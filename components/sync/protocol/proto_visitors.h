@@ -447,6 +447,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_overflow_and_landmark);
   VISIT(address_street_location_and_locality);
   VISIT(address_thoroughfare_number_and_apt);
+  VISIT(invisible_in_autofill);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::Observation& proto) {
