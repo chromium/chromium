@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/kleene_value.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -21,21 +22,28 @@ CSSIfParser::CSSIfParser(const CSSParserContext& context)
       media_query_parser_(MediaQueryParser::kMediaQuerySetParser,
                           kHTMLStandardMode,
                           context.GetExecutionContext(),
-                          MediaQueryParser::SyntaxLevel::kLevel4) {}
+                          MediaQueryParser::SyntaxLevel::kLevel4),
+      supports_query_parser_(CSSParserImpl(&context)) {}
 
-// <if-test> = media( <media-query> ) | style( <style-query> )
+// <if-test> =
+//   supports( [ <supports-condition> | <ident> : <declaration-value> ] ) |
+//   media( <media-query> ) |
+//   style( <style-query> )
 const IfCondition* CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
-  if (stream.Peek().GetType() == kFunctionToken &&
-      stream.Peek().FunctionId() == CSSValueID::kStyle) {
+  if (RuntimeEnabledFeatures::CSSInlineIfForSupportsQueriesEnabled() &&
+      stream.Peek().GetType() == kFunctionToken &&
+      stream.Peek().FunctionId() == CSSValueID::kSupports) {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    if (const MediaQueryExpNode* query =
-            container_query_parser_.ConsumeFeatureQuery(
-                stream, ContainerQueryParser::StyleFeatureSet())) {
+    CSSSupportsParser::Result supports_parsing_result =
+        CSSSupportsParser::ConsumeSupportsCondition(stream,
+                                                    supports_query_parser_);
+    if (supports_parsing_result != CSSSupportsParser::Result::kParseFailure) {
       guard.Release();
       stream.ConsumeWhitespace();
-      return MakeGarbageCollected<IfTestStyle>(
-          MediaQueryExpNode::Function(query, AtomicString("style")));
+      bool result =
+          (supports_parsing_result == CSSSupportsParser::Result::kSupported);
+      return MakeGarbageCollected<IfTestSupports>(result);
     }
   }
   if (RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled() &&
@@ -47,6 +55,19 @@ const IfCondition* CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
       guard.Release();
       stream.ConsumeWhitespace();
       return MakeGarbageCollected<IfTestMedia>(query);
+    }
+  }
+  if (stream.Peek().GetType() == kFunctionToken &&
+      stream.Peek().FunctionId() == CSSValueID::kStyle) {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    if (const MediaQueryExpNode* query =
+            container_query_parser_.ConsumeFeatureQuery(
+                stream, ContainerQueryParser::StyleFeatureSet())) {
+      guard.Release();
+      stream.ConsumeWhitespace();
+      return MakeGarbageCollected<IfTestStyle>(
+          MediaQueryExpNode::Function(query, AtomicString("style")));
     }
   }
   return nullptr;

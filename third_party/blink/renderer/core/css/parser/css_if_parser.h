@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 
@@ -34,6 +35,7 @@ class CORE_EXPORT CSSIfParser {
 
   ContainerQueryParser container_query_parser_;
   MediaQueryParser media_query_parser_;
+  CSSParserImpl supports_query_parser_;
 };
 
 }  // namespace blink

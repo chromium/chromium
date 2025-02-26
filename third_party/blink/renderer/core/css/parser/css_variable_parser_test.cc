@@ -148,6 +148,9 @@ const char* valid_if_values[] = {
     "if(not style(--prop: abc): true_val; (not style(--prop: def)): true_val)",
     "if(not style(--prop: abc): true_val; else: false_val; (not style(--prop: def)): true_val)",
     "if(media(only (min-width : 500px)): true_val; else: false_val;)",
+    "if(supports(not (transform-origin: 10em 10em 10em)): true_val; else: false_val;)",
+    "if(supports((display: table-cell) and (display: list-item)): true_val; else: false_val;)",
+    "if(media(screen) and (supports(display: table-cell) or style(--x)): true_val; else: false_val;)",
     // clang-format on
 };
 
@@ -161,6 +164,7 @@ const char* invalid_if_values[] = {
     "if(style(--x) true_val)",
     "if(style(--prop)): abc",
     "if(media(invalid) or invalid: true_val)",
+    "if(invalid and supports(invalid): true_val')",
     "if(style(--prop: abc) abc; else: cba)",
     "if(style(--prop: abc): abc; else cba)",
     "if(media(min-width : 500px): true_val; else: false_val;)",
@@ -354,6 +358,7 @@ INSTANTIATE_TEST_SUITE_P(All, ValidIfTest, testing::ValuesIn(valid_if_values));
 TEST_P(ValidIfTest, ContainsValidIf) {
   ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
   ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
+  ScopedCSSInlineIfForSupportsQueriesForTest scoped_supports_feature(true);
 
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
@@ -377,6 +382,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(InvalidIfTest, ContainsInvalidIf) {
   ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
   ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
+  ScopedCSSInlineIfForSupportsQueriesForTest scoped_supports_feature(true);
 
   SCOPED_TRACE(GetParam());
   CSSParserTokenStream stream{GetParam()};
