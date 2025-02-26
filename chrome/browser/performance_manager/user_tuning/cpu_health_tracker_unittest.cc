@@ -52,15 +52,13 @@ namespace {
 
 // Number of times to see a health status consecutively for the health status to
 // change
-const int kNumHealthStatusForChange =
-    performance_manager::features::kCPUTimeOverThreshold.Get() /
-    performance_manager::features::kCPUSampleFrequency.Get();
+const int kNumHealthStatusForChange = CpuHealthTracker::kCPUTimeOverThreshold /
+                                      CpuHealthTracker::kCPUSampleFrequency;
 
 const CpuHealthTracker::CpuPercent kUnhealthySystemCpuUsagePercentage{
-    performance_manager::features::kCPUUnhealthyPercentageThreshold.Get() + 1};
+    CpuHealthTracker::kCPUUnhealthyPercentageThreshold + 1};
 const CpuHealthTracker::CpuPercent kDegradedSystemCpuUsagePercentage{
-    performance_manager::features::kCPUDegradedHealthPercentageThreshold.Get() +
-    1};
+    CpuHealthTracker::kCPUDegradedHealthPercentageThreshold + 1};
 
 class StatusWaiter : public PerformanceDetectionManager::StatusObserver {
  public:
@@ -470,17 +468,14 @@ TEST_F(CpuHealthTrackerBrowserTest, PagesMeetMinimumCpuUsage) {
     page_contexts_cpu.insert(
         {page_context,
          CpuHealthTracker::CpuPercent(
-             performance_manager::features::kMinimumActionableTabCPUPercentage
-                 .Get() -
-             1)});
+             CpuHealthTracker::kMinimumActionableTabCPUPercentage - 1)});
   }
 
   Graph* graph = PerformanceManager::GetGraph();
   CpuHealthTracker::GetFromGraph(graph)->GetFilteredActionableTabs(
       page_contexts_cpu,
       CpuHealthTracker::CpuPercent(
-          performance_manager::features::kCPUDegradedHealthPercentageThreshold
-              .Get()),
+          CpuHealthTracker::kCPUDegradedHealthPercentageThreshold),
       base::BindOnce([](CpuHealthTracker::ActionableTabsResult result) {
         // The actionable tab list should be empty because each
         // page's CPU usage is below the minimum needed to  be
@@ -584,7 +579,7 @@ TEST_F(CpuHealthTrackerBrowserTest, NotifyWhenNoTabsAreActionable) {
   task_environment()->FastForwardBy(base::Seconds(60));
   result_map[first_page_context] = {
       .cpu_time_result = CreateFakeCpuResult(base::Seconds(
-          features::kMinimumActionableTabCPUPercentage.Get() - 1))};
+          CpuHealthTracker::kMinimumActionableTabCPUPercentage - 1))};
 
   // Verify that there is no actionable tabs because the first tab's CPU usage
   // is below the minimum needed to be considered as actionable
@@ -606,7 +601,7 @@ TEST_F(CpuHealthTrackerBrowserTest, NeedMultipleTabsToBeActionable) {
   task_environment()->FastForwardBy(base::Seconds(60));
   resource_attribution::QueryResultMap result_map;
   const int cpu_time =
-      features::kMinimumActionableTabCPUPercentage.Get() / 100.0 * 60;
+      CpuHealthTracker::kMinimumActionableTabCPUPercentage / 100.0 * 60;
   result_map[first_page_context] = {
       .cpu_time_result = CreateFakeCpuResult(
           base::Seconds((cpu_time + 1) * base::SysInfo::NumberOfProcessors()))};
@@ -619,8 +614,8 @@ TEST_F(CpuHealthTrackerBrowserTest, NeedMultipleTabsToBeActionable) {
       {PerformanceDetectionManager::ResourceType::kCpu}, &observer);
   ProcessQueryResultMap(
       CpuHealthTracker::CpuPercent(
-          features::kCPUUnhealthyPercentageThreshold.Get() +
-          (2 * features::kMinimumActionableTabCPUPercentage.Get())),
+          CpuHealthTracker::kCPUUnhealthyPercentageThreshold +
+          (2 * CpuHealthTracker::kMinimumActionableTabCPUPercentage)),
       result_map);
   observer.Wait();
 

@@ -76,48 +76,6 @@ BASE_DECLARE_FEATURE(kPerformanceInterventionDemoMode);
 
 bool ShouldUsePerformanceInterventionBackend();
 
-// This represents the version number for the string displayed on the
-// Performance Intervention Dialog.
-extern const base::FeatureParam<int> kInterventionDialogStringVersion;
-
-// This represents whether we should show the performance intervention
-// UI when the suggested tabs to take action on include tabs from a
-// profile that is different from the last active browser.
-extern const base::FeatureParam<bool> kInterventionShowMixedProfileSuggestions;
-
-// This represents the duration that the performance intervention button
-// should remain in the toolbar after the user dismisses the intervention
-// dialog without taking the suggested action.
-extern const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout;
-
-// This represents the duration that CPU must be over the threshold before
-// a notification is triggered.
-extern const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold;
-
-// Frequency to sample for cpu usage to ensure that the user is experiencing
-// consistent cpu issues before surfacing a notification
-extern const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency;
-
-// If the system CPU consistently exceeds these percent thresholds, then
-// the CPU health will be classified as the threshold it is exceeding
-extern const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold;
-extern const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold;
-
-// Maximum number of tabs to be actionable
-extern const base::FeatureParam<int> kCPUMaxActionableTabs;
-
-// Minimum percentage to improve CPU health for a tab to be actionable
-extern const base::FeatureParam<int> kMinimumActionableTabCPUPercentage;
-
-// This represents the duration that Memory must be over the threshold before
-// a notification is triggered.
-extern const base::FeatureParam<base::TimeDelta> kMemoryTimeOverThreshold;
-
-// If available Memory percent and bytes are both under the specified thresholds
-// then we will trigger a notification.
-extern const base::FeatureParam<int> kMemoryFreePercentThreshold;
-extern const base::FeatureParam<int> kMemoryFreeBytesThreshold;
-
 #endif
 
 BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);

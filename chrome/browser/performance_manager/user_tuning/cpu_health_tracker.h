@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
@@ -42,6 +43,25 @@ class CpuHealthTracker
   CpuHealthTracker(StatusChangeCallback on_status_change_cb,
                    ActionableTabResultCallback on_actionability_change_cb);
   ~CpuHealthTracker() override;
+
+  // This represents the duration that CPU must be over the threshold before
+  // a notification is triggered.
+  static constexpr base::TimeDelta kCPUTimeOverThreshold = base::Seconds(60);
+
+  // Frequency to sample for cpu usage to ensure that the user is experiencing
+  // consistent cpu issues before surfacing a notification.
+  static constexpr base::TimeDelta kCPUSampleFrequency = base::Seconds(15);
+
+  // If the system CPU consistently exceeds these percent thresholds, then
+  // the CPU health will be classified as the threshold it is exceeding.
+  static constexpr int kCPUDegradedHealthPercentageThreshold = 50;
+  static constexpr int kCPUUnhealthyPercentageThreshold = 75;
+
+  // Maximum number of tabs to be actionable.
+  static constexpr int kCPUMaxActionableTabs = 4;
+
+  // Minimum percentage to improve CPU health for a tab to be actionable.
+  static constexpr int kMinimumActionableTabCPUPercentage = 10;
 
   HealthLevel GetCurrentHealthLevel();
 
