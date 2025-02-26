@@ -178,8 +178,7 @@ void DevToolsFileWatcher::SharedFileWatcher::DirectoryChanged(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          &DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications,
-          base::Unretained(this)),
+          &DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications, this),
       shedule_for);
   last_event_time_ = now;
 }
