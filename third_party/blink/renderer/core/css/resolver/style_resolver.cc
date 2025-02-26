@@ -2789,7 +2789,8 @@ const CSSValue* StyleResolver::ResolveValue(
     const CSSValue& value) {
   StyleResolverState state(element.GetDocument(), element);
   state.SetStyle(style);
-  return StyleCascade::Resolve(state, property_name, value);
+  return StyleCascade::Resolve(state, property_name, value,
+                               /*tree_scope=*/&element.GetDocument());
 }
 
 FilterOperations StyleResolver::ComputeFilterOperations(

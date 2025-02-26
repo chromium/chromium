@@ -314,14 +314,15 @@ StringKeyframe::CreatePropertySpecificKeyframe(
       composite_.value_or(effect_composite);
   if (property.IsCSSProperty()) {
     return MakeGarbageCollected<CSSPropertySpecificKeyframe>(
-        offset, &Easing(), &CssPropertyValue(property), composite);
+        offset, &Easing(), &CssPropertyValue(property), tree_scope_.Get(),
+        composite);
   }
 
   if (property.IsPresentationAttribute()) {
     return MakeGarbageCollected<CSSPropertySpecificKeyframe>(
         offset, &Easing(),
         &PresentationAttributeValue(property.PresentationAttribute()),
-        composite);
+        tree_scope_.Get(), composite);
   }
 
   DCHECK(property.IsSVGAttribute());
@@ -353,12 +354,14 @@ StringKeyframe::CSSPropertySpecificKeyframe::NeutralKeyframe(
     double offset,
     scoped_refptr<TimingFunction> easing) const {
   return MakeGarbageCollected<CSSPropertySpecificKeyframe>(
-      offset, std::move(easing), nullptr, EffectModel::kCompositeAdd);
+      offset, std::move(easing), /*value=*/nullptr, /*tree_scope=*/nullptr,
+      EffectModel::kCompositeAdd);
 }
 
 void StringKeyframe::CSSPropertySpecificKeyframe::Trace(
     Visitor* visitor) const {
   visitor->Trace(value_);
+  visitor->Trace(tree_scope_);
   visitor->Trace(compositor_keyframe_value_cache_);
   Keyframe::PropertySpecificKeyframe::Trace(visitor);
 }
@@ -367,7 +370,7 @@ Keyframe::PropertySpecificKeyframe*
 StringKeyframe::CSSPropertySpecificKeyframe::CloneWithOffset(
     double offset) const {
   auto* clone = MakeGarbageCollected<CSSPropertySpecificKeyframe>(
-      offset, easing_, value_.Get(), composite_);
+      offset, easing_, value_.Get(), tree_scope_.Get(), composite_);
   clone->compositor_keyframe_value_cache_ = compositor_keyframe_value_cache_;
   return clone;
 }

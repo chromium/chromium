@@ -356,14 +356,14 @@ void StyleCascade::Reset() {
 
 const CSSValue* StyleCascade::Resolve(const CSSPropertyName& name,
                                       const CSSValue& value,
+                                      const TreeScope* tree_scope,
                                       CascadeOrigin origin,
                                       CascadeResolver& resolver) {
   CSSPropertyRef ref(name, state_.GetDocument());
 
-  // TODO(crbug.com/394111301): Propagate tree_scope from animations machinery.
-  const CSSValue* resolved = Resolve(ResolveSurrogate(ref.GetProperty()), value,
-                                     /*tree_scope=*/nullptr,
-                                     CascadePriority(origin), origin, resolver);
+  const CSSValue* resolved =
+      Resolve(ResolveSurrogate(ref.GetProperty()), value, tree_scope,
+              CascadePriority(origin), origin, resolver);
 
   DCHECK(resolved);
 
@@ -423,7 +423,8 @@ StyleCascade::GetCascadedValues() const {
 
 const CSSValue* StyleCascade::Resolve(StyleResolverState& state,
                                       const CSSPropertyName& name,
-                                      const CSSValue& value) {
+                                      const CSSValue& value,
+                                      const TreeScope* tree_scope) {
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
   // Since the cascade map is empty, the CascadeResolver isn't important,
@@ -437,7 +438,7 @@ const CSSValue* StyleCascade::Resolve(StyleResolverState& state,
   // from a location on the `MatchResult`, which is not the case.
   CascadeOrigin origin = CascadeOrigin::kNone;
 
-  return cascade.Resolve(name, value, origin, resolver);
+  return cascade.Resolve(name, value, tree_scope, origin, resolver);
 }
 
 void StyleCascade::AnalyzeIfNeeded() {

@@ -23,24 +23,31 @@ class CycleChecker : public InterpolationType::ConversionChecker {
  public:
   CycleChecker(const PropertyHandle& property,
                const CSSValue& value,
+               const TreeScope* keyframe_tree_scope,
                bool cycle_detected)
-      : property_(property), value_(value), cycle_detected_(cycle_detected) {}
+      : property_(property),
+        value_(value),
+        keyframe_tree_scope_(keyframe_tree_scope),
+        cycle_detected_(cycle_detected) {}
 
   void Trace(Visitor* visitor) const final {
     InterpolationType::ConversionChecker::Trace(visitor);
     visitor->Trace(value_);
+    visitor->Trace(keyframe_tree_scope_);
   }
 
  private:
   bool IsValid(const InterpolationEnvironment& environment,
                const InterpolationValue&) const final {
     const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
-    bool cycle_detected = !css_environment.Resolve(property_, value_);
+    bool cycle_detected =
+        !css_environment.Resolve(property_, value_, keyframe_tree_scope_);
     return cycle_detected == cycle_detected_;
   }
 
   PropertyHandle property_;
   Member<const CSSValue> value_;
+  Member<const TreeScope> keyframe_tree_scope_;
   const bool cycle_detected_;
 };
 
@@ -60,7 +67,9 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
     const InterpolationEnvironment& environment,
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
-  const CSSValue& value = *To<CSSPropertySpecificKeyframe>(keyframe).Value();
+  const auto& property_specific = To<CSSPropertySpecificKeyframe>(keyframe);
+  const CSSValue& value = *property_specific.Value();
+  const TreeScope* keyframe_tree_scope = property_specific.GetTreeScope();
 
   // It is only possible to form a cycle if the value points to something else.
   // This is only possible with var(), or with revert-[layer] which may revert
@@ -76,9 +85,10 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
   const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
 
   PropertyHandle property = GetProperty();
-  bool cycle_detected = !css_environment.Resolve(property, &value);
-  conversion_checkers.push_back(
-      MakeGarbageCollected<CycleChecker>(property, value, cycle_detected));
+  bool cycle_detected =
+      !css_environment.Resolve(property, &value, keyframe_tree_scope);
+  conversion_checkers.push_back(MakeGarbageCollected<CycleChecker>(
+      property, value, keyframe_tree_scope, cycle_detected));
   return cycle_detected ? CreateCycleDetectedValue() : nullptr;
 }
 

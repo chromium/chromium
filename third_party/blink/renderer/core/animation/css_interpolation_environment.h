@@ -67,8 +67,16 @@ class CSSInterpolationEnvironment : public InterpolationEnvironment {
     return *animation_controls_style_;
   }
 
+  // Eliminates substitution functions, and handles other cascade interactions,
+  // such as 'revert', 'revert-layer', etc.
+  //
+  // The TreeScope is the tree scope of the associated @keyframes rule
+  // (if any).
+  //
   // TODO(crbug.com/985023): This effective violates const.
-  const CSSValue* Resolve(const PropertyHandle&, const CSSValue*) const;
+  const CSSValue* Resolve(const PropertyHandle&,
+                          const CSSValue*,
+                          const TreeScope*) const;
 
  private:
   StyleResolverState* state_ = nullptr;
