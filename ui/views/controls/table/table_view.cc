@@ -849,8 +849,8 @@ void TableView::UpdateHover(std::optional<gfx::Point> view_coordinates) {
                           static_cast<float>(row_height_);
   const int row = static_cast<int>(std::floor(row_float));
   const bool in_bounds = row >= 0 && static_cast<size_t>(row) < GetRowCount();
-  hovered_rows_ = in_bounds ? std::make_optional<GroupRange>(GetGroupRange(
-                                  ViewToModel(static_cast<size_t>(row))))
+  hovered_rows_ = in_bounds ? std::make_optional<GroupRange>(
+                                  GetGroupRange(static_cast<size_t>(row)))
                             : std::nullopt;
 
   if (previous_hovered_rows != hovered_rows_) {
