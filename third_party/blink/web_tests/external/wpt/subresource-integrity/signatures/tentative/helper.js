@@ -58,7 +58,7 @@ function generate_fetch_test(request_data, options, expectation, description) {
     let fetcher = fetch(url, fetch_options);
     if (expectation == EXPECT_LOADED) {
       return fetcher.then(r => {
-        const expected_status = options.mode == "no-cors" ? 0 : 200;
+        const expected_status = options.mode == "no-cors" ? 0 : (request_data.status ?? 200);
         assert_equals(r.status, expected_status, `Response status is ${expected_status}.`);
 
         // Verify `accept-signature`: if the invalid key is present, both a valid and invalid
