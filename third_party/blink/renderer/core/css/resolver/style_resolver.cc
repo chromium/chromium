@@ -150,6 +150,7 @@ bool IsPseudoElementWithUAStyle(PseudoId pseudo_id) {
     case kPseudoIdScrollButtonInlineStart:
     case kPseudoIdScrollButtonInlineEnd:
     case kPseudoIdScrollButtonBlockEnd:
+    case kPseudoIdScrollMarker:
       return true;
     default:
       return false;
