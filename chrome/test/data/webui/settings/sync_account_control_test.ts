@@ -206,6 +206,28 @@ suite('SyncAccountControl', function() {
         assertTrue(isChildVisible(testElement, '#signout-button'));
       });
 
+  test('Signout buttons not available to managed accounts', function() {
+    loadTimeData.overrideValues({isImprovedSettingsUIOnDesktopEnabled: true});
+    testElement.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+      domain: 'domain',
+    };
+
+    flush();
+
+    assertTrue(isChildVisible(testElement, '#sync-button'));
+    assertFalse(isChildVisible(testElement, '#signout-button'));
+    assertFalse(isChildVisible(testElement, '#remove-account-button'));
+
+    testElement.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN_PAUSED,
+      statusAction: StatusAction.NO_ACTION,
+      domain: 'domain',
+    };
+    assertFalse(isChildVisible(testElement, '#signout-button'));
+    assertFalse(isChildVisible(testElement, '#remove-account-button'));
+  });
 
   test(
       'Updated UI hidden when sync off, kImprovedSettingsUIOnDesktop disabled',
@@ -707,6 +729,7 @@ suite('SyncAccountControl', function() {
     assertNotEquals(secondaryContentSignedIn, secondaryContentSigninPaused);
     assertEquals(secondaryContentSigninPaused.trim(), signedInAccount.email);
     assertTrue(isChildVisible(testElement, '#signin-paused-buttons'));
+    assertTrue(isChildVisible(testElement, '#remove-account-button'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
     assertFalse(isChildVisible(testElement, '#sync-button'));
   });

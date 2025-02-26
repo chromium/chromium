@@ -404,8 +404,19 @@ export class SettingsSyncAccountControlElement extends
       return true;
     }
 
+    if (this.syncStatus.domain) {
+      return true;
+    }
+
     return this.syncStatus.signedInState !== SignedInState.SIGNED_IN ||
         this.syncStatus.statusAction !== StatusAction.NO_ACTION;
+  }
+
+  /**
+   * Determines if the remove account button should be hidden.
+   */
+  private shouldHideRemoveAccountButton_(): boolean {
+    return !!this.syncStatus.domain;
   }
 
   /**
@@ -591,7 +602,11 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldHideSignoutDropdownButton_(): boolean {
-    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled');
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      return true;
+    }
+
+    return !!this.syncStatus.domain;
   }
 
 
