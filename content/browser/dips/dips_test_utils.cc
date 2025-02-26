@@ -23,6 +23,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 
 namespace content {
 
@@ -46,6 +47,18 @@ base::expected<WebContents*, std::string> OpenInNewTab(
   WaitForLoadStop(tab_observer.window());
 
   return tab_observer.window();
+}
+
+[[nodiscard]] testing::AssertionResult AccessStorage(
+    RenderFrameHost* frame,
+    blink::mojom::StorageTypeAccessed type) {
+  // We drop the first character of ToString(type) because it's just the
+  // constant-indicating 'k'.
+  return ExecJs(frame,
+                base::StringPrintf(kStorageAccessScript,
+                                   base::ToString(type).substr(1).c_str()),
+                EXECUTE_SCRIPT_NO_USER_GESTURE,
+                /*world_id=*/1);
 }
 
 void AccessCookieViaJSIn(WebContents* web_contents, RenderFrameHost* frame) {
