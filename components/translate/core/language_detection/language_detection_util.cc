@@ -33,7 +33,7 @@ struct SimilarLanguageCode {
   int group;
 };
 
-const auto kSimilarLanguageCodes = std::to_array<SimilarLanguageCode>({
+constexpr auto kSimilarLanguageCodes = std::to_array<SimilarLanguageCode>({
     {"bs", 1},
     {"hr", 1},
     {"hi", 2},
