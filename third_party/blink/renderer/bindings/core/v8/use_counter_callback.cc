@@ -33,6 +33,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kBreakIterator:
       blink_feature = WebFeature::kBreakIterator;
+      deprecated = true;
       break;
     case v8::Isolate::kSloppyMode:
       blink_feature = WebFeature::kV8SloppyMode;
