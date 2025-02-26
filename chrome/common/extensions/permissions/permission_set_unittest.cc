@@ -1036,9 +1036,9 @@ TEST(PermissionsTest, AccessToDevicesMessages) {
     PermissionSet permissions(std::move(api_permissions),
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
-    VerifyOnePermissionMessage(
+    EXPECT_TRUE(VerifyOnePermissionMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_SERIAL));
+        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_SERIAL)));
   }
   {
     // Testing that multiple permissions will show the one message.
@@ -1048,25 +1048,25 @@ TEST(PermissionsTest, AccessToDevicesMessages) {
     PermissionSet permissions(std::move(api_permissions),
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
-    VerifyOnePermissionMessage(
+    EXPECT_TRUE(VerifyOnePermissionMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_SERIAL));
+        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_SERIAL)));
   }
   {
     scoped_refptr<Extension> extension =
         LoadManifest("permissions", "access_to_devices_bluetooth.json");
     PermissionSet& set = const_cast<PermissionSet&>(
         extension->permissions_data()->active_permissions());
-    VerifyOnePermissionMessage(
+    EXPECT_TRUE(VerifyOnePermissionMessage(
         set, extension->GetType(),
-        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH));
+        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH)));
 
     // Test Bluetooth and Serial
     set.apis_.insert(APIPermissionID::kSerial);
-    VerifyOnePermissionMessage(
+    EXPECT_TRUE(VerifyOnePermissionMessage(
         set, extension->GetType(),
         l10n_util::GetStringUTF16(
-            IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_SERIAL));
+            IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_SERIAL)));
   }
 }
 
