@@ -329,9 +329,10 @@ absl::Status BackgroundBlurCalculatorWebGpu::Process(
 
   if (config_packet.Get<RuntimeConfig>().blur_state != BlurState::kEnabled) {
     wgpu::CommandEncoder command_encoder = device.CreateCommandEncoder();
-    wgpu::ImageCopyTexture source = {.texture = input_texture_view.texture()};
-    wgpu::ImageCopyTexture destination = {.texture =
-                                              output_texture_view.texture()};
+    wgpu::TexelCopyTextureInfo source = {.texture =
+                                             input_texture_view.texture()};
+    wgpu::TexelCopyTextureInfo destination = {
+        .texture = output_texture_view.texture()};
     wgpu::Extent3D extent = {
         .width = static_cast<uint32_t>(input_buffer.width()),
         .height = static_cast<uint32_t>(input_buffer.height()),
