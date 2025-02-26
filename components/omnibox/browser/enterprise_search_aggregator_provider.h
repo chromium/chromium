@@ -102,9 +102,14 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                        SuggestionType suggestion_type,
                        bool is_navigation);
 
-  std::string GetUrl(const base::Value::Dict& result,
-                     const TemplateURLRef& url_ref,
-                     SuggestionType suggestion_type) const;
+  // Helper method to get `destination_url` based on `suggestion_type` for
+  // `CreateMatch()`.
+  std::string GetMatchDestinationUrl(const base::Value::Dict& result,
+                                     const TemplateURLRef& url_ref,
+                                     SuggestionType suggestion_type) const;
+
+  // Helper method to get `image_url`, if one is available, for `CreateMatch()`.
+  std::string GetMatchImageUrl(const base::Value::Dict& result) const;
 
   // Helper method to get `description` based on `suggestion_type` for
   // `CreateMatch()`.
@@ -123,6 +128,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                 bool is_navigation,
                                 int relevance,
                                 const std::string& destination_url,
+                                const std::string& image_url,
                                 const std::u16string& description,
                                 const std::u16string& contents);
 
