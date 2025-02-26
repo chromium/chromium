@@ -142,6 +142,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
+#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -1920,7 +1921,7 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       routing_id_(params.routing_id),
 #endif
       process_label_id_(
-          base::trace_event::TraceLog::GetInstance()->GetNewProcessLabelId()),
+          tracing::TrackNameRecorder::GetInstance()->GetNewProcessLabelId()),
       selection_text_offset_(0),
       selection_range_(gfx::Range::InvalidRange()),
       render_accessibility_manager_(
@@ -1984,7 +1985,7 @@ RenderFrameImpl::~RenderFrameImpl() {
   if (initialized_ && is_main_frame_)
     MainFrameCounter::DecrementCount();
 
-  base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(
+  tracing::TrackNameRecorder::GetInstance()->RemoveProcessLabel(
       process_label_id_);
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   g_routing_id_frame_map.Get().erase(routing_id_);
@@ -4217,7 +4218,7 @@ void RenderFrameImpl::RunScriptsAtDocumentElementAvailable() {
 void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
   // Ignore all but top level navigations.
   if (!frame_->Parent() && !title.IsEmpty()) {
-    base::trace_event::TraceLog::GetInstance()->UpdateProcessLabel(
+    tracing::TrackNameRecorder::GetInstance()->UpdateProcessLabel(
         process_label_id_, title.Utf8());
   } else {
     // Set process title for sub-frames and title-less frames in traces.
@@ -4229,7 +4230,7 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
         frame_title += "Subframe: ";
       }
       frame_title += loading_url.DeprecatedGetOriginAsURL().spec();
-      base::trace_event::TraceLog::GetInstance()->UpdateProcessLabel(
+      tracing::TrackNameRecorder::GetInstance()->UpdateProcessLabel(
           process_label_id_, frame_title);
     }
   }

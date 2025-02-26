@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_thread_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"
@@ -23,71 +22,27 @@
 
 namespace tracing {
 
-// Set the track descriptor for the current process.
-void SetProcessTrackDescriptor(int64_t process_start_timestamp) {
-  using perfetto::protos::gen::ChromeProcessDescriptor;
-
-  const auto* trace_log = base::trace_event::TraceLog::GetInstance();
-  int process_id = trace_log->process_id();
-  std::string process_name = base::CurrentProcess::GetInstance().GetName({});
-  auto process_type = static_cast<ChromeProcessDescriptor::ProcessType>(
-      base::CurrentProcess::GetInstance().GetType({}));
-
-  // We record a few (string) fields here that are stripped for background
-  // tracing. We rely on the post-process privacy filtering to remove them.
-  auto process_track = perfetto::ProcessTrack::Current();
-  auto process_track_desc = process_track.Serialize();
-  auto* process = process_track_desc.mutable_process();
-  process->set_pid(process_id);
-  process->set_process_name(process_name);
-  process->set_start_timestamp_ns(process_start_timestamp);
-  for (const auto& label : trace_log->process_labels()) {
-    process->add_process_labels(label.second);
-  }
-
-  auto* chrome_process = process_track_desc.mutable_chrome_process();
-  if (process_type != ChromeProcessDescriptor::PROCESS_UNSPECIFIED) {
-    chrome_process->set_process_type(process_type);
-  }
-
-  // Add the crash trace ID to all the traces uploaded. If there are crashes
-  // during this tracing session, then the crash will contain the process's
-  // trace ID as "chrome-trace-id" crash key. This should be emitted
-  // periodically to ensure it is present in the traces when the process
-  // crashes. Metadata can go missing if process crashes. So, record this in
-  // process descriptor.
-  static const std::optional<uint64_t> crash_trace_id = GetTraceCrashId();
-  if (crash_trace_id) {
-    chrome_process->set_crash_trace_id(*crash_trace_id);
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Host app package name is only recorded if the corresponding TraceLog
-  // setting is set to true.
-  if (trace_log->ShouldRecordHostAppPackageName()) {
-    // Host app package name is used to group information from different
-    // processes that "belong" to the same WebView app.
-    if (process_type == ChromeProcessDescriptor::PROCESS_RENDERER ||
-        process_type == ChromeProcessDescriptor::PROCESS_BROWSER) {
-      chrome_process->set_host_app_package_name(
-          base::android::BuildInfo::GetInstance()->host_package_name());
-    }
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  base::TrackEvent::SetTrackDescriptor(process_track,
-                                       std::move(process_track_desc));
-}
+using perfetto::protos::gen::ChromeProcessDescriptor;
 
 namespace {
+
+std::optional<uint64_t> GetTraceCrashId() {
+  static base::debug::CrashKeyString* key = base::debug::AllocateCrashKeyString(
+      "chrome-trace-id", base::debug::CrashKeySize::Size32);
+  if (!key) {
+    return std::nullopt;
+  }
+  uint64_t id = base::RandUint64();
+  base::debug::SetCrashKeyString(key, base::NumberToString(id));
+  return id;
+}
 
 void FillThreadTrack(const perfetto::ThreadTrack& track, const char* name) {
   using perfetto::protos::gen::ChromeThreadDescriptor;
 
-  int process_id = static_cast<int>(
-      base::trace_event::TraceLog::GetInstance()->process_id());
   auto desc = track.Serialize();
-  desc.mutable_thread()->set_pid(process_id);
+  desc.mutable_thread()->set_pid(static_cast<int>(
+      base::trace_event::TraceLog::GetInstance()->process_id()));
   desc.mutable_thread()->set_thread_name(name);
   auto thread_type =
       static_cast<ChromeThreadDescriptor::ThreadType>(GetThreadType(name));
@@ -117,23 +72,64 @@ void SetThreadTrackDescriptors() {
   auto thread_track = perfetto::ThreadTrack::Current();
   FillThreadTrack(thread_track, thread_name);
 }
+
 }  // namespace
 
-std::optional<uint64_t> GetTraceCrashId() {
-  static base::debug::CrashKeyString* key = base::debug::AllocateCrashKeyString(
-      "chrome-trace-id", base::debug::CrashKeySize::Size32);
-  if (!key) {
-    return std::nullopt;
+void TrackNameRecorder::SetProcessTrackDescriptor(
+    const std::string& process_name,
+    ChromeProcessDescriptor::ProcessType process_type) {
+  // We record a few (string) fields here that are stripped for background
+  // tracing. We rely on the post-process privacy filtering to remove them.
+  auto process_track = perfetto::ProcessTrack::Current();
+  auto process_track_desc = process_track.Serialize();
+  auto* process = process_track_desc.mutable_process();
+  process->set_pid(base::trace_event::TraceLog::GetInstance()->process_id());
+  process->set_process_name(process_name);
+  process->set_start_timestamp_ns(process_start_timestamp_);
+  for (const auto& label : process_labels()) {
+    process->add_process_labels(label.second);
   }
-  uint64_t id = base::RandUint64();
-  base::debug::SetCrashKeyString(key, base::NumberToString(id));
-  return id;
+
+  auto* chrome_process = process_track_desc.mutable_chrome_process();
+  if (process_type != ChromeProcessDescriptor::PROCESS_UNSPECIFIED) {
+    chrome_process->set_process_type(process_type);
+  }
+
+  // Add the crash trace ID to all the traces uploaded. If there are crashes
+  // during this tracing session, then the crash will contain the process's
+  // trace ID as "chrome-trace-id" crash key. This should be emitted
+  // periodically to ensure it is present in the traces when the process
+  // crashes. Metadata can go missing if process crashes. So, record this in
+  // process descriptor.
+  static const std::optional<uint64_t> crash_trace_id = GetTraceCrashId();
+  if (crash_trace_id) {
+    chrome_process->set_crash_trace_id(*crash_trace_id);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Host app package name is only recorded if the corresponding TraceLog
+  // setting is set to true.
+  if (base::trace_event::TraceLog::GetInstance()
+          ->ShouldRecordHostAppPackageName()) {
+    // Host app package name is used to group information from different
+    // processes that "belong" to the same WebView app.
+    if (process_type == ChromeProcessDescriptor::PROCESS_RENDERER ||
+        process_type == ChromeProcessDescriptor::PROCESS_BROWSER) {
+      chrome_process->set_host_app_package_name(
+          base::android::BuildInfo::GetInstance()->host_package_name());
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  base::TrackEvent::SetTrackDescriptor(process_track,
+                                       std::move(process_track_desc));
 }
 
 TrackNameRecorder::TrackNameRecorder()
     : process_start_timestamp_(
           TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds()) {
   base::ThreadIdNameManager::GetInstance()->AddObserver(this);
+  base::CurrentProcess::GetInstance().SetDelegate(this, {});
   base::TrackEvent::AddSessionObserver(this);
   SetThreadTrackDescriptors();
 }
@@ -147,11 +143,11 @@ TrackNameRecorder* TrackNameRecorder::GetInstance() {
 }
 
 void TrackNameRecorder::OnSetup(const perfetto::DataSourceBase::SetupArgs&) {
-  SetProcessTrackDescriptor(process_start_timestamp_);
+  SetProcessTrackDescriptor();
 }
 
 void TrackNameRecorder::OnStop(const perfetto::DataSourceBase::StopArgs&) {
-  SetProcessTrackDescriptor(process_start_timestamp_);
+  SetProcessTrackDescriptor();
 }
 
 void TrackNameRecorder::OnThreadNameChanged(const char* name) {
@@ -159,4 +155,49 @@ void TrackNameRecorder::OnThreadNameChanged(const char* name) {
   // never happen outside of tests.
   FillThreadTrack(perfetto::ThreadTrack::Current(), name);
 }
+
+void TrackNameRecorder::OnProcessNameChanged(
+    const std::string& process_name,
+    base::CurrentProcessType process_type) {
+  if (perfetto::Tracing::IsInitialized()) {
+    SetProcessTrackDescriptor(
+        process_name,
+        static_cast<ChromeProcessDescriptor::ProcessType>(process_type));
+  }
+}
+
+int TrackNameRecorder::GetNewProcessLabelId() {
+  base::AutoLock lock(lock_);
+  return next_process_label_id_++;
+}
+
+void TrackNameRecorder::UpdateProcessLabel(int label_id,
+                                           const std::string& current_label) {
+  if (!current_label.length()) {
+    return RemoveProcessLabel(label_id);
+  }
+
+  if (perfetto::Tracing::IsInitialized()) {
+    auto track = perfetto::ProcessTrack::Current();
+    auto desc = track.Serialize();
+    desc.mutable_process()->add_process_labels(current_label);
+    base::TrackEvent::SetTrackDescriptor(track, std::move(desc));
+  }
+
+  base::AutoLock lock(lock_);
+  process_labels_[label_id] = current_label;
+}
+
+void TrackNameRecorder::RemoveProcessLabel(int label_id) {
+  base::AutoLock lock(lock_);
+  process_labels_.erase(label_id);
+}
+
+void TrackNameRecorder::SetProcessTrackDescriptor() {
+  std::string process_name = base::CurrentProcess::GetInstance().GetName({});
+  auto process_type = static_cast<ChromeProcessDescriptor::ProcessType>(
+      base::CurrentProcess::GetInstance().GetType({}));
+  SetProcessTrackDescriptor(process_name, process_type);
+}
+
 }  // namespace tracing
