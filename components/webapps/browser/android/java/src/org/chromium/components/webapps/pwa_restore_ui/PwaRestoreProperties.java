@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -20,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Contains the properties that a pwa-restore {@link PropertyModel} can have. */
+@NullMarked
 public class PwaRestoreProperties {
     /** Encapsulates the information about an app to show in the PWA Restore dialog. */
     public static class AppInfo {

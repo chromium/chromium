@@ -4,12 +4,12 @@
 
 package org.chromium.android_webview.common.origin_trial;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeActionIds;
+import org.chromium.build.annotations.NullMarked;
 
 /** A {@link SafeModeAction} to disable all origin trials */
+@NullMarked
 public class DisableOriginTrialsSafeModeAction implements SafeModeAction {
     private static boolean sDisableOriginTrials;
 
@@ -17,7 +17,6 @@ public class DisableOriginTrialsSafeModeAction implements SafeModeAction {
     private static final String ID = SafeModeActionIds.DISABLE_ORIGIN_TRIALS;
 
     @Override
-    @NonNull
     public String getId() {
         return ID;
     }

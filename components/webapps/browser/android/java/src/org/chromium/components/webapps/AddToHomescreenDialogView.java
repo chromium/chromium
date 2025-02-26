@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -26,6 +28,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -41,6 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * data is not yet fetched, and accepting the dialog is disabled until all data is available and in
  * its place on the screen.
  */
+@NullMarked
 public class AddToHomescreenDialogView
         implements View.OnClickListener, ModalDialogProperties.Controller {
     private PropertyModel mDialogModel;
@@ -355,7 +359,7 @@ public class AddToHomescreenDialogView
                 return mAppNameView;
             default:
                 assert false;
-                return null;
+                return assumeNonNull(null);
         }
     }
 

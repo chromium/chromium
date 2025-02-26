@@ -6,9 +6,11 @@ package org.chromium.components.webapps.bottomsheet;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A factory for producing a {@link PwaBottomSheetController}. */
+@NullMarked
 public class PwaBottomSheetControllerFactory {
     public static PwaBottomSheetController createPwaBottomSheetController(Context context) {
         return new PwaBottomSheetController(context);

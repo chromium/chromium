@@ -28,7 +28,7 @@ import java.util.HashMap;
     private static final int REQUEST_CODE_PREFIX = 1000;
     private static final int REQUEST_CODE_RANGE_SIZE = 100;
 
-    private final SparseArray<IntentCallback> mOutstandingIntents;
+    private final SparseArray<@Nullable IntentCallback> mOutstandingIntents;
     private int mNextRequestCode;
     private final Delegate mDelegate;
 
@@ -48,7 +48,7 @@ import java.util.HashMap;
     }
 
     /* package */ int showCancelableIntent(
-            PendingIntent intent, IntentCallback callback, @Nullable Integer errorId) {
+            PendingIntent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         if (!mDelegate.startIntentSenderForResult(intent.getIntentSender(), requestCode)) {
@@ -61,7 +61,7 @@ import java.util.HashMap;
 
     @Override
     public int showCancelableIntent(
-            @Nullable Intent intent, IntentCallback callback, @Nullable Integer errorId) {
+            @Nullable Intent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         if (!mDelegate.startActivityForResult(intent, requestCode)) {
@@ -73,7 +73,9 @@ import java.util.HashMap;
     }
 
     /* package */ int showCancelableIntent(
-            Callback<Integer> intentTrigger, IntentCallback callback, @Nullable Integer errorId) {
+            Callback<Integer> intentTrigger,
+            @Nullable IntentCallback callback,
+            @Nullable Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         intentTrigger.onResult(requestCode);
@@ -140,7 +142,7 @@ import java.util.HashMap;
     }
 
     private void storeCallbackData(
-            int requestCode, IntentCallback callback, @Nullable Integer errorId) {
+            int requestCode, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         mOutstandingIntents.put(requestCode, callback);
         mIntentErrors.put(
                 requestCode,

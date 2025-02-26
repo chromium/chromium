@@ -7,7 +7,11 @@ package org.chromium.components.webapps;
 import android.app.PendingIntent;
 import android.content.Intent;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+
 /** Stores information about a particular app. */
+@NullMarked
 public class AppData {
     // Immutable data about this app.
     private final String mSiteUrl;
@@ -115,6 +119,7 @@ public class AppData {
      * @param detailsIntent Intent to fire to launch the details page for the app
      * @param installIntent Intent to fire to trigger the purchase/install process.
      */
+    @Initializer
     public void setPackageInfo(
             String title,
             String imageUrl,
