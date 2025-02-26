@@ -2062,8 +2062,17 @@ void CaptureModeController::OnTextDetectionComplete(
     base::TimeTicks ocr_attempt_start_time,
     std::optional<std::string> detected_text) {
   RecordOnDeviceOcrTimerCompleted(ocr_attempt_start_time);
-  if (!image_search_token || !detected_text.has_value() ||
-      detected_text->empty()) {
+  if (!image_search_token || !detected_text.has_value()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kSmartActionsButtonNotShownDueToTextDetectionCancelled);
+    return;
+  }
+
+  if (detected_text->empty()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kSmartActionsButtonNotShownDueToNoTextDetected);
     return;
   }
 

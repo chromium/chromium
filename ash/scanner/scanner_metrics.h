@@ -110,8 +110,10 @@ enum class ScannerFeatureUserState {
   kSmartActionsButtonImageCapturedAndActionsFetchStarted = 46,
 
   kSmartActionsButtonNotShownDueToFeatureChecks = 47,
+  kSmartActionsButtonNotShownDueToTextDetectionCancelled = 48,
+  kSmartActionsButtonNotShownDueToNoTextDetected = 49,
 
-  kMaxValue = kSmartActionsButtonNotShownDueToFeatureChecks,
+  kMaxValue = kSmartActionsButtonNotShownDueToNoTextDetected,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 
