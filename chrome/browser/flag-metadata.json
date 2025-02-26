@@ -517,11 +517,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "audio-a2dp-advanced-codecs",
-    "owners": ["jrwu@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "audio-ducking",
     "owners": ["steimel@chromium.org", "mfoltz@chromium.org"],
     "expiry_milestone": 150
