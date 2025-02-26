@@ -497,8 +497,8 @@ Those fuzzers require more resources to run correctly.\
     # TODO(399002817): add this to the gardener_rotations.
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
-        category = "libfuzzer",
-        short_name = "libfuzzer high end",
+        category = "libfuzz",
+        short_name = "linux high end",
     ),
     contact_team_email = "chrome-deet-core@google.com",
     properties = {
