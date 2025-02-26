@@ -65,6 +65,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/mock_autofill_ai_delegate.h"
@@ -3526,28 +3527,30 @@ class BrowserAutofillManagerWithLogEventsTest
   }
 
   std::vector<AutofillField::FieldLogEventType> ToFieldTypeEvents(
-      FieldType heuristic_type,
-      FieldType overall_type,
+      const AutofillField& field,
       size_t field_signature_rank = 1) {
     std::vector<AutofillField::FieldLogEventType> expected_events;
+    expected_events.push_back(HeuristicPredictionFieldLogEvent{
+        .field_type = field.heuristic_type(),
+        .heuristic_source = GetActiveHeuristicSource(),
+        .is_active_heuristic_source = true,
+        .rank_in_field_signature_group = field_signature_rank,
+    });
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    expected_events.push_back(HeuristicPredictionFieldLogEvent{
-        .field_type = heuristic_type,
-        .heuristic_source = HeuristicSource::kDefaultRegexes,
-        .is_active_heuristic_source = true,
-        .rank_in_field_signature_group = field_signature_rank,
-    });
-#else
-    expected_events.push_back(HeuristicPredictionFieldLogEvent{
-        .field_type = heuristic_type,
-        .heuristic_source = HeuristicSource::kLegacyRegexes,
-        .is_active_heuristic_source = true,
-        .rank_in_field_signature_group = field_signature_rank,
-    });
+    // When experimental patterns are active, default predictions are computed
+    // for shadow prediction metrics.
+    if (GetActiveHeuristicSource() == HeuristicSource::kExperimentalRegexes) {
+      expected_events.push_back(HeuristicPredictionFieldLogEvent{
+          .field_type = field.heuristic_type(HeuristicSource::kDefaultRegexes),
+          .heuristic_source = HeuristicSource::kDefaultRegexes,
+          .is_active_heuristic_source = false,
+          .rank_in_field_signature_group = field_signature_rank,
+      });
+    }
 #endif
     // Rationalization.
     expected_events.push_back(RationalizationFieldLogEvent{
-        .field_type = overall_type,
+        .field_type = field.heuristic_type(),
         .section_id = 1,
         .type_changed = false,
     });
@@ -3623,8 +3626,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
-                          autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(*autofill_field_ptr);
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -3706,8 +3708,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
-                          autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(*autofill_field_ptr);
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -3829,8 +3830,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
-                          autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(*autofill_field_ptr);
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -3939,8 +3939,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
-                          autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(*autofill_field_ptr);
 
     if (autofill_field_ptr->parseable_label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
@@ -4014,8 +4013,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
-                          autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(*autofill_field_ptr);
 
     if (autofill_field_ptr->parseable_label() == u"Name on Card") {
       // The "Name on Card" field gets focus and shows a suggestion so it
@@ -4083,9 +4081,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    FieldType overall_type = autofill_field_ptr->heuristic_type();
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(), overall_type);
+        ToFieldTypeEvents(*autofill_field_ptr);
     if (autofill_field_ptr->parseable_label() != u"Middle name") {
       expected_events.insert(expected_events.begin(),
                              AutocompleteAttributeFieldLogEvent{
@@ -4172,8 +4169,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
-                          autofill_field_ptr->heuristic_type());
+        ToFieldTypeEvents(*autofill_field_ptr);
     // The autofill server applies two predictions on the "Name" field.
     std::optional<FieldType> server_type2 =
         autofill_field_ptr->parseable_label() == u"Name"
@@ -4271,9 +4267,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
     size_t field_signature_rank =
         autofill_field_ptr->heuristic_type() == ADDRESS_HOME_LINE2 ? 2 : 1;
     std::vector<AutofillField::FieldLogEventType> expected_events =
-        ToFieldTypeEvents(autofill_field_ptr->heuristic_type(),
-                          autofill_field_ptr->heuristic_type(),
-                          field_signature_rank);
+        ToFieldTypeEvents(*autofill_field_ptr, field_signature_rank);
     expected_events.push_back(ServerPredictionFieldLogEvent{
         .server_type1 = autofill_field_ptr->server_type(),
         .prediction_source1 =
