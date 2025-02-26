@@ -35,6 +35,14 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kShouldFreezeSelf);
 // be frozen.
 class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SelfCompactCancellationReason {
+    kAppFreezer,
+    kPageResumed,
+    kMaxValue = kPageResumed
+  };
+
   static PreFreezeBackgroundMemoryTrimmer& Instance();
   ~PreFreezeBackgroundMemoryTrimmer() = delete;
 
@@ -119,8 +127,10 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   void CompactSelf(scoped_refptr<SequencedTaskRunner> task_runner,
                    base::TimeTicks started_at);
 
-  // If we are currently running self compaction, cancel it.
-  static void MaybeCancelSelfCompaction();
+  // If we are currently running self compaction, cancel it. If it was running,
+  // record a metric with the reason for the cancellation.
+  static void MaybeCancelSelfCompaction(
+      SelfCompactCancellationReason cancellation_reason);
 
   static void SetSupportsModernTrimForTesting(bool is_supported);
   static void ClearMetricsForTesting() LOCKS_EXCLUDED(lock());
@@ -288,7 +298,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   void OnSelfFreezeInternal(scoped_refptr<SequencedTaskRunner> task_runner);
 
-  void MaybeCancelSelfCompactionInternal() LOCKS_EXCLUDED(lock());
+  void MaybeCancelSelfCompactionInternal(
+      SelfCompactCancellationReason cancellation_reason) LOCKS_EXCLUDED(lock());
 
   void PostMetricsTasksIfModern() EXCLUSIVE_LOCKS_REQUIRED(lock());
   void PostMetricsTask() EXCLUSIVE_LOCKS_REQUIRED(lock());
@@ -313,6 +324,9 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   //     attempt to not do self compaction if we know that we are going to
   //     frozen by App Freezer.
   base::TimeTicks self_compaction_last_cancelled_ GUARDED_BY(lock()) =
+      base::TimeTicks::Min();
+  // When we last started self compaction. Used to record metrics.
+  base::TimeTicks self_compaction_last_started_ GUARDED_BY(lock()) =
       base::TimeTicks::Min();
   std::optional<base::ScopedSampleMetadata> process_compacted_metadata_
       GUARDED_BY(lock());

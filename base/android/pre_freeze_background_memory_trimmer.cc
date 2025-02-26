@@ -74,8 +74,7 @@ std::string GetPreFreezeMetricName(std::string_view name,
 
 std::string GetSelfCompactionMetricName(std::string_view name,
                                         std::string_view suffix) {
-  const char* process_type = GetProcessType();
-  return StrCat({"Memory.SelfCompact2.", process_type, ".", name, ".", suffix});
+  return StrCat({"Memory.SelfCompact2.Renderer.", name, ".", suffix});
 }
 
 class PrivateMemoryFootprintMetric
@@ -559,13 +558,21 @@ PreFreezeBackgroundMemoryTrimmer::GetDelayBetweenSelfCompaction() {
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction() {
-  Instance().MaybeCancelSelfCompactionInternal();
+void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction(
+    SelfCompactCancellationReason cancellation_reason) {
+  Instance().MaybeCancelSelfCompactionInternal(cancellation_reason);
 }
 
-void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompactionInternal() {
+void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompactionInternal(
+    SelfCompactCancellationReason cancellation_reason) {
   base::AutoLock locker(lock());
   process_compacted_metadata_.reset();
+  // Check for the last time cancelled here in order to avoid recording this
+  // metric multiple times.
+  if (self_compaction_last_cancelled_ < self_compaction_last_started_) {
+    UmaHistogramEnumeration("Memory.SelfCompact2.Renderer.CancellationReason",
+                            cancellation_reason);
+  }
   self_compaction_last_cancelled_ = base::TimeTicks::Now();
 }
 
@@ -686,6 +693,7 @@ void PreFreezeBackgroundMemoryTrimmer::OnSelfFreezeInternal(
     scoped_refptr<SequencedTaskRunner> task_runner) {
   const auto started_at = base::TimeTicks::Now();
   base::AutoLock locker(lock());
+  self_compaction_last_started_ = started_at;
   if (base::FeatureList::IsEnabled(kShouldFreezeSelf)) {
     RunPreFreezeTasks();
   }
@@ -701,7 +709,7 @@ void PreFreezeBackgroundMemoryTrimmer::OnPreFreeze() {
   // If we have scheduled a self compaction task, cancel it, since App Freezer
   // will handle the compaction for us, and we don't want to potentially run
   // self compaction after we have resumed.
-  MaybeCancelSelfCompaction();
+  MaybeCancelSelfCompaction(SelfCompactCancellationReason::kAppFreezer);
   Instance().OnPreFreezeInternal();
 }
 

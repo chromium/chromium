@@ -70,6 +70,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Moderate pressure to no pressure"/>
 </enum>
 
+<enum name="SelfCompactionCancellationReason">
+  <int value="0" label="Frozen by App Freezer"/>
+  <int value="1" label="Page resumed"/>
+</enum>
+
 <enum name="VmmmsRequestPriority">
 <!-- This must be kept in sync with enum UmaResizePriority in ChromeOS
 src/platform2/vm_tools/concierge/mm/resize_priority.h -->
