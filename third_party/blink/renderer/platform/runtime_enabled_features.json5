@@ -917,6 +917,10 @@
       status:  {"Android": "stable", "default": "test"},
     },
     {
+      name: "ContainerTiming",
+      status: "experimental",
+    },
+    {
       name: "ContainerTypeNoLayoutContainment",
       status: "stable",
     },

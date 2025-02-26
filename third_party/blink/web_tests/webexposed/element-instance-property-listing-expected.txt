@@ -110,6 +110,7 @@ namespace http://www.w3.org/1999/xhtml
     property computedName
     property computedRole
     property computedStyleMap
+    property containerTiming
     property contains
     property contentEditable
     property currentCSSZoom
@@ -1385,6 +1386,7 @@ namespace http://www.w3.org/2000/svg
     property computedName
     property computedRole
     property computedStyleMap
+    property containerTiming
     property contains
     property currentCSSZoom
     property dataset
