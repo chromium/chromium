@@ -179,7 +179,7 @@ def _generate_version_map_str(bom_path):
     with open(bom_path) as f:
         bom = json.load(f)
     for dep in bom:
-        line = f"    versionCache['{dep['group']}:{dep['name']}'] = '{dep['version']}'"
+        line = f"versionCache['{dep['group']}:{dep['name']}'] = '{dep['version']}'"
         version_lines.append(line)
     return '\n'.join(sorted(version_lines))
 
