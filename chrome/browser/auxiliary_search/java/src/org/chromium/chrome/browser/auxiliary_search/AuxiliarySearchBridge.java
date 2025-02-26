@@ -52,6 +52,7 @@ public class AuxiliarySearchBridge {
                     () -> {
                         callback.onResult(null);
                     });
+            return;
         }
 
         AuxiliarySearchBridgeJni.get()
