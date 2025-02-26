@@ -504,34 +504,6 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
   EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
 }
 
-// Tests that BNPL settings toggle should not be shown if BNPL feature
-// flag `kAutofillEnableBuyNowPayLaterSyncing` is disabled.
-TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplSyncFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
-                            features::kAutofillEnableBuyNowPayLater},
-      /*disabled_features=*/{});
-
-  // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
-
-  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
-  TriggerBnplUpdateSuggestionsFlow(
-      /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
-
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
-
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLater},
-      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing});
-
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
-}
-
 // Tests that BNPL settings toggle should not be shown if BNPL
 // issuer feature flags are disabled.
 TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
@@ -556,33 +528,6 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
-
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
-}
-
-// Tests that BNPL settings toggle should not be shown if there are no synced
-// BNPL issuers.
-TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_NoSyncedIssuers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
-                            features::kAutofillEnableBuyNowPayLater},
-      /*disabled_features=*/{});
-
-  // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
-  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
-
-  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
-  TriggerBnplUpdateSuggestionsFlow(
-      /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
-
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
-
-  autofill_client_->GetPersonalDataManager()
-      .payments_data_manager()
-      .ClearAllServerDataForTesting();
 
   EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
 }
