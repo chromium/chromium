@@ -12,10 +12,10 @@
 #include "base/memory/raw_ref.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "url/origin.h"
 
@@ -216,7 +216,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const url::Origin& origin,
       const PermissionsPolicy* parent_policy,
       std::pair<network::mojom::PermissionsPolicyFeature,
-                PermissionsPolicyFeatureDefault> feature,
+                network::PermissionsPolicyFeatureDefault> feature,
       const network::ParsedPermissionsPolicy& container_policy);
 
   // Various URLs that cannot supply Permissions-Policy headers are treated
@@ -272,7 +272,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   }
 
   // Returns the list of features which can be controlled by Permissions Policy.
-  const PermissionsPolicyFeatureList& GetFeatureList() const;
+  const network::PermissionsPolicyFeatureList& GetFeatureList() const;
 
   bool IsFeatureEnabledByInheritedPolicy(
       network::mojom::PermissionsPolicyFeature feature) const;
@@ -310,15 +310,15 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   PermissionsPolicy(
       url::Origin origin,
       AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints,
-      PermissionsPolicyFeatureState inherited_policies,
-      const PermissionsPolicyFeatureList& feature_list,
+      network::PermissionsPolicyFeatureState inherited_policies,
+      const network::PermissionsPolicyFeatureList& feature_list,
       bool headerless = false);
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
       const network::ParsedPermissionsPolicy& header_policy,
       const network::ParsedPermissionsPolicy& container_policy,
       const url::Origin& origin,
-      const PermissionsPolicyFeatureList& features,
+      const network::PermissionsPolicyFeatureList& features,
       bool headerless = false);
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
@@ -326,19 +326,19 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const std::optional<network::ParsedPermissionsPolicy>&
           parsed_policy_for_isolated_app,
       const url::Origin& origin,
-      const PermissionsPolicyFeatureList& features);
+      const network::PermissionsPolicyFeatureList& features);
 
   static std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
       const PermissionsPolicy* parent_policy,
       const network::ParsedPermissionsPolicy& header_policy,
       const network::ParsedPermissionsPolicy& container_policy,
       const url::Origin& subframe_origin,
-      const PermissionsPolicyFeatureList& features);
+      const network::PermissionsPolicyFeatureList& features);
 
   static std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
       const network::ParsedPermissionsPolicy& header_policy,
-      const PermissionsPolicyFeatureList& features,
+      const network::PermissionsPolicyFeatureList& features,
       base::span<const network::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);
 
@@ -385,10 +385,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   // Records whether or not each feature was enabled for this frame by its
   // parent frame.
-  const PermissionsPolicyFeatureState inherited_policies_;
+  const network::PermissionsPolicyFeatureState inherited_policies_;
 
   // The map of features to their default enable state.
-  const raw_ref<const PermissionsPolicyFeatureList> feature_list_;
+  const raw_ref<const network::PermissionsPolicyFeatureList> feature_list_;
 };
 
 }  // namespace blink

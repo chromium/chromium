@@ -94,6 +94,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -102,7 +103,6 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
@@ -8981,7 +8981,7 @@ class AdAuctionServiceImplRestrictedPermissionsPolicyTest
   AdAuctionServiceImplRestrictedPermissionsPolicyTest() {
     feature_list_.InitAndEnableFeature(
         network::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
-    blink::UpdatePermissionsPolicyFeatureListForTesting();
+    network::UpdatePermissionsPolicyFeatureListForTesting();
     old_content_browser_client_ =
         SetBrowserClientForTesting(&content_browser_client_);
   }

@@ -164,6 +164,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -192,7 +193,6 @@
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
@@ -9556,8 +9556,8 @@ bool NavigationRequest::CoopCoepSanityCheck() {
 bool NavigationRequest::IsFencedFrameRequiredPolicyFeatureAllowed(
     const url::Origin& origin,
     const network::mojom::PermissionsPolicyFeature feature) {
-  const blink::PermissionsPolicyFeatureList& feature_list =
-      blink::GetPermissionsPolicyFeatureList(origin);
+  const network::PermissionsPolicyFeatureList& feature_list =
+      network::GetPermissionsPolicyFeatureList(origin);
 
   // Check if the outer document's permissions policies allow all of the
   // required policies.
@@ -9583,7 +9583,7 @@ bool NavigationRequest::IsFencedFrameRequiredPolicyFeatureAllowed(
       });
   if (policy_iter == commit_params_->frame_policy.container_policy.end()) {
     return feature_list.at(feature) ==
-           blink::PermissionsPolicyFeatureDefault::EnableForAll;
+           network::PermissionsPolicyFeatureDefault::EnableForAll;
   }
 
   return policy_iter->Contains(origin);

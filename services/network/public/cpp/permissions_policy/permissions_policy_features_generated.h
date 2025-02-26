@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_GENERATED_H_
-#define THIRD_PARTY_BLINK_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_GENERATED_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_GENERATED_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_GENERATED_H_
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 
 // Headers for the generated code from
 // permissions_policy_features_generated.cc.tmpl.
-namespace blink {
+namespace network {
 
 PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList();
 void UpdatePermissionsPolicyFeatureListFlagDefaults(
@@ -17,6 +17,6 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(
 PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadNone();
 PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadAll();
 
-}  // namespace blink
+}  // namespace network
 
-#endif  // THIRD_PARTY_BLINK_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_GENERATED_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_GENERATED_H_

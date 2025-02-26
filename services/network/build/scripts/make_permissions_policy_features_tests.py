@@ -6,10 +6,22 @@
 # '_test.py' or '_unittest.py' as these files will be recognized by
 # 'run_blinkpy_tests.py' task, where jinja2 module is not available.
 
+import sys
+import os
 import unittest
 from make_permissions_policy_features import PermissionsPolicyFeatureWriter
-from writer_test_util import path_to_test_file, WriterTest
 
+# TODO(crbug.com/397934758): Move `writer_test_util` out of Blink and remove
+# this hack.
+current_dir = os.path.dirname(__file__)
+module_path = os.path.join(current_dir, os.pardir, os.pardir, os.pardir,
+                           os.pardir, 'third_party', 'blink', 'renderer', 'build', 'scripts')
+sys.path.append(module_path)
+
+from writer_test_util import WriterTest
+
+def path_to_test_file(*path):
+    return os.path.join(os.path.dirname(__file__), 'tests', *path)
 
 class MakeDocumentPolicyFeaturesTest(WriterTest):
     def test_default_value_control(self):

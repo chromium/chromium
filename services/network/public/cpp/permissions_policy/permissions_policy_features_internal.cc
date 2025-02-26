@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/common/permissions_policy/permissions_policy_features_internal.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_internal.h"
 
 #include <stdint.h>
 
@@ -15,7 +15,7 @@
 #include "services/network/public/cpp/features.h"
 #include "url/scheme_host_port.h"
 
-namespace blink {
+namespace network {
 
 using HostSet = std::unordered_set<std::string>;
 
@@ -63,8 +63,8 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
   // there's not much else we can do in this case.
   const url::SchemeHostPort& shp = origin.GetTupleOrPrecursorTupleIfOpaque();
   // Only disable unload on http(s):// pages, not chrome:// etc.
-  // TODO(https://crbug.com/1495734): Remove this when all internal unload usage
-  // has been removed.
+  // TODO(https://crbug.com/40286626): Remove this when all internal unload
+  // usage has been removed.
   if (shp.scheme() != "http" && shp.scheme() != "https") {
     return false;
   }
@@ -84,4 +84,4 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
       network::features::kDeprecateUnloadBucket.Get());
 }
 
-}  // namespace blink
+}  // namespace network

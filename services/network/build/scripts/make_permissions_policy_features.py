@@ -2,6 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import sys
+import os
+
+# TODO(crbug.com/397934758): Move `json5_generator` and `template_expander` out
+# of Blink and remove this hack.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+module_path = os.path.join(current_dir, os.pardir, os.pardir, os.pardir,
+                           os.pardir, 'third_party', 'blink', 'renderer', 'build', 'scripts')
+sys.path.append(module_path)
+
 import json5_generator
 import template_expander
 
@@ -13,8 +23,9 @@ class PermissionsPolicyFeatureWriter(json5_generator.Writer):
         super(PermissionsPolicyFeatureWriter,
               self).__init__(json5_file_path, output_dir)
 
-        @template_expander.use_jinja('templates/' + self.file_basename +
-                                     '.cc.tmpl')
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        @template_expander.use_jinja(self.file_basename + '.cc.tmpl',
+                                     template_dir = os.path.join(current_dir, 'templates'))
         def generate_implementation():
             return {
                 'input_files':

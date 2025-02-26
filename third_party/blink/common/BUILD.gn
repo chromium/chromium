@@ -14,26 +14,6 @@ if (is_ios) {
   import("//build/config/ios/bundle_data_from_filelist.gni")
 }
 
-blink_python_runner("make_generated_permissions_policy_features") {
-  script = "../renderer/build/scripts/make_permissions_policy_features.py"
-
-  inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_runtime_features_utilities.py",
-             "../renderer/core/permissions_policy/permissions_policy_features.json5",
-             "../renderer/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
-           ]
-  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features_generated.cc" ]
-
-  args = [
-    rebase_path(
-        "../renderer/core/permissions_policy/permissions_policy_features.json5",
-        root_build_dir),
-    "--output_dir",
-    rebase_path("$root_gen_dir/third_party/blink/common/permissions_policy",
-                root_build_dir),
-  ]
-}
-
 blink_python_runner("make_generated_document_policy_features") {
   script = "../renderer/build/scripts/make_document_policy_features.py"
 
@@ -267,10 +247,6 @@ source_set("common") {
     "permissions/permission_utils.cc",
     "permissions_policy/document_policy.cc",
     "permissions_policy/permissions_policy.cc",
-    "permissions_policy/permissions_policy_features.cc",
-    "permissions_policy/permissions_policy_features_generated.h",
-    "permissions_policy/permissions_policy_features_internal.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
     "permissions_policy/policy_value.cc",
     "renderer_preferences/renderer_preferences.cc",
     "renderer_preferences/renderer_preferences_mojom_traits.cc",
@@ -310,14 +286,12 @@ source_set("common") {
   sources += get_target_outputs(":make_generated_document_policy_features")
   sources += get_target_outputs(":make_generated_features")
   sources += get_target_outputs(":make_generated_origin_trials")
-  sources += get_target_outputs(":make_generated_permissions_policy_features")
   sources += get_target_outputs(":make_runtime_feature_state_contexts_impl")
 
   public_deps = [
     ":make_generated_document_policy_features",
     ":make_generated_features",
     ":make_generated_origin_trials",
-    ":make_generated_permissions_policy_features",
     ":make_runtime_feature_state_contexts_impl",
     "//components/viz/common:common",
     "//third_party/blink/common/privacy_budget:privacy_budget",
@@ -450,7 +424,6 @@ source_set("common_unittests_sources") {
     "page_state/page_state_serialization_unittest.cc",
     "peerconnection/webrtc_ip_handling_policy_unittest.cc",
     "permissions_policy/document_policy_unittest.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
     "permissions_policy/permissions_policy_unittest.cc",
     "permissions_policy/policy_value_unittest.cc",
     "scheduler/web_scheduler_tracked_feature_unittest.cc",
@@ -483,6 +456,7 @@ source_set("common_unittests_sources") {
     "//net:test_support",
     "//services/device:test_support",
     "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
     "//skia/public/mojom",
     "//testing/gmock",
     "//testing/gtest",

@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
@@ -209,7 +209,8 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 ->GetSecurityContext()
                 ->GetPermissionsPolicy()
           : nullptr;
-  const auto& feature_list = GetPermissionsPolicyFeatureList(to_url_origin);
+  const auto& feature_list =
+      network::GetPermissionsPolicyFeatureList(to_url_origin);
 
   // 1. Set container’s reserved deferred-fetch quota to 0.
 

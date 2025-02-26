@@ -224,7 +224,7 @@ If you need to add a permission policy:
 1. In [permissions_policy_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom)
 update enum
 [PermissionsPolicyFeature](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom;l=16)
-2. In [permissions_policy_features.json5](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5)
+2. In [permissions_policy_features.json5](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/cpp/permissions_policy/permissions_policy_features.json5)
 update `data` array with the new policy.
 5. Update [feature-policy-features-expected.txt](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt)
 6. In the `<PermissionName>PermissionContext`, make sure to initialize the permission policy variable

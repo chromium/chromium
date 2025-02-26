@@ -22,14 +22,14 @@ blink_python_runner("make_generated_permissions_policy_helper") {
 
   inputs = scripts_for_json5_files + [
              "../../renderer/build/scripts/make_policy_helper_public.py",
-             "../../renderer/core/permissions_policy/permissions_policy_features.json5",
+             "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
              "../../renderer/build/scripts/templates/policy_helper_public.cc.tmpl",
            ]
   outputs = [ "$root_gen_dir/third_party/blink/public/common/permissions_policy/policy_helper_public.cc" ]
 
   args = [
     rebase_path(
-        "../../renderer/core/permissions_policy/permissions_policy_features.json5",
+        "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
         root_build_dir),
     "--output_dir",
     rebase_path(
@@ -272,7 +272,6 @@ source_set("headers") {
     "permissions_policy/document_policy.h",
     "permissions_policy/document_policy_features.h",
     "permissions_policy/permissions_policy.h",
-    "permissions_policy/permissions_policy_features.h",
     "permissions_policy/policy_helper_public.h",
     "permissions_policy/policy_value.h",
     "renderer_preferences/renderer_preferences.h",

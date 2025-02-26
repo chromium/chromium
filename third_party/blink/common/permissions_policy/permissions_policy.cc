@@ -12,11 +12,11 @@
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -102,9 +102,9 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const network::ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin,
     bool headerless) {
-  return CreateFromParentPolicy(parent_policy, header_policy, container_policy,
-                                origin, GetPermissionsPolicyFeatureList(origin),
-                                headerless);
+  return CreateFromParentPolicy(
+      parent_policy, header_policy, container_policy, origin,
+      network::GetPermissionsPolicyFeatureList(origin), headerless);
 }
 
 // static
@@ -114,11 +114,12 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CopyStateFrom(
     return nullptr;
   }
 
-  std::unique_ptr<PermissionsPolicy> new_policy = base::WrapUnique(
-      new PermissionsPolicy(source->origin_, {source->allowlists_, {}},
-                            source->inherited_policies_,
-                            GetPermissionsPolicyFeatureList(source->origin_),
-                            source->headerless_));
+  std::unique_ptr<PermissionsPolicy> new_policy =
+      base::WrapUnique(new PermissionsPolicy(
+          source->origin_, {source->allowlists_, {}},
+          source->inherited_policies_,
+          network::GetPermissionsPolicyFeatureList(source->origin_),
+          source->headerless_));
 
   return new_policy;
 }
@@ -128,8 +129,9 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
     const network::ParsedPermissionsPolicy& parsed_policy,
     const std::optional<network::ParsedPermissionsPolicy>& base_policy,
     const url::Origin& origin) {
-  return CreateFromParsedPolicy(parsed_policy, base_policy, origin,
-                                GetPermissionsPolicyFeatureList(origin));
+  return CreateFromParsedPolicy(
+      parsed_policy, base_policy, origin,
+      network::GetPermissionsPolicyFeatureList(origin));
 }
 
 // static
@@ -138,8 +140,8 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
     const std::optional<network::ParsedPermissionsPolicy>&
         parsed_policy_for_isolated_app,
     const url::Origin& origin,
-    const PermissionsPolicyFeatureList& features) {
-  PermissionsPolicyFeatureState inherited_policies;
+    const network::PermissionsPolicyFeatureList& features) {
+  network::PermissionsPolicyFeatureState inherited_policies;
   AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints =
       parsed_policy_for_isolated_app
           ? CombinePolicies(parsed_policy_for_isolated_app.value(),
@@ -241,14 +243,14 @@ bool PermissionsPolicy::GetFeatureValueForOrigin(
     return allowlist->second.Contains(origin);
   }
 
-  const PermissionsPolicyFeatureDefault default_policy =
+  const network::PermissionsPolicyFeatureDefault default_policy =
       feature_list_->at(feature);
   switch (default_policy) {
-    case PermissionsPolicyFeatureDefault::EnableForAll:
-    case PermissionsPolicyFeatureDefault::EnableForSelf:
+    case network::PermissionsPolicyFeatureDefault::EnableForAll:
+    case network::PermissionsPolicyFeatureDefault::EnableForSelf:
       // 9.8.4 Return "Enabled".
       return true;
-    case PermissionsPolicyFeatureDefault::EnableForNone:
+    case network::PermissionsPolicyFeatureDefault::EnableForNone:
       // Proposed algorithm change in
       // https://github.com/w3c/webappsec-permissions-policy/pull/515:
       // 9.8.5 Return "Disabled".
@@ -273,14 +275,14 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
   // declared in HTTP header, all origins are implicitly allowed unless the
   // default is `EnableForNone`.
   PermissionsPolicy::Allowlist default_allowlist;
-  const PermissionsPolicyFeatureDefault default_policy =
+  const network::PermissionsPolicyFeatureDefault default_policy =
       feature_list_->at(feature);
   switch (default_policy) {
-    case PermissionsPolicyFeatureDefault::EnableForAll:
-    case PermissionsPolicyFeatureDefault::EnableForSelf:
+    case network::PermissionsPolicyFeatureDefault::EnableForAll:
+    case network::PermissionsPolicyFeatureDefault::EnableForSelf:
       default_allowlist.AddAll();
       break;
-    case PermissionsPolicyFeatureDefault::EnableForNone:
+    case network::PermissionsPolicyFeatureDefault::EnableForNone:
       break;
   }
 
@@ -304,15 +306,15 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
     return maybe_allow_list.value();
   }
 
-  const PermissionsPolicyFeatureDefault default_policy =
+  const network::PermissionsPolicyFeatureDefault default_policy =
       feature_list_->at(feature);
   PermissionsPolicy::Allowlist default_allowlist;
 
   switch (default_policy) {
-    case PermissionsPolicyFeatureDefault::EnableForAll:
+    case network::PermissionsPolicyFeatureDefault::EnableForAll:
       default_allowlist.AddAll();
       break;
-    case PermissionsPolicyFeatureDefault::EnableForSelf: {
+    case network::PermissionsPolicyFeatureDefault::EnableForSelf: {
       std::optional<network::OriginWithPossibleWildcards>
           origin_with_possible_wildcards =
               network::OriginWithPossibleWildcards::FromOrigin(origin_);
@@ -320,7 +322,7 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
         default_allowlist.Add(*origin_with_possible_wildcards);
       }
     } break;
-    case PermissionsPolicyFeatureDefault::EnableForNone:
+    case network::PermissionsPolicyFeatureDefault::EnableForNone:
       break;
   }
 
@@ -447,7 +449,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::WithClientHints(
 
   return base::WrapUnique(new PermissionsPolicy(
       origin_, {allowlists, reporting_endpoints_}, inherited_policies_,
-      GetPermissionsPolicyFeatureList(origin_)));
+      network::GetPermissionsPolicyFeatureList(origin_)));
 }
 
 const network::mojom::PermissionsPolicyFeature
@@ -461,8 +463,8 @@ const network::mojom::PermissionsPolicyFeature
 PermissionsPolicy::PermissionsPolicy(
     url::Origin origin,
     AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints,
-    PermissionsPolicyFeatureState inherited_policies,
-    const PermissionsPolicyFeatureList& feature_list,
+    network::PermissionsPolicyFeatureState inherited_policies,
+    const network::PermissionsPolicyFeatureList& feature_list,
     bool headerless)
     : origin_(std::move(origin)),
       headerless_(headerless),
@@ -483,7 +485,7 @@ PermissionsPolicy::CreateFlexibleForFencedFrame(
     const url::Origin& subframe_origin) {
   return CreateFlexibleForFencedFrame(
       parent_policy, header_policy, container_policy, subframe_origin,
-      GetPermissionsPolicyFeatureList(subframe_origin));
+      network::GetPermissionsPolicyFeatureList(subframe_origin));
 }
 
 // static
@@ -493,8 +495,8 @@ PermissionsPolicy::CreateFlexibleForFencedFrame(
     const network::ParsedPermissionsPolicy& header_policy,
     const network::ParsedPermissionsPolicy& container_policy,
     const url::Origin& subframe_origin,
-    const PermissionsPolicyFeatureList& features) {
-  PermissionsPolicyFeatureState inherited_policies;
+    const network::PermissionsPolicyFeatureList& features) {
+  network::PermissionsPolicyFeatureState inherited_policies;
   for (const auto& feature : features) {
     if (base::Contains(network::kFencedFrameAllowedFeatures, feature.first)) {
       inherited_policies[feature.first] = InheritedValueForFeature(
@@ -514,19 +516,19 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     const network::ParsedPermissionsPolicy& header_policy,
     base::span<const network::mojom::PermissionsPolicyFeature>
         effective_enabled_permissions) {
-  return CreateFixedForFencedFrame(origin, header_policy,
-                                   GetPermissionsPolicyFeatureList(origin),
-                                   effective_enabled_permissions);
+  return CreateFixedForFencedFrame(
+      origin, header_policy, network::GetPermissionsPolicyFeatureList(origin),
+      effective_enabled_permissions);
 }
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     const url::Origin& origin,
     const network::ParsedPermissionsPolicy& header_policy,
-    const PermissionsPolicyFeatureList& features,
+    const network::PermissionsPolicyFeatureList& features,
     base::span<const network::mojom::PermissionsPolicyFeature>
         effective_enabled_permissions) {
-  PermissionsPolicyFeatureState inherited_policies;
+  network::PermissionsPolicyFeatureState inherited_policies;
   for (const auto& feature : features) {
     inherited_policies[feature.first] = false;
   }
@@ -546,9 +548,9 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const network::ParsedPermissionsPolicy& header_policy,
     const network::ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin,
-    const PermissionsPolicyFeatureList& features,
+    const network::PermissionsPolicyFeatureList& features,
     bool headerless) {
-  PermissionsPolicyFeatureState inherited_policies;
+  network::PermissionsPolicyFeatureState inherited_policies;
   for (const auto& feature : features) {
     inherited_policies[feature.first] = InheritedValueForFeature(
         origin, parent_policy, feature, container_policy);
@@ -589,21 +591,21 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
     return true;
   }
 
-  const PermissionsPolicyFeatureDefault default_policy =
+  const network::PermissionsPolicyFeatureDefault default_policy =
       feature_list_->at(feature);
 
   switch (default_policy) {
-    case PermissionsPolicyFeatureDefault::EnableForAll:
+    case network::PermissionsPolicyFeatureDefault::EnableForAll:
       // 9.9.4: If feature’s default allowlist is *, return "Enabled".
       return true;
-    case PermissionsPolicyFeatureDefault::EnableForSelf:
+    case network::PermissionsPolicyFeatureDefault::EnableForSelf:
       // 9.9.5: If feature’s default allowlist is 'self', and origin is same
       // origin with document’s origin, return "Enabled".
       if (origin_.IsSameOriginWith(origin)) {
         return true;
       }
       break;
-    case PermissionsPolicyFeatureDefault::EnableForNone:
+    case network::PermissionsPolicyFeatureDefault::EnableForNone:
       if (headerless_) {
         // Proposed algorithm change in
         // https://github.com/w3c/webappsec-permissions-policy/pull/515:
@@ -636,7 +638,7 @@ bool PermissionsPolicy::InheritedValueForFeature(
     const url::Origin& origin,
     const PermissionsPolicy* parent_policy,
     std::pair<network::mojom::PermissionsPolicyFeature,
-              PermissionsPolicyFeatureDefault> feature,
+              network::PermissionsPolicyFeatureDefault> feature,
     const network::ParsedPermissionsPolicy& container_policy) {
   // 9.7 1: If container is null, return "Enabled".
   if (!parent_policy) {
@@ -666,24 +668,25 @@ bool PermissionsPolicy::InheritedValueForFeature(
     }
   }
   switch (feature.second) {
-    case PermissionsPolicyFeatureDefault::EnableForAll:
+    case network::PermissionsPolicyFeatureDefault::EnableForAll:
       // 9.7 6: If feature’s default allowlist is *, return "Enabled".
       return true;
-    case PermissionsPolicyFeatureDefault::EnableForSelf:
+    case network::PermissionsPolicyFeatureDefault::EnableForSelf:
       // 9.7 7: If feature’s default allowlist is 'self', and origin is same
       // origin with container’s node document’s origin, return "Enabled". 9.7
       if (origin.IsSameOriginWith(parent_policy->origin_)) {
         return true;
       }
       break;
-    case PermissionsPolicyFeatureDefault::EnableForNone:
+    case network::PermissionsPolicyFeatureDefault::EnableForNone:
       break;
   }
   // 9.7 8: Otherwise return "Disabled".
   return false;
 }
 
-const PermissionsPolicyFeatureList& PermissionsPolicy::GetFeatureList() const {
+const network::PermissionsPolicyFeatureList& PermissionsPolicy::GetFeatureList()
+    const {
   return *feature_list_;
 }
 

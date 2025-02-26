@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_H_
 
 #include <map>
 
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
-#include "third_party/blink/public/common/common_export.h"
+#include "base/component_export.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/origin.h"
 
-namespace blink {
+namespace network {
 
 // The PermissionsPolicyFeatureDefault enum defines the default enable state for
 // a feature. For a top-level frame, this is the default enable state; for an
@@ -50,8 +50,9 @@ using PermissionsPolicyFeatureList =
 
 // `origin` is used, in combination with flags, to decide whether the "unload"
 // feature will be enabled or disabled by default.
-BLINK_COMMON_EXPORT const PermissionsPolicyFeatureList&
-GetPermissionsPolicyFeatureList(const url::Origin& origin);
+COMPONENT_EXPORT(NETWORK_CPP)
+const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList(
+    const url::Origin& origin);
 
 // Updates the PermissionPolicyFeatureList based on the current feature flags.
 // For efficiency, `GetPermissionPolicyFeatureList()` only calculates the
@@ -61,13 +62,14 @@ GetPermissionsPolicyFeatureList(const url::Origin& origin);
 // flag to avoid flakiness. Note that, like the general feature flag
 // calculation, if the flags for multiple `default_value_behind_flag` are
 // enabled, the default from the first listed is used.
-BLINK_COMMON_EXPORT void UpdatePermissionsPolicyFeatureListForTesting();
+COMPONENT_EXPORT(NETWORK_CPP)
+void UpdatePermissionsPolicyFeatureListForTesting();
 
 // TODO(iclelland): Generate, instead of this map, a set of bool flags, one
 // for each feature, as all features are supposed to be represented here.
 using PermissionsPolicyFeatureState =
     std::map<network::mojom::PermissionsPolicyFeature, bool>;
 
-}  // namespace blink
+}  // namespace network
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_H_

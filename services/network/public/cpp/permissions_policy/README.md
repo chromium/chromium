@@ -50,7 +50,7 @@ policy is undetermined, consider shipping the feature behind a runtime-enabled f
 
 ##### Define new feature
 1. Permissions policy features are defined in
-`third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5`. Add the new feature,
+`services/network/public/cpp/permissions_policy/permissions_policy_features.json5`. Add the new feature,
 placing any runtime-enabled feature or origin trial dependencies in its "depends_on" field as
 described in the file's comments. This list is used to generate `permissions_policy_helper.cc`.
 

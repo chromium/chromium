@@ -15,13 +15,13 @@
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_internal.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/common/permissions_policy/permissions_policy_features_internal.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -57,23 +57,24 @@ class PermissionsPolicyTest : public testing::Test {
  protected:
   PermissionsPolicyTest()
       : feature_list_(
-            {{kDefaultOnFeature, PermissionsPolicyFeatureDefault::EnableForAll},
+            {{kDefaultOnFeature,
+              network::PermissionsPolicyFeatureDefault::EnableForAll},
              {kDefaultSelfFeature,
-              PermissionsPolicyFeatureDefault::EnableForSelf},
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {kDefaultOffFeature,
-              PermissionsPolicyFeatureDefault::EnableForNone},
+              network::PermissionsPolicyFeatureDefault::EnableForNone},
              {network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
-              PermissionsPolicyFeatureDefault::EnableForSelf},
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kClientHintDPR,
-              PermissionsPolicyFeatureDefault::EnableForSelf},
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kAttributionReporting,
-              PermissionsPolicyFeatureDefault::EnableForSelf},
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kSharedStorage,
-              PermissionsPolicyFeatureDefault::EnableForSelf},
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
-              PermissionsPolicyFeatureDefault::EnableForSelf},
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
-              PermissionsPolicyFeatureDefault::EnableForSelf}}) {}
+              network::PermissionsPolicyFeatureDefault::EnableForSelf}}) {}
 
   ~PermissionsPolicyTest() override = default;
 
@@ -146,7 +147,7 @@ class PermissionsPolicyTest : public testing::Test {
  private:
   // Contains the list of controlled features, so that we are guaranteed to
   // have at least one of each kind of default behaviour represented.
-  PermissionsPolicyFeatureList feature_list_;
+  network::PermissionsPolicyFeatureList feature_list_;
 };
 
 TEST_F(PermissionsPolicyTest, TestInitialPolicy) {
@@ -3428,8 +3429,8 @@ TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForAll) {
                                          {network::features::kDeprecateUnload});
     std::unique_ptr<PermissionsPolicy> policy =
         CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-    EXPECT_EQ(PermissionsPolicyFeatureDefault::EnableForAll,
-              GetPermissionsPolicyFeatureList(origin_a_)
+    EXPECT_EQ(network::PermissionsPolicyFeatureDefault::EnableForAll,
+              network::GetPermissionsPolicyFeatureList(origin_a_)
                   .find(network::mojom::PermissionsPolicyFeature::kUnload)
                   ->second);
   }
@@ -3443,16 +3444,16 @@ TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForNone) {
                                   /*disabled_features=*/{});
     std::unique_ptr<PermissionsPolicy> policy =
         CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-    EXPECT_EQ(PermissionsPolicyFeatureDefault::EnableForNone,
-              GetPermissionsPolicyFeatureList(origin_a_)
+    EXPECT_EQ(network::PermissionsPolicyFeatureDefault::EnableForNone,
+              network::GetPermissionsPolicyFeatureList(origin_a_)
                   .find(network::mojom::PermissionsPolicyFeature::kUnload)
                   ->second);
   }
 }
 
-blink::PermissionsPolicyFeatureDefault GetDefaultForUnload(
+network::PermissionsPolicyFeatureDefault GetDefaultForUnload(
     const url::Origin& origin) {
-  return GetPermissionsPolicyFeatureList(origin)
+  return network::GetPermissionsPolicyFeatureList(origin)
       .find(network::mojom::PermissionsPolicyFeature::kUnload)
       ->second;
 }
@@ -3476,15 +3477,16 @@ TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
              {network::features::kDeprecateUnloadBucket.name,
               base::StringPrintf("%d", bucket)}}}},
           /*disabled_features=*/{});
-      const PermissionsPolicyFeatureDefault unload_default =
+      const network::PermissionsPolicyFeatureDefault unload_default =
           GetDefaultForUnload(origin);
       ASSERT_EQ(GetDefaultForUnload(origin.DeriveNewOpaqueOrigin()),
                 unload_default);
-      if (unload_default == PermissionsPolicyFeatureDefault::EnableForNone) {
+      if (unload_default ==
+          network::PermissionsPolicyFeatureDefault::EnableForNone) {
         count++;
       } else {
         ASSERT_EQ(unload_default,
-                  PermissionsPolicyFeatureDefault::EnableForAll);
+                  network::PermissionsPolicyFeatureDefault::EnableForAll);
       }
     }
     // Because the bucket is used as salt, the percentage of users who see
@@ -3520,7 +3522,7 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Empty) {
   // Make sure the default is the empty string.
   ASSERT_EQ(network::features::kDeprecateUnloadAllowlist.Get(), "");
   EXPECT_EQ(std::unordered_set<std::string>({}),
-            UnloadDeprecationAllowedHosts());
+            network::UnloadDeprecationAllowedHosts());
 }
 
 // A simple list of hosts should be parsed correctly.
@@ -3533,7 +3535,7 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Simple) {
       /*disabled_features=*/{});
 
   EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
-            UnloadDeprecationAllowedHosts());
+            network::UnloadDeprecationAllowedHosts());
 }
 
 // A messy list of hosts should be parsed correctly.
@@ -3546,7 +3548,7 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Messy) {
       /*disabled_features=*/{});
 
   EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
-            UnloadDeprecationAllowedHosts());
+            network::UnloadDeprecationAllowedHosts());
 }
 
 // Test that UnloadDeprecationAllowedForHost works correctly with an empty
@@ -3557,14 +3559,20 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_EmptyAllowList) {
       {{network::features::kDeprecateUnloadByAllowList,
         {{network::features::kDeprecateUnloadAllowlist.name, ""}}}},
       /*disabled_features=*/{});
-  const auto hosts = UnloadDeprecationAllowedHosts();
+  const auto hosts = network::UnloadDeprecationAllowedHosts();
   // With no allowlist, every origin is allowed.
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin1_.host(), hosts));
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin1_.host(), hosts));
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin2_.host(), hosts));
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin2_.host(), hosts));
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin3_.host(), hosts));
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin3_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(http_origin1_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(https_origin1_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(http_origin2_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(https_origin2_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(http_origin3_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(https_origin3_.host(), hosts));
 }
 
 // Test that the UnloadDeprecationAllowedForHost works correctly with
@@ -3579,13 +3587,19 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_NonEmptyAllowList) {
           "testing1,testing2"}}}},
       /*disabled_features=*/{});
 
-  const auto hosts = UnloadDeprecationAllowedHosts();
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin1_.host(), hosts));
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin1_.host(), hosts));
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin2_.host(), hosts));
-  EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin2_.host(), hosts));
-  EXPECT_FALSE(UnloadDeprecationAllowedForHost(http_origin3_.host(), hosts));
-  EXPECT_FALSE(UnloadDeprecationAllowedForHost(https_origin3_.host(), hosts));
+  const auto hosts = network::UnloadDeprecationAllowedHosts();
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(http_origin1_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(https_origin1_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(http_origin2_.host(), hosts));
+  EXPECT_TRUE(
+      network::UnloadDeprecationAllowedForHost(https_origin2_.host(), hosts));
+  EXPECT_FALSE(
+      network::UnloadDeprecationAllowedForHost(http_origin3_.host(), hosts));
+  EXPECT_FALSE(
+      network::UnloadDeprecationAllowedForHost(https_origin3_.host(), hosts));
 }
 
 // Non-http(s) origins should never be included in the deprecation.
@@ -3599,9 +3613,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
       /*disabled_features=*/{});
   const url::Origin chrome_origin =
       url::Origin::Create(GURL("chrome://settings"));
-  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(chrome_origin));
-  EXPECT_FALSE(
-      UnloadDeprecationAllowedForOrigin(chrome_origin.DeriveNewOpaqueOrigin()));
+  EXPECT_FALSE(network::UnloadDeprecationAllowedForOrigin(chrome_origin));
+  EXPECT_FALSE(network::UnloadDeprecationAllowedForOrigin(
+      chrome_origin.DeriveNewOpaqueOrigin()));
 }
 
 // When the rollout is at 0%, no host should be allowed.
@@ -3612,9 +3626,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_0Percent) {
         {{network::features::kDeprecateUnloadPercent.name, "0"},
          {network::features::kDeprecateUnloadBucket.name, "0"}}}},
       /*disabled_features=*/{});
-  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin1_));
-  EXPECT_FALSE(
-      UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
+  EXPECT_FALSE(network::UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_FALSE(network::UnloadDeprecationAllowedForOrigin(
+      http_origin1_.DeriveNewOpaqueOrigin()));
 }
 
 // When the rollout is at 100% all hosts should be allowed.
@@ -3625,9 +3639,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_100Percent) {
         {{network::features::kDeprecateUnloadPercent.name, "100"},
          {network::features::kDeprecateUnloadBucket.name, "0"}}}},
       /*disabled_features=*/{});
-  EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
-  EXPECT_TRUE(
-      UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
+  EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(
+      http_origin1_.DeriveNewOpaqueOrigin()));
 }
 
 // When the rollout is at 0% with an allowlist, no host should be allowed,
@@ -3643,11 +3657,11 @@ TEST_F(DeprecateUnloadTest,
         {{network::features::kDeprecateUnloadAllowlist.name,
           http_origin1_.host()}}}},
       /*disabled_features=*/{});
-  EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
-  EXPECT_TRUE(
-      UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
+  EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(
+      http_origin1_.DeriveNewOpaqueOrigin()));
   // http_origin2 is not on the allow list.
-  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin2_));
+  EXPECT_FALSE(network::UnloadDeprecationAllowedForOrigin(http_origin2_));
 }
 
 // When the rollout is at 100% with an allowlist, the hosts on the list should
@@ -3663,11 +3677,11 @@ TEST_F(DeprecateUnloadTest,
         {{network::features::kDeprecateUnloadAllowlist.name,
           http_origin1_.host()}}}},
       /*disabled_features=*/{});
-  EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1_));
-  EXPECT_TRUE(
-      UnloadDeprecationAllowedForOrigin(http_origin1_.DeriveNewOpaqueOrigin()));
+  EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(http_origin1_));
+  EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(
+      http_origin1_.DeriveNewOpaqueOrigin()));
   // http_origin2 is not on the allow list but we are at 100%.
-  EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin2_));
+  EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(http_origin2_));
 }
 
 // Test that we recognize the known types of headerless documents.

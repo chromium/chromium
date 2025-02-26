@@ -669,7 +669,8 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
   network::ParsedPermissionsPolicy container_policy =
       ConstructContainerPolicy();
   auto& security_context = GetExecutionContext()->GetSecurityContext();
-  for (const auto& feature_desc : GetPermissionsPolicyFeatureList(src)) {
+  for (const auto& feature_desc :
+       network::GetPermissionsPolicyFeatureList(src)) {
     network::mojom::PermissionsPolicyFeature feature = feature_desc.first;
     if (!IsFeatureDeclared(feature, container_policy)) {
       continue;
