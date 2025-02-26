@@ -5,9 +5,10 @@
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 
 #include <atomic>
-#include <optional>
+#include <ostream>
 #include <utility>
 
+#include "base/containers/enum_set.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
@@ -15,7 +16,43 @@
 
 namespace performance_scenarios {
 
+// Test printers.
+std::ostream& operator<<(std::ostream& os, LoadingScenario loading_scenario) {
+  switch (loading_scenario) {
+    case LoadingScenario::kNoPageLoading:
+      return os << "NoPageLoading";
+    case LoadingScenario::kFocusedPageLoading:
+      return os << "FocusedPageLoading";
+    case LoadingScenario::kVisiblePageLoading:
+      return os << "VisiblePageLoading";
+    case LoadingScenario::kBackgroundPageLoading:
+      return os << "BackgroundPageLoading";
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, InputScenario input_scenario) {
+  switch (input_scenario) {
+    case InputScenario::kNoInput:
+      return os << "NoInput";
+    case InputScenario::kTyping:
+      return os << "TypingInput";
+  }
+}
+
 namespace {
+
+// Tests that are repeated for all scenarios of a given type.
+using PerformanceScenariosAllLoadingScenariosTest =
+    ::testing::TestWithParam<LoadingScenario>;
+using PerformanceScenariosAllInputScenariosTest =
+    ::testing::TestWithParam<InputScenario>;
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PerformanceScenariosAllLoadingScenariosTest,
+                         ::testing::ValuesIn(LoadingScenarios::All()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PerformanceScenariosAllInputScenariosTest,
+                         ::testing::ValuesIn(InputScenarios::All()));
 
 TEST(PerformanceScenariosTest, MappedScenarioState) {
   auto shared_memory = base::StructuredSharedMemory<ScenarioState>::Create();
@@ -121,6 +158,91 @@ TEST(PerformanceScenariosTest, SharedAtomicRef) {
             LoadingScenario::kBackgroundPageLoading);
   EXPECT_EQ(input_ref->load(std::memory_order_relaxed),
             InputScenario::kNoInput);
+}
+
+TEST_P(PerformanceScenariosAllLoadingScenariosTest, EmptyScenarioPattern) {
+  // Nothing matches the pattern.
+  static ScenarioPattern kEmptyScenarioPattern{};
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kNoInput,
+                             kEmptyScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kTyping,
+                             kEmptyScenarioPattern));
+}
+
+TEST_P(PerformanceScenariosAllLoadingScenariosTest, InputScenarioPattern) {
+  // kNoInput matches the pattern, loading scenarios are ignored.
+  static ScenarioPattern kInputScenarioPattern{
+      .input = {InputScenario::kNoInput},
+  };
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kNoInput,
+                             kInputScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kTyping,
+                              kInputScenarioPattern));
+}
+
+TEST_P(PerformanceScenariosAllInputScenariosTest, LoadingScenarioPattern) {
+  // Only kNoPageLoading matches the pattern, input scenarios are ignored.
+  static ScenarioPattern kNotLoadingScenarioPattern{
+      .loading = {LoadingScenario::kNoPageLoading},
+  };
+  EXPECT_TRUE(ScenariosMatch(LoadingScenario::kNoPageLoading, GetParam(),
+                             kNotLoadingScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(LoadingScenario::kBackgroundPageLoading,
+                              GetParam(), kNotLoadingScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(LoadingScenario::kVisiblePageLoading, GetParam(),
+                              kNotLoadingScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(LoadingScenario::kFocusedPageLoading, GetParam(),
+                              kNotLoadingScenarioPattern));
+
+  // Loading background pages match the pattern, input scenarios are ignored.
+  static ScenarioPattern kBackgroundLoadingScenarioPattern{
+      .loading = {LoadingScenario::kNoPageLoading,
+                  LoadingScenario::kBackgroundPageLoading},
+  };
+  EXPECT_TRUE(ScenariosMatch(LoadingScenario::kNoPageLoading, GetParam(),
+                             kBackgroundLoadingScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(LoadingScenario::kBackgroundPageLoading,
+                             GetParam(), kBackgroundLoadingScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(LoadingScenario::kVisiblePageLoading, GetParam(),
+                              kBackgroundLoadingScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(LoadingScenario::kFocusedPageLoading, GetParam(),
+                              kBackgroundLoadingScenarioPattern));
+
+  // Loading non-focused pages match the pattern, input scenarios are ignored.
+  static ScenarioPattern kNonFocusedLoadingScenarioPattern{
+      .loading = {LoadingScenario::kNoPageLoading,
+                  LoadingScenario::kBackgroundPageLoading,
+                  LoadingScenario::kVisiblePageLoading},
+  };
+  EXPECT_TRUE(ScenariosMatch(LoadingScenario::kNoPageLoading, GetParam(),
+                             kNonFocusedLoadingScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(LoadingScenario::kBackgroundPageLoading,
+                             GetParam(), kNonFocusedLoadingScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(LoadingScenario::kVisiblePageLoading, GetParam(),
+                             kNonFocusedLoadingScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(LoadingScenario::kFocusedPageLoading, GetParam(),
+                              kNonFocusedLoadingScenarioPattern));
+}
+
+// By default, scenarios are only idle with no foreground loading and no input.
+// If one of these tests fails, check if the definition of kDefaultIdleScenarios
+// has changed.
+
+TEST(PerformanceScenariosTest, DefaultIdleScenariosNoInput) {
+  EXPECT_TRUE(ScenariosMatch(LoadingScenario::kNoPageLoading,
+                             InputScenario::kNoInput, kDefaultIdleScenarios));
+  EXPECT_TRUE(ScenariosMatch(LoadingScenario::kBackgroundPageLoading,
+                             InputScenario::kNoInput, kDefaultIdleScenarios));
+  EXPECT_FALSE(ScenariosMatch(LoadingScenario::kVisiblePageLoading,
+                              InputScenario::kNoInput, kDefaultIdleScenarios));
+  EXPECT_FALSE(ScenariosMatch(LoadingScenario::kFocusedPageLoading,
+                              InputScenario::kNoInput, kDefaultIdleScenarios));
+}
+
+TEST_P(PerformanceScenariosAllLoadingScenariosTest,
+       DefaultIdleScenariosWithInput) {
+  EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kTyping,
+                              kDefaultIdleScenarios));
 }
 
 }  // namespace

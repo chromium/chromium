@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
@@ -40,13 +41,21 @@ enum class LoadingScenario {
   // No visible pages are loading, but a non-visible page is.
   kBackgroundPageLoading,
 };
+using LoadingScenarios =
+    base::EnumSet<LoadingScenario,
+                  /*Min=*/LoadingScenario::kNoPageLoading,
+                  /*Max=*/LoadingScenario::kBackgroundPageLoading>;
 
 // Scenarios indicating user input.
 enum class InputScenario {
-  // TODO(crbug.com/365586676): Add additional scenarios.
+  // No input was detected.
   kNoInput = 0,
+  // The user is typing in the focused page.
   kTyping,
 };
+using InputScenarios = base::EnumSet<InputScenario,
+                                     /*Min=*/InputScenario::kNoInput,
+                                     /*Max=*/InputScenario::kTyping>;
 
 // The scope that a scenario covers.
 enum class ScenarioScope {
@@ -55,8 +64,42 @@ enum class ScenarioScope {
   // The scenario covers the whole browser.
   kGlobal,
 };
+using ScenarioScopes = base::EnumSet<ScenarioScope,
+                                     /*Min=*/ScenarioScope::kCurrentProcess,
+                                     /*Max=*/ScenarioScope::kGlobal>;
+
+// Different subsets of scenarios that can be checked with the ScenariosMatch()
+// function or a MatchingScenarioObserver.
+//
+// A given ScenarioScope `scope` matches a ScenarioPattern if all of:
+//
+// * GetLoadingScenario(scope) returns a value in the `loading` set, or the set
+//   is empty.
+// * GetInputScenarios(scope) returns a value in the `input` set, or the set is
+//   empty.
+struct COMPONENT_EXPORT(SCENARIO_API) ScenarioPattern {
+  // Set of LoadingScenarios that match the pattern. If this is empty, any
+  // LoadingScenario matches.
+  LoadingScenarios loading;
+
+  // Set of InputScenarios that match the pattern. If this is empty, any
+  // InputScenario matches.
+  InputScenarios input;
+};
+
+// A ScenarioPattern for a scope that's considered "idle": only background pages
+// are loading and there is no input. This is a good definition of "idle" for
+// most purposes, but some features that are particularly sensitive to different
+// scenarios may want to define a different ScenarioPattern.
+inline constexpr ScenarioPattern kDefaultIdleScenarios{
+    .loading = {LoadingScenario::kNoPageLoading,
+                LoadingScenario::kBackgroundPageLoading},
+    .input = {InputScenario::kNoInput},
+};
 
 // The full scenario state to copy over shared memory.
+// TODO(crbug.com/365586676): Move this to a separate header since it's part of
+// the plumbing, not the general API.
 #pragma clang diagnostic push
 #pragma clang diagnostic error "-Wpadded"
 struct COMPONENT_EXPORT(SCENARIO_API) ScenarioState {
@@ -111,6 +154,8 @@ class SharedAtomicRef {
 
 // A scoped object that maps shared memory for the scenario state into the
 // current process as long as it exists.
+// TODO(crbug.com/365586676): Move this to a separate header since it's part of
+// the plumbing, not the general API.
 class COMPONENT_EXPORT(SCENARIO_API) ScopedReadOnlyScenarioMemory {
  public:
   // Maps `region` into the current process, as a read-only view of the memory
@@ -148,10 +193,32 @@ class COMPONENT_EXPORT(SCENARIO_API) ScopedReadOnlyScenarioMemory {
 //     ... delay less-important work until scenario changes ...
 //   }
 //
+//   // Inverse of the above test: true if NO foreground page is loading.
+//   if (CurrentScenariosMatch(ScenarioScope::kGlobal,
+//                             ScenarioPattern{.loading = {
+//                               LoadingScenario::kNoPageLoading,
+//                               LoadingScenario::kBackgroundPageLoading,
+//                             }) {
+//     ... good time to do less-important work ...
+//   }
+//
 //   // Test whether the current process is in the critical path for user input.
 //   if (GetInputScenario(ScenarioScope::kCurrentProcess)->load(
 //           std::memory_order_relaxed) != InputScenario::kNoInput) {
 //     ... current process should prioritize input responsiveness ...
+//   }
+//
+//   // Equivalently:
+//   if (!CurrentScenariosMatch(ScenarioScope::kCurrentProcess,
+//                              ScenarioPattern{
+//                                .input = {InputScenario::kNoInput}
+//                              }) {
+//     ... current process should prioritize input responsiveness ...
+//   }
+//
+//   // Test whether the browser overall is idle by the most common definition.
+//   if (CurrentScenariosMatch(ScenarioScope::kGlobal, kDefaultIdleScenarios)) {
+//     ... good time to do maintenance tasks ...
 //   }
 
 // Returns a reference to the loading scenario for `scope`.
@@ -161,6 +228,16 @@ SharedAtomicRef<LoadingScenario> GetLoadingScenario(ScenarioScope scope);
 // Returns a reference to the input scenario for `scope`.
 COMPONENT_EXPORT(SCENARIO_API)
 SharedAtomicRef<InputScenario> GetInputScenario(ScenarioScope scope);
+
+// Returns true if `scope` currently matches `pattern`.
+COMPONENT_EXPORT(SCENARIO_API)
+bool CurrentScenariosMatch(ScenarioScope scope, ScenarioPattern pattern);
+
+// Returns true if the given scenarios match `pattern`.
+COMPONENT_EXPORT(SCENARIO_API)
+bool ScenariosMatch(LoadingScenario loading_scenario,
+                    InputScenario input_scenario,
+                    ScenarioPattern pattern);
 
 }  // namespace performance_scenarios
 

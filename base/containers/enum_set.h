@@ -67,6 +67,9 @@ class EnumSet {
   static_assert(kMinValue <= kMaxValue,
                 "min value must be no greater than max value");
 
+  // Allow use with ::testing::ValuesIn, which expects a value_type defined.
+  using value_type = EnumType;
+
  private:
   // Declaration needed by Iterator.
   using EnumBitSet = std::bitset<kValueCount>;
