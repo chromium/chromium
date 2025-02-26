@@ -21,12 +21,12 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.BrowserParts;
@@ -51,12 +51,12 @@ import java.util.Collection;
 
 /**
  * This is the target activity for the "Manage Storage" button in the Android Settings UI. This is
- * configured in AndroidManifest.xml by setting android:manageSpaceActivity for the application.
- * The browser process must be started here because this Activity may be started explicitly from
- * Android settings, when Android is restoring ManageSpaceActivity after Chrome was killed, or for
- * tests.
+ * configured in AndroidManifest.xml by setting android:manageSpaceActivity for the application. The
+ * browser process must be started here because this Activity may be started explicitly from Android
+ * settings, when Android is restoring ManageSpaceActivity after Chrome was killed, or for tests.
  */
-public class ManageSpaceActivity extends AppCompatActivity implements View.OnClickListener {
+public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
+        implements View.OnClickListener {
     private static final String TAG = "ManageSpaceActivity";
 
     private TextView mUnimportantSiteDataSizeText;
