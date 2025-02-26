@@ -136,6 +136,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
@@ -720,7 +721,7 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
 
     if (AffineTransform curr_transform = curr_state->GetTransform();
         prev_transform != curr_transform) {
-      c->setMatrix(AffineTransformToSkM44(curr_transform));
+      c->setMatrix(curr_transform.ToSkM44());
       prev_transform = curr_transform;
     }
   }
@@ -1474,7 +1475,7 @@ void BaseRenderingContext2D::transform(double m11,
   }
 
   SetTransform(new_transform);
-  c->concat(AffineTransformToSkM44(transform));
+  c->concat(transform.ToSkM44());
 
   if (IsTransformInvertible()) [[likely]] {
     GetModifiablePath().Transform(transform.Inverse());

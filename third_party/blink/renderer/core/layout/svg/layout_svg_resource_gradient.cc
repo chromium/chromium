@@ -165,8 +165,8 @@ bool LayoutSVGResourceGradient::ApplyShader(
   ImageDrawOptions draw_options;
   draw_options.apply_dark_mode =
       auto_dark_mode.enabled && StyleRef().ForceDark();
-  gradient_data->gradient->ApplyToFlags(
-      flags, AffineTransformToSkMatrix(transform), draw_options);
+  gradient_data->gradient->ApplyToFlags(flags, transform.ToSkMatrix(),
+                                        draw_options);
   return true;
 }
 
