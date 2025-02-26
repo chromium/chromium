@@ -439,7 +439,6 @@ class GnParser(object):
   def parse_gn_desc(self,
                     gn_desc,
                     gn_target_name,
-                    java_group_name=None,
                     is_test_target=False):
     """Parses a gn desc tree and resolves all target dependencies.
 
@@ -597,14 +596,12 @@ class GnParser(object):
       target.rtti = True
 
     for gn_dep_name in set(target.jni_registration_java_deps):
-      dep = self.parse_gn_desc(gn_desc, gn_dep_name, java_group_name,
-                               is_test_target)
+      dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
       target.transitive_jni_java_sources.update(dep.transitive_jni_java_sources)
 
     # Recurse in dependencies.
     for gn_dep_name in set(deps):
-      dep = self.parse_gn_desc(gn_desc, gn_dep_name, java_group_name,
-                               is_test_target)
+      dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
 
       if dep.type == 'proto_library':
         target.proto_deps.add(dep.name)
