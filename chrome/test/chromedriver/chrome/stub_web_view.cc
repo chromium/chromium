@@ -63,7 +63,8 @@ Status StubWebView::Resume(const Timeout* timeout) {
   return Status(kOk);
 }
 
-Status StubWebView::StartBidiServer(std::string bidi_mapper_script) {
+Status StubWebView::StartBidiServer(std::string bidi_mapper_script,
+                                    bool enable_unsafe_extension_debugging) {
   return Status{kOk};
 }
 

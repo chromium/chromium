@@ -8500,8 +8500,15 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 class CustomBidiMapperTest(CustomChromeDriverInstanceTest):
   """Base class for testing chromedriver with a custom bidi mapper path."""
 
+  def GetLogPath(self):
+    if '_MINIDUMP_PATH' in globals() and _MINIDUMP_PATH:
+      return os.path.join(_MINIDUMP_PATH, self.id() + '.chromedriver.log')
+    else:
+      _, log_path = tempfile.mkstemp(prefix='chromedriver_log_')
+      return log_path
+
   def CreateDriver(self, bidi_mapper_path=None, **kwargs):
-    log_path = os.path.join(_MINIDUMP_PATH, self.id() + '.chromedriver.log')
+    log_path = self.GetLogPath()
 
     chromedriver_server = self.CreateChromeDriverServer(
         _CHROMEDRIVER_BINARY,
@@ -8543,6 +8550,26 @@ class CustomBidiMapperTest(CustomChromeDriverInstanceTest):
                            'Failed to initialize BiDi Mapper: Error: ' +
                            'custom bidi mapper error from test_bidi_mapper.js',
                            self.CreateDriver, bidi_mapper_path=bidi_mapper_path)
+
+class UnsafeExtensionsDebuggingTest(CustomBidiMapperTest):
+  """Tests with custom BiDi mapper + unsafe-extension-debugging."""
+
+  def testCanLaunch(self):
+    # Test that we can use a custom bidi mapper path.
+
+    bidi_mapper_path = os.path.join(
+        os.path.realpath(os.path.dirname(os.path.dirname(__file__))),
+        'js', 'test_bidi_mapper.js')
+
+    # We test for a success by expecting a custom error from the
+    # custom mapper.
+    self.assertRaisesRegex(Exception,
+                           'unknown error: ' +
+                           'Failed to initialize BiDi Mapper: Error: ' +
+                           'custom bidi mapper error from test_bidi_mapper.js',
+                           self.CreateDriver,
+                           bidi_mapper_path=bidi_mapper_path,
+                           chrome_switches=['--enable-unsafe-extension-debugging'])
 
 class ClassicTest(ChromeDriverBaseTestWithWebServer):
 

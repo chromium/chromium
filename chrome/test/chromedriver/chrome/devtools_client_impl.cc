@@ -304,18 +304,22 @@ Status DevToolsClientImpl::SetTunnelSessionId(std::string session_id) {
   return Status{kOk};
 }
 
-Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script) {
+Status DevToolsClientImpl::StartBidiServer(
+    std::string bidi_mapper_script,
+    bool enable_unsafe_extension_debugging) {
   // Give BiDiMapper generous amount of time to start.
   // If the wait times out then we likely have a bug in BiDiMapper.
   // There is no need to make this timeout user configurable.
   // We use the default page load timeout (the biggest in the standard).
   Timeout timeout = Timeout(base::Seconds(300));
-  return StartBidiServer(std::move(bidi_mapper_script), timeout);
+  return StartBidiServer(std::move(bidi_mapper_script), timeout,
+                         enable_unsafe_extension_debugging);
 }
 
 Status DevToolsClientImpl::StartBidiServer(
     std::string bidi_mapper_script,
-    const Timeout& timeout) {
+    const Timeout& timeout,
+    bool enable_unsafe_extension_debugging) {
   if (!is_main_page_) {
     // Later we might want to start the BiDiMapper an another type of targets
     // however for the moment being we support pages only.
@@ -337,6 +341,9 @@ Status DevToolsClientImpl::StartBidiServer(
     base::Value::Dict params;
     params.Set("bindingName", "cdp");
     params.Set("targetId", target_id);
+    // Additional permissions are needed if enable_unsafe_extension_debugging is
+    // enabled.
+    params.Set("inheritPermissions", enable_unsafe_extension_debugging);
     DevToolsClient* root_client = this;
     while (root_client->GetParentClient() != nullptr) {
       root_client = root_client->GetParentClient();

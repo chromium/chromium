@@ -410,7 +410,10 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       }
     }
 
-    status = web_view->StartBidiServer(mapper_script);
+    bool enable_unsafe_extension_debugging =
+        capabilities.switches.HasSwitch("enable-unsafe-extension-debugging");
+    status = web_view->StartBidiServer(mapper_script,
+                                       enable_unsafe_extension_debugging);
     if (status.IsError()) {
       return status;
     }
