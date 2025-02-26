@@ -291,11 +291,6 @@ void GetDawnTogglesForSkiaGraphite(
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
 void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
-  static BASE_FEATURE(kCollectDawnGpuMetrics, "CollectDawnGpuMetrics",
-                      base::FEATURE_ENABLED_BY_DEFAULT);
-  if (!base::FeatureList::IsEnabled(kCollectDawnGpuMetrics)) {
-    return;
-  }
   WGPULimits max_limits{};
   wgpu::AdapterType adapter_type = wgpu::AdapterType::Unknown;
 
