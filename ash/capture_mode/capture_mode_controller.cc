@@ -2076,7 +2076,8 @@ void CaptureModeController::OnTextDetectionComplete(
     return;
   }
 
-  AddCopyTextAndSmartActionsButtons(*detected_text);
+  AddCopyTextButton(*detected_text);
+  capture_mode_session_->AddSmartActionsButton();
 }
 
 void CaptureModeController::OnLensTextDetectionComplete(
@@ -2087,16 +2088,15 @@ void CaptureModeController::OnLensTextDetectionComplete(
     return;
   }
 
-  // Only use lens to automatically add Copy Text and Smart Actions buttons if
-  // we are in a sunfish session.
+  // Only use lens to automatically add a Copy Text button if we are in a
+  // sunfish session.
   if (capture_mode_session_->active_behavior()->behavior_type() ==
       BehaviorType::kSunfish) {
-    AddCopyTextAndSmartActionsButtons(*detected_text);
+    AddCopyTextButton(*detected_text);
   }
 }
 
-void CaptureModeController::AddCopyTextAndSmartActionsButtons(
-    std::string detected_text) {
+void CaptureModeController::AddCopyTextButton(std::string_view detected_text) {
   CHECK(!detected_text.empty());
 
   capture_mode_util::AddActionButton(
@@ -2107,7 +2107,6 @@ void CaptureModeController::AddCopyTextAndSmartActionsButtons(
       &vector_icons::kContentCopyIcon,
       ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
       ActionButtonViewID::kCopyTextButton);
-  capture_mode_session_->AddSmartActionsButton();
 }
 
 void CaptureModeController::OnCopyTextButtonClicked(

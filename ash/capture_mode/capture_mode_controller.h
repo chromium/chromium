@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -562,10 +563,10 @@ class ASH_EXPORT CaptureModeController
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       std::optional<std::string> detected_text);
 
-  // Helper function that adds a Copy Text button and potentially a Smart
-  // Actions button to the session. Called when both Lens-based and on-device
-  // text detection are completed with non-empty `detected_text`.
-  void AddCopyTextAndSmartActionsButtons(std::string detected_text);
+  // Helper function that adds a Copy Text action button. Called when both
+  // Lens-based and on-device text detection are completed with non-empty
+  // `detected_text`.
+  void AddCopyTextButton(std::string_view detected_text);
 
   // Called back when the copy text button is clicked. This will copy `text` to
   // clipboard, show a notification, and close the capture session.

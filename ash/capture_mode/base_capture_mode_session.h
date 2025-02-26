@@ -190,6 +190,7 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
 
   // Adds an action button that can be clicked to fetch smart actions if the
   // current behaviour allows showing it, and the device is online.
+  // This should only be called when the active behavior is `DefaultBehavior`.
   virtual void AddSmartActionsButton() = 0;
 
   // Checks if the controller needs to show the scanner disclaimer and shows if
