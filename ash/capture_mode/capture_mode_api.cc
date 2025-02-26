@@ -18,11 +18,15 @@
 
 namespace ash {
 
-namespace {
+void CaptureScreenshotsOfAllDisplays() {
+  CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
+}
 
-// Extra checks for Sunfish prefs and policy, used in `CanShowSunfishUi`.
-// TODO: crbug.com/397521940 - Inline this into `CanShowSunfishUi`.
-bool ExtraSunfishChecks() {
+bool CanShowSunfishUi() {
+  if (!features::IsSunfishFeatureEnabled()) {
+    return false;
+  }
+
   Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
   if (!shell) {
     return false;
@@ -44,16 +48,6 @@ bool ExtraSunfishChecks() {
 
   auto* controller = CaptureModeController::Get();
   return controller && controller->IsSearchAllowedByPolicy();
-}
-
-}  // namespace
-
-void CaptureScreenshotsOfAllDisplays() {
-  CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
-}
-
-bool CanShowSunfishUi() {
-  return features::IsSunfishFeatureEnabled() && ExtraSunfishChecks();
 }
 
 bool CanShowSunfishOrScannerUi() {
