@@ -1568,10 +1568,22 @@ void CompositeEditCommand::MoveParagraphs(
         SelectionForUndoStep::From(selection_to_delete.AsSelection()));
   }
 
+  if (RuntimeEnabledFeatures::
+          PartialCompletionNotAllowedInMoveParagraphsEnabled()) {
+    const VisibleSelection& destination_selection = CreateVisibleSelection(
+        SelectionInDOMTree::Builder()
+            .Collapse(destination.ToPositionWithAffinity())
+            .Build());
+    if (!destination_selection.RootEditableElement() ||
+        !EndingVisibleSelection().RootEditableElement()) {
+      return;
+    }
+  }
   if (!DeleteSelection(
           editing_state,
-          DeleteSelectionOptions::Builder().SetSanitizeMarkup(true).Build()))
+          DeleteSelectionOptions::Builder().SetSanitizeMarkup(true).Build())) {
     return;
+  }
 
   DCHECK(destination.DeepEquivalent().IsConnected()) << destination;
   CleanupAfterDeletion(editing_state, destination);
