@@ -23,17 +23,11 @@ message AdProtos {
   repeated AdProto ads = 1;
 }
 
-message BiddingAndAuctionServerKeysProtos {
+message BiddingAndAuctionServerKeyProtos {
   message BiddingAndAuctionServerKeyProto {
     bytes key = 1;
-    optional int32 id = 2 [deprecated = true];
-    string id_str = 3;
+    int32 id = 2;
   }
-  message BiddingAndAuctionServerKeyProtos {
-    repeated BiddingAndAuctionServerKeyProto keys = 1;
-  }
-
-  // Global keys
   repeated BiddingAndAuctionServerKeyProto keys = 1;
 }
 
