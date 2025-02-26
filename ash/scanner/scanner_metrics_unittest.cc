@@ -91,6 +91,7 @@ INSTANTIATE_TEST_SUITE_P(
         kSunfishSessionImageCapturedAndActionsFetchStarted,
         kSmartActionsButtonImageCapturedAndActionsNotFetched,
         kSmartActionsButtonImageCapturedAndActionsFetchStarted,
+        kSmartActionsButtonNotShownDueToFeatureChecks,
     }));
 
 TEST_P(ScannerMetricsParameterisedTest, Record) {

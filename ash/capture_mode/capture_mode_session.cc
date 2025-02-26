@@ -3633,13 +3633,24 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
   // Early exit if we can't show the action container, i.e. a drag is in
   // progress or capture region is empty. This will be checked again if an
   // asynchronous function invokes `AddActionButton()`.
-  if (!ShouldShowActionContainerWidget()) {
+  if (!ShouldShowActionContainerWidgetWithoutFeatureChecks()) {
     return false;
   }
 
-  // `ShouldShowActionContainerWidget()` checks `CanShowSunfishOrScannerUi()`
-  // which checks if *either* Scanner or Sunfish is enabled. Check again if
-  // Sunfish specifically is enabled to show the Search button.
+  // Separate out the feature checks so metrics can be captured.
+  if (!CanShowSunfishOrScannerUi()) {
+    if (active_behavior_->behavior_type() == BehaviorType::kDefault) {
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::
+              kSmartActionsButtonNotShownDueToFeatureChecks);
+    }
+    return false;
+  }
+
+  // `CanShowSunfishOrScannerUi()` checks if *either* Scanner or Sunfish is
+  // enabled. Check again if Sunfish specifically is enabled to show the Search
+  // button.
+  // TODO: crbug.com/397521940 - Replace this with a more precise Sunfish check.
   if (active_behavior_->ShouldShowDefaultActionButtonsInActionContainer() &&
       CanShowSunfishUi()) {
     if (controller_->IsNetworkConnectionOffline()) {
@@ -3733,11 +3744,8 @@ bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
          controller->source() != CaptureModeSource::kRegion;
 }
 
-bool CaptureModeSession::ShouldShowActionContainerWidget() const {
-  if (!CanShowSunfishOrScannerUi()) {
-    return false;
-  }
-
+bool CaptureModeSession::ShouldShowActionContainerWidgetWithoutFeatureChecks()
+    const {
   // If drag for capture region is in progress, action buttons should be
   // hidden.
   if (is_drag_in_progress_) {
@@ -3757,6 +3765,11 @@ bool CaptureModeSession::ShouldShowActionContainerWidget() const {
   }
 
   return true;
+}
+
+bool CaptureModeSession::ShouldShowActionContainerWidget() const {
+  return ShouldShowActionContainerWidgetWithoutFeatureChecks() &&
+         CanShowSunfishOrScannerUi();
 }
 
 void CaptureModeSession::ShowFeedbackPage() {

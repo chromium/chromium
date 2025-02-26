@@ -230,6 +230,24 @@ TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointIsNoop) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+TEST_F(SunfishDisabledScannerDisabledTest,
+       SmartActionsButtonNotShownDueToFeatureChecksRecorded) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToFeatureChecks,
+      0);
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToFeatureChecks,
+      1);
+}
+
 // Tests that the feedback button is not shown in default capture mode if
 // neither Sunfish nor Scanner is enabled.
 TEST_F(SunfishDisabledScannerDisabledTest,
@@ -2833,6 +2851,36 @@ TEST_F(ScannerTest, CreatesScannerActionButtons) {
   const CaptureModeSessionTestApi session_test_api(
       capture_mode_controller->capture_mode_session());
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
+}
+
+// Tests that the "smart actions button not shown due to feature checks" metrics
+// is not recorded when a region is selected in a Sunfish-session after
+// `CanShowSunfishOrScannerUi` turns false. Removing the default session check
+// guarding the metric will cause this test to fail.
+TEST_F(ScannerTest, SmartActionsButtonNotShownDueToFeatureChecksNotRecorded) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToFeatureChecks,
+      0);
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+
+  // Forcibly turn `CanShowSunfishOrScannerUi` off by disabling the Search
+  // policy and the Scanner policy.
+  auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+      capture_mode_controller->delegate_for_testing());
+  test_delegate->set_is_search_allowed_by_policy(false);
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToFeatureChecks,
+      0);
 }
 
 TEST_F(ScannerTest, SunfishSessionImageCapturedAndActionsFetchedRecorded) {

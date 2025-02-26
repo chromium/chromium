@@ -478,12 +478,18 @@ class ASH_EXPORT CaptureModeSession
   // mode for an image (including Sunfish/Scanner sessions).
   bool ShouldHideFeedbackWidget(views::Widget* widget) const;
 
-  // Returns true if the action container should be shown. This checks:
-  // - Sunfish-related UI can be shown or Scanner-related UI can be shown,
+  // Returns true if the action container should be shown, excluding a check for
+  // whether Sunfish-related UI or Scanner-related UI can be shown. This checks:
   // - a drag is not in progress,
   // - the selection is a non-empty image region, and
   // - the active behavior can show action buttons (i.e. it is either the
   //   default behavior or the Sunfish behavior).
+  bool ShouldShowActionContainerWidgetWithoutFeatureChecks() const;
+
+  // Returns true if the action container should be shown. This checks all of
+  // the checks in `ShouldShowActionContainerWidgetWithoutFeatureChecks`, and
+  // also includes a check for whether Sunfish-related UI or Scanner-related UI
+  // can be shown.
   bool ShouldShowActionContainerWidget() const;
 
   // Shows the feedback page with preset information for sunfish.
