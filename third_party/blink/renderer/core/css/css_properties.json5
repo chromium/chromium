@@ -2778,7 +2778,7 @@
       // TODO(fs): Convert this to a keyword (requires enum massage).
       field_template: "primitive",
       field_size: 1,
-      include_paths: ["third_party/blink/renderer/platform/graphics/graphics_types.h"],
+      include_paths: ["third_party/blink/renderer/platform/geometry/path_types.h"],
       type_name: "WindRule",
       keywords: ["nonzero", "evenodd"],
       default_value: "RULE_NONZERO",
@@ -3201,7 +3201,7 @@
       // TODO(fs): Convert this to a keyword (requires enum massage).
       field_template: "primitive",
       field_size: 1,
-      include_paths: ["third_party/blink/renderer/platform/graphics/graphics_types.h"],
+      include_paths: ["third_party/blink/renderer/platform/geometry/path_types.h"],
       type_name: "WindRule",
       keywords: ["nonzero", "evenodd"],
       default_value: "RULE_NONZERO",
