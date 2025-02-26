@@ -50,6 +50,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -289,15 +290,15 @@ bool IsAssistantExitPointInsideLauncher(
 }
 
 SearchBoxModel::SunfishButtonVisibility GetSunfishButtonVisibility() {
-  if (!CanShowSunfishOrScannerUi()) {
-    return SearchBoxModel::SunfishButtonVisibility::kHidden;
+  if (CanShowSunfishUi()) {
+    return SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon;
   }
 
-  if (!CanShowSunfishUi()) {
+  if (ScannerController::CanShowUiForShell()) {
     return SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon;
   }
 
-  return SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon;
+  return SearchBoxModel::SunfishButtonVisibility::kHidden;
 }
 
 }  // namespace
