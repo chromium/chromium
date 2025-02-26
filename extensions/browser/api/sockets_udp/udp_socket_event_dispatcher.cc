@@ -124,7 +124,7 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     sockets_udp::ReceiveInfo receive_info;
     receive_info.socket_id = params.socket_id;
     receive_info.data = base::ToVector(
-        io_buffer->span().subspan(0u, static_cast<size_t>(bytes_read)));
+        io_buffer->span().first(static_cast<size_t>(bytes_read)));
     receive_info.remote_address = address;
     receive_info.remote_port = port;
     auto args = sockets_udp::OnReceive::Create(receive_info);

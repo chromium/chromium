@@ -150,7 +150,7 @@ size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
       return bytes_read_total;
     }
 
-    const size_t bytes_received = Receive(buffer.subspan(0u, bytes_to_read));
+    const size_t bytes_received = Receive(buffer.first(bytes_to_read));
     bytes_read_total += bytes_received;
     buffer = buffer.subspan(bytes_received);
     if (bytes_received != bytes_to_read) {

@@ -301,7 +301,7 @@ base::span<const uint8_t> MjpegFileParser::GetNextFrame() {
   // Reset the pointer to play repeatedly.
   if (current_byte_index_ >= mapped_file_->length())
     current_byte_index_ = first_frame_byte_index_;
-  return buf_span.subspan(0u, base::checked_cast<size_t>(frame_size));
+  return buf_span.first(base::checked_cast<size_t>(frame_size));
 }
 
 // static

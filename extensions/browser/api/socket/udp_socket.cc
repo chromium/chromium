@@ -134,7 +134,7 @@ int UDPSocket::WriteImpl(net::IOBuffer* io_buffer,
     return net::ERR_SOCKET_NOT_CONNECTED;
   }
   base::span<const uint8_t> data =
-      io_buffer->span().subspan(0u, static_cast<size_t>(io_buffer_size));
+      io_buffer->span().first(static_cast<size_t>(io_buffer_size));
   socket_->Send(
       data,
       net::MutableNetworkTrafficAnnotationTag(
@@ -181,7 +181,7 @@ void UDPSocket::SendTo(scoped_refptr<net::IOBuffer> io_buffer,
   }
 
   base::span<const uint8_t> data =
-      io_buffer->span().subspan(0u, static_cast<size_t>(byte_count));
+      io_buffer->span().first(static_cast<size_t>(byte_count));
   socket_->SendTo(
       address, data,
       net::MutableNetworkTrafficAnnotationTag(
