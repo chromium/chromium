@@ -233,5 +233,47 @@ TEST_P(AssistantOverlayTest, RippleAnimationWithTap) {
             clip_rect_snapshot_before);
 }
 
+// AssistantOverlay renders a ripple animation with a tap, which goes beyond the
+// size of home button.
+TEST_P(AssistantOverlayTest, RippleAnimationWithAssistantDisabledDuringTap) {
+  const views::View* assistant_overlay = GetAssistantOverlay();
+  ASSERT_THAT(assistant_overlay, testing::NotNull());
+
+  const ui::Layer* assistant_overlay_layer = assistant_overlay->layer();
+
+  std::vector<gfx::Rect> clip_rect_snapshot_before =
+      TakeClipRectSnapshot(assistant_overlay_layer);
+
+  SendGestureEventToHomeButton(ui::EventType::kGestureTapDown);
+
+  // HomeButtonController delays assistant animation for
+  // kAssistantAnimationDelay.
+  task_environment()->FastForwardBy(kAssistantAnimationDelay);
+
+  // Confirm that no clip rect is set in ancestor layers.
+  std::vector<gfx::Rect> clip_rects_during_animation =
+      TakeClipRectSnapshot(assistant_overlay_layer);
+  for (const gfx::Rect& clip_rect : clip_rects_during_animation) {
+    EXPECT_TRUE(clip_rect.IsEmpty());
+  }
+
+  // Assistant turns disabled during the tap (due to policy, for example).
+  AssistantState* assistant_state = AssistantState::Get();
+  assistant_state->NotifyFeatureAllowed(
+      assistant::AssistantAllowedState::DISALLOWED_BY_POLICY);
+
+  SendGestureEventToHomeButton(ui::EventType::kGestureTap);
+
+  // The above tap will de-activate test window and hides back button.
+  // Re-activate the window to show a back button. Clip rect can be different if
+  // no back button is shown.
+  if (GetParam() == kTabletWithBackButton) {
+    ActivateTestWindow();
+  }
+
+  EXPECT_EQ(TakeClipRectSnapshot(assistant_overlay_layer),
+            clip_rect_snapshot_before);
+}
+
 }  // namespace
 }  // namespace ash
