@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace gpu {
@@ -298,7 +299,7 @@ GrShaderCache::ScopedCacheUse::~ScopedCacheUse() {
 }
 
 GrShaderCache::CacheKey::CacheKey(sk_sp<SkData> data) : data(std::move(data)) {
-  hash = base::FastHash(base::span(this->data->bytes(), this->data->size()));
+  hash = base::FastHash(skia::as_byte_span(*this->data));
 }
 GrShaderCache::CacheKey::CacheKey(const CacheKey& other) = default;
 GrShaderCache::CacheKey::CacheKey(CacheKey&& other) = default;

@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 
+#include "skia/ext/skia_utils_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
@@ -164,7 +165,7 @@ TEST(SegmentReaderTest, getAsSkData) {
   for (auto segment_reader : reader_struct.segment_readers) {
     sk_sp<SkData> skdata = segment_reader->GetAsSkData();
     EXPECT_EQ(data->size(), skdata->size());
-    auto skdata_span = base::span(skdata->bytes(), skdata->size());
+    auto skdata_span = skia::as_byte_span(*skdata);
 
     size_t position = 0;
     for (base::span<const uint8_t> segment =

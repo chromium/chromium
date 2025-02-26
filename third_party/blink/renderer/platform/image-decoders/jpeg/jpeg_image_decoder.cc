@@ -50,6 +50,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
@@ -476,8 +477,8 @@ class JPEGImageReader final {
           sk_sp<SkData> profile_data =
               metadata_decoder_->getICCProfileData(/*copyData=*/false);
           if (profile_data) {
-            std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
-                base::span(profile_data->bytes(), profile_data->size()));
+            std::unique_ptr<ColorProfile> profile =
+                ColorProfile::Create(skia::as_byte_span(*profile_data));
             if (profile) {
               uint32_t data_color_space =
                   profile->GetProfile()->data_color_space;
