@@ -29,7 +29,7 @@ namespace {
 // Number of native codes expected to be mapped for each kind of native code.
 // These are in the same order as the columns in dom_code_data.inc
 // as reflected in the DOM_CODE() macro below.
-const auto expected_mapped_key_count = std::to_array<size_t>({
+constexpr auto expected_mapped_key_count = std::to_array<size_t>({
     225,  // evdev
     225,  // xkb
     157,  // windows
