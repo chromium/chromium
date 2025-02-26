@@ -1,0 +1,16 @@
+Name: androidx.pdf:pdf-viewer
+Short Name: pdf-viewer
+URL: https://developer.android.com/jetpack/androidx/releases/pdf#1.0.0-alpha06
+Version: 1.0.0-alpha06
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+add pdf viewing to their apps.
+
+Local Modifications:
+No modifications.
