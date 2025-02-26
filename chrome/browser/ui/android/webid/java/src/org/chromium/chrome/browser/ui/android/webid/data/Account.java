@@ -29,6 +29,7 @@ public class Account {
     private final boolean mIsSignIn;
     private final boolean mIsBrowserTrustedSignIn;
     private final boolean mIsFilteredOut;
+    private final IdentityProviderData mIdentityProviderData;
 
     /**
      * @param id The account ID.
@@ -44,6 +45,8 @@ public class Account {
      *     has third-party cookie access.
      * @param isFilteredOut Whether this account is filtered out or not. If true, the account must
      *     be shown disabled since it cannot be used by the user.
+     * @param identityProviderData The IdentityProviderData corresponding to the IDP to which this
+     *     account belongs to.
      */
     @CalledByNative
     public Account(
@@ -55,7 +58,8 @@ public class Account {
             Bitmap pictureBitmap,
             boolean isSignIn,
             boolean isBrowserTrustedSignIn,
-            boolean isFilteredOut) {
+            boolean isFilteredOut,
+            IdentityProviderData identityProviderData) {
         mId = id;
         mEmail = email;
         mName = name;
@@ -65,6 +69,7 @@ public class Account {
         mIsSignIn = isSignIn;
         mIsBrowserTrustedSignIn = isBrowserTrustedSignIn;
         mIsFilteredOut = isFilteredOut;
+        mIdentityProviderData = identityProviderData;
     }
 
     public String getId() {
@@ -101,5 +106,9 @@ public class Account {
 
     public boolean isFilteredOut() {
         return mIsFilteredOut;
+    }
+
+    public IdentityProviderData getIdentityProviderData() {
+        return mIdentityProviderData;
     }
 }

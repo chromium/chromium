@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
@@ -41,7 +42,8 @@ namespace {
 ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     JNIEnv* env,
     content::IdentityRequestAccount* account,
-    bool is_multi_idp) {
+    bool is_multi_idp,
+    ScopedJavaLocalRef<jobject> identity_provider) {
   ScopedJavaLocalRef<jobject> decoded_picture = nullptr;
   if (!account->decoded_picture.IsEmpty()) {
     decoded_picture =
@@ -61,7 +63,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
                    : std::nullopt,
       decoded_picture, account->login_state == Account::LoginState::kSignIn,
       account->browser_trusted_login_state == Account::LoginState::kSignIn,
-      account->is_filtered_out);
+      account->is_filtered_out, identity_provider);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
@@ -104,7 +106,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
     JNIEnv* env,
     const std::vector<IdentityRequestAccountPtr>& accounts,
-    bool is_multi_idp) {
+    const base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>&
+        identity_providers_map) {
   ScopedJavaLocalRef<jclass> account_clazz = base::android::GetClass(
       env, "org/chromium/chrome/browser/ui/android/webid/data/Account");
   ScopedJavaLocalRef<jobjectArray> array(
@@ -112,9 +115,11 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
 
   base::android::CheckException(env);
 
+  bool is_multi_idp = identity_providers_map.size() > 1u;
   for (size_t i = 0; i < accounts.size(); ++i) {
-    ScopedJavaLocalRef<jobject> item =
-        ConvertToJavaAccount(env, accounts[i].get(), is_multi_idp);
+    ScopedJavaLocalRef<jobject> item = ConvertToJavaAccount(
+        env, accounts[i].get(), is_multi_idp,
+        identity_providers_map.at(accounts[i]->identity_provider));
     env->SetObjectArrayElement(array.obj(), i, item.obj());
   }
   return array;
@@ -142,22 +147,34 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
       idp_data->has_login_status_mismatch);
 }
 
-ScopedJavaLocalRef<jobjectArray> ConvertToJavaIdentityProviderDataList(
+base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>
+ConvertToJavaIdentityProviderDataMap(
     JNIEnv* env,
     const std::vector<IdentityProviderDataPtr>& identity_providers) {
+  base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>> map;
+
+  for (const auto& identity_provider : identity_providers) {
+    map[identity_provider] =
+        ConvertToJavaIdentityProviderData(env, identity_provider.get());
+  }
+  return map;
+}
+
+ScopedJavaLocalRef<jobjectArray> ConvertToJavaIdentityProvidersList(
+    JNIEnv* env,
+    base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>
+        identity_providers_map) {
   ScopedJavaLocalRef<jclass> identity_provider_clazz = base::android::GetClass(
       env,
       "org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderData");
   ScopedJavaLocalRef<jobjectArray> array(
-      env, env->NewObjectArray(identity_providers.size(),
+      env, env->NewObjectArray(identity_providers_map.size(),
                                identity_provider_clazz.obj(), nullptr));
 
   base::android::CheckException(env);
-
-  for (size_t i = 0; i < identity_providers.size(); ++i) {
-    ScopedJavaLocalRef<jobject> item =
-        ConvertToJavaIdentityProviderData(env, identity_providers[i].get());
-    env->SetObjectArrayElement(array.obj(), i, item.obj());
+  size_t i = 0;
+  for (const auto& iter : identity_providers_map) {
+    env->SetObjectArrayElement(array.obj(), i, iter.second.obj());
   }
   return array;
 }
@@ -218,24 +235,28 @@ bool AccountSelectionViewAndroid::Show(
     return false;
   }
 
-  bool is_multi_idp = idp_list.size() > 1u;
   // Serialize the `idp_list` and `accounts` into a Java array and
   // instruct the bridge to show it together with |url| to the user.
   // TODO(crbug.com/40945672): render filtered out accounts differently on
   // Android.
   JNIEnv* env = AttachCurrentThread();
+
+  base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>
+      identity_providers_map =
+          ConvertToJavaIdentityProviderDataMap(env, idp_list);
+
   ScopedJavaLocalRef<jobjectArray> accounts_obj =
-      ConvertToJavaAccounts(env, accounts, is_multi_idp);
+      ConvertToJavaAccounts(env, accounts, identity_providers_map);
 
   ScopedJavaLocalRef<jobjectArray> new_accounts_obj =
-      ConvertToJavaAccounts(env, new_accounts, is_multi_idp);
+      ConvertToJavaAccounts(env, new_accounts, identity_providers_map);
 
-  ScopedJavaLocalRef<jobjectArray> identity_providers_obj =
-      ConvertToJavaIdentityProviderDataList(env, idp_list);
+  ScopedJavaLocalRef<jobjectArray> identity_providers_list =
+      ConvertToJavaIdentityProvidersList(env, identity_providers_map);
 
   return Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, rp_for_display, accounts_obj,
-      identity_providers_obj, sign_in_mode == Account::SignInMode::kAuto,
+      identity_providers_list, sign_in_mode == Account::SignInMode::kAuto,
       new_accounts_obj);
 }
 

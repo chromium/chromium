@@ -60,7 +60,7 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            Arrays.asList(NEW_BOB),
+                            Arrays.asList(mNewBob),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);

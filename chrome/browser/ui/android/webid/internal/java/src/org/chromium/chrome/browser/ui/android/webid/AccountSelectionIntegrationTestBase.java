@@ -43,29 +43,6 @@ public class AccountSelectionIntegrationTestBase {
     protected static final String TEST_ETLD_PLUS_ONE_2 = "two.com";
     protected static final GURL TEST_URL = JUnitTestGURLs.URL_1;
 
-    protected static final Account RETURNING_ANA =
-            new Account(
-                    "Ana",
-                    "ana@one.test",
-                    "Ana Doe",
-                    "Ana",
-                    /* secondaryDescription= */ null,
-                    null,
-                    /* isSignIn= */ true,
-                    /* isBrowserTrustedSignIn= */ true,
-                    /* isFilteredOut= */ false);
-    protected static final Account NEW_BOB =
-            new Account(
-                    "Bob",
-                    "",
-                    "Bob",
-                    "",
-                    /* secondaryDescription= */ null,
-                    null,
-                    /* isSignIn= */ false,
-                    /* isBrowserTrustedSignIn= */ false,
-                    /* isFilteredOut= */ false);
-
     protected static final IdentityProviderMetadata IDP_METADATA =
             new IdentityProviderMetadata(
                     /* brandTextColor= */ Color.WHITE,
@@ -111,6 +88,8 @@ public class AccountSelectionIntegrationTestBase {
     @RpMode.EnumType int mRpMode;
     IdentityProviderData mIdpData;
     IdentityProviderData mIdpDataWithAddAccount;
+    Account mReturningAna;
+    Account mNewBob;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -126,9 +105,6 @@ public class AccountSelectionIntegrationTestBase {
                         new GURL(mTestUrlTermsOfService),
                         new GURL(mTestUrlPrivacyPolicy),
                         Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
-        mNewAccountsReturningAna = Arrays.asList(RETURNING_ANA);
-        mNewAccountsNewBob = Arrays.asList(NEW_BOB);
-
         mIdpData =
                 new IdentityProviderData(
                         TEST_ETLD_PLUS_ONE_2,
@@ -145,6 +121,33 @@ public class AccountSelectionIntegrationTestBase {
                         RpContext.SIGN_IN,
                         DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
+
+        mReturningAna =
+                new Account(
+                        "Ana",
+                        "ana@one.test",
+                        "Ana Doe",
+                        "Ana",
+                        /* secondaryDescription= */ null,
+                        null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+        mNewBob =
+                new Account(
+                        "Bob",
+                        "",
+                        "Bob",
+                        "",
+                        /* secondaryDescription= */ null,
+                        null,
+                        /* isSignIn= */ false,
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+        mNewAccountsReturningAna = Arrays.asList(mReturningAna);
+        mNewAccountsNewBob = Arrays.asList(mNewBob);
 
         runOnUiThreadBlocking(
                 () -> {

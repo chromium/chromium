@@ -189,84 +189,6 @@ public class AccountSelectionJUnitTestBase {
         mTestErrorUrl = new GURL("https://idp.com/error");
         mTestEmptyErrorUrl = new GURL("");
 
-        mAnaAccount =
-                new Account(
-                        "Ana",
-                        "ana@email.example",
-                        "Ana Doe",
-                        "Ana",
-                        /* secondaryDescription= */ null,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true,
-                        /* isFilteredOut= */ false);
-        mBobAccount =
-                new Account(
-                        "Bob",
-                        "",
-                        "Bob",
-                        "",
-                        /* secondaryDescription= */ null,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true,
-                        /* isFilteredOut= */ false);
-        mCarlAccount =
-                new Account(
-                        "Carl",
-                        "carl@three.test",
-                        "Carl Test",
-                        ":)",
-                        /* secondaryDescription= */ null,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true,
-                        /* isFilteredOut= */ false);
-        mNewUserAccount =
-                new Account(
-                        "602214076",
-                        "goto@email.example",
-                        "Sam E. Goto",
-                        "Sam",
-                        /* secondaryDescription= */ null,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ false,
-                        /* isBrowserTrustedSignIn= */ false,
-                        /* isFilteredOut= */ false);
-        mNoOneAccount =
-                new Account(
-                        "",
-                        "",
-                        "No Subject",
-                        "",
-                        /* secondaryDescription= */ null,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true,
-                        /* isFilteredOut= */ false);
-        mFilteredOutAccount =
-                new Account(
-                        "ID123",
-                        "nicolas@example.com",
-                        "Nicolas Pena",
-                        "Nicolas",
-                        /* secondaryDescription= */ null,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true,
-                        /* isFilteredOut= */ true);
-        mNicolasAccount =
-                new Account(
-                        "NicoId",
-                        "nicolas@email.com",
-                        "Nico P",
-                        "Nicolas",
-                        "email.com",
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true,
-                        /* isFilteredOut= */ false);
-
         mTokenError = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestErrorUrl);
         mTokenErrorEmptyUrl = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestEmptyErrorUrl);
 
@@ -325,6 +247,91 @@ public class AccountSelectionJUnitTestBase {
                         RpContext.SIGN_IN,
                         DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
+
+        mAnaAccount =
+                new Account(
+                        "Ana",
+                        "ana@email.example",
+                        "Ana Doe",
+                        "Ana",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+        mBobAccount =
+                new Account(
+                        "Bob",
+                        "",
+                        "Bob",
+                        "",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+        mCarlAccount =
+                new Account(
+                        "Carl",
+                        "carl@three.test",
+                        "Carl Test",
+                        ":)",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+        mNewUserAccount =
+                new Account(
+                        "602214076",
+                        "goto@email.example",
+                        "Sam E. Goto",
+                        "Sam",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ false,
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+        mNoOneAccount =
+                new Account(
+                        "",
+                        "",
+                        "No Subject",
+                        "",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
+        mFilteredOutAccount =
+                new Account(
+                        "ID123",
+                        "nicolas@example.com",
+                        "Nicolas Pena",
+                        "Nicolas",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ true,
+                        mIdpData);
+        mNicolasAccount =
+                new Account(
+                        "NicoId",
+                        "nicolas@email.com",
+                        "Nico P",
+                        "Nicolas",
+                        "email.com",
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpData);
 
         mNewAccountsSingleReturningAccount = Arrays.asList(mAnaAccount);
         mNewAccountsSingleNewAccount = Arrays.asList(mNewUserAccount);
