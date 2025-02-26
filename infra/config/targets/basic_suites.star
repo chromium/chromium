@@ -1076,6 +1076,11 @@ targets.legacy_basic_suite(
         "usage_time_limit_unittests": targets.legacy_test_config(
             experiment_percentage = 100,
         ),
+        "views_ax_chromeos_browser_tests": targets.legacy_test_config(
+            # TODO(crbug.com/325137417): Promote to non-experimental
+            # once we're sure we have the capacity.
+            experiment_percentage = 10,
+        ),
         "wayland_client_perftests": targets.legacy_test_config(),
         "wayland_client_tests": targets.legacy_test_config(),
     },
