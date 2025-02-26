@@ -33,6 +33,7 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -260,10 +261,15 @@ void FloatRoundedRect::OutsetForShapeMargin(float outset) {
   radii_.OutsetForShapeMargin(outset);
 }
 
-// TODO(crbug.com/396173464) support curvature
 bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
   if (!quad.IntersectsRect(rect_))
     return false;
+
+  if (!HasSimpleRoundedCurvature()) {
+    Path path;
+    path.AddRoundedRect(*this);
+    return path.Intersects(quad);
+  }
 
   const auto [quad_min, quad_max] = quad.Extents();
 
