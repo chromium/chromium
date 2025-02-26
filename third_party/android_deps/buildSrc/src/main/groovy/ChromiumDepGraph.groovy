@@ -604,6 +604,8 @@ class ChromiumDepGraph {
         } else if (dep.id?.startsWith('androidx_')) {
             // Some androidx dependencies don't set their URL, here is a good default.
             dep.url = dep.url ?: 'https://developer.android.com/jetpack/androidx'
+            // By default androidx dependencies' licenses are compatible with android.
+            dep.licenseAndroidCompatible = true
         }
 
         if (!dep.description && dep.id) {
