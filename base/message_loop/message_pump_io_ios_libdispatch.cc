@@ -83,7 +83,10 @@ void MessagePumpIOSForIOLibdispatch::FdWatchController::HandleRead() {
       return;
     }
   }
-  if (is_persistent_ && dispatch_source_read_) {
+  if (!is_persistent_) {
+    StopWatchingFileDescriptor();
+  }
+  if (dispatch_source_read_) {
     dispatch_source_read_->Resume();
   }
 }
@@ -98,7 +101,10 @@ void MessagePumpIOSForIOLibdispatch::FdWatchController::HandleWrite() {
       return;
     }
   }
-  if (is_persistent_ && dispatch_source_write_) {
+  if (!is_persistent_) {
+    StopWatchingFileDescriptor();
+  }
+  if (dispatch_source_write_) {
     dispatch_source_write_->Resume();
   }
 }
