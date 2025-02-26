@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/if_condition.h"
 #include "third_party/blink/renderer/core/css/kleene_value.h"
 #include "third_party/blink/renderer/core/css/media_eval_utils.h"
+#include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
@@ -2301,6 +2302,40 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
   return KleeneValue::kFalse;
 }
 
+KleeneValue StyleCascade::EvalIfTest(const IfCondition& if_condition,
+                                     const TreeScope* tree_scope,
+                                     CascadeResolver& resolver,
+                                     const CSSParserContext& context,
+                                     FunctionContext* function_context,
+                                     bool& is_attr_tainted) {
+  if (auto* n = DynamicTo<IfTestStyle>(if_condition)) {
+    const MediaQueryExpNode* query_exp = n->GetMediaQueryExpNode();
+    DCHECK(query_exp);
+
+    return MediaEval(*query_exp, [this, &tree_scope, &resolver, &context,
+                                  &function_context, &is_attr_tainted](
+                                     const MediaQueryFeatureExpNode& feature) {
+      return EvalIfStyleFeature(feature, tree_scope, resolver, context,
+                                function_context, is_attr_tainted);
+    });
+  }
+  if (auto* n = DynamicTo<IfTestMedia>(if_condition)) {
+    DCHECK(RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled());
+
+    const MediaQuerySet* query_set = n->GetMediaQuerySet();
+    DCHECK(query_set);
+
+    state_.StyleBuilder().SetAffectedByFunctionalMedia();
+    return GetDocument().GetStyleEngine().EvaluateFunctionalMediaQuery(
+               *query_set)
+               ? KleeneValue::kTrue
+               : KleeneValue::kFalse;
+  }
+  // Should be either style() or media() query, supports() queries are
+  // invalidated during parse time.
+  NOTREACHED();
+}
+
 bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
                                    const TreeScope* tree_scope,
                                    CascadeResolver& resolver,
@@ -2314,28 +2349,12 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
   DCHECK_EQ(stream.Peek().GetType(), kColonToken);
   stream.ConsumeIncludingWhitespace();
 
-  return IfEval(*if_condition, [this, &tree_scope, &resolver, &context,
-                                &function_context,
-                                &is_attr_tainted](const IfCondition& node) {
-           if (auto* n = DynamicTo<IfTestStyle>(node)) {
-             return MediaEval(
-                 *n->GetMediaQueryExpNode(),
-                 [this, &tree_scope, &resolver, &context, &function_context,
-                  &is_attr_tainted](const MediaQueryFeatureExpNode& feature) {
-                   return EvalIfStyleFeature(feature, tree_scope, resolver,
-                                             context, function_context,
-                                             is_attr_tainted);
-                 });
-           }
-           if (RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled() &&
-               DynamicTo<IfTestMedia>(node)) {
-             // TODO(crbug.com/346977961): Support media() queries.
-             return KleeneValue::kFalse;
-           }
-           // Should be either style() or media() query, supports() queries are
-           // invalidated during parse time.
-           NOTREACHED();
-         }) == KleeneValue::kTrue;
+  return IfEval(*if_condition,
+                [this, &tree_scope, &resolver, &context, &function_context,
+                 &is_attr_tainted](const IfCondition& if_condition) {
+                  return EvalIfTest(if_condition, tree_scope, resolver, context,
+                                    function_context, is_attr_tainted);
+                }) == KleeneValue::kTrue;
 }
 
 bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
