@@ -76,6 +76,12 @@ BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,
              "WebAuthenticationICloudKeychainForInactiveWithoutDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Default enabled in M135. Remove in or after M138.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_FEATURE(kWebAuthnRetryU2FErrors,
+             "WebAuthenticationRetryU2FErrors",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Development flag. Must not be enabled by default once
 // kWebAuthnEnclaveAuthenticator is enabled.
 BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,

@@ -513,6 +513,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.U2fSignOperation"
+    enum="U2fSignOperationResult" expires_after="M141">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of a WebAuthn get assertion operation on a U2F device.
+    This will be logged every time there's a U2F device plugged in, even if the
+    user did not interact with it.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Windows.FindHelloDialogIterationCount"
     units="iterations" expires_after="2025-07-06">
   <owner>kenrb@chromium.org</owner>
