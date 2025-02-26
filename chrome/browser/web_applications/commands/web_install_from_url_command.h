@@ -50,21 +50,26 @@ using DownloadedIconsHttpResults =
     base::flat_map<IconUrlWithSize, int /*http_status_code*/>;
 
 // Implementation of the Web Install API for loading an install_url.
-// Fetches the content at `install_url` in the background document. If the
-// provided `manifest_id` matches the computed manifest id, then the install
-// dialog is shown and the app is installed if accepted. After installation, the
-// app is launched.
-// This command will return errors for state such as the url not loading, the
-// site not being "installable", the `manifest_id` doesn't match, or if the user
-// rejects the installation.
+// Fetches the content at `install_url` in the background document.
+//
+// If no `manifest_id` is provided, the fetched content's manifest file must
+// contain a developer-specified id field (computed is not sufficient).
+// Otherwise, the provided `manifest_id` must match the fetched manifest's
+// computed id.
+//
+// If the id validation succeeds, then the install dialog is shown and the app
+// is installed if accepted. After installation, the app is launched. This
+// command will return errors for state such as the url not loading, the site
+// not being "installable", the `manifest_id` doesn't exist or doesn't match,
+// or if the user rejects the installation.
 class WebInstallFromUrlCommand
     : public WebAppCommand<SharedWebContentsLock,
                            const GURL&,
                            webapps::InstallResultCode> {
  public:
   WebInstallFromUrlCommand(Profile& profile,
-                           const GURL& manifest_id,
                            const GURL& install_url,
+                           const std::optional<GURL>& manifest_id,
                            WebInstallFromUrlCommandCallback installed_callback);
   ~WebInstallFromUrlCommand() override;
 
@@ -94,7 +99,8 @@ class WebInstallFromUrlCommand
   void MeasureUserInstalledAppHistogram(webapps::InstallResultCode code);
 
   raw_ref<Profile> profile_;
-  GURL manifest_id_;
+  // Unset if the WebInstall API's 1-parameter signature was called.
+  std::optional<GURL> manifest_id_;
   GURL install_url_;
   InstallErrorLogEntry install_error_log_entry_;
 

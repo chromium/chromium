@@ -74,8 +74,12 @@ void WebInstallServiceImpl::CreateIfAllowed(
 void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
                                     InstallCallback callback) {
   GURL install_target;
+  const GURL current_url = render_frame_host().GetLastCommittedURL();
+
+  // `options` is null if the 0-parameter signature was called.
   if (!options) {
-    install_target = render_frame_host().GetLastCommittedURL();
+    // No parameters means we want to install the current document.
+    install_target = current_url;
   } else {
     install_target = options->install_url;
   }
@@ -87,12 +91,16 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
     return;
   }
 
-  if (!options) {
+  // Initiate installation of the current document.
+  if (install_target == current_url) {
     // TODO(crbug.com/381214488): Implement 0-param install. Queue a web app
     // command against the current document. For the time being, stub out the
     // callback to prevent the calls from hanging for zero parameters given.
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kSuccess,
                             GURL());
+
+    // Current document installs don't require the permissions checking code.
+    return;
   }
 
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
@@ -112,8 +120,8 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
 
   RequestWebInstallPermission(
       base::BindOnce(&WebInstallServiceImpl::OnPermissionDecided,
-                     weak_ptr_factory_.GetWeakPtr(), options->manifest_id,
-                     install_target, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), install_target,
+                     options->manifest_id, std::move(callback)));
 }
 
 void WebInstallServiceImpl::RequestWebInstallPermission(
@@ -167,8 +175,8 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
 }
 
 void WebInstallServiceImpl::OnPermissionDecided(
-    const GURL& manifest_id,
     const GURL& install_target,
+    const std::optional<GURL>& manifest_id,
     InstallCallback callback,
     const std::vector<PermissionStatus>& permission_status) {
   // TODO(crbug.com/381282538): Throw different error if permission not granted.
@@ -183,7 +191,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
 
   auto* provider = WebAppProvider::GetForWebApps(profile);
   provider->scheduler().InstallAppFromUrl(
-      manifest_id, install_target,
+      install_target, manifest_id,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

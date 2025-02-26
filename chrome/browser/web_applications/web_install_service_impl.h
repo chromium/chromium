@@ -42,8 +42,8 @@ class WebInstallServiceImpl
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
 
   void OnPermissionDecided(
-      const GURL& manifest_id,
       const GURL& install_target,
+      const std::optional<GURL>& manifest_id,
       InstallCallback callback,
       const std::vector<blink::mojom::PermissionStatus>& permission_status);
 
