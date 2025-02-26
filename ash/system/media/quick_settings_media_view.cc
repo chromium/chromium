@@ -201,20 +201,19 @@ void QuickSettingsMediaView::UpdateItemOrder(std::list<std::string> ids) {
     return;
   }
 
-  // Remove all the media views for re-ordering.
-  std::map<const std::string,
-           std::unique_ptr<global_media_controls::MediaItemUIView>>
-      media_items;
-  for (auto& item : items_) {
-    media_items[item.first] =
-        media_scroll_view_->contents()->RemoveChildViewT(item.second);
-  }
+  // Note that `items_` might contain entries that are not listed in `ids`.  For
+  // example, frozen entries are likely not included.  We should pretend that
+  // all items not in `ids` are at the end of the list in arbitrary order.
 
-  // Add back the media views given the new order.
+  // Remove each item that's in `ids`, and add it to the appropriate position in
+  // the container.
+  size_t position = 0;
   for (auto& id : ids) {
-    DCHECK(base::Contains(media_items, id));
-    items_[id] = media_scroll_view_->contents()->AddChildView(
-        std::move(media_items[id]));
+    auto item = items_.find(id);
+    CHECK(item != items_.end());
+    auto view = media_scroll_view_->contents()->RemoveChildViewT(item->second);
+    item->second = media_scroll_view_->contents()->AddChildViewAt(
+        std::move(view), position++);
   }
 }
 
