@@ -176,7 +176,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
 
   // Returns Disk object corresponding to |source_path| or NULL on failure.
   virtual const Disk* FindDiskBySourcePath(
-      const std::string& source_path) const = 0;
+      std::string_view source_path) const = 0;
 
   // Gets the list of mount points.
   virtual const MountPoints& mount_points() const = 0;

@@ -120,7 +120,7 @@ const DiskMountManager::MountPoints& MockDiskMountManager::mountPointsInternal()
 }
 
 const Disk* MockDiskMountManager::FindDiskBySourcePathInternal(
-    const std::string& source_path) const {
+    std::string_view source_path) const {
   Disks::const_iterator disk_it = disks_.find(source_path);
   return disk_it == disks_.end() ? nullptr : disk_it->get();
 }

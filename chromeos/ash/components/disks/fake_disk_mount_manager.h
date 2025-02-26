@@ -75,8 +75,7 @@ class FakeDiskMountManager : public DiskMountManager {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   const Disks& disks() const override;
-  const Disk* FindDiskBySourcePath(
-      const std::string& source_path) const override;
+  const Disk* FindDiskBySourcePath(std::string_view source_path) const override;
   const MountPoints& mount_points() const override;
   void EnsureMountInfoRefreshed(EnsureMountInfoRefreshedCallback callback,
                                 bool force) override;

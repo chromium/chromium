@@ -1856,10 +1856,8 @@ void VolumeManager::OnMigrationReset() {
   }
 }
 
-// TODO(isandrk, b/383308221): Convert to take an `std::string_view` (need to
-// convert `FindDiskBySourcePath` as well).
 std::optional<policy::DeviceId> VolumeManager::GetDeviceIdFromDevicePath(
-    const std::string& device_path) {
+    std::string_view device_path) {
   const ash::disks::Disk* disk =
       disk_mount_manager_->FindDiskBySourcePath(device_path);
   return policy::DeviceId::FromDisk(disk);
