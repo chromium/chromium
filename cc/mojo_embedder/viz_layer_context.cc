@@ -451,6 +451,7 @@ void SerializeLayer(LayerImpl& layer,
                     viz::mojom::LayerTreeUpdate& update) {
   auto& wire = *update.layers.emplace_back(viz::mojom::Layer::New());
   wire.id = layer.id();
+  wire.element_id = layer.element_id();
   wire.type = layer.GetLayerType();
   wire.bounds = layer.bounds();
   wire.is_drawable = layer.draws_content();
