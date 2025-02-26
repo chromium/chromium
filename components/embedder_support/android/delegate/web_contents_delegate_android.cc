@@ -236,11 +236,6 @@ void WebContentsDelegateAndroid::CloseContents(WebContents* source) {
   Java_WebContentsDelegateAndroid_closeContents(env, obj);
 }
 
-void WebContentsDelegateAndroid::SetContentsBounds(WebContents* source,
-                                                   const gfx::Rect& bounds) {
-  // Do nothing.
-}
-
 bool WebContentsDelegateAndroid::DidAddMessageToConsole(
     WebContents* source,
     blink::mojom::ConsoleMessageLevel log_level,

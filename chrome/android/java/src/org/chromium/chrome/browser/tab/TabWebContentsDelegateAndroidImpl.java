@@ -126,6 +126,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
                 sourceWebContents, webContents, disposition, initialPosition, userGesture);
     }
 
+    @CalledByNative
+    @Override
+    protected void setContentsBounds(WebContents source, Rect bounds) {
+        mDelegate.setContentsBounds(source, bounds);
+    }
+
     // WebContentsDelegateAndroid
 
     @Override

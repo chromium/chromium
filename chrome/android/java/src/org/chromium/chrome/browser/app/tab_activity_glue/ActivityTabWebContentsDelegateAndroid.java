@@ -260,6 +260,11 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
+    protected void setContentsBounds(WebContents source, Rect bounds) {
+        // Do nothing.
+    }
+
+    @Override
     public void activateContents() {
         if (mActivity == null) {
             Log.e(TAG, "Activity not set activateContents().  Bailing out.");

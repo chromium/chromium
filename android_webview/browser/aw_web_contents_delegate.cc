@@ -201,6 +201,11 @@ WebContents* AwWebContentsDelegate::AddNewContents(
   return nullptr;
 }
 
+void AwWebContentsDelegate::SetContentsBounds(content::WebContents* source,
+                                              const gfx::Rect& bounds) {
+  // Do nothing.
+}
+
 void AwWebContentsDelegate::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
