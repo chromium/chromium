@@ -728,17 +728,17 @@
             "description": "True for ChromeVox (native), false for TalkBack."
           }
         ],
-	"returns_async": {
-	  "name": "callback",
-	  "desctiprion": "Callback function.",
-	  "parameters": [
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback function.",
+          "parameters": [
             {
-	      "name": "response",
-	      "$ref": "SetNativeChromeVoxResponse",
-	      "description": "Return Success if successfully toggled. Return error description otherwise."
-	    }
-	  ]
-	}
+              "name": "response",
+              "$ref": "SetNativeChromeVoxResponse",
+              "description": "Return Success if successfully toggled. Return error description otherwise."
+            }
+          ]
+        }
       },
       {
         "name": "sendSyntheticKeyEvent",
@@ -775,6 +775,23 @@
             "description": "True if accessibility component extensions should receive mouse events."
           }
         ]
+      },
+      {
+        "name": "enableLiveCaption",
+        "type": "function",
+        "description": "Enables or disables live captioning",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "True if live caption should be turned on."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [],
+          "optional": true
+        }
       },
       {
         "name": "setCursorPosition",

@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -601,8 +601,8 @@ chrome.accessibilityPrivate.setPointScanState = function(state) {};
 /**
  * Sets current ARC app to use native ARC support.
  * @param {boolean} enabled True for ChromeVox (native), false for TalkBack.
- * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse): void}
- *     callback
+ * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse):
+ *     void} callback Callback function.
  */
 chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function(enabled, callback) {};
 
@@ -625,6 +625,13 @@ chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewrit
  *     receive mouse events.
  */
 chrome.accessibilityPrivate.enableMouseEvents = function(enabled) {};
+
+/**
+ * Enables or disables live captioning
+ * @param {boolean} enabled True if live caption should be turned on.
+ * @param {function(): void=} callback
+ */
+chrome.accessibilityPrivate.enableLiveCaption = function(enabled, callback) {};
 
 /**
  * Sets the cursor position on the screen in absolute screen coordinates.
