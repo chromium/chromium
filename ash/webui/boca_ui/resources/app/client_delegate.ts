@@ -273,8 +273,11 @@ export class ClientDelegateFactory {
         return (await pageHandler.setSitePermission(
                     url, permission.valueOf(), setting.valueOf()))
             .success;
-      }
-    }
+      },
+      closeTab: async (tabId: number) => {
+        return (await pageHandler.closeTab(tabId)).success;
+      },
+    };
   }
 
   getInstance(): ClientApiDelegate {

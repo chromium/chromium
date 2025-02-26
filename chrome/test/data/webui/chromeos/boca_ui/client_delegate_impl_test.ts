@@ -303,6 +303,10 @@ class MockRemoteHandler extends PageHandlerRemote {
     setting;
     return Promise.resolve({success: true});
   }
+  override closeTab(tabId: number): Promise<{success: boolean}> {
+    tabId;
+    return Promise.resolve({success: true});
+  }
 }
 
 suite('ClientDelegateTest', function() {
@@ -751,4 +755,8 @@ suite('ClientDelegateTest', function() {
             await clientDelegateImpl.getInstance().setSitePermission('1', 0, 0);
         assertTrue(result);
       });
+  test('client delegate should respond correctly for close tabs', async () => {
+    const result = await clientDelegateImpl.getInstance().closeTab(1);
+    assertTrue(result);
+  });
 });

@@ -17,11 +17,13 @@
 #include "ash/webui/boca_ui/webview_auth_handler.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 #include "components/account_id/account_id.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -43,6 +45,7 @@ class BocaAppHandler : public mojom::PageHandler,
       std::unique_ptr<WebviewAuthHandler> auth_handler,
       std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
       std::unique_ptr<ContentSettingsHandler> content_settings_handler,
+      OnTaskSystemWebAppManager* system_web_app_manager,
       SessionClientImpl* session_client_impl,
       bool is_producer);
 
@@ -93,6 +96,8 @@ class BocaAppHandler : public mojom::PageHandler,
                          mojom::Permission permission,
                          mojom::PermissionSetting setting,
                          SetSitePermissionCallback callback) override;
+  void CloseTab(const SessionID::id_type tab_id,
+                CloseTabCallback callback) override;
 
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -173,6 +178,7 @@ class BocaAppHandler : public mojom::PageHandler,
   ActivityInterceptorCallback test_activity_callback_;
   SessionConfigInterceptorCallback test_config_callback_;
   raw_ptr<SpotlightService> spotlight_service_;
+  const raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<content::WebUI> web_ui_;
   raw_ptr<PrefService> pref_service_;

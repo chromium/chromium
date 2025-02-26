@@ -332,6 +332,11 @@ export declare interface ClientApiDelegate {
   setSitePermission(
       url: string, permission: Permission,
       setting: PermissionSetting): Promise<boolean>;
+
+  /**
+   * Close the tab with tabId.
+   */
+  closeTab(tabId: number): Promise<boolean>;
 }
 
 /**

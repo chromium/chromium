@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
+#include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -40,6 +41,7 @@
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/wm/constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -192,6 +194,7 @@ BocaAppHandler::BocaAppHandler(
     std::unique_ptr<WebviewAuthHandler> auth_handler,
     std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
     std::unique_ptr<ContentSettingsHandler> content_settings_handler,
+    OnTaskSystemWebAppManager* system_web_app_manager,
     SessionClientImpl* session_client_impl,
     bool is_producer)
     : is_producer_(is_producer),
@@ -201,6 +204,7 @@ BocaAppHandler::BocaAppHandler(
       content_settings_handler_(std::move(content_settings_handler)),
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
+      system_web_app_manager_(system_web_app_manager),
       session_client_impl_(session_client_impl),
       web_ui_(web_ui) {
   auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
@@ -580,6 +584,25 @@ void BocaAppHandler::SetSitePermission(const std::string& url,
   const bool success = content_settings_handler_->SetContentSettingForOrigin(
       url, permission, setting);
   std::move(callback).Run(success);
+}
+
+void BocaAppHandler::CloseTab(const SessionID::id_type tab_id,
+                              CloseTabCallback callback) {
+  if (!system_web_app_manager_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const SessionID window_id =
+      system_web_app_manager_->GetActiveSystemWebAppWindowID();
+  const SessionID id = SessionID::FromSerializedValue(tab_id);
+  if (!window_id.is_valid() || !id.is_valid()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  system_web_app_manager_->RemoveTabsWithTabIds(window_id, {id});
+  std::move(callback).Run(true);
 }
 
 void BocaAppHandler::OnStudentActivityUpdated(

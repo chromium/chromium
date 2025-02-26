@@ -77,7 +77,7 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
   OnTaskSessionManager* GetOnTaskSessionManager() {
     ash::BocaManager* const boca_manager =
         ash::BocaManagerFactory::GetInstance()->GetForProfile(profile());
-    return boca_manager->GetOnTaskSessionManagerForTesting();
+    return boca_manager->GetOnTaskSessionManager();
   }
 
   Browser* FindBocaSystemWebAppBrowser() {
