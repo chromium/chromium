@@ -24,10 +24,10 @@
 
 #include <grpc/grpc.h>
 
-#include "third_party/grpc/src/src/core/lib/config/core_configuration.h"
-#include "third_party/grpc/src/src/core/lib/surface/builtins.h"
-#include "third_party/grpc/src/src/core/lib/transport/http_connect_handshaker.h"
-#include "third_party/grpc/src/src/core/lib/transport/tcp_connect_handshaker.h"
+#include "third_party/grpc/source/src/core/lib/config/core_configuration.h"
+#include "third_party/grpc/source/src/core/lib/surface/builtins.h"
+#include "third_party/grpc/source/src/core/lib/transport/http_connect_handshaker.h"
+#include "third_party/grpc/source/src/core/lib/transport/tcp_connect_handshaker.h"
 
 namespace grpc_event_engine {
 namespace experimental {

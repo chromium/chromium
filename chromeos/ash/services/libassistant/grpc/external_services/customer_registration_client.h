@@ -15,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
-#include "third_party/grpc/src/include/grpcpp/grpcpp.h"
+#include "third_party/grpc/source/include/grpcpp/grpcpp.h"
 
 namespace ash::libassistant {
 

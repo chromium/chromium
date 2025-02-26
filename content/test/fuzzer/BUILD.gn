@@ -107,7 +107,7 @@ fuzzer_test("devtools_protocol_encoding_json_fuzzer") {
     "//base",
     "//third_party/inspector_protocol:crdtp",
   ]
-  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
+  seed_corpus = "//third_party/grpc/source/test/core/json/corpus/"
 }
 
 fuzzer_test("inspector_fuzzer") {
@@ -338,7 +338,7 @@ fuzzer_test("first_party_set_parser_fuzzer") {
   deps = [ ":first_party_set_parser_fuzzer_support" ]
   dict =
       "../../browser/first_party_sets/test/first_party_set_parser_fuzzer.dict"
-  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
+  seed_corpus = "//third_party/grpc/source/test/core/json/corpus/"
 }
 
 fuzzer_test("first_party_set_parser_json_fuzzer") {

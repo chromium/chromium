@@ -132,7 +132,6 @@ per-file third_party/google_toolbox_for_mac/src=*
 per-file third_party/googlemac=*
 per-file third_party/googletest/src=*
 per-file third_party/gperf=*
-per-file third_party/grpc/src=*
 per-file third_party/gvr-android-sdk/src=*
 per-file third_party/harfbuzz-ng/src=*
 per-file third_party/highway/src=*

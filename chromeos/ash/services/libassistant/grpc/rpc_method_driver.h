@@ -14,8 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
-#include "third_party/grpc/src/include/grpcpp/grpcpp.h"
-#include "third_party/grpc/src/include/grpcpp/server_context.h"
+#include "third_party/grpc/source/include/grpcpp/grpcpp.h"
+#include "third_party/grpc/source/include/grpcpp/server_context.h"
 
 namespace ash::libassistant {
 

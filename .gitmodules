@@ -247,9 +247,6 @@
 [submodule "third_party/gemmlowp/src"]
 	path = third_party/gemmlowp/src
 	url = https://chromium.googlesource.com/external/github.com/google/gemmlowp
-[submodule "third_party/grpc/src"]
-	path = third_party/grpc/src
-	url = https://chromium.googlesource.com/external/github.com/grpc/grpc
 [submodule "third_party/freetype/src"]
 	path = third_party/freetype/src
 	url = https://chromium.googlesource.com/chromium/src/third_party/freetype2

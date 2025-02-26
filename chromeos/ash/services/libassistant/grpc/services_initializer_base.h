@@ -12,8 +12,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "chromeos/ash/services/libassistant/grpc/async_service_driver.h"
-#include "third_party/grpc/src/include/grpcpp/completion_queue.h"
-#include "third_party/grpc/src/include/grpcpp/server_builder.h"
+#include "third_party/grpc/source/include/grpcpp/completion_queue.h"
+#include "third_party/grpc/source/include/grpcpp/server_builder.h"
 
 namespace ash::libassistant {
 

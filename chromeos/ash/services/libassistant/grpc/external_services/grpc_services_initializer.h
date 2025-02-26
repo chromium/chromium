@@ -16,7 +16,7 @@
 #include "chromeos/ash/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/ash/services/libassistant/grpc/services_initializer_base.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_provider.h"
-#include "third_party/grpc/src/include/grpcpp/server_builder.h"
+#include "third_party/grpc/source/include/grpcpp/server_builder.h"
 
 namespace assistant {
 namespace api {

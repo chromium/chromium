@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/grpc/src/include/grpcpp/server_builder.h"
+#include "third_party/grpc/source/include/grpcpp/server_builder.h"
 
 namespace ash::libassistant {
 

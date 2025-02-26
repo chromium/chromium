@@ -19,7 +19,7 @@
 #include "chromeos/assistant/internal/grpc_transport/streaming/streaming_write_queue.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/http_connection_service.grpc.pb.h"
-#include "third_party/grpc/src/include/grpcpp/channel.h"
+#include "third_party/grpc/source/include/grpcpp/channel.h"
 
 namespace ash::libassistant {
 

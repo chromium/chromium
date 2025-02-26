@@ -12,7 +12,7 @@
 #include "chromeos/ash/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_state.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
-#include "third_party/grpc/src/include/grpcpp/channel.h"
+#include "third_party/grpc/source/include/grpcpp/channel.h"
 
 namespace ash::libassistant {
 
