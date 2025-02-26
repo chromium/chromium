@@ -447,7 +447,6 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/g
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-active-bind.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
-crbug.com/1490427 [ angle-vulkan arm fuchsia fuchsia-board-nelson web-engine-shell ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Failure ]
 crbug.com/1490427 [ angle-vulkan arm fuchsia fuchsia-board-nelson web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 crbug.com/1490427 [ angle-vulkan arm fuchsia fuchsia-board-sherlock web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
