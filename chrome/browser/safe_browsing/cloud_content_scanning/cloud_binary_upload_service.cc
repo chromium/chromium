@@ -447,8 +447,8 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
 
   if (result != Result::SUCCESS) {
     if (!IgnoreErrorResultForResumableUpload(request, result)) {
-      FinishRequest(request, result,
-                    enterprise_connectors::ContentAnalysisResponse());
+      FinishAndCleanupRequest(request, result,
+                              enterprise_connectors::ContentAnalysisResponse());
       return;
     }
 
@@ -462,8 +462,8 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     // A size of 0 implies an edge case like an empty file being uploaded. In
     // such a case, the file doesn't need to scan so the request can simply
     // finish early.
-    FinishRequest(request, Result::SUCCESS,
-                  enterprise_connectors::ContentAnalysisResponse());
+    FinishAndCleanupRequest(request, Result::SUCCESS,
+                            enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
@@ -535,27 +535,27 @@ void CloudBinaryUploadService::OnUploadComplete(
   }
 
   if (http_status == net::HTTP_UNAUTHORIZED) {
-    FinishRequest(request, Result::UNAUTHORIZED,
-                  enterprise_connectors::ContentAnalysisResponse());
+    FinishAndCleanupRequest(request, Result::UNAUTHORIZED,
+                            enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   if (http_status == net::HTTP_TOO_MANY_REQUESTS) {
-    FinishRequest(request, Result::TOO_MANY_REQUESTS,
-                  enterprise_connectors::ContentAnalysisResponse());
+    FinishAndCleanupRequest(request, Result::TOO_MANY_REQUESTS,
+                            enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   if (!success) {
-    FinishRequest(request, Result::UPLOAD_FAILURE,
-                  enterprise_connectors::ContentAnalysisResponse());
+    FinishAndCleanupRequest(request, Result::UPLOAD_FAILURE,
+                            enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   enterprise_connectors::ContentAnalysisResponse response;
   if (!response.ParseFromString(response_data)) {
-    FinishRequest(request, Result::UPLOAD_FAILURE,
-                  enterprise_connectors::ContentAnalysisResponse());
+    FinishAndCleanupRequest(request, Result::UPLOAD_FAILURE,
+                            enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
@@ -606,7 +606,7 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
   // response.
   Result result =
       response_is_complete ? Result::SUCCESS : Result::INCOMPLETE_RESPONSE;
-  FinishRequest(request, result, std::move(response));
+  FinishAndCleanupRequest(request, result, std::move(response));
 }
 
 void CloudBinaryUploadService::FinishIfActive(
@@ -615,8 +615,16 @@ void CloudBinaryUploadService::FinishIfActive(
     enterprise_connectors::ContentAnalysisResponse response) {
   Request* request = GetRequest(request_id);
   if (request) {
-    FinishRequest(request, result, response);
+    FinishAndCleanupRequest(request, result, response);
   }
+}
+
+void CloudBinaryUploadService::FinishAndCleanupRequest(
+    Request* request,
+    Result result,
+    enterprise_connectors::ContentAnalysisResponse response) {
+  FinishRequest(request, result, response);
+  CleanupRequest(request);
 }
 
 void CloudBinaryUploadService::FinishRequest(
@@ -638,18 +646,9 @@ void CloudBinaryUploadService::FinishRequest(
       active_tokens_[request->id()], ResultToString(result), response);
 
   request->FinishRequest(result, response);
-  CleanupRequest(request);
 }
 
 void CloudBinaryUploadService::CleanupRequest(Request* request) {
-  FinishRequestCleanup(request);
-
-  // Now that a request has been cleaned up, we can try to allocate resources
-  // for queued uploads.
-  PopRequestQueue();
-}
-
-void CloudBinaryUploadService::FinishRequestCleanup(Request* request) {
   std::string instance_id = request->fcm_notification_token();
   Request::Id request_id = request->id();
   std::string dm_token = request->device_token();
@@ -686,6 +685,10 @@ void CloudBinaryUploadService::FinishRequestCleanup(Request* request) {
   if (token_it != active_tokens_.end()) {
     active_tokens_.erase(token_it);
   }
+
+  // Now that a request has been cleaned up, we can try to allocate resources
+  // for queued uploads.
+  PopRequestQueue();
 }
 
 void CloudBinaryUploadService::InstanceIDUnregisteredCallback(
