@@ -60,6 +60,7 @@ enum FeedbackSource {
   kFeedbackSourceBirch_DEPRECATED,
   kFeedbackSourceBorealis,
   kFeedbackSourceSunfish,
+  kFeedbackSourceBocaApp,
 
   // ATTENTION: Before making any changes or adding to feedback collection,
   // please ensure the teams that operationalize feedback are aware and

@@ -5140,6 +5140,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="41" label="DEPRECATED: Birch"/>
   <int value="42" label="Borealis"/>
   <int value="43" label="Sunfish"/>
+  <int value="44" label="Boca App"/>
 </enum>
 
 <enum name="FetchKeepAliveRequestMetricType">

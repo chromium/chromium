@@ -6,6 +6,7 @@
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -46,5 +47,16 @@ std::string BocaAppClientImpl::GetDeviceId() {
 void BocaAppClientImpl::LaunchApp() {
   ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
                                SystemWebAppType::BOCA);
+}
+
+void BocaAppClientImpl::OpenFeedbackDialog() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  constexpr char kBocaAppFeedbackCategoryTag[] = "Boca";
+  chrome::ShowFeedbackPage(GURL("chrome-untrusted://boca-app/"), profile,
+                           feedback::kFeedbackSourceBocaApp,
+                           /*description_template=*/std::string(),
+                           /*description_placeholder_text=*/std::string(),
+                           kBocaAppFeedbackCategoryTag,
+                           /*extra_diagnostics=*/std::string());
 }
 }  // namespace ash::boca

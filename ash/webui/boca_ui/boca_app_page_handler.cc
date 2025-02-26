@@ -605,6 +605,11 @@ void BocaAppHandler::CloseTab(const SessionID::id_type tab_id,
   std::move(callback).Run(true);
 }
 
+void BocaAppHandler::OpenFeedbackDialog(OpenFeedbackDialogCallback callback) {
+  BocaAppClient::Get()->OpenFeedbackDialog();
+  std::move(callback).Run();
+}
+
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
   if (!test_activity_callback_.is_null()) {

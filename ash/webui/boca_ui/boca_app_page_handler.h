@@ -98,6 +98,7 @@ class BocaAppHandler : public mojom::PageHandler,
                          SetSitePermissionCallback callback) override;
   void CloseTab(const SessionID::id_type tab_id,
                 CloseTabCallback callback) override;
+  void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
 
   // mojom::Page:
   void OnStudentActivityUpdated(

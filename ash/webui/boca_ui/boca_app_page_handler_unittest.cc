@@ -205,6 +205,7 @@ class MockBocaAppClient : public BocaAppClient {
               (),
               (override));
   MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
+  MOCK_METHOD(void, OpenFeedbackDialog, (), (override));
 };
 
 class MockSessionManager : public BocaSessionManager {
@@ -1848,6 +1849,13 @@ TEST_F(BocaAppPageHandlerTest, EndViewScreenSessionFailed) {
 
   boca_app_handler()->EndViewScreenSession(student_id, future.GetCallback());
   EXPECT_EQ(mojom::EndViewScreenSessionError::kHTTPError, future.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerTest, OpenFeedbackDialog) {
+  EXPECT_CALL(*boca_app_client(), OpenFeedbackDialog()).Times(1);
+  base::test::TestFuture<void> open_feedback_future;
+  boca_app_handler()->OpenFeedbackDialog(open_feedback_future.GetCallback());
+  EXPECT_TRUE(open_feedback_future.Wait());
 }
 
 class BocaAppPageHandlerFloatModeTest : public AshTestBase {
