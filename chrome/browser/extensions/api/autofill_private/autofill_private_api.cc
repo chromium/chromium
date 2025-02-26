@@ -1204,9 +1204,10 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
   if (!entity_data_manager) {
     return RespondNow(Error(kErrorAutofillAIUnavailable));
   }
-  std::vector<autofill_private::EntityInstance> result = base::ToVector(
-      entity_data_manager->GetEntityInstances(),
-      &autofill_ai_util::EntityInstanceToPrivateApiEntityInstance);
+  std::vector<autofill_private::EntityInstanceWithLabels> result =
+      base::ToVector(entity_data_manager->GetEntityInstances(),
+                     &autofill_ai_util::
+                         EntityInstanceToPrivateApiEntityInstanceWithLabels);
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
 }

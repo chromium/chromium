@@ -204,16 +204,34 @@ declare global {
         value: string;
       }
 
+      export interface AttributeType {
+        typeName: number;
+        typeNameAsString: string;
+      }
+
+      export interface EntityType {
+        typeName: number;
+        typeNameAsString: string;
+        addEntityString: string;
+        editEntityString: string;
+      }
+
       export interface AttributeInstance {
-        type: number;
+        type: AttributeType;
         value: string;
       }
 
       export interface EntityInstance {
-        type: number;
+        type: EntityType;
         attributes: AttributeInstance[];
         guid: string;
         nickname: string;
+      }
+
+      export interface EntityInstanceWithLabels {
+        guid: string;
+        entityLabel: string;
+        entitySubLabel: string;
       }
 
       export function getAccountInfo(): Promise<AccountInfo|undefined>;
@@ -250,7 +268,8 @@ declare global {
       export function addOrUpdateEntityInstance(entityInstance: EntityInstance):
           void;
       export function removeEntityInstance(guid: string): void;
-      export function loadEntityInstances(): Promise<EntityInstance[]>;
+      export function loadEntityInstances():
+          Promise<EntityInstanceWithLabels[]>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], accountInfo?: AccountInfo) => void>;

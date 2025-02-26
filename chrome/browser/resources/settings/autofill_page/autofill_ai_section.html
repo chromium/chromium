@@ -101,8 +101,8 @@
   <template is="dom-repeat" items="[[entityInstances_]]">
     <li class="list-item">
       <div class="start">
-        [[getEntityLabel_(item)]]
-        <div class="cr-secondary-text">[[getEntityLabel_(item)]]</div>
+        [[item.entityLabel]]
+        <div class="cr-secondary-text">[[item.entitySubLabel]]</div>
       </div>
       <!-- TODO(crbug.com/393318914): Add title. -->
       <cr-icon-button id="moreButton" class="icon-more-vert"
@@ -127,9 +127,12 @@
 </cr-lazy-render>
 
 <template is="dom-if" if="[[showRemoveEntityDialog_]]" restamp>
+  <!-- TODO(crbug.com/393318914): Confirm the body text string with UX and
+       potentially use settings localized strings provider for the body
+       text. -->
   <settings-simple-confirmation-dialog id="removeEntityDialog"
       title-text="$i18n{autofillAiDeleteEntryDialogTitle}"
-      body-text="[[getRemoveEntityText_(activeEntity_)]]"
+      body-text="Autofill will have less info for filling out forms."
       confirm-text="$i18n{delete}"
       on-close="onRemoveEntityDialogClose_">
   </settings-simple-confirmation-dialog>

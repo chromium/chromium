@@ -82,27 +82,21 @@ suite('AutofillAiSectionUiTest', function() {
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
-    const testEntities: chrome.autofillPrivate.EntityInstance[] = [
+    const testEntityInstancesWithLabels:
+        chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
-        type: 1,  // Loyalty Card
-        attributes: [
-          {type: 5, value: 'The Discount'},  // Loyalty Card Program
-          {type: 6, value: 'The Airline'},   // Loyalty Card Provider
-        ],
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-        nickname: 'Airline card',
+        entityLabel: 'Toyota',
+        entitySubLabel: 'Car',
       },
       {
-        type: 0,  // Passport
-        attributes: [
-          {type: 0, value: 'John Doe'},  // Passport Name
-          {type: 1, value: '123456'},    // Passport Number
-        ],
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
-        nickname: 'Personal passport',
+        entityLabel: 'John Doe',
+        entitySubLabel: 'Passport',
       },
     ];
-    entityDataManager.setloadEntityInstancesResponse(testEntities);
+    entityDataManager.setloadEntityInstancesResponse(
+        testEntityInstancesWithLabels);
 
     section = document.createElement('settings-autofill-ai-section');
     section.prefs = {
@@ -134,7 +128,7 @@ suite('AutofillAiSectionUiTest', function() {
 
     assertEquals(
         3, listItems.length, '2 entities and a hidden element were loaded.');
-    assertTrue(listItems[0]!.textContent!.includes('The Discount'));
+    assertTrue(listItems[0]!.textContent!.includes('Toyota'));
     assertTrue(listItems[1]!.textContent!.includes('John Doe'));
     assertTrue(listItems[2]!.hidden);
   });
@@ -203,7 +197,7 @@ suite('AutofillAiSectionUiTest', function() {
     assertEquals(
         3, listItems.length,
         '2 entities and a hidden element should still be present.');
-    assertTrue(listItems[0]!.textContent!.includes('The Discount'));
+    assertTrue(listItems[0]!.textContent!.includes('Toyota'));
     assertTrue(listItems[1]!.textContent!.includes('John Doe'));
     assertTrue(listItems[2]!.hidden);
   });

@@ -392,14 +392,11 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
   let page: SettingsAiPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let entityDataManager: TestEntityDataManagerProxy;
-  const testEntity: chrome.autofillPrivate.EntityInstance = {
-    type: 1,  // Loyalty Card
-    attributes: [
-      {type: 5, value: 'The Discount'},  // Loyalty Card Program
-      {type: 6, value: 'The Airline'},   // Loyalty Card Provider
-    ],
+  const testEntityWithLabels:
+      chrome.autofillPrivate.EntityInstanceWithLabels = {
     guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-    nickname: 'Airline card',
+    entityLabel: 'Toyota',
+    entitySubLabel: 'Car',
   };
 
   suiteSetup(function() {
@@ -446,7 +443,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
 
   // Always hide the Autofill AI row if `autofillAiFeatureEnabled` is false.
   test('AutofillAIHiddenIfFeatureNotEnabled', async () => {
-    entityDataManager.setloadEntityInstancesResponse([testEntity]);
+    entityDataManager.setloadEntityInstancesResponse([testEntityWithLabels]);
     loadTimeData.overrideValues({
       autofillAiFeatureEnabled: false,
       userEligibleForAutofillAi: true,
@@ -485,7 +482,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
     // V2 UI should still be hidden while the refresh flag is disabled.
     assertFalse(isChildVisible(page, '#autofillAiRowV2'));
 
-    entityDataManager.setloadEntityInstancesResponse([testEntity]);
+    entityDataManager.setloadEntityInstancesResponse([testEntityWithLabels]);
     loadTimeData.overrideValues({
       autofillAiFeatureEnabled: true,
       userEligibleForAutofillAi: false,
