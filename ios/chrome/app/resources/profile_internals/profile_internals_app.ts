@@ -56,7 +56,7 @@ export class ProfileInternalsAppElement extends CrLitElement {
   }
 
   private getPropertiesArray_(profile: ProfileState): string[] {
-    let properties = [];
+    const properties = [];
     if (profile.isPersonalProfile) {
       properties.push('personal');
     }

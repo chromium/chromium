@@ -1,0 +1,16 @@
+Name: Profile Installer
+Short Name: profileinstaller
+URL: https://developer.android.com/jetpack/androidx/releases/profileinstaller#1.5.0-SNAPSHOT
+Version: 1.5.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Allows libraries to prepopulate ahead of time compilation traces to be read by ART
+
+Local Modifications:
+No modifications.

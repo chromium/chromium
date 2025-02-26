@@ -282,6 +282,17 @@ PrimaryAccountManager::PrimaryAccountManager(
         prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
   }
 
+  // Clear the extensions explicit sign in pref if the feature flag is not
+  // enabled.
+  if (!switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+    std::vector<AccountInfo> accounts_in_tracker_service =
+        account_tracker_service_->GetAccounts();
+    SigninPrefs signin_prefs = SigninPrefs(*prefs);
+    for (const auto& account : accounts_in_tracker_service) {
+      signin_prefs.SetExtensionsExplicitBrowserSignin(account.gaia, false);
+    }
+  }
+
   // Instrument metrics to know what fraction of users without a primary
   // account previously did have one, with sync enabled.
   RecordHadPreviousSyncAccount();
@@ -771,6 +782,15 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
                 switches::kEnablePreferencesAccountStorage)) {
           scoped_pref_commit.SetBoolean(
               prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
+        }
+        if (access_point ==
+                signin_metrics::AccessPoint::kExtensionInstallBubble &&
+            switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+          // Record an explicit signin for extensions for this account only.
+          auto current_gaia_id =
+              event_details.GetCurrentState().primary_account.gaia;
+          SigninPrefs(*client_->GetPrefs())
+              .SetExtensionsExplicitBrowserSignin(current_gaia_id, true);
         }
       }
   }

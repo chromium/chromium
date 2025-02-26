@@ -44,6 +44,10 @@ FORWARD_DECLARE_TEST(ChromeMetricsServiceClientTest,
 FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
 
+namespace first_run {
+class FirstRunCoordinatorMetricsHelper;
+}
+
 namespace variations {
 class SyntheticTrialRegistry;
 }
@@ -108,6 +112,7 @@ class MetricsService {
    private:
     OutOfBandUploadPasskey() = default;
     ~OutOfBandUploadPasskey() = default;
+    friend class first_run::FirstRunCoordinatorMetricsHelper;
 
     FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, OutOfBandLogUpload);
   };

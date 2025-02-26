@@ -733,7 +733,7 @@ TEST_P(ClientSideDetectionServiceTest,
   EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
-  EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
+  EXPECT_FALSE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());

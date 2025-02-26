@@ -16,6 +16,10 @@
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -179,9 +183,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsExplicitSignInBrowserTest,
   // After some time has passed, initiate a sign in for the `new_extension`.
   InitiateSignInFromExtensionPromo(new_extension);
 
-  // Simulate a sign in to the web to finish what was initiated above.
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager(), "test@gmail.com", signin::ConsentLevel::kSignin);
+  // Simulate a sign in from the extensions bubble to finish what was initiated
+  // above.
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithAccessPoint(signin_metrics::AccessPoint::kExtensionInstallBubble)
+          .Build("testy@mctestface.com"));
+  ASSERT_TRUE(SigninPrefs(*profile()->GetPrefs())
+                  .GetExtensionsExplicitBrowserSignin(account_info.gaia));
 
   // Check that the user is now signed in for the browser in transport mode and
   // syncing for extensions is enabled.

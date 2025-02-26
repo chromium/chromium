@@ -75,6 +75,8 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
        /*due_to_user_inactivity=*/false);
 
   if (!IsProviderAllowed(input)) {
+    // Clear old matches if provider is not allowed.
+    matches_.clear();
     return;
   }
 
@@ -144,8 +146,11 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
       static_cast<int>(input.text().length()) <
           omnibox_feature_configs::SearchAggregatorProvider::Get()
               .min_query_length) {
-    // Clear old matches if the query length goes below `min_query_length`.
-    matches_.clear();
+    return false;
+  }
+
+  // Don't run provider if the input is a URL.
+  if (input.type() == metrics::OmniboxInputType::URL) {
     return false;
   }
 
@@ -252,7 +257,7 @@ void EnterpriseSearchAggregatorProvider::
                   /*is_navigation=*/false);
   ParseResultList(peopleResults,
                   /*suggestion_type=*/SuggestionType::PEOPLE,
-                  /*is_navigation=*/false);
+                  /*is_navigation=*/true);
   ParseResultList(contentResults,
                   /*suggestion_type=*/SuggestionType::CONTENT,
                   /*is_navigation=*/true);
@@ -341,7 +346,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::PEOPLE) {
     return ptr_to_string(result.FindStringByDottedPath(
-        "document.derivedStructData.name.userName"));
+        "document.derivedStructData.name.displayName"));
   } else if (suggestion_type == SuggestionType::CONTENT) {
     return ptr_to_string(
         result.FindStringByDottedPath("document.derivedStructData.title"));
@@ -356,7 +361,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
     return ptr_to_string(result.FindString("suggestion"));
   } else if (suggestion_type == SuggestionType::PEOPLE) {
     return ptr_to_string(result.FindStringByDottedPath(
-        "document.derivedStructData.name.displayName"));
+        "document.derivedStructData.name.userName"));
   }
   return "";
 }

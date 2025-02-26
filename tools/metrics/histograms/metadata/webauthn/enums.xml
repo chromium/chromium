@@ -121,6 +121,21 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FIDO2 and Passkey Cache calls succeeded."/>
 </enum>
 
+<!-- LINT.IfChange(U2fSignOperationResultEnum) -->
+
+<enum name="U2fSignOperationResult">
+  <int value="0" label="Operation succeeded"/>
+  <int value="1" label="Operation was cancelled"/>
+  <int value="2" label="User had no credentials"/>
+  <int value="3" label="An unrecoverable error occurred"/>
+  <int value="4" label="An error occurred, then the operation succeeded"/>
+  <int value="5" label="An error occurred, then the operation was cancelled"/>
+  <int value="6" label="An error occurred, then the user had no credentials"/>
+  <int value="7" label="An error occurred, then a fatal error occurred"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/fido/u2f_sign_operation.cc:U2fSignOperationResult) -->
+
 <enum name="WebAuthenticationCableV2TunnelEvent">
   <int value="0"
       label="Tunnel attempt started for QR- or extension-based connection"/>

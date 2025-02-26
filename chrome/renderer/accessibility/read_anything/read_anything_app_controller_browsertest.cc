@@ -60,6 +60,9 @@ base::File GetValidModelFile() {
   return file;
 }
 
+int kSecondsElapsedSincePageLoadForDataCollection = 30;
+int kSecondsElapsedSinceTreeChangedForDataCollection = 30;
+
 }  // namespace
 
 class MockAXTreeDistiller : public AXTreeDistiller {
@@ -4690,7 +4693,8 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
   SetScreenAIServiceReady();
   OnActiveAXTreeIDChanged(tree_id_);
-  task_environment_.FastForwardBy(base::Seconds(31));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSincePageLoadForDataCollection + 1));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -4699,7 +4703,8 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // When the AXTreeID changes, and 30s pass, the controller calls
   // distiller_->Distill() once the screenAI service is ready.
   OnActiveAXTreeIDChanged(tree_id_);
-  task_environment_.FastForwardBy(base::Seconds(31));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSincePageLoadForDataCollection + 1));
 
   EXPECT_CALL(*distiller_, Distill).Times(1);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
@@ -4714,12 +4719,15 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   EXPECT_CALL(*distiller_, Distill).Times(0);
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
   OnActiveAXTreeIDChanged(tree_id_);
-  task_environment_.FastForwardBy(base::Seconds(31));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSincePageLoadForDataCollection + 1));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
+// TODO(crbug.com/355925253): Update the test when time constants are finalized.
+// This test is not meaningful now that the constants are equal.
 TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
-       DistillsAfterDelayWhenTreeIsStable) {
+       DISABLED_DistillsAfterDelayWhenTreeIsStable) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   ui::AXNodeData root;
@@ -4730,6 +4738,8 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   update.nodes = {root, node};
   update.root_id = root.id;
 
+  // TODO(crbug.com/355925253): Update all comments with time after time
+  // constants are finalized.
   // When the tree is stable for 10s, the controller still waits for 30s after
   // page load completion.
   EXPECT_CALL(*distiller_, Distill).Times(0);
@@ -4738,7 +4748,8 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   OnActiveAXTreeIDChanged(tree_id_);
   AccessibilityEventReceived({update}, {load_complete});
-  task_environment_.FastForwardBy(base::Seconds(11));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSinceTreeChangedForDataCollection + 1));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -4760,10 +4771,12 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
   SetScreenAIServiceReady();
   OnActiveAXTreeIDChanged(tree_id_);
-  task_environment_.FastForwardBy(base::Seconds(29));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSincePageLoadForDataCollection - 1));
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({update}, {load_complete});
-  task_environment_.FastForwardBy(base::Seconds(9));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSinceTreeChangedForDataCollection - 1));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -4794,10 +4807,12 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({updates[0]}, {load_complete});
   OnActiveAXTreeIDChanged(tree_id_);
-  task_environment_.FastForwardBy(base::Seconds(9));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSinceTreeChangedForDataCollection - 1));
 
   AccessibilityEventReceived({updates[1]});
-  task_environment_.FastForwardBy(base::Seconds(5));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSinceTreeChangedForDataCollection / 2));
 
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -4829,16 +4844,20 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({updates[0]}, {load_complete});
   OnActiveAXTreeIDChanged(tree_id_);
-  task_environment_.FastForwardBy(base::Seconds(9));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSinceTreeChangedForDataCollection - 1));
 
   AccessibilityEventReceived({updates[1]});
-  task_environment_.FastForwardBy(base::Seconds(9));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSinceTreeChangedForDataCollection - 1));
 
   AccessibilityEventReceived({updates[2]});
-  task_environment_.FastForwardBy(base::Seconds(9));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSinceTreeChangedForDataCollection - 1));
 
   AccessibilityEventReceived({updates[3]});
-  task_environment_.FastForwardBy(base::Seconds(4));
+  task_environment_.FastForwardBy(
+      base::Seconds(kSecondsElapsedSinceTreeChangedForDataCollection + 1));
 
   Mock::VerifyAndClearExpectations(distiller_);
 }

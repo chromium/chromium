@@ -424,7 +424,7 @@ message SafeBrowsingPasswordChangedEvent {
 }
 
 // A message for reporting dangerous download events.
-// Next ID: 33.
+// Next ID: 35.
 message SafeBrowsingDangerousDownloadEvent {
   reserved 5, 11, 12, 13, 14, 15, 16;
 
@@ -536,6 +536,13 @@ message SafeBrowsingDangerousDownloadEvent {
   // The total scan time in milliseconds on the server side before reporting
   // this event.
   int64 server_scan_latency_millis = 32;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 33;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 34;
 }
 
 // Types of data transferring operations that may have triggered the event to
@@ -559,7 +566,7 @@ enum DataTransferEventTrigger {
   MOUSE_ACTION = 10;
 }
 
-// Next ID: 20.
+// Next ID: 22.
 message SafeBrowsingInterstitialEvent {
   reserved 2, 6, 8, 9, 10, 11, 12, 13, 15;
 
@@ -621,6 +628,13 @@ message SafeBrowsingInterstitialEvent {
 
   // Security agent installed on the device
   repeated SecurityAgent security_agents = 19;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 20;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 21;
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
@@ -810,7 +824,7 @@ message UnscannedFileEvent {
 
 // Event that indicates that content was transferred.
 //
-// Next ID: 15.
+// Next ID: 17.
 message ContentTransferEvent {
   // The id of the scan. This will be shared by all events that are triggered
   // from a single scan.
@@ -886,6 +900,13 @@ message ContentTransferEvent {
   // The total scan time in milliseconds on the server side before reporting
   // this event.
   int64 server_scan_latency_millis = 14;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 15;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 16;
 }
 
 // Event sent when a user successfully logs in to a website, as determined by
@@ -1085,7 +1106,7 @@ message BrowserCrashEvent {
   repeated SecurityAgent security_agents = 7;
 }
 
-// Next ID: 11
+// Next ID: 13
 message UrlFilteringInterstitialEvent {
   // Top level URL that triggers this interstitial.
   string url = 1;
@@ -1136,6 +1157,13 @@ message UrlFilteringInterstitialEvent {
 
   // The reporting target of the event.
   ReportingTarget reporting_target = 10;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 11;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 12;
 }
 
 // Next ID: 5

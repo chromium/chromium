@@ -4020,11 +4020,10 @@ public class StripLayoutHelper
 
             int rootId = tab.getRootId();
             final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
-            assert groupTitle != null;
 
             // Show bubble and iph on group title if collapsed, otherwise show iph on the updated
             // tab.
-            if (groupTitle.isCollapsed() && !updateForCollapsedGroup) {
+            if (groupTitle != null && groupTitle.isCollapsed() && !updateForCollapsedGroup) {
                 groupTitle.setShowBubble(hasUpdate);
                 updateGroupTextAndSharedState(rootId);
                 if (hasUpdate && showIph) {
@@ -4036,7 +4035,7 @@ public class StripLayoutHelper
                                             IphType.GROUP_TITLE_NOTIFICATION_BUBBLE));
                 }
                 updateForCollapsedGroup = true;
-            } else if (!groupTitle.isCollapsed()) {
+            } else if (groupTitle != null && !groupTitle.isCollapsed()) {
                 if (hasUpdate && showIph) {
                     mQueuedIphList.add(
                             () ->

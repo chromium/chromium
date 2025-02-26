@@ -141,6 +141,7 @@ void CSSDefaultStyleSheets::Reset() {
   fullscreen_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   scroll_button_style_sheet_.Clear();
+  scroll_marker_style_sheet_.Clear();
   permission_element_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
@@ -188,7 +189,8 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
            default_fullscreen_style_->UniversalRules().size() == 8u);
   }
 
-  if (marker_style_sheet_ || scroll_button_style_sheet_) {
+  if (marker_style_sheet_ || scroll_button_style_sheet_ ||
+      scroll_marker_style_sheet_) {
     default_pseudo_element_style_->CompactRulesIfNeeded();
     size_t expected_rule_count = 0u;
     if (marker_style_sheet_) {
@@ -196,6 +198,9 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
     }
     if (scroll_button_style_sheet_) {
       expected_rule_count += 32u;
+    }
+    if (scroll_marker_style_sheet_) {
+      expected_rule_count += 4u;
     }
     DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(),
               expected_rule_count);
@@ -426,6 +431,20 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       default_pseudo_element_style_->CompactRulesIfNeeded();
       return true;
     }
+    case kPseudoIdScrollMarker: {
+      if (scroll_marker_style_sheet_) {
+        return false;
+      }
+      scroll_marker_style_sheet_ = ParseUASheet(
+          UncompressResourceAsASCIIString(IDR_UASTYLE_SCROLL_MARKER_CSS));
+      if (!default_pseudo_element_style_) {
+        default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
+      }
+      default_pseudo_element_style_->AddRulesFromSheet(ScrollMarkerStyleSheet(),
+                                                       ScreenEval());
+      default_pseudo_element_style_->CompactRulesIfNeeded();
+      return true;
+    }
     case kPseudoIdMarker: {
       if (marker_style_sheet_) {
         return false;
@@ -572,6 +591,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(scroll_button_style_sheet_);
+  visitor->Trace(scroll_marker_style_sheet_);
   visitor->Trace(default_json_document_style_);
   visitor->Trace(default_forced_colors_media_controls_style_);
   visitor->Trace(rule_set_group_cache_);

@@ -18,14 +18,73 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 NSString* const kFirstStepAnimation = @"CPE_promo_animation_edu_autofill";
 NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
+
+// Returns the title string to use when the promo context is `kFirstStep`.
+NSString* GetFirstStepTitleString() {
+  if (!IOSPasskeysM2Enabled()) {
+    return l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE_IOS18);
+  } else {
+    return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE);
+  }
+}
+
+// Returns the subtitle string to use when the promo context is `kFirstStep`.
+NSString* GetFirstStepSubtitleString() {
+  if (!IOSPasskeysM2Enabled()) {
+    return l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return nil;
+  } else {
+    return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_SUBTITLE);
+  }
+}
+
+// Returns the primary action string to use when the promo context is
+// `kFirstStep`.
+NSString* GetFirstStepPrimaryActionString() {
+  if (!IOSPasskeysM2Enabled()) {
+    return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
+  } else {
+    return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
+  }
+}
+
+// Returns the subtitle string to use when the promo context is `kLearnMore`.
+NSString* GetLearnMoreSubtitleString() {
+  NSString* settings_menu_item_string = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
+  CHECK(settings_menu_item_string.length > 0);
+  return l10n_util::GetNSStringF(
+      IOSPasskeysM2Enabled()
+          ? IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INSTRUCTIONS_SUBTITLE
+          : IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
+      base::SysNSStringToUTF16(settings_menu_item_string));
+}
+
 }  // namespace
 
 @interface CredentialProviderPromoMediator ()
@@ -162,24 +221,15 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER);
 
   if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
-    titleString =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE);
-    subtitleString = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE);
-    primaryActionString =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
+    titleString = GetFirstStepTitleString();
+    subtitleString = GetFirstStepSubtitleString();
+    primaryActionString = GetFirstStepPrimaryActionString();
     image = ios::provider::GetBrandedImage(
         ios::provider::BrandedImage::kPasswordSuggestionKey);
   } else {
     titleString = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);
-    NSString* settingsMenuItemString = settingsMenuItemString =
-        l10n_util::GetNSString(
-            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
-    DCHECK(settingsMenuItemString.length > 0);
-    subtitleString = l10n_util::GetNSStringF(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
-        base::SysNSStringToUTF16(settingsMenuItemString));
+    subtitleString = GetLearnMoreSubtitleString();
     primaryActionString = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_GO_TO_SETTINGS);
   }

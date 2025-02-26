@@ -42,6 +42,7 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -3540,15 +3541,6 @@ class DeveloperPrivateApiTransportModeUnitTest
     return ItemStatePrefsChangedObserver(event_router, extension_id);
   }
 
-  // Simulates an explicit sign in. This involves both the sign in itself and
-  // flipping the pref to record an explicit sign in.
-  void SimulateExplicitSignIn() {
-    identity_test_env_profile_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                      signin::ConsentLevel::kSignin);
-    profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
-  }
-
   // Simulates an initial download of sync data with the given `extensions`
   // present.
   void SimulateInitialSync(const std::vector<const Extension*>& extensions) {
@@ -3600,7 +3592,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   service()->AddExtension(unsyncable_extension.get());
 
   // Sign the user in without full sync.
-  SimulateExplicitSignIn();
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   std::string args_str =
       base::StringPrintf(R"(["%s"])", unsyncable_extension->id().c_str());
@@ -3624,7 +3616,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   auto syncable_extension = LoadSyncableExtension("ext");
 
   // Sign the user in without full sync.
-  SimulateExplicitSignIn();
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   // The syncable extension can be uploaded, but pretend we don't proceed with
   // the upload by simulating cancelling the dialog.
@@ -3666,7 +3658,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
       StartListeningForEvent(extension->id());
 
   // Sign the user in without full sync.
-  SimulateExplicitSignIn();
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   // Now simulate an initial sync with no extensions in the user's account. This
   // is needed to spin up the sync service so uploaded extensions actually get
@@ -3736,7 +3728,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest, ExtensionUploadableOnSignIn) {
       StartListeningForEvent(extension->id());
 
   // Sign the user in without full sync.
-  SimulateExplicitSignIn();
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   // While the extension technically can be uploaded to the user's account,
   // don't dispatch an update event if the initial sync data has not been
@@ -3768,7 +3760,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
       StartListeningForEvent(extension->id());
 
   // Sign the user in without full sync.
-  SimulateExplicitSignIn();
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
   EXPECT_FALSE(test_observer.WasEventDispatched());
   test_observer.Reset();
 
@@ -3796,7 +3788,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest, CannotUploadAfterSignOut) {
       StartListeningForEvent(extension->id());
 
   // Sign the user in without full sync.
-  SimulateExplicitSignIn();
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   SimulateInitialSync({});
   test_observer.WaitForEvent();
@@ -3825,7 +3817,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest, CannotUploadWithFullSync) {
       StartListeningForEvent(extension->id());
 
   // Sign the user in without full sync.
-  SimulateExplicitSignIn();
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   SimulateInitialSync({});
   test_observer.WaitForEvent();
@@ -3855,7 +3847,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
       StartListeningForEvent(extension->id());
 
   // Sign the user in without full sync.
-  SimulateExplicitSignIn();
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   SimulateInitialSync({});
   test_observer.WaitForEvent();

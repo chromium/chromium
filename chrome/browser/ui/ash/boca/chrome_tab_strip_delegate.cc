@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -43,7 +44,7 @@ std::vector<ash::TabInfo> ChromeTabStripDelegate::GetTabsListForWindow(
     tab.favicon = entry->GetFavicon().url;
     tab.title = web_contents->GetTitle();
     tab.url = web_contents->GetVisibleURL();
-
+    tab.id = sessions::SessionTabHelper::IdForTab(web_contents).id();
     tabs.push_back(tab);
   }
   return tabs;

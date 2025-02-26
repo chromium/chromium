@@ -505,7 +505,7 @@
     {
       name: "accessibilityFontScaleFactor",
       initial: "1.0",
-      invalidate: ["TextAutosizing"],
+      invalidate: ["TextAutosizing", "FontScaleFactor"],
       type: "double",
     },
 

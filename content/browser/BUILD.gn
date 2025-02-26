@@ -2864,6 +2864,10 @@ source_set("browser") {
     deps += [ "//sandbox" ]
   }
 
+  if (is_linux) {
+    sources += [ "accessibility/browser_accessibility_state_impl_auralinux.cc" ]
+  }
+
   # Desktop/Window/WebContents screen capture implementations, conditionally
   # built depending on the available implementations for each platform.
   if (enable_screen_capture) {

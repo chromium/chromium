@@ -66,14 +66,14 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
   for (const autofill_private::AttributeInstance&
            private_api_attribute_instance :
        private_api_entity_instance.attributes) {
-    if (private_api_attribute_instance.type < 0 ||
-        private_api_attribute_instance.type >
+    if (private_api_attribute_instance.type.type_name < 0 ||
+        private_api_attribute_instance.type.type_name >
             base::to_underlying(AttributeTypeName::kMaxValue)) {
       return std::nullopt;
     }
 
     autofill::AttributeType attribute_type(
-        AttributeTypeName(private_api_attribute_instance.type));
+        AttributeTypeName(private_api_attribute_instance.type.type_name));
     AttributeInstance attribute(attribute_type);
     attribute.SetInfoWithVerificationStatus(
         attribute.GetTopLevelType(),
@@ -82,13 +82,9 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     attributes.emplace(std::move(attribute));
   }
 
-  if (private_api_entity_instance.type < 0 ||
-      private_api_entity_instance.type >
-          base::to_underlying(EntityTypeName::kMaxValue)) {
-    return std::nullopt;
-  }
   std::optional<EntityTypeName> entity_type_name =
-      autofill::ToSafeEntityTypeName(private_api_entity_instance.type);
+      autofill::ToSafeEntityTypeName(
+          private_api_entity_instance.type.type_name);
   if (!entity_type_name.has_value()) {
     return std::nullopt;
   }
@@ -105,19 +101,40 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
   for (const AttributeInstance& attribute_instance :
        entity_instance.attributes()) {
     private_api_attributes.emplace_back();
-    private_api_attributes.back().type =
+    private_api_attributes.back().type.type_name =
         base::to_underlying(attribute_instance.type().name());
+    private_api_attributes.back().type.type_name_as_string =
+        base::UTF16ToUTF8(attribute_instance.type().GetNameForI18n());
     private_api_attributes.back().value =
         base::UTF16ToUTF8(attribute_instance.value());
   }
 
   autofill_private::EntityInstance private_api_entity_instance;
-  private_api_entity_instance.type =
+  private_api_entity_instance.type.type_name =
       base::to_underlying(entity_instance.type().name());
+  private_api_entity_instance.type.type_name_as_string =
+      base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
+  private_api_entity_instance.type.add_entity_string =
+      GetAddEntityStringForI18n(entity_instance.type());
+  private_api_entity_instance.type.edit_entity_string =
+      GetEditEntityStringForI18n(entity_instance.type());
   private_api_entity_instance.attributes = std::move(private_api_attributes);
   private_api_entity_instance.guid = entity_instance.guid().AsLowercaseString();
   private_api_entity_instance.nickname = entity_instance.nickname();
   return private_api_entity_instance;
+}
+
+autofill_private::EntityInstanceWithLabels
+EntityInstanceToPrivateApiEntityInstanceWithLabels(
+    const EntityInstance& entity_instance) {
+  autofill_private::EntityInstanceWithLabels entity_instance_with_labels;
+  entity_instance_with_labels.guid = entity_instance.guid().AsLowercaseString();
+  // TODO(crbug.com/393318055): Use better labels;
+  entity_instance_with_labels.entity_label =
+      base::UTF16ToUTF8(entity_instance.attributes()[0].value());
+  entity_instance_with_labels.entity_sub_label =
+      base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
+  return entity_instance_with_labels;
 }
 
 }  // namespace extensions::autofill_ai_util

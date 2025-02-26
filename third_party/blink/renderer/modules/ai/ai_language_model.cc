@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/ai/ai_language_model.h"
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
@@ -28,7 +31,10 @@
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/shapedetection/shape_detector.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -211,8 +217,56 @@ GetContent(const V8AILanguageModelPrompt* prompt,
           bitmap.value());
     }
     if (dict->type() == V8AILanguageModelPromptType::Enum::kAudio) {
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSyntaxError, "Input type audio not yet supported");
+      if (dict->content()->IsBlob()) {
+        // TODO(crbug.com/382180351): Make blob reading async.
+        SyncedFileReaderAccumulator* blobReader =
+            MakeGarbageCollected<SyncedFileReaderAccumulator>();
+        std::pair<FileErrorCode, FileReaderData> data =
+            blobReader->Load(dict->content()->GetAsBlob()->GetBlobDataHandle(),
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
+        WTF::String audio_contents = std::move(data.second).AsBinaryString();
+        scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
+            audio_contents.Bytes(), audio_contents.length(),
+            /*mix_to_mono=*/true, /*sample_rate=*/0.0);
+
+        on_device_model::mojom::blink::AudioDataPtr audio_data =
+            on_device_model::mojom::blink::AudioData::New();
+        audio_data->sample_rate = bus->SampleRate();
+        audio_data->frame_count = bus->length();
+        audio_data->channel_count = bus->NumberOfChannels();
+        CHECK_EQ(audio_data->channel_count, 1);
+        // TODO(crbug.com/382180351): Avoid a copy.
+        audio_data->data = WTF::Vector<float>(bus->length());
+        std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
+                    audio_data->data.end());
+        return on_device_model::mojom::blink::InputPiece::NewAudio(
+            std::move(audio_data));
+      }
+      if (dict->content()->IsAudioBuffer()) {
+        AudioBuffer* audio_buffer = dict->content()->GetAsAudioBuffer();
+        if (audio_buffer->numberOfChannels() != 1) {
+          // TODO(crbug.com/382180351): Support multichanel audio.
+          // Mix into mono, or interleave frames properly over IPC.
+          return MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kSyntaxError,
+              "Multichannel audio is not supported.");
+        }
+        on_device_model::mojom::blink::AudioDataPtr audio_data =
+            on_device_model::mojom::blink::AudioData::New();
+        audio_data->sample_rate = audio_buffer->sampleRate();
+        audio_data->frame_count = audio_buffer->length();
+        audio_data->channel_count = audio_buffer->numberOfChannels();
+        // TODO(crbug.com/382180351): Avoid copy, or make it more succinct.
+        audio_data->data = WTF::Vector<float>(
+            audio_buffer->getChannelData(0)->AsSpan().size());
+        std::copy(audio_buffer->getChannelData(0)->AsSpan().begin(),
+                  audio_buffer->getChannelData(0)->AsSpan().end(),
+                  audio_data->data.begin());
+        return on_device_model::mojom::blink::InputPiece::NewAudio(
+            std::move(audio_data));
+      }
+      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
+                                                "Unsupported audio type.");
     }
   }
   return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,

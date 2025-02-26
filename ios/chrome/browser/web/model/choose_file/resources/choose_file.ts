@@ -46,77 +46,77 @@ const APPLE_FILES = ['pkpass', 'mobileprovision'];
 
 // The accept type sent to the browser.
 enum AcceptType {
-  NoAccept = 0,
-  MixedAccept = 1,
-  UnknownAccept = 2,
-  ImageAccept = 3,
-  VideoAccept = 4,
-  AudioAccept = 5,
-  ArchiveAccept = 6,
-  PDFAccept = 7,
-  DocAccept = 8,
-  AppleAccept = 9,
+  NO_ACCEPT = 0,
+  MIXED_ACCEPT = 1,
+  UNKNOWN_ACCEPT = 2,
+  IMAGE_ACCEPT = 3,
+  VIDEO_ACCEPT = 4,
+  AUDIO_ACCEPT = 5,
+  ARCHIVE_ACCEPT = 6,
+  PDF_ACCEPT = 7,
+  DOC_ACCEPT = 8,
+  APPLE_ACCEPT = 9,
 }
 
 // Converts a single accept string to an AcceptType
 function stringToAcceptType(acceptString: string): AcceptType {
   let accept = acceptString.trim().toLowerCase();
   if (accept === '') {
-    return AcceptType.NoAccept;
+    return AcceptType.NO_ACCEPT;
   }
   if (accept.startsWith('image/')) {
-    return AcceptType.ImageAccept;
+    return AcceptType.IMAGE_ACCEPT;
   }
   if (accept.startsWith('video/')) {
-    return AcceptType.VideoAccept;
+    return AcceptType.VIDEO_ACCEPT;
   }
   if (accept.startsWith('audio/')) {
-    return AcceptType.AudioAccept;
+    return AcceptType.AUDIO_ACCEPT;
   }
   if (accept.startsWith('.')) {
     accept = accept.substring(1);
   }
   if (IMAGE_FILES.includes(accept)) {
-    return AcceptType.ImageAccept;
+    return AcceptType.IMAGE_ACCEPT;
   }
   if (VIDEO_FILES.includes(accept)) {
-    return AcceptType.VideoAccept;
+    return AcceptType.VIDEO_ACCEPT;
   }
   if (AUDIO_FILES.includes(accept)) {
-    return AcceptType.AudioAccept;
+    return AcceptType.AUDIO_ACCEPT;
   }
   if (COMPRESSED_FILES.includes(accept)) {
-    return AcceptType.ArchiveAccept;
+    return AcceptType.ARCHIVE_ACCEPT;
   }
   if (PDF_FILES.includes(accept)) {
-    return AcceptType.PDFAccept;
+    return AcceptType.PDF_ACCEPT;
   }
   if (DOC_FILES.includes(accept)) {
-    return AcceptType.DocAccept;
+    return AcceptType.DOC_ACCEPT;
   }
   if (APPLE_FILES.includes(accept)) {
-    return AcceptType.AppleAccept;
+    return AcceptType.APPLE_ACCEPT;
   }
-  return AcceptType.UnknownAccept;
+  return AcceptType.UNKNOWN_ACCEPT;
 }
 
 // Converts a multiple accept string to an AcceptType
-function MultipleStringToAcceptType(acceptString: string): AcceptType {
+function multipleStringToAcceptType(acceptString: string): AcceptType {
   const accepts = acceptString.split(',');
-  let acceptType = AcceptType.NoAccept;
+  let acceptType = AcceptType.NO_ACCEPT;
   for (const accept of accepts) {
     const current = stringToAcceptType(accept);
-    if (acceptType === AcceptType.NoAccept ||
-        acceptType === AcceptType.UnknownAccept) {
+    if (acceptType === AcceptType.NO_ACCEPT ||
+        acceptType === AcceptType.UNKNOWN_ACCEPT) {
       acceptType = current;
       continue;
     }
-    if (acceptType === current || current === AcceptType.UnknownAccept ||
-        current === AcceptType.NoAccept) {
+    if (acceptType === current || current === AcceptType.UNKNOWN_ACCEPT ||
+        current === AcceptType.NO_ACCEPT) {
       continue;
     }
     // Types are different and neither is Unknown, so it is Mixed.
-    return AcceptType.MixedAccept;
+    return AcceptType.MIXED_ACCEPT;
   }
   return acceptType;
 }
@@ -219,10 +219,10 @@ function processChooseFileClick(inputEvent: MouseEvent): void {
   if (target.type.toLowerCase() !== 'file') {
     return;
   }
-  let accept = AcceptType.NoAccept;
+  let accept = AcceptType.NO_ACCEPT;
   let acceptString = target.getAttribute('accept');
   if (acceptString) {
-    accept = MultipleStringToAcceptType(acceptString!);
+    accept = multipleStringToAcceptType(acceptString!);
   }
   let hasFiles = false;
   if (target.files && target.files.length > 0) {

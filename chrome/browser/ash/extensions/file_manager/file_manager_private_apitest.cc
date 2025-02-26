@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
@@ -324,7 +325,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
     }
   }
 
-  const Disk* FindVolumeBySourcePath(const std::string& source_path) {
+  const Disk* FindVolumeBySourcePath(std::string_view source_path) {
     auto volume_it = volumes_.find(source_path);
     return (volume_it == volumes_.end()) ? nullptr : volume_it->get();
   }

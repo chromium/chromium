@@ -33,19 +33,21 @@ var NICKNAME = 'nickname';
 var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
 var ENTITY_INSTANCE = {
-  type: 1,  // Loyalty Card
+  type: {
+    typeName: 2,
+    typeNameAsString: 'Car',
+    addEntityString: 'Add car',
+    editEntityString: 'Edit car',
+  },
   attributes: [
-    {type: 5, value: 'The Discount'},  // Loyalty Card Program
-    {type: 6, value: 'The Airline'},   // Loyalty Card Provider
+    {type: {typeName: 9, typeNameAsString: 'License plate'}, value: 'ABCDE'},
+    {type: {typeName: 11, typeNameAsString: 'Make'}, value: 'Toyota'},
   ],
   guid: GUID,
-  nickname: 'Airline card'
+  nickname: 'Personal car'
 };
 
-var UPDATED_ENTITY_INSTANCE = {
-  ...ENTITY_INSTANCE,
-  nickname: 'New airline card'
-};
+var UPDATED_ENTITY_INSTANCE = {...ENTITY_INSTANCE, nickname: 'Work car'};
 
 var failOnceCalled = function() {
   chrome.test.fail();
@@ -179,6 +181,14 @@ function updateCreditCardForCvc(updatedCvcValue) {
           cvc: updatedCvcValue
         });
       }));
+};
+
+function entityInstaceToEntityInstanceWithLabels(entityInstance) {
+  return ({
+    guid: entityInstance.guid,
+    entityLabel: entityInstance.attributes[0].value,
+    entitySubLabel: entityInstance.type.typeNameAsString,
+  });
 };
 
 var availableTests = [
@@ -924,23 +934,27 @@ var availableTests = [
   },
 
   async function loadEmptyEntityInstancesList() {
-    const entityInstancesList =
+    const entityInstancesWithLabelsList =
         await chrome.autofillPrivate.loadEntityInstances();
-    chrome.test.assertEq([], entityInstancesList);
+    chrome.test.assertEq([], entityInstancesWithLabelsList);
     chrome.test.succeed();
   },
 
   async function loadFirstEntityInstance() {
-    const entityInstancesList =
+    const entityInstancesWithLabelsList =
         await chrome.autofillPrivate.loadEntityInstances();
-    chrome.test.assertEq([ENTITY_INSTANCE], entityInstancesList);
+    chrome.test.assertEq(
+        [entityInstaceToEntityInstanceWithLabels(ENTITY_INSTANCE)],
+        entityInstancesWithLabelsList);
     chrome.test.succeed();
   },
 
   async function loadUpdatedEntityInstance() {
-    const entityInstancesList =
+    const entityInstancesWithLabelsList =
         await chrome.autofillPrivate.loadEntityInstances();
-    chrome.test.assertEq([UPDATED_ENTITY_INSTANCE], entityInstancesList);
+    chrome.test.assertEq(
+        [entityInstaceToEntityInstanceWithLabels(UPDATED_ENTITY_INSTANCE)],
+        entityInstancesWithLabelsList);
     chrome.test.succeed();
   },
 ];

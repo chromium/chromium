@@ -11,12 +11,12 @@
 #include "chromeos/ash/services/libassistant/grpc/grpc_http_connection_delegate.h"
 #include "chromeos/assistant/internal/grpc_transport/streaming/bidi_streaming_rpc_call.h"
 #include "chromeos/assistant/internal/grpc_transport/streaming/streaming_write_queue.h"
-#include "third_party/grpc/src/include/grpc/grpc_security_constants.h"
-#include "third_party/grpc/src/include/grpc/impl/codegen/grpc_types.h"
-#include "third_party/grpc/src/include/grpcpp/create_channel.h"
-#include "third_party/grpc/src/include/grpcpp/security/credentials.h"
-#include "third_party/grpc/src/include/grpcpp/security/server_credentials.h"
-#include "third_party/grpc/src/include/grpcpp/support/channel_arguments.h"
+#include "third_party/grpc/source/include/grpc/grpc_security_constants.h"
+#include "third_party/grpc/source/include/grpc/impl/codegen/grpc_types.h"
+#include "third_party/grpc/source/include/grpcpp/create_channel.h"
+#include "third_party/grpc/source/include/grpcpp/security/credentials.h"
+#include "third_party/grpc/source/include/grpcpp/security/server_credentials.h"
+#include "third_party/grpc/source/include/grpcpp/support/channel_arguments.h"
 
 namespace ash::libassistant {
 

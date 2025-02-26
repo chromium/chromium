@@ -74,7 +74,7 @@ class BnplManager {
   virtual void OnAmountExtractionReturned(
       const std::optional<uint64_t>& extracted_amount);
 
-  // Returns if there is at least one synced BNPL issuer and if the BNPL
+  // Returns if user has seen a BNPL suggestion before and if the BNPL
   // feature is enabled. Does not check for user's locale.
   bool ShouldShowBnplSettingsToggle() const;
 

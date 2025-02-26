@@ -458,18 +458,6 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
     }
   }
 
-  [[nodiscard]] testing::AssertionResult AccessStorage(
-      RenderFrameHost* frame,
-      StorageTypeAccessed type) {
-    // We drop the first character of ToString(type) because it's just the
-    // constant-indicating 'k'.
-    return ExecJs(frame,
-                  base::StringPrintf(kStorageAccessScript,
-                                     base::ToString(type).substr(1).c_str()),
-                  EXECUTE_SCRIPT_NO_USER_GESTURE,
-                  /*world_id=*/1);
-  }
-
   auto* fenced_frame_test_helper() { return &fenced_frame_test_helper_; }
   auto* prerender_test_helper() { return &prerender_test_helper_; }
 

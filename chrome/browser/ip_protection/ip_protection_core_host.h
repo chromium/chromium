@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
@@ -71,6 +72,8 @@ class IpProtectionCoreHost
                         ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   void GetProxyConfig(GetProxyConfigCallback callback) override;
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override;
 
   static bool CanIpProtectionBeEnabled();
   bool IsIpProtectionEnabled();
@@ -129,8 +132,9 @@ class IpProtectionCoreHost
       base::OnceCallback<void(GoogleServiceAuthError error,
                               signin::AccessTokenInfo access_token_info)>;
 
-  // Set up `ip_protection_proxy_config_fetcher_` and
-  // `ip_protection_token_fetcher_` if
+  // Set up `ip_protection_proxy_config_fetcher_`,
+  // `ip_protection_token_fetcher_` and
+  // `ip_protection_prt_fetcher_` if
   // not already initialized. This accomplishes lazy loading of these components
   // to break dependency loops in browser startup.
   void SetUp();
@@ -200,6 +204,9 @@ class IpProtectionCoreHost
   // corresponding dependency (if needed) registered in the factory class.
   raw_ptr<Profile> profile_;
 
+  std::unique_ptr<
+      ip_protection::IpProtectionProbabilisticRevealTokenDirectFetcher>
+      ip_protection_prt_fetcher_;
   std::unique_ptr<ip_protection::IpProtectionProxyConfigDirectFetcher>
       ip_protection_proxy_config_fetcher_;
   std::unique_ptr<ip_protection::IpProtectionTokenDirectFetcher>

@@ -73,6 +73,7 @@ class CORE_EXPORT SettingsDelegate {
     kUniversalAccess,
     kVisionDeficiency,
     kForcedColors,
+    kFontScaleFactor,
   };
 
   virtual void SettingsChanged(ChangeType) = 0;

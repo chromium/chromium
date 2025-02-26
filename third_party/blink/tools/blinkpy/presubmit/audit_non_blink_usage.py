@@ -2446,10 +2446,14 @@ _CONFIG = [
             'third_party/blink/public/web/',
         ],
         'allowed': [
+            'network::GetPermissionsPolicyFeatureList',
             'network::mojom::PermissionsPolicyFeature',
             'network::OriginWithPossibleWildcards',
             'network::ParsedPermissionsPolicy',
             'network::ParsedPermissionsPolicyDeclaration',
+            'network::PermissionsPolicyFeatureDefault',
+            'network::PermissionsPolicyFeatureList',
+            'network::PermissionsPolicyFeatureState',
         ]
     },
     {

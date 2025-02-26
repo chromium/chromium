@@ -8641,6 +8641,23 @@
             ]
         }
     ],
+    "DrawImmediatelyV2": [
+        {
+            "platforms": [
+                "android_webview",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AckOnSurfaceActivationWhenInteractive",
+                        "DrawImmediatelyWhenInteractive"
+                    ]
+                }
+            ]
+        }
+    ],
     "DwaFeature": [
         {
             "platforms": [
@@ -8721,21 +8738,6 @@
                         "DynamicSafeAreaInsetsOnScroll",
                         "EdgeToEdgeBottomChin",
                         "EdgeToEdgeWebOptIn"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EdgeToEdgeEverywhere": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_134",
-                    "enable_features": [
-                        "EdgeToEdgeEverywhere"
                     ]
                 }
             ]
@@ -9017,23 +9019,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableFatalCrashEventsObserver"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableImmediateDrawDuringScrollInteraction": [
-        {
-            "platforms": [
-                "android_webview",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AckOnSurfaceActivationWhenInteractive",
-                        "DrawImmediatelyWhenInteractive"
                     ]
                 }
             ]
@@ -12070,6 +12055,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LogApplicationStorageSizeMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSManualLogUploadsInTheFRE": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ManualLogUploadsInTheFRE"
                     ]
                 }
             ]

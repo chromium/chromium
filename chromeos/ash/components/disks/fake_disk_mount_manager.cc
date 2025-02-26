@@ -56,7 +56,7 @@ const DiskMountManager::Disks& FakeDiskMountManager::disks() const {
 }
 
 const Disk* FakeDiskMountManager::FindDiskBySourcePath(
-    const std::string& source_path) const {
+    std::string_view source_path) const {
   Disks::const_iterator iter = disks_.find(source_path);
   return iter != disks_.end() ? iter->get() : nullptr;
 }

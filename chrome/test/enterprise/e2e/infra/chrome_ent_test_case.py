@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 import logging
 import os
 from posixpath import join
@@ -9,6 +10,7 @@ import random
 import string
 import subprocess
 import time
+from typing import Sequence
 
 from absl import flags
 from chrome_ent_test.infra.core import EnterpriseTestCase
@@ -401,3 +403,27 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
   def EnsureDirectory(self, instance_name: str, path: str):
     cmd = f'New-Item -ItemType Directory -Force -Path {path}'
     self.clients[instance_name].RunPowershell(cmd)
+
+  @contextlib.contextmanager
+  def RunScriptInBackground(self,
+                            instance_name: str,
+                            local_script_path: str,
+                            args: Sequence[str] | None = None):
+    remote_script_path = self.UploadFile(instance_name, local_script_path,
+                                         r'c:\temp')
+    python_exec = self._pythonExecutablePath[instance_name]
+    python_args = ' '.join([
+        '-u',
+        remote_script_path,
+        *(args or []),
+    ])
+    cmd = (f'(Start-Process -PassThru -FilePath {python_exec} '
+           f'-ArgumentList "{python_args}").ID')
+    client = self.clients[instance_name]
+    pid = client.RunPowershell(cmd).decode().strip()
+    try:
+      yield
+    finally:
+      # Use `taskkill /t` instead of `Stop-Process` to kill all subprocesses as
+      # well.
+      client.RunPowershell(f'taskkill /pid {pid} /f /t')

@@ -41,12 +41,14 @@ source_set("ui_bundled") {
   ]
   deps = [
     ":constants",
+    ":features",
     ":field_trial",
     ":first_run_provider",
     ":screen_delegate",
     ":utils",
     "//base",
     "//base:i18n",
+    "//components/metrics",
     "//components/signin/public/identity_manager",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",

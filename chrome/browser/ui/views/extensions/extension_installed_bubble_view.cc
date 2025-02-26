@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
-#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +31,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -57,7 +57,7 @@ const int kExplicitSigninRightColumnWidth = 348;
 constexpr gfx::Size kMaxIconSize{43, 43};
 
 int GetRightColumnWidth() {
-  return extensions::sync_util::IsExtensionsExplicitSigninEnabled()
+  return switches::IsExtensionsExplicitBrowserSigninEnabled()
              ? kExplicitSigninRightColumnWidth
              : kRightColumnWidth;
 }
@@ -224,7 +224,7 @@ void ExtensionInstalledBubbleView::Init() {
 void ExtensionInstalledBubbleView::OnSignIn(const AccountInfo& account) {
   // Sign the user into transport mode (sync not enabled) if extensions sync in
   // transport mode is supported. Otherwise, sign in with sync enabled.
-  if (extensions::sync_util::IsExtensionsExplicitSigninEnabled()) {
+  if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
     signin_ui_util::SignInFromSingleAccountPromo(
         browser_->profile(), account,
         signin_metrics::AccessPoint::kExtensionInstallBubble);

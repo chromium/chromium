@@ -9,11 +9,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_consumer.h"
 
-@protocol ApplicationCommands;
 @protocol PasswordDetailsHandler;
 @protocol AddPasswordViewControllerDelegate;
 @protocol ReauthenticationProtocol;
-@protocol SnackbarCommands;
 
 // Screen which allows the user to save a new password.
 @interface AddPasswordViewController
@@ -26,12 +24,6 @@
 
 // Delegate for CredentialDetails related actions e.g. Password editing.
 @property(nonatomic, weak) id<AddPasswordViewControllerDelegate> delegate;
-
-// ApplicationCommands handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
-
-// SnackbarCommands handler.
-@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Module containing the reauthentication mechanism for interactions
 // with password.

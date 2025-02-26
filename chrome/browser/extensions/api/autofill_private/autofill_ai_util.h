@@ -36,6 +36,12 @@ PrivateApiEntityInstanceToEntityInstance(
 api::autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const autofill::EntityInstance& entity_instance);
 
+// Converts an `autofill::EntityInstance` object to an
+// `api::autofill_private::EntityInstanceWithLabels` object.
+api::autofill_private::EntityInstanceWithLabels
+EntityInstanceToPrivateApiEntityInstanceWithLabels(
+    const autofill::EntityInstance& entity_instance);
+
 }  // namespace extensions::autofill_ai_util
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_AI_UTIL_H_

@@ -10,10 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.components.webapps.R;
 
 /** UI for the zoomed image view used for screenshots in the bottom-sheet UI for PWA installs. */
+@NullMarked
 public class ImageZoomView extends FullscreenAlertDialog {
     public ImageZoomView(Context context, Bitmap bitmap) {
         super(context);

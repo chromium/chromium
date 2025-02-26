@@ -182,7 +182,8 @@ class TestCascade {
     DCHECK(set);
     DCHECK(set->PropertyCount());
     const CSSPropertyValue& reference = set->PropertyAt(0);
-    return StyleCascade::Resolve(state, reference.Name(), reference.Value());
+    return StyleCascade::Resolve(state, reference.Name(), reference.Value(),
+                                 /*tree_scope=*/&state.GetDocument());
   }
 
   std::unique_ptr<CSSBitset> GetImportantSet() {

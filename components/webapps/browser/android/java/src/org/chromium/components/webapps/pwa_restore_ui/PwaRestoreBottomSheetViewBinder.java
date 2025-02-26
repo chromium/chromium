@@ -7,6 +7,7 @@ package org.chromium.components.webapps.pwa_restore_ui;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** Binds a pwa-restore {@link PropertyModel} with a {@link PwaRestoreBottomSheetView}. */
+@NullMarked
 class PwaRestoreBottomSheetViewBinder {
     static void bind(PropertyModel model, PwaRestoreBottomSheetView view, PropertyKey propertyKey) {
         if (propertyKey == PwaRestoreProperties.VIEW_STATE) {

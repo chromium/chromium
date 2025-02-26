@@ -130,6 +130,10 @@ class CORE_EXPORT StyleCascade {
   //  - If a cycle was detected, returns nullptr.
   //  - If IACVT for other reasons, returns a 'CSSUnsetValue'.
   //
+  // The TreeScope is the tree scope where the declaration holding the specified
+  // CSSValue came from. This is typically the tree scope where the @keyframes
+  // rule is defined.
+  //
   // TODO(crbug.com/985023): This function has an associated const
   // violation, which isn't great. (This vilation was not introduced with
   // StyleCascade, however).
@@ -139,6 +143,7 @@ class CORE_EXPORT StyleCascade {
   // [1] https://drafts.csswg.org/css-variables/#invalid-at-computed-value-time
   const CSSValue* Resolve(const CSSPropertyName&,
                           const CSSValue&,
+                          const TreeScope*,
                           CascadeOrigin,
                           CascadeResolver&);
 
@@ -168,7 +173,8 @@ class CORE_EXPORT StyleCascade {
   // as there is nothing else to revert to.
   static const CSSValue* Resolve(StyleResolverState&,
                                  const CSSPropertyName&,
-                                 const CSSValue&);
+                                 const CSSValue&,
+                                 const TreeScope*);
 
  private:
   friend class TestCascade;

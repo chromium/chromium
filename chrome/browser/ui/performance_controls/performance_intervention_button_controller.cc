@@ -27,6 +27,14 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+// This represents the duration that the performance intervention button
+// should remain in the toolbar after the user dismisses the intervention
+// dialog without taking the suggested action.
+const base::TimeDelta kInterventionButtonTimeout = base::Seconds(10);
+}  // namespace
+
 PerformanceInterventionButtonController::
     PerformanceInterventionButtonController(
         PerformanceInterventionButtonControllerDelegate* delegate,
@@ -130,8 +138,7 @@ void PerformanceInterventionButtonController::OnBubbleHidden() {
   // as the controller owns the timer and will exist for the lifetime of
   // the timer.
   hide_button_timer_.Start(
-      FROM_HERE,
-      performance_manager::features::kInterventionButtonTimeout.Get(),
+      FROM_HERE, kInterventionButtonTimeout,
       base::BindRepeating(
           &PerformanceInterventionButtonController::HideToolbarButton,
           base::Unretained(this)));
@@ -169,9 +176,7 @@ void PerformanceInterventionButtonController::MaybeShowUi(
   InterventionMessageTriggerResult trigger_result =
       InterventionMessageTriggerResult::kShown;
 
-  if (!performance_manager::features::kInterventionShowMixedProfileSuggestions
-           .Get() &&
-      ContainsNonLastActiveProfile(result)) {
+  if (ContainsNonLastActiveProfile(result)) {
     trigger_result = InterventionMessageTriggerResult::kMixedProfile;
   } else if (base::FeatureList::IsEnabled(
                  performance_manager::features::

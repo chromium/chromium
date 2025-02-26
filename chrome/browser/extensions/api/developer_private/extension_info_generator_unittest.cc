@@ -36,6 +36,7 @@
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
@@ -1278,15 +1279,11 @@ TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_TransportMode) {
       {switches::kEnableExtensionsExplicitBrowserSignin},
       /*disabled_features=*/{});
 
-  // Sign the user in without full sync.
+  // Sign the user in without full sync with an explicit signin.
   auto identity_test_env_profile_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-  identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                    signin::ConsentLevel::kSignin);
-  // Pretend the user has now explcitly signed in. All this is required for
-  // extensions to sync in transport mode.
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  signin_test_util::SimulateExplicitSignIn(
+      profile(), identity_test_env_profile_adaptor->identity_test_env());
 
   // Create two extensions: one syncable and one non-syncable.
   const scoped_refptr<const Extension> syncable_extension = CreateExtension(

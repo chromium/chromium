@@ -1164,14 +1164,15 @@ blink_python_runner("make_core_generated_permissions_policy_helper") {
              "../build/scripts/templates/policy_helper.cc.tmpl",
              "../platform/runtime_enabled_features.json5",
              "./permissions_policy/document_policy_features.json5",
-             "./permissions_policy/permissions_policy_features.json5",
+             "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
            ]
   outputs = [ "$blink_core_output_dir/permissions_policy/policy_helper.cc" ]
 
   args = [
     rebase_path("../platform/runtime_enabled_features.json5", root_build_dir),
-    rebase_path("./permissions_policy/permissions_policy_features.json5",
-                root_build_dir),
+    rebase_path(
+        "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
+        root_build_dir),
     rebase_path("./permissions_policy/document_policy_features.json5",
                 root_build_dir),
     "--output_dir",

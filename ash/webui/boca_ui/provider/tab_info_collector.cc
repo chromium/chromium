@@ -81,6 +81,7 @@ mojom::TabInfoPtr TabInfoCollector::AshToPageTabInfo(ash::TabInfo tab) {
   tab_info->title = base::UTF16ToUTF8(tab.title);
   tab_info->url = std::move(tab.url);
   tab_info->favicon = std::move(tab.favicon);
+  tab_info->id = tab.id;
   return tab_info;
 }
 

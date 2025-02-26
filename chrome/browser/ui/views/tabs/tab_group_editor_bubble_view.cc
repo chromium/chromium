@@ -714,9 +714,8 @@ bool TabGroupEditorBubbleView::CanSaveGroups() const {
 }
 
 bool TabGroupEditorBubbleView::CanShareGroups() const {
-  return CanSaveGroups() && tab_groups::IsTabGroupsSaveV2Enabled() &&
-         base::FeatureList::IsEnabled(
-             data_sharing::features::kDataSharingFeature);
+  return tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
+         CanSaveGroups();
 }
 
 bool TabGroupEditorBubbleView::OwnsGroup() const {

@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -1017,6 +1018,135 @@ TEST_F(IpProtectionCoreHostTest, GetProxyConfig_IpProtectionDisabled) {
 
   EXPECT_EQ(proxy_list, std::nullopt);
   EXPECT_FALSE(geo_hint.has_value());
+}
+
+TEST_F(IpProtectionCoreHostTest, TryGetProbabilisticRevealTokensSuccess) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+  const std::uint64_t expiration =
+      (base::Time::Now() + base::Hours(10)).InSecondsFSinceUnixEpoch();
+  const std::uint64_t next_start =
+      (base::Time::Now() + base::Hours(5)).InSecondsFSinceUnixEpoch();
+  const int32_t num_tokens_with_signal = 3;
+  std::string public_key;
+  ASSERT_TRUE(base::Base64Decode("ArcODL1rtL9/MhOQuUoDwdNWwhEiNDKA1hFcHSE=",
+                                 &public_key));
+  std::string response_str;
+  {
+    ip_protection::GetProbabilisticRevealTokenResponse response_proto;
+    for (size_t i = 0; i < 10; ++i) {
+      ip_protection::
+          GetProbabilisticRevealTokenResponse_ProbabilisticRevealToken* token =
+              response_proto.add_tokens();
+      token->set_version(1);
+      token->set_u(std::string(29, 'u'));
+      token->set_e(std::string(29, 'e'));
+    }
+    response_proto.mutable_public_key()->set_y(public_key);
+    response_proto.set_expiration_time_seconds(expiration);
+    response_proto.set_next_epoch_start_time_seconds(next_start);
+    response_proto.set_num_tokens_with_signal(num_tokens_with_signal);
+    response_str = response_proto.SerializeAsString();
+  }
+
+  const GURL issuer_server_url = GURL(
+      "https://prod.probabilisticrevealtoken.goog/v1/ipblinding/"
+      "getProbabilisticRevealToken");
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        auto head = network::mojom::URLResponseHead::New();
+        test_url_loader_factory_.AddResponse(
+            issuer_server_url, std::move(head), response_str,
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
+
+  base::test::TestFuture<
+      const std::optional<
+          ip_protection::TryGetProbabilisticRevealTokensOutcome>&,
+      const ip_protection::TryGetProbabilisticRevealTokensResult&>
+      future;
+
+  core_host_->TryGetProbabilisticRevealTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait())
+      << "TryGetProbabilisticRevealTokens did not call back";
+
+  const auto& outcome = future.Get<0>();
+  ASSERT_TRUE(outcome);
+  EXPECT_THAT(outcome->tokens, testing::SizeIs(10));
+  EXPECT_EQ(outcome->tokens[9].u, std::string(29, 'u'));
+  EXPECT_EQ(outcome->tokens[9].e, std::string(29, 'e'));
+  EXPECT_EQ(outcome->public_key, public_key);
+  EXPECT_EQ(outcome->expiration_time_seconds, expiration);
+  EXPECT_EQ(outcome->next_epoch_start_time_seconds, next_start);
+  EXPECT_EQ(outcome->num_tokens_with_signal, num_tokens_with_signal);
+
+  const auto& result = std::move(future.Get<1>());
+  EXPECT_EQ(result.status,
+            ip_protection::TryGetProbabilisticRevealTokensStatus::kSuccess);
+  EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
+}
+
+TEST_F(IpProtectionCoreHostTest,
+       TryGetProbabilisticRevealTokensInvalidPublicKey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+  const std::uint64_t expiration =
+      (base::Time::Now() + base::Hours(9)).InSecondsFSinceUnixEpoch();
+  const std::uint64_t next_start =
+      (base::Time::Now() + base::Hours(4)).InSecondsFSinceUnixEpoch();
+  const int32_t num_tokens_with_signal = 7;
+  const std::string public_key = "invalid-public-key";
+  std::string response_str;
+  {
+    ip_protection::GetProbabilisticRevealTokenResponse response_proto;
+    for (size_t i = 0; i < 13; ++i) {
+      ip_protection::
+          GetProbabilisticRevealTokenResponse_ProbabilisticRevealToken* token =
+              response_proto.add_tokens();
+      token->set_version(1);
+      token->set_u(std::string(29, 'u'));
+      token->set_e(std::string(29, 'e'));
+    }
+    response_proto.mutable_public_key()->set_y(public_key);
+    response_proto.set_expiration_time_seconds(expiration);
+    response_proto.set_next_epoch_start_time_seconds(next_start);
+    response_proto.set_num_tokens_with_signal(num_tokens_with_signal);
+    response_str = response_proto.SerializeAsString();
+  }
+
+  const GURL issuer_server_url = GURL(
+      "https://prod.probabilisticrevealtoken.goog/v1/ipblinding/"
+      "getProbabilisticRevealToken");
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        auto head = network::mojom::URLResponseHead::New();
+        test_url_loader_factory_.AddResponse(
+            issuer_server_url, std::move(head), response_str,
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
+
+  base::test::TestFuture<
+      const std::optional<
+          ip_protection::TryGetProbabilisticRevealTokensOutcome>&,
+      const ip_protection::TryGetProbabilisticRevealTokensResult&>
+      future;
+
+  core_host_->TryGetProbabilisticRevealTokens(future.GetCallback());
+  ASSERT_TRUE(future.Wait())
+      << "TryGetProbabilisticRevealTokens did not call back";
+
+  const auto& outcome = future.Get<0>();
+  EXPECT_FALSE(outcome);
+
+  const auto& result = std::move(future.Get<1>());
+  EXPECT_EQ(
+      result.status,
+      ip_protection::TryGetProbabilisticRevealTokensStatus::kInvalidPublicKey);
+  EXPECT_EQ(result.network_error_code, net::OK);
+  EXPECT_EQ(result.try_again_after, std::nullopt);
 }
 
 // Do a basic check of the token formats.

@@ -110,17 +110,18 @@ absl::Status BackgroundBlurCalculatorWebGpu::GetContract(
     mediapipe::CalculatorContract* cc) {
   cc->UseService(mediapipe::kWebGpuService);
 
-  cc->InputSidePackets().Index(0).Set<video_effects::StaticConfig>();
-  cc->Inputs().Index(0).Set<video_effects::RuntimeConfig>();
-  cc->Inputs().Index(1).Set<mediapipe::GpuBuffer>();  // original
-  cc->Inputs().Index(2).Set<mediapipe::GpuBuffer>();  // mask
-  // TODO(http://b/384572750): instead of producing results in-place in this
-  // calculator, we should introduce a new one that'll handle the requirements
-  // placed on us by the video effects service (namely, producing the results
-  // in a caller-provided GPU resource).
-  cc->Inputs().Index(3).Set<mediapipe::GpuBuffer>();  // result (in-place)
+  cc->Inputs()
+      .Tag(kRuntimeConfigInputStreamTag)
+      .Set<video_effects::RuntimeConfig>();
+  cc->Inputs()
+      .Tag(kInputTextureStreamTag)
+      .Set<mediapipe::GpuBuffer>();  // original
+  cc->Inputs().Tag(kMaskTextureStreamTag).Set<mediapipe::GpuBuffer>();  // mask
+  cc->Inputs()
+      .Tag(kOutputTextureInputStreamTag)
+      .Set<mediapipe::GpuBuffer>();  // result (in-place)
 
-  cc->Outputs().Index(0).Set<mediapipe::GpuBuffer>();
+  cc->Outputs().Tag(kOutputTextureOutputStreamTag).Set<mediapipe::GpuBuffer>();
 
   return absl::OkStatus();
 }
@@ -312,26 +313,30 @@ absl::Status BackgroundBlurCalculatorWebGpu::Process(
 
   CHECK(compute_pipeline_);
 
-  mediapipe::Packet& config_packet = cc->Inputs().Index(0).Value();
+  mediapipe::Packet& config_packet =
+      cc->Inputs().Tag(kRuntimeConfigInputStreamTag).Value();
   if (config_packet.IsEmpty()) {
     return absl::InternalError("Runtime configuration not present!");
   }
 
-  mediapipe::Packet& input_packet = cc->Inputs().Index(1).Value();
+  mediapipe::Packet& input_packet =
+      cc->Inputs().Tag(kInputTextureStreamTag).Value();
   auto input_buffer = input_packet.Get<mediapipe::GpuBuffer>();
   auto input_texture_view =
       input_buffer.GetReadView<mediapipe::WebGpuTextureView>();
 
-  mediapipe::Packet& output_packet = cc->Inputs().Index(3).Value();
+  mediapipe::Packet& output_packet =
+      cc->Inputs().Tag(kOutputTextureInputStreamTag).Value();
   auto output_buffer = output_packet.Get<mediapipe::GpuBuffer>();
   auto output_texture_view =
       output_buffer.GetWriteView<mediapipe::WebGpuTextureView>();
 
   if (config_packet.Get<RuntimeConfig>().blur_state != BlurState::kEnabled) {
     wgpu::CommandEncoder command_encoder = device.CreateCommandEncoder();
-    wgpu::ImageCopyTexture source = {.texture = input_texture_view.texture()};
-    wgpu::ImageCopyTexture destination = {.texture =
-                                              output_texture_view.texture()};
+    wgpu::TexelCopyTextureInfo source = {.texture =
+                                             input_texture_view.texture()};
+    wgpu::TexelCopyTextureInfo destination = {
+        .texture = output_texture_view.texture()};
     wgpu::Extent3D extent = {
         .width = static_cast<uint32_t>(input_buffer.width()),
         .height = static_cast<uint32_t>(input_buffer.height()),
@@ -343,17 +348,16 @@ absl::Status BackgroundBlurCalculatorWebGpu::Process(
     wgpu::CommandBuffer command_buffer =
         command_encoder.Finish(&command_buffer_descriptor);
     device.GetQueue().Submit(1, &command_buffer);
-    cc->Outputs().Index(0).AddPacket(output_packet);
+
+    cc->Outputs().Tag(kOutputTextureOutputStreamTag).AddPacket(output_packet);
+
     return absl::OkStatus();
   }
 
   // Mask can only be accessed if the previous calculator produced it, and it
   // should have done so iff runtime config was enabled:
-  mediapipe::Packet& mask_packet = cc->Inputs().Index(2).Value();
-  if (mask_packet.IsEmpty()) {
-    return absl::InternalError(
-        "Mask is not present even though blur is enabled!");
-  }
+  mediapipe::Packet& mask_packet =
+      cc->Inputs().Tag(kMaskTextureStreamTag).Value();
   auto mask_buffer = mask_packet.Get<mediapipe::GpuBuffer>();
   auto mask_texture_view =
       mask_buffer.GetReadView<mediapipe::WebGpuTextureView>();
@@ -406,7 +410,7 @@ absl::Status BackgroundBlurCalculatorWebGpu::Process(
 
   device.GetQueue().Submit(/*commandCount=*/1, &command_buffer);
 
-  cc->Outputs().Index(0).AddPacket(output_packet);
+  cc->Outputs().Tag(kOutputTextureOutputStreamTag).AddPacket(output_packet);
 
   return absl::OkStatus();
 }

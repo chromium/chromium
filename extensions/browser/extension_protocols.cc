@@ -487,7 +487,7 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
         // read error, because some errors are ignorable. See
         // ContentVerifyJob::BytesRead() for more details.
         verify_job_->BytesRead(
-            buffer.subspan(0u, static_cast<size_t>(result->bytes_read)),
+            buffer.first(static_cast<size_t>(result->bytes_read)),
             result->result);
       }
     }

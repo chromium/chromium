@@ -11,6 +11,7 @@ import android.view.View;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -20,6 +21,7 @@ import java.util.List;
 
 /** The Mediator for the PWA Restore bottom sheet. */
 @JNINamespace("webapk")
+@NullMarked
 class PwaRestoreBottomSheetMediator {
     // The current activity.
     private final Activity mActivity;

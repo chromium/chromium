@@ -66,42 +66,6 @@ bool ShouldUsePerformanceInterventionBackend() {
   return base::FeatureList::IsEnabled(kPerformanceInterventionUI);
 }
 
-const base::FeatureParam<int> kInterventionDialogStringVersion{
-    &kPerformanceInterventionUI, "intervention_dialog_version", 1};
-
-const base::FeatureParam<bool> kInterventionShowMixedProfileSuggestions{
-    &kPerformanceInterventionUI, "intervention_show_mixed_profile", false};
-
-const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout{
-    &kPerformanceInterventionUI, "intervention_button_timeout",
-    base::Seconds(10)};
-
-const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold{
-    &kPerformanceInterventionUI, "cpu_time_over_threshold", base::Seconds(60)};
-const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency{
-    &kPerformanceInterventionUI, "cpu_sample_frequency", base::Seconds(15)};
-
-const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold{
-    &kPerformanceInterventionUI, "cpu_degraded_percent_threshold", 50};
-const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold{
-    &kPerformanceInterventionUI, "cpu_unhealthy_percent_threshold", 75};
-
-const base::FeatureParam<int> kCPUMaxActionableTabs{
-    &kPerformanceInterventionUI, "cpu_max_actionable_tabs", 4};
-
-const base::FeatureParam<int> kMinimumActionableTabCPUPercentage{
-    &kPerformanceInterventionUI, "minimum_actionable_tab_cpu", 10};
-
-const base::FeatureParam<base::TimeDelta> kMemoryTimeOverThreshold{
-    &kPerformanceInterventionUI, "memory_time_over_threshold",
-    base::Seconds(60)};
-
-const base::FeatureParam<int> kMemoryFreePercentThreshold{
-    &kPerformanceInterventionUI, "memory_free_percent_threshold", 10};
-const base::FeatureParam<int> kMemoryFreeBytesThreshold{
-    &kPerformanceInterventionUI, "memory_free_bytes_threshold",
-    1024 * 1024 * 1024};
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUnthrottledTabProcessReporting,
              "UnthrottledTabProcessReporting",

@@ -348,7 +348,26 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MultipleScreenDetails,
     "sanity/multiple-screen-details.js",
-    "--screen-info={label=#1}{600x800 label=#2}")
+    "--screen-info={label=#1}{600x800 label='#2'}")
+
+// This produces unexpected results, see http://crbug.com/399153009.
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MoveWindowBetweenScreens,
+    "sanity/move-window-between-screens.js",
+    "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
+
+// This produces unexpected results, see http://crbug.com/399153016.
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowOpenOnSecondaryScreen,
+    "sanity/window-open-on-secondary-screen.js",
+    "--screen-info={label='#1'}{label='#2'} --disable-popup-blocking")
+
+// This produces unexpected results, see http://crbug.com/399132959.
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    CreateTargetSecondaryScreen,
+    "sanity/create-target-secondary-screen.js",
+    "--screen-info={label='#1'}{label='#2'}")
+
 #endif
 
 }  // namespace headless

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
+#include "chrome/browser/performance_manager/user_tuning/cpu_health_tracker.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -102,18 +103,6 @@ class MockPerformanceDetectionManagerActionableTabsObserver
                std::vector<resource_attribution::PageContext>),
               (override));
 };
-
-// Number of times to see a health status consecutively for the health status to
-// change
-const int kNumHealthStatusForChange =
-    performance_manager::features::kCPUTimeOverThreshold.Get() /
-    performance_manager::features::kCPUSampleFrequency.Get();
-
-const int kUnhealthySystemCpuUsagePercentage =
-    performance_manager::features::kCPUUnhealthyPercentageThreshold.Get() + 1;
-const int kDegradedSystemCpuUsagePercentage =
-    performance_manager::features::kCPUDegradedHealthPercentageThreshold.Get() +
-    1;
 }  // namespace
 
 class PerformanceDetectionManagerTest : public ChromeRenderViewHostTestHarness {

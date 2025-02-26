@@ -28,6 +28,7 @@ struct ASH_PUBLIC_EXPORT TabInfo {
   std::u16string title;
   GURL url;
   GURL favicon;
+  int32_t id;
   base::TimeTicks last_access_timetick;
 };
 

@@ -392,7 +392,7 @@ class VolumeManager
   void OnMigrationReset() override;
 
   std::optional<policy::DeviceId> GetDeviceIdFromDevicePath(
-      const std::string& device_path);
+      std::string_view device_path);
 
   static int counter_;
   const int id_ = ++counter_;  // Only used in log traces

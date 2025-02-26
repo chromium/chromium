@@ -203,3 +203,18 @@ wheel: <
   name: "infra/python/wheels/attrs-py3"
   version: "version:23.1.0"
 >
+
+# `cryptography` (and its transitive dependencies) for root/client certificates
+# testing.
+wheel: <
+  name: "infra/python/wheels/cryptography/${vpython_platform}"
+  version: "version:43.0.0"
+>
+wheel: <
+  name: "infra/python/wheels/cffi/${vpython_platform}"
+  version: "version:1.15.1.chromium.2"
+>
+wheel: <
+  name: "infra/python/wheels/pycparser-py2_py3"
+  version: "version:2.19"
+>

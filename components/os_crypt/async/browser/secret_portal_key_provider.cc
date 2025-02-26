@@ -190,7 +190,7 @@ void SecretPortalKeyProvider::OnFdReadable() {
   }
   if (bytes_read > 0) {
     auto buffer_span =
-        base::span(buffer).subspan(0u, base::checked_cast<size_t>(bytes_read));
+        base::span(buffer).first(base::checked_cast<size_t>(bytes_read));
     secret_.insert(secret_.end(), buffer_span.begin(), buffer_span.end());
     return;
   }

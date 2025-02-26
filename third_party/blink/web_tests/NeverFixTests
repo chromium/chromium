@@ -1575,6 +1575,7 @@ crbug.com/1343368 external/wpt/css/mediaqueries/viewport-script-dynamic.html [ S
 
 # Tests that require the text autosizing setting.
 crbug.com/340389272 wpt_internal/css/css-size-adjust/* [ Skip ]
+crbug.com/340389272 virtual/text-size-adjust/wpt_internal/css/css-size-adjust/os-font-scale-required/* [ Skip ]
 
 # Predefined counter styles that we support a larger range than the spec.
 external/wpt/css/css-counter-styles/armenian/css3-counter-styles-008.html [ Skip ]

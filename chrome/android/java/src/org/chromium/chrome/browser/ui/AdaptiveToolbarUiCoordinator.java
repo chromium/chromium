@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonControll
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
+import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.coupons.DiscountsButtonController;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.price_insights.PriceInsightsButtonController;
 import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -45,6 +48,8 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.adaptive.TranslateToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -64,6 +69,10 @@ public class AdaptiveToolbarUiCoordinator {
     private ContextualPageActionController mContextualPageActionController;
     private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private VoiceToolbarButtonController mVoiceToolbarButtonController;
+    private BottomSheetController mBottomSheetController;
+    private ObservableSupplier<Profile> mProfileSupplier;
+    private Supplier<ScrimManager> mScrimSupplier;
+    private CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
 
     /**
      * Constructor.
@@ -93,12 +102,14 @@ public class AdaptiveToolbarUiCoordinator {
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             Supplier<ReadAloudController> readAloudControllerSupplier,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            Supplier<CommerceBottomSheetContentController> commerceBottomSheetControllerSupplier,
             Runnable onShareRunnable,
             WindowAndroid windowAndroid,
-            Supplier<Tracker> trackerSupplier) {
+            Supplier<Tracker> trackerSupplier,
+            Supplier<ScrimManager> scrimSupplier) {
         if (!toolbarBehavior.shouldInitialize()) return;
-
+        mBottomSheetController = bottomSheetController;
+        mProfileSupplier = profileSupplier;
+        mScrimSupplier = scrimSupplier;
         IdentityDiscController identityDiscController =
                 new IdentityDiscController(mContext, activityLifecycleDispatcher, profileSupplier);
         mCurrentTabPriceTrackingStateSupplier =
@@ -116,7 +127,7 @@ public class AdaptiveToolbarUiCoordinator {
                         new PriceInsightsDelegateImpl(
                                 mContext, mCurrentTabPriceTrackingStateSupplier),
                         AppCompatResources.getDrawable(mContext, R.drawable.ic_trending_down_24dp),
-                        commerceBottomSheetControllerSupplier);
+                        this::getCommerceBottomSheetContentController);
         PriceTrackingButtonController priceTrackingButtonController =
                 new PriceTrackingButtonController(
                         mContext,
@@ -187,7 +198,7 @@ public class AdaptiveToolbarUiCoordinator {
                             mContext,
                             mActivityTabProvider,
                             mModalDialogManagerSupplier.get(),
-                            commerceBottomSheetControllerSupplier);
+                            this::getCommerceBottomSheetContentController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);
         }
@@ -289,5 +300,29 @@ public class AdaptiveToolbarUiCoordinator {
             for (ButtonDataProvider provider : mButtonDataProviders) provider.destroy();
             mButtonDataProviders = null;
         }
+    }
+
+    private PriceTrackingBottomSheetContentCoordinator createPriceTrackingContentProvider() {
+        return new PriceTrackingBottomSheetContentCoordinator(
+                mContext,
+                mActivityTabProvider,
+                new PriceInsightsDelegateImpl(mContext, mCurrentTabPriceTrackingStateSupplier));
+    }
+
+    @Nullable
+    private CommerceBottomSheetContentController getCommerceBottomSheetContentController() {
+        if (mCommerceBottomSheetContentCoordinator == null
+                // This flag is for discounts and commerce bottom sheet as a feature together.
+                && CommerceFeatureUtils.isDiscountInfoApiEnabled(
+                        ShoppingServiceFactory.getForProfile(mProfileSupplier.get()))) {
+            mCommerceBottomSheetContentCoordinator =
+                    new CommerceBottomSheetContentCoordinator(
+                            mContext,
+                            mBottomSheetController,
+                            mScrimSupplier,
+                            this::createPriceTrackingContentProvider);
+        }
+
+        return mCommerceBottomSheetContentCoordinator;
     }
 }

@@ -26,7 +26,6 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -41,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "content/public/browser/render_frame_host.h"
@@ -891,7 +891,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   // `CanUploadAsAccountExtension` should already check for the feature flag
   // somewhere but add another guard for it here just in case.
   info->can_upload_as_account_extension =
-      sync_util::IsExtensionsExplicitSigninEnabled() &&
+      switches::IsExtensionsExplicitBrowserSigninEnabled() &&
       AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
           extension);
 

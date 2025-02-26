@@ -1192,6 +1192,10 @@
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
     },
+    {
+      name: "CSSPreferredTextScale",
+      status: "experimental",
+    },
     // https://drafts.csswg.org/css-values-5/#progress
     // progress(), media-progress(), container-progress()
     {

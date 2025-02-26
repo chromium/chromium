@@ -4,20 +4,8 @@
 
 #include "chrome/browser/background/extensions/background_mode_manager.h"
 
-#include "base/task/sequenced_task_runner.h"
-
-void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
-  NOTREACHED();
-}
-
 void BackgroundModeManager::DisplayClientInstalledNotification(
     const std::u16string& name) {
   // No need to display anything on ChromeOS because all extensions run all
   // the time anyway.
-}
-
-// static
-scoped_refptr<base::SequencedTaskRunner>
-BackgroundModeManager::CreateTaskRunner() {
-  return nullptr;
 }

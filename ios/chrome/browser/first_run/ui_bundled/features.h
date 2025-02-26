@@ -64,6 +64,9 @@ BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
 // FRE sequence.
 BASE_DECLARE_FEATURE(kBestFeaturesScreenInFirstRun);
 
+// Flag to enable manual metrics log uploads in the FRE screens.
+BASE_DECLARE_FEATURE(kManualLogUploadsInTheFRE);
+
 // Feature to enable updates to the sequence of the first run screens.
 BASE_DECLARE_FEATURE(kUpdatedFirstRunSequence);
 

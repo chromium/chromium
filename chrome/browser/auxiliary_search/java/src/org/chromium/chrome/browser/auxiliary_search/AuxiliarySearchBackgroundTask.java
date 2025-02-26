@@ -57,7 +57,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         int MAX_COUNT = 3;
     }
 
-    private final Map<Integer, Bitmap> mTabIdToFaviconMap = new HashMap<>();
+    private final Map<AuxiliarySearchEntry, Bitmap> mTabToFaviconMap = new HashMap<>();
 
     private @NonNull Context mContext;
     private int mTaskFinishedCount;
@@ -202,7 +202,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                     faviconSize,
                     (bitmap, url) -> {
                         if (bitmap != null) {
-                            mTabIdToFaviconMap.put(tab.getId(), bitmap);
+                            mTabToFaviconMap.put(tab, bitmap);
                         }
                         mTaskFinishedCount++;
                         // Notifies the taskFinishedCallback after all favicon fetching are
@@ -212,11 +212,11 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                             AuxiliarySearchMetrics.recordScheduledFaviconFetchDuration(
                                     currentTimeMs - startTimeMs);
 
-                            if (!mTabIdToFaviconMap.isEmpty()) {
-                                int size = mTabIdToFaviconMap.size();
+                            if (!mTabToFaviconMap.isEmpty()) {
+                                int size = mTabToFaviconMap.size();
                                 auxiliarySearchController.onBackgroundTaskStart(
                                         tabs,
-                                        mTabIdToFaviconMap,
+                                        mTabToFaviconMap,
                                         (success) -> {
                                             onTaskFinished(taskFinishedCallback);
                                             AuxiliarySearchMetrics.recordScheduledDonationResult(

@@ -21,7 +21,6 @@ import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -39,7 +38,7 @@ import {getTemplate} from './autofill_ai_section.html.js';
 import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 
-type EntityInstance = chrome.autofillPrivate.EntityInstance;
+type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 
 // browser_element_identifiers constants
 const AUTOFILL_AI_HEADER_ELEMENT_ID =
@@ -53,7 +52,7 @@ export interface SettingsAutofillAiSectionElement {
 }
 
 const SettingsAutofillAiSectionElementBase =
-    HelpBubbleMixin(PrefsMixin(I18nMixin(PolymerElement)));
+    HelpBubbleMixin(PrefsMixin(PolymerElement));
 
 export class SettingsAutofillAiSectionElement extends
     SettingsAutofillAiSectionElementBase {
@@ -81,15 +80,6 @@ export class SettingsAutofillAiSectionElement extends
         value: false,
       },
 
-      /**
-         The correspondent model for any entity related action menus or
-         dialogs.
-       */
-      activeEntity_: {
-        type: Object,
-        value: null,
-      },
-
       /** The same dialog can be used for both adding and editing entities. */
       showAddOrEditEntityDialog_: {
         type: Boolean,
@@ -109,10 +99,12 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   ineligibleUser: boolean;
-  private activeEntity_: EntityInstance|null;
   private showAddOrEditEntityDialog_: boolean;
   private showRemoveEntityDialog_: boolean;
-  private entityInstances_: EntityInstance[];
+  private entityInstances_: EntityInstanceWithLabels[];
+
+  // The correspondent model for any entity related action menus or dialogs.
+  private activeEntity_: EntityInstanceWithLabels|null;
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
 
@@ -120,7 +112,7 @@ export class SettingsAutofillAiSectionElement extends
     super.connectedCallback();
 
     this.entityDataManager_.loadEntityInstances().then(
-        (entityInstances: EntityInstance[]) => {
+        (entityInstances: EntityInstanceWithLabels[]) => {
           // If the user is ineligible for Autofill with Ai and has no data
           // saved, then they should not be able to access this page. These
           // lines prevent such a user manually navigating to this page by
@@ -144,27 +136,9 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   /**
-   * Returns the first attribute of the entity, to be used as a label.
-   */
-  private getEntityLabel_(entity: EntityInstance): string {
-    // TODO(crbug.com/393318914): Use better labels.
-    return entity.attributes[0].value;
-  }
-
-  /**
-   * Returns the text to be used in the "Delete" entity dialog.
-   */
-  private getRemoveEntityText_(entity: EntityInstance): string {
-    // TODO(crbug.com/393319296): Make the string more suggestive.
-    return this.i18n(
-        'autofillAiDeleteEntryDialogText', this.getEntityLabel_(entity),
-        this.getEntityLabel_(entity));
-  }
-
-  /**
    * Open the action menu.
    */
-  private onMoreButtonClick_(e: DomRepeatEvent<EntityInstance>) {
+  private onMoreButtonClick_(e: DomRepeatEvent<EntityInstanceWithLabels>) {
     this.activeEntity_ = e.model.item;
     const moreButton = e.target as HTMLElement;
     this.$.actionMenu.get().showAt(moreButton);

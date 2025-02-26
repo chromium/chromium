@@ -329,6 +329,24 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
         u"", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
     EXPECT_FALSE(provider_->IsProviderAllowed(unscoped_empty_input));
   }
+
+  {
+    // Query must not be a url in unscoped mode
+    EXPECT_TRUE(provider_->IsProviderAllowed(input));
+    AutocompleteInput query_input(u"https", metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
+    EXPECT_TRUE(provider_->IsProviderAllowed(query_input));
+    AutocompleteInput person_query(
+        u"john doe", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+    EXPECT_TRUE(provider_->IsProviderAllowed(person_query));
+    AutocompleteInput url_input(u"www.web.site",
+                                metrics::OmniboxEventProto::OTHER,
+                                TestSchemeClassifier());
+    EXPECT_FALSE(provider_->IsProviderAllowed(url_input));
+    AutocompleteInput url_no_prefix(
+        u"john.com", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+    EXPECT_FALSE(provider_->IsProviderAllowed(url_no_prefix));
+  }
 }
 
 // Test that a call to `Start()` will stop old requests to prevent their results
@@ -418,9 +436,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_EQ(matches[0].destination_url,
             GURL("http://www.yahoo.com/Document%201"));
 
-  EXPECT_EQ(matches[1].type, AutocompleteMatchType::SEARCH_SUGGEST);
-  EXPECT_EQ(matches[1].contents, u"John Doe");
-  EXPECT_EQ(matches[1].description, u"john@example.com");
+  EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
+  EXPECT_EQ(matches[1].contents, u"john@example.com");
+  EXPECT_EQ(matches[1].description, u"John Doe");
   EXPECT_EQ(matches[1].destination_url,
             GURL("http://www.yahoo.com/john@example.com"));
   EXPECT_EQ(matches[1].image_url, GURL("https://example.com/image.png"));

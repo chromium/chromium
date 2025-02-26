@@ -6,9 +6,9 @@
 
 #include "base/check_op.h"
 #include "chromeos/assistant/internal/internal_constants.h"
-#include "third_party/grpc/src/include/grpcpp/impl/codegen/proto_utils.h"
-#include "third_party/grpc/src/include/grpcpp/support/proto_buffer_reader.h"
-#include "third_party/grpc/src/include/grpcpp/support/proto_buffer_writer.h"
+#include "third_party/grpc/source/include/grpcpp/impl/codegen/proto_utils.h"
+#include "third_party/grpc/source/include/grpcpp/support/proto_buffer_reader.h"
+#include "third_party/grpc/source/include/grpcpp/support/proto_buffer_writer.h"
 
 namespace ash::libassistant {
 

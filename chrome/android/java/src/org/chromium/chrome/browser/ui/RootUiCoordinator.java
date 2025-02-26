@@ -50,8 +50,6 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
-import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -104,8 +102,6 @@ import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.pdf.PdfPage;
-import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
@@ -169,7 +165,6 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
-import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
@@ -329,7 +324,6 @@ public class RootUiCoordinator
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private @Nullable BoardingPassController mBoardingPassController;
     private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
-    private CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
     protected AdaptiveToolbarUiCoordinator mAdaptiveToolbarUiCoordinator;
 
@@ -1393,11 +1387,11 @@ public class RootUiCoordinator
                     mBookmarkModelSupplier,
                     mReadAloudControllerSupplier,
                     mShareDelegateSupplier,
-                    this::getCommerceBottomSheetContentController,
                     /* onShareRunnable= */ () ->
                             mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS),
                     mWindowAndroid,
-                    trackerSupplier);
+                    trackerSupplier,
+                    this::getScrimManager);
 
             var omniboxActionDelegate =
                     new OmniboxActionDelegateImpl(
@@ -1506,31 +1500,6 @@ public class RootUiCoordinator
     protected void addVoiceSearchAdaptiveButton(Supplier<Tracker> trackerSupplier) {
         mAdaptiveToolbarUiCoordinator.addVoiceSearchAdaptiveButton(
                 () -> mToolbarManager.getVoiceRecognitionHandler(), trackerSupplier);
-    }
-
-    private PriceTrackingBottomSheetContentCoordinator createPriceTrackingContentProvider() {
-        return new PriceTrackingBottomSheetContentCoordinator(
-                mActivity,
-                mActivityTabProvider,
-                new PriceInsightsDelegateImpl(
-                        mActivity,
-                        new CurrentTabPriceTrackingStateSupplier(
-                                mActivityTabProvider, mProfileSupplier)));
-    }
-
-    @Nullable
-    private CommerceBottomSheetContentController getCommerceBottomSheetContentController() {
-        if (mCommerceBottomSheetContentCoordinator == null
-                && CommerceFeatureUtils.isDiscountInfoApiEnabled(
-                        ShoppingServiceFactory.getForProfile(mProfileSupplier.get()))) {
-            mCommerceBottomSheetContentCoordinator =
-                    new CommerceBottomSheetContentCoordinator(
-                            mActivity,
-                            mBottomSheetController,
-                            this::createPriceTrackingContentProvider);
-        }
-
-        return mCommerceBottomSheetContentCoordinator;
     }
 
     /**

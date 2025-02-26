@@ -1761,6 +1761,13 @@ targets.binaries.script(
     ],
 )
 
+targets.binaries.generated_script(
+    name = "webui_resources_tools_python_unittests",
+    label = "//ui/webui/resources/tools:webui_resources_tools_python_unittests",
+    # All references are in starlark.
+    skip_usage_check = True,
+)
+
 targets.binaries.console_test_launcher(
     name = "power_sampler_unittests",
     label = "//tools/mac/power:power_sampler_unittests",

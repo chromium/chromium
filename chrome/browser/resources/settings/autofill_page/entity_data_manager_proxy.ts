@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
+type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 
 /**
  * This interface defines the autofill API wrapper that combines entity data
@@ -21,9 +22,9 @@ export interface EntityDataManagerProxy {
   removeEntityInstance(guid: string): void;
 
   /**
-   * Returns the user's entity instances.
+   * Returns the user's entity instances with labels.
    */
-  loadEntityInstances(): Promise<EntityInstance[]>;
+  loadEntityInstances(): Promise<EntityInstanceWithLabels[]>;
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {

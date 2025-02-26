@@ -67,3 +67,55 @@ async function testEventHanders(controlledFrame, events) {
     }
   }
 };
+
+// The list of WebRequest events.
+const WebRequestEvents = [
+  'onBeforeRequest',
+  'onBeforeSendHeaders',
+  'onSendHeaders',
+  'onAuthRequired',
+  'onBeforeRedirect',
+  'onHeadersReceived',
+  'onResponseStarted',
+  'onCompleted',
+];
+
+function addWebRequestListeners(controlledframe, targetUrl) {
+  window.events = [];
+
+  const filter = {
+    urls: [targetUrl],
+    types: ['main_frame', 'xmlhttprequest'],
+  };
+  for (const eventName of WebRequestEvents) {
+    const eventCounter = function(details) {
+      window.events.push(eventName);
+    };
+
+    controlledframe.request[eventName].addListener(eventCounter, filter);
+  }
+
+  // Temporarily add special case for onErrorOccurred here to monitor it being
+  // triggered in the CI.
+  // TODO(crbug.com/386380410): clean up.
+  window.occurredErrors = [];
+  controlledframe.request.onErrorOccurred.addListener(function(details) {
+    window.events.push('onErrorOccurred');
+    window.occurredErrors.push(details.error);
+  }, filter);
+}
+
+function verifyWebRequestEvents(expected) {
+  // Temporarily add special case for onErrorOccurred here to monitor it being
+  // triggered in the CI.
+  // TODO(crbug.com/386380410): clean up.
+  if (window.occurredErrors.length > 0) {
+    console.log(`onErrorOccurred triggered ${
+        window.occurredErrors.length} times, errors are:\n${
+        window.occurredErrors
+            .map((item, index) => `${index + 1}. ${item}`)
+            .join('\n')}\n`);
+  }
+
+  assert_equals(JSON.stringify(window.events), JSON.stringify(expected));
+}

@@ -4,15 +4,17 @@
 
 package org.chromium.components.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.util.Pair;
-
-import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,11 +27,12 @@ import org.chromium.ui.modelutil.PropertyModel;
  * side.
  */
 @JNINamespace("webapps")
+@NullMarked
 class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     private long mNativeAddToHomescreenMediator;
     private PropertyModel mModel;
     private WindowAndroid mWindowAndroid;
-    private AppData mNativeAppData;
+    private @Nullable AppData mNativeAppData;
 
     AddToHomescreenMediator(PropertyModel model, WindowAndroid windowAndroid) {
         mModel = model;
@@ -37,7 +40,7 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         mNativeAddToHomescreenMediator = AddToHomescreenMediatorJni.get().initialize(this);
     }
 
-    void startForAppMenu(@NonNull WebContents webContents, int menuItemType) {
+    void startForAppMenu(WebContents webContents, int menuItemType) {
         if (mNativeAddToHomescreenMediator == 0) return;
 
         AddToHomescreenMediatorJni.get()
@@ -94,6 +97,7 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
             return false;
         }
 
+        assumeNonNull(mNativeAppData);
         mWindowAndroid.showIntent(mNativeAppData.detailsIntent(), null, null);
 
         if (mNativeAddToHomescreenMediator != 0) {

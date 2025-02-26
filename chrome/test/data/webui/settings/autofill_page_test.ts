@@ -137,14 +137,11 @@ suite('PasswordsAndForms', function() {
   let prefs: SettingsPrefsElement;
   let element: SettingsAutofillPageElement;
 
-  const testEntity: chrome.autofillPrivate.EntityInstance = {
-    type: 1,  // Loyalty Card
-    attributes: [
-      {type: 5, value: 'The Discount'},  // Loyalty Card Program
-      {type: 6, value: 'The Airline'},   // Loyalty Card Provider
-    ],
+  const testEntityWithLabels:
+      chrome.autofillPrivate.EntityInstanceWithLabels = {
     guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-    nickname: 'Airline card',
+    entityLabel: 'Toyota',
+    entitySubLabel: 'Car',
   };
 
   setup(async function() {
@@ -242,7 +239,7 @@ suite('PasswordsAndForms', function() {
   // The Autofill AI button is visible if the user has data saved, but is not
   // eligible.
   test('AutofillAIVisibleIfUserHasDataSaved', async function() {
-    entityDataManager.setloadEntityInstancesResponse([testEntity]);
+    entityDataManager.setloadEntityInstancesResponse([testEntityWithLabels]);
     loadTimeData.overrideValues({
       autofillAiFeatureEnabled: true,
       userEligibleForAutofillAi: false,

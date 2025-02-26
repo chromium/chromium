@@ -201,9 +201,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
   // Image view at the top of the screen, indicating the overall Password
   // Checkup status.
   UIImageView* _headerImageView;
-
-  // Whether the previous password checkup state was the running state.
-  BOOL _wasRunning;
 }
 
 @end

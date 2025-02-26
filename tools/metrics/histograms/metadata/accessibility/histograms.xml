@@ -3332,6 +3332,8 @@ even if they fit the naming pattern. -->
   </summary>
   <token key="ScreenReader">
     <variant name="Android.ScreenReader" summary="Android (e.g. Talkback)"/>
+    <variant name="Linux.Orca"
+        summary="This tracks Orca screen reader usage specifically"/>
     <variant name="Mac.ScreenReader"
         summary="This tracks to the screen reader AXMode flag on Mac, which
                  can actually be turned on by any assistive technology"/>

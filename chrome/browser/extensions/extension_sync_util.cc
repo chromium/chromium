@@ -64,11 +64,4 @@ bool IsSyncingExtensionsInTransportMode(Profile* profile) {
          !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
-bool IsExtensionsExplicitSigninEnabled() {
-  // Explicit sign ins for extensions are enabled if extensions can be synced if
-  // the user signs into transport mode.
-  return base::FeatureList::IsEnabled(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-}
-
 }  // namespace extensions::sync_util

@@ -326,28 +326,66 @@ namespace autofillPrivate {
     DOMString value;
   };
 
+  // Contains the attribute type name and other relevant information about the
+  // attribute type. It is part of the `EntityInstance` API.
+  dictionary AttributeType {
+    // Contains the value of an `AttributeTypeName` on the C++ side.
+    long typeName;
+    // The type name as a human readable string.
+    DOMString typeNameAsString;
+  };
+
+  // Contains the entity type name and other relevant information about the
+  // entity type. It is part of the `EntityInstance` API.
+  dictionary EntityType {
+    // Contains the value of an `EntityTypeName` on the C++ side.
+    long typeName;
+    // The type name as a human readable string.
+    DOMString typeNameAsString;
+    // The i18n string representation of "Add <entity>". Used in the entity
+    // adding settings UI. The string cannot be constructed dynamically,
+    // because the entity string might need declension in some languages.
+    DOMString addEntityString;
+    // The i18n string representation of "Edit <entity>". Used in the entity
+    // editing settings UI. The string cannot be constructed dynamically,
+    // because the entity string might need declension in some languages.
+    DOMString editEntityString;
+  };
+
   // An attribute instance is a typed string value with additional metadata.
-  // It is associated with an `EntityInstance`. The type contains the value of
-  // an `AttributeTypeName` on the C++ side.
+  // It is associated with an `EntityInstance`.
   dictionary AttributeInstance {
-    // The attribute type.
-    long type;
+    // Contains the attribute type name and other relevant information about the
+    // attribute type.
+    AttributeType type;
     // The attribute value.
     DOMString value;
   };
 
   // An entity instance entry which can be saved in the "Autofill with AI"
-  // section of the settings UI. The type contains the value of an
-  // `EntityTypeName` on the C++ side.
+  // section of the settings UI.
   dictionary EntityInstance {
-    // The entity type.
-    long type;
+    // Contains the entity type name and other relevant information about the
+    // entity type.
+    EntityType type;
     // The attribute instances of this entity instance.
     AttributeInstance[] attributes;
-    // The guid of the entity.
+    // The guid of the entity instance.
     DOMString guid;
-    // The nickname of the entity.
+    // The nickname of the entity instance.
     DOMString nickname;
+  };
+
+  // Contains the minimum amount of information needed to display an entity
+  // instance, along with the guid. The guid is needed to retrieve the complete
+  // information of the entity instance.
+  dictionary EntityInstanceWithLabels {
+    // The guid of the entity instance.
+    DOMString guid;
+    // The enitity instance label.
+    DOMString entityLabel;
+    // The enitity instance sublabel.
+    DOMString entitySubLabel;
   };
 
   callback VoidCallback = void();
@@ -363,7 +401,7 @@ namespace autofillPrivate {
   callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
   callback hasUserAnnotationsEntriesCallback = void(boolean hasEntries);
   callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
-  callback LoadEntityInstancesCallback = void(EntityInstance[] entries);
+  callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -507,7 +545,7 @@ namespace autofillPrivate {
     static void removeEntityInstance(
         DOMString guid, optional VoidCallback callback);
 
-    // Returns all entity instances of the user.
+    // Returns all of the user's entity instances with labels.
     static void loadEntityInstances(LoadEntityInstancesCallback callback);
   };
 

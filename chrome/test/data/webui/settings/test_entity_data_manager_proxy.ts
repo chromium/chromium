@@ -6,10 +6,11 @@ import type {EntityDataManagerProxy} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
+type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 
 export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     EntityDataManagerProxy {
-  private entities_: EntityInstance[] = [];
+  private entityInstancesWithLabels_: EntityInstanceWithLabels[] = [];
 
   constructor() {
     super([
@@ -19,8 +20,9 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     ]);
   }
 
-  setloadEntityInstancesResponse(entities: EntityInstance[]): void {
-    this.entities_ = entities;
+  setloadEntityInstancesResponse(
+      entityInstancesWithLabels: EntityInstanceWithLabels[]): void {
+    this.entityInstancesWithLabels_ = entityInstancesWithLabels;
   }
 
   addOrUpdateEntityInstance(entityInstance: EntityInstance): void {
@@ -32,8 +34,8 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     this.methodCalled('removeEntityInstance', structuredClone(guid));
   }
 
-  loadEntityInstances(): Promise<EntityInstance[]> {
+  loadEntityInstances(): Promise<EntityInstanceWithLabels[]> {
     this.methodCalled('loadEntityInstances');
-    return Promise.resolve(structuredClone(this.entities_));
+    return Promise.resolve(structuredClone(this.entityInstancesWithLabels_));
   }
 }

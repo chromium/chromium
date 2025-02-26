@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0"
+  name="viewport">
+<meta name="assert"
+  content="text-size-adjust with env(preferred-text-scale) scales text by the user's preferred factor">
+<link rel="help"
+  href="https://drafts.csswg.org/css-size-adjust/#propdef-text-size-adjust">
+<link rel="help"
+  href="https://github.com/w3c/csswg-drafts/issues/10674#issuecomment-2625414100">
+<link rel="match" href="text-size-adjust-env-001-ref.html">
+
+<p style="text-size-adjust: calc(100% * env(preferred-text-scale));">This text
+  should be 2x default size.</p>

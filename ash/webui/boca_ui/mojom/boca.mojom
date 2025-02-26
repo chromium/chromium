@@ -15,6 +15,9 @@ import "mojo/public/mojom/base/values.mojom";
 
 // Represents the tab information within browser window.
 struct TabInfo {
+  // Tab id. Only present for local tab info. Will be absent for teacher-sent
+  // tab info.
+  int32? id;
   // Tab title.
   string title;
   // Tab URL.

@@ -6,10 +6,12 @@ package org.chromium.components.webapps.pwa_universal_install;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webapps.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The Mediator for the PWA Universal Install bottom sheet. */
+@NullMarked
 class PwaUniversalInstallBottomSheetMediator {
     // The current activity.
     private final Activity mActivity;

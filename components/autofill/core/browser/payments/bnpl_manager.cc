@@ -117,14 +117,13 @@ bool BnplManager::ShouldShowBnplSettingsToggle() const {
   const PaymentsDataManager& payments_data_manager =
       payments_autofill_client().GetPaymentsDataManager();
 
-  // Call `GetBnplIssuers()` only if `IsAutofillHasSeenBnplPrefEnabled()` is
-  // true and a BNPL issuer is present to avoid unnecessary feature flag
-  // checks. Ensures that only relevant sessions are included in BNPL related
-  // A/B experiments. Otherwise, users that navigate to the settings page can
-  // enroll in the experiment, with very little guarantee they will actually use
-  // the BNPL feature.
+  // Check `kAutofillEnableBuyNowPayLater` only if user has seen a BNPL
+  // suggestion before to avoid unnecessary feature flag checks. Ensures that
+  // only relevant sessions are included in BNPL related A/B experiments.
+  // Otherwise, users that navigate to the settings page can enroll in the
+  // experiment, with very little guarantee they will actually use the BNPL
+  // feature.
   return payments_data_manager.IsAutofillHasSeenBnplPrefEnabled() &&
-         !payments_data_manager.GetBnplIssuers().empty() &&
          base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
 #else
   return false;

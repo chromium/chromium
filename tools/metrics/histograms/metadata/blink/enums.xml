@@ -5932,6 +5932,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5329" label="V8AILanguageDetectorFactory_Availability_Method"/>
   <int value="5330" label="CrossPartitionSameOriginBlobURLFetch"/>
   <int value="5331" label="WebAppManifestUpdate"/>
+  <int value="5332" label="CSSEnvironmentVariable_PreferredTextScale"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -109,13 +109,26 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     CSSPropertySpecificKeyframe(double offset,
                                 scoped_refptr<TimingFunction> easing,
                                 const CSSValue* value,
+                                const TreeScope* tree_scope,
                                 EffectModel::CompositeOperation composite)
         : Keyframe::PropertySpecificKeyframe(offset,
                                              std::move(easing),
                                              composite),
-          value_(value) {}
+          value_(value),
+          tree_scope_(tree_scope) {}
 
     const CSSValue* Value() const { return value_.Get(); }
+
+    // The originating TreeScope for this keyframe. Note that certain
+    // values also bake the TreeScope into their value (see CSSValue::
+    // EnsureScopedValue); this is needed when need to represent a mix
+    // of two interpolable values that originate from two different tree
+    // scopes.
+    //
+    // CSSUnparsedDeclarationValue does *not* bake the TreeScope into
+    // its value, however, since it's somewhat expensive, and we never
+    // need to represent a mix of such values.
+    const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
 
     bool PopulateCompositorKeyframeValue(
         const PropertyHandle&,
@@ -141,6 +154,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     bool IsCSSPropertySpecificKeyframe() const override { return true; }
 
     Member<const CSSValue> value_;
+    Member<const TreeScope> tree_scope_;
     mutable Member<CompositorKeyframeValue> compositor_keyframe_value_cache_;
   };
 

@@ -314,17 +314,17 @@ public class AuxiliarySearchDonor {
      * Donates favicons. Only the tabs with favicons will be donated.
      *
      * @param entries The list of {@link AuxiliarySearchEntry} object which contains a Tab's data.
-     * @param tabIdToFaviconMap The map of <TabId, favicon>.
+     * @param tabToFaviconMap The map of <TabId, favicon>.
      */
     @VisibleForTesting
     public void donateFavicons(
             @NonNull List<AuxiliarySearchEntry> entries,
-            @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
+            @NonNull Map<AuxiliarySearchEntry, Bitmap> tabToFaviconMap,
             @NonNull Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<WebPage>();
 
         for (AuxiliarySearchEntry entry : entries) {
-            Bitmap favicon = tabIdToFaviconMap.get(entry.getId());
+            Bitmap favicon = tabToFaviconMap.get(entry);
             if (favicon != null) {
                 docs.add(
                         buildDocument(

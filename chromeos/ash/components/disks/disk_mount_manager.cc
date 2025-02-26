@@ -341,7 +341,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // DiskMountManager override.
   const Disk* FindDiskBySourcePath(
-      const std::string& source_path) const override {
+      std::string_view source_path) const override {
     const Disks::const_iterator it = disks_.find(source_path);
     return it == disks_.end() ? nullptr : it->get();
   }

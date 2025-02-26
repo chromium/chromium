@@ -6,30 +6,30 @@
  * @fileoverview Handle styling a 'CHROME_ANNOTATION' element.
  */
 
+const DECORATION_STYLES = 'border-bottom-width: 1px; ' +
+    'border-bottom-style: dotted; ' +
+    'background-color: transparent; ' +
+    'pointer-events: none;';
+const DECORATION_STYLES_FOR_PHONE_AND_EMAIL = 'border-bottom-width: 1px; ' +
+    'border-bottom-style: solid; ' +
+    'background-color: transparent; ' +
+    'pointer-events: none;';
+const DECORATION_DEFAULT_COLOR = 'blue';
+const DECORATION_STYLES_FOR_SPACE = 'white-space: pre';
+
 // Class to add style to annotations `Element`.
 class TextStyler {
-  static DECORATION_STYLES = 'border-bottom-width: 1px; ' +
-      'border-bottom-style: dotted; ' +
-      'background-color: transparent; ' +
-      'pointer-events: none;';
-  static DECORATION_STYLES_FOR_PHONE_AND_EMAIL = 'border-bottom-width: 1px; ' +
-      'border-bottom-style: solid; ' +
-      'background-color: transparent; ' +
-      'pointer-events: none;';
-  static DECORATION_DEFAULT_COLOR = 'blue';
-  static DECORATION_STYLES_FOR_SPACE = 'white-space: pre';
-
   // Adds style on given `element`.
   style(parentNode: Node, element: HTMLElement, type: string): void {
-    let textColor: string = TextStyler.DECORATION_DEFAULT_COLOR;
+    let textColor: string = DECORATION_DEFAULT_COLOR;
     if (parentNode instanceof Element) {
       textColor = window.getComputedStyle(parentNode).color || textColor;
     }
 
     if (type === 'PHONE_NUMBER' || type === 'EMAIL') {
-      element.style.cssText = TextStyler.DECORATION_STYLES_FOR_PHONE_AND_EMAIL;
+      element.style.cssText = DECORATION_STYLES_FOR_PHONE_AND_EMAIL;
     } else {
-      element.style.cssText = TextStyler.DECORATION_STYLES;
+      element.style.cssText = DECORATION_STYLES;
     }
 
     element.style.borderBottomColor = textColor;
@@ -38,7 +38,7 @@ class TextStyler {
 
   // Styles a whitespace that doesn't collapse with its neighbors.
   space(element: HTMLElement): void {
-    element.style.cssText = TextStyler.DECORATION_STYLES_FOR_SPACE;
+    element.style.cssText = DECORATION_STYLES_FOR_SPACE;
   }
 }
 

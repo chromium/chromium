@@ -881,11 +881,6 @@ void ProcessServerPredictionsQueryResponse(
         field->SetPasswordRequirements(
             field_suggestion->password_requirements());
       }
-      if (field_suggestion->has_format_string()) {
-        field->set_format_string_unless_overruled(
-            field_suggestion->format_string(),
-            AutofillField::FormatStringSource::kServer);
-      }
       ++field_rank_map[field->GetFieldSignature()];
 
       // Log the field type predicted from Autofill crowdsourced server.

@@ -12,7 +12,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
+#include "services/video_effects/calculators/background_blur_calculator_webgpu.h"
+#include "services/video_effects/calculators/inference_calculator_webgpu.h"
 #include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/mediapipe/src/mediapipe/framework/calculator.pb.h"
@@ -40,9 +43,14 @@ mediapipe::GpuBufferFormat WebGpuTextureFormatToGpuBufferFormat(
   }
 }
 
+std::string StreamFromTagAndName(std::string_view tag,
+                                 std::string_view stream_name) {
+  return base::StrCat({tag, ":", stream_name});
+}
+
 }  // namespace
 
-// Inputs:
+// Graph inputs:
 constexpr char kStaticConfigInputStreamName[] = "static_config";
 constexpr char kRuntimeConfigInputStreamName[] = "runtime_config";
 constexpr char kInputTextureInputStreamName[] = "input_texture";
@@ -50,8 +58,10 @@ constexpr char kInputTextureDownscaledInputStreamName[] =
     "input_texture_downscaled";
 constexpr char kOutputTextureInputStreamName[] = "output_texture";
 
-// Outputs:
+// Intermediate streams:
 constexpr char kBackgroundMaskOutputStreamName[] = "mask";
+
+// Graph outputs:
 constexpr char kOutputTextureOutputStreamName[] = "out";
 
 VideoEffectsGraphWebGpu::~VideoEffectsGraphWebGpu() = default;
@@ -74,21 +84,39 @@ std::unique_ptr<VideoEffectsGraphWebGpu> VideoEffectsGraphWebGpu::Create() {
   config.add_output_stream(kOutputTextureOutputStreamName);
 
   auto* inference_node = config.add_node();
-  inference_node->set_calculator("InferenceCalculatorWebGpu");
+  inference_node->set_calculator(InferenceCalculatorWebGpu::kCalculatorName);
   // Inputs for inference calculator node:
-  inference_node->add_input_side_packet(kStaticConfigInputStreamName);
-  inference_node->add_input_stream(kRuntimeConfigInputStreamName);
-  inference_node->add_input_stream(kInputTextureDownscaledInputStreamName);
-  inference_node->add_output_stream(kBackgroundMaskOutputStreamName);
+  inference_node->add_input_side_packet(StreamFromTagAndName(
+      InferenceCalculatorWebGpu::kStaticConfigInputSidePacketStreamTag,
+      kStaticConfigInputStreamName));
+  inference_node->add_input_stream(StreamFromTagAndName(
+      InferenceCalculatorWebGpu::kRuntimeConfigInputStreamTag,
+      kRuntimeConfigInputStreamName));
+  inference_node->add_input_stream(
+      StreamFromTagAndName(InferenceCalculatorWebGpu::kInputTextureStreamTag,
+                           kInputTextureDownscaledInputStreamName));
+  inference_node->add_output_stream(
+      StreamFromTagAndName(InferenceCalculatorWebGpu::kOutputTextureStreamTag,
+                           kBackgroundMaskOutputStreamName));
 
   auto* blur_node = config.add_node();
-  blur_node->set_calculator("BackgroundBlurCalculatorWebGpu");
-  blur_node->add_input_side_packet(kStaticConfigInputStreamName);
-  blur_node->add_input_stream(kRuntimeConfigInputStreamName);
-  blur_node->add_input_stream(kInputTextureInputStreamName);
-  blur_node->add_input_stream(kBackgroundMaskOutputStreamName);
-  blur_node->add_input_stream(kOutputTextureInputStreamName);
-  blur_node->add_output_stream(kOutputTextureOutputStreamName);
+  blur_node->set_calculator(BackgroundBlurCalculatorWebGpu::kCalculatorName);
+  blur_node->add_input_stream(StreamFromTagAndName(
+      BackgroundBlurCalculatorWebGpu::kRuntimeConfigInputStreamTag,
+      kRuntimeConfigInputStreamName));
+  blur_node->add_input_stream(StreamFromTagAndName(
+      BackgroundBlurCalculatorWebGpu::kInputTextureStreamTag,
+      kInputTextureInputStreamName));
+  blur_node->add_input_stream(StreamFromTagAndName(
+      BackgroundBlurCalculatorWebGpu::kMaskTextureStreamTag,
+      kBackgroundMaskOutputStreamName));
+  blur_node->add_input_stream(StreamFromTagAndName(
+      BackgroundBlurCalculatorWebGpu::kOutputTextureInputStreamTag,
+      kOutputTextureInputStreamName));
+
+  blur_node->add_output_stream(StreamFromTagAndName(
+      BackgroundBlurCalculatorWebGpu::kOutputTextureOutputStreamTag,
+      kOutputTextureOutputStreamName));
 
   // Dawn Wire over command buffer is not thread-safe, so we need to make
   // MediaPipe use our own thread:

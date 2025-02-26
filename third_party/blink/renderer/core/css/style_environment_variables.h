@@ -59,7 +59,10 @@ enum class UADefinedVariable {
   kTitlebarAreaX,
   kTitlebarAreaY,
   kTitlebarAreaWidth,
-  kTitlebarAreaHeight
+  kTitlebarAreaHeight,
+
+  // The text scale as chosen by the user in the OS accessibility settings.
+  kPreferredTextScale
 };
 
 enum class UADefinedTwoDimensionalVariable {

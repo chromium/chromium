@@ -75,6 +75,7 @@ export function getSessionConfigMojomToUI(session: Config|
       tabs: session.onTaskConfig.tabs.map((item: ControlledTabMojom) => {
         return {
           tab: {
+            id: item.tab.id ? item.tab.id : undefined,
             url: item.tab.url.url,
             title: item.tab.title,
             favicon: item.tab.favicon.url,
@@ -115,6 +116,7 @@ export class ClientDelegateFactory {
             windowName: window.name ?? '',
             tabList: window.tabList.map((tab: TabInfo) => {
               return {
+                id: tab.id ? tab.id : undefined,
                 title: tab.title,
                 url: tab.url.url,
                 favicon: tab.favicon.url,
@@ -182,6 +184,7 @@ export class ClientDelegateFactory {
                 sessionConfig.onTaskConfig?.tabs.map((item: ControlledTab) => {
                   return {
                     tab: {
+                      id: null,
                       url: {url: item.tab.url},
                       title: item.tab.title,
                       favicon: {url: item.tab.favicon},
@@ -226,6 +229,7 @@ export class ClientDelegateFactory {
               tabs: onTaskConfig.tabs.map((item: ControlledTab) => {
                 return {
                   tab: {
+                    id: null,
                     url: {url: item.tab.url},
                     title: item.tab.title,
                     favicon: {url: item.tab.favicon},

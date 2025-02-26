@@ -9,8 +9,8 @@ module network.mojom;
 // Features are listed in
 // https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md.
 // Not all listed features are supported in Blink, and many are gated by runtime
-// flags. See renderer/core/permissions_policy/permissions_policy_features.json5 for the
-// feature names which will be recognized in policy declarations.
+// flags. See services/network/public/cpp/permissions_policy/permissions_policy_features.json5
+// for the feature names which will be recognized in policy declarations.
 // For more details on adding a new permissions policy, see:
 // https://chromium.googlesource.com/chromium/src/+/main/services/network/public/cpp/permissions_policy/README.md
 enum PermissionsPolicyFeature {

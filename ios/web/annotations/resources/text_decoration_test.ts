@@ -22,7 +22,7 @@ class TestTextDecoration extends TestSuite {
         '<div id="d3">World</div>';
     load(originalHTML);
     const body = document.body;
-    const d2 = document.querySelector('#d2') as HTMLElementWithSymbolIndex;
+    const d2 = document.querySelector<HTMLElementWithSymbolIndex>('#d2')!;
     const originalTextNode = d2.childNodes[0] as TextWithSymbolIndex;
     const replacement =
         createChromeAnnotation(2, 'Small', 'SIZE', 'Small', 'external-key');

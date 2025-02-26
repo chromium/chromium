@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -11,6 +13,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -25,10 +29,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * chooses the "Add to Home screen" option from the app menu.
  */
 @JNINamespace("webapps")
+@NullMarked
 public class AddToHomescreenCoordinator {
     private Context mActivityContext;
     private ModalDialogManager mModalDialogManager;
-    private PropertyModel mModel;
+    private @Nullable PropertyModel mModel;
     private WindowAndroid mWindowAndroid;
     // May be null during tests.
     private WebContents mWebContents;
@@ -88,7 +93,7 @@ public class AddToHomescreenCoordinator {
         AddToHomescreenCoordinator coordinator =
                 new AddToHomescreenCoordinator(
                         webContents,
-                        windowAndroid.getContext().get(),
+                        assertNonNull(windowAndroid.getContext().get()),
                         windowAndroid,
                         modalDialogManager);
         return coordinator.buildMediatorAndShowDialog().getNativeMediator();
@@ -126,7 +131,7 @@ public class AddToHomescreenCoordinator {
         return mActivityContext;
     }
 
-    public PropertyModel getPropertyModelForTesting() {
+    public @Nullable PropertyModel getPropertyModelForTesting() {
         return mModel;
     }
 }

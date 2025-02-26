@@ -19,6 +19,10 @@ BASE_FEATURE(kBestFeaturesScreenInFirstRun,
              "BestFeaturesScreenInFirstRunExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kManualLogUploadsInTheFRE,
+             "ManualLogUploadsInTheFRE",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUpdatedFirstRunSequence,
              "UpdatedFirstRunSequence",
              base::FEATURE_DISABLED_BY_DEFAULT);

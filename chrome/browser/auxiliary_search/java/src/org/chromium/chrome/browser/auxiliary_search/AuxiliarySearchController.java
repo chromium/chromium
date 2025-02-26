@@ -55,13 +55,13 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
      * Called after the background task has fetched metadata.
      *
      * @param tabs The tabs to donate.
-     * @param tabIdToFaviconMap A map of <TabId, Bitmap>.
+     * @param tabToFaviconMap A map of <AuxiliarySearchEntry, Bitmap>.
      * @param callback The callback to notify whether the donation is succeed.
      * @param startTimeMs The starting time in milliseconds.
      */
     default void onBackgroundTaskStart(
             @NonNull List<AuxiliarySearchEntry> tabs,
-            @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
+            @NonNull Map<AuxiliarySearchEntry, Bitmap> tabToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMs) {}
 }

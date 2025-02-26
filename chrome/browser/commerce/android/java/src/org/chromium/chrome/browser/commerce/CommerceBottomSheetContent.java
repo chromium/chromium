@@ -6,20 +6,27 @@ package org.chromium.chrome.browser.commerce;
 
 import android.content.Context;
 import android.view.View;
+import android.view.View.MeasureSpec;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 public class CommerceBottomSheetContent implements BottomSheetContent {
 
     private final View mContentView;
     private final int mExpectedContentItemCount;
+    private final BottomSheetController mBottomSheetController;
 
-    public CommerceBottomSheetContent(View contentView, int expectedContentItemCount) {
+    public CommerceBottomSheetContent(
+            View contentView,
+            int expectedContentItemCount,
+            BottomSheetController bottomSheetController) {
         mContentView = contentView;
         mExpectedContentItemCount = expectedContentItemCount;
+        mBottomSheetController = bottomSheetController;
     }
 
     @Override
@@ -58,7 +65,12 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        if (mExpectedContentItemCount > 2) {
+        float containerHeight = mBottomSheetController.getContainerHeight();
+        if (containerHeight == 0) {
+            return HeightMode.DISABLED;
+        }
+        float contentRatio = getContentHeight() / containerHeight;
+        if (contentRatio > 0.5) {
             return 0.5f;
         }
 
@@ -67,8 +79,13 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        if (mExpectedContentItemCount > 2) {
-            return 1.0f;
+        float containerHeight = mBottomSheetController.getContainerHeight();
+        if (containerHeight == 0) {
+            return HeightMode.DISABLED;
+        }
+        float contentRatio = getContentHeight() / containerHeight;
+        if (contentRatio > 0.5) {
+            return contentRatio;
         }
 
         return HeightMode.WRAP_CONTENT;
@@ -104,5 +121,14 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     public boolean hasCustomScrimLifecycle() {
         // Don't show a scrim (gray overlay on page) when open the bottom sheet.
         return true;
+    }
+
+    private int getContentHeight() {
+        mContentView.measure(
+                MeasureSpec.makeMeasureSpec(
+                        mBottomSheetController.getContainerWidth(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(
+                        mBottomSheetController.getContainerHeight(), MeasureSpec.AT_MOST));
+        return mContentView.getMeasuredHeight();
     }
 }

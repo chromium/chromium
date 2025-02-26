@@ -17,6 +17,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           name: 'window1',
           tabList: [
             {
+              id: 1,
               title: 'title1',
               url: {url: 'http://foo1'},
               favicon: {url: 'dataurl1'},
@@ -115,6 +116,7 @@ class MockRemoteHandler extends PageHandlerRemote {
             tabs: [
               {
                 tab: {
+                  id: null,
                   url: {url: 'http://google.com/'},
                   title: 'google',
                   favicon: {url: 'data/image'},
@@ -123,6 +125,7 @@ class MockRemoteHandler extends PageHandlerRemote {
               },
               {
                 tab: {
+                  id: null,
                   url: {url: 'http://youtube.com/'},
                   title: 'youtube',
                   favicon: {url: 'data/image'},
@@ -182,6 +185,7 @@ class MockRemoteHandler extends PageHandlerRemote {
               tabs: [
                 {
                   tab: {
+                    id: 1,
                     url: {url: 'http://google.com/'},
                     title: 'google',
                     favicon: {url: 'data/image'},
@@ -190,6 +194,7 @@ class MockRemoteHandler extends PageHandlerRemote {
                 },
                 {
                   tab: {
+                    id: null,
                     url: {url: 'http://youtube.com/'},
                     title: 'youtube',
                     favicon: {url: 'data/image'},
@@ -218,6 +223,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           tabs: [
             {
               tab: {
+                id: null,
                 url: {url: 'http://google.com/'},
                 title: 'google',
                 favicon: {url: 'data/image'},
@@ -226,6 +232,7 @@ class MockRemoteHandler extends PageHandlerRemote {
             },
             {
               tab: {
+                id: null,
                 url: {url: 'http://youtube.com/'},
                 title: 'youtube',
                 favicon: {url: 'data/image'},
@@ -329,21 +336,35 @@ suite('ClientDelegateTest', function() {
       async () => {
         const result =
             await clientDelegateImpl.getInstance().getWindowsTabsList();
-
         assertDeepEquals(
             [
               {
                 windowName: 'window1',
                 tabList: [
-                  {title: 'title1', url: 'http://foo1', favicon: 'dataurl1'},
-                  {title: 'title2', url: 'http://foo2', favicon: 'dataurl2'},
+                  {
+                    id: 1,
+                    title: 'title1',
+                    url: 'http://foo1',
+                    favicon: 'dataurl1',
+                  },
+                  {
+                    id: undefined,
+                    title: 'title2',
+                    url: 'http://foo2',
+                    favicon: 'dataurl2',
+                  },
                 ],
               },
               {
                 // Default window name should be empty
                 windowName: '',
                 tabList: [
-                  {title: 'title3', url: 'http://foo3', favicon: 'dataurl3'},
+                  {
+                    id: undefined,
+                    title: 'title3',
+                    url: 'http://foo3',
+                    favicon: 'dataurl3',
+                  },
                 ],
               },
             ],
@@ -485,6 +506,7 @@ suite('ClientDelegateTest', function() {
               tabs: [
                 {
                   tab: {
+                    id: 1,
                     title: 'google',
                     url: 'http://google.com/',
                     favicon: 'data/image',
@@ -493,6 +515,7 @@ suite('ClientDelegateTest', function() {
                 },
                 {
                   tab: {
+                    id: undefined,
                     title: 'youtube',
                     url: 'http://youtube.com/',
                     favicon: 'data/image',

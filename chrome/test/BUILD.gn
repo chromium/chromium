@@ -6425,6 +6425,7 @@ test("unit_tests") {
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/autofill",
+    "//chrome/browser/background:unit_tests",
     "//chrome/browser/battery",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bitmap_fetcher:unit_tests",
@@ -8674,10 +8675,6 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_background_contents) {
-    sources +=
-        [ "../browser/background/background_contents_service_unittest.cc" ]
-  }
   if (enable_background_mode) {
     deps += [ "//chrome/browser/background/extensions:unit_tests" ]
   }

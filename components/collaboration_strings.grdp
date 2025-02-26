@@ -29,7 +29,7 @@
     1 tab group no longer available
   </message>
   <message name="IDS_COLLABORATION_TWO_GROUPS_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when two tab groups are no longer shared with the user.">
-    "<ph name="GROUP_TITLE_1">$1<ex>Travel</ex></ph>" and "<ph name="GROUP_TITLE_2">$2<ex>Vacation</ex></ph>" "tab groups no longer available
+    "<ph name="GROUP_TITLE_1">$1<ex>Travel</ex></ph>" and "<ph name="GROUP_TITLE_2">$2<ex>Vacation</ex></ph>" tab groups no longer available
   </message>
   <message name="IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when more than 2 tab groups are no longer shared with the user.">
     <ph name="GROUP_COUNT">$1<ex>5</ex></ph> tab groups no longer available

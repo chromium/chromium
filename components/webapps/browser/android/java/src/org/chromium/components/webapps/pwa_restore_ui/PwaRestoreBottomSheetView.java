@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps.pwa_restore_ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -20,6 +22,9 @@ import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 
@@ -33,6 +38,7 @@ import java.util.List;
  * no-op for us).
  */
 @SuppressLint("ClickableViewAccessibility")
+@NullMarked
 public class PwaRestoreBottomSheetView {
 
     // The current context.
@@ -42,15 +48,16 @@ public class PwaRestoreBottomSheetView {
     private View mContentView;
 
     // The listener to notify when the Back button is clicked.
-    private OnClickListener mBackButtonListener;
+    private @Nullable OnClickListener mBackButtonListener;
 
     // The listener to notify when an app checkbox is toggled in the app list.
-    private OnClickListener mSelectionToggleButtonListener;
+    private @Nullable OnClickListener mSelectionToggleButtonListener;
 
     public PwaRestoreBottomSheetView(Context context) {
         mContext = context;
     }
 
+    @Initializer
     public void initialize(int backArrowId) {
         mContentView =
                 LayoutInflater.from(mContext)
@@ -67,6 +74,14 @@ public class PwaRestoreBottomSheetView {
         ImageView backArrowView = (ImageView) mContentView.findViewById(R.id.back);
         backArrowView.setImageDrawable(backArrow);
         backArrowView.setOnClickListener(this::onClickBack);
+    }
+
+    protected void setBackButtonListener(OnClickListener listener) {
+        mBackButtonListener = listener;
+    }
+
+    protected void setSelectionToggleButtonListener(OnClickListener listener) {
+        mSelectionToggleButtonListener = listener;
     }
 
     public View getContentView() {
@@ -146,6 +161,7 @@ public class PwaRestoreBottomSheetView {
     }
 
     public void onClickBack(View view) {
+        assumeNonNull(mBackButtonListener);
         mBackButtonListener.onClick(view);
     }
 
@@ -161,14 +177,7 @@ public class PwaRestoreBottomSheetView {
         }
 
         // Notify of the change.
+        assumeNonNull(mSelectionToggleButtonListener);
         mSelectionToggleButtonListener.onClick(checkBox);
-    }
-
-    protected void setBackButtonListener(OnClickListener listener) {
-        mBackButtonListener = listener;
-    }
-
-    protected void setSelectionToggleButtonListener(OnClickListener listener) {
-        mSelectionToggleButtonListener = listener;
     }
 }

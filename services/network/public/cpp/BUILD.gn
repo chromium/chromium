@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")  # TODO(crbug.com/397934758)
 
 _is_directory_transfer_required = is_fuchsia
 buildflag_header("buildflags") {
@@ -15,6 +16,29 @@ buildflag_header("buildflags") {
     "IS_CT_SUPPORTED=$is_ct_supported",
     "IS_P2P_ENABLED=$is_p2p_enabled",
     "IS_DIRECTORY_TRANSFER_REQUIRED=$_is_directory_transfer_required",
+  ]
+}
+
+# TODO(crbug.com/397934758): Move `blink_python_runner` out of Blink and update
+# this action.
+blink_python_runner("make_generated_permissions_policy_features") {
+  script =
+      "//services/network/build/scripts/make_permissions_policy_features.py"
+
+  inputs = scripts_for_json5_files + [
+             "//services/network/build/scripts/make_permissions_policy_features.py",
+             "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
+             "//services/network/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
+           ]
+  outputs = [ "$root_gen_dir/services/network/public/cpp/permissions_policy/permissions_policy_features_generated.cc" ]
+
+  args = [
+    rebase_path(
+        "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
+        root_build_dir),
+    "--output_dir",
+    rebase_path("$root_gen_dir/services/network/public/cpp/permissions_policy",
+                root_build_dir),
   ]
 }
 
@@ -115,6 +139,11 @@ component("cpp") {
     "permissions_policy/origin_with_possible_wildcards.h",
     "permissions_policy/permissions_policy_declaration.cc",
     "permissions_policy/permissions_policy_declaration.h",
+    "permissions_policy/permissions_policy_features.cc",
+    "permissions_policy/permissions_policy_features.h",
+    "permissions_policy/permissions_policy_features_generated.h",
+    "permissions_policy/permissions_policy_features_internal.cc",
+    "permissions_policy/permissions_policy_features_internal.h",
     "permissions_policy/permissions_policy_mojom_traits.cc",
     "permissions_policy/permissions_policy_mojom_traits.h",
     "private_network_access_check_result.cc",
@@ -164,11 +193,14 @@ component("cpp") {
     "x_frame_options_parser.h",
   ]
 
+  sources += get_target_outputs(":make_generated_permissions_policy_features")
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":buildflags",
     ":cpp_base",
+    ":make_generated_permissions_policy_features",
     "//net",
     "//services/network/public/mojom",
     "//services/network/public/mojom:mojom_permissions_policy_shared",

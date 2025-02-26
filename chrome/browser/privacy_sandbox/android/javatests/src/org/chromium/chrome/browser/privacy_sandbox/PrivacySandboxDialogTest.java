@@ -72,7 +72,6 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Need to evaluate these tests for batching; some test startup behavior.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
 public final class PrivacySandboxDialogTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =

@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -169,7 +168,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   bool is_extension_signin_promo =
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       promo_type == signin::SignInPromoType::kExtension &&
-      extensions::sync_util::IsExtensionsExplicitSigninEnabled();
+      switches::IsExtensionsExplicitBrowserSigninEnabled();
 #else
       false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

@@ -108,10 +108,8 @@ class PerformanceInterventionInteractiveTest
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
-    feature_list_.InitAndEnableFeatureWithParameters(
-        performance_manager::features::kPerformanceInterventionUI,
-        {{"intervention_show_mixed_profile", "false"},
-         {"intervention_dialog_version", "2"}});
+    feature_list_.InitAndEnableFeature(
+        performance_manager::features::kPerformanceInterventionUI);
     InteractiveFeaturePromoTest::SetUp();
   }
 
@@ -227,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       BodyTextControlledByFeatureParamSingluarTab) {
+                       BodyTextSingularTab) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GetURL()),
       TriggerOnActionableTabListChange({0}),
@@ -237,11 +235,11 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody,
           &views::Label::GetText,
           l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V2)));
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       BodyTextControlledByFeatureParamPluralTabs) {
+                       BodyTextPluralTabs) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GetURL()),
       AddInstrumentedTab(kThirdTab, GetURL()),
@@ -252,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody,
           &views::Label::GetText,
           l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2)));
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
@@ -720,75 +718,3 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
             InterventionMessageTriggerResult::kRateLimited, 1);
       }));
 }
-
-class PerformanceInterventionMixedProfileTest
-    : public PerformanceInterventionInteractiveTest {
- public:
-  void SetUp() override {
-    set_open_about_blank_on_browser_launch(true);
-
-    feature_list_.InitAndEnableFeatureWithParameters(
-        performance_manager::features::kPerformanceInterventionUI,
-        {{"intervention_show_mixed_profile", "true"}});
-    InteractiveFeaturePromoTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// We can only have one non-off record profile open at a time on ChromeOS so
-// users will not encounter this case.
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
-                       SuggestTabsForMultipleProfiles) {
-  // Create two browser windows with tabs and ensure the second browser window
-  // is active
-  Browser* const first_browser = browser();
-  ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 0, GetURL("a.com"),
-                                     ui::PageTransition::PAGE_TRANSITION_LINK));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
-                                     ui::PageTransition::PAGE_TRANSITION_LINK));
-
-  Browser* const second_browser = CreateBrowser(CreateTestProfile());
-  ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
-                                     ui::PageTransition::PAGE_TRANSITION_LINK));
-  BrowserWindow* const first_browser_window = first_browser->window();
-  BrowserWindow* const second_browser_window = second_browser->window();
-  second_browser_window->Activate();
-  ASSERT_TRUE(second_browser_window->IsActive());
-  ASSERT_FALSE(first_browser_window->IsActive());
-
-  ToolbarButton* const first_button =
-      BrowserView::GetBrowserViewForBrowser(first_browser)
-          ->toolbar()
-          ->performance_intervention_button();
-  ToolbarButton* const second_button =
-      BrowserView::GetBrowserViewForBrowser(second_browser)
-          ->toolbar()
-          ->performance_intervention_button();
-  ASSERT_FALSE(first_button->GetVisible());
-  ASSERT_FALSE(second_button->GetVisible());
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kMessageTriggerResultHistogram,
-      InterventionMessageTriggerResult::kMixedProfile, 0);
-  histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
-                                     InterventionMessageTriggerResult::kShown,
-                                     0);
-
-  // We should show the toolbar button on the second browser because it is the
-  // last active browser even though all actionable tabs belong to the first
-  // browser.
-  NotifyActionableTabListChange({0, 1}, first_browser);
-  EXPECT_FALSE(first_button->GetVisible());
-  EXPECT_TRUE(second_button->GetVisible());
-  histogram_tester.ExpectBucketCount(
-      kMessageTriggerResultHistogram,
-      InterventionMessageTriggerResult::kMixedProfile, 0);
-  histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
-                                     InterventionMessageTriggerResult::kShown,
-                                     1);
-}
-#endif

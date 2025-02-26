@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -2128,13 +2129,8 @@ class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
         data_dir().AppendASCII(extension_path));
   }
 
-  // Simulates an explicit sign in. This involves both the sign in itself and
-  // flipping the pref to record an explicit sign in.
-  void SimulateExplicitSignIn() {
-    identity_test_env_profile_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                      signin::ConsentLevel::kSignin);
-    profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
   }
 
  private:
@@ -2168,7 +2164,8 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
 
   // Mimic signing a user into transport mode with syncing for extensions
   // enabled via an explicit sign in.
-  SimulateExplicitSignIn();
+  extensions::signin_test_util::SimulateExplicitSignIn(profile(),
+                                                       identity_test_env());
 
   scoped_refptr<const Extension> second_extension =
       LoadExtension("simple_with_icon");
@@ -2230,7 +2227,8 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
 
   // Mimic signing a user into transport mode with syncing for extensions
   // enabled via an explicit sign in.
-  SimulateExplicitSignIn();
+  extensions::signin_test_util::SimulateExplicitSignIn(profile(),
+                                                       identity_test_env());
 
   // Disable and re-enable `first_extension` before first sync data arrives.
   service()->DisableExtension(first_extension_id,
@@ -2283,7 +2281,8 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
 
   // Mimic signing a user into transport mode with syncing for extensions
   // enabled via an explicit sign in.
-  SimulateExplicitSignIn();
+  extensions::signin_test_util::SimulateExplicitSignIn(profile(),
+                                                       identity_test_env());
 
   scoped_refptr<const Extension> second_extension =
       LoadExtension("simple_with_icon");

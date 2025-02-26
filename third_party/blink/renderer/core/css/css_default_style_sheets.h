@@ -97,6 +97,9 @@ class CSSDefaultStyleSheets final
   StyleSheetContents* ScrollButtonStyleSheet() {
     return scroll_button_style_sheet_.Get();
   }
+  StyleSheetContents* ScrollMarkerStyleSheet() {
+    return scroll_marker_style_sheet_.Get();
+  }
   StyleSheetContents* ForcedColorsStyleSheet() {
     return forced_colors_style_sheet_.Get();
   }
@@ -179,6 +182,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> fullscreen_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;
   Member<StyleSheetContents> scroll_button_style_sheet_;
+  Member<StyleSheetContents> scroll_marker_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;
 
   std::unique_ptr<UAStyleSheetLoader> media_controls_style_sheet_loader_;
