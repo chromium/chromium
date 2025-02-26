@@ -23,6 +23,11 @@ namespace experimental_flags {
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
+// Whether the First Run UI will never be displayed. Useful when running
+// automated testing on the "chrome" build target which otherwise cannot skip
+// the FRE using tests_hook::DisableDefaultFirstRun
+bool NeverDisplayFirstRun();
+
 // Whether the Upgrade Promo UI will always be displayed.
 bool AlwaysDisplayUpgradePromo();
 
