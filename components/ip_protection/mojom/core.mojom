@@ -51,4 +51,15 @@ interface CoreHost {
   // remotely before returning it.
   GetProxyConfig() => (array<network.mojom.ProxyChain>? proxy_list,
                        GeoHint? geo_hint);
+
+  // Try to get a batch of new PRTs.
+  //
+  // `outcome` will be null in case of errors.
+  // `result.status` will contain the status of the call.
+  // `result.network_error_code` will indicate the network error code returned
+  // by the url loader. `result.try_again_after`, if not null, will contain the
+  // time after which the fetcher suggests trying again, as a form of backoff.
+  TryGetProbabilisticRevealTokens() =>
+    (TryGetProbabilisticRevealTokensOutcome? outcome,
+     TryGetProbabilisticRevealTokensResult result);
 };

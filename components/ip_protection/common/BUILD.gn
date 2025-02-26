@@ -613,11 +613,33 @@ source_set("ip_protection_probabilistic_reveal_token_direct_fetcher_unittest") {
   ]
 }
 
-source_set("ip_protection_probabilistic_reveal_token_fetcher") {
+source_set("ip_protection_probabilistic_reveal_token_mojo_fetcher") {
   sources = [
-    "ip_protection_probabilistic_reveal_token_fetcher.cc",
-    "ip_protection_probabilistic_reveal_token_fetcher.h",
+    "ip_protection_probabilistic_reveal_token_mojo_fetcher.cc",
+    "ip_protection_probabilistic_reveal_token_mojo_fetcher.h",
   ]
+  public_deps = [
+    ":ip_protection_core_host_remote",
+    ":ip_protection_probabilistic_reveal_token_fetcher",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_mojo_fetcher_unittest") {
+  testonly = true
+  sources =
+      [ "ip_protection_probabilistic_reveal_token_mojo_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_probabilistic_reveal_token_mojo_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_probabilistic_reveal_token_fetcher") {
+  sources = [ "ip_protection_probabilistic_reveal_token_fetcher.h" ]
   public_deps = [
     ":ip_protection_data_types",
     "//base",

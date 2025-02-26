@@ -35,6 +35,11 @@ class FakeCoreHost : public ip_protection::mojom::CoreHost {
   void GetProxyConfig(GetProxyConfigCallback callback) override {
     NOTREACHED();
   }
+
+  void TryGetProbabilisticRevealTokens(
+      TryGetProbabilisticRevealTokensCallback callback) override {
+    NOTREACHED();
+  }
 };
 
 TEST(IpProtectionTokenMojoFetcherTest, CallsThrough) {
