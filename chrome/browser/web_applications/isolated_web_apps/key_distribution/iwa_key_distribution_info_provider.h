@@ -150,10 +150,6 @@ class IwaKeyDistributionInfoProvider {
 
   void SignalOnDataReady(bool is_preloaded);
 
-  // Component data protobuf parsing tasks are posted to a sequenced runner
-  // instead of a thread pool to prevent possible version races.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   // Will be signalled once any component version (regardless of whether
   // preloaded or downloaded) is loaded.
   base::OneShotEvent any_data_ready_;
