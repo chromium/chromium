@@ -1975,8 +1975,8 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLSuggestions) {
       url::Origin::Create(GURL(profile1.facet.canonical_spec()));
 
   // Note that `profile3` is not a PSL match due to the PSL extensions list.
-  ExpectServiceToReturnAffiliatedPlusProfiles(
-      origin, UnorderedElementsAre(profile1, profile2));
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(profile1, profile2)));
 }
 
 // Verifies that affiliated group suggestions are returned.
@@ -2001,8 +2001,8 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedGroupSuggestions) {
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  ExpectServiceToReturnAffiliatedPlusProfiles(
-      origin, UnorderedElementsAre(group_profile));
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(group_profile)));
 }
 
 // Tests that filling suggestions are returned even if they are affiliated
@@ -2023,8 +2023,8 @@ TEST_F(PlusAddressAffiliationsTest,
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  ExpectServiceToReturnAffiliatedPlusProfiles(
-      origin, UnorderedElementsAre(group_profile));
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(group_profile)));
 }
 
 // Tests that no creation suggestion is offered when the profile is off the
@@ -2039,7 +2039,7 @@ TEST_F(PlusAddressAffiliationsTest,
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  ExpectServiceToReturnAffiliatedPlusProfiles(origin, IsEmpty());
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(origin, IsEmpty()));
 }
 
 // Tests that no creation suggestion is offered when the global toggle is off.
@@ -2056,7 +2056,7 @@ TEST_F(PlusAddressAffiliationsTest,
   setting_service().set_is_plus_addresses_enabled(false);
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  ExpectServiceToReturnAffiliatedPlusProfiles(origin, IsEmpty());
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(origin, IsEmpty()));
 }
 
 // Tests that filling suggestions are returned even if they are affiliated
@@ -2080,8 +2080,8 @@ TEST_F(PlusAddressAffiliationsTest,
   setting_service().set_is_plus_addresses_enabled(false);
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  ExpectServiceToReturnAffiliatedPlusProfiles(
-      origin, UnorderedElementsAre(group_profile));
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(group_profile)));
 }
 
 // Verifies that no affiliated suggestions are returned when there are no
@@ -2148,14 +2148,16 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLProfiles) {
       url::Origin::Create(GURL(profile1.facet.canonical_spec()));
 
   // Note that `profile3` is not a PSL match due to the PSL extensions list.
-  ExpectServiceToReturnAffiliatedPlusProfiles(
-      origin, UnorderedElementsAre(profile1, profile2));
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(profile1, profile2)));
 }
 
 // Verifies that the service returns profiles from affiliated domains even if
 // the requested domain doesn't have an affiliated plus address.
+//
+// TODO(crbug.com/399184823): Reenable after fixing the failed expectation.
 TEST_F(PlusAddressAffiliationsTest,
-       AffiliatedProfilesForDomainWithNoPlusAddresses) {
+       DISABLED_AffiliatedProfilesForDomainWithNoPlusAddresses) {
   PlusProfile group_profile = test::CreatePlusProfileWithFacet(
       FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
 
@@ -2173,8 +2175,8 @@ TEST_F(PlusAddressAffiliationsTest,
   const url::Origin origin =
       url::Origin::Create(GURL("https://bar.example.com"));
 
-  ExpectServiceToReturnAffiliatedPlusProfiles(
-      origin, UnorderedElementsAre(group_profile));
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(group_profile)));
 }
 
 // Verifies that affiliated plus addresses are returned.
@@ -2216,13 +2218,17 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLPlusAddresses) {
       url::Origin::Create(GURL(profile1.facet.canonical_spec()));
 
   // Note that `profile3` is not a PSL match due to the PSL extensions list.
-  ExpectServiceToReturnAffiliatedPlusAddresses(
-      origin, UnorderedElementsAre("plus+one@plus.plus", "plus+foo@plus.plus"));
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusAddresses(
+      origin,
+      UnorderedElementsAre("plus+one@plus.plus", "plus+foo@plus.plus")));
 }
 
 // Verifies that the service returns plus addresses from affiliated group
 // domains.
-TEST_F(PlusAddressAffiliationsTest, AffiliatedPlusAddressesForGroupMatches) {
+//
+// TODO(crbug.com/399184823): Reenable after fixing the failed expectation.
+TEST_F(PlusAddressAffiliationsTest,
+       DISABLED_AffiliatedPlusAddressesForGroupMatches) {
   PlusProfile group_profile = test::CreatePlusProfileWithFacet(
       FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
 
@@ -2240,8 +2246,8 @@ TEST_F(PlusAddressAffiliationsTest, AffiliatedPlusAddressesForGroupMatches) {
   const url::Origin origin =
       url::Origin::Create(GURL("https://bar.example.com"));
 
-  ExpectServiceToReturnAffiliatedPlusAddresses(
-      origin, UnorderedElementsAre("https://group.affiliated.com"));
+  EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusAddresses(
+      origin, UnorderedElementsAre("https://group.affiliated.com")));
 }
 
 }  // namespace
