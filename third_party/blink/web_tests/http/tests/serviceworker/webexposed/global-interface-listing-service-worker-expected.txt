@@ -1584,6 +1584,7 @@ interface OffscreenCanvasRenderingContext2D
     method stroke
     method strokeRect
     method strokeText
+    method strokeTextCluster
     method transferBackFromGPUTexture
     method transferToGPUTexture
     method transform

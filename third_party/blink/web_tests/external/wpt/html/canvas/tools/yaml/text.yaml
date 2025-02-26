@@ -2097,7 +2097,7 @@
   variants:
   - *load-font-variant-definition
 
-- name: 2d.text.measure.text-clusters-rendering-align.tentative
+- name: 2d.text.measure.fillTextCluster-align.tentative
   desc: >-
     Test that fillTextCluster() correctly positions the text, taking into
     account the textAlign from the context at the time the text was measured.
@@ -2138,7 +2138,48 @@
     ctx_align_right:
       ctx_align: right
 
-- name: 2d.text.measure.text-clusters-rendering-baseline.tentative
+- name: 2d.text.measure.strokeTextCluster-align.tentative
+  desc: >-
+    Test that strokeTextCluster() correctly positions the text, taking into
+    account the textAlign from the context at the time the text was measured.
+  size: [250, 43]
+  code: |
+    ctx.font = '20px serif';
+    const text = 'Test ☺️ א';
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
+
+    ctx.textAlign = '{{ ctx_align }}';
+    let tm = ctx.measureText(text);
+    const clusters = tm.getTextClusters();
+
+    // Rendering all clusters with the same (x, y) parameters must be
+    // equivalent to a strokeText() call at (x, y).
+    for (const cluster of clusters) {
+        ctx.strokeTextCluster(cluster, x, y);
+    }
+  reference: |
+    ctx.font = '20px serif';
+    const text = 'Test ☺️ א';
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
+
+    ctx.textAlign = '{{ ctx_align }}';
+
+    // Rendering all clusters with the same (x, y) parameters must be
+    // equivalent to a strokeText() call at (x, y).
+    ctx.strokeText(text, x, y);
+  variants_layout:
+      [single_file]
+  variants:
+  - ctx_align_left:
+      ctx_align: left
+    ctx_align_center:
+      ctx_align: center
+    ctx_align_right:
+      ctx_align: right
+
+- name: 2d.text.measure.fillTextCluster-baseline.tentative
   desc: >-
     Test that fillTextCluster() correctly positions the text, taking into
     account the textBaseline from the context at the time the text was measured.
@@ -2178,7 +2219,47 @@
     ctx_baseline_alphabetic:
       ctx_baseline: alphabetic
 
-- name: 2d.text.measure.text-clusters-rendering-font-change.tentative
+- name: 2d.text.measure.strokeTextCluster-baseline.tentative
+  desc: >-
+    Test that strokeTextCluster() correctly positions the text, taking into
+    account the textBaseline from the context at the time the text was measured.
+  size: [180, 43]
+  code: |
+    ctx.font = '20px serif';
+    const text = 'Test ☺️ א';
+    const x = 20;
+    const y = canvas.height / 2;
+
+    ctx.textBaseline = '{{ ctx_baseline }}';
+    let tm = ctx.measureText(text);
+    const clusters = tm.getTextClusters();
+
+    // Rendering all clusters with the same (x, y) parameters must be
+    // equivalent to a strokeText() call at (x, y).
+    for (const cluster of clusters) {
+        ctx.strokeTextCluster(cluster, x, y);
+    }
+  reference: |
+    ctx.font = '20px serif';
+    const text = 'Test ☺️ א';
+    const x = 20;
+    const y = canvas.height / 2;
+
+    ctx.textBaseline = '{{ ctx_baseline }}';
+    ctx.strokeText(text, x, y);
+  variants_layout:
+      [single_file]
+  variants:
+  - ctx_baseline_top:
+      ctx_baseline: top
+    ctx_baseline_middle:
+      ctx_baseline: middle
+    ctx_baseline_bottom:
+      ctx_baseline: bottom
+    ctx_baseline_alphabetic:
+      ctx_baseline: alphabetic
+
+- name: 2d.text.measure.fillTextCluster-font-change.tentative
   desc: >-
     Test that fillTextCluster() renders in the font used originally when the
     text was measured, even if the font set on the context has changed since.
@@ -2206,7 +2287,35 @@
     const y = 100;
     ctx.fillText(text, x, y);
 
-- name: 2d.text.measure.text-clusters-rendering-drawing-styles-change.tentative
+- name: 2d.text.measure.strokeTextCluster-font-change.tentative
+  desc: >-
+    Test that strokeTextCluster() renders in the font used originally when the
+    text was measured, even if the font set on the context has changed since.
+  size: [500, 200]
+  code: |
+    ctx.font = '50px sans-serif';
+    const text = 'Hello ♦️ World!';
+    let tm = ctx.measureText(text);
+    const clusters = tm.getTextClusters();
+
+    ctx.font = '80px serif';
+
+    const x = 100;
+    const y = 100;
+    for (const cluster of clusters) {
+        ctx.strokeTextCluster(cluster, x, y);
+    }
+  reference: |
+    ctx.font = '50px sans-serif';
+    const text = 'Hello ♦️ World!';
+    let tm = ctx.measureText(text);
+    const clusters = tm.getTextClusters();
+
+    const x = 100;
+    const y = 100;
+    ctx.strokeText(text, x, y);
+
+- name: 2d.text.measure.fillTextCluster-drawing-styles-change.tentative
   desc: >-
     Test that fillTextCluster() renders using the drawing styles as they were
     when `ctx.measureText()` was called, regardless of any changes in the
@@ -2264,7 +2373,65 @@
       modified_value: |-
        ctx.fontVariantCaps = 'all-small-caps';
 
-- name: 2d.text.measure.text-clusters-range.tentative
+- name: 2d.text.measure.strokeTextCluster-drawing-styles-change.tentative
+  desc: >-
+    Test that strokeTextCluster() renders using the drawing styles as they were
+    when `ctx.measureText()` was called, regardless of any changes in the
+    context since.
+  size: [250, 80]
+  code: |
+    ctx.font = '20px serif';
+    const text = 'Test ♦️ find';
+
+    {{ original_value }}
+
+    let tm = ctx.measureText(text);
+    const clusters = tm.getTextClusters();
+
+    {{ modified_value }}
+
+    for (const cluster of clusters) {
+        ctx.strokeTextCluster(cluster, 10, 25);
+    }
+
+    ctx.strokeText(text, 10, 50);
+  reference: |
+    ctx.font = '20px serif';
+    const text = 'Test ♦️ find';
+
+    {{ original_value }}
+
+    ctx.strokeText(text, 10, 25);
+
+    {{ modified_value }}
+
+    ctx.strokeText(text, 10, 50);
+  variants_layout:
+      [single_file]
+  grid_width: 2
+  variants:
+  - letter_spacing:
+      original_value: |-
+       ctx.letterSpacing = '2px';
+      modified_value: |-
+       ctx.letterSpacing = '6px';
+    word_spacing:
+      original_value: |-
+       ctx.wordSpacing = '2px';
+      modified_value: |-
+       ctx.wordSpacing = '10px';
+    font_kerning:
+      original_value: |-
+       ctx.fontKerning = 'none';
+      modified_value: |-
+       ctx.fontKerning = 'normal';
+    font_variant_caps:
+      original_value: |-
+       ctx.fontVariantCaps = 'small-caps';
+      modified_value: |-
+       ctx.fontVariantCaps = 'all-small-caps';
+
+- name: 2d.text.measure.fillTextCluster-range.tentative
   desc: >-
     Test that getTextClusters() and fillTextCluster() correctly render
     different ranges of the input text.
@@ -2318,7 +2485,62 @@
   variants:
   - *load-font-variant-definition
 
-- name: 2d.text.measure.text-clusters-rendering-options.tentative
+- name: 2d.text.measure.strokeTextCluster-range.tentative
+  desc: >-
+    Test that getTextClusters() and strokeTextCluster() correctly render
+    different ranges of the input text.
+  test_type: promise
+  fonts:
+  - CanvasTest
+  size: [400, 300]
+  code: |
+    // Renders all the clusters in the list from position (x, y).
+    function renderClusters(clusters, x, y) {
+      for (const cluster of clusters) {
+        ctx.strokeTextCluster(cluster, x, y);
+      }
+    }
+
+    {{ load_font }}
+
+    ctx.font = '50px CanvasTest';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    const text = 'EEEEE';
+    let tm = ctx.measureText(text);
+
+    // Background color.
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#0f0';
+    ctx.lineWidth = 12;
+
+    // Without the first character.
+    renderClusters(tm.getTextClusters(1, 5), 0, 0);
+    @assert pixel 5,5 ==~ 255,0,0,255;
+    @assert pixel 55,5 ==~ 0,255,0,255;
+    @assert pixel 105,5 ==~ 0,255,0,255;
+    @assert pixel 155,5 ==~ 0,255,0,255;
+    @assert pixel 205,5 ==~ 0,255,0,255;
+    // Without the last character.
+    renderClusters(tm.getTextClusters(0, 4), 0, 100);
+    @assert pixel 5,105 ==~ 0,255,0,255;
+    @assert pixel 55,105 ==~ 0,255,0,255;
+    @assert pixel 105,105 ==~ 0,255,0,255;
+    @assert pixel 155,105 ==~ 0,255,0,255;
+    @assert pixel 245,105 ==~ 255,0,0,255;
+    // Only the middle character.
+    renderClusters(tm.getTextClusters(2, 3), 0, 200);
+    @assert pixel 5,205 ==~ 255,0,0,255;
+    @assert pixel 55,205 ==~ 255,0,0,255;
+    @assert pixel 105,205 ==~ 0,255,0,255;
+    @assert pixel 195,205 ==~ 255,0,0,255;
+    @assert pixel 245,205 ==~ 255,0,0,255;
+  variants:
+  - *load-font-variant-definition
+
+- name: 2d.text.measure.fillTextCluster-options.tentative
   desc: >-
     Test that fillTextCluster() correctly applies the options passed as a
     dictionary.
@@ -2350,7 +2572,6 @@
     @assert pixel 45,45 ==~ 0,255,0,255;
     @assert pixel 55,5 ==~ 255,0,0,255;
     @assert pixel 5,55 ==~ 255,0,0,255;
-    @assert pixel 5,55 ==~ 255,0,0,255;
     @assert pixel 55,55 ==~ 255,0,0,255;
 
     // Override the x and y values of the cluster.
@@ -2373,6 +2594,66 @@
     @assert pixel 65,215 ==~ 255,0,0,255;
     @assert pixel 15,265 ==~ 255,0,0,255;
     @assert pixel 65,265 ==~ 255,0,0,255;
+  variants:
+  - *load-font-variant-definition
+
+- name: 2d.text.measure.strokeTextCluster-options.tentative
+  desc: >-
+    Test that strokeTextCluster() correctly applies the options passed as a
+    dictionary.
+  test_type: promise
+  fonts:
+  - CanvasTest
+  size: [100, 300]
+  code: |
+    {{ load_font }}
+
+    ctx.font = '50px CanvasTest';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    const text = 'E';
+    const tm = ctx.measureText(text);
+    const cluster = tm.getTextClusters()[0];
+
+    // Background color.
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#0f0';
+    ctx.lineWidth = 12;
+
+    // Override the align and baseline of the cluster.
+    ctx.strokeTextCluster(cluster, 50, 50, {align: 'right', baseline: 'bottom'});
+    @assert pixel 5,5 ==~ 0,255,0,255;
+    @assert pixel 45,5 ==~ 0,255,0,255;
+    @assert pixel 5,45 ==~ 0,255,0,255;
+    @assert pixel 45,45 ==~ 0,255,0,255;
+    @assert pixel 5,95 ==~ 255,0,0,255;
+    @assert pixel 50,95 ==~ 255,0,0,255;
+    @assert pixel 95,50 ==~ 255,0,0,255;
+    @assert pixel 95,5 ==~ 255,0,0,255;
+
+    // Override the x and y values of the cluster.
+    ctx.strokeTextCluster(cluster, 0, 100, {x: 10, y: 10});
+    @assert pixel 15,115 ==~ 0,255,0,255;
+    @assert pixel 55,115 ==~ 0,255,0,255;
+    @assert pixel 15,155 ==~ 0,255,0,255;
+    @assert pixel 55,155 ==~ 0,255,0,255;
+    @assert pixel 1,101 ==~ 255,0,0,255;
+    @assert pixel 1,151 ==~ 255,0,0,255;
+    @assert pixel 51,101 ==~ 255,0,0,255;
+
+    // Override the align, baseline, x, and y values of the cluster.
+    ctx.strokeTextCluster(cluster, 50, 250,
+                        {align: 'right', baseline: 'bottom', x: 10,  y: 10});
+    @assert pixel 15,215 ==~ 0,255,0,255;
+    @assert pixel 55,215 ==~ 0,255,0,255;
+    @assert pixel 15,255 ==~ 0,255,0,255;
+    @assert pixel 55,255 ==~ 0,255,0,255;
+    @assert pixel 5,295 ==~ 255,0,0,255;
+    @assert pixel 50,295 ==~ 255,0,0,255;
+    @assert pixel 95,250 ==~ 255,0,0,255;
+    @assert pixel 95,25 ==~ 255,0,0,255;
   variants:
   - *load-font-variant-definition
 

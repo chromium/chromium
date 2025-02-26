@@ -3508,6 +3508,43 @@ void BaseRenderingContext2D::strokeText(const String& text,
                    text.length(), &max_width);
 }
 
+void BaseRenderingContext2D::strokeTextCluster(const TextCluster* text_cluster,
+                                               double x,
+                                               double y) {
+  strokeTextCluster(text_cluster, x, y, /*cluster_options=*/nullptr);
+}
+
+void BaseRenderingContext2D::strokeTextCluster(
+    const TextCluster* text_cluster,
+    double x,
+    double y,
+    const TextClusterOptions* cluster_options) {
+  DCHECK(text_cluster);
+  V8CanvasTextAlign cluster_align = text_cluster->align();
+  V8CanvasTextBaseline cluster_baseline = text_cluster->baseline();
+  double cluster_x = text_cluster->x();
+  double cluster_y = text_cluster->y();
+  if (cluster_options != nullptr) {
+    if (cluster_options->hasX()) {
+      cluster_x = cluster_options->x();
+    }
+    if (cluster_options->hasY()) {
+      cluster_y = cluster_options->y();
+    }
+    if (cluster_options->hasAlign()) {
+      cluster_align = cluster_options->align();
+    }
+    if (cluster_options->hasBaseline()) {
+      cluster_baseline = cluster_options->baseline();
+    }
+  }
+  DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
+                   CanvasRenderingContext2DState::kStrokePaintType,
+                   cluster_align, cluster_baseline, text_cluster->begin(),
+                   text_cluster->end(), nullptr,
+                   text_cluster->textMetrics()->GetFont());
+}
+
 const Font* BaseRenderingContext2D::AccessFont(HTMLCanvasElement* canvas) {
   const CanvasRenderingContext2DState& state = GetState();
   if (!state.HasRealizedFont()) {

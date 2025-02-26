@@ -1516,6 +1516,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stroke
 [Worker]     method strokeRect
 [Worker]     method strokeText
+[Worker]     method strokeTextCluster
 [Worker]     method transferBackFromGPUTexture
 [Worker]     method transferToGPUTexture
 [Worker]     method transform

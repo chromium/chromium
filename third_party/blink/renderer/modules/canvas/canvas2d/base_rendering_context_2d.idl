@@ -18,6 +18,8 @@ interface mixin BaseRenderingContext2D {
     [HighEntropy, MeasureAs=Canvas2DMeasureText] TextMetrics measureText(DOMString text);
     [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y);
     [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y, TextClusterOptions options);
+    [RuntimeEnabled=ExtendedTextMetrics] void strokeTextCluster(TextCluster textCluster, double x, double y);
+    [RuntimeEnabled=ExtendedTextMetrics] void strokeTextCluster(TextCluster textCluster, double x, double y, TextClusterOptions options);
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);
