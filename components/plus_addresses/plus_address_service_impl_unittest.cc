@@ -325,13 +325,13 @@ TEST_F(PlusAddressServiceTest, IsEligibleForPlusAddress) {
                            autofill::FieldType::EMAIL_ADDRESS);
   EXPECT_TRUE(service().IsFieldEligibleForPlusAddress(field));
 
-  // SINGLE_USERNAME_FORGOT_PASSWORD fields are supported.
+  // SINGLE_USERNAME_FORGOT_PASSWORD fields are not supported.
   field = autofill::AutofillField();
   field.set_server_predictions({autofill::test::CreateFieldPrediction(
       autofill::FieldType::SINGLE_USERNAME_FORGOT_PASSWORD)});
   field.set_heuristic_type(autofill::GetActiveHeuristicSource(),
                            autofill::FieldType::EMAIL_ADDRESS);
-  EXPECT_TRUE(service().IsFieldEligibleForPlusAddress(field));
+  EXPECT_FALSE(service().IsFieldEligibleForPlusAddress(field));
 
   // Heuristic type needs to be EMAIL_ADDRESS.
   field = autofill::AutofillField();

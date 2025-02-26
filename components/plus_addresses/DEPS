@@ -3,7 +3,6 @@ include_rules = [
   "+components/autofill/core",
   "+components/feature_engagement/public/feature_constants.h",
   "+components/keyed_service/core",
-  "+components/password_manager",
   "+components/prefs",
   "+components/pref_registry",
   "+components/signin/public",
