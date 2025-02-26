@@ -2334,6 +2334,7 @@ class InterestGroupAuction::BuyerHelper
     bid_state.bidding_signals_handle =
         auction_->interest_group_manager_->trusted_signals_cache()
             ->RequestTrustedBiddingSignals(
+                auction_->auction_worklet_manager_->GetFrameTreeNodeID(),
                 auction_->main_frame_origin_, auction_->ip_address_space_,
                 interest_group.owner, interest_group.name,
                 interest_group.execution_mode, bid_state.bidder->joining_origin,
@@ -5585,6 +5586,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
     cache_handle =
         interest_group_manager_->trusted_signals_cache()
             ->RequestTrustedScoringSignals(
+                auction_worklet_manager_->GetFrameTreeNodeID(),
                 main_frame_origin_, ip_address_space_, config_->seller,
                 *config_->trusted_scoring_signals_url,
                 *config_->non_shared_params.trusted_scoring_signals_coordinator,

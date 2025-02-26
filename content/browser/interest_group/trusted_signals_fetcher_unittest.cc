@@ -34,6 +34,7 @@
 #include "base/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
@@ -274,7 +275,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), kDefaultMainFrameOrigin,
+        url_loader_factory_.get(), FrameTreeNodeId(), kDefaultMainFrameOrigin,
         network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
         GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
@@ -305,7 +306,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
-        url_loader_factory_.get(), kDefaultMainFrameOrigin,
+        url_loader_factory_.get(), FrameTreeNodeId(), kDefaultMainFrameOrigin,
         network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
         GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
@@ -2368,7 +2369,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, kDefaultMainFrameOrigin,
+      &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
       network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
       GetScriptOrigin(), TrustedBiddingSignalsUrl(),
       BiddingAndAuctionServerKey{
@@ -2405,7 +2406,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchScoringSignals(
-      &url_loader_factory, kDefaultMainFrameOrigin,
+      &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
       network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
       GetScriptOrigin(), TrustedScoringSignalsUrl(),
       BiddingAndAuctionServerKey{
@@ -2463,8 +2464,8 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsClientSecurityState) {
       network::TestURLLoaderFactory url_loader_factory;
       TrustedSignalsFetcher trusted_signals_fetcher;
       trusted_signals_fetcher.FetchScoringSignals(
-          &url_loader_factory, kDefaultMainFrameOrigin, ip_address_space,
-          network_partition_nonce_, GetScriptOrigin(),
+          &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
+          ip_address_space, network_partition_nonce_, GetScriptOrigin(),
           TrustedScoringSignalsUrl(),
           BiddingAndAuctionServerKey{
               std::string(reinterpret_cast<const char*>(kTestPublicKey),
@@ -2553,7 +2554,8 @@ TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
   TrustedSignalsFetcher::SignalsFetchResult out;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, /*main_frame_origin=*/kSignalsOrigin,
+      &url_loader_factory, FrameTreeNodeId(),
+      /*main_frame_origin=*/kSignalsOrigin,
       network::mojom::IPAddressSpace::kPublic,
       /*network_partition_nonce=*/base::UnguessableToken::Create(),
       kSignalsOrigin, kSignalsUrl,

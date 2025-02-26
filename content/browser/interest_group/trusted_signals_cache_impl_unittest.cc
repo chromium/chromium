@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/trusted_signals_fetcher.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,6 +34,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -82,6 +84,7 @@ std::string CreateString(std::uint32_t i, size_t length = 3) {
 // validating all parameters passed to the TrustedSignalsFetcher, without
 // duplicating a lot of code.
 struct BiddingParams {
+  FrameTreeNodeId frame_tree_node_id;
   url::Origin main_frame_origin;
   network::mojom::IPAddressSpace ip_address_space =
       network::mojom::IPAddressSpace::kPublic;
@@ -105,6 +108,7 @@ struct BiddingParams {
 
 // Struct with input parameters for RequestTrustedScoringSignals().
 struct ScoringParams {
+  FrameTreeNodeId frame_tree_node_id;
   url::Origin main_frame_origin;
   network::mojom::IPAddressSpace ip_address_space =
       network::mojom::IPAddressSpace::kPublic;
@@ -158,6 +162,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingBiddingSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
+      FrameTreeNodeId frame_tree_node_id;
       url::Origin main_frame_origin;
       network::mojom::IPAddressSpace ip_address_space;
       base::UnguessableToken network_partition_nonce;
@@ -174,6 +179,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingScoringSignalsFetch {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
+      FrameTreeNodeId frame_tree_node_id;
       url::Origin main_frame_origin;
       network::mojom::IPAddressSpace ip_address_space;
       base::UnguessableToken network_partition_nonce;
@@ -195,6 +201,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
    private:
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
+        FrameTreeNodeId frame_tree_node_id,
         const url::Origin& main_frame_origin,
         network::mojom::IPAddressSpace ip_address_space,
         base::UnguessableToken network_partition_nonce,
@@ -223,14 +230,15 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key, main_frame_origin,
-          ip_address_space, network_partition_nonce, script_origin,
-          std::move(compression_groups_copy), std::move(callback),
-          weak_ptr_factory_.GetWeakPtr()));
+          trusted_signals_url, bidding_and_auction_key, frame_tree_node_id,
+          main_frame_origin, ip_address_space, network_partition_nonce,
+          script_origin, std::move(compression_groups_copy),
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
+        FrameTreeNodeId frame_tree_node_id,
         const url::Origin& main_frame_origin,
         network::mojom::IPAddressSpace ip_address_space,
         base::UnguessableToken network_partition_nonce,
@@ -259,10 +267,10 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       }
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
-          trusted_signals_url, bidding_and_auction_key, main_frame_origin,
-          ip_address_space, network_partition_nonce, script_origin,
-          std::move(compression_groups_copy), std::move(callback),
-          weak_ptr_factory_.GetWeakPtr()));
+          trusted_signals_url, bidding_and_auction_key, frame_tree_node_id,
+          main_frame_origin, ip_address_space, network_partition_nonce,
+          script_origin, std::move(compression_groups_copy),
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
 
     const raw_ptr<TestTrustedSignalsCache> cache_;
@@ -505,6 +513,7 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          const ParamType& params,
                          int expected_compression_group_id,
                          int expected_partition_id) {
+  EXPECT_EQ(fetch.frame_tree_node_id, params.frame_tree_node_id);
   EXPECT_EQ(fetch.main_frame_origin, params.main_frame_origin);
   EXPECT_EQ(fetch.ip_address_space, params.ip_address_space);
   EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
@@ -817,6 +826,7 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   BiddingParams CreateDefaultBiddingParams() const {
     BiddingParams out;
+    out.frame_tree_node_id = kFrameTreeNodeId;
     out.main_frame_origin = kMainFrameOrigin;
     out.ip_address_space = network::mojom::IPAddressSpace::kPublic;
     out.script_origin = kBidder;
@@ -832,6 +842,7 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   ScoringParams CreateDefaultScoringParams() const {
     ScoringParams out;
+    out.frame_tree_node_id = kFrameTreeNodeId;
     out.main_frame_origin = kMainFrameOrigin;
     out.ip_address_space = network::mojom::IPAddressSpace::kPublic;
     out.script_origin = kSeller;
@@ -1134,6 +1145,13 @@ class TrustedSignalsCacheTest : public testing::Test {
           network::mojom::IPAddressSpace::kLocal;
     }
 
+    // Cases shared by bidder and seller tests.
+
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Different FrameTreeNodeIds";
+    out.back().request_relation = RequestRelation::kDifferentFetches;
+    out.back().params2.frame_tree_node_id = FrameTreeNodeId(2);
+
     return out;
   }
 
@@ -1144,6 +1162,8 @@ class TrustedSignalsCacheTest : public testing::Test {
                                    const BiddingParams& bidding_params2) {
     // In order to merge two sets of params, only `interest_group_names` and
     // `trusted_bidding_signals_keys` may be different.
+    EXPECT_EQ(bidding_params1.frame_tree_node_id,
+              bidding_params2.frame_tree_node_id);
     EXPECT_EQ(bidding_params1.main_frame_origin,
               bidding_params2.main_frame_origin);
     EXPECT_EQ(bidding_params1.ip_address_space,
@@ -1158,6 +1178,7 @@ class TrustedSignalsCacheTest : public testing::Test {
               bidding_params2.additional_params);
 
     BiddingParams merged_bidding_params{
+        bidding_params1.frame_tree_node_id,
         bidding_params1.main_frame_origin,
         bidding_params1.ip_address_space,
         bidding_params1.script_origin,
@@ -1208,8 +1229,8 @@ class TrustedSignalsCacheTest : public testing::Test {
     // solely for the ValidateFetchParams family of methods.
     CHECK_EQ(1u, bidding_params.interest_group_names.size());
     auto handle = trusted_signals_cache_->RequestTrustedBiddingSignals(
-        bidding_params.main_frame_origin, bidding_params.ip_address_space,
-        bidding_params.script_origin,
+        bidding_params.frame_tree_node_id, bidding_params.main_frame_origin,
+        bidding_params.ip_address_space, bidding_params.script_origin,
         *bidding_params.interest_group_names.begin(),
         bidding_params.execution_mode, bidding_params.joining_origin,
         bidding_params.trusted_signals_url, bidding_params.coordinator,
@@ -1233,11 +1254,11 @@ class TrustedSignalsCacheTest : public testing::Test {
                         bool start_fetch = true) {
     int partition_id = -1;
     auto handle = trusted_signals_cache_->RequestTrustedScoringSignals(
-        scoring_params.main_frame_origin, scoring_params.ip_address_space,
-        scoring_params.script_origin, scoring_params.trusted_signals_url,
-        scoring_params.coordinator, scoring_params.interest_group_owner,
-        scoring_params.joining_origin, scoring_params.render_url,
-        scoring_params.component_render_urls,
+        scoring_params.frame_tree_node_id, scoring_params.main_frame_origin,
+        scoring_params.ip_address_space, scoring_params.script_origin,
+        scoring_params.trusted_signals_url, scoring_params.coordinator,
+        scoring_params.interest_group_owner, scoring_params.joining_origin,
+        scoring_params.render_url, scoring_params.component_render_urls,
         scoring_params.additional_params.Clone(), partition_id);
 
     // The call should never fail.
@@ -1257,6 +1278,7 @@ class TrustedSignalsCacheTest : public testing::Test {
 
   // Defaults used by most tests.
 
+  static constexpr FrameTreeNodeId kFrameTreeNodeId{1};
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main.frame.test"));
   const url::Origin kBidder = url::Origin::Create(GURL("https://bidder.test"));

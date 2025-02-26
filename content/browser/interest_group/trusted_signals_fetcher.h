@@ -22,6 +22,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/buffers/oblivious_http_request.h"
@@ -155,6 +156,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   TrustedSignalsFetcher(const TrustedSignalsFetcher&) = delete;
   TrustedSignalsFetcher& operator=(const TrustedSignalsFetcher&) = delete;
 
+  // `frame_tree_node_id` is used to log events for devtools.
+  //
   // `main_frame_origin` and `network_partition_nonce` are used to create an
   // IsolationInfo identifying the network partition to use.
   // `main_frame_origin`'s host is also sent as part of the encrypted request.
@@ -174,6 +177,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // compression group id. Virtual for tests.
   virtual void FetchBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       base::UnguessableToken network_partition_nonce,
@@ -183,6 +187,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
 
+  // `frame_tree_node_id` is used to log events for devtools.
+  //
   // `main_frame_origin` and `network_partition_nonce` are used to create an
   // IsolationInfo identifying the network partition to use.
   // `main_frame_origin`'s host is also sent as part of the encrypted request.
@@ -199,6 +205,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // compression group id. Virtual for tests.
   virtual void FetchScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       base::UnguessableToken network_partition_nonce,
@@ -217,6 +224,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // this class.
   void EncryptRequestBodyAndStart(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       base::UnguessableToken network_partition_nonce,
