@@ -93,7 +93,6 @@ import org.chromium.ui.base.WindowAndroid;
     ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
     ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
 })
-@DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
 public class EdgeToEdgeControllerTest {
 
     private static final int TOP_INSET = 113;
