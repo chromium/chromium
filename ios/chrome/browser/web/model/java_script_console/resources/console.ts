@@ -5,10 +5,12 @@
 // Scripts to allow page console.log() etc. output to be seen on the console
 // of the host application.
 
+/* eslint-disable no-console */
+
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
-declare type LogLevel = 'log' | 'debug' | 'info' | 'warn' | 'error';
+type LogLevel = 'log'|'debug'|'info'|'warn'|'error';
 
 function sendConsoleMessage(logLevel: LogLevel, originalArgs: unknown[]) {
   let message;

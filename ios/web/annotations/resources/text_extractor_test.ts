@@ -46,9 +46,7 @@ class TestTextExtractor extends TestSuite {
 
     // Simulates the visit.
     extractor.begin();
-    let run = '';
     for (const childNode of root.childNodes) {
-      run += ':' + childNode.nodeName;
       if (childNode.nodeType === Node.TEXT_NODE) {
         extractor.visibleTextNode(childNode as Text);
       } else if (childNode.nodeName === 'VISIBLE') {

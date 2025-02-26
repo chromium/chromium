@@ -7,6 +7,8 @@
  */
 
 // Semantically extends `HTMLElement` to allow using `Symbol` as property index.
+// Disable ESLint rule to follow native HTML elements naming convention.
+// eslint-disable-next-line @typescript-eslint/naming-convention
 class HTMLElementWithSymbolIndex extends HTMLElement {
   [key: symbol|string]: any
 }

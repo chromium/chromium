@@ -118,9 +118,9 @@ class TestTextIntersectionObserver extends TestSuite implements
         '<div id="d3">World</div>');
     const html = document.documentElement as HTMLElementWithSymbolIndex;
     const body = document.body as HTMLElementWithSymbolIndex;
-    const d1 = document.querySelector('#d1') as HTMLElementWithSymbolIndex;
-    const d2 = document.querySelector('#d2') as HTMLElementWithSymbolIndex;
-    const d3 = document.querySelector('#d3') as HTMLElementWithSymbolIndex;
+    const d1 = document.querySelector<HTMLElementWithSymbolIndex>('#d1')!;
+    const d2 = document.querySelector<HTMLElementWithSymbolIndex>('#d2')!;
+    const d3 = document.querySelector<HTMLElementWithSymbolIndex>('#d3')!;
 
     this.observer.observe(d1.childNodes[0]!);
     this.observer.observe(d2.childNodes[0]!);
@@ -180,9 +180,9 @@ class TestTextIntersectionObserver extends TestSuite implements
         '<div id="d3">World</div>');
     const html = document.documentElement as HTMLElementWithSymbolIndex;
     const body = document.body as HTMLElementWithSymbolIndex;
-    const d1 = document.querySelector('#d1') as HTMLElementWithSymbolIndex;
-    const d2 = document.querySelector('#d2') as HTMLElementWithSymbolIndex;
-    const d3 = document.querySelector('#d3') as HTMLElementWithSymbolIndex;
+    const d1 = document.querySelector<HTMLElementWithSymbolIndex>('#d1')!;
+    const d2 = document.querySelector<HTMLElementWithSymbolIndex>('#d2')!;
+    const d3 = document.querySelector<HTMLElementWithSymbolIndex>('#d3')!;
     this.observer.observe(d1.childNodes[0]!);
     this.observer.observe(d2.childNodes[0]!);
     this.observer.observe(d3.childNodes[0]!);

@@ -12,7 +12,7 @@ import {TextAnnotationList} from '//ios/web/annotations/resources/text_annotatio
 import {TextClick} from '//ios/web/annotations/resources/text_click.js';
 import {annotationExternalData, annotationFullText} from '//ios/web/annotations/resources/text_decoration.js';
 import {TextDecorator} from '//ios/web/annotations/resources/text_decorator.js';
-import {TextDOMObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
+import {TextDomObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
 import type {HTMLElementWithSymbolIndex, NodeWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {getMetaContentByHttpEquiv, hasNoIntentDetection, noFormatDetectionTypes, rectFromElement} from '//ios/web/annotations/resources/text_dom_utils.js';
 import type {TextChunk} from '//ios/web/annotations/resources/text_extractor.js';
@@ -26,7 +26,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 // Used to trigger text extraction and decoration when system is idle.
 let idleTaskTracker: IdleTaskTracker|null;
 let intersectionObserver: TextIntersectionObserver|null;
-let mutationObserver: TextDOMObserver|null;
+let mutationObserver: TextDomObserver|null;
 let styler: TextStyler|null;
 let decorator: TextDecorator|null;
 let extractor: TextExtractor|null;
@@ -133,7 +133,7 @@ function start(): void {
   decorator = new TextDecorator(styler);
   intersectionObserver =
       new TextIntersectionObserver(root, extractor, idleTaskTracker);
-  mutationObserver = new TextDOMObserver(
+  mutationObserver = new TextDomObserver(
       root, intersectionObserver, decorationNodeRemovedConsumer);
   intersectionObserver.start();
   mutationObserver.start();

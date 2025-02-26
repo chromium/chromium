@@ -8,11 +8,11 @@
 
 import {replacementNodeDecorationId} from '//ios/web/annotations/resources/text_decoration.js';
 import type {CountedIntersectionObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
-import {TextDOMObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
+import {TextDomObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
 import type {HTMLElementWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {expectEq, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextDOMObserver extends TestSuite implements
+class TestTextDomObserver extends TestSuite implements
     CountedIntersectionObserver {
   corrupted: Node[] = [];
 
@@ -40,7 +40,7 @@ class TestTextDOMObserver extends TestSuite implements
 
   // Mark: Tests
 
-  observer = new TextDOMObserver(
+  observer = new TextDomObserver(
       document.documentElement, this, this.decorationNodeRemovedConsumer);
 
   override setUp(): void {
@@ -57,7 +57,7 @@ class TestTextDOMObserver extends TestSuite implements
 
   // Tests the observer works correctly when nodes are added or removed and when
   // text is mutated.
-  testTextDOMObserverFlow() {
+  testTextDomObserverFlow() {
     load(
         '<div id="d0">' +
         '<div id="d1">Hello</div>' +
@@ -112,7 +112,7 @@ class TestTextDOMObserver extends TestSuite implements
 
     // Make annotation 'decorated'.
     const annotation =
-        document.querySelector('#d2') as HTMLElementWithSymbolIndex;
+        document.querySelector<HTMLElementWithSymbolIndex>('#d2')!;
     annotation[replacementNodeDecorationId] = 'd2';
 
     // Now have 3p remove it without going through decorator.
@@ -125,4 +125,4 @@ class TestTextDOMObserver extends TestSuite implements
   }
 }
 
-export {TestTextDOMObserver};
+export {TestTextDomObserver};

@@ -171,7 +171,7 @@ function refreshExpandedState(): void {
       const rowPath = row.getAttribute('path')!;
 
       if (row.classList.contains('directory')) {
-        const itemIcon = row.querySelector('.item_icon') as HTMLElement;
+        const itemIcon = row.querySelector<HTMLElement>('.item_icon')!;
         if (collapsedDirectoryPaths.has(rowPath)) {
           itemIcon.innerText = '📁';
         } else {
@@ -372,6 +372,8 @@ function collapseDirectories(items: Item[], parentPath = ''): void {
 }
 
 // Marks every directory as collapsed and refreshes the UI.
+// Suppress ESLint error because the function is actually used in the HTML file.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function collapseAllDirectories(): void {
   if (!allStatistics) {
     return;
@@ -383,6 +385,8 @@ function collapseAllDirectories(): void {
 }
 
 // Marks every directory as expanded and refreshes the UI.
+// Suppress ESLint error because the function is actually used in the HTML file.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function expandAllDirectories(): void {
   collapsedDirectoryPaths.clear();
   refreshExpandedState();
