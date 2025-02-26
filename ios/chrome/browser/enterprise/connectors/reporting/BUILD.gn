@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("reporting") {
+  sources = [
+    "ios_realtime_reporting_client.h",
+    "ios_realtime_reporting_client.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/common",
+    "//components/profile_metrics",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_realtime_reporting_client_unittest.mm" ]
+  deps = [
+    ":reporting",
+    "//base",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
