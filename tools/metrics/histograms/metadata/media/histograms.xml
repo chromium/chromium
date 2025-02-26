@@ -5352,7 +5352,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.ScreenCaptureKit.SCContentSharingPicker"
+<histogram name="Media.ScreenCaptureKit.SCContentSharingPicker2"
     enum="ScreenCaptureKitSCContentSharingPicker" expires_after="2025-08-31">
   <owner>tovep@chromium.org</owner>
   <owner>kron@chromium.org</owner>
