@@ -4298,7 +4298,7 @@
     },
     {
       name: "SvgInlineRootPixelSnappingScaleAdjustment",
-      status: "test",
+      status: "stable",
     },
     {
       name: "SvgNoPixelSnappingScaleAdjustment",
