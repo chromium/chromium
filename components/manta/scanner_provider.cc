@@ -21,7 +21,6 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace manta {
 
@@ -29,6 +28,37 @@ namespace {
 
 constexpr char kOauthConsumerName[] = "manta_scanner";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
+constexpr auto kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("chromeos_scanner_provider", R"(
+      semantics {
+        sender: "ChromeOS Scanner"
+        description:
+          "Requests extracted details for a selected region of their screen "
+          "from the Scanner service."
+        trigger:
+          "User selecting a region via the Scanner UI."
+        internal {
+          contacts {
+            email: "e14s-eng@google.com"
+          }
+        }
+        user_data {
+          type: USER_CONTENT
+        }
+        data:
+          "A selected region of their screen."
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2025-02-25"
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No setting. Users must take explicit action to trigger the feature."
+        policy_exception_justification:
+          "Not implemented, not considered useful. This request is part of a "
+          "flow which is user-initiated."
+      }
+    )");
 
 bool IsValidScannerInput(const proto::ScannerInput& scanner_input) {
   return scanner_input.image().size() > 0;
@@ -134,11 +164,10 @@ void ScannerProvider::Call(
   custom.set_type_url(kScannerInputTypeUrl);
   custom.set_value(scanner_input.SerializeAsString());
 
-  // TODO: b/363101024 - Populate annotation tag.
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsScannerUseProdServerEnabled())},
-      kOauthConsumerName, /*annotation_tag=*/MISSING_TRAFFIC_ANNOTATION,
-      request, MantaMetricType::kScanner,
+      kOauthConsumerName, /*annotation_tag=*/kTrafficAnnotation, request,
+      MantaMetricType::kScanner,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)),
       kTimeout);
