@@ -155,12 +155,8 @@ void ContextualCueingService::OnNudgeActivity(
       LogNudgeInteractionUKM(source_id, NudgeInteraction::kIgnoredTabChange,
                              document_available_time, *nudge_time);
       break;
-    case tabs::GlicNudgeActivity::kNudgeIgnoredNavigation:
-      LogNudgeInteractionHistogram(NudgeInteraction::kIgnoredNavigation);
-      CHECK(nudge_time);
-      LogNudgeInteractionUKM(source_id, NudgeInteraction::kIgnoredNavigation,
-                             document_available_time, *nudge_time);
-      break;
+      // TODO: b/395169951 - Make sure UKM called for ignored nudges due to
+      // navigation changes.
   }
 }
 
