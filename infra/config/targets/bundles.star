@@ -2596,6 +2596,7 @@ targets.bundle(
     name = "desktop_once_isolated_scripts",
     targets = [
         "test_env_py_unittests",
+        "webui_resources_tools_python_unittests",
         "xvfb_py_unittests",
     ],
 )
