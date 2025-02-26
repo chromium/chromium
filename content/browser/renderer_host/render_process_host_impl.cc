@@ -69,6 +69,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/embedder_support/switches.h"
 #include "components/input/utils.h"
 #include "components/metrics/histogram_controller.h"
 #include "components/metrics/single_sample_metrics.h"
@@ -3447,7 +3448,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kUseCmdDecoder,
       switches::kUseFakeCodecForPeerConnection,
       switches::kUseFakeUIForMediaStream,
-      switches::kUseMobileUserAgent,
+      embedder_support::kUseMobileUserAgent,
       switches::kVideoCaptureUseGpuMemoryBuffer,
       switches::kVideoThreads,
       switches::kWaitForDebuggerOnNavigation,

@@ -26,8 +26,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/user_agent.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -235,9 +233,9 @@ std::string GetUserAgentInternal(
   }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMobileUserAgent))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kUseMobileUserAgent)) {
     product += " Mobile";
+  }
 #endif
 
   // In User-Agent reduction phase 5, only apply the <unifiedPlatform> to
@@ -455,8 +453,8 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
       GetUserAgentBrandMajorVersionListInternal(std::nullopt);
   metadata.mobile = false;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  metadata.mobile = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kUseMobileUserAgent);
+  metadata.mobile =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(kUseMobileUserAgent);
 #endif
   metadata.platform = GetPlatformForUAMetadata();
 
