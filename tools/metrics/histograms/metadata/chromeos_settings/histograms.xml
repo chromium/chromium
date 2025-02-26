@@ -78,7 +78,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.CursorColor.Enabled"
-    enum="BooleanToggled" expires_after="M134">
+    enum="BooleanToggled" expires_after="2025-09-23">
 <!-- Kept separate from the generic accessibility settings metric because this
  is not a simple toggle on/off presented to the user, but is a dropdown list
  of color choices. -->

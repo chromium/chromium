@@ -806,10 +806,6 @@ class ASH_EXPORT AccessibilityController
   void UpdateShortcutsEnabledFromPref();
   void UpdateTabletModeShelfNavigationButtonsFromPref();
 
-  // UpdateCursorColorFromPrefs helpers.
-  void UpdateCursorColor(SkColor cursor_color, bool notify);
-  void TrackCursorColorEnabledDuration(SkColor cursor_color);
-
   void SwitchAccessDisableDialogClosed(bool disable_dialog_accepted);
   void MaybeCreateSelectToSpeakEventHandler();
   void ActivateSwitchAccess();
@@ -855,13 +851,8 @@ class ASH_EXPORT AccessibilityController
   int large_cursor_size_in_dip_ = kDefaultLargeCursorSize;
 
   bool dictation_active_ = false;
-  bool cursor_color_enabled_ = false;
   bool shortcuts_enabled_ = true;
   bool tablet_mode_shelf_navigation_buttons_enabled_ = false;
-
-  // The time at which the cursor color feature was last enabled. Used for
-  // metrics.
-  base::Time last_cursor_color_enabled_time_;
 
   SelectToSpeakState select_to_speak_state_ =
       SelectToSpeakState::kSelectToSpeakStateInactive;

@@ -135,6 +135,8 @@ class AccessibilityFeaturesApiTest
       return ash::prefs::kAccessibilitySelectToSpeakEnabled;
     if (feature == "switchAccess")
       return ash::prefs::kAccessibilitySwitchAccessEnabled;
+    if (feature == "cursorColor")
+      return ash::prefs::kAccessibilityCursorColorEnabled;
     if (feature == "dockedMagnifier")
       return ash::prefs::kDockedMagnifierEnabled;
     if (feature == "dictation")
@@ -245,10 +247,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get) {
   // WARNING: Make sure that features which load Chrome extension are not among
   // enabled_features (see |Set| test for the reason).
   std::vector<std::string> enabled_features = {
-      "cursorHighlight",
-      "highContrast",
-      "largeCursor",
-      "stickyKeys",
+      "cursorColor", "cursorHighlight", "highContrast",
+      "largeCursor", "stickyKeys",
   };
 
   std::vector<std::string> disabled_features = {
@@ -302,14 +302,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
   };
 
   std::vector<std::string> disabled_features = {
-      "autoclick",
-      "caretHighlight",
-      "focusHighlight",
-      "screenMagnifier",
-      "selectToSpeak",
-      "spokenFeedback",
-      "switchAccess",
-      "virtualKeyboard",
+      "autoclick",      "caretHighlight",  "cursorColor",
+      "focusHighlight", "screenMagnifier", "selectToSpeak",
+      "spokenFeedback", "switchAccess",    "virtualKeyboard",
   };
 
   ASSERT_TRUE(
@@ -341,6 +336,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Set) {
   // would induce loading of Chrome extension.
   std::vector<std::string> enabled_features = {
       "caretHighlight",
+      "cursorColor",
       "focusHighlight",
       "stickyKeys",
   };
@@ -386,6 +382,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, ObserveFeatures) {
   // enabled_features (see |Set| test for the reason).
   std::vector<std::string> enabled_features = {
       "caretHighlight",
+      "cursorColor",
       "focusHighlight",
       "stickyKeys",
   };
