@@ -26,6 +26,8 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/policy/external_storage/device_id.h"
+#include "chromeos/ash/components/policy/external_storage/external_storage_policy_controller.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -249,13 +251,6 @@ void ArcVolumeMounterBridge::OnMountEvent(
     return;
   }
 
-  // Skip mount events if removable media is forbidden by the policy.
-  if (event == DiskMountManager::MountEvent::MOUNTING &&
-      pref_service_->GetBoolean(disks::prefs::kExternalStorageDisabled)) {
-    DVLOG(1) << "Ignored mount event since policy disallows removable media";
-    return;
-  }
-
   // Skip mount events if removable media access is disabled by a feature.
   if (event == DiskMountManager::MountEvent::MOUNTING &&
       !base::FeatureList::IsEnabled(kExternalStorageAccess)) {
@@ -271,10 +266,20 @@ void ArcVolumeMounterBridge::OnMountEvent(
     return;
   }
 
-  // Get disks information that are needed by Android MountService.
   const ash::disks::Disk* disk =
       DiskMountManager::GetInstance()->FindDiskBySourcePath(
           mount_info.source_path);
+
+  // Skip mount events if removable media is forbidden by the policy.
+  const auto device_id = policy::DeviceId::FromDisk(disk);
+  if (event == DiskMountManager::MountEvent::MOUNTING &&
+      policy::ExternalStoragePolicyController::IsDeviceDisabled(*pref_service_,
+                                                                device_id)) {
+    DVLOG(1) << "Ignored mount event since policy disallows removable media";
+    return;
+  }
+
+  // Get disks information that are needed by Android MountService.
   std::string fs_uuid, device_label;
   ash::DeviceType device_type = ash::DeviceType::kUnknown;
   // There are several cases where disk can be null:

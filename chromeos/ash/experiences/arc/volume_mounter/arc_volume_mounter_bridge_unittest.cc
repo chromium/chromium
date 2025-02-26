@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/components/policy/external_storage/test_support.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -248,7 +249,7 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageDisabled) {
   EXPECT_TRUE(delegate()->is_watching(kRemovableMountPath1));
 
   // Disable external storage by policy.
-  prefs()->SetBoolean(disks::prefs::kExternalStorageDisabled, true);
+  policy::external_storage::SetDisabled(*prefs(), true);
 
   // No new mount events are propagated to the instance or the delegate.
   bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
@@ -263,6 +264,32 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageDisabled) {
                          ash::MountPoint(kDevicePath1, kRemovableMountPath1));
   EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 2);
   EXPECT_FALSE(delegate()->is_watching(kRemovableMountPath1));
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageAllowlist) {
+  constexpr char kDevicePath[] = "/dev/foo";
+  constexpr char kRemovableMountPath[] = "/media/removable/FOO";
+  constexpr uint16_t kVendorId = 0xABCD;
+  constexpr uint16_t kProductId = 0x1234;
+
+  disk_mount_manager()->AddDiskForTest(
+      ash::disks::Disk::Builder()
+          .SetDevicePath(kDevicePath)
+          .SetMountPath(kRemovableMountPath)
+          .SetVendorId(base::StringPrintf("%x", kVendorId))
+          .SetProductId(base::StringPrintf("%x", kProductId))
+          .Build());
+
+  // Disable external storage by policy and set the allowlist.
+  policy::external_storage::SetDisabled(*prefs(), true);
+  policy::external_storage::SetAllowlist(*prefs(), {kVendorId, kProductId});
+
+  // Mount events are propagated because of the allowlist.
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint(kDevicePath, kRemovableMountPath));
+  EXPECT_EQ(1, volume_mounter_instance()->num_on_mount_event_called());
+  EXPECT_TRUE(delegate()->is_watching(kRemovableMountPath));
 }
 
 TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageAccess) {
@@ -382,7 +409,7 @@ TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageDisabled) {
       {kDevicePath, kRemovableMountPath, ash::MountType::kDevice});
 
   // Disable external storage by policy.
-  prefs()->SetBoolean(disks::prefs::kExternalStorageDisabled, true);
+  policy::external_storage::SetDisabled(*prefs(), true);
 
   bridge()->SendAllMountEvents();
 
@@ -399,6 +426,46 @@ TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageDisabled) {
   EXPECT_FALSE(mount_point_info_myfiles.is_null());
   EXPECT_EQ(mount_point_info_myfiles->mount_event,
             DiskMountManager::MountEvent::MOUNTING);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest,
+       SendAllMountEvents_ExternalStorageAllowlist) {
+  constexpr char kDevicePath[] = "/dev/foo";
+  constexpr char kRemovableMountPath[] = "/media/removable/FOO";
+  constexpr uint16_t kVendorId = 0xABCD;
+  constexpr uint16_t kProductId = 0x1234;
+
+  disk_mount_manager()->AddDiskForTest(
+      ash::disks::Disk::Builder()
+          .SetDevicePath(kDevicePath)
+          .SetMountPath(kRemovableMountPath)
+          .SetVendorId(base::StringPrintf("%x", kVendorId))
+          .SetProductId(base::StringPrintf("%x", kProductId))
+          .Build());
+  disk_mount_manager()->AddMountPointForTest(
+      {kDevicePath, kRemovableMountPath, ash::MountType::kDevice});
+
+  // Disable external storage by policy and set the allowlist.
+  policy::external_storage::SetDisabled(*prefs(), true);
+  policy::external_storage::SetAllowlist(*prefs(), {kVendorId, kProductId});
+
+  bridge()->SendAllMountEvents();
+
+  // Mount point info is propagated for MyFiles, and because of the allowlist
+  // also for /media/removable/FOO.
+  EXPECT_EQ(2, volume_mounter_instance()->num_on_mount_event_called());
+
+  mojom::MountPointInfoPtr mount_point_info_removable =
+      volume_mounter_instance()->GetMountPointInfo(kRemovableMountPath);
+  ASSERT_FALSE(mount_point_info_removable.is_null());
+  EXPECT_EQ(DiskMountManager::MountEvent::MOUNTING,
+            mount_point_info_removable->mount_event);
+
+  mojom::MountPointInfoPtr mount_point_info_myfiles =
+      volume_mounter_instance()->GetMountPointInfo(kMyFilesMountPath);
+  ASSERT_FALSE(mount_point_info_myfiles.is_null());
+  EXPECT_EQ(DiskMountManager::MountEvent::MOUNTING,
+            mount_point_info_myfiles->mount_event);
 }
 
 TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageAccess) {
