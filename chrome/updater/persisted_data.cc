@@ -322,8 +322,9 @@ void PersistedData::SetLang(const std::string& id, const std::string& lang) {
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, record the lang in ClientState, since some
   // applications read it from there.
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), base::UTF8ToWide(id),
-                 kRegValueLang, base::UTF8ToWide(lang));
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueLang,
+                 base::UTF8ToWide(lang));
 #endif
 }
 

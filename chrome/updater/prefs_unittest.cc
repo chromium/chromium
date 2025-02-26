@@ -61,6 +61,16 @@ TEST_F(PrefsTest, PrefsCommitPendingWrites) {
   EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "brand");
 
   metadata->SetLang("someappid", "somelang");
+#if BUILDFLAG(IS_WIN)
+  std::wstring registry_lang_w;
+  EXPECT_EQ(
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValue(kRegValueLang, &registry_lang_w),
+      ERROR_SUCCESS);
+  EXPECT_EQ(registry_lang_w, L"somelang");
+#endif
   EXPECT_EQ(metadata->GetLang("someappid"), "somelang");
 
 #if BUILDFLAG(IS_WIN)
