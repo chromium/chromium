@@ -4480,7 +4480,21 @@ TEST_F(FileUtilTest, NonExistentContentUriTest) {
   File file(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_FALSE(file.IsValid());
 }
-#endif
+
+// Validate crbug.com/398066589 where CreateDirectory() fails when a user does
+// not have stat() access to all subpaths.
+TEST_F(FileUtilTest, CreateDirectoryOnlyCheckMissingSubpaths) {
+  // Apps have access to the android external-storage-dir (e.g.
+  // /storage/emulated/0), but for security will usually not have access such as
+  // stat() to its parent. In tests, DIR_ANDROID_APP_DATA is subdir
+  // chromium_tests_root. The directory should always exist before this test
+  // runs, but even if not it should create ok even though stat() would fail on
+  // some of the subpaths.
+  FilePath dir = PathService::CheckedGet(DIR_ANDROID_APP_DATA);
+  EXPECT_TRUE(CreateDirectory(dir));
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     defined(ARCH_CPU_32_BITS)
