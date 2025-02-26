@@ -222,6 +222,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kFormsClassifications:
       // TODO(crbug.com/389631477) - Add traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kEnhancedCalendar:
+      // TODO(crbug.com/398296762): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:

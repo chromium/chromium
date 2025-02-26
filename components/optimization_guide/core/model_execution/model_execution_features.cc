@@ -174,6 +174,7 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kBlingPrototyping:
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kEnhancedCalendar:
       return std::nullopt;
   }
 }
