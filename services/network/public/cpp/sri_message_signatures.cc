@@ -63,7 +63,8 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     }
     auto result = mojom::SRIMessageSignatureComponent::New();
     result->name = name;
-    result->params.push_back(Parameters::kStrictStructuredFieldSerialization);
+    result->params.insert(
+        {Parameters::kStrictStructuredFieldSerialization, ""});
     return result;
   } else if (base::Contains(kDerivedComponents, name)) {
     // Derived components require a single `req` parameter with a `true` boolean
@@ -76,7 +77,7 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     }
     auto result = mojom::SRIMessageSignatureComponent::New();
     result->name = name;
-    result->params.push_back(Parameters::kRequest);
+    result->params.insert({Parameters::kRequest, ""});
     return result;
   } else {
     errors.push_back(mojom::SRIMessageSignatureError::
@@ -117,13 +118,14 @@ std::string SerializeParams(const net::structured_headers::Parameters params) {
   return param_list.str();
 }
 
-std::string SerializeComponentParams(const std::vector<Parameters>& params) {
+std::string SerializeComponentParams(
+    const base::flat_map<Parameters, std::string>& params) {
   // All currently-supported component params are boolean, so we serialize them
   // by mapping each enum value to a string, and joining them with `;`.
   std::stringstream param_list;
   for (const auto& param : params) {
     param_list << ';';
-    switch (param) {
+    switch (param.first) {
       case Parameters::kRequest:
         param_list << "req";
         break;
@@ -496,8 +498,8 @@ std::optional<std::string> ConstructSignatureBase(
       // SRI requires the `sf` parameter, which forces strict serialization for
       // structured fields.
       if (component->params.size() != 1u ||
-          component->params[0] !=
-              Parameters::kStrictStructuredFieldSerialization) {
+          !component->params.contains(
+              Parameters::kStrictStructuredFieldSerialization)) {
         return std::nullopt;
       }
 

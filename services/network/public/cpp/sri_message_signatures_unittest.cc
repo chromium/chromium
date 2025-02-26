@@ -143,9 +143,9 @@ class SRIMessageSignatureParserTest : public testing::Test {
     ASSERT_EQ(1u, sig->components.size());
     EXPECT_EQ("unencoded-digest", sig->components[0]->name);
     ASSERT_EQ(1u, sig->components[0]->params.size());
-    EXPECT_EQ(mojom::SRIMessageSignatureComponent::Parameter::
-                  kStrictStructuredFieldSerialization,
-              sig->components[0]->params[0]);
+    EXPECT_TRUE(sig->components[0]->params.contains(
+        mojom::SRIMessageSignatureComponent::Parameter::
+            kStrictStructuredFieldSerialization));
   }
 };
 
