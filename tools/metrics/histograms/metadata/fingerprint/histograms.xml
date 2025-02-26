@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Enroll.NumCaptures" units="captures"
     expires_after="2025-07-01">
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Count the number of fingerprint sensor captures (i.e. touches) performed
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Enroll.SessionResult" enum="EnrollSessionResult"
     expires_after="2026-01-08">
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Tracks the result/outcome of an enrollment session. This allows for
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.SetContext.Success" enum="BooleanSuccess"
     expires_after="2025-08-03">
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>Whether setting FPMCU mode succeeded.</summary>
 </histogram>
@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
     enum="BooleanCorrect" expires_after="2025-06-08">
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Whether the hash of the positive match secret read from FPMCU matches the
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.PartialAttemptsBeforeSuccess"
     units="attempts" expires_after="2025-03-30">
-  <owner>hcyang@google.com</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>tomhughes@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.ReadPositiveMatchSecret.Success"
     enum="BooleanSuccess" expires_after="2025-05-29">
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     ChromeOS Only. After a positive fingerprint match has been identified,
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess"
     units="attempts" expires_after="2025-11-17">
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Counts the number of recent fingerprint attempts until successful screen
@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
     enum="FingerprintRecordFormatVersion" expires_after="2025-07-13">
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Format version of a fingerprint template record read from storage. ChromeOS
@@ -479,7 +479,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
     expires_after="2025-08-10">
   <owner>tomhughes@chromium.org</owner>
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Tracks the fingerprint firmware updater's reason(s) for re-flashing.
@@ -489,7 +489,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
     expires_after="2025-08-10">
   <owner>tomhughes@chromium.org</owner>
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>Tracks the fingerprint firmware updater's overall status.</summary>
 </histogram>
@@ -497,7 +497,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Fingerprint.Updater.{Outcome}.Duration.Overall" units="ms"
     expires_after="2026-01-26">
   <owner>tomhughes@chromium.org</owner>
-  <owner>hesling@chromium.org</owner>
+  <owner>fsammoura@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Measures the total time it takes to run the fingerprint firmware updater
