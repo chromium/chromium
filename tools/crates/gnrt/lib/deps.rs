@@ -629,6 +629,15 @@ mod tests {
 
         i += 1;
 
+        assert_eq!(dependencies[i].package_name, "libc");
+        assert_eq!(dependencies[i].version, Version::new(0, 2, 133));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["std"],
+        );
+
+        i += 1;
+
         assert_eq!(dependencies[i].package_name, "more-asserts");
         assert_eq!(dependencies[i].version, Version::new(0, 3, 0));
         assert!(dependencies[i].is_toplevel_dep);
@@ -661,6 +670,15 @@ mod tests {
             assert!(path.ends_with("num-traits-0.2.15/build.rs"));
             true
         }));
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "num_threads");
+        assert_eq!(dependencies[i].version, Version::new(0, 1, 6));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            empty_str_slice
+        );
 
         i += 1;
 
@@ -830,6 +848,25 @@ mod tests {
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
             &["alloc", "std"]
         );
+        assert_eq!(dependencies[i].dependencies.len(), 2);
+        assert_eq!(
+            dependencies[i].dependencies[0],
+            DepOfDep {
+                package_name: "libc".to_string(),
+                use_name: "libc".to_string(),
+                version: Version::new(0, 2, 133),
+                platform: Some(Platform::from_str("cfg(target_family = \"unix\")").unwrap()),
+            }
+        );
+        assert_eq!(
+            dependencies[i].dependencies[1],
+            DepOfDep {
+                package_name: "num_threads".to_string(),
+                use_name: "num_threads".to_string(),
+                version: Version::new(0, 1, 6),
+                platform: Some(Platform::from_str("cfg(target_family = \"unix\")").unwrap()),
+            }
+        );
 
         i += 1;
 
@@ -911,6 +948,20 @@ mod tests {
 
         assert_eq!(dependencies[i].package_name, "foo");
         assert_eq!(dependencies[i].version, Version::new(0, 1, 0));
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "libc");
+        assert_eq!(dependencies[i].version, Version::new(0, 2, 133));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["std"]
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "num_threads");
+        assert_eq!(dependencies[i].version, Version::new(0, 1, 6));
 
         i += 1;
 
