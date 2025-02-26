@@ -22,11 +22,27 @@ Aggregate Build(int a, int b, int c) {
 
 int UnsafeIndex();  // This function might return an out-of-bound index.
 
+struct Embedded {
+  // Expected rewrite:
+  // struct Values {
+  //   int value;
+  // };
+  // std::array<Values, 3> values = {{{1}, {2}, {3}}};
+  struct Values {
+    int value;
+  };
+  std::array<Values, 3> values = {{{1}, {2}, {3}}};
+};
+
 void test_with_structs() {
   // Expected rewrite:
   // auto buf0 = std::to_array<Aggregate>({{13, 1, 7}, {14, 2, 5}, {15, 2, 4}});
   auto buf0 = std::to_array<Aggregate>({{13, 1, 7}, {14, 2, 5}, {15, 2, 4}});
   buf0[UnsafeIndex()].a = 0;
+
+  Embedded embedded;
+  // Triggers the rewrite of Embedded::values
+  embedded.values[UnsafeIndex()].value++;
 
   // Expected rewrite:
   // std::array<Aggregate, 2> buf1 = {
