@@ -2914,9 +2914,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Only the prediction for the first field is overridden.
   base::test::ScopedFeatureList features;
   base::FieldTrialParams feature_parameters{
-      {features::test::
-           kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
-               .name,
+      {features::test::kAutofillOverridePredictionsSpecification.name,
        CreateManualOverridePrediction({{CalculateAlternativeFormSignature(form),
                                         CalculateFieldSignatureForField(field1),
                                         {USERNAME}}})}};
@@ -2975,9 +2973,7 @@ TEST_F(
   // Only the prediction for the first field is overridden.
   base::test::ScopedFeatureList features;
   base::FieldTrialParams feature_parameters{
-      {features::test::
-           kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
-               .name,
+      {features::test::kAutofillOverridePredictionsSpecification.name,
        CreateManualOverridePrediction({{CalculateAlternativeFormSignature(form),
                                         CalculateFieldSignatureForField(field1),
                                         {USERNAME}}})}};
@@ -3033,9 +3029,7 @@ TEST_F(
   // overridden.
   base::test::ScopedFeatureList features;
   base::FieldTrialParams feature_parameters{
-      {features::test::
-           kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
-               .name,
+      {features::test::kAutofillOverridePredictionsSpecification.name,
        CreateManualOverridePrediction(
            {{CalculateAlternativeFormSignature(form),
              CalculateFieldSignatureForField(name_field),
