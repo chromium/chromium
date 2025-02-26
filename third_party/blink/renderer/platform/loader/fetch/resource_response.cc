@@ -371,9 +371,7 @@ static std::optional<base::Time> ParseDateValueInHeader(
   //
   // > A cache recipient MUST interpret invalid date formats, especially the
   // > value "0", as representing a time in the past (i.e., "already expired").
-  if (base::FeatureList::IsEnabled(
-          blink::features::kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink) &&
-      header_name == http_names::kLowerExpires && header_value == "0") {
+  if (header_name == http_names::kLowerExpires && header_value == "0") {
     return base::Time::Min();
   }
 

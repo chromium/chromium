@@ -1455,9 +1455,7 @@ std::optional<Time> HttpResponseHeaders::GetTimeValuedHeader(
   //
   // > A cache recipient MUST interpret invalid date formats, especially the
   // > value "0", as representing a time in the past (i.e., "already expired").
-  if (base::FeatureList::IsEnabled(
-          features::kTreatHTTPExpiresHeaderValueZeroAsExpired) &&
-      name == "Expires" && *value == "0") {
+  if (name == "Expires" && *value == "0") {
     return Time::Min();
   }
 
