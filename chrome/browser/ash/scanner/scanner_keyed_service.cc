@@ -80,8 +80,7 @@ constexpr auto kTrafficAnnotation =
 
 specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
   specialized_features::FeatureAccessConfig config;
-  // TODO: b/381767664 - Use `ash::prefs::kScannerEnabled` instead.
-  config.settings_toggle_pref = ash::prefs::kSunfishEnabled;
+  config.settings_toggle_pref = ash::prefs::kScannerEnabled;
   config.disabled_in_kiosk_mode = true;
   config.consent_accepted_pref = ash::prefs::kSunfishConsentDisclaimerAccepted;
 
