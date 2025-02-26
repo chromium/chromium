@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -55,6 +56,7 @@ public class CommerceBottomSheetContentRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock BottomSheetController mBottomSheetController;
+    @Mock ScrimManager mMockScrimManager;
     @Mock CommerceBottomSheetContentProvider mPriceTrackingBottomSheetContentProvider;
 
     private ModelList mModelList;
@@ -96,6 +98,7 @@ public class CommerceBottomSheetContentRenderTest {
                             new CommerceBottomSheetContentCoordinator(
                                     getActivity(),
                                     mBottomSheetController,
+                                    () -> mMockScrimManager,
                                     () -> mPriceTrackingBottomSheetContentProvider);
 
                     mContentView = mCoordinator.getContentViewForTesting();

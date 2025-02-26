@@ -900,6 +900,13 @@ class BottomSheet extends FrameLayout
     }
 
     /**
+     * @return The width of the container that the bottom sheet exists in.
+     */
+    public float getSheetContainerWidth() {
+        return mContainerWidth;
+    }
+
+    /**
      * Sends notifications if the sheet is transitioning from the peeking to half expanded state and
      * from the peeking to fully expanded state. The peek to half events are only sent when the
      * sheet is between the peeking and half states.

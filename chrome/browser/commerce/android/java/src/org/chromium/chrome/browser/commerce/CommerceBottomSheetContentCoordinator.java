@@ -19,9 +19,12 @@ import androidx.recyclerview.widget.RecyclerView.State;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -41,14 +44,17 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Supplier<CommerceBottomSheetContentProvider>
             mPriceTrackingContentProviderSupplier;
+    private final Supplier<ScrimManager> mScrimManagerSupplier;
 
     public CommerceBottomSheetContentCoordinator(
             Context context,
             @NonNull BottomSheetController bottomSheetController,
+            final Supplier<ScrimManager> scrimSupplier,
             Supplier<CommerceBottomSheetContentProvider> priceTrackingContentProviderSupplier) {
         mModelList = new ModelList();
         mPriceTrackingContentProviderSupplier = priceTrackingContentProviderSupplier;
 
+        mScrimManagerSupplier = scrimSupplier;
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
         adapter.registerType(
                 0,
@@ -82,8 +88,26 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
 
         bottomSheetController.addObserver(
                 new EmptyBottomSheetObserver() {
+                    PropertyModel mScrimModel;
+
+                    @Override
+                    public void onSheetStateChanged(int newState, int reason) {
+                        if (newState == SheetState.FULL) {
+                            mContenRecyclerView.suppressLayout(false);
+                            if (!mMediator.isContentWrappingContent()) {
+                                mScrimModel = bottomSheetController.createScrimParams();
+                                mScrimManagerSupplier.get().showScrim(mScrimModel);
+                            }
+                        } else if (newState == SheetState.HALF) {
+                            mContenRecyclerView.suppressLayout(true);
+                        }
+                    }
+
                     @Override
                     public void onSheetClosed(int reason) {
+                        if (mScrimModel != null) {
+                            mScrimManagerSupplier.get().hideScrim(mScrimModel, true);
+                        }
                         mMediator.onBottomSheetClosed();
                         for (CommerceBottomSheetContentProvider provider : mContentProviders) {
                             provider.hideContentView();

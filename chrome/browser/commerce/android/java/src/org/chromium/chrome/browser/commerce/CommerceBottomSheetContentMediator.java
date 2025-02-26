@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -22,6 +23,7 @@ public class CommerceBottomSheetContentMediator {
     private final int mExpectedContentCount;
     @NonNull private final BottomSheetController mBottomSheetController;
     private final View mCommerceBottomSheetContentContainer;
+    private CommerceBottomSheetContent mContent;
 
     public CommerceBottomSheetContentMediator(
             ModelList modelList,
@@ -67,6 +69,7 @@ public class CommerceBottomSheetContentMediator {
     }
 
     void onBottomSheetClosed() {
+        mContent = null;
         mModelList.clear();
         mContentReadyCount = 0;
     }
@@ -82,9 +85,16 @@ public class CommerceBottomSheetContentMediator {
     }
 
     private void showBottomSheet() {
-        CommerceBottomSheetContent content =
+        mContent =
                 new CommerceBottomSheetContent(
-                        mCommerceBottomSheetContentContainer, mModelList.size());
-        mBottomSheetController.requestShowContent(content, true);
+                        mCommerceBottomSheetContentContainer,
+                        mModelList.size(),
+                        mBottomSheetController);
+        mBottomSheetController.requestShowContent(mContent, true);
+    }
+
+    boolean isContentWrappingContent() {
+        if (mContent == null) return true;
+        return mContent.getFullHeightRatio() == HeightMode.WRAP_CONTENT;
     }
 }
