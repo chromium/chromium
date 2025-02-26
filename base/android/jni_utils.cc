@@ -28,14 +28,6 @@ LockAndMap* GetLockAndMap() {
 }
 }  // namespace
 
-static void JNI_JNIUtils_OverwriteMainClassLoader(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& class_loader) {
-  LockAndMap* lock_and_map = GetLockAndMap();
-  base::AutoLock guard(lock_and_map->lock);
-  lock_and_map->map[""].Reset(env, class_loader);
-}
-
 jobject GetSplitClassLoader(JNIEnv* env, const char* split_name) {
   LockAndMap* lock_and_map = GetLockAndMap();
   base::AutoLock guard(lock_and_map->lock);
@@ -45,7 +37,7 @@ jobject GetSplitClassLoader(JNIEnv* env, const char* split_name) {
   }
 
   ScopedJavaGlobalRef<jobject> class_loader(
-      Java_JNIUtils_getSplitClassLoader(env, split_name));
+      env, Java_JNIUtils_getSplitClassLoader(env, split_name));
   jobject class_loader_obj = class_loader.obj();
   lock_and_map->map.insert({split_name, std::move(class_loader)});
   return class_loader_obj;

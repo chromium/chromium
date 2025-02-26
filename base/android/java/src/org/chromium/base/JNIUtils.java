@@ -7,7 +7,6 @@ package org.chromium.base;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -17,8 +16,7 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("base::android")
 public class JNIUtils {
     private static final String TAG = "JNIUtils";
-    private static @Nullable ClassLoader sJniClassLoader;
-    private static boolean sBadClassLoaderUsed;
+    private static final JniClassLoader sJniClassLoader = new JniClassLoader();
 
     /**
      * Returns a ClassLoader which can load Java classes from the specified split.
@@ -41,12 +39,6 @@ public class JNIUtils {
                 // is very out of date.
             }
         }
-        if (sJniClassLoader == null) {
-            sBadClassLoaderUsed = true;
-            // This will be replaced by the Chrome split's ClassLoader as soon as we call
-            // setClassLoader.
-            return JNIUtils.class.getClassLoader();
-        }
         return sJniClassLoader;
     }
 
@@ -55,21 +47,30 @@ public class JNIUtils {
      *
      * @param classLoader the ClassLoader to use.
      */
-    public static void setClassLoader(ClassLoader classLoader) {
-        assert sJniClassLoader == null : "setClassLoader should be called only once.";
-        sJniClassLoader = classLoader;
-        if (sBadClassLoaderUsed) {
-            // In the case that we attempt a JNI call before the Chrome split is loaded, we want to
-            // make sure that we invalidate the cached ClassLoader, since the cached ClassLoader
-            // only includes the base module. We cannot do this unconditionally, however, since
-            // sBadClassLoaderUsed also indicates that native is loaded, and this function will
-            // often execute before native is loaded.
-            JNIUtilsJni.get().overwriteMainClassLoader(classLoader);
-        }
+    public static void setDefaultClassLoader(ClassLoader classLoader) {
+        sJniClassLoader.mDelegate = classLoader;
     }
 
-    @NativeMethods
-    interface Natives {
-        void overwriteMainClassLoader(ClassLoader classLoader);
+    /**
+     * Allows swapping out the underlying class loader to a an apk split's class loader without
+     * having to invalidate the native code's caching of the class loader (which may or may not
+     * have happened yet).
+     */
+    private static class JniClassLoader extends ClassLoader {
+        @Nullable ClassLoader mDelegate;
+
+        JniClassLoader() {
+            super(JNIUtils.class.getClassLoader());
+        }
+
+        // ClassLoader.loadClass() delegates to this method.
+        @Override
+        public Class<?> findClass(String cn) throws ClassNotFoundException {
+            ClassLoader delegate = mDelegate;
+            if (delegate != null) {
+                return delegate.loadClass(cn);
+            }
+            return super.findClass(cn);
+        }
     }
 }

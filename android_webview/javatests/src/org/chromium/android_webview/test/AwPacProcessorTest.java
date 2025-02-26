@@ -11,8 +11,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
-import com.android.webview.chromium.WebViewChromiumFactoryProvider;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,7 +20,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwPacProcessor;
-import org.chromium.base.JNIUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
@@ -54,7 +51,6 @@ public class AwPacProcessorTest extends AwParameterizedTest {
 
     @Before
     public void setUp() {
-        JNIUtils.setClassLoader(WebViewChromiumFactoryProvider.class.getClassLoader());
         LibraryLoader.getInstance().ensureInitialized();
 
         mProcessor = AwPacProcessor.getInstance();
