@@ -21,9 +21,11 @@ GlicNudgeController::GlicNudgeController(
 
 GlicNudgeController::~GlicNudgeController() = default;
 
-void GlicNudgeController::UpdateNudgeLabel(content::WebContents* web_contents,
-                                           const std::string& nudge_label,
-                                           GlicNudgeActivityCallback callback) {
+void GlicNudgeController::UpdateNudgeLabel(
+    content::WebContents* web_contents,
+    const std::string& nudge_label,
+    std::optional<GlicNudgeActivity> activity,
+    GlicNudgeActivityCallback callback) {
   auto* const tab_interface =
       browser_window_interface_->GetActiveTabInterface();
   if (tab_interface->GetContents() != web_contents) {
@@ -34,6 +36,11 @@ void GlicNudgeController::UpdateNudgeLabel(content::WebContents* web_contents,
   nudge_activity_callback_ = callback;
   for (auto& observer : observers_) {
     observer.OnTriggerGlicNudgeUI(nudge_label);
+  }
+
+  if (nudge_label.empty()) {
+    CHECK(activity);
+    OnNudgeActivity(*activity);
   }
 }
 
@@ -48,6 +55,7 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
     case GlicNudgeActivity::kNudgeClicked:
     case GlicNudgeActivity::kNudgeDismissed:
     case GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
+    case GlicNudgeActivity::kNudgeIgnoredNavigation:
       nudge_activity_callback_.Run(activity);
       nudge_activity_callback_.Reset();
       break;
