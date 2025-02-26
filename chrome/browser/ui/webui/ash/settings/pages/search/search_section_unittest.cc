@@ -202,7 +202,7 @@ class SearchSectionTestWithScannerEnabled : public ChromeAshTestBase {
 };
 
 TEST_F(SearchSectionTestWithScannerEnabled,
-       DoesNotIncludeSunfishSettingsWhenScannerDisabledByAccessChecker) {
+       DoesNotIncludeScannerSettingsWhenScannerDisabledByAccessChecker) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
           CheckFeatureAccess)
@@ -218,13 +218,13 @@ TEST_F(SearchSectionTestWithScannerEnabled,
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_FALSE(html_source->GetLocalizedStrings()
-                   ->FindBool("isSunfishSettingsToggleVisible")
+                   ->FindBool("isScannerSettingsToggleVisible")
                    .value());
 }
 
 TEST_F(
     SearchSectionTestWithScannerEnabled,
-    IncludesSunfishSettingsWhenFeatureAccessCheckFailsConsentOrSettingsCheck) {
+    IncludesScannerSettingsWhenFeatureAccessCheckFailsConsentOrSettingsCheck) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
           CheckFeatureAccess)
@@ -242,12 +242,12 @@ TEST_F(
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_TRUE(html_source->GetLocalizedStrings()
-                  ->FindBool("isSunfishSettingsToggleVisible")
+                  ->FindBool("isScannerSettingsToggleVisible")
                   .value());
 }
 
 TEST_F(SearchSectionTestWithScannerEnabled,
-       IncludeSunfishSettingsWhenNoChecksFail) {
+       IncludeScannerSettingsWhenNoChecksFail) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
           CheckFeatureAccess)
@@ -262,7 +262,7 @@ TEST_F(SearchSectionTestWithScannerEnabled,
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_TRUE(html_source->GetLocalizedStrings()
-                  ->FindBool("isSunfishSettingsToggleVisible")
+                  ->FindBool("isScannerSettingsToggleVisible")
                   .value());
 }
 

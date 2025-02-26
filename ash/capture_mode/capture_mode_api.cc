@@ -20,8 +20,8 @@ namespace ash {
 
 namespace {
 
-// Extra checks for Sunfish prefs and policy, used in `CanShowSunfishUi` and
-// `IsSunfishSessionAllowed`.
+// Extra checks for Sunfish prefs and policy, used in `CanShowSunfishUi`.
+// TODO: crbug.com/397521940 - Inline this into `CanShowSunfishUi`.
 bool ExtraSunfishChecks() {
   Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
   if (!shell) {
@@ -57,9 +57,7 @@ bool CanShowSunfishUi() {
 }
 
 bool IsSunfishSessionAllowed() {
-  return (features::IsSunfishFeatureEnabled() ||
-          ScannerController::CanShowUiForShell()) &&
-         ExtraSunfishChecks();
+  return CanShowSunfishUi() || ScannerController::CanShowUiForShell();
 }
 
 }  // namespace ash
