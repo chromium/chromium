@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1045448422538531528">Afegeix al grup</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creat fa <ph name="NUM_WEEKS_ONE" /> setmana}other{Creat fa <ph name="NUM_WEEKS_MANY" /> setmanes}}</translation>
 <translation id="1063300264396686489">Obre automàticament grups de pestanyes d'altres dispositius</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>

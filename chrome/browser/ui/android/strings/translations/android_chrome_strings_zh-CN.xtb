@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1009406586654360474">打开 Google 密码管理工具，然后前往“设置”。选择“导入”，然后添加包含您已导出密码的 CSV 文件。</translation>
+<translation id="1010283278930414892">此设备上没有任何保存的密码</translation>
 <translation id="1011749477052068769">移至这里</translation>
 <translation id="1014147525163127655">在此设备上未发现 <ph name="ORIGIN" /> 的任何通行密钥</translation>
 <translation id="1016498331642356377">使用语音快速搜索。若要修改此快捷方式，请轻触并按住这里。</translation>
@@ -142,6 +143,7 @@
 <translation id="1568636008098739136">读出此网页的内容。如要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="1571041387761170095">没有安全系数低或重复使用的密码</translation>
 <translation id="1571304935088121812">复制用户名</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{此设备上有 1 个已泄露的密码}other{此设备上有 # 个已泄露的密码}}</translation>
 <translation id="1594635596540195766">下方列表中有 <ph name="SUGGESTIONS_COUNT" /> 项建议的内容。</translation>
 <translation id="1598163867407640634">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">当此设置处于开启状态时，系统会将数据保存在您的 Google 账号中并使用这些数据。当此设置处于关闭状态时，数据只会保存在此设备上。</translation>
@@ -163,6 +165,7 @@
 <translation id="1724977129262658800">解锁屏幕后才能修改您的密码</translation>
 <translation id="1726477445370128854">如果 Chrome 预加载它认为您可能会访问的网页，您便可更快速地浏览和搜索</translation>
 <translation id="1728803206919861584">要在无痕模式以外保存通行密钥吗？</translation>
+<translation id="1732514748744806741">如果您的密码遭外泄，我们会通知您</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 个网站近期发送了很多通知}other{# 个网站近期发送了很多通知}}</translation>
 <translation id="1749561566933687563">同步您的书签</translation>
 <translation id="1750238553597293878">请继续使用您的 Google 账号的密码</translation>
@@ -1336,6 +1339,7 @@
 <translation id="7022756207310403729">在浏览器中打开</translation>
 <translation id="7025769836128625875">这是一项实验性 AI 功能，有时可能会出错。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">密码</translation>
+<translation id="7053256416619638731">强化此设备上的密码</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7054588988317389591">获取图片说明？</translation>
 <translation id="7057969023583258980">打开完整的 Chrome 历史记录</translation>
@@ -1584,6 +1588,7 @@
 <translation id="8110024788458304985">帮助改进 Chrome 的功能和性能</translation>
 <translation id="8110087112193408731">在“数字健康”应用中显示您的 Chrome 活动记录？</translation>
 <translation id="8118117428362942925">如需帮助，请找家长（<ph name="PARENT_NAME" />）帮忙</translation>
+<translation id="8120286190326371840">此设备上没有任何已泄露的密码</translation>
 <translation id="8122623268651408616">按从新到旧排序</translation>
 <translation id="8127542551745560481">修改主页</translation>
 <translation id="8130309322784422030">您存储的登录信息可能已过期</translation>

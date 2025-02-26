@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Ativar Google Play Store</translation>
 <translation id="1008186147501209563">Exportar marcadores</translation>
 <translation id="1008261151167010035">O <ph name="BRAND" /> memoriza a forma como iniciou sessão e inicia automaticamente a sua sessão sempre que possível. Quando esta opção está desativada, é-lhe pedida sempre uma confirmação.</translation>
-<translation id="1008544602823861396">fica impedido de usar as suas informações em</translation>
 <translation id="1008557486741366299">Agora não</translation>
 <translation id="100881991356161927">Nome do site</translation>
 <translation id="1009663062402466586">Controlos de jogos já disponíveis</translation>
@@ -2401,7 +2400,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="265390580714150011">Campo Valor</translation>
 <translation id="2654553774144920065">Pedido de impressão</translation>
-<translation id="265680054508313161">Continuar como <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">Mantenha a ligação com o seu telemóvel</translation>
 <translation id="2657612187216250073">Definições de acessibilidade do ponteiro</translation>
 <translation id="2658510146844889864">Chaves de acesso e chaves de segurança</translation>
@@ -2530,6 +2528,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2739191690716947896">Depurar</translation>
 <translation id="2739240477418971307">Alterar as definições de acessibilidade</translation>
 <translation id="2739331588276254426">Ligado à Internet através de <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="2739887572830526131">Mantenha este grupo para adicionar separadores mais tarde ou elimine-o se já não precisar dele.</translation>
 <translation id="274029851662193272">Reduzida</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Estas chaves de acesso só são guardadas neste dispositivo. Não são guardadas na sua Conta Google.</translation>
@@ -4037,6 +4036,7 @@ Quer pará-lo?</translation>
 <translation id="3813358687923336574">Idioma utilizado para traduzir páginas e Respostas rápidas</translation>
 <translation id="3813458570141926987">Lista de tópicos estimados pelo Chrome com base no seu histórico de navegação recente</translation>
 <translation id="3814529970604306954">Conta escolar</translation>
+<translation id="3815668647912194650">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este.</translation>
 <translation id="3816118180265633665">Cores do Chrome</translation>
 <translation id="3817524650114746564">Abrir definições do proxy do seu computador</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos com ChromeOS enviem relatórios automáticos, ajuda-nos a dar prioridade ao que deve ser corrigido e melhorado no ChromeOS. Estes relatórios podem incluir informações como a altura em que o ChromeOS falha, que funcionalidades usa e a quantidade de memória que usa habitualmente.<ph name="END_PARAGRAPH1" />
@@ -4273,7 +4273,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O utilizador não é permitido</translation>
 <translation id="3973660817924297510">A verificar palavras-passe (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Os sites podem pedir para usar as informações guardadas sobre si</translation>
 <translation id="3974514184580396500">Use "Seguinte" para mover o foco para a frente no ecrã</translation>
 <translation id="3975017815357433345">Autoestrada</translation>
 <translation id="3975201861340929143">Explicação</translation>
@@ -4520,7 +4519,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4146785383423576110">Repor e limpar</translation>
 <translation id="4147099377280085053">Selecionar uma tabela de braille</translation>
 <translation id="4147911968024186208">Tente novamente. Se vir novamente este erro, contacte o seu representante do apoio técnico.</translation>
-<translation id="414800391140809654">pode usar as suas informações enquanto navega</translation>
 <translation id="4148195018520464922">Pode limitar o início de sessão a determinados utilizadores. Esta ação remove a opção "Adicionar pessoa" do ecrã de início de sessão. Também pode remover utilizadores atuais.</translation>
 <translation id="4148957013307229264">A instalar...</translation>
 <translation id="4149385644005013189">Está tudo organizado!</translation>
@@ -5310,7 +5308,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4730492586225682674">Nota mais recente com a caneta stylus no ecrã de bloqueio</translation>
 <translation id="4730888769809690665">São permitidas notificações de <ph name="SITE" /></translation>
-<translation id="4731306954230393087">Autorizado a usar as informações que guardou sobre si</translation>
 <translation id="4732799736617504962">O microfone ligado só é compatível com o cancelamento de ruído</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
 <translation id="4733793249294335256">Local</translation>
@@ -6214,7 +6211,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Foi encontrado 1 site com muitas notificações}other{Foram encontrados {NUM_SITES} sites com muitas notificações}}</translation>
 <translation id="5388885445722491159">Emparelhado</translation>
 <translation id="5389224261615877010">Arco-íris</translation>
-<translation id="5389626883706033615">Os sites estão impedidos de pedir para usar informações que guardaram sobre si</translation>
 <translation id="5389794555912875905">Ver avisos antes de aceder a sites inseguros (recomendado)</translation>
 <translation id="5389943529251318913">Reduzir a velocidade do rato em</translation>
 <translation id="5390112241331447203">Inclua o ficheiro system_logs.txt enviado nos relatórios de feedback.</translation>
@@ -6902,7 +6898,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5888889603768021126">Com sessão iniciada com</translation>
 <translation id="5889282057229379085">Número máximo de ACs intermédias:<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encriptar dados sincronizados com a sua própria <ph name="BEGIN_LINK" />frase de acesso de sincronização<ph name="END_LINK" />. Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é sincronizado.</translation>
-<translation id="5891084409170578560">Os sites que visitar podem incorporar conteúdo de outros sites, por exemplo, imagens, anúncios e texto. Estes outros sites podem pedir autorização para usar as informações que guardaram sobre si enquanto navega no site.</translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5894056653502215961">Desmarcar a pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -9269,7 +9264,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7619937211696316184">Manutenção concluída</translation>
 <translation id="7620616707541471029">Escolha uma conta para continuar</translation>
 <translation id="7621382409404463535">O sistema não conseguiu guardar a configuração do dispositivo.</translation>
-<translation id="7621480263311228380">Não autorizado a usar as informações que guardou sobre si</translation>
 <translation id="7621595347123595643">Caso se esqueça da palavra-passe ou do PIN, não pode recuperar os dados locais.</translation>
 <translation id="7622114377921274169">A carregar…</translation>
 <translation id="7622768823216805500">Normalmente, os sites instalam controladores de pagamentos para funcionalidades de compras como o pagamento mais fácil.</translation>
@@ -10723,6 +10717,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8633979878370972178">As versões antigas das Apps do Chrome não vão abrir nos dispositivos Linux depois de dezembro de 2022. Pode verificar se está disponível uma nova versão.</translation>
 <translation id="8634348081024879304">Vai deixar de poder utilizar o seu cartão virtual com o Google Pay. <ph name="BEGIN_LINK" />Saiba mais sobre cartões virtuais<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">Teclado virtual do ChromeOS</translation>
+<translation id="8635399646025169806">Manter o grupo de separadores?</translation>
 <translation id="8635628933471165173">A atualizar…</translation>
 <translation id="8636284842992792762">A inicializar extensões…</translation>
 <translation id="8636323803535540285">Para aceder aqui mais rapidamente, adicione um atalho para o <ph name="BRAND" /></translation>
@@ -10983,6 +10978,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
     <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações sem identificar o utilizador para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Pode desativar a Precisão da localização em qualquer altura nas definições de localização do seu dispositivo, em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização &gt; Definições de localização avançadas. Se a Precisão da localização estiver desativada, não são recolhidos dados da Precisão da localização. Para serviços e apps Android, só é usado o endereço IP, se disponível, para determinar a localização do seu dispositivo, o que pode afetar a disponibilidade e a precisão das localizações de serviços e apps Android, como o Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Abre em</translation>
+<translation id="8804742093141782941">Manter grupo</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mover separador para outra janela}other{Mover separadores para outra janela}}</translation>
 <translation id="8805140816472474147">Confirme as definições de sincronização para iniciar a sincronização.</translation>
 <translation id="8805255531353778052">Enormes poupanças</translation>

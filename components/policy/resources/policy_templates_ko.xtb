@@ -4036,6 +4036,7 @@ Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="3979738908158213640">SAML 인증을 하는 동안 기기 증명을 실행할 권한이 부여되는 URL입니다.</translation>
 <translation id="3982322576186033243">TLS 핸드셰이크에서 안전하지 않은 해시 허용 안 함</translation>
 <translation id="3982465141749620677">탭에서 재인증 메시지 표시</translation>
+<translation id="3982624306233556415">브라우저에 확장 가능한 엔터프라이즈 SSO를 사용할 수 없는 ID 공급업체의 차단 목록</translation>
 <translation id="3982849521386211220">엔터프라이즈 신고를 보낼 수 있는 Reporting API 엔드포인트[1] 목록을 구성할 수 있습니다.
 
 [1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
@@ -7054,6 +7055,7 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_P
 <translation id="6123052603197028610">Google 서버로 전송된 쿼리가 타임스탬프를 가져오도록 허용하지 않음</translation>
 <translation id="6128539430475678271">이 사이트에서 Controlled Frame API 차단</translation>
 <translation id="6130360423841559818">beforeunload 이벤트에서 생성된 취소 대화상자의 새로운 동작을 제어합니다.</translation>
+<translation id="6131672297549089047">모든 ID 공급업체</translation>
 <translation id="6131803221304830537">렌더러 코드 무결성 사용 중지</translation>
 <translation id="6132506775968708399">타사 쿠키 차단</translation>
 <translation id="6133088669883929098">모든 사이트에서 키 생성 사용 허용</translation>
@@ -8643,6 +8645,7 @@ SkyVault 사용자에게만 적용됩니다. 즉, LocalUserFilesAllowed가 false
 <translation id="7136237405361383549">필드 체험판 구성에 따라 기본 렌더기를 사용합니다.</translation>
 <translation id="7138762292550697459">자바스크립트 setTimeout() 함수의 최소 시간 초과를 제어합니다.</translation>
 <translation id="7138792262152376158">PrefixedVideoFullscreen API의 일반적인 지원 중단 타임라인을 따릅니다.</translation>
+<translation id="7140760943584613237">Microsoft® 클라우드 ID 공급업체</translation>
 <translation id="714219487865269980">키보드 포커스 강조표시 사용 설정</translation>
 <translation id="7144022711746703451">
       이 정책은 M80에서 삭제되었습니다. WebDriver가 이제 기존의 모든 정책과 호환됨에 따라 더 이상 필요가 없어졌기 때문입니다.

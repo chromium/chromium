@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">gatos</translation>
 <translation id="5907649332524363701">cor da tecla</translation>
 <translation id="5908813850962688338">A instalação da atualização vai levar alguns minutos. Deixe o dispositivo conectado e ligado enquanto a atualização estiver sendo baixada. O dispositivo pode ser reiniciado várias vezes e mostrar uma tela preta durante o processo. Você vai receber uma solicitação para reiniciar o dispositivo e concluir a instalação.</translation>
+<translation id="5915794087373112615">O professor verá sua tela em <ph name="NUM_SECONDS" /> segundos</translation>
 <translation id="5916084858004523819">Proibido</translation>
 <translation id="5916664084637901428">Ativada</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O arquivo foi digitalizado e salvo em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{O arquivo foi digitalizado e salvo em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os arquivos foram digitalizados e salvos em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8054112564438735763">bege</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> de cor <ph name="CHARACTERS_COLOR" /> em um plano de fundo <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Conecte um microfone para começar a gravar áudio</translation>
 <translation id="8067126283828232460">O APN está conectado.</translation>
 <translation id="8067208048261192356">marrom</translation>
 <translation id="8067224607978179455">Excluir <ph name="ACTION_NAME" /></translation>
@@ -1627,6 +1629,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">casa de chá</translation>
 <translation id="8538236298648811558">Com a tecnologia de IA do Google</translation>
+<translation id="8543574988889671960">Atualizar guia</translation>
 <translation id="8550364285433943656">Use as teclas do teclado para controlar as ações do jogo</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Pode ser necessário ativar esta opção para se conectar à rede da sua operadora. Entre em contato com a operadora para mais informações.</translation>

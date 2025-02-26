@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1045448422538531528">Aggiungi al gruppo</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creato <ph name="NUM_WEEKS_ONE" /> settimana fa}other{Creato <ph name="NUM_WEEKS_MANY" /> settimane fa}}</translation>
 <translation id="1063300264396686489">Apri automaticamente i gruppi di schede da altri dispositivi</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>

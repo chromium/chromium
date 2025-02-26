@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">יש להזין ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4664250907885839816">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
+<translation id="4703271465972936359">טראקים של אודיו</translation>
 <translation id="4718048029184481307">הפעלה במצב תמונה בתוך תמונה</translation>
 <translation id="4812940957355064477">יש להזין מספר.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> נבחרו</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">‏הפעלת Cast</translation>
 <translation id="5630795885300617244">לחיצה כפולה בצד ימין או שמאל מדלגת על 10 שניות</translation>
 <translation id="57838592816432529">השתקה</translation>
+<translation id="5868587040512539609">טראקים של וידאו</translation>
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5888666972993069672">מתבצעת העברה אל <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">איפוס</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">הדפסה יפה</translation>
 <translation id="6550675742724504774">אפשרויות</translation>
 <translation id="6643016212128521049">ניקוי</translation>
+<translation id="6661136971638885481">‏טראק ‎#<ph name="TRACK_NUMBER" />‎</translation>
 <translation id="668171684555832681">אחר...</translation>
 <translation id="6709093583001123835">הערך חייב להיות <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">איכות הפעלה נמוכה</translation>

@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Turn on Google Play Store</translation>
 <translation id="1008186147501209563">Export bookmarks</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> remembers how you signed in and automatically signs you in when possible. When off, you'll be asked for confirmation every time.</translation>
-<translation id="1008544602823861396">is blocked from using your info on</translation>
 <translation id="1008557486741366299">Not Now</translation>
 <translation id="100881991356161927">Site name</translation>
 <translation id="1009663062402466586">Game controls now available</translation>
@@ -2413,7 +2412,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2653659639078652383">Submit</translation>
 <translation id="265390580714150011">Field Value</translation>
 <translation id="2654553774144920065">Print request</translation>
-<translation id="265680054508313161">Continue as <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">Stay connected with your phone</translation>
 <translation id="2657612187216250073">Pointer accessibility settings</translation>
 <translation id="2658510146844889864">Passkeys and security keys</translation>
@@ -2542,6 +2540,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2739191690716947896">Debug</translation>
 <translation id="2739240477418971307">Change your accessibility settings</translation>
 <translation id="2739331588276254426">Connected to internet through <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="2739887572830526131">Keep this group to add tabs later or delete it if you no longer need it.</translation>
 <translation id="274029851662193272">Depressed</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">These passkeys are only saved on this device. They aren't saved to your Google Account.</translation>
@@ -4048,6 +4047,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3813358687923336574">Language used for translating pages and Quick Answers</translation>
 <translation id="3813458570141926987">List of topics estimated by Chrome based on your recent browsing history</translation>
 <translation id="3814529970604306954">School account</translation>
+<translation id="3815668647912194650">Keep this group to add tabs later, or leave it if you no longer want access to it.</translation>
 <translation id="3816118180265633665">Chrome colours</translation>
 <translation id="3817524650114746564">Open your computer's proxy settings</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Allowing your ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use, and how much memory you typically use.<ph name="END_PARAGRAPH1" />
@@ -4284,7 +4284,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3971764089670057203">Fingerprints on this security key</translation>
 <translation id="3973005893595042880">User is not allowed</translation>
 <translation id="3973660817924297510">Checking passwords (<ph name="CHECKED_PASSWORDS" /> of <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Sites can ask to use info they've saved about you</translation>
 <translation id="3974514184580396500">Use 'Next' to move your focus forward on the screen</translation>
 <translation id="3975017815357433345">Main road</translation>
 <translation id="3975201861340929143">Explanation</translation>
@@ -4531,7 +4530,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4146785383423576110">Reset and clean up</translation>
 <translation id="4147099377280085053">Select a braille table</translation>
 <translation id="4147911968024186208">Please retry. If you see this error again, please contact your support representative.</translation>
-<translation id="414800391140809654">can use your info as you browse</translation>
 <translation id="4148195018520464922">You can limit sign-in to certain users. This removes the 'Add person' option on the sign-in screen. You can also remove current users.</translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="4149385644005013189">Things look neat!</translation>
@@ -5321,7 +5319,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4730492586225682674">Stylus latest note on lock screen</translation>
 <translation id="4730888769809690665">Notifications allowed for <ph name="SITE" /></translation>
-<translation id="4731306954230393087">Allowed to use info they've saved about you</translation>
 <translation id="4732799736617504962">The connected mic can only support noise cancellation</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4733793249294335256">Location</translation>
@@ -6225,7 +6222,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Found 1 site with lots of notifications}other{Found {NUM_SITES} sites with lots of notifications}}</translation>
 <translation id="5388885445722491159">Paired</translation>
 <translation id="5389224261615877010">Rainbow</translation>
-<translation id="5389626883706033615">Sites are blocked from asking you to use info they've saved about you</translation>
 <translation id="5389794555912875905">See warnings before going to insecure sites (recommended)</translation>
 <translation id="5389943529251318913">Reduce mouse speed by</translation>
 <translation id="5390112241331447203">Include the system_logs.txt file sent in feedback reports.</translation>
@@ -6912,7 +6908,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5888889603768021126">Signed in with</translation>
 <translation id="5889282057229379085">Maximum number of intermediate CAs: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encrypt synced data with your own <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" />. Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.</translation>
-<translation id="5891084409170578560">Sites you visit can embed content from other sites, for example images, ads and text. These other sites can ask for permission to use info they've saved about you as you browse the site.</translation>
 <translation id="5891688036610113830">Preferred Wi-Fi networks</translation>
 <translation id="5894056653502215961">Deselect folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -9279,7 +9274,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7619937211696316184">Maintenance is done</translation>
 <translation id="7620616707541471029">Choose an account to continue</translation>
 <translation id="7621382409404463535">The system failed to save device configuration.</translation>
-<translation id="7621480263311228380">Not allowed to use info they've saved about you</translation>
 <translation id="7621595347123595643">You will not be able to recover local data if you forget your password or PIN.</translation>
 <translation id="7622114377921274169">Charging.</translation>
 <translation id="7622768823216805500">Sites usually install payment handlers for shopping features like easier checkout</translation>
@@ -10733,6 +10727,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8633979878370972178">Old versions of Chrome apps won't open on Linux devices after December 2022. You can check if there's a new version available.</translation>
 <translation id="8634348081024879304">You will no longer be able to use your virtual card with Google Pay. <ph name="BEGIN_LINK" />Learn about virtual cards<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">ChromeOS Virtual Keyboard</translation>
+<translation id="8635399646025169806">Keep tab group?</translation>
 <translation id="8635628933471165173">Reloading...</translation>
 <translation id="8636284842992792762">Initialising extensions…</translation>
 <translation id="8636323803535540285">To get here quicker, add a shortcut to <ph name="BRAND" /></translation>
@@ -10993,6 +10988,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
     <ph name="BEGIN_PARAGRAPH2" />Google uses this information without identifying you to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />You can turn off Location Accuracy at any time in your device's location settings under Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access &gt; Advanced location settings. If Location Accuracy is off, no Location Accuracy data will be collected. For Android apps and services, only the IP address is used, if available, to determine your device's location, which may impact the availability and accuracy of locations for Android apps and services, such as Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Opens in</translation>
+<translation id="8804742093141782941">Keep group</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Move Tab to Another Window}other{Move Tabs to Another Window}}</translation>
 <translation id="8805140816472474147">Confirm sync settings to start sync.</translation>
 <translation id="8805255531353778052">Huge savings</translation>

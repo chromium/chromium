@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1045448422538531528">Add to group</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Created <ph name="NUM_WEEKS_ONE" /> week ago}other{Created <ph name="NUM_WEEKS_MANY" /> weeks ago}}</translation>
 <translation id="1063300264396686489">Automatically open tab groups from other devices</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>

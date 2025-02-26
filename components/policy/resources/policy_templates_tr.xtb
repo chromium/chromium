@@ -4071,6 +4071,7 @@ Not: Bu ayar sonucunda ana makine ve istemci tarafında her iki tarafın destekl
 <translation id="3979738908158213640">SAML kimlik doğrulaması sırasında cihaz onayı gerçekleştirmek için erişim izni verilecek URL'ler</translation>
 <translation id="3982322576186033243">TLS El Sıkışmalarında Güvenli Olmayan Karmalara İzin Verme</translation>
 <translation id="3982465141749620677">Yeni sekmede yeniden kimlik doğrulama iste</translation>
+<translation id="3982624306233556415">Tarayıcı için Genişletilebilir Enterprise SSO'yu kullanamayan kimlik sağlayıcıları içeren engellenenler listesi</translation>
 <translation id="3982849521386211220">Kurumsal raporların gönderilebileceği Reporting API uç noktaları[1] listesini yapılandırmanıza olanak tanır.
 
 [1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
@@ -7051,6 +7052,7 @@ Güvenli Tarama hakkında daha fazla bilgiyi https://developers.google.com/safe-
 <translation id="6123052603197028610">Zaman damgalarını almak için Google sunucularına sorgu gönderilmesine izin verme</translation>
 <translation id="6128539430475678271">Bu sitelerde Controlled Frame API'yi engelle</translation>
 <translation id="6130360423841559818">beforeunload etkinliği tarafından oluşturulan iptal iletişim kutusu için yeni davranışı kontrol et</translation>
+<translation id="6131672297549089047">Tüm kimlik sağlayıcılar</translation>
 <translation id="6131803221304830537">Oluşturucu Kod Bütünlüğü'nü devre dışı bırak</translation>
 <translation id="6132506775968708399">3. taraf çerezleri engelle</translation>
 <translation id="6133088669883929098">Tüm sitelerin anahtar oluşturma işlevini kullanmasına izin ver</translation>
@@ -8668,6 +8670,7 @@ Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve
 <translation id="7136237405361383549">Alan deneme yapılandırmasına göre varsayılan oluşturucuyu kullan.</translation>
 <translation id="7138762292550697459">JavaScript setTimeout() fonksiyonunun minimum zaman aşımını kontrol et.</translation>
 <translation id="7138792262152376158">PrefixedVideoFullscreen API için düzenli desteği sonlandırma zaman çizelgelerini takip eder</translation>
+<translation id="7140760943584613237">Microsoft® bulut kimlik sağlayıcısı</translation>
 <translation id="714219487865269980">Klavye odağını vurgulamayı etkinleştir</translation>
 <translation id="7144022711746703451">
       WebDriver artık mevcut tüm politikalarla uyumlu olduğundan gerekliliğini yitiren bu politika, M80 sürümünde kaldırılmıştır.

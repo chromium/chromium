@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1045448422538531528">Gehitu taldean</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Duela <ph name="NUM_WEEKS_ONE" /> aste sortua}other{Duela <ph name="NUM_WEEKS_MANY" /> aste sortua}}</translation>
 <translation id="1063300264396686489">Ireki beste gailu batzuetako fitxa taldeak automatikoki</translation>
 <translation id="1075622780330595106">Fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>

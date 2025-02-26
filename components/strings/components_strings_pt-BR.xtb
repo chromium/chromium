@@ -772,6 +772,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Configuração controlada pelo administrador</translation>
 <translation id="2340263603246777781">O <ph name="ORIGIN" /> deseja realizar o pareamento</translation>
+<translation id="2344529975040861103">Você pode preencher automaticamente as informações deste cartão porque sua conta está vinculada ao Google Pay</translation>
 <translation id="2346319942568447007">Imagem que você copiou</translation>
 <translation id="2348509731468399833">Monitoramento de preços interrompido.</translation>
 <translation id="2349957959687031096">Botão "Abrir guia anônima". Ative para abrir uma nova guia anônima e navegar com privacidade</translation>
@@ -1031,7 +1032,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2833637280516285136">Programas de rádio</translation>
 <translation id="2835170189407361413">Limpar formulário</translation>
 <translation id="2837891525090413132">Pode pedir para bloquear e usar o teclado</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> quer usar as informações salvas sobre você</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
 <translation id="2839501879576190149">Site falso</translation>
 <translation id="2843623755398178332">Rolar a tela e aplicar zoom à guia compartilhada?</translation>
@@ -4580,6 +4580,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9140198744651252040">O navegador Chrome quer usar a impressão digital para preencher senhas automaticamente</translation>
 <translation id="9141013498910525015">Gerenciar endereços</translation>
+<translation id="9143898823728499852">Você pode preencher automaticamente as informações deste cartão porque sua conta do <ph name="CARD_ISSUER_NAME" /> está vinculada ao Google Pay</translation>
 <translation id="9144951720726881238">Data de expiração:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Faça login<ph name="END_LINK" />
     de novo e volte a esta guia para receber ajuda com a escrita</translation>

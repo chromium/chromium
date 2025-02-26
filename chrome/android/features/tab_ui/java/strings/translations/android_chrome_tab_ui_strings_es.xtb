@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1045448422538531528">Añadir a grupo</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creado hace <ph name="NUM_WEEKS_ONE" /> semana}other{Creado hace <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abrir automáticamente grupos de pestañas de otros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de las pestañas no se han usado recientemente. ¿Quieres cerrarlas?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Mantén este grupo para añadir pestañas más tarde o elimínalo si ya no lo necesitas.
 
 Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="TITLE_OF_GROUP" /> y se eliminará de todos los dispositivos.</translation>
+<translation id="1326654401173629446">El grupo de pestañas <ph name="TAB_GROUP_NAME" /> no está disponible</translation>
 <translation id="1329584516321524826">Actualizada justo ahora</translation>
 <translation id="1340839264183302272">Salir del grupo</translation>
 <translation id="1419023007528516122">Se eliminará permanentemente el grupo de tu dispositivo</translation>

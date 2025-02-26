@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">탭에 가격 인하 정보 숨기기 카드</translation>
 <translation id="1510341833810331442">사이트에서 기기에 데이터를 저장할 수 없습니다.</translation>
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
-<translation id="1568470248891039841">내가 방문한 사이트에서는 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 이러한 다른 사이트에서는 사이트를 탐색할 때 나에 관해 저장된 정보를 사용할 권한을 요청할 수 있습니다. <ph name="BEGIN_LINK" />삽입된 콘텐츠에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">화면 상단에서 새로운 작업 가능</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1633720957382884102">관련 사이트</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">원치 않는 요청 접기(권장)</translation>
 <translation id="3955193568934677022">사이트에서 보호된 콘텐츠를 재생하도록 허용(권장)</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
-<translation id="3974105241379491420">사이트에서 나에 관해 저장된 정보를 사용하도록 요청할 수 있음</translation>
 <translation id="3987993985790029246">링크 복사</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">이 페이지에 관한 정보</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ 삭제</translation>
 <translation id="528192093759286357">전체화면을 종료하려면 상단에서 드래그하여 뒤로 버튼을 터치하세요.</translation>
 <translation id="5292915569214461965">탐색 중인 사용자를 추적하려는 목적으로 사이트에서 서드 파티 쿠키를 사용하지 못하도록 차단했습니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />서드 파티 쿠키의 액세스를 관리<ph name="END_LINK" />하세요.</translation>
-<translation id="5295729974480418933">사용 설정하면 사이트에서 나에 관해 저장된 정보 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 나에 관해 저장된 정보 사용을 요청할 수 없습니다.</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5301954838959518834">확인</translation>
 <translation id="5317780077021120954">저장</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">NFC 기기</translation>
 <translation id="5344522958567249764">광고 개인 정보 보호 관리</translation>
 <translation id="5373874281522292782">탭 그룹이 저장되었습니다</translation>
-<translation id="5389626883706033615">사이트에서 나에 관해 저장된 정보 사용을 요청하지 못하도록 차단</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
 <translation id="5403592356182871684">이름</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" />의 권한이 재설정됩니다.</translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">차단됨</translation>
 <translation id="5689516760719285838">위치</translation>
 <translation id="5690795753582697420">Android 설정에서 카메라가 사용 중지됩니다.</translation>
-<translation id="5691080386278724773"><ph name="SITE" />에서 내가 인터넷을 사용하는 동안 내 정보를 사용할 수 있습니다</translation>
 <translation id="5700761515355162635">서드 파티 쿠키 허용됨</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" />의 쿠키 및 기타 사이트 데이터가 삭제됩니다.</translation>
 <translation id="5723967018671998714">시크릿 모드에서는 타사 쿠키가 차단됨</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
-<translation id="6304434827459067558"><ph name="SITE" />에서 내 정보를 사용하지 못하도록 차단함</translation>
 <translation id="6320088164292336938">진동</translation>
 <translation id="6344622098450209924">추적 보호</translation>
 <translation id="6367753977865761591">특정 사이트에 대해 서드 파티 로그인을 차단합니다.</translation>

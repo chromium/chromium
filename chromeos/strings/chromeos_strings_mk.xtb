@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">мачки</translation>
 <translation id="5907649332524363701">боја на копчиња</translation>
 <translation id="5908813850962688338">Инсталирањето на ажурирањево ќе трае неколку минути. Уредот нека биде приклучен на напојување и вклучен при преземањето на ажурирањето. Уредот може да се рестартира неколку пати и притоа да се прикажува црн екран. Ќе треба да го рестартирате уредот за да го завршите инсталирањето.</translation>
+<translation id="5915794087373112615">Вашиот наставник ќе го гледа вашиот екран за <ph name="NUM_SECONDS" /> секунди</translation>
 <translation id="5916084858004523819">Забранета</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Датотеката е успешно скенирана и зачувана во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@
 <translation id="8054112564438735763">беж</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> на <ph name="CHARACTERS_BACKGROUND" /> заднина</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Поврзете микрофон за да започнете да снимате аудио</translation>
 <translation id="8067126283828232460">APN е поврзано.</translation>
 <translation id="8067208048261192356">кафеава</translation>
 <translation id="8067224607978179455">Избришете го <ph name="ACTION_NAME" /></translation>
@@ -1627,6 +1629,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџилница</translation>
 <translation id="8538236298648811558">Овозможено од Google AI</translation>
+<translation id="8543574988889671960">Вчитај ја картичката повторно</translation>
 <translation id="8550364285433943656">Поставете контроли на дејства во игра за да играте со копчињата од тастатурата</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Оваа опција може да е задолжителна за да се поврзете на мрежата на операторот. Контактирајте со операторот за детали.</translation>

@@ -819,6 +819,7 @@
 <translation id="4777866634702576038">წაიშალოს ჩანართების ეს ჯგუფი?</translation>
 <translation id="4778653490315793244">საჩვენებელი ჯერ არაფერია</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> თქვენი ნაგულისხმევი საძიებო სისტემაა</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ითხოვს, გამოიყენოს თქვენი პერსონალური ინფორმაცია თქვენი ციფრული საფულიდან.</translation>
 <translation id="4787736314074622408">გსურთ, წაშალოთ <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">შეიტყვეთ, როგორ ზრუნავს Chrome თქვენს უსაფრთხოებაზე</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -943,6 +944,7 @@
 <translation id="5364112109233799727">იმ გვერდის URL, რომელთან დაკავშირებითაც გვაწვდით გამოხმაურებას, გაეგზავნება Google-ს და ის, შესაძლოა, ადამიანებმა შეამოწმონ ამ ფუნქციის გაუმჯობესების მიზნით</translation>
 <translation id="5375374982898812658">თქვენ მყისიერად დაკარგავთ წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“ და ის ამოიშლება თქვენი ყველა მოწყობილობიდან</translation>
 <translation id="5375577065097716013">მოიძიეთ სურათი Google Lens-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ითხოვს, გამოიყენოს თქვენი პერსონალური ინფორმაცია თქვენი ციფრული საფულიდან. განაგრძეთ მხოლოდ იმ შემთხვევაში, თუ ენდობით ამ საიტს. სახიფათო საიტებმა შეიძლება გაგამჟღავნებინოთ ისეთი ინფორმაცია, როგორიცაა თქვენი იურიდიული სახელი ან ID ნომერი.</translation>
 <translation id="5394331612381306435">ინკოგნიტო რეჟიმიდან გასვლა</translation>
 <translation id="5395376160638294582">იზრუნეთ, რომ ყოველთვის გამოიყენოთ Chrome-ის მონაცემები თქვენს Google ანგარიშში</translation>
 <translation id="539881862970320163">შემოთავაზებულია ძლიერი პაროლი. კლავიატურა დამალულია.</translation>
@@ -1823,6 +1825,7 @@
 <translation id="9148126808321036104">ხელახლა შედით</translation>
 <translation id="9157212632995922070">აირჩიეთ ანგარიში, რომ გახსნათ <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">მხოლოდ კონტენტის გაზიარება</translation>
+<translation id="9161172953291434881">ანდობთ ამ საიტს თქვენს მონაცემებს?</translation>
 <translation id="9168847423516963845">გადაიტანეთ მისამართთა ზოლი ქვემოთ</translation>
 <translation id="9169507124922466868">ნავიგაციის ისტორია ნახევრადგახსნილია</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

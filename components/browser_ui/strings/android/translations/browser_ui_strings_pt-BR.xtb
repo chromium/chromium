@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Ocultar nas guias o card de redução no preço</translation>
 <translation id="1510341833810331442">Os sites não podem salvar dados no seu dispositivo</translation>
 <translation id="1547123415014299762">Cookies de terceiros são permitidos</translation>
-<translation id="1568470248891039841">Os sites que você visita podem incorporar conteúdo de outros sites, como imagens, anúncios e texto. Esses outros sites podem pedir permissão para usar informações que salvaram sobre você durante a navegação. <ph name="BEGIN_LINK" />Saber mais sobre conteúdo incorporado<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Novas ações disponíveis perto da parte de cima da tela</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1633720957382884102">Sites relacionados</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que os sites mostrem conteúdo protegido (recomendado)</translation>
 <translation id="3967822245660637423">Download concluído</translation>
-<translation id="3974105241379491420">Os sites podem pedir para usar informações que salvaram sobre você</translation>
 <translation id="3987993985790029246">Copiar link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Sobre esta página</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Remover "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arraste a partir da parte superior e toque no botão "Voltar" para sair da tela cheia.</translation>
 <translation id="5292915569214461965">Você bloqueou o uso de cookies de terceiros para rastreamento durante a navegação. Acesse as configurações para <ph name="BEGIN_LINK" />gerenciar o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Quando essa configuração está ativada, os sites podem pedir para usar informações que salvaram sobre você. Quando está desativada, os sites não podem pedir para usar as informações que salvaram sobre você.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">Ok, entendi</translation>
 <translation id="5317780077021120954">Salvar</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344522958567249764">Gerenciar a privacidade de anúncios</translation>
 <translation id="5373874281522292782">Seus grupos de guias foram salvos</translation>
-<translation id="5389626883706033615">Os sites não podem pedir para usar as informações que salvaram sobre você</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5438097262470833822">Essa ação redefinirá as permissões de <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Local</translation>
 <translation id="5690795753582697420">A câmera está desativada nas configurações do Android</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> pode usar suas informações enquanto você navega</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
 <translation id="5706552988683188916">Essa ação vai excluir cookies e outros dados do site <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Os cookies de terceiros são bloqueados no modo de navegação anônima</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">Bloqueadas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> está impedido de usar suas informações em</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6344622098450209924">Proteção antirrastreamento</translation>
 <translation id="6367753977865761591">Bloqueie o login de terceiros em um site específico.</translation>

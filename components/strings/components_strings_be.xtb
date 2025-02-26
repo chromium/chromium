@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, дзейнічае да <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Наладай кіруе ваш адміністратар</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запытвае спалучэнне</translation>
+<translation id="2344529975040861103">Вы можаце аўтаматычна запоўніць даныя гэтай карткі, бо ўліковы запіс карткі звязаны з Google Pay</translation>
 <translation id="2346319942568447007">Скапіраваны вамі відарыс</translation>
 <translation id="2348509731468399833">Адсочванне цаны прыпынена.</translation>
 <translation id="2349957959687031096">Кнопка "Адкрыць укладку ў рэжыме інкогніта". Каб адкрыць новую ўкладку ў рэжыме інкогніта для прыватнага прагляду вэб-старонак, націсніце яе.</translation>
@@ -1032,7 +1033,6 @@
 <translation id="2833637280516285136">Размоўнае радыё</translation>
 <translation id="2835170189407361413">Ачысціць форму</translation>
 <translation id="2837891525090413132">Можа запытаць дазвол на блакіроўку і выкарыстанне клавіятуры</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> хоча выкарыстоўваць захаваную пра вас інфармацыю</translation>
 <translation id="2839032553903800133">Апавяшчэнні заблакіраваны</translation>
 <translation id="2839501879576190149">Вы збіраецеся перайсці на фіктыўны сайт</translation>
 <translation id="2843623755398178332">Змяніць маштаб і прагартаць змесціва абагуленай укладкі?</translation>
@@ -4577,6 +4577,7 @@
 <translation id="9139318394846604261">Шопінг</translation>
 <translation id="9140198744651252040">Браўзер Chrome прапануе выкарыстоўваць адбітак пальца для аўтазапаўнення пароляў</translation>
 <translation id="9141013498910525015">Кіраваць адрасамі</translation>
+<translation id="9143898823728499852">Вы можаце аўтаматычна запоўніць даныя гэтай карткі, бо ўліковы запіс карткі <ph name="CARD_ISSUER_NAME" /> звязаны з Google Pay</translation>
 <translation id="9144951720726881238">Заканчэнне тэрміну дзеяння:</translation>
 <translation id="9145910032514306808">Каб атрымаць дапамогу з напісаннем,
     <ph name="BEGIN_LINK" />увайдзіце зноў<ph name="END_LINK" /> і вярніцеся на гэту ўкладку</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1045448422538531528">그룹에 추가</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" />주 전 생성됨}other{<ph name="NUM_WEEKS_MANY" />주 전 생성됨}}</translation>
 <translation id="1063300264396686489">다른 기기에서 생성된 탭 그룹 자동 열기</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" />개의 탭을 최근 사용하지 않았습니다. 탭을 닫을까요?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">이 그룹을 유지하여 나중에 탭을 추가하거나 더 이상 필요하지 않으면 삭제하세요.
 
 삭제하면 모든 사용자가 '<ph name="TITLE_OF_GROUP" />' 탭 그룹의 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
+<translation id="1326654401173629446">"<ph name="TAB_GROUP_NAME" />" 탭 그룹을 더 이상 사용할 수 없습니다.</translation>
 <translation id="1329584516321524826">조금 전 업데이트됨</translation>
 <translation id="1340839264183302272">그룹 나가기</translation>
 <translation id="1419023007528516122">기기에서 그룹이 완전히 삭제됩니다.</translation>

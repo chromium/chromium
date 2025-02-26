@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="1045448422538531528">Engeza kwiqembu</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Kusungulwe evikini elingu-<ph name="NUM_WEEKS_ONE" /> eledlule}one{Kusungulwe emavikini angu-<ph name="NUM_WEEKS_MANY" /> adlule}other{Kusungulwe emavikini angu-<ph name="NUM_WEEKS_MANY" /> adlule}}</translation>
 <translation id="1063300264396686489">Vula ngokuzenzekelayo amaqembu amathebhu asuka kwamanye amadivaysi</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>

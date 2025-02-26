@@ -776,6 +776,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, վավեր է մինչև <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Կարգավորումը վերահսկվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> կայքն ուզում է զուգակցվել</translation>
+<translation id="2344529975040861103">Դուք կարող եք ավտոմատ լրացնել այս քարտը, քանի որ ձեր հաշիվը կապված է Google Pay-ի հետ</translation>
 <translation id="2346319942568447007">Ձեր պատճենած պատկերը</translation>
 <translation id="2348509731468399833">Գների հետագծումը կանգնեցված է։</translation>
 <translation id="2349957959687031096">«Բացել ինկոգնիտո ներդիր» կոճակ․ ակտիվացրեք՝ նոր ինկոգնիտո ներդիր բացելու համար</translation>
@@ -1035,7 +1036,6 @@
 <translation id="2833637280516285136">Ռադիոյով թոք շոուներ</translation>
 <translation id="2835170189407361413">Մաքրել ձևաթուղթը</translation>
 <translation id="2837891525090413132">Կարող է խնդրել ձեր ստեղնաշարը կողպելու և օգտագործելու թույլտվություն</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" />-ն ուզում է օգտագործել ձեր մասին տեղեկությունները, որոնք պահել է</translation>
 <translation id="2839032553903800133">Ծանուցումներն արգելափակված են</translation>
 <translation id="2839501879576190149">Կայքը, որը պատրաստվում եք այցելել, կեղծ է</translation>
 <translation id="2843623755398178332">Ոլորումով փոխե՞լ ընդհանուր ներդիրի մասշտաբը</translation>
@@ -4586,6 +4586,7 @@
 <translation id="9139318394846604261">Գնումներ</translation>
 <translation id="9140198744651252040">Գաղտնաբառերի ինքնալրացման համար Chrome դիտարկիչը ցանկանում է օգտագործել մատնահետքը</translation>
 <translation id="9141013498910525015">Կառավարել հասցեները</translation>
+<translation id="9143898823728499852">Դուք կարող եք ավտոմատ լրացնել այս քարտը, քանի որ ձեր <ph name="CARD_ISSUER_NAME" /> հաշիվը կապված է Google Pay-ի հետ</translation>
 <translation id="9144951720726881238">Սպառման ամսաթիվը՝</translation>
 <translation id="9145910032514306808">Նորից <ph name="BEGIN_LINK" />մուտք գործեք<ph name="END_LINK" />, այնուհետև վերադարձեք այս ներդիր՝ գրելու հետ կապված օգնություն ստանալու համար</translation>
 <translation id="9145936855791010051">Համեմատել</translation>

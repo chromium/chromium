@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1045448422538531528">إضافة إلى مجموعة</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{تم إنشاء المجموعة قبل أسبوع واحد (<ph name="NUM_WEEKS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_WEEKS_MANY" /> أسبوع}two{تم إنشاء المجموعة قبل أسبوعَين (<ph name="NUM_WEEKS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_WEEKS_MANY" /> أسابيع}many{تم إنشاء المجموعة قبل <ph name="NUM_WEEKS_MANY" /> أسبوعًا}other{تم إنشاء المجموعة قبل <ph name="NUM_WEEKS_MANY" /> أسبوع}}</translation>
 <translation id="1063300264396686489">فتح مجموعات علامات التبويب من الأجهزة الأخرى تلقائيًا</translation>
 <translation id="1075622780330595106">لم يتم استخدام <ph name="NUMBER_OF_TABS" /> من علامات التبويب مؤخرًا. هل تريد إغلاقها؟</translation>

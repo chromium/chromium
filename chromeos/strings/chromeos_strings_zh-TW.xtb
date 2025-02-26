@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">貓</translation>
 <translation id="5907649332524363701">按鍵顏色</translation>
 <translation id="5908813850962688338">安裝這項更新需要幾分鐘的時間。下載更新時，請將裝置接上電源並保持開啟。裝置可能會自行重新啟動數次，並在過程中顯示黑色畫面。系統會提示你重新啟動裝置，以完成安裝作業。</translation>
+<translation id="5915794087373112615">老師將在 <ph name="NUM_SECONDS" /> 秒後查看你的畫面</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749">選取<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">上次重設時間</translation>
 <translation id="7633068090678117093">背景圖片</translation>
 <translation id="763873111564339966">靛藍色</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">米色</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" />的<ph name="CHARACTERS_SUBJECTS" />搭配<ph name="CHARACTERS_BACKGROUND" />背景</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">請連接麥克風，才能開始錄音</translation>
 <translation id="8067126283828232460">APN 已連線。</translation>
 <translation id="8067208048261192356">棕色</translation>
 <translation id="8067224607978179455">刪除<ph name="ACTION_NAME" /></translation>

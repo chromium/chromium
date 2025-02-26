@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1045448422538531528">Shto te grupi</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Krijuar <ph name="NUM_WEEKS_ONE" /> javë më parë}other{Krijuar <ph name="NUM_WEEKS_MANY" /> javë më parë}}</translation>
 <translation id="1063300264396686489">Hap automatikisht grupet e skedave nga pajisjet e tjera</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>

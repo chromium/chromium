@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1045448422538531528">گروپ میں شامل کریں</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ہفتہ پہلے تخلیق کیا گیا}other{<ph name="NUM_WEEKS_MANY" /> ہفتے پہلے تخلیق کیا گیا}}</translation>
 <translation id="1063300264396686489">دوسرے آلات سے ٹیب گروپس کو خودکار طور پر کھولیں</translation>
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>

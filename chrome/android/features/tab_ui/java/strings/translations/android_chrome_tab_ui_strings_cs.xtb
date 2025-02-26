@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1045448422538531528">Přidat do skupiny</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vytvořeno před <ph name="NUM_WEEKS_ONE" /> týdnem}few{Vytvořeno před <ph name="NUM_WEEKS_MANY" /> týdny}many{Vytvořeno před <ph name="NUM_WEEKS_MANY" /> týdne}other{Vytvořeno před <ph name="NUM_WEEKS_MANY" /> týdny}}</translation>
 <translation id="1063300264396686489">Automaticky otevírat skupiny karet z jiných zařízení</translation>
 <translation id="1075622780330595106">Tento počet vašich karet v poslední době nebyl použit: <ph name="NUMBER_OF_TABS" />. Chcete je zavřít?</translation>

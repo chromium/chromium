@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истиче <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Подешавање контролише администратор</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> жели да се упари</translation>
+<translation id="2344529975040861103">Можете да попуните ову картицу аутоматски јер је налог повезан са Google Pay-ом</translation>
 <translation id="2346319942568447007">Копирана слика</translation>
 <translation id="2348509731468399833">Праћење цена је заустављено.</translation>
 <translation id="2349957959687031096">Дугме Отвори картицу без архивирања, активирајте га да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">Радио-емисије са гостима</translation>
 <translation id="2835170189407361413">Обриши образац</translation>
 <translation id="2837891525090413132">Може да тражи да закључа и користи тастатуру</translation>
-<translation id="2838682941130655229">Веб-сајт <ph name="EMBEDDED_URL" /> жели да користи информације које је сачувао о вама</translation>
 <translation id="2839032553903800133">Обавештења су блокирана</translation>
 <translation id="2839501879576190149">Сајт на који желите да одете је лажан</translation>
 <translation id="2843623755398178332">Желите да скролујете и зумирате дељену картицу?</translation>
@@ -4578,6 +4578,7 @@
 <translation id="9139318394846604261">Шопинг</translation>
 <translation id="9140198744651252040">Chrome прегледач жели да користи отисак прста за аутоматско попуњавање лозинки</translation>
 <translation id="9141013498910525015">Управљајте адресама</translation>
+<translation id="9143898823728499852">Можете да попуните ову картицу аутоматски јер је <ph name="CARD_ISSUER_NAME" /> налог повезан са Google Pay-ом</translation>
 <translation id="9144951720726881238">Датум истека:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Пријавите се<ph name="END_LINK" />
     поново, па се вратите на ову картицу да бисте добили помоћ при писању</translation>

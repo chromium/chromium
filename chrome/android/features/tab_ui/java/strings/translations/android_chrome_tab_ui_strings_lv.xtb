@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1045448422538531528">Pievienot grupai</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Izveidota pirms <ph name="NUM_WEEKS_ONE" /> nedēļas}zero{Izveidota pirms <ph name="NUM_WEEKS_MANY" /> nedēļām}one{Izveidota pirms <ph name="NUM_WEEKS_MANY" /> nedēļas}other{Izveidota pirms <ph name="NUM_WEEKS_MANY" /> nedēļām}}</translation>
 <translation id="1063300264396686489">Automātiski atvērt ciļņu grupas no citām ierīcēm</translation>
 <translation id="1075622780330595106">Vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>

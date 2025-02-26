@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">pisici</translation>
 <translation id="5907649332524363701">culoarea tastelor</translation>
 <translation id="5908813850962688338">Instalarea actualizării va dura câteva minute. Păstrează dispozitivul conectat la sursa de alimentare și pornit cât timp se descarcă actualizarea. Dispozitivul poate să repornească de mai multe ori și să afișeze un ecran negru în timpul acestui proces. Ți se va cere să repornești dispozitivul pentru a finaliza instalarea.</translation>
+<translation id="5915794087373112615">Profesorul tău îți va vedea ecranul în <ph name="NUM_SECONDS" /> secunde</translation>
 <translation id="5916084858004523819">Interzis</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fișierul a fost scanat și salvat în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Fișierele au fost scanate și salvate în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fișierele au fost scanate și salvate în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8054112564438735763">bej</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> pe fundal <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Conectează un microfon pentru a începe înregistrarea audio</translation>
 <translation id="8067126283828232460">APN-ul este conectat.</translation>
 <translation id="8067208048261192356">maro</translation>
 <translation id="8067224607978179455">Șterge <ph name="ACTION_NAME" /></translation>

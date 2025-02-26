@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">请输入有效值。两个最接近的有效值分别为<ph name="VALID_VALUE_LOW" />和<ph name="VALID_VALUE_HIGHER" />。</translation>
 <translation id="4522570452068850558">详情</translation>
 <translation id="4664250907885839816">“<ph name="ATSIGN" />”后面的内容不应包含符号“<ph name="INVALIDCHARACTER" />”。</translation>
+<translation id="4703271465972936359">音频轨道</translation>
 <translation id="4718048029184481307">以“画中画”模式播放</translation>
 <translation id="4812940957355064477">请输入一个数字。</translation>
 <translation id="4975562563186953947">选择了<ph name="SELECTED_COUNT" />项</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">投放</translation>
 <translation id="5630795885300617244">在左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="57838592816432529">静音</translation>
+<translation id="5868587040512539609">视频轨道</translation>
 <translation id="588258955323874662">全屏</translation>
 <translation id="5888666972993069672">现正投放至“<ph name="DEVICE_FRIENDLY_NAME" />”</translation>
 <translation id="5939518447894949180">重置</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">美观输出</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="6643016212128521049">清除</translation>
+<translation id="6661136971638885481">第 <ph name="TRACK_NUMBER" /> 个轨道</translation>
 <translation id="668171684555832681">其他...</translation>
 <translation id="6709093583001123835">值必须为 <ph name="VALUE" />。</translation>
 <translation id="6709570249143506788">播放质量不佳</translation>

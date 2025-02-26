@@ -1843,6 +1843,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="886477344907998366">Mostra les adreces d'interès</translation>
 <translation id="8869239474428371589">Treu el màxim profit del navegador que més t'agrada</translation>
 <translation id="8871974300055371298">Configuració del contingut</translation>
+<translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8879604564928138696">Fes doble toc per provar-ho</translation>
 <translation id="8879952635974818770">Contingut personalitzat</translation>
 <translation id="8887595428614802520">Tanca totes les pestanyes i tots els grups</translation>
@@ -1943,6 +1944,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="963102227019621224">Activitat al web i en aplicacions</translation>
 <translation id="966593914872420832">Cerca per veu</translation>
 <translation id="968653181266955408">Rep notificacions de contingut</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{Uneix-te al grup de pestanyes amb <ph name="OWNER_NAME" />}=1{Uneix-te al grup de pestanyes amb <ph name="OWNER_NAME" /> i {COUNT} persona més}other{Uneix-te al grup de pestanyes amb <ph name="OWNER_NAME" /> i {COUNT} persones més}}</translation>
 <translation id="973493300226275298">Fes un seguiment del preu d'un producte en diferents botigues en línia. Rebràs alertes quan el preu baixi.</translation>
 <translation id="973788791897303708">Aquest grup de pestanyes és ple</translation>
 <translation id="976392601789283511">Tornar a obrir la darrera pestanya tancada</translation>

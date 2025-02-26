@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">ಬೆಕ್ಕುಗಳು</translation>
 <translation id="5907649332524363701">ಕೀ ಬಣ್ಣ</translation>
 <translation id="5908813850962688338">ಈ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ. ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವಾಗ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪ್ಲಗ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಆನ್ ಮಾಡಿ ಇರಿಸಿ. ಈ ಪ್ರಕ್ರಿಯೆಯಲ್ಲಿ ನಿಮ್ಮ ಸಾಧನವು ಹಲವಾರು ಬಾರಿ ರೀಬೂಟ್ ಆಗಬಹುದು ಮತ್ತು ಕಪ್ಪು ಸ್ಕ್ರೀನ್ ತೋರಿಸಬಹುದು. ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮನ್ನು ಕೇಳಲಾಗುತ್ತದೆ.</translation>
+<translation id="5915794087373112615">ನಿಮ್ಮ ಶಿಕ್ಷಕರು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು <ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ನೋಡುತ್ತಾರೆ</translation>
 <translation id="5916084858004523819">ನಿಷೇಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ನಿಮ್ಮ ಫೈಲ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.}one{ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.}other{ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.}}</translation>
@@ -1524,6 +1525,7 @@
 <translation id="8054112564438735763">ಬೇಜ್</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> ಹಿನ್ನೆಲೆಯ ಮೇಲೆ<ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ಆಡಿಯೋ ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು ಮೈಕ್ ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="8067126283828232460">APN ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="8067208048261192356">ಕಂದು</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ಅನ್ನು ಅಳಿಸಿ</translation>

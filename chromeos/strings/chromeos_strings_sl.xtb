@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">mačke</translation>
 <translation id="5907649332524363701">barva tipk</translation>
 <translation id="5908813850962688338">Nameščanje te posodobitve bo trajalo nekaj minut. Med prenosom posodobitve naj bo naprava priklopljena in vklopljena. Med tem postopkom se bo naprava morda sama večkrat znova zagnala in prikazan bo črn zaslon. Za dokončanje namestitve boste pozvani, da znova zaženete napravo.</translation>
+<translation id="5915794087373112615">Učitelj si bo ogledal tvoj zaslon čez <ph name="NUM_SECONDS" /> s</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša datoteka je bila uspešno pregledana in je shranjena v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749">Izberite: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Nevtralna</translation>
 <translation id="7620771111601174153">Preberite več v centru za pomoč</translation>
+<translation id="7623327321610992184">Pripomoček OnTask</translation>
 <translation id="763165478673169849">Čas zadnje ponastavitve</translation>
 <translation id="7633068090678117093">Slika ozadja</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">bež</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> na ozadju v barvi <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Če želite začeti snemati zvok, priključite mikrofon</translation>
 <translation id="8067126283828232460">Povezava z APN-jem je vzpostavljena.</translation>
 <translation id="8067208048261192356">rjava</translation>
 <translation id="8067224607978179455">Izbriši <ph name="ACTION_NAME" /></translation>

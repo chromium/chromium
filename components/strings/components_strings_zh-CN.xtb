@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">设置由管理员控制</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 希望与以下所选设备配对：</translation>
+<translation id="2344529975040861103">您可以自动填充此卡的信息，因为您的账号已关联到 Google Pay</translation>
 <translation id="2346319942568447007">您复制的图片</translation>
 <translation id="2348509731468399833">已停止跟踪价格。</translation>
 <translation id="2349957959687031096">“打开无痕式标签页”按钮，激活它即可打开新的无痕式标签页进行私密浏览</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">谈话类广播节目</translation>
 <translation id="2835170189407361413">清除表单</translation>
 <translation id="2837891525090413132">可以请求锁定和使用您的键盘</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 想使用其保存的与您相关的信息</translation>
 <translation id="2839032553903800133">已阻止显示通知</translation>
 <translation id="2839501879576190149">您要访问的是虚假网站</translation>
 <translation id="2843623755398178332">要滚动和缩放您分享的标签页吗？</translation>
@@ -4574,6 +4574,7 @@
 <translation id="9139318394846604261">购物</translation>
 <translation id="9140198744651252040">Chrome 浏览器希望使用指纹来自动填充密码</translation>
 <translation id="9141013498910525015">管理地址</translation>
+<translation id="9143898823728499852">您可以自动填充此卡的信息，因为您的 <ph name="CARD_ISSUER_NAME" /> 账号已关联到 Google Pay</translation>
 <translation id="9144951720726881238">截止日期：</translation>
 <translation id="9145910032514306808">请<ph name="BEGIN_LINK" />重新登录<ph name="END_LINK" />，然后返回此标签页以获取写作帮助</translation>
 <translation id="9145936855791010051">比较</translation>

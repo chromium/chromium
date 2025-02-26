@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />-д дуусна</translation>
 <translation id="2337852623177822836">Тохируулгыг таны администратор хянадаг</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
+<translation id="2344529975040861103">Таны дансыг Google Pay-д холбосон тул та энэ картыг автоматаар бөглөх боломжтой</translation>
 <translation id="2346319942568447007">Таны хуулсан зураг</translation>
 <translation id="2348509731468399833">Үнэ мөшгөхийг зогсоосон.</translation>
 <translation id="2349957959687031096">Нууцлалтай таб нээх товчлуур, хувиараа үзэх шинэ нууцлалтай таб нээхийн тулд идэвхжүүлнэ үү</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">Ярилцлагын радио</translation>
 <translation id="2835170189407361413">Маягтыг цэвэрлэх</translation>
 <translation id="2837891525090413132">Таны гарыг түгжиж, ашиглахыг хүсэх боломжтой</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> таны талаар хадгалсан мэдээллээ ашиглахыг хүсэж байна</translation>
 <translation id="2839032553903800133">Мэдэгдлийг хориглосон</translation>
 <translation id="2839501879576190149">Хуурамч сайт байна</translation>
 <translation id="2843623755398178332">Хуваалцсан табаа гүйлгэж, томруулах уу?</translation>
@@ -4577,6 +4577,7 @@
 <translation id="9139318394846604261">Дэлгүүр</translation>
 <translation id="9140198744651252040">Chrome хөтөч нууц үгнүүдийг автоматаар бөглөхийн тулд хурууны хээ ашиглахыг хүсэж байна</translation>
 <translation id="9141013498910525015">Хаяг удирдах</translation>
+<translation id="9143898823728499852">Таны <ph name="CARD_ISSUER_NAME" /> дансыг Google Pay-д холбосон тул та энэ картыг автоматаар бөглөх боломжтой.</translation>
 <translation id="9144951720726881238">Хүчинтэй хугацаа:</translation>
 <translation id="9145910032514306808">Бичих тусламж 
     авахын тулд дахин <ph name="BEGIN_LINK" />нэвтрээд<ph name="END_LINK" />, энэ таб руу буцаж ирнэ үү</translation>

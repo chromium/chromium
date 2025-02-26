@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1045448422538531528">Idagdag sa pangkat</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ginawa <ph name="NUM_WEEKS_ONE" /> linggo ang nakalipas}one{Ginawa <ph name="NUM_WEEKS_MANY" /> linggo ang nakalipas}other{Ginawa <ph name="NUM_WEEKS_MANY" /> na linggo ang nakalipas}}</translation>
 <translation id="1063300264396686489">Awtomatikong buksan ang mga grupo ng tab mula sa iba pang device</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>

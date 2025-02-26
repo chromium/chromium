@@ -772,6 +772,7 @@
 <translation id="2330137317877982892">「<ph name="CREDIT_CARD" />」の有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
 <translation id="2337852623177822836">管理者が指定する設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> がペア設定を要求しています</translation>
+<translation id="2344529975040861103">アカウントが Google Pay にリンクされているため、このカードを自動入力できます</translation>
 <translation id="2346319942568447007">コピーした画像</translation>
 <translation id="2348509731468399833">価格のトラッキングを停止しました。</translation>
 <translation id="2349957959687031096">[シークレット タブを開く] ボタンです。実行すると、新しいシークレット タブを開いてシークレット モードでブラウジングできます</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">ラジオのトーク番組</translation>
 <translation id="2835170189407361413">フォームをクリア</translation>
 <translation id="2837891525090413132">キーボードのロックと使用を要求できます</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> から、保存したあなたに関する情報の使用を求められています</translation>
 <translation id="2839032553903800133">通知をブロック中</translation>
 <translation id="2839501879576190149">偽のサイトにアクセスしようとしています</translation>
 <translation id="2843623755398178332">共有タブをスクロールしてズームしますか？</translation>
@@ -4580,6 +4580,7 @@
 <translation id="9139318394846604261">ショッピング</translation>
 <translation id="9140198744651252040">Chrome ブラウザが指紋認証を使用してパスワードを自動入力しようとしています</translation>
 <translation id="9141013498910525015">住所を管理</translation>
+<translation id="9143898823728499852"><ph name="CARD_ISSUER_NAME" /> アカウントが Google Pay にリンクされているため、このカードを自動入力できます</translation>
 <translation id="9144951720726881238">有効期限:</translation>
 <translation id="9145910032514306808">もう一度<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してこのタブに戻ると、文章作成サポートを使用できます</translation>
 <translation id="9145936855791010051">比較</translation>

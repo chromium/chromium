@@ -771,6 +771,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">管理員所控制的設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 要求配對</translation>
+<translation id="2344529975040861103">你的帳戶已連結 Google Pay，因此可以自動填入這張卡片的資訊</translation>
 <translation id="2346319942568447007">你複製的圖片</translation>
 <translation id="2348509731468399833">已停止追蹤價格。</translation>
 <translation id="2349957959687031096">「開啟無痕分頁」按鈕，啟動後即可開啟新的無痕分頁進行私密瀏覽</translation>
@@ -1030,7 +1031,6 @@
 <translation id="2833637280516285136">談話性廣播節目</translation>
 <translation id="2835170189407361413">清除表單</translation>
 <translation id="2837891525090413132">可要求鎖定及使用鍵盤</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> 要求使用與你相關的既有資訊</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2839501879576190149">你要造訪的是偽造的網站</translation>
 <translation id="2843623755398178332">要捲動及縮放已分享的分頁嗎？</translation>
@@ -4576,6 +4576,7 @@
 <translation id="9139318394846604261">購物</translation>
 <translation id="9140198744651252040">Chrome 瀏覽器想使用指紋自動填入密碼</translation>
 <translation id="9141013498910525015">管理地址</translation>
+<translation id="9143898823728499852">你的「<ph name="CARD_ISSUER_NAME" />」帳戶已連結 Google Pay，因此可以自動填入這張卡片的資訊</translation>
 <translation id="9144951720726881238">到期日：</translation>
 <translation id="9145910032514306808">請重新<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />，再返回這個分頁取得撰寫協助</translation>
 <translation id="9145936855791010051">比較</translation>

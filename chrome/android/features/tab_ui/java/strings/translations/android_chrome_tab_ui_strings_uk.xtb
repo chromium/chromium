@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1045448422538531528">Додати в групу</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Створено <ph name="NUM_WEEKS_ONE" /> тиждень тому}one{Створено <ph name="NUM_WEEKS_MANY" /> тиждень тому}few{Створено <ph name="NUM_WEEKS_MANY" /> тижні тому}many{Створено <ph name="NUM_WEEKS_MANY" /> тижнів тому}other{Створено <ph name="NUM_WEEKS_MANY" /> тижня тому}}</translation>
 <translation id="1063300264396686489">Автоматично відкривати групи вкладок з інших пристроїв</translation>
 <translation id="1075622780330595106">Ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>

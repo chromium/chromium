@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1045448422538531528">Setja í hóp</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Búinn til fyrir <ph name="NUM_WEEKS_ONE" /> viku}one{Búinn til fyrir <ph name="NUM_WEEKS_MANY" /> viku}other{Búinn til fyrir <ph name="NUM_WEEKS_MANY" /> vikum}}</translation>
 <translation id="1063300264396686489">Opna flipahópa úr öðrum tækjum sjálfkrafa</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>

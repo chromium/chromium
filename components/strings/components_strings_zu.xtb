@@ -772,6 +772,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, iphelelwa isikhathi ngomhla ka-<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Isethingi lilawulwa umlawuli wakho</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ufuna ukubhangqa</translation>
+<translation id="2344529975040861103">Ungazigcwalisela leli khadi ngoba i-akhawunti yakho ilinkwe kuGoogle Pay</translation>
 <translation id="2346319942568447007">Isithombe osikopishile</translation>
 <translation id="2348509731468399833">Ukulandela intengo kumisiwe.</translation>
 <translation id="2349957959687031096">Vula inkinobho yethebhu ye-Incognito, yenza kusebenze ukuze uvule ithebhu ye-Incognito entsha ukuze ubhrawuze ngokugodliwe</translation>
@@ -1031,7 +1032,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2833637280516285136">Irediyo Yengxoxo</translation>
 <translation id="2835170189407361413">Sula ifomu</translation>
 <translation id="2837891525090413132">Ingacela ukukhiya nokusebenzisa ikhibhodi yakho</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ifuna ukusebenzisa imininingwane eyilondolozile ngawe</translation>
 <translation id="2839032553903800133">Izaziso zivinjelwe</translation>
 <translation id="2839501879576190149">Isayithi mbumbulu ngaphambili</translation>
 <translation id="2843623755398178332">Skrola futhi usondeze ithebhu yakho eyabiwe?</translation>
@@ -4574,6 +4574,7 @@ Imininingwane engeziwe:
 <translation id="9139318394846604261">Ukuthenga</translation>
 <translation id="9140198744651252040">Ibhrawuza yeChrome ingathanda ukusebenzisa isigxivizo somunwe ukuze igcwalise amaphasiwedi ngokuzenzekelayo</translation>
 <translation id="9141013498910525015">Phatha amakheli</translation>
+<translation id="9143898823728499852">Ungazigcwalisela leli khadi ngoba i-akhawunti yakho ye-<ph name="CARD_ISSUER_NAME" /> ilinkwe kuGoogle Pay</translation>
 <translation id="9144951720726881238">Idethi yokuphelelwa isikhathi:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Ngena ngemvume<ph name="END_LINK" />
     futhi, bese ubuyela kule thebhu ukuze uthole usizo lokubhala</translation>

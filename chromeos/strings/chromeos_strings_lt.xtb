@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">katės</translation>
 <translation id="5907649332524363701">klavišo spalva</translation>
 <translation id="5908813850962688338">Šio naujinio diegimas užtruks kelias minutes. Įrenginys turi būti įjungtas į lizdą ir įjungtas, kai atsisiunčiamas naujinys. Šio proceso metu įrenginys gali būti kelis kartus automatiškai paleistas iš naujo ir gali būti rodomas juodas ekranas. Bus paprašyta iš naujo paleisti įrenginį, kad būtų užbaigtas diegimas.</translation>
+<translation id="5915794087373112615">Mokytojas peržiūrės jūsų ekraną po <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="5916084858004523819">Draudžiama</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}many{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
@@ -1525,6 +1526,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8054112564438735763">smėlio spalvos</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_BACKGROUND" /> fone</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Prijunkite mikrofoną, kad galėtumėte pradėti garso įrašymą</translation>
 <translation id="8067126283828232460">APN įjungtas.</translation>
 <translation id="8067208048261192356">rudos spalvos</translation>
 <translation id="8067224607978179455">Ištrinti „<ph name="ACTION_NAME" />“</translation>

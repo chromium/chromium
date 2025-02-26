@@ -1032,7 +1032,6 @@
 <translation id="2833637280516285136">რადიოსაუბრები</translation>
 <translation id="2835170189407361413">ფორმის გასუფთავება</translation>
 <translation id="2837891525090413132">შეიძლება მოითხოვოს დაბლოკვა და თქვენი კლავიატურის გამოყენება</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" />-ს სურს, გამოიყენოს მის მიერ თქვენ შესახებ შენახული ინფორმაცია</translation>
 <translation id="2839032553903800133">შეტყობინებები დაბლოკილია</translation>
 <translation id="2839501879576190149">მოერიდეთ ყალბ საიტს</translation>
 <translation id="2843623755398178332">დაიშვას თქვენს გაზიარებულ ჩანართში გადაადგილება და მისი მასშტაბირება?</translation>
@@ -1946,6 +1945,7 @@
 <translation id="4378154925671717803">ტელეფონი</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive-ში ფაილის ატვირთვა დაპაუზდა</translation>
+<translation id="4389931020843542579">მიმდინარეობს ჩანართების ჯგუფის ჩატვირთვა</translation>
 <translation id="4390472908992056574">კიდეების გადავსება</translation>
 <translation id="4395550503472021297">ამ წესებით იმართება შემდეგი წესების სტანდარტული ქცევა: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">გახსნის ამომხტარ ფანჯარას დადასტურების გასავლელად თქვენი ბანკის ვებსაიტზე</translation>

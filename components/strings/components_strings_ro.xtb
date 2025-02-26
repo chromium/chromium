@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expiră pe <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Setare controlată de administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dorește să se asocieze</translation>
+<translation id="2344529975040861103">Poți completa automat acest card deoarece contul tău este conectat la Google Pay.</translation>
 <translation id="2346319942568447007">Imaginea copiată de tine</translation>
 <translation id="2348509731468399833">Urmărirea prețului s-a oprit.</translation>
 <translation id="2349957959687031096">Butonul Deschide o filă incognito, activează pentru a deschide o nouă filă incognito ca să navighezi în privat</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">Discuții radiofonice</translation>
 <translation id="2835170189407361413">Golește formularul</translation>
 <translation id="2837891525090413132">Poate solicita blocarea și folosirea tastaturii</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> dorește să folosească informațiile pe care le salvează despre tine</translation>
 <translation id="2839032553903800133">Notificările au fost blocate</translation>
 <translation id="2839501879576190149">Urmează un site fals</translation>
 <translation id="2843623755398178332">Derulezi și faci zoom în fila la care ai permis accesul?</translation>
@@ -4579,6 +4579,7 @@ Detalii suplimentare:
 <translation id="9139318394846604261">Cumpărături</translation>
 <translation id="9140198744651252040">Browserul Chrome dorește să folosească amprenta pentru a completa automat parolele</translation>
 <translation id="9141013498910525015">Gestionează adresele</translation>
+<translation id="9143898823728499852">Poți completa automat acest card deoarece contul <ph name="CARD_ISSUER_NAME" /> este conectat la Google Pay</translation>
 <translation id="9144951720726881238">Data expirării:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Conectează-te<ph name="END_LINK" />
     din nou, apoi revino la această filă pentru a primi ajutor la scriere</translation>

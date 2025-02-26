@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">gatos</translation>
 <translation id="5907649332524363701">cor das teclas</translation>
 <translation id="5908813850962688338">A instalación desta actualización pode levar uns minutiños. Non desenchufes nin apagues o dispositivo mentres se estea descargando a actualización. Pode que o aparello se reinicie varias veces e mostre unha pantalla negra durante o proceso. Pediráseche que reinicies o dispositivo para poder completar a instalación.</translation>
+<translation id="5915794087373112615">A persoa docente verá a túa pantalla dentro de <ph name="NUM_SECONDS" /> segundos</translation>
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O teu ficheiro escaneouse e gardouse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os teus ficheiros escaneáronse e gardáronse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7618216277886673749">Seleccionar o <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7620771111601174153">Máis información no Centro de axuda</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Última hora de restablecemento</translation>
 <translation id="7633068090678117093">Imaxe de fondo</translation>
 <translation id="763873111564339966">índigo</translation>
@@ -1524,6 +1526,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8054112564438735763">beixe</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> de cor <ph name="CHARACTERS_COLOR" /> nun fondo de cor <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Conecta un micrófono para comezar a gravar audio</translation>
 <translation id="8067126283828232460">O APN está conectado.</translation>
 <translation id="8067208048261192356">marrón</translation>
 <translation id="8067224607978179455">Eliminar <ph name="ACTION_NAME" /></translation>

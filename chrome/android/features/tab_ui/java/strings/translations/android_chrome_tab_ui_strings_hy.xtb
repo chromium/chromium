@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1045448422538531528">Ավելացնել խմբում</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ստեղծվել է <ph name="NUM_WEEKS_ONE" /> շաբաթ առաջ}one{Ստեղծվել է <ph name="NUM_WEEKS_MANY" /> շաբաթ առաջ}other{Ստեղծվել է <ph name="NUM_WEEKS_MANY" /> շաբաթ առաջ}}</translation>
 <translation id="1063300264396686489">Ավտոմատ բացում է ներդիրների խմբերն այլ սարքերից</translation>
 <translation id="1075622780330595106">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վերջերս չեն օգտագործվել։ Փակե՞լ դրանք։</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ ջնջեք խումբը, եթե այն այլևս պետք չէ ձեզ։
 
 Եթե ջնջեք, բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="TITLE_OF_GROUP" />» խումբը, և այն կջնջվի բոլոր սարքերից։</translation>
+<translation id="1326654401173629446">«<ph name="TAB_GROUP_NAME" />» ներդիրների խումբն այլևս հասանելի չէ</translation>
 <translation id="1329584516321524826">Թարմացվեց հենց նոր</translation>
 <translation id="1340839264183302272">Լքել խումբը</translation>
 <translation id="1419023007528516122">Խումբն ընդմիշտ կջնջվի ձեր սարքից</translation>

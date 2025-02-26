@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Google Play 스토어 사용 설정</translation>
 <translation id="1008186147501209563">북마크 내보내기</translation>
 <translation id="1008261151167010035"><ph name="BRAND" />에서는 내가 로그인한 방식을 기억하고 가능한 경우 자동으로 로그인합니다. 이 기능이 사용 중지되어 있는 경우 매번 확인 요청 메시지가 표시됩니다.</translation>
-<translation id="1008544602823861396">의 경우 내 정보를 사용하지 못하도록 차단됨</translation>
 <translation id="1008557486741366299">나중에 하기</translation>
 <translation id="100881991356161927">사이트 이름</translation>
 <translation id="1009663062402466586">게임 컨트롤 사용 가능</translation>
@@ -838,6 +837,7 @@
 <translation id="1575741822946219011">언어 및 입력</translation>
 <translation id="1576594961618857597">기본 흰색 아바타</translation>
 <translation id="1576729678809834061">검색결과 신고</translation>
+<translation id="1578110287710452646">나란히 핸들 크기 조절</translation>
 <translation id="1578488449637163638">어둡게</translation>
 <translation id="1578558981922970608">강제 종료</translation>
 <translation id="157931050206866263">멀웨어 검사에 관해 자세히 알아보기</translation>
@@ -2415,7 +2415,6 @@
 <translation id="2653659639078652383">제출</translation>
 <translation id="265390580714150011">필드 값</translation>
 <translation id="2654553774144920065">인쇄 요청</translation>
-<translation id="265680054508313161"><ph name="USERNAME" /> 계정 계속 사용</translation>
 <translation id="265748523151262387">휴대전화 연결 상태 유지</translation>
 <translation id="2657612187216250073">포인팅 장치 접근성 설정</translation>
 <translation id="2658510146844889864">패스키 및 보안 키</translation>
@@ -2544,6 +2543,7 @@
 <translation id="2739191690716947896">디버그</translation>
 <translation id="2739240477418971307">접근성 설정 변경</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" />을 통해 인터넷에 연결됨</translation>
+<translation id="2739887572830526131">이 그룹을 유지하여 나중에 탭을 추가하거나 더 이상 필요하지 않으면 삭제하세요.</translation>
 <translation id="274029851662193272">음각</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2740876196999178364">이 패스키는 이 기기에만 저장됩니다. Google 계정에는 저장되지 않습니다.</translation>
@@ -4050,6 +4050,7 @@
 <translation id="3813358687923336574">페이지 번역 및 빠른 답변에 사용되는 언어</translation>
 <translation id="3813458570141926987">최근 방문 기록을 기반으로 Chrome에서 예측한 주제 목록</translation>
 <translation id="3814529970604306954">학교 계정</translation>
+<translation id="3815668647912194650">나중에 탭을 추가하려면 이 그룹을 유지하고, 더 이상 액세스할 필요가 없으면 그룹에서 나가세요.</translation>
 <translation id="3816118180265633665">Chrome 색상</translation>
 <translation id="3817524650114746564">컴퓨터 프록시 설정 열기</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상 종료되는지, 어떤 기능을 사용하는지, 일반적으로 메모리를 얼마나 많이 사용하는지 등의 정보가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
@@ -4286,7 +4287,6 @@
 <translation id="3971764089670057203">보안 키의 지문</translation>
 <translation id="3973005893595042880">허용되지 않은 사용자입니다.</translation>
 <translation id="3973660817924297510">비밀번호 확인 중(<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">사이트에서 나에 관해 저장된 정보를 사용하도록 요청할 수 있음</translation>
 <translation id="3974514184580396500">'다음'을 사용하여 화면에서 포커스를 앞으로 이동합니다.</translation>
 <translation id="3975017815357433345">고속도로</translation>
 <translation id="3975201861340929143">설명</translation>
@@ -4531,7 +4531,6 @@
 <translation id="4146785383423576110">재설정 및 정리하기</translation>
 <translation id="4147099377280085053">점자표 선택</translation>
 <translation id="4147911968024186208">다시 시도해 주세요. 이 오류가 다시 표시되면 지원 담당자에게 문의하시기 바랍니다.</translation>
-<translation id="414800391140809654">의 경우 인터넷을 사용하는 동안 내 정보를 사용할 수 있음</translation>
 <translation id="4148195018520464922">특정 사용자만 로그인할 수 있도록 제한할 수 있습니다. 이렇게 하면 로그인 화면에서 '사용자 추가' 옵션이 삭제됩니다. 현재 사용자를 삭제할 수도 있습니다.</translation>
 <translation id="4148957013307229264">설치 중...</translation>
 <translation id="4149385644005013189">깔끔해졌습니다</translation>
@@ -5322,7 +5321,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4728558894243024398">플랫폼</translation>
 <translation id="4730492586225682674">잠금 화면에 최근 스타일러스 메모 표시</translation>
 <translation id="4730888769809690665"><ph name="SITE" />의 알림이 허용됨</translation>
-<translation id="4731306954230393087">나에 관해 저장한 정보를 사용하도록 허용됨</translation>
 <translation id="4732799736617504962">연결된 마이크는 주변 소음 제거만 지원합니다.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%(왼쪽)</translation>
 <translation id="4733793249294335256">위치</translation>
@@ -6226,7 +6224,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{알림이 많은 사이트 1개를 찾음}other{알림이 많은 사이트 {NUM_SITES}개를 찾음}}</translation>
 <translation id="5388885445722491159">페어링됨</translation>
 <translation id="5389224261615877010">무지개</translation>
-<translation id="5389626883706033615">사이트에서 나에 관해 저장된 정보 사용을 요청하지 못하도록 차단</translation>
 <translation id="5389794555912875905">안전하지 않은 사이트로 이동하기 전에 경고를 표시합니다(권장).</translation>
 <translation id="5389943529251318913">다음 값만큼 마우스 속도 줄이기</translation>
 <translation id="5390112241331447203">전송된 system_logs.txt 파일을 의견 보고서에 포함합니다.</translation>
@@ -6913,7 +6910,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5888889603768021126">다음을 사용하여 로그인함</translation>
 <translation id="5889282057229379085">중간 인증기관(CA)의 최대 개수: <ph name="NUM_INTERMEDIATE_CA" />개</translation>
 <translation id="5889629805140803638">나만의 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />로 동기화 데이터를 암호화합니다. Google Pay 결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.</translation>
-<translation id="5891084409170578560">내가 방문한 사이트에서는 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 이러한 다른 사이트에서는 사이트를 탐색할 때 나에 관해 저장된 정보를 사용할 권한을 요청할 수 있습니다.</translation>
 <translation id="5891688036610113830">선호하는 Wi-Fi 네트워크</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> 폴더 선택 해제</translation>
 <translation id="5895138241574237353">다시 시작</translation>
@@ -9279,7 +9275,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7619937211696316184">유지보수가 완료되었습니다.</translation>
 <translation id="7620616707541471029">계속하려면 계정을 선택하세요</translation>
 <translation id="7621382409404463535">시스템에서 기기 설정을 저장하지 못했습니다.</translation>
-<translation id="7621480263311228380">나에 관해 저장한 정보를 사용하도록 허용되지 않음</translation>
 <translation id="7621595347123595643">비밀번호 또는 PIN을 잊어버린 경우 로컬 데이터를 복구할 수 없습니다.</translation>
 <translation id="7622114377921274169">충전 중</translation>
 <translation id="7622768823216805500">사이트에서는 일반적으로 간편 결제와 같은 쇼핑 기능을 사용하기 위해 결제 핸들러를 설치합니다.</translation>
@@ -10734,6 +10729,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8633979878370972178">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Linux 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
 <translation id="8634348081024879304">더 이상 Google Pay에서 가상 카드를 사용할 수 없습니다. <ph name="BEGIN_LINK" />가상 카드에 관해 알아보기<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">ChromeOS 가상 키보드</translation>
+<translation id="8635399646025169806">탭 그룹을 유지하시겠습니까?</translation>
 <translation id="8635628933471165173">새로 고치는 중...</translation>
 <translation id="8636284842992792762">확장 프로그램 초기화 중...</translation>
 <translation id="8636323803535540285">여기로 더 빨리 이동하려면 <ph name="BRAND" />에 바로가기를 추가하세요.</translation>
@@ -10994,6 +10990,7 @@ https://support.google.com/chromebook/?p=sm</translation>
     <ph name="BEGIN_PARAGRAPH2" />Google은 사용자를 식별하지 않고 이 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />언제든지 기기의 위치 설정(설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스 &gt; 고급 위치 설정)에서 위치 정확도를 사용 중지할 수 있습니다. 위치 정확도를 사용 중지하면 위치 정확도 데이터가 수집되지 않습니다. Android 앱 및 서비스의 경우 IP 주소만 사용하여 기기 위치를 파악합니다(사용 가능한 경우). 이는 Android 앱 및 서비스(예: Google 지도)의 위치 사용 가능 여부와 정확성에 영향을 줄 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">사용할 브라우저</translation>
+<translation id="8804742093141782941">그룹 유지</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{탭을 다른 창으로 이동}other{탭을 다른 창으로 이동}}</translation>
 <translation id="8805140816472474147">동기화를 시작하려면 동기화 설정을 확인하세요.</translation>
 <translation id="8805255531353778052">메모리 최대 절약</translation>

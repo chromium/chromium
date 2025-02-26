@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">ကြောင်</translation>
 <translation id="5907649332524363701">ကီးအရောင်</translation>
 <translation id="5908813850962688338">ဤအပ်ဒိတ်ထည့်သွင်းခြင်းက မိနစ်အနည်းငယ် ကြာပါမည်။ အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်နေစဉ် သင့်စက်ကို ပလတ်တပ်ပြီး ပါဝါဖွင့်ထားပါ။ ဤလုပ်ငန်းစဉ်အတွင်း သင့်စက်သည် အကြိမ်များစွာ ပြန်လည်စတင်ပြီး စခရင်အနက် ပြနိုင်သည်။ ထည့်သွင်းမှု အပြီးသတ်ရန်အတွက် သင့်စက်ကို ပြန်စရန် တိုက်တွန်းပါမည်။</translation>
+<translation id="5915794087373112615">ဆရာက သင့်စခရင်ကို <ph name="NUM_SECONDS" /> စက္ကန့်အကြာတွင် ကြည့်ပါမည်</translation>
 <translation id="5916084858004523819">တားမြစ်ထားသည်</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{သင်၏ဖိုင်ကို စကင်ဖတ်ပြီး <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> တွင် သိမ်းပြီးပြီ။}other{သင်၏ဖိုင်များကို စကင်ဖတ်ပြီး <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> တွင် သိမ်းပြီးပြီ။}}</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8054112564438735763">ဝါညိုနုရောင်</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> နောက်ခံပေါ်ရှိ <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />၊ <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">အသံကို စတင်မှတ်တမ်းတင်ရန် မိုက် ချိတ်ဆက်ပါ</translation>
 <translation id="8067126283828232460">APN ချိတ်ထားသည်။</translation>
 <translation id="8067208048261192356">အညိုရောင်</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ကို ဖျက်ရန်</translation>

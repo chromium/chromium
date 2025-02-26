@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />፣ በ<ph name="EXPIRATION_DATE_ABBR" /> አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="2337852623177822836">ቅንብር በአስተዳዳሪዎ ነው ቁጥጥር የሚደረግበት</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> መጣመር ይፈልጋል</translation>
+<translation id="2344529975040861103">መለያዎ ከGoogle Pay ጋር ስለተገናኘ ይህን ካርድ ራስ-ሙላ ማድረግ ይችላሉ</translation>
 <translation id="2346319942568447007">እርስዎ የቀዱት ምስል</translation>
 <translation id="2348509731468399833">የዋጋ ክትትል ቆሟል።</translation>
 <translation id="2349957959687031096">ማንነትን የማያሳውቅ ትር አዝራርን ይክፈቱ፣ በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ትር ለመክፈት ያግብሩ</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">የንግግር ሬዲዮ</translation>
 <translation id="2835170189407361413">ቅጽ አጽዳ</translation>
 <translation id="2837891525090413132">የእርስዎን ቁልፍ ሰሌዳ ለመቆለፍ ወይም ለመጠቀም መጠየቅ ይችላል</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ስለ እርስዎ ያስቀመጡትን መረጃ መጠቀም ይፈልጋሉ</translation>
 <translation id="2839032553903800133">ማሳወቂያዎች ታግደዋል</translation>
 <translation id="2839501879576190149">የውሸት ጣቢያ ከፊት አለ</translation>
 <translation id="2843623755398178332">የተጋራውን ትርዎ ይሸብለል እና ይጉላ?</translation>
@@ -4578,6 +4578,7 @@
 <translation id="9139318394846604261">ግዢ</translation>
 <translation id="9140198744651252040">የChrome አሳሽ የይለፍ ቃላትን በራስ-ሰር ለመሙላት የጣት አሻራ መጠቀም ይፈልጋል</translation>
 <translation id="9141013498910525015">አድራሻዎችን ያቀናብሩ</translation>
+<translation id="9143898823728499852">የእርስዎ <ph name="CARD_ISSUER_NAME" /> መለያ ከGoogle Pay ጋር ስለተገናኘ ይህን ካርድ ራስ-ሙላ ማድረግ ይችላሉ</translation>
 <translation id="9144951720726881238">ጊዜው የሚያልፍበት ቀን፦</translation>
 <translation id="9145910032514306808">እንደገና <ph name="BEGIN_LINK" />ይግቡ<ph name="END_LINK" />፣
     ከዚያም የጽሑፍ እገዛ ለማግኘት ወደዚህ ትር ይመለሱ</translation>
