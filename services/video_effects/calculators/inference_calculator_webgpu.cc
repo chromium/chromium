@@ -62,12 +62,16 @@ absl::Status InferenceCalculatorWebGpu::GetContract(
     mediapipe::CalculatorContract* cc) {
   cc->UseService(mediapipe::kWebGpuService);
 
-  cc->InputSidePackets().Index(0).Set<video_effects::StaticConfig>();
+  cc->InputSidePackets()
+      .Tag(kStaticConfigInputSidePacketStreamTag)
+      .Set<video_effects::StaticConfig>();
 
-  cc->Inputs().Index(0).Set<video_effects::RuntimeConfig>();
-  cc->Inputs().Index(1).Set<mediapipe::GpuBuffer>();
+  cc->Inputs()
+      .Tag(kRuntimeConfigInputStreamTag)
+      .Set<video_effects::RuntimeConfig>();
+  cc->Inputs().Tag(kInputTextureStreamTag).Set<mediapipe::GpuBuffer>();
 
-  cc->Outputs().Index(0).Set<mediapipe::GpuBuffer>();
+  cc->Outputs().Tag(kOutputTextureStreamTag).Set<mediapipe::GpuBuffer>();
 
   return absl::OkStatus();
 }
@@ -82,7 +86,7 @@ DISABLE_CFI_DLSYM absl::Status InferenceCalculatorWebGpu::Open(
   ml_api->SetFatalErrorFn(&ChromeMLFatalErrorFnImpl);
 
   const mediapipe::Packet& static_config_packet =
-      cc->InputSidePackets().Index(0);
+      cc->InputSidePackets().Tag(kStaticConfigInputSidePacketStreamTag);
   const StaticConfig& static_config = static_config_packet.Get<StaticConfig>();
   CHECK(!static_config.background_segmentation_model().empty());
 
@@ -109,12 +113,14 @@ DISABLE_CFI_DLSYM absl::Status InferenceCalculatorWebGpu::Process(
   auto* ml_api = GetChromeMlApi();
   CHECK(ml_api);
 
-  mediapipe::Packet& config_packet = cc->Inputs().Index(0).Value();
+  mediapipe::Packet& config_packet =
+      cc->Inputs().Tag(kRuntimeConfigInputStreamTag).Value();
   if (config_packet.IsEmpty()) {
     return absl::InternalError("Runtime configuration not present!");
   }
 
-  mediapipe::Packet& input_frame = cc->Inputs().Index(1).Value();
+  mediapipe::Packet& input_frame =
+      cc->Inputs().Tag(kInputTextureStreamTag).Value();
   mediapipe::GpuBuffer input_buffer = input_frame.Get<mediapipe::GpuBuffer>();
   auto input_buffer_view =
       input_buffer.GetReadView<mediapipe::WebGpuTextureView>();
@@ -130,12 +136,15 @@ DISABLE_CFI_DLSYM absl::Status InferenceCalculatorWebGpu::Process(
                               output_buffer_view.texture().Get())) {
       return absl::InternalError("Processing failed");
     }
-    cc->Outputs().Index(0).AddPacket(
-        mediapipe::MakePacket<mediapipe::GpuBuffer>(std::move(output_buffer))
-            .At(input_frame.Timestamp()));
+    cc->Outputs()
+        .Tag(kOutputTextureStreamTag)
+        .AddPacket(mediapipe::MakePacket<mediapipe::GpuBuffer>(
+                       std::move(output_buffer))
+                       .At(input_frame.Timestamp()));
   } else {
-    cc->Outputs().Index(0).AddPacket(
-        mediapipe::MakePacket<mediapipe::GpuBuffer>().At(
+    cc->Outputs()
+        .Tag(kOutputTextureStreamTag)
+        .AddPacket(mediapipe::MakePacket<mediapipe::GpuBuffer>().At(
             input_frame.Timestamp()));
   }
 
