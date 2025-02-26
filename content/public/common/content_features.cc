@@ -1017,7 +1017,15 @@ BASE_FEATURE(kServiceWorkerPaymentApps,
 // isolated renderers.
 BASE_FEATURE(kSharedArrayBuffer,
              "SharedArrayBuffer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(PLATFORM_CFM)
+// Supports x-on-meet-coop interop implementation.
+// TODO: crbug.com/398741358 - clean up this temporary workaround after
+// https://crbug.com/333029146 replaces COOP restrict-properties.
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // If enabled, GetUserMedia API will only work when the concerned tab is in
 // focus
