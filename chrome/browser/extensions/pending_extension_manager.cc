@@ -14,7 +14,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,8 +23,9 @@
 #include "extensions/common/extension.h"
 #include "url/gurl.h"
 
-using content::BrowserThread;
-using extensions::mojom::ManifestLocation;
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#endif
 
 namespace {
 
@@ -42,6 +42,9 @@ std::string GetVersionString(const base::Version& version) {
 }  // namespace
 
 namespace extensions {
+
+using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 PendingExtensionManager::PendingExtensionManager(
     content::BrowserContext* context)
@@ -117,12 +120,14 @@ bool PendingExtensionManager::AddFromSync(
     return false;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   EnsureMigratedDefaultChromeAppIdsCachePopulated();
   if (migrating_default_chrome_app_ids_cache_->contains(id)) {
     base::UmaHistogramBoolean("Extensions.SyncBlockedByDefaultWebAppMigration",
                               true);
     return false;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   static const bool kIsFromSync = true;
   static const mojom::ManifestLocation kSyncLocation =
@@ -323,6 +328,10 @@ bool PendingExtensionManager::AddExtensionImpl(
   return true;
 }
 
+// TODO(crbug.com/399192132): Chrome apps have been deprecated and will NOT
+// be supported on Android. We don't need to migrate default chrome apps unless
+// we changed the decision in the future.
+#if !BUILDFLAG(IS_ANDROID)
 void PendingExtensionManager::
     EnsureMigratedDefaultChromeAppIdsCachePopulated() {
   if (migrating_default_chrome_app_ids_cache_)
@@ -339,6 +348,7 @@ void PendingExtensionManager::
 
   migrating_default_chrome_app_ids_cache_.emplace(std::move(chrome_app_ids));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PendingExtensionManager::AddForTesting(
     PendingExtensionInfo pending_extension_info) {
