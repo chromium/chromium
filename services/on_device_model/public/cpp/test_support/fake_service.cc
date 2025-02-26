@@ -87,12 +87,6 @@ FakeOnDeviceSession::FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
 
-void FakeOnDeviceSession::AddContext(
-    mojom::InputOptionsPtr input,
-    mojo::PendingRemote<mojom::ContextClient> client) {
-  NOTREACHED();
-}
-
 void FakeOnDeviceSession::Append(
     mojom::AppendOptionsPtr options,
     mojo::PendingRemote<mojom::ContextClient> client) {
@@ -100,12 +94,6 @@ void FakeOnDeviceSession::Append(
       FROM_HERE, base::BindOnce(&FakeOnDeviceSession::AppendImpl,
                                 weak_factory_.GetWeakPtr(), std::move(options),
                                 std::move(client)));
-}
-
-void FakeOnDeviceSession::Execute(
-    mojom::InputOptionsPtr input,
-    mojo::PendingRemote<mojom::StreamingResponder> response) {
-  NOTREACHED();
 }
 
 void FakeOnDeviceSession::Generate(

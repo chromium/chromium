@@ -46,10 +46,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
   void Append(on_device_model::mojom::AppendOptionsPtr options,
               mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
               base::OnceClosure on_complete);
-  void Execute(
-      on_device_model::mojom::InputOptionsPtr input,
-      mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
-      base::OnceClosure on_complete);
   void Generate(
       on_device_model::mojom::GenerateOptionsPtr input,
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,

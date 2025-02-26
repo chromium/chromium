@@ -75,15 +75,8 @@ class FakeOnDeviceSession final : public mojom::Session {
   ~FakeOnDeviceSession() override;
 
   // mojom::Session:
-  void AddContext(mojom::InputOptionsPtr input,
-                  mojo::PendingRemote<mojom::ContextClient> client) override;
-
   void Append(mojom::AppendOptionsPtr options,
               mojo::PendingRemote<mojom::ContextClient> client) override;
-
-  void Execute(
-      mojom::InputOptionsPtr input,
-      mojo::PendingRemote<mojom::StreamingResponder> response) override;
 
   void Generate(
       mojom::GenerateOptionsPtr input,

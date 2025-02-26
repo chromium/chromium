@@ -147,15 +147,19 @@ abstract class OnDeviceModel<T> implements Model<T> {
         resolve(response.join('').trimStart());
       },
     );
-    session.execute(
+    session.append(
       {
-        ignoreContext: false,
         maxTokens: 0,
         tokenOffset: 0,
+        input: inputPieces,
+      },
+      null,
+    );
+    session.generate(
+      {
         maxOutputTokens: 0,
         topK: 1,
         temperature: 0,
-        input: inputPieces,
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );

@@ -258,8 +258,6 @@ class OnDeviceExecution final
   // responder.
   size_t latest_response_pos_ = 0;
 
-  // The number of tokens in the executed input.
-  size_t input_token_count_ = 0;
   // The number of tokens in the returned output.
   size_t output_token_count_ = 0;
 

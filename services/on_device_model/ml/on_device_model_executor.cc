@@ -145,10 +145,6 @@ class Responder final {
     };
   }
 
-  ChromeMLContextSavedFn CreateContextSavedFn() {
-    return CreateWeakCallbackFn(&Responder::OnContextSaved, this);
-  }
-
   base::WeakPtr<Responder> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -182,7 +178,6 @@ class Responder final {
       }
 
       auto summary = on_device_model::mojom::ResponseSummary::New();
-      summary->input_token_count = num_input_tokens_;
       summary->output_token_count = num_output_tokens_;
       responder_->OnComplete(std::move(summary));
       if (!on_complete_.is_null()) {
@@ -201,21 +196,9 @@ class Responder final {
     }
   }
 
-  void OnContextSaved(int tokens_processed) {
-    if (tokens_processed > 0) {
-      base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Execute",
-                                    tokens_processed);
-      base::UmaHistogramCounts10000(
-          "OnDeviceModel.TokensPerSecond.Execute",
-          CalculateTokensPerSecond(tokens_processed, timer_.Elapsed()));
-    }
-    num_input_tokens_ = tokens_processed;
-  }
-
   base::ElapsedTimer timer_;
   base::TimeTicks first_token_time_;
   int num_output_tokens_ = 0;
-  int num_input_tokens_ = 0;
   std::string output_so_far_;
   mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
   ChromeMLCancelFn cancel_;
@@ -323,27 +306,6 @@ void SessionImpl::Append(
   *context_holder->GetCancelFn() =
       session_->Append(std::move(options), context_saved_fn);
   context_holders_.insert(std::move(context_holder));
-}
-
-DISABLE_CFI_DLSYM
-void SessionImpl::Execute(
-    on_device_model::mojom::InputOptionsPtr input,
-    mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
-    base::OnceClosure on_complete) {
-  auto cloned =
-      input->ignore_context ? empty_session_->Clone() : session_->Clone();
-  auto cloned_raw = cloned.get();  // For Execute after std::move
-  responder_ = std::make_unique<Responder>(
-      std::move(response), std::move(on_complete), std::move(cloned));
-  ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
-  if (input->max_tokens == 0 || input->max_tokens > max_tokens_) {
-    input->max_tokens = max_tokens_;
-  }
-  input->top_k = GetTopK(input->top_k);
-  input->temperature = GetTemperature(input->temperature);
-  ChromeMLContextSavedFn context_saved_fn = responder_->CreateContextSavedFn();
-  *responder_->GetCancelFn() =
-      cloned_raw->Execute(std::move(input), output_fn, context_saved_fn);
 }
 
 DISABLE_CFI_DLSYM

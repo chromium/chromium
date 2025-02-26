@@ -88,19 +88,6 @@ SessionAccessor::Ptr SessionAccessor::Clone() {
   return handle;
 }
 
-ChromeMLCancelFn SessionAccessor::Execute(
-    on_device_model::mojom::InputOptionsPtr input,
-    ChromeMLExecutionOutputFn output_fn,
-    ChromeMLContextSavedFn context_saved_fn) {
-  auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SessionAccessor::ExecuteInternal, base::Unretained(this),
-                     std::move(input), std::move(output_fn),
-                     std::move(context_saved_fn), canceler));
-  return [canceler] { canceler->Cancel(); };
-}
-
 ChromeMLCancelFn SessionAccessor::Append(
     on_device_model::mojom::AppendOptionsPtr options,
     ChromeMLContextSavedFn context_saved_fn) {
@@ -178,32 +165,6 @@ void SessionAccessor::CreateInternal(
   } else {
     session_ = chrome_ml_->api().CreateSession(model_, nullptr);
   }
-}
-
-DISABLE_CFI_DLSYM
-void SessionAccessor::ExecuteInternal(
-    on_device_model::mojom::InputOptionsPtr input,
-    ChromeMLExecutionOutputFn output_fn,
-    ChromeMLContextSavedFn context_saved_fn,
-    scoped_refptr<Canceler> canceler) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  ChromeMLExecuteOptions options{
-      .max_tokens = input->max_tokens,
-      .token_offset = input->token_offset,
-      .max_output_tokens = input->max_output_tokens,
-      .top_k = input->top_k.value_or(1),
-      .temperature = input->temperature.value_or(0),
-  };
-  options.input = input->input->pieces.data();
-  options.input_size = input->input->pieces.size();
-  if (context_saved_fn) {
-    options.context_saved_fn = &context_saved_fn;
-  }
-  if (output_fn) {
-    options.execution_output_fn = &output_fn;
-  }
-  chrome_ml_->api().SessionExecuteModel(session_, model_, &options,
-                                        canceler->get());
 }
 
 DISABLE_CFI_DLSYM

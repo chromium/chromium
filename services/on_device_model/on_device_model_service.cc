@@ -46,13 +46,8 @@ class SessionWrapper final : public mojom::Session {
   SessionWrapper(const SessionWrapper&) = delete;
   SessionWrapper& operator=(const SessionWrapper&) = delete;
 
-  void AddContext(mojom::InputOptionsPtr input,
-                  mojo::PendingRemote<mojom::ContextClient> client) override;
   void Append(mojom::AppendOptionsPtr options,
               mojo::PendingRemote<mojom::ContextClient> client) override;
-  void Execute(
-      mojom::InputOptionsPtr input,
-      mojo::PendingRemote<mojom::StreamingResponder> response) override;
   void Generate(
       mojom::GenerateOptionsPtr options,
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
@@ -69,13 +64,6 @@ class SessionWrapper final : public mojom::Session {
                       base::OnceClosure on_complete) {
     session_->Append(std::move(options), std::move(client),
                      std::move(on_complete));
-  }
-
-  void ExecuteInternal(mojom::InputOptionsPtr input,
-                       mojo::PendingRemote<mojom::StreamingResponder> response,
-                       base::OnceClosure on_complete) {
-    session_->Execute(std::move(input), std::move(response),
-                      std::move(on_complete));
   }
 
   void GenerateInternal(mojom::GenerateOptionsPtr input,
@@ -255,16 +243,6 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   base::WeakPtrFactory<ModelWrapper> weak_ptr_factory_{this};
 };
 
-void SessionWrapper::AddContext(
-    mojom::InputOptionsPtr input,
-    mojo::PendingRemote<mojom::ContextClient> client) {
-  auto append_options = mojom::AppendOptions::New();
-  append_options->input = std::move(input->input);
-  append_options->max_tokens = input->max_tokens;
-  append_options->token_offset = input->token_offset;
-  Append(std::move(append_options), std::move(client));
-}
-
 void SessionWrapper::Append(mojom::AppendOptionsPtr options,
                             mojo::PendingRemote<mojom::ContextClient> client) {
   if (!model_) {
@@ -276,21 +254,6 @@ void SessionWrapper::Append(mojom::AppendOptionsPtr options,
                                         std::move(options), std::move(client));
 
   model_->AddAndRunPendingTask(std::move(append_internal),
-                               weak_ptr_factory_.GetWeakPtr());
-}
-
-void SessionWrapper::Execute(
-    mojom::InputOptionsPtr input,
-    mojo::PendingRemote<mojom::StreamingResponder> response) {
-  if (!model_) {
-    return;
-  }
-
-  auto execute_internal = base::BindOnce(&SessionWrapper::ExecuteInternal,
-                                         weak_ptr_factory_.GetWeakPtr(),
-                                         std::move(input), std::move(response));
-
-  model_->AddAndRunPendingTask(std::move(execute_internal),
                                weak_ptr_factory_.GetWeakPtr());
 }
 
