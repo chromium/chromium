@@ -118,8 +118,10 @@ class DefaultBehavior : public CaptureModeBehavior {
     return ScannerController::CanShowUiForShell();
   }
   bool CanShowActionButtons() const override { return true; }
-  void OnRegionSelectedOrAdjusted() override {
-    if (ShouldShowDefaultActionButtonsAfterRegionSelected()) {
+  void OnRegionSelectedOrAdjustedWhenActionContainerShowing() override {
+    // TODO: crbug.com/397296160 - Remove this redundant check, as it is always
+    // true when this function is called.
+    if (ShouldShowDefaultActionButtonsInActionContainer()) {
       auto* capture_mode_controller = CaptureModeController::Get();
       if (features::IsCaptureModeOnDeviceOcrEnabled()) {
         // Perform text detection to determine whether the copy text and smart
@@ -374,7 +376,7 @@ class SunfishBehavior : public CaptureModeBehavior {
       PerformCaptureType capture_type) const override {
     return true;
   }
-  bool ShouldShowDefaultActionButtonsAfterRegionSelected() const override {
+  bool ShouldShowDefaultActionButtonsInActionContainer() const override {
     // We show action buttons in Sunfish mode for individual Scanner actions,
     // which is a different set of buttons to the default action buttons shown
     // in normal capture mode (search, copy text, smart actions button).
@@ -396,7 +398,7 @@ class SunfishBehavior : public CaptureModeBehavior {
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<SunfishCaptureBarView>();
   }
-  void OnRegionSelectedOrAdjusted() override {
+  void OnRegionSelectedOrAdjustedWhenActionContainerShowing() override {
     auto* controller = CaptureModeController::Get();
     controller->MaybeUpdateSearchResultsPanelBounds();
 
@@ -557,8 +559,10 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
   }
 }
 
-bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
+bool CaptureModeBehavior::ShouldShowDefaultActionButtonsInActionContainer()
     const {
+  // TODO: crbug.com/397296160 - Remove this redundant check, as it is always
+  // true when this function is called.
   if (!CanShowSunfishOrScannerUi()) {
     return false;
   }
@@ -684,7 +688,8 @@ void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
 
 void CaptureModeBehavior::OnDemoToolsSettingsChanged() {}
 
-void CaptureModeBehavior::OnRegionSelectedOrAdjusted() {}
+void CaptureModeBehavior::
+    OnRegionSelectedOrAdjustedWhenActionContainerShowing() {}
 
 void CaptureModeBehavior::OnEnterKeyPressed() {
   CaptureModeController::Get()->PerformCapture();

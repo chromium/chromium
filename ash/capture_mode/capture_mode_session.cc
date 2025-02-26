@@ -3640,7 +3640,7 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
   // `ShouldShowActionContainerWidget()` checks `CanShowSunfishOrScannerUi()`
   // which checks if *either* Scanner or Sunfish is enabled. Check again if
   // Sunfish specifically is enabled to show the Search button.
-  if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected() &&
+  if (active_behavior_->ShouldShowDefaultActionButtonsInActionContainer() &&
       CanShowSunfishUi()) {
     if (controller_->IsNetworkConnectionOffline()) {
       ShowActionContainerError(l10n_util::GetStringUTF16(
@@ -3663,8 +3663,9 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
   // needs to do specific handling. Note `this` may be destroyed by
   // `OnRegionSelectedOrAdjusted()`.
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  active_behavior_
-      ->OnRegionSelectedOrAdjusted();  // `this` may be deleted after this line.
+  // `this` may be deleted after the following line.
+  active_behavior_->OnRegionSelectedOrAdjustedWhenActionContainerShowing();
+
   return !weak_ptr;
 }
 
