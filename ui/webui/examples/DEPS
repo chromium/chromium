@@ -5,6 +5,9 @@ include_rules = [
   "+chrome/grit/webui_gallery_resources.h",
   "+chrome/grit/webui_gallery_resources_map.h",
 
+  # User Agent string support code.
+  "+components/embedder_support/user_agent_utils.h",
+
   # The GuestView supports the WebView element.
   "+components/guest_view",
 
