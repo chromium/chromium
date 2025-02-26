@@ -2697,6 +2697,13 @@ void LayoutBox::RebuildFragmentTreeSpine() {
          !container->NeedsLayout()) {
     for (auto& result : container->layout_results_)
       result = LayoutResult::CloneWithPostLayoutFragments(*result);
+    if (MeasureCache* measure_cache = container->measure_cache_) {
+      // In case any of the now-replaced cached results above were in fact
+      // measure-results (see how SetCachedLayoutResult() may write into both
+      // the measure cache and the layout results vector), the measure results
+      // are now outdated. Remove them.
+      measure_cache->Clear();
+    }
     container = container->ContainingNGBox();
   }
 
