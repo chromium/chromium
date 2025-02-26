@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/account_extension_tracker.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/plugin_manager.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -40,7 +40,6 @@ namespace chrome_extensions {
 void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ErrorConsoleFactory::GetInstance();
   extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
-  extensions::PermissionsUpdater::EnsureAssociatedFactoryBuilt();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionSyncServiceFactory::GetInstance();
@@ -58,6 +57,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::InstallVerifierFactory::GetInstance();
   extensions::ManifestV2ExperimentManager::GetFactory();
   extensions::MenuManagerFactory::GetInstance();
+  extensions::PermissionsUpdater::EnsureAssociatedFactoryBuilt();
 #if BUILDFLAG(ENABLE_PLUGINS)
   extensions::PluginManager::GetFactoryInstance();
 #endif
