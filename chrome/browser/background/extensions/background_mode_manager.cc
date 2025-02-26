@@ -23,7 +23,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/background/extensions/background_application_list_model.h"
 #include "chrome/browser/background/extensions/background_mode_optimizer.h"
+#include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/glic/glic_enabling.h"
@@ -287,7 +287,7 @@ bool BackgroundModeManager::BackgroundModeData::BackgroundModeDataCompare(
 BackgroundModeManager::BackgroundModeManager(
     const base::CommandLine& command_line,
     ProfileAttributesStorage* profile_storage)
-    : profile_storage_(profile_storage), task_runner_(CreateTaskRunner()) {
+    : profile_storage_(profile_storage) {
   // We should never start up if there is no browser process or if we are
   // currently quitting.
   CHECK(g_browser_process);
@@ -853,14 +853,21 @@ void BackgroundModeManager::OnBackgroundClientInstalled(
 }
 
 void BackgroundModeManager::UpdateEnableLaunchOnStartup() {
-  bool new_launch_on_startup =
+  const bool new_launch_on_startup =
       ShouldBeInBackgroundMode() && HasPersistentBackgroundClient();
   if (launch_on_startup_enabled_ &&
       new_launch_on_startup == *launch_on_startup_enabled_) {
     return;
   }
   launch_on_startup_enabled_.emplace(new_launch_on_startup);
-  EnableLaunchOnStartup(*launch_on_startup_enabled_);
+
+  StartupLaunchManager* const launch_manager =
+      StartupLaunchManager::GetInstance();
+  if (launch_on_startup_enabled_.value()) {
+    launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kExtensions);
+  } else {
+    launch_manager->UnregisterLaunchOnStartup(StartupLaunchReason::kExtensions);
+  }
 }
 
 namespace {

@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/background/extensions/background_application_list_model.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -303,10 +302,6 @@ class BackgroundModeManager : public BrowserListObserver,
   // |this| has any persistent background clients.
   void UpdateEnableLaunchOnStartup();
 
-  // Called to make sure that our launch-on-startup mode is properly set.
-  // (virtual so it can be mocked in tests).
-  virtual void EnableLaunchOnStartup(bool should_launch);
-
   // Invoked when a client is installed so we can display a platform-specific
   // notification.
   virtual void DisplayClientInstalledNotification(const std::u16string& name);
@@ -394,13 +389,6 @@ class BackgroundModeManager : public BrowserListObserver,
   // if the profile isn't locked. Returns NULL otherwise.
   BackgroundModeData* GetBackgroundModeDataForLastProfile() const;
 
-  // Creates sequenced task runner for making startup/login configuration
-  // changes that may require file system or registry access.
-  // The implementation of this function is platform specific and may return
-  // a null scoped_refptr if the task runner isn't needed on that particular
-  // platform.
-  static scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
-
   // Set to true when the next restart should be done in background mode.
   // Static because its value is read after the background mode manager is
   // destroyed.
@@ -471,10 +459,6 @@ class BackgroundModeManager : public BrowserListObserver,
   bool background_mode_suspended_ = false;
 
   std::optional<bool> launch_on_startup_enabled_;
-
-  // Task runner for making startup/login configuration changes that may
-  // require file system or registry access.
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<BackgroundModeManager> weak_factory_{this};
 };

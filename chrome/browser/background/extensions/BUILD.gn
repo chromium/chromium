@@ -89,6 +89,7 @@ source_set("unit_tests") {
     ":extensions",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/background",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/test:test_support",
     "//components/policy/core/common:test_support",
