@@ -2353,9 +2353,10 @@
     // Adds support for the `command` and `commandfor` attributes, as specified
     // in the open-ui "Invokers" explainer.
     // https://open-ui.org/components/invokers.explainer/
+    // This feature was shipped in M135 and can be removed in M137.
     {
       name: "HTMLCommandAttributes",
-      status: "experimental",
+      status: "stable",
     },
     {
       // TODO(crbug.com/376516550): Enables dialog light dismiss functionality.
