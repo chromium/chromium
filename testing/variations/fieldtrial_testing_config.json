@@ -6221,23 +6221,6 @@
             ]
         }
     ],
-    "ContentCaptureExperiment": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableExperiment",
-                    "enable_features": [
-                        "ContentCaptureTriggeringForExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContentUsesBrowserThemeColorMode": [
         {
             "platforms": [
