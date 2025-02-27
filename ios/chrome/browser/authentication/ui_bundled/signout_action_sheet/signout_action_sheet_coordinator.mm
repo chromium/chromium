@@ -291,9 +291,11 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 - (void)continueSignOutWithUnsyncedDataTypeSet:(syncer::DataTypeSet)set {
   [self allowUserInteraction];
   if (!set.empty()) {
-    for (syncer::DataType type : set) {
-      base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
-                                    syncer::DataTypeHistogramValue(type));
+    if (!self.accountSwitch) {
+      for (syncer::DataType type : set) {
+        base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
+                                      syncer::DataTypeHistogramValue(type));
+      }
     }
     [self startActionSheetCoordinatorForSignout];
   } else {
