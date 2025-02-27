@@ -163,6 +163,7 @@ constexpr char kOpTanhTypeName[] = "tanh";
 constexpr char kOpTileTypeName[] = "tile";
 constexpr char kOpTransposeTypeName[] = "transpose";
 constexpr char kOpTriangularTypeName[] = "band_part";
+constexpr char kOpPreluTypeName[] = "prelu";
 constexpr char kOpWhereTypeName[] = "select";
 // Elementwise binary operators.
 constexpr char kOpAddTypeName[] = "add";
@@ -1267,8 +1268,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.pool.max_pool
        /*max_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, {3, 5}},
-       // Prelu is not implemented.
-       /*prelu_input=*/{},
+       {kFloatsAndInt32, kMaxRank},
        /*quantize_linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*quantize_linear_zero_point=*/
        {DataTypeConstraint::kInts8, SupportedRanks::UpTo(1)},
@@ -1674,12 +1674,14 @@ GraphBuilderCoreml::BuildCoreMLModel() {
             AddOperationForTriangular(*operation->get_triangular(), block));
         break;
       }
+      case mojom::Operation::Tag::kPrelu: {
+        RETURN_IF_ERROR(AddOperationForPrelu(*operation->get_prelu(), block));
+        break;
+      }
       case mojom::Operation::Tag::kWhere: {
         RETURN_IF_ERROR(AddOperationForWhere(*operation->get_where(), block));
         break;
       }
-      case mojom::Operation::Tag::kPrelu:
-        return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
   }
 
@@ -5103,6 +5105,91 @@ GraphBuilderCoreml::AddOperationForTranspose(
   return AddOperationForTranspose(operation.input_operand_id,
                                   operation.output_operand_id,
                                   operation.permutation, block);
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForPrelu(
+    const mojom::Prelu& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  base::span<const uint32_t> slope_shape =
+      GetOperandInfo(operation.slope_operand_id).dimensions;
+  CHECK(context_properties_.data_type_limits.prelu_input.data_types.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+  CHECK_EQ(input_operand_info.mil_data_type,
+           GetOperandInfo(operation.slope_operand_id).mil_data_type);
+
+  if (input_operand_info.dimensions.size() != 4u ||
+      !constant_operands_->contains(operation.slope_operand_id) ||
+      slope_shape.size() < 3u) {
+    return AddOperationForPreluEmulate(operation, block);
+  }
+
+  // CoreML prelu only allow 1D slope matching size of the channel(1st)
+  // dimension. So the accepted shape would be: [C, 1, 1], [1, C, 1, 1].
+  uint32_t channel_size = input_operand_info.dimensions[1];
+  CHECK_LE(slope_shape.size(), 4u);
+  CHECK_GE(slope_shape.size(), 3u);
+  size_t channel_dim = slope_shape.size() == 4 ? 1 : 0;
+  for (size_t i = 0; i < slope_shape.size(); i++) {
+    if (i == channel_dim && slope_shape[i] != channel_size) {
+      return AddOperationForPreluEmulate(operation, block);
+    }
+    if (i != channel_dim && slope_shape[i] != 1) {
+      return AddOperationForPreluEmulate(operation, block);
+    }
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpPreluTypeName);
+
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
+                                      operation.input_operand_id));
+
+  RETURN_IF_ERROR(SetInputFromConstantOperand(
+      *op->mutable_inputs(), kOpParamAlpha, operation.slope_operand_id,
+      base::span<const uint32_t>({channel_size})));
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForPreluEmulate(
+    const mojom::Prelu& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  // max(0, x) + slope * min(0, x)
+  ASSIGN_OR_RETURN(uint64_t max_result,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
+  RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+      operation.input_operand_id,
+      CreateFloatValue(input_operand_info.mil_data_type, 0.0f), max_result,
+      mojom::ElementWiseBinary::Kind::kMax, block));
+
+  ASSIGN_OR_RETURN(uint64_t min_result,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
+  RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+      operation.input_operand_id,
+      CreateFloatValue(input_operand_info.mil_data_type, 0.0f), min_result,
+      mojom::ElementWiseBinary::Kind::kMin, block));
+
+  ASSIGN_OR_RETURN(uint64_t mul_slope,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
+  RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+      min_result, operation.slope_operand_id, mul_slope,
+      mojom::ElementWiseBinary::Kind::kMul, block));
+
+  return AddOperationForElementwiseBinary(
+      mul_slope, max_result, operation.output_operand_id,
+      mojom::ElementWiseBinary::Kind::kAdd, block);
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(

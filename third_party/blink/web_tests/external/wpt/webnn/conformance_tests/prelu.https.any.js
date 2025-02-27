@@ -580,8 +580,8 @@ const preluTests = [
           'constant': true
         },
         'preluSlope': {
-          'data': [5.0114545822143555],
-          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'},
+          'data': [5.0114545822143555, 5.0114545822143555],
+          'descriptor': {shape: [1, 2, 1, 1], dataType: 'float32'},
           'constant': true
         }
       },
