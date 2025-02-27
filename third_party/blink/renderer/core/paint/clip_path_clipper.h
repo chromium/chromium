@@ -23,6 +23,29 @@ class CORE_EXPORT ClipPathClipper {
   STATIC_ONLY(ClipPathClipper);
 
  public:
+  // Value used for HasCompositeClipPathAnimation to determine what, if any
+  // update is required.
+  enum class CompositedStateResolutionType {
+    // This is used to resolve clip path status when the paint properties have
+    // not been initialized. This is not typically used, but can be used in the
+    // case that there are no other reasons to initialize the paint properties.
+    // In this case, the status may not be fully resolved, and may instead
+    // remain at kNeedsRepaint.
+    kInitialResolve,
+
+    // This is used to resolve the composited clip path status. When calling
+    // with this option, the status will be set to a definitive value or
+    // error.
+    kFullResolve,
+
+    // This is used to simply read the current value of the clip path status.
+    // Like kFullResolve, it is guaranteed to return a definitive value or
+    // fail, however this mode assumes the status has already been calculated,
+    // ie, that ClipPathStatusResolved == true. If the status is kNeedsRepaint,
+    // there will be an error.
+    kReadCache
+  };
+
   // Returns true if the given layout object a resolved clip path status
   static bool ClipPathStatusResolved(const LayoutObject& layout_object);
 
@@ -33,14 +56,15 @@ class CORE_EXPORT ClipPathClipper {
   // Checks the composited paint status for a given Layout Object and checks
   // whether it contains a composited clip path animation. Assumes
   // ResolveClipPathStatus has been called, will fail otherwise.
-  static bool HasCompositeClipPathAnimation(const LayoutObject& layout_object);
+  static bool HasCompositeClipPathAnimation(
+      const LayoutObject& layout_object,
+      CompositedStateResolutionType state);
 
-  // Resolves the composited clip path status for a layout object, running all
-  // the required checks to ensure an animation can definitely be painted on
-  // main and started on cc. This must be called prior to checking
-  // HasCompositeClipPathAnimation.
-  static void ResolveClipPathStatus(const LayoutObject& layout_object,
-                                    bool is_in_block_fragmentation);
+  // Sets a potential composited clip path animation to be not composited.
+  // Called during pre-paint, currently in the case of fragmented layouts.
+  static void FallbackClipPathAnimationIfNecessary(
+      const LayoutObject& layout_object,
+      bool is_in_block_fragmentation);
 
   static void PaintClipPathAsMaskImage(GraphicsContext&,
                                        const LayoutObject&,
