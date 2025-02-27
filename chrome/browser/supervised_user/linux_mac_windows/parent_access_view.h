@@ -84,13 +84,17 @@ class ParentAccessView : public views::View, public views::WidgetObserver {
   // Closes the widget that hosts this view.
   // Results in destructing the present view and its widget.
   void CloseView();
+  void DisplayErrorMessage(content::WebContents* web_contents);
+
+  // Exposed for testing.
+  views::WebView* GetWebViewForTesting() { return web_view_.get(); }
+  views::View* GetErrorViewForTesting() { return error_view_.get(); }
 
  private:
   // Initialize ParentAccessView's web_view_ element.
   void Initialize(const GURL& pacp_url, int corner_radius);
   void ShowNativeView();
   content::WebContents* GetWebViewContents();
-
   // views::WidgetObserver implementation:
   void OnWidgetClosing(views::Widget* widget) override;
 
@@ -102,7 +106,13 @@ class ParentAccessView : public views::View, public views::WidgetObserver {
       content_loader_timeout_observer_;
   bool is_initialized_ = false;
   int corner_radius_ = 0;
+  // Web view that displays the PACP widget content.
   raw_ptr<views::WebView> web_view_ = nullptr;
+  // View used to display an error message in case of failure.
+  raw_ptr<views::View> error_view_ = nullptr;
+  // Assumes ownership of a removed child view.
+  std::unique_ptr<views::View> removed_view_holder_;
+
   base::WeakPtrFactory<ParentAccessView> weak_ptr_factory_{this};
 };
 

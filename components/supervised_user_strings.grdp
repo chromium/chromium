@@ -98,4 +98,7 @@
       <message name="IDS_PARENT_WEBSITE_APPROVAL_MANUAL_URL" desc="This text displayed as a subtitle in a bottom sheet asking a parent to allow or not allow a website. This informs the parent that this site was blocked due to a manual blocklist entry.">
       You previously blocked <ph name="BLOCKED_URL">$1<ex>example.com</ex></ph>
       </message>
+      <message name="IDS_PARENT_WEBSITE_LOCAL_WEB_APPROVAL_ERROR" desc="Error message in case of a local web approval failure." translateable="false">
+      An error occurred. Try again later.
+      </message>
 </grit-part>
