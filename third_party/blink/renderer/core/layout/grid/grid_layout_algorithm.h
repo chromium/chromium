@@ -21,7 +21,7 @@ struct GridItemPlacementData;
 enum class GridItemContributionType;
 enum class SizingConstraint;
 
-using GridItemDataPtrVector = Vector<GridItemData*, 16>;
+using GridItemDataPtrVector = HeapVector<Member<GridItemData>, 16>;
 using GridSetPtrVector = Vector<GridSet*, 16>;
 
 class CORE_EXPORT GridLayoutAlgorithm
@@ -181,8 +181,8 @@ class CORE_EXPORT GridLayoutAlgorithm
                                   SizingConstraint sizing_constraint) const;
 
   void IncreaseTrackSizesToAccommodateGridItems(
-      GridItemDataPtrVector::iterator group_begin,
-      GridItemDataPtrVector::iterator group_end,
+      base::span<Member<GridItemData>>::iterator group_begin,
+      base::span<Member<GridItemData>>::iterator group_end,
       const GridSizingSubtree& sizing_subtree,
       bool is_group_spanning_flex_track,
       SizingConstraint sizing_constraint,

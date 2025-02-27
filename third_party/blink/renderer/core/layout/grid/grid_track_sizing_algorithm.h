@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -92,8 +93,8 @@ class GridTrackSizingAlgorithm {
 
   void IncreaseTrackSizesToAccommodateGridItems(
       const ContributionSizeFunctionRef& contribution_size,
-      base::span<GridItemData*>::iterator group_begin,
-      base::span<GridItemData*>::iterator group_end,
+      base::span<Member<GridItemData>>::iterator group_begin,
+      base::span<Member<GridItemData>>::iterator group_end,
       GridItemContributionType contribution_type,
       bool is_group_spanning_flex_track,
       GridSizingTrackCollection* track_collection) const;

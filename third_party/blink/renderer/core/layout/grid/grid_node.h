@@ -41,10 +41,10 @@ class CORE_EXPORT GridNode final : public BlockNode {
   }
 
   // If `oof_children` is provided, aggregate any out of flow children.
-  GridItems ConstructGridItems(const GridLineResolver& line_resolver,
-                               bool* must_invalidate_placement_cache,
-                               HeapVector<Member<LayoutBox>>* opt_oof_children,
-                               bool* opt_has_nested_subgrid = nullptr) const;
+  GridItems* ConstructGridItems(const GridLineResolver& line_resolver,
+                                bool* must_invalidate_placement_cache,
+                                HeapVector<Member<LayoutBox>>* opt_oof_children,
+                                bool* opt_has_nested_subgrid = nullptr) const;
 
   void AppendSubgriddedItems(GridItems* grid_items) const;
 
@@ -57,7 +57,7 @@ class CORE_EXPORT GridNode final : public BlockNode {
       const ConstraintSpace& space) const;
 
  private:
-  GridItems ConstructGridItems(
+  GridItems* ConstructGridItems(
       const GridLineResolver& line_resolver,
       const ComputedStyle& root_grid_style,
       const ComputedStyle& parent_grid_style,

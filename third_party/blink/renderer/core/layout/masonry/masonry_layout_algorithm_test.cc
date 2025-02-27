@@ -33,8 +33,12 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   const GridRangeVector& Ranges() { return grid_axis_tracks_->ranges_; }
   wtf_size_t SetCount() { return grid_axis_tracks_->GetSetCount(); }
-  wtf_size_t MasonryItemCount() { return masonry_items_.Size(); }
-  wtf_size_t VirtualItemCount() { return virtual_masonry_items_.Size(); }
+  wtf_size_t VirtualItemCount() {
+    return virtual_masonry_items_ ? virtual_masonry_items_->Size() : 0;
+  }
+  wtf_size_t MasonryItemCount() {
+    return masonry_items_ ? masonry_items_->Size() : 0;
+  }
 
   LayoutUnit TrackSize(wtf_size_t index) {
     return grid_axis_tracks_->GetSetOffset(index + 1) -
@@ -50,30 +54,32 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   const GridSpan& VirtualItemSpan(wtf_size_t index) {
-    return virtual_masonry_items_.At(index).resolved_position.Span(
+    return virtual_masonry_items_->At(index).resolved_position.Span(
         grid_axis_tracks_->Direction());
   }
 
   const GridSpan& MasonryItemSpan(wtf_size_t index) {
-    return masonry_items_.At(index).resolved_position.Span(
+    return masonry_items_->At(index).resolved_position.Span(
         grid_axis_tracks_->Direction());
   }
 
  private:
   const MinMaxSizes& ContributionSizes(wtf_size_t index) {
     const auto& contribution_sizes =
-        virtual_masonry_items_.At(index).contribution_sizes;
+        virtual_masonry_items_->At(index).contribution_sizes;
 
     DCHECK(contribution_sizes);
     return *contribution_sizes;
   }
 
   std::unique_ptr<GridSizingTrackCollection> grid_axis_tracks_;
+
   // Virtual items represent the contributions of item groups in track sizing
   // and are not directly related to any children of the container.
-  GridItems virtual_masonry_items_;
+  Persistent<GridItems> virtual_masonry_items_;
+
   // Children of the container to be laid out are represented by masonry items.
-  GridItems masonry_items_;
+  Persistent<GridItems> masonry_items_;
 };
 
 TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {

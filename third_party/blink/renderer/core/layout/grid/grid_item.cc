@@ -425,7 +425,7 @@ GridItems::GridItems(const GridItems& other)
     : first_subgridded_item_index_(other.first_subgridded_item_index_) {
   item_data_.ReserveInitialCapacity(other.item_data_.size());
   for (const auto& grid_item : other.item_data_) {
-    item_data_.emplace_back(std::make_unique<GridItemData>(*grid_item));
+    item_data_.emplace_back(MakeGarbageCollected<GridItemData>(*grid_item));
   }
 }
 
@@ -436,11 +436,10 @@ void GridItems::Append(GridItems* other) {
 }
 
 void GridItems::SortByOrderProperty() {
-  auto CompareItemsByOrderProperty =
-      [](const std::unique_ptr<GridItemData>& lhs,
-         const std::unique_ptr<GridItemData>& rhs) {
-        return lhs->node.Style().Order() < rhs->node.Style().Order();
-      };
+  auto CompareItemsByOrderProperty = [](const GridItemData* lhs,
+                                        const GridItemData* rhs) {
+    return lhs->node.Style().Order() < rhs->node.Style().Order();
+  };
   std::stable_sort(item_data_.begin(), item_data_.end(),
                    CompareItemsByOrderProperty);
 }

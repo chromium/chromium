@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -37,15 +38,14 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     algorithm.ComputeGridGeometry(grid_sizing_tree,
                                   &unused_intrinsic_block_size);
 
-    auto& [grid_items, layout_data, tree_size] =
-        grid_sizing_tree.TreeRootData();
+    auto& tree_data = grid_sizing_tree.TreeRootData();
 
-    cached_grid_items_ = std::move(grid_items);
-    layout_data_ = std::move(layout_data);
+    cached_grid_items_ = &tree_data.GetGridItems();
+    layout_data_ = std::move(tree_data.layout_data);
   }
 
   const GridItemData& GridItem(wtf_size_t index) {
-    return cached_grid_items_.At(index);
+    return cached_grid_items_->At(index);
   }
 
   const GridSizingTrackCollection& TrackCollection(
@@ -82,12 +82,15 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   // Helper methods to access private data on GridLayoutAlgorithm. This class
   // is a friend of GridLayoutAlgorithm but the individual tests are not.
-  wtf_size_t GridItemCount() { return cached_grid_items_.Size(); }
+  wtf_size_t GridItemCount() {
+    return cached_grid_items_ ? cached_grid_items_->Size() : 0U;
+  }
 
   Vector<GridArea> GridItemGridAreas() {
     Vector<GridArea> results;
-    for (const auto& grid_item : cached_grid_items_)
+    for (const auto& grid_item : *cached_grid_items_) {
       results.push_back(grid_item.resolved_position);
+    }
     return results;
   }
 
@@ -155,7 +158,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return fragment->DumpFragmentTree(flags);
   }
 
-  GridItems cached_grid_items_;
+  Persistent<GridItems> cached_grid_items_;
   GridLayoutData layout_data_;
 };
 

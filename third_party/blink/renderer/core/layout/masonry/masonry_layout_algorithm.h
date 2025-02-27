@@ -41,8 +41,8 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   //   intrinsic size contribution among the items in that group."
   // Returns a collection of items that reflect the intrinsic contributions from
   // the item groups, which will be used to resolve the grid axis' track sizes.
-  GridItems VirtualMasonryItems(const GridLineResolver& line_resolver,
-                                wtf_size_t* start_offset) const;
+  GridItems* VirtualMasonryItems(const GridLineResolver& line_resolver,
+                                 wtf_size_t* start_offset) const;
 
   ConstraintSpace CreateConstraintSpace(
       const GridItemData& masonry_item,
