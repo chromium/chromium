@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {type WebClientInitialState} from '../glic.mojom-webui.js';
 import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
@@ -10,11 +11,12 @@ and the Glic web client.
 
 Request type entries should have this structure
 // The name of the function, should be unique.
-'name': {
-  // The type of payload sent.
+name: {
+  // The type of payload sent. Defaults to 'undefined', which means the request
+  // has no request payload.
   request: {},
-  // The type of response payload. May be 'void' for requests that do not
-  // send responses.
+  // The type of response payload. Defaults to 'void', which means the request
+  // sends no response payload.
   response: {},
 }
 
@@ -28,17 +30,8 @@ export declare interface HostRequestTypes {
   // This message is sent just before calling initialize() on the web client.
   // It is not part of the GlicBrowserHost public API.
   glicBrowserWebClientCreated: {
-    request: {},
     response: {
-      microphonePermissionEnabled: boolean,
-      locationPermissionEnabled: boolean,
-      tabContextPermissionEnabled: boolean,
-      panelState: PanelState,
-      focusedTabData: FocusedTabDataPrivate,
-      chromeVersion: ChromeVersion,
-      canAttach: boolean,
-      scrollToEnabled: boolean,
-      panelIsActive: boolean,
+      initialState: WebClientInitialStatePrivate,
     },
   };
   // This message is sent after the client returns from initialize(). It is not
@@ -50,7 +43,6 @@ export declare interface HostRequestTypes {
       // is false).
       exception?: TransferableException,
     },
-    response: void,
   };
 
   // The messages that fulfil the GlicBrowserHost public API follow below.
@@ -65,18 +57,9 @@ export declare interface HostRequestTypes {
       tabData?: TabDataPrivate,
     },
   };
-  glicBrowserOpenGlicSettingsPage: {
-    request: {},
-    response: void,
-  };
-  glicBrowserClosePanel: {
-    request: {},
-    response: void,
-  };
-  glicBrowserShowProfilePicker: {
-    request: {},
-    response: void,
-  };
+  glicBrowserOpenGlicSettingsPage: {};
+  glicBrowserClosePanel: {};
+  glicBrowserShowProfilePicker: {};
   glicBrowserGetContextFromFocusedTab: {
     request: {
       options: TabContextOptions,
@@ -86,7 +69,6 @@ export declare interface HostRequestTypes {
     },
   };
   glicBrowserCaptureScreenshot: {
-    request: {},
     response: {
       screenshot: Screenshot,
     },
@@ -101,91 +83,64 @@ export declare interface HostRequestTypes {
         durationMs?: number,
       },
     },
-    response: void,
   };
   glicBrowserSetWindowDraggableAreas: {
     request: {
       areas: DraggableArea[],
     },
-    response: void,
   };
   glicBrowserSetMicrophonePermissionState: {
     request: {
       enabled: boolean,
     },
-    response: void,
   };
   glicBrowserSetLocationPermissionState: {
     request: {
       enabled: boolean,
     },
-    response: void,
   };
   glicBrowserSetTabContextPermissionState: {
     request: {
       enabled: boolean,
     },
-    response: void,
   };
   glicBrowserSetContextAccessIndicator: {
     request: {
       show: boolean,
     },
-    response: void,
   };
   glicBrowserGetUserProfileInfo: {
-    request: {},
     response: {
       profileInfo?: UserProfileInfoPrivate,
     },
   };
   glicBrowserRefreshSignInCookies: {
-    request: {},
     response: {
       success: boolean,
     },
   };
-  glicBrowserAttachPanel: {
-    request: {},
-    response: void,
-  };
-  glicBrowserDetachPanel: {
-    request: {},
-    response: void,
-  };
+  glicBrowserAttachPanel: {};
+  glicBrowserDetachPanel: {};
   glicBrowserSetAudioDucking: {
     request: {
       enabled: boolean,
     },
-    response: void,
   };
   glicBrowserOnUserInputSubmitted: {
     request: {
       mode: number,
     },
-    response: void,
   };
-  glicBrowserOnResponseStarted: {
-    request: {},
-    response: void,
-  };
-  glicBrowserOnResponseStopped: {
-    request: {},
-    response: void,
-  };
-  glicBrowserOnSessionTerminated: {
-    request: {},
-    response: void,
-  };
+  glicBrowserOnResponseStarted: {};
+  glicBrowserOnResponseStopped: {};
+  glicBrowserOnSessionTerminated: {};
   glicBrowserOnResponseRated: {
     request: {
       positive: boolean,
     },
-    response: void,
   };
   glicBrowserScrollTo: {
     request: {params: ScrollToParams},
-    response: void,
   };
 }
 
@@ -200,66 +155,93 @@ export declare interface WebClientRequestTypes {
     },
   };
   glicWebClientNotifyPanelWasClosed: {
-    request: {},
-    response: void,
   };
   glicWebClientNotifyPanelOpened: {
     request: {
       attachedToWindowId: string|undefined,
     },
-    response: void,
   };
   glicWebClientNotifyPanelClosed: {
-    request: {},
-    response: void,
   };
   glicWebClientPanelStateChanged: {
     request: {
       panelState: PanelState,
     },
-    response: void,
   };
   glicWebClientCanAttachStateChanged: {
     request: {
       canAttach: boolean,
     },
-    response: void,
   };
   glicWebClientNotifyMicrophonePermissionStateChanged: {
     request: {
       enabled: boolean,
     },
-    response: void,
   };
   glicWebClientNotifyLocationPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
-    response: void,
   };
   glicWebClientNotifyTabContextPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
-    response: void,
   };
   glicWebClientNotifyFocusedTabChanged: {
     request: {
       focusedTabDataPrivate: FocusedTabDataPrivate,
     },
-    response: void,
   };
   glicWebClientNotifyPanelActiveChanged: {
     request: {
       panelActive: boolean,
     },
-    response: void,
   };
 }
 
-export declare interface WebClientInitialState {
-  panelState?: PanelState;
-}
+export type AllRequestTypes = HostRequestTypes&WebClientRequestTypes;
+// All request types which do not provide a return.
+export type AllRequestTypesWithoutReturn = {
+  [K in keyof AllRequestTypes as
+       RequestResponseType<K> extends void ? K : never]: AllRequestTypes[K]
+};
+
+export type RequestRequestType<T extends keyof AllRequestTypes> =
+    'request' extends keyof AllRequestTypes[T] ? AllRequestTypes[T]['request'] :
+                                                 undefined;
+export type RequestResponseType<T extends keyof AllRequestTypes> =
+    'response' extends keyof AllRequestTypes[T] ?
+    AllRequestTypes[T]['response'] :
+    void;
+
+type AllValues<T> = T[keyof T];
+type ArrayElement<ArrayType extends unknown[]> =
+    ArrayType extends Array<infer ElementType>? ElementType : never;
+
+// Do some high level checks that we don't accidentally add a non-cloneable or
+// transferable type to our messages. These are not perfect.
+
+// This can be extended for other transferable types when we need them. Using
+// 'extends ...' for all possible Transferable types is too permissive.
+type TransferableTypes = ArrayBuffer;
+type StructuredClonableBasicType = string|boolean|number|void|undefined|null;
+type CheckStructuredClonable<T> =
+    T extends StructuredClonableBasicType ? never : T extends any[] ?
+    CheckStructuredClonable<ArrayElement<T>>:
+    T extends Function ?
+    ['Function not structured cloneable', T] :
+    T extends Promise<any>? ['Promise not structured cloneable', T] :
+                            CheckStructuredClonableObject<T>;
+type CheckStructuredClonableObject<T> = T extends TransferableTypes ?
+    never :
+    AllValues<{[K in keyof T] -?: CheckStructuredClonable<T[K]>;}>;
+
+/* eslint-disable-next-line @typescript-eslint/naming-convention */
+function assertNever<_T extends never>() {}
+
+assertNever<CheckStructuredClonable<HostRequestTypes>>();
+assertNever<CheckStructuredClonable<WebClientRequestTypes>>();
 
 //
 // Types used in messages that are not exposed directly to the API.
@@ -272,6 +254,20 @@ export declare interface WebClientInitialState {
 // have the same name, but different type. This ensures that we don't
 // accidentally leave the private data on the returned object.
 //
+
+// Same as A&B, but replaces properties that are in both with those in B.
+type ReplaceProperties<A, B> = {
+  [K in keyof A |
+   keyof B]: K extends keyof B ? B[K] : K extends keyof A ? A[K] : never;
+};
+
+export type WebClientInitialStatePrivate =
+    ReplaceProperties<WebClientInitialState, {
+      panelState: PanelState,
+      chromeVersion: ChromeVersion,
+      focusedTabData: FocusedTabDataPrivate,
+      scrollToEnabled: boolean,
+    }>;
 
 // TabData format for postMessage transport.
 export declare interface TabDataPrivate extends Omit<TabData, 'favicon'> {

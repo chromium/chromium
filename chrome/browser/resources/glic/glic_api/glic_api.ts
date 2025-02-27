@@ -32,6 +32,8 @@ export declare interface GlicHostRegistry {
    * rejection of the promise indicates a browser side failure.
    *
    * The web client must call this once when its webview on-load event is fired.
+   *
+   * This should only be called once! Subsequent calls will break.
    */
   registerWebClient(webClient: GlicWebClient): Promise<void>;
 }

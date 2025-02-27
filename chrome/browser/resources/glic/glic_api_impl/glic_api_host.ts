@@ -6,8 +6,6 @@
 // Communicates with the web client side in
 // glic_api_host/glic_api_impl.ts.
 
-// TODO(crbug.com/379677413): Add tests for the API host.
-
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -24,8 +22,8 @@ import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextError
 
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
-import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException} from './request_types.js';
+import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
+import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Implemented by the embedder of GlicApiHost.
@@ -51,11 +49,8 @@ type Promisify<T> = T extends void ? void : Promise<T>;
 type HostMessageHandlerInterface = {
   [Property in keyof HostRequestTypes]:
       // `payload` is the message payload.
-      // `responseTransfer` is populated by objects that should be transferred
-      // when sending the message.
-  (payload: HostRequestTypes[Property]['request'],
-   responseTransfer: Transferable[]) =>
-      Promisify<HostRequestTypes[Property]['response']>;
+  (payload: RequestRequestType<Property>, extras: ResponseExtras) =>
+      Promisify<RequestResponseType<Property>>;
 };
 
 class WebClientImpl implements WebClientInterface {
@@ -70,7 +65,8 @@ class WebClientImpl implements WebClientInterface {
   }
 
   async notifyPanelClosed(): Promise<void> {
-    await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
+    await this.sender.requestWithResponse(
+        'glicWebClientNotifyPanelClosed', undefined);
   }
 
   async notifyPanelWillOpen(panelState: PanelStateMojo):
@@ -103,7 +99,7 @@ class WebClientImpl implements WebClientInterface {
 
   notifyPanelWasClosed(): Promise<void> {
     return this.sender.requestWithResponse(
-        'glicWebClientNotifyPanelWasClosed', {});
+        'glicWebClientNotifyPanelWasClosed', undefined);
   }
 
   notifyPanelStateChange(panelState: PanelStateMojo) {
@@ -139,13 +135,12 @@ class WebClientImpl implements WebClientInterface {
   }
 
   notifyFocusedTabChanged(focusedTabData: (FocusedTabDataMojo)): void {
-    const transfer: Transferable[] = [];
+    const extras = new ResponseExtras();
     this.sender.requestNoResponse(
         'glicWebClientNotifyFocusedTabChanged', {
-          focusedTabDataPrivate:
-              focusedTabDataToClient(focusedTabData, transfer),
+          focusedTabDataPrivate: focusedTabDataToClient(focusedTabData, extras),
         },
-        transfer);
+        extras.transfers);
   }
   notifyPanelActiveChange(panelActive: boolean): void {
     this.sender.requestNoResponse(
@@ -166,10 +161,12 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   destroy() {
     if (this.receiver) {
       this.receiver.$.close();
+      this.receiver = undefined;
     }
   }
 
-  async glicBrowserWebClientCreated({}, transfer: Transferable[]) {
+  async glicBrowserWebClientCreated(_request: void, extras: ResponseExtras):
+      Promise<{initialState: WebClientInitialStatePrivate}> {
     this.receiver =
         new WebClientReceiver(new WebClientImpl(this.sender, this.embedder));
     const {initialState} = await this.handler.webClientCreated(
@@ -177,21 +174,18 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     const chromeVersion = initialState.chromeVersion.components;
 
     return {
-      panelState: panelStateToClient(initialState.panelState),
-      focusedTabData:
-          focusedTabDataToClient(initialState.focusedTabData, transfer),
-      microphonePermissionEnabled: initialState.microphonePermissionEnabled,
-      locationPermissionEnabled: initialState.locationPermissionEnabled,
-      tabContextPermissionEnabled: initialState.tabContextPermissionEnabled,
-      chromeVersion: {
-        major: chromeVersion[0] || 0,
-        minor: chromeVersion[1] || 0,
-        build: chromeVersion[2] || 0,
-        patch: chromeVersion[3] || 0,
-      },
-      canAttach: initialState.canAttach,
-      scrollToEnabled: loadTimeData.getBoolean('enableScrollTo'),
-      panelIsActive: initialState.panelIsActive,
+      initialState: replaceProperties(initialState, {
+        panelState: panelStateToClient(initialState.panelState),
+        focusedTabData:
+            focusedTabDataToClient(initialState.focusedTabData, extras),
+        chromeVersion: {
+          major: chromeVersion[0] || 0,
+          minor: chromeVersion[1] || 0,
+          build: chromeVersion[2] || 0,
+          patch: chromeVersion[3] || 0,
+        },
+        scrollToEnabled: loadTimeData.getBoolean('enableScrollTo'),
+      }),
     };
   }
 
@@ -233,11 +227,11 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return {};
   }
 
-  glicBrowserOpenGlicSettingsPage() {
+  glicBrowserOpenGlicSettingsPage(): void {
     this.handler.openGlicSettingsPage();
   }
 
-  glicBrowserClosePanel() {
+  glicBrowserClosePanel(): void {
     return this.handler.closePanel();
   }
 
@@ -249,12 +243,12 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.detachPanel();
   }
 
-  glicBrowserShowProfilePicker() {
-    return this.handler.showProfilePicker();
+  glicBrowserShowProfilePicker(): void {
+    this.handler.showProfilePicker();
   }
 
   async glicBrowserGetContextFromFocusedTab(
-      request: {options: TabContextOptions}, transfer: Transferable[]):
+      request: {options: TabContextOptions}, extras: ResponseExtras):
       Promise<{tabContextResult: TabContextResultPrivate}> {
     const {
       result: {errorReason, tabContext},
@@ -279,7 +273,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     if (tabData.favicon) {
       favicon = bitmapN32ToRGBAImage(tabData.favicon);
       if (favicon) {
-        transfer.push(favicon.dataRGBA);
+        extras.addTransfer(favicon.dataRGBA);
       }
     }
 
@@ -311,7 +305,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         mimeType: viewportScreenshot.mimeType,
         originAnnotations: {},
       };
-      transfer.push(screenshotArray.buffer);
+      extras.addTransfer(screenshotArray.buffer);
     }
     let pdfDocumentData: PdfDocumentDataPrivate|undefined = undefined;
     if (tabContext.pdfDocumentData) {
@@ -319,7 +313,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
           new Uint8Array(tabContext.pdfDocumentData.pdfData).buffer :
           undefined;
       if (pdfData) {
-        transfer.push(pdfData);
+        extras.addTransfer(pdfData);
       }
       pdfDocumentData = {
         origin: originToClient(tabContext.pdfDocumentData.origin),
@@ -335,7 +329,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
               tabContext.annotatedPageData.annotatedPageContent.smuggled) :
           undefined;
       if (annotatedPageContent) {
-        transfer.push(annotatedPageContent);
+        extras.addTransfer(annotatedPageContent);
       }
       annotatedPageData = {annotatedPageContent};
     }
@@ -360,7 +354,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         request.size, timeDeltaFromClient(request.options?.durationMs));
   }
 
-  async glicBrowserCaptureScreenshot(_request: {}, transfer: Transferable[]):
+  async glicBrowserCaptureScreenshot(_request: void, extras: ResponseExtras):
       Promise<{screenshot: Screenshot}> {
     const {
       result: {screenshot, errorReason},
@@ -372,7 +366,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
               CaptureScreenshotErrorReason.UNKNOWN);
     }
     const screenshotArray = new Uint8Array(screenshot.data);
-    transfer.push(screenshotArray.buffer);
+    extras.addTransfer(screenshotArray.buffer);
     return {
       screenshot: {
         widthPixels: screenshot.widthPixels,
@@ -400,7 +394,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return this.handler.setTabContextPermissionState(request.enabled);
   }
 
-  async glicBrowserGetUserProfileInfo(_request: {}, transfer: Transferable[]) {
+  async glicBrowserGetUserProfileInfo(_request: void, extras: ResponseExtras) {
     const {profileInfo: mojoProfileInfo} =
         await this.handler.getUserProfileInfo();
     if (!mojoProfileInfo) {
@@ -411,7 +405,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     if (mojoProfileInfo.avatarIcon) {
       avatarIcon = bitmapN32ToRGBAImage(mojoProfileInfo.avatarIcon);
       if (avatarIcon) {
-        transfer.push(avatarIcon.dataRGBA);
+        extras.addTransfer(avatarIcon.dataRGBA);
       }
     }
     return {profileInfo: replaceProperties(mojoProfileInfo, {avatarIcon})};
@@ -421,31 +415,31 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return this.handler.syncCookies();
   }
 
-  glicBrowserSetContextAccessIndicator(request: {show: boolean}) {
+  glicBrowserSetContextAccessIndicator(request: {show: boolean}): void {
     this.handler.setContextAccessIndicator(request.show);
   }
 
-  glicBrowserSetAudioDucking(request: {enabled: boolean}) {
+  glicBrowserSetAudioDucking(request: {enabled: boolean}): void {
     this.handler.setAudioDucking(request.enabled);
   }
 
-  glicBrowserOnUserInputSubmitted(request: {mode: number}) {
+  glicBrowserOnUserInputSubmitted(request: {mode: number}): void {
     this.handler.onUserInputSubmitted(request.mode);
   }
 
-  glicBrowserOnResponseStarted() {
+  glicBrowserOnResponseStarted(): void {
     this.handler.onResponseStarted();
   }
 
-  glicBrowserOnResponseStopped() {
+  glicBrowserOnResponseStopped(): void {
     this.handler.onResponseStopped();
   }
 
-  glicBrowserOnSessionTerminated() {
+  glicBrowserOnSessionTerminated(): void {
     this.handler.onSessionTerminated();
   }
 
-  glicBrowserOnResponseRated(request: {positive: boolean}) {
+  glicBrowserOnResponseRated(request: {positive: boolean}): void {
     this.handler.onResponseRated(request.positive);
   }
 
@@ -486,6 +480,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {
+  private senderId = newSenderId();
   private messageHandler: HostMessageHandler;
   private readonly postMessageReceiver: PostMessageRequestReceiver;
   private sender: PostMessageRequestSender;
@@ -497,7 +492,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
       private embeddedOrigin: string, embedder: ApiHostEmbedder) {
     this.postMessageReceiver =
         new PostMessageRequestReceiver(embeddedOrigin, windowProxy, this);
-    this.sender = new PostMessageRequestSender(windowProxy, embeddedOrigin);
+    this.sender = new PostMessageRequestSender(
+        windowProxy, embeddedOrigin, this.senderId);
     this.handler = new WebClientHandlerRemote();
     this.browserProxy.handler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
@@ -553,8 +549,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   // PostMessageRequestHandler implementation.
-  async handleRawRequest(type: string, payload: any):
-      Promise<{payload: any, transfer: Transferable[]}|undefined> {
+  async handleRawRequest(type: string, payload: any, extras: ResponseExtras):
+      Promise<{payload: any}|undefined> {
     const handlerFunction = (this.messageHandler as any)[type];
     if (typeof handlerFunction !== 'function') {
       console.warn(`GlicApiHost: Unknown message type ${type}`);
@@ -562,14 +558,13 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
 
     this.stopBootstrapPing();
-    const transfer: Transferable[] = [];
     const response =
-        await handlerFunction.call(this.messageHandler, payload, transfer);
+        await handlerFunction.call(this.messageHandler, payload, extras);
     if (!response) {
       // Not all request types require a return value.
       return;
     }
-    return {payload: response, transfer};
+    return {payload: response};
   }
 }
 
@@ -633,7 +628,7 @@ function originToClient(origin: Origin): string {
   return originBase;
 }
 
-function tabDataToClient(tabData: TabDataMojo|null, transfer: Transferable[]):
+function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
     TabDataPrivate|undefined {
   if (!tabData) {
     return undefined;
@@ -643,7 +638,7 @@ function tabDataToClient(tabData: TabDataMojo|null, transfer: Transferable[]):
   if (tabData.favicon) {
     favicon = bitmapN32ToRGBAImage(tabData.favicon);
     if (favicon) {
-      transfer.push(favicon.dataRGBA);
+      extras.addTransfer(favicon.dataRGBA);
     }
   }
 
@@ -659,9 +654,9 @@ function tabDataToClient(tabData: TabDataMojo|null, transfer: Transferable[]):
 
 function focusedTabCandidateToClient(
     focusedTabCandidate: FocusedTabCandidateMojo,
-    transfer: Transferable[]): FocusedTabCandidatePrivate {
+    extras: ResponseExtras): FocusedTabCandidatePrivate {
   const focusedTabCandidateData =
-      tabDataToClient(focusedTabCandidate.focusedTabCandidateData, transfer);
+      tabDataToClient(focusedTabCandidate.focusedTabCandidateData, extras);
   const invalidCandidateError =
       invalidCandidateErrorToClient(focusedTabCandidate.invalidCandidateError);
   return {
@@ -672,16 +667,16 @@ function focusedTabCandidateToClient(
 
 function focusedTabDataToClient(
     focusedTabData: FocusedTabDataMojo,
-    transfer: Transferable[]): FocusedTabDataPrivate {
+    extras: ResponseExtras): FocusedTabDataPrivate {
   if (focusedTabData.focusedTab) {
     return {
-      focusedTab: tabDataToClient(focusedTabData.focusedTab, transfer),
+      focusedTab: tabDataToClient(focusedTabData.focusedTab, extras),
     };
   }
   if (focusedTabData.focusedTabCandidate) {
     return {
       focusedTabCandidate: focusedTabCandidateToClient(
-          focusedTabData.focusedTabCandidate, transfer),
+          focusedTabData.focusedTabCandidate, extras),
     };
   }
   if (focusedTabData.noCandidateTabError) {
