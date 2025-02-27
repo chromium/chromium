@@ -149,11 +149,16 @@ class IFrameWaiter : public content::WebContentsObserver {
 
 // WebPageReplayServerWrapper is a helper wrapper that controls the configuring
 // and running the WebPageReplay Server instance.
+// TODO(b/399665693): Consider moving this to a shared WPR utilities code
+// location.
 class WebPageReplayServerWrapper {
  public:
-  explicit WebPageReplayServerWrapper(const bool start_as_replay,
-                                      int hostHttpPort = 8080,
-                                      int hostHttpsPort = 8081);
+  explicit WebPageReplayServerWrapper(
+      bool start_as_replay,
+      int host_http_port = 8080,
+      int host_https_port = 8081,
+      // Passes additional arguments used in the WPR command.
+      const std::vector<std::string> extra_args = {});
 
   WebPageReplayServerWrapper(const WebPageReplayServerWrapper&) = delete;
   WebPageReplayServerWrapper& operator=(const WebPageReplayServerWrapper&) =
@@ -177,6 +182,7 @@ class WebPageReplayServerWrapper {
   int host_http_port_;
   int host_https_port_;
   bool start_as_replay_;
+  std::vector<std::string> extra_args_;
 };
 
 class ProfileDataController {
