@@ -30,6 +30,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.InsetObserver;
 
@@ -437,13 +439,13 @@ public class BottomAttachedUiObserver
     // Bottom sheet
 
     @Override
-    public void onSheetClosed(int reason) {
+    public void onSheetClosed(@StateChangeReason int reason) {
         mBottomSheetVisible = false;
         updateBottomAttachedColor();
     }
 
     @Override
-    public void onSheetOpened(int reason) {
+    public void onSheetOpened(@StateChangeReason int reason) {
         mBottomSheetVisible = true;
         updateBottomAttachedColor();
     }
@@ -460,7 +462,7 @@ public class BottomAttachedUiObserver
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
 
     @Override
-    public void onSheetStateChanged(int newState, int reason) {}
+    public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {}
 
     // Omnibox Suggestions
 
