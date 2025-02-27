@@ -4,6 +4,7 @@
 
 #include "third_party/dawn/src/tint/lang/wgsl/reader/reader.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
+#include "tint_wgsl_fuzzer_grammar.h"
 
 void CanParseWithoutCrashing(std::string_view wgsl) {
   tint::Source::File file("test.wgsl", wgsl);
@@ -12,4 +13,5 @@ void CanParseWithoutCrashing(std::string_view wgsl) {
   auto program = tint::wgsl::reader::Parse(&file, parse_options);
 }
 
-FUZZ_TEST(ChromiumTintWgslTest, CanParseWithoutCrashing);
+FUZZ_TEST(ChromiumTintWgslTest, CanParseWithoutCrashing)
+    .WithDomains(fuzztest::InWgslGrammar());
