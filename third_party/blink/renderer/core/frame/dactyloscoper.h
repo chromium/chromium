@@ -25,7 +25,6 @@ class EnumerationBase;
 
 class ExecutionContext;
 class SVGStringListTearOff;
-class FontDescription;
 
 class CORE_EXPORT Dactyloscoper {
   DISALLOW_NEW();
@@ -48,7 +47,6 @@ class CORE_EXPORT Dactyloscoper {
 
   static void TraceFontLookup(ExecutionContext* execution_context,
                               const AtomicString& name,
-                              const FontDescription& font_description,
                               FontLookupType lookup_type);
 
   Dactyloscoper();

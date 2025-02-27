@@ -72,7 +72,7 @@ const SimpleFontData* LocalFontFaceSource::CreateFontData(
     const FontDescription& font_description,
     const FontSelectionCapabilities& font_selection_capabilities) {
   if (!IsValid()) {
-    ReportFontLookup(font_description, nullptr);
+    ReportFontLookup(font_description);
     return nullptr;
   }
 
@@ -87,8 +87,7 @@ const SimpleFontData* LocalFontFaceSource::CreateFontData(
   if (IsValid() && IsLoading()) {
     const SimpleFontData* fallback_font_data =
         CreateLoadingFallbackFontData(font_description);
-    ReportFontLookup(font_description, fallback_font_data,
-                     true /* is_loading_fallback */);
+    ReportFontLookup(font_description, true /* is_loading_fallback */);
     return fallback_font_data;
   }
 
@@ -156,7 +155,6 @@ const SimpleFontData* LocalFontFaceSource::CreateFontData(
       MakeGarbageCollected<SimpleFontData>(platform_data_avoid_bitmaps);
 
   histograms_.Record(font_data_variations_palette_applied);
-  ReportFontLookup(unstyled_description, font_data_variations_palette_applied);
   return font_data_variations_palette_applied;
 }
 
@@ -207,14 +205,6 @@ void LocalFontFaceSource::Trace(Visitor* visitor) const {
   visitor->Trace(face_);
   visitor->Trace(font_selector_);
   CSSFontFaceSource::Trace(visitor);
-}
-
-void LocalFontFaceSource::ReportFontLookup(
-    const FontDescription& font_description,
-    const SimpleFontData* font_data,
-    bool is_loading_fallback) {
-  font_selector_->ReportFontLookupByUniqueNameOnly(
-      font_name_, font_description, font_data, is_loading_fallback);
 }
 
 }  // namespace blink
