@@ -70,7 +70,7 @@ const base::FilePath::CharType kLocalStateFilename[] =
 }  // namespace
 
 HeadlessBrowser::Options::Options()
-    : user_agent(content::BuildUserAgentFromProduct(
+    : user_agent(content::BuildUnifiedPlatformUserAgentFromProduct(
           HeadlessBrowser::GetProductNameAndVersion())) {}
 
 HeadlessBrowser::Options::Options(Options&& options) = default;
