@@ -488,7 +488,7 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
 
   // TODO(sanaakbani): fade this in.
-  GetGlicView()->SetVisible(false);
+  GetGlicView()->web_view()->SetVisible(false);
 
   // If the web client is already initialized, wait for it to load in parallel.
   if (web_client_) {
@@ -595,7 +595,7 @@ void GlicWindowController::OpenAnimationFinished() {
     // Note: this logic may never be called if state_ != kOpenAnimation when the
     // open animation is finished (or cancelled).
     // TODO(sanaakbani): fade this in.
-    GetGlicView()->SetVisible(true);
+    GetGlicView()->web_view()->SetVisible(true);
 
     if (glic_loaded_) {
       ShowFinish();
