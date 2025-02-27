@@ -27,9 +27,7 @@ class XRWebGLProjectionLayer final : public XRProjectionLayer,
   WebGLRenderingContextBase* context() const override {
     return webgl_context_.Get();
   }
-  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override {
-    return nullptr;
-  }
+  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
 
   uint16_t textureWidth() const override;
   uint16_t textureHeight() const override;

@@ -41,6 +41,10 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
 
   void ClearCurrentTexture();
 
+  virtual scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() {
+    return nullptr;
+  }
+
  protected:
   WebGLFramebuffer* GetFramebuffer();
 

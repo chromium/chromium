@@ -66,6 +66,11 @@ void XRWebGLProjectionLayer::OnFrameEnd() {
                                    color_swap_chain_->texture_was_queried());
 }
 
+scoped_refptr<StaticBitmapImage>
+XRWebGLProjectionLayer::TransferToStaticBitmapImage() {
+  return color_swap_chain_->TransferToStaticBitmapImage();
+}
+
 void XRWebGLProjectionLayer::OnResize() {}
 
 void XRWebGLProjectionLayer::Trace(Visitor* visitor) const {

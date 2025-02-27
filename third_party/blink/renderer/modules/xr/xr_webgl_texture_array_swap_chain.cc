@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 
 namespace blink {
 
@@ -258,6 +259,11 @@ GLuint XRWebGLTextureArraySwapChain::GetCopyProgram() {
   }
 
   return copy_program_;
+}
+
+scoped_refptr<StaticBitmapImage>
+XRWebGLTextureArraySwapChain::TransferToStaticBitmapImage() {
+  return wrapped_swap_chain_->TransferToStaticBitmapImage();
 }
 
 void XRWebGLTextureArraySwapChain::Trace(Visitor* visitor) const {

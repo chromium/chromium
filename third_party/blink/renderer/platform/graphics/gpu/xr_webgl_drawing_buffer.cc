@@ -352,6 +352,10 @@ void XRWebGLDrawingBuffer::DoneWithSharedBuffer() {
   client->DrawingBufferClientRestoreFramebufferBinding();
 }
 
+GLuint XRWebGLDrawingBuffer::GetCurrentColorBufferTextureId() {
+  return back_color_buffer_->texture_id();
+}
+
 void XRWebGLDrawingBuffer::ClearBoundFramebuffer() {
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(
       drawing_buffer_->client());

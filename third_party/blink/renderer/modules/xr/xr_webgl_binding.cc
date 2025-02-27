@@ -12,12 +12,15 @@
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
 #include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_render_state.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewer_pose.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_buffer_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_sub_image.h"
@@ -152,9 +155,14 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
   color_desc.height = static_cast<uint32_t>(texture_size.height());
   color_desc.layers = 1;
 
-  XRWebGLSwapChain* color_swap_chain =
-      MakeGarbageCollected<XRWebGLSharedImageSwapChain>(webgl_context_,
-                                                        color_desc, webgl2_);
+  XRWebGLSwapChain* color_swap_chain;
+  if (session()->xr()->frameProvider()->DrawingIntoSharedBuffer()) {
+    color_swap_chain = MakeGarbageCollected<XRWebGLSharedImageSwapChain>(
+        webgl_context_, color_desc, webgl2_);
+  } else {
+    color_swap_chain = MakeGarbageCollected<XRWebGLDrawingBufferSwapChain>(
+        webgl_context_, color_desc, webgl2_);
+  }
 
   if (is_texture_array) {
     // If a texture-array was requested, create a texture array wrapper for the
