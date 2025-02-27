@@ -71,6 +71,9 @@ float ClampAndInterpolate(gfx::Tween::Type type,
   return gfx::Tween::FloatValueBetween(calculated, low, high);
 }
 
+int64_t TimeTicksToMicroseconds(base::TimeTicks tick) {
+  return (tick - base::TimeTicks()).InMicroseconds();
+}
 }  // namespace
 
 class GlicBorderView::BorderViewUpdater {
@@ -164,6 +167,10 @@ class GlicBorderView::BorderViewUpdater {
     kFocusedTabChanged_LostFocus,
   };
   void UpdateBorderView(UpdateBorderReason reason) {
+    AddReasonForDebugging(reason);
+    auto reasons_string = UpdateReasonsToString();
+    SCOPED_CRASH_KEY_STRING1024("crbug-398319435", "update_reasons",
+                                reasons_string);
     switch (reason) {
       case UpdateBorderReason::kContextAccessIndicatorOn: {
         // Off to On. Throw away everything we have and start the animation from
@@ -227,6 +234,39 @@ class GlicBorderView::BorderViewUpdater {
     return IsGlicWindowShowing();
   }
 
+  std::string UpdateReasonToString(UpdateBorderReason reason) {
+    switch (reason) {
+      case UpdateBorderReason::kContextAccessIndicatorOn:
+        return "IndicatorOn";
+      case UpdateBorderReason::kContextAccessIndicatorOff:
+        return "IndicatorOff";
+      case UpdateBorderReason::kFocusedTabChanged_NoFocusChange:
+        return "TabFocusChange";
+      case UpdateBorderReason::kFocusedTabDestroyed_NoFocusChange:
+        return "TabDestroyed";
+      case UpdateBorderReason::kFocusedTabChanged_GainFocus:
+        return "WindowGainFocus";
+      case UpdateBorderReason::kFocusedTabChanged_LostFocus:
+        return "WindowLostFocus";
+    }
+    NOTREACHED();
+  }
+
+  void AddReasonForDebugging(UpdateBorderReason reason) {
+    border_update_reasons_.push_back(UpdateReasonToString(reason));
+    if (border_update_reasons_.size() > kNumReasonsToKeep) {
+      border_update_reasons_.pop_front();
+    }
+  }
+
+  std::string UpdateReasonsToString() const {
+    std::ostringstream oss;
+    for (const auto& r : border_update_reasons_) {
+      oss << r << ",";
+    }
+    return oss.str();
+  }
+
   // Back pointer to the owner. Guaranteed to outlive `this`.
   const raw_ptr<GlicBorderView> border_view_;
 
@@ -239,6 +279,9 @@ class GlicBorderView::BorderViewUpdater {
   base::CallbackListSubscription focus_change_subscription_;
   bool context_access_indicator_enabled_ = false;
   base::CallbackListSubscription indicator_change_subscription_;
+
+  static constexpr size_t kNumReasonsToKeep = 10u;
+  std::list<std::string> border_update_reasons_;
 };
 
 GlicBorderView::GlicBorderView(Browser* browser)
@@ -427,7 +470,24 @@ float GlicBorderView::GetEmphasis(base::TimeDelta delta) const {
 }
 
 void GlicBorderView::ResetEmphasisAndReplay() {
-  CHECK(compositor_);
+  // TOOD(crbug.com/398319435): Remove once we know why this is called before
+  // `StartAnimation()`.
+  if (!compositor_) {
+    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "opacity", opacity_);
+    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "emphasis", emphasis_);
+    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "creation",
+                            TimeTicksToMicroseconds(creation_time_));
+    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "first_frame",
+                            TimeTicksToMicroseconds(first_frame_time_));
+    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "first_emphasis",
+                            TimeTicksToMicroseconds(first_emphasis_frame_));
+    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "last_step",
+                            TimeTicksToMicroseconds(last_animation_step_time_));
+    SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "first_rampdown",
+                            TimeTicksToMicroseconds(first_ramp_down_frame_));
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   CHECK(compositor_->HasObserver(this));
   if (!compositor_->HasAnimationObserver(this)) {
     compositor_->AddAnimationObserver(this);
