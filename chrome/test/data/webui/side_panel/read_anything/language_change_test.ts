@@ -7,7 +7,6 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -131,8 +130,8 @@ suite('LanguageChanged', () => {
         chrome.readingMode.baseLanguageForSpeech = langWithNoVoices;
       });
 
-      test('to the current voice if there is one', async () => {
-        await emitEvent(
+      test('to the current voice if there is one', () => {
+        emitEvent(
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
         app.languageChanged();
         assertEquals(otherVoice, app.getSpeechSynthesisVoice());
@@ -157,7 +156,6 @@ suite('LanguageChanged', () => {
           createSpeechSynthesisVoice({lang: 'es-us', name: 'Spanish'});
       app.enabledLangs = ['es-us'];
       setVoices(app, speechSynthesis, [voice]);
-      flush();
       chrome.readingMode.baseLanguageForSpeech = 'es';
 
       app.languageChanged();
@@ -171,7 +169,6 @@ suite('LanguageChanged', () => {
       app.enabledLangs = [];
       setVoices(app, speechSynthesis, [voice]);
       setInstalled('en-au');
-      flush();
       chrome.readingMode.baseLanguageForSpeech = 'en';
 
       app.languageChanged();
@@ -206,7 +203,6 @@ suite('LanguageChanged', () => {
     suite('and this locale is disabled', () => {
       test('and it enables pack manager locale', () => {
         app.enabledLangs = [];
-        flush();
         chrome.readingMode.baseLanguageForSpeech = lang3;
 
         app.languageChanged();
@@ -219,7 +215,6 @@ suite('LanguageChanged', () => {
           'and it enables other locale if not supported by pack manager',
           () => {
             app.enabledLangs = [];
-            flush();
             chrome.readingMode.baseLanguageForSpeech = lang1;
 
             app.languageChanged();
@@ -236,7 +231,6 @@ suite('LanguageChanged', () => {
         setVoices(app, speechSynthesis, [voice]);
         setInstalled('en-gb');
         setInstalled('en-us');
-        flush();
         chrome.readingMode.baseLanguageForSpeech = 'en-US';
 
         app.languageChanged();
@@ -266,7 +260,6 @@ suite('LanguageChanged', () => {
 
       test('to undefined if no enabled languages', () => {
         app.enabledLangs = [];
-        flush();
         chrome.readingMode.baseLanguageForSpeech = lang2;
 
         app.languageChanged();
