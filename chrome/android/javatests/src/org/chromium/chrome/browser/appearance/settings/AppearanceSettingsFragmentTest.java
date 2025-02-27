@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.appearance.settings;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_TOOLBAR_SHORTCUT;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_UI_THEME;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.NEW_TAB;
@@ -21,10 +22,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
+import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
@@ -65,10 +70,25 @@ public class AppearanceSettingsFragmentTest {
     @SmallTest
     public void testUiThemePreference() throws ClassNotFoundException {
         launchSettings();
+
         final var uiThemePref = assertSettingsExists(PREF_UI_THEME, ThemeSettingsFragment.class);
         Assert.assertEquals(
                 ThemeSettingsEntry.SETTINGS,
                 uiThemePref.getExtras().getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
+
+        final var context = mSettings.getContext();
+        Assert.assertEquals(
+                NightModeUtils.getThemeSettingTitle(context, NightModeUtils.getThemeSetting()),
+                uiThemePref.getSummary());
+
+        final var prefs = ChromeSharedPreferences.getInstance();
+        for (int theme = 0; theme < ThemeType.NUM_ENTRIES; theme++) {
+            ThreadUtils.runOnUiThreadBlocking(mSettings::onPause);
+            prefs.writeInt(UI_THEME_SETTING, theme);
+            ThreadUtils.runOnUiThreadBlocking(mSettings::onResume);
+            Assert.assertEquals(
+                    NightModeUtils.getThemeSettingTitle(context, theme), uiThemePref.getSummary());
+        }
     }
 
     private @NonNull Preference assertSettingsExists(
