@@ -30,7 +30,7 @@ class Module {
   static std::unique_ptr<Module> Load();
 
   // Stub function
-  // TODO(crbug.com/375463618): Remove this function and clean up the support
+  // TODO(crbug.com/398885436): Remove this function and clean up the support
   // machinery for executing native code.
   void DoNothing();
 
