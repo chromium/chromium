@@ -173,6 +173,7 @@ if (is_android) {
       "//chrome/browser/data_sharing:recent_activity_java",
       "//components/browser_ui/styles/android:java",
       "//components/data_sharing/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 

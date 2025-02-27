@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.AvatarProvider;
@@ -181,13 +182,12 @@ class RecentActivityListMediator {
         return getTabMetadata(logItem).lastKnownUrl;
     }
 
-    private @NonNull GroupMember getUserToDisplay(ActivityLogItem logItem) {
+    private @Nullable GroupMember getUserToDisplay(ActivityLogItem logItem) {
         assert logItem.activityMetadata != null : "ActivityMetadata is null";
         GroupMember member = logItem.activityMetadata.triggeringUser;
         if (member == null) {
             member = logItem.activityMetadata.affectedUser;
         }
-        assert member != null : "The user is null";
         return member;
     }
 }
