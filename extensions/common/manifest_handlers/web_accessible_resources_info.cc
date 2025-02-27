@@ -166,9 +166,9 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
 
 bool IsResourceWebAccessibleImpl(
     const Extension& extension,
+    const GURL& target_url,
     const std::optional<url::Origin>& initiator_origin,
-    const GURL& upstream_url,
-    const GURL& target_url) {
+    const GURL& upstream_url) {
   std::string relative_path = target_url.path();
 
   // Set the initiator_url.
@@ -260,9 +260,10 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const url::Origin* initiator_origin) {
   CHECK(extension);
   return IsResourceWebAccessibleImpl(
-      *extension, base::OptionalFromPtr(initiator_origin),
-      /*upstream_url=*/GURL(),
-      /*target_url=*/extension->GetResourceURL(relative_path));
+      *extension,
+      /*target_url=*/extension->GetResourceURL(relative_path),
+      base::OptionalFromPtr(initiator_origin),
+      /*upstream_url=*/GURL());
 }
 
 // static
@@ -274,8 +275,8 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
   CHECK(extension);
   CHECK(target_url.SchemeIs(kExtensionScheme));
 
-  return IsResourceWebAccessibleImpl(*extension, initiator_origin, upstream_url,
-                                     target_url);
+  return IsResourceWebAccessibleImpl(*extension, target_url, initiator_origin,
+                                     upstream_url);
 }
 
 // static
