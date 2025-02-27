@@ -5,6 +5,14 @@
   </div>
 </select>
 
+<style>
+select {
+  appearance: base-select;
+}
+</style>
+
 <script>
   window.selectParserRelaxationEnabled = !!document.querySelector('div');
+  const style = getComputedStyle(document.querySelector('select'));
+  window.customizableSelectEnabled = style.appearance == 'base-select';
 </script>
