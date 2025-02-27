@@ -177,16 +177,4 @@ public class StartupHelperUnitTest {
         mStartupHelper.initializeTabGroupSync();
         verify(mRemoteMutationHelper).createRemoteTabGroup(eq(LOCAL_TAB_GROUP_ID_1));
     }
-
-    @Test
-    public void testNotifyBackendOfActiveTabOnStartup() {
-        // Setup a group with two tabs in the tab model.
-        createLocalGroupWithTwoTabs();
-        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(true);
-
-        // Initialize. It should notify backend about currently selected tab.
-        mStartupHelper.notifyBackendOfActiveTabOnStartup();
-        verify(mTabGroupSyncService)
-                .onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), eq(TAB_TITLE_1));
-    }
 }
