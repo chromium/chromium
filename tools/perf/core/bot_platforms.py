@@ -447,45 +447,23 @@ FUCHSIA_EXEC_ARGS = {
     'nelson': None,
     'nuc': None
 }
-FUCHSIA_EXEC_CONFIGS = {
-    'astro': None,
-    'sherlock': None,
-    'atlas': None,
-    'nelson': None,
-    'nuc': None
-}
 _IMAGE_PATHS = {
     'astro': ('astro-release', 'smart_display_eng_arrested'),
     'sherlock': ('sherlock-release', 'smart_display_max_eng_arrested'),
     'nelson': ('nelson-release', 'smart_display_m3_eng_paused'),
 }
 
-# Some image paths are just a product-bundle, which is not a relative path.
-_PB_IMAGE_PATHS = {
-    'atlas': 'workstation_eng.chromebook-x64',
-    'nuc': 'workstation_eng.x64',
-}
-
-_FUCHSIA_IMAGE_DIR = '../../third_party/fuchsia-sdk/images-internal/%s/%s'
-_COMMON_FUCHSIA_ARGS = ['-d', '--os-check=check']
+# TODO(zijiehe): Fuchsia should check the os version, i.e. --os-check=check, but
+# perf test run multiple suites in sequential and the os checks are performed
+# multiple times. Currently there isn't a simple way to check only once at the
+# beginning of the test.
+# See the revision:
+# https://crsrc.org/c/tools/perf/core/bot_platforms.py
+#   ;drc=93a804bc8c5871e1fb70a762e461d787749cb2d7;l=470
+_COMMON_FUCHSIA_ARGS = ['-d', '--os-check=ignore']
 for board, path_parts in _IMAGE_PATHS.items():
-  image_dir = _FUCHSIA_IMAGE_DIR % path_parts
-  FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS + [
-      '--system-image-dir=%s' % image_dir
-  ]
+  FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS
 
-for board, pb_name in _PB_IMAGE_PATHS.items():
-  FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS + [
-      f'--system-image-dir={pb_name}'
-  ]
-  FUCHSIA_EXEC_CONFIGS[board] = frozenset([
-      _base_perftests(900,
-                      path='bin/run_base_perftests',
-                      additional_flags=FUCHSIA_EXEC_ARGS[board]),
-      _sync_performance_tests(900,
-                              path='bin/run_sync_performance_tests',
-                              additional_flags=FUCHSIA_EXEC_ARGS[board]),
-  ])
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
 ]).Add([
@@ -691,7 +669,6 @@ _ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS = frozenset(
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('rendering.desktop')])
 _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('media.mobile'),

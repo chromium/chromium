@@ -93,8 +93,7 @@
           "--experimental-tbmv3-metrics",
           "--extra-path=/b/s/w/ir/bin/",
           "-d",
-          "--os-check=check",
-          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/nelson-release/smart_display_m3_eng_paused"
+          "--os-check=ignore"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
@@ -150,8 +149,7 @@
           "--experimental-tbmv3-metrics",
           "--extra-path=/b/s/w/ir/bin/",
           "-d",
-          "--os-check=check",
-          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
+          "--os-check=ignore"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
