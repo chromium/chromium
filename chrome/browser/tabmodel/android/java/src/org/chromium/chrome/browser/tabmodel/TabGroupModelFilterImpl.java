@@ -709,6 +709,17 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
+    public int getTabCountForGroup(@Nullable Token tabGroupId) {
+        if (tabGroupId == null) return 0;
+
+        @Nullable Integer rootId = mGroupIdToRootIdMap.get(tabGroupId);
+        if (rootId == null) return 0;
+
+        @Nullable TabGroup tabGroup = mRootIdToGroupMap.get(rootId);
+        return tabGroup == null ? 0 : tabGroup.size();
+    }
+
+    @Override
     public boolean isTabInTabGroup(Tab tab) {
         int rootId = tab.getRootId();
         TabGroup group = mRootIdToGroupMap.get(rootId);

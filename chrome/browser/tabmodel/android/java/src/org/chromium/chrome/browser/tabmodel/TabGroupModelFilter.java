@@ -59,8 +59,19 @@ public interface TabGroupModelFilter extends TabList {
      *
      * @param tabRootId The tab root id that is used to find the related group.
      * @return The number of related tabs.
+     * @deprecated Use {@link #getTabCountForGroup(Token)}. This method returns 1 in the event the
+     *     group was not found or a tab is not in a group which is confusing. Any existing usages of
+     *     this method will be migrated and any reliance on this method returning 1 if the group
+     *     doesn't exist will be fixed as part of the migration.
      */
+    @Deprecated
     int getRelatedTabCountForRootId(int tabRootId);
+
+    /**
+     * Returns the number of tabs in the tab group with {@code tabGroupId} or 0 if the tab group
+     * does not exist.
+     */
+    int getTabCountForGroup(@Nullable Token tabGroupId);
 
     /**
      * @param rootId The root identifier of the tab group.
