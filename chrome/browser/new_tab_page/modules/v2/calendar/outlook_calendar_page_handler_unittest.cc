@@ -1119,4 +1119,7 @@ TEST_F(OutlookCalendarPageHandlerTest, NoEventsOnUnauthorizedResponseCode) {
                                         "", status);
 
   EXPECT_EQ(future.Get().size(), 0u);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.OutlookCalendar.RequestResult",
+      OutlookCalendarRequestResult::kAuthError, 1);
 }

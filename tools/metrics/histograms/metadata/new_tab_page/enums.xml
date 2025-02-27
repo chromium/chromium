@@ -500,6 +500,7 @@ error count for now.
   <int value="2" label="JSON parse error"/>
   <int value="3" label="Content error"/>
   <int value="4" label="Throttling error"/>
+  <int value="5" label="Unauthorized error"/>
 </enum>
 
 <enum name="PromoBrowserCommandEnum">
