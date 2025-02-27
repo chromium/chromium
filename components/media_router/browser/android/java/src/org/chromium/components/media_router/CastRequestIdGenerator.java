@@ -4,17 +4,13 @@
 
 package org.chromium.components.media_router;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 /**
  * Returns a request id in a range that is considered fairly unique. These request ids are used to
  * communicate with the cast device and identify messages and their responses.
  */
-@NullMarked
 public class CastRequestIdGenerator {
     private static final Object LOCK = new Object();
-    private static @Nullable CastRequestIdGenerator sInstance;
+    private static CastRequestIdGenerator sInstance;
 
     private int mRequestId;
 

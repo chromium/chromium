@@ -4,8 +4,7 @@
 
 package org.chromium.components.media_router;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 
@@ -13,7 +12,6 @@ import java.util.List;
  * A complimentary interface to {@link MediaRouteProvider}. Media route providers use the
  * implementation to communicate back to the {@link BrowserMediaRouter}.
  */
-@NullMarked
 public interface MediaRouteManager {
     /**
      * Adds a {@link MediaRouteProvider} to be managed.

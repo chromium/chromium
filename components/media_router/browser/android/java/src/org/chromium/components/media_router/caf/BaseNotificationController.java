@@ -4,17 +4,12 @@
 
 package org.chromium.components.media_router.caf;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Intent;
 
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationListener;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
@@ -23,10 +18,9 @@ import org.chromium.components.media_router.R;
 import org.chromium.services.media_session.MediaMetadata;
 
 /** Base controller for updating media notification for Casting and MediaFling. */
-@NullMarked
 public abstract class BaseNotificationController
         implements MediaNotificationListener, BaseSessionController.Callback {
-    private MediaNotificationInfo.@Nullable Builder mNotificationBuilder;
+    private MediaNotificationInfo.Builder mNotificationBuilder;
     private final BaseSessionController mSessionController;
 
     public BaseNotificationController(BaseSessionController sessionController) {
@@ -39,7 +33,7 @@ public abstract class BaseNotificationController
         mNotificationBuilder =
                 new MediaNotificationInfo.Builder()
                         .setPaused(false)
-                        .setOrigin(assumeNonNull(mSessionController.getRouteCreationInfo()).origin)
+                        .setOrigin(mSessionController.getRouteCreationInfo().origin)
                         // TODO(zqzhang): the same session might have more than one tab id. Should
                         // we track the last foreground alive tab and update the notification with
                         // it?
@@ -53,7 +47,6 @@ public abstract class BaseNotificationController
                         .setListener(this);
 
         updateNotificationMetadata();
-        assumeNonNull(MediaRouterClient.getInstance());
         MediaRouterClient.getInstance().showNotification(mNotificationBuilder.build());
     }
 
@@ -68,7 +61,6 @@ public abstract class BaseNotificationController
     public void onStatusUpdated() {
         if (mNotificationBuilder == null) return;
         if (!mSessionController.isConnected()) return;
-        assumeNonNull(mSessionController.getRemoteMediaClient());
 
         MediaStatus mediaStatus = mSessionController.getRemoteMediaClient().getMediaStatus();
         if (mediaStatus == null) return;
@@ -82,7 +74,6 @@ public abstract class BaseNotificationController
         } else {
             mNotificationBuilder.setActions(MediaNotificationInfo.ACTION_STOP);
         }
-        assumeNonNull(MediaRouterClient.getInstance());
         MediaRouterClient.getInstance().showNotification(mNotificationBuilder.build());
     }
 
@@ -91,11 +82,9 @@ public abstract class BaseNotificationController
     public void onMetadataUpdated() {
         if (mNotificationBuilder == null) return;
         updateNotificationMetadata();
-        assumeNonNull(MediaRouterClient.getInstance());
         MediaRouterClient.getInstance().showNotification(mNotificationBuilder.build());
     }
 
-    @RequiresNonNull("mNotificationBuilder")
     private void updateNotificationMetadata() {
         // We use a placeholder title here to comply with the requirement for non-empty
         // notification titles. See crbug.com/1445673 for more details.
@@ -103,7 +92,6 @@ public abstract class BaseNotificationController
         mNotificationBuilder.setMetadata(notificationMetadata);
 
         if (!mSessionController.isConnected()) return;
-        assumeNonNull(mSessionController.getSession());
 
         CastDevice castDevice = mSessionController.getSession().getCastDevice();
         if (castDevice != null) {
@@ -114,7 +102,6 @@ public abstract class BaseNotificationController
         }
 
         RemoteMediaClient remoteMediaClient = mSessionController.getRemoteMediaClient();
-        assumeNonNull(remoteMediaClient);
 
         com.google.android.gms.cast.MediaInfo info = remoteMediaClient.getMediaInfo();
         if (info == null) return;
@@ -142,7 +129,6 @@ public abstract class BaseNotificationController
     @Override
     public void onPlay(int actionSource) {
         if (!mSessionController.isConnected()) return;
-        assumeNonNull(mSessionController.getRemoteMediaClient());
 
         mSessionController.getRemoteMediaClient().play();
     }
@@ -150,7 +136,6 @@ public abstract class BaseNotificationController
     @Override
     public void onPause(int actionSource) {
         if (!mSessionController.isConnected()) return;
-        assumeNonNull(mSessionController.getRemoteMediaClient());
 
         mSessionController.getRemoteMediaClient().pause();
     }
@@ -169,9 +154,8 @@ public abstract class BaseNotificationController
     public void onMediaSessionSeekTo(long pos) {}
 
     protected Intent createBringTabToFrontIntent() {
-        return assumeNonNull(MediaRouterClient.getInstance())
-                .createBringTabToFrontIntent(
-                        assumeNonNull(mSessionController.getRouteCreationInfo()).tabId);
+        return MediaRouterClient.getInstance()
+                .createBringTabToFrontIntent(mSessionController.getRouteCreationInfo().tabId);
     }
 
     // Abstract methods to be implemented by children.

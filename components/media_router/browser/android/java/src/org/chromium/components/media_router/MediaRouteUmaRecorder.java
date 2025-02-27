@@ -5,10 +5,8 @@
 package org.chromium.components.media_router;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.annotations.NullMarked;
 
 /** Record statistics on interesting cast events and actions. */
-@NullMarked
 public class MediaRouteUmaRecorder {
     /**
      * Record the number of devices shown in the media route chooser dialog. The function is called

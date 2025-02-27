@@ -4,8 +4,7 @@
 
 package org.chromium.components.media_router;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * An interface components providing media sinks and routes need to implement to hooks up into
@@ -14,7 +13,6 @@ import org.chromium.build.annotations.Nullable;
  * Note: Empty-string origins passed through this interface should be considered
  * "unique origins" from url::Origin for the purposes of comparison.
  */
-@NullMarked
 public interface MediaRouteProvider {
     /** Factory for {@link MediaRouteProvider}s. */
     interface Factory {
@@ -96,5 +94,6 @@ public interface MediaRouteProvider {
      * Returns null if no FlingingController can be retrieved from the given route ID.
      * @param routeId The id of the route.
      */
-    @Nullable FlingingController getFlingingController(String routeId);
+    @Nullable
+    FlingingController getFlingingController(String routeId);
 }

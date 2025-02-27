@@ -11,15 +11,11 @@ import com.google.android.gms.cast.MediaStatus;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 /**
  * Wrapper layer that exposes a gms.cast.MediaStatus to native code.
  * See also media/base/media_status.h.
  */
 @JNINamespace("media_router")
-@NullMarked
 public class MediaStatusBridge {
     private MediaStatus mStatus;
 
@@ -60,7 +56,7 @@ public class MediaStatusBridge {
      * a YouTube Cast session, this could be the title of the video.
      */
     @CalledByNative
-    public @Nullable String title() {
+    public String title() {
         MediaInfo info = mStatus.getMediaInfo();
         if (info == null) return "";
 

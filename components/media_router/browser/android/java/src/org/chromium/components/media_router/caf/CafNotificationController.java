@@ -4,15 +4,11 @@
 
 package org.chromium.components.media_router.caf;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Intent;
 
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.media_router.MediaRouterClient;
 
 /** NotificationController implementation for presentation. */
-@NullMarked
 public class CafNotificationController extends BaseNotificationController {
     public CafNotificationController(BaseSessionController sessionController) {
         super(sessionController);
@@ -26,6 +22,6 @@ public class CafNotificationController extends BaseNotificationController {
 
     @Override
     public int getNotificationId() {
-        return assumeNonNull(MediaRouterClient.getInstance()).getPresentationNotificationId();
+        return MediaRouterClient.getInstance().getPresentationNotificationId();
     }
 }

@@ -4,10 +4,7 @@
 
 package org.chromium.components.media_router;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Interface to subscribe to MediaStatus updates. */
-@NullMarked
 public interface MediaStatusObserver {
     /**
      * Called when there is a MediaStatus update.

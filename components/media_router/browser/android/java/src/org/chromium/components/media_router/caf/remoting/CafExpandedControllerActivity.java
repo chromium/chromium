@@ -4,8 +4,6 @@
 
 package org.chromium.components.media_router.caf.remoting;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,16 +17,11 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.mediarouter.app.MediaRouteButton;
 
-import com.google.android.gms.cast.framework.media.RemoteMediaClient;
-
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.R;
 import org.chromium.components.media_router.caf.BaseSessionController;
 import org.chromium.third_party.android.media.MediaController;
 
 /** The activity that's opened by clicking the video flinging (casting) notification. */
-@NullMarked
 public class CafExpandedControllerActivity extends FragmentActivity
         implements BaseSessionController.Callback {
     private static final int PROGRESS_UPDATE_PERIOD_IN_MS = 1000;
@@ -38,16 +31,9 @@ public class CafExpandedControllerActivity extends FragmentActivity
     // See the class itself for details.
     private MediaController mMediaController;
     private RemotingSessionController mSessionController;
-    private @Nullable MediaRouteButton mMediaRouteButton;
+    private MediaRouteButton mMediaRouteButton;
     private TextView mTitleView;
     private Runnable mUpdateProgressRunnable;
-
-    private RemoteMediaClient getRemoteMediaClient() {
-        RemoteMediaClient ret =
-                assumeNonNull(mSessionController.getSession()).getRemoteMediaClient();
-        assert ret != null;
-        return ret;
-    }
 
     /** Handle actions from on-screen media controls. */
     private MediaController.Delegate mControllerDelegate =
@@ -56,41 +42,40 @@ public class CafExpandedControllerActivity extends FragmentActivity
                 public void play() {
                     if (!mSessionController.isConnected()) return;
 
-                    getRemoteMediaClient().play();
+                    mSessionController.getSession().getRemoteMediaClient().play();
                 }
 
                 @Override
                 public void pause() {
                     if (!mSessionController.isConnected()) return;
 
-                    getRemoteMediaClient().pause();
+                    mSessionController.getSession().getRemoteMediaClient().pause();
                 }
 
                 @Override
                 public long getDuration() {
                     if (!mSessionController.isConnected()) return 0;
-                    return assumeNonNull(mSessionController.getFlingingController()).getDuration();
+                    return mSessionController.getFlingingController().getDuration();
                 }
 
                 @Override
                 public long getPosition() {
                     if (!mSessionController.isConnected()) return 0;
-                    return assumeNonNull(mSessionController.getFlingingController())
-                            .getApproximateCurrentTime();
+                    return mSessionController.getFlingingController().getApproximateCurrentTime();
                 }
 
                 @Override
                 public void seekTo(long pos) {
                     if (!mSessionController.isConnected()) return;
 
-                    getRemoteMediaClient().seek(pos);
+                    mSessionController.getSession().getRemoteMediaClient().seek(pos);
                 }
 
                 @Override
                 public boolean isPlaying() {
                     if (!mSessionController.isConnected()) return false;
 
-                    return getRemoteMediaClient().isPlaying();
+                    return mSessionController.getSession().getRemoteMediaClient().isPlaying();
                 }
 
                 @Override
@@ -98,7 +83,8 @@ public class CafExpandedControllerActivity extends FragmentActivity
                     long flags =
                             PlaybackStateCompat.ACTION_REWIND
                                     | PlaybackStateCompat.ACTION_FAST_FORWARD;
-                    if (mSessionController.isConnected() && getRemoteMediaClient().isPlaying()) {
+                    if (mSessionController.isConnected()
+                            && mSessionController.getSession().getRemoteMediaClient().isPlaying()) {
                         flags |= PlaybackStateCompat.ACTION_PAUSE;
                     } else {
                         flags |= PlaybackStateCompat.ACTION_PLAY;
@@ -108,25 +94,17 @@ public class CafExpandedControllerActivity extends FragmentActivity
             };
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        RemotingSessionController sessionController = RemotingSessionController.getInstance();
+        mSessionController = RemotingSessionController.getInstance();
 
-        if (sessionController == null || !sessionController.isConnected()) {
-            // Suppress NullAway warnings about these fields being left null.
-            assumeNonNull(mHandler);
-            assumeNonNull(mMediaController);
-            assumeNonNull(mSessionController);
-            assumeNonNull(mTitleView);
-            assumeNonNull(mUpdateProgressRunnable);
-
+        if (mSessionController == null || !mSessionController.isConnected()) {
             finish();
             return;
         }
 
-        mSessionController = sessionController;
-        sessionController.addCallback(this);
+        mSessionController.addCallback(this);
 
         // Make the activity full screen.
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -152,9 +130,7 @@ public class CafExpandedControllerActivity extends FragmentActivity
             mMediaRouteButton = (MediaRouteButton) castButtonView;
             rootView.addView(mMediaRouteButton);
             mMediaRouteButton.bringToFront();
-            var routeSelector = assumeNonNull(mSessionController.getSource()).buildRouteSelector();
-            assert routeSelector != null;
-            mMediaRouteButton.setRouteSelector(routeSelector);
+            mMediaRouteButton.setRouteSelector(mSessionController.getSource().buildRouteSelector());
         }
 
         mTitleView = (TextView) findViewById(R.id.cast_screen_title);
@@ -201,12 +177,11 @@ public class CafExpandedControllerActivity extends FragmentActivity
 
     private void updateUi() {
         if (!mSessionController.isConnected()) return;
-        assumeNonNull(mSessionController.getSession());
 
         String deviceName = mSessionController.getSession().getCastDevice().getFriendlyName();
         String titleText = "";
         if (deviceName != null) {
-            titleText = getString(R.string.cast_casting_video, deviceName);
+            titleText = getResources().getString(R.string.cast_casting_video, deviceName);
         }
         mTitleView.setText(titleText);
 
@@ -214,7 +189,7 @@ public class CafExpandedControllerActivity extends FragmentActivity
         mMediaController.updateProgress();
 
         cancelProgressUpdateTask();
-        if (getRemoteMediaClient().isPlaying()) {
+        if (mSessionController.getSession().getRemoteMediaClient().isPlaying()) {
             scheduleProgressUpdateTask();
         }
     }
