@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/core/canvas_interventions/noise_helper.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -106,6 +108,89 @@ TEST_F(NoiseHelperTest, NoisePixels) {
   pixels2.copy_from(pixels_orig);
   NoisePixels(token_hash2, pixels2, width, height);
   EXPECT_NE(pixels, pixels2);
+}
+
+TEST_F(NoiseHelperTest, NoisePixelsAllSameValue) {
+  const int width = 100;
+  const int height = 100;
+  const uint8_t channel_value = 50;
+  std::array<uint8_t, width * height * 4> pixel_arr;
+  std::ranges::fill(pixel_arr, channel_value);
+  base::span<uint8_t> pixels(pixel_arr);
+  const uint64_t token = 0x01234678901234567;
+  auto token_hash = NoiseHash(token, "https://a.com");
+  std::array<uint8_t, 4> first_pixel;
+  std::ranges::fill(first_pixel, channel_value);
+  // It's possible that the first pixel remains unaltered (when noise for the 4
+  // channels is 0).
+  do {
+    NoisePixels(token_hash, pixels, width, height);
+    token_hash.Update(0x9876543210);
+  } while (pixels.first(4u) == first_pixel);
+
+  base::span<uint8_t> first_noised_pixel(first_pixel);
+  first_noised_pixel.copy_from(pixels.first<4>());
+  for (int i = 4; i < static_cast<int>(pixels.size()); i += 4) {
+    EXPECT_EQ(pixels.subspan(static_cast<uint32_t>(i), 4u), first_noised_pixel);
+  }
+}
+
+TEST_F(NoiseHelperTest, NoisePixelsSingleNeighbor) {
+  const int width = 3;
+  const int height = 3;
+  const uint8_t val_default = 50;
+  const uint8_t val_other = 150;
+  std::array<uint8_t, width * height * 4> pixel_arr_orig;
+  std::ranges::fill(pixel_arr_orig, val_default);
+  std::array<uint8_t, width * height * 4> pixel_arr = pixel_arr_orig;
+  base::span<uint8_t> pixels(pixel_arr);
+
+  std::map<std::pair<size_t, size_t>, std::pair<size_t, size_t>>
+      changed_to_checked = {
+          {{0, 0}, {1, 1}},  // top-left
+          {{0, 0}, {0, 1}},  // top
+          {{1, 0}, {0, 1}},  // top-right
+          {{1, 1}, {2, 1}}   // left
+      };
+
+  for (const auto& [changed, checked] : changed_to_checked) {
+    pixels.copy_from(pixel_arr_orig);
+    const uint64_t token = 0x01234678901234567;
+    auto token_hash = NoiseHash(token, "https://a.com");
+    auto changed_pixel =
+        pixels.subspan((changed.first + changed.second * width) * 4, 4u);
+    auto checked_pixel =
+        pixels.subspan((checked.first + checked.second * width) * 4, 4u);
+    std::ranges::fill(changed_pixel, val_other);
+    std::ranges::fill(checked_pixel, val_other);
+    std::array<uint8_t, 4u> initial_pixel_value;
+    std::ranges::fill(initial_pixel_value, val_other);
+    // It's possible that the first pixel remains unaltered (when noise for the
+    // 4 channels is 0).
+    do {
+      NoisePixels(token_hash, pixels, width, height);
+      token_hash.Update(0x9876543210);
+    } while (changed_pixel == initial_pixel_value);
+
+    EXPECT_EQ(changed_pixel, checked_pixel);
+    for (size_t y = 0; y < height; ++y) {
+      for (size_t x = 0; x < width; ++x) {
+        auto cur_pixel = pixels.subspan((x + y * width) * 4, 4u);
+        for (int i = 0; i < 4; ++i) {
+          if ((x == changed.first && y == changed.second) ||
+              (x == checked.first && y == checked.second)) {
+            // Ensure that the changed pixels have the correct values.
+            EXPECT_GE(cur_pixel[i], val_other - 3);
+            EXPECT_LE(cur_pixel[i], val_other + 3);
+          } else {
+            // Ensure that the other pixels did not change.
+            EXPECT_GE(cur_pixel[i], val_default - 3);
+            EXPECT_LE(cur_pixel[i], val_default + 3);
+          }
+        }
+      }
+    }
+  }
 }
 
 }  // namespace
