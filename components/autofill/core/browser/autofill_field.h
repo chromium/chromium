@@ -492,7 +492,7 @@ class AutofillField : public FormFieldData {
   std::optional<PasswordRequirementsSpec> password_requirements_;
 
   std::string format_string_;
-  FormatStringSource format_string_source_;
+  FormatStringSource format_string_source_ = FormatStringSource::kUnset;
 
   // Predictions which where calculated on the client. This is initialized to
   // `NO_SERVER_DATA`, which means "NO_DATA", i.e. no classification was
