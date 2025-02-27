@@ -32,8 +32,15 @@ bool D3D12VideoEncoderWrapper::Initialize() {
 
   // Get the profile, resolution and MaxEncoderOutputMetadataBufferSize
   D3D12_VIDEO_ENCODER_CODEC codec = video_encoder_->GetCodec();
-  D3D12_VIDEO_ENCODER_PROFILE_DESC profile_desc;
-  // TODO(crbug.com/40275246): support no codec for now due to CL split.
+  D3D12_VIDEO_ENCODER_PROFILE_DESC profile_desc{};
+  if (codec == D3D12_VIDEO_ENCODER_CODEC_H264) {
+    profile_desc = {
+        .DataSize = sizeof(profile_data_.h264_profile_),
+        .pH264Profile = &profile_data_.h264_profile_,
+    };
+  } else {
+    return false;
+  }
   HRESULT hr = video_encoder_->GetCodecProfile(profile_desc);
   RETURN_ON_HR_FAILURE(hr, "GetCodecProfile failed", false);
   CHECK_EQ(video_encoder_heap_->GetResolutionListCount(), 1u);

@@ -9,7 +9,9 @@
 #include "base/bits.h"
 #include "base/logging.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/gpu/h264_dpb.h"
 #include "media/gpu/windows/d3d12_helpers.h"
+#include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 
@@ -32,8 +34,8 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
     ID3D12VideoDevice3* video_device) {
   CHECK(video_device);
   VideoEncodeAccelerator::SupportedProfiles supported_profiles;
-  for (D3D12_VIDEO_ENCODER_CODEC codec : std::vector<D3D12_VIDEO_ENCODER_CODEC>{
-           // TODO(40275246): add codecs.
+  for (D3D12_VIDEO_ENCODER_CODEC codec : {
+           D3D12_VIDEO_ENCODER_CODEC_H264,
        }) {
     D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec_support{.Codec = codec};
     CHECK_FEATURE_SUPPORT(CODEC, codec_support);
@@ -85,7 +87,14 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
 
     std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
         profiles;
-    // TODO(40275246): add codecs.
+    switch (codec) {
+      case D3D12_VIDEO_ENCODER_CODEC_H264:
+        profiles =
+            D3D12VideoEncodeH264Delegate::GetSupportedProfiles(video_device);
+        break;
+      default:
+        NOTREACHED();
+    }
     for (const auto& [profile, formats] : profiles) {
       supported_profile.profile = profile;
       supported_profile.gpu_supported_pixel_formats = formats;
@@ -409,12 +418,10 @@ D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::GetCurrentFrame() const {
 template <size_t maxDpbSize>
 void D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::InsertCurrentFrame(
     size_t position) {
-  base::span raw_resources_span(raw_resources_);
-  std::ranges::rotate(raw_resources_span.subspan(position),
-                      std::prev(raw_resources_span.end()));
-  base::span subresources_span(subresources_);
-  std::ranges::rotate(subresources_span.subspan(position),
-                      std::prev(subresources_span.end()));
+  base::span raw_resources_span = base::span(raw_resources_).subspan(position);
+  std::ranges::rotate(raw_resources_span, std::prev(raw_resources_span.end()));
+  base::span subresources_span = base::span(subresources_).subspan(position);
+  std::ranges::rotate(subresources_span, std::prev(subresources_span.end()));
 }
 
 template <size_t maxDpbSize>
@@ -433,5 +440,7 @@ D3D12_VIDEO_ENCODE_REFERENCE_FRAMES D3D12VideoEncodeDecodedPictureBuffers<
       .pSubresources = subresources_.data(),
   };
 }
+
+template class D3D12VideoEncodeDecodedPictureBuffers<H264DPB::kDPBMaxSize>;
 
 }  // namespace media

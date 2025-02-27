@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
+#include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 #include "media/gpu/windows/format_utils.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -31,8 +32,12 @@ class VideoEncodeDelegateFactory
   std::unique_ptr<D3D12VideoEncodeDelegate> CreateVideoEncodeDelegate(
       ID3D12VideoDevice3* video_device,
       VideoCodecProfile profile) override {
-    // TODO(crbug.com/40275246): encoder_ will be initialized here.
-    return nullptr;
+    switch (VideoCodecProfileToVideoCodec(profile)) {
+      case VideoCodec::kH264:
+        return std::make_unique<D3D12VideoEncodeH264Delegate>(video_device);
+      default:
+        return nullptr;
+    }
   }
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
