@@ -111,10 +111,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     return PopoverTriggerSupport::kNone;
   }
 
-  // The IDL reflections:
-  AtomicString popoverTargetAction() const;
-  void setPopoverTargetAction(const AtomicString& value);
-
   Element* interestTargetElement() override;
 
   void DefaultEventHandler(Event&) override;

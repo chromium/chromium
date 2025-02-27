@@ -2401,12 +2401,6 @@
       name: "HTMLParserYieldAndDelayOftenForTesting",
     },
     {
-      // TODO(crbug.com/1416284): Enables popover=hint functionality.
-      // This shipped in M133, and this flag can be removed in M135.
-      name: "HTMLPopoverHint",
-      status: "stable",
-    },
-    {
       name: "HTMLSelectElementShowPicker",
       status: "stable",
     },
