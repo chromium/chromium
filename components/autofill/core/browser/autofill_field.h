@@ -326,6 +326,39 @@ class AutofillField : public FormFieldData {
     return password_requirements_;
   }
 
+  // The ordering ordering matters: higher values overrule lower vaules (e.g.,
+  // kServer overrules kHeuristics).
+  enum class FormatStringSource {
+    kUnset = 0,       // The format string hasn't been set yet.
+    kHeuristics = 1,  // The format string has been set by local heuristics.
+    kServer = 2,      // The format string has been set by the server.
+  };
+
+  // The format of the value expected by the web document. For now, format
+  // strings are only aimed at dates for Autofill AI:
+  //
+  // The alphabet is "YYYY", "YY", "MM", "M", "DD", "D", "/", ".", "-", and " "
+  // (space, U+0020). A format string contains at most one occurrence of "YYYY"
+  // or "YY", at most one of "MM" or "M", at most one of "DD" or "D", and at
+  // most two occurrences of one separator. A separator is "/", ".", "-",
+  // optionally with surrounding spaces, or space itself.
+  //
+  // Only one format string is stored at a time: the one with the
+  // highest-ranking `FormatStringSource`.
+  const std::string& format_string() const { return format_string_; }
+
+  FormatStringSource format_string_source() const {
+    return format_string_source_;
+  }
+
+  void set_format_string_unless_overruled(std::string format_string,
+                                          FormatStringSource source) {
+    if (format_string_source_ >= source) {
+      format_string_ = std::move(format_string);
+      format_string_source_ = source;
+    }
+  }
+
   // Getter and Setter methods for |state_is_a_matching_type_|.
   void set_state_is_a_matching_type(bool value = true) {
     state_is_a_matching_type_ = value;
@@ -457,6 +490,9 @@ class AutofillField : public FormFieldData {
   // Requirements the site imposes to passwords (for password generation).
   // Corresponds to the requirements determined by the Autofill server.
   std::optional<PasswordRequirementsSpec> password_requirements_;
+
+  std::string format_string_;
+  FormatStringSource format_string_source_;
 
   // Predictions which where calculated on the client. This is initialized to
   // `NO_SERVER_DATA`, which means "NO_DATA", i.e. no classification was
