@@ -105,8 +105,7 @@ public class AutofillImageFetcher {
     }
 
     /**
-     * Returns the required image if it exists in the image cache. If not, makes a call to fetch and
-     * cache the image for next time.
+     * Returns the required image if it exists in the image cache, empty object otherwise.
      *
      * @param url The URL of the image.
      * @param cardIconSpecs The sizing specifications for the image.
@@ -121,8 +120,6 @@ public class AutofillImageFetcher {
             return Optional.of(mImagesCache.get(urlToCache.getSpec()));
         }
 
-        // If not, fetch the image from the server, and cache for next time. Return empty object.
-        fetchImage(url, cardIconSpecs);
         return Optional.empty();
     }
 

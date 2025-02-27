@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -247,29 +246,6 @@ public class AutofillImageFetcherTest {
         assertNotNull(pixAccountIcon);
         assertTrue(
                 drawableToBitmap(genericBankAccountIcon).sameAs(drawableToBitmap(pixAccountIcon)));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetImagesIfAvailable() {
-        GURL cardArtUrl = new GURL("https://www.google.com/card-art-url");
-        CardIconSpecs cardIconSpecs =
-                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.LARGE);
-        Bitmap treatedImage =
-                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                        TEST_CARD_ART_IMAGE, cardIconSpecs, true);
-
-        // The card art image is not present in the image cache, so a call is made to fetch the
-        // image, and nothing is returned.
-        assertFalse(mImageFetcher.getImageIfAvailable(cardArtUrl, cardIconSpecs).isPresent());
-
-        // The card art image is fetched and cached from the previous call, so the cached image is
-        // returned.
-        assertTrue(
-                mImageFetcher
-                        .getImageIfAvailable(cardArtUrl, cardIconSpecs)
-                        .get()
-                        .sameAs(treatedImage));
     }
 
     private @Nullable Bitmap drawableToBitmap(Drawable drawable) {
