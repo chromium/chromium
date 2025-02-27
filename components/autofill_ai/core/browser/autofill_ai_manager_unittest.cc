@@ -396,6 +396,64 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerAttribute) {
       base::DoNothing());
 }
 
+// Tests that update prompts are only shown three times per entity that is to
+// be updated. Tests that accepting a prompt resets the counter.
+TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
+  constexpr char16_t kOtherPassportNumber[] = u"67867";
+  constexpr char16_t kOtherPassportNumber2[] = u"6785634567";
+
+  AutofillAiClient::SaveOrUpdatePromptResult decline = {
+      /*did_user_interact=*/true, std::nullopt};
+  AutofillAiClient::SaveOrUpdatePromptResult accept = {
+      /*did_user_interact=*/true,
+      GetPassportEntityInstance({.number = kDefaultPassportNumber})};
+
+  {
+    InSequence s;
+    // Accept the first prompt.
+    EXPECT_CALL(client(), ShowSaveOrUpdateBubble(
+                              PassportWithNumber(kDefaultPassportNumber), _, _))
+        .WillOnce(RunOnceCallback<2>(accept));
+
+    // Accept the third prompt.
+    EXPECT_CALL(client(), ShowSaveOrUpdateBubble(
+                              PassportWithNumber(kOtherPassportNumber), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
+    EXPECT_CALL(client(), ShowSaveOrUpdateBubble(
+                              PassportWithNumber(kOtherPassportNumber), _, _))
+        .WillOnce(RunOnceCallback<2>(accept));
+
+    // Only three more prompts will be shown for the next update.
+    EXPECT_CALL(client(), ShowSaveOrUpdateBubble(
+                              PassportWithNumber(kOtherPassportNumber2), _, _))
+        .Times(3)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
+  }
+
+  manager().MaybeImportForm(CreatePassportForm(), base::DoNothing());
+  // The first dialog was accepted.
+  EXPECT_THAT(GetEntityInstances(), SizeIs(1));
+
+  // Simulate three submissions - the last prompt is accepted.
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber),
+                            base::DoNothing());
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber),
+                            base::DoNothing());
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber),
+                            base::DoNothing());
+
+  // Simulate four more submissions - only three prompts are shown.
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber2),
+                            base::DoNothing());
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber2),
+                            base::DoNothing());
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber2),
+                            base::DoNothing());
+  manager().MaybeImportForm(CreatePassportForm(kOtherPassportNumber2),
+                            base::DoNothing());
+}
+
 // Tests that accepting a save prompt for an entity resets the strike counter
 // for that entity type.
 TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerUrl) {
