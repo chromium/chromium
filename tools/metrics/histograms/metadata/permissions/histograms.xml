@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.CrowdDeny.DidHoldbackQuietUi" enum="Boolean"
-    expires_after="2025-02-04">
+    expires_after="2026-03-01">
   <owner>andypaicu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.DSE.AutoPermissionRevertTransition"
-    enum="AutoDSEPermissionRevertTransition" expires_after="2025-03-01">
+    enum="AutoDSEPermissionRevertTransition" expires_after="2026-03-01">
   <owner>andypaicu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.DSE.EffectiveSetting" enum="ContentSetting"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>andypaicu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1091,7 +1091,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.Dismissed.Reason"
-    enum="DismissedReason" expires_after="2025-02-16">
+    enum="DismissedReason" expires_after="2026-03-01">
   <owner>hkamila@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1119,7 +1119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.{OsScreen}.OsScreenAction"
-    enum="OsScreenAction" expires_after="2025-08-24">
+    enum="OsScreenAction" expires_after="2026-03-01">
   <owner>hkamila@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1134,7 +1134,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.{OsScreen}.{OsScreenAction}.TimeToAction"
-    units="ms" expires_after="2025-02-16">
+    units="ms" expires_after="2026-03-01">
   <owner>hkamila@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
