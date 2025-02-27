@@ -209,12 +209,10 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   auto source_si_texture = shared_image_->CreateGLTexture(dest_gl);
   auto source_scoped_si_access = source_si_texture->BeginAccess(
       mailbox_ref_->sync_token(), /*readonly=*/true);
-  const bool do_alpha_multiply =
-      sk_image_info_.alphaType() == kUnpremul_SkAlphaType &&
-      unpack_premultiply_alpha == true;
-  const bool do_alpha_unmultiply =
-      sk_image_info_.alphaType() == kPremul_SkAlphaType &&
-      unpack_premultiply_alpha == false;
+  const bool do_alpha_multiply = GetAlphaType() == kUnpremul_SkAlphaType &&
+                                 unpack_premultiply_alpha == true;
+  const bool do_alpha_unmultiply = GetAlphaType() == kPremul_SkAlphaType &&
+                                   unpack_premultiply_alpha == false;
   dest_gl->CopySubTextureCHROMIUM(
       source_scoped_si_access->texture_id(), 0, dest_target, dest_texture_id,
       dest_level, dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
