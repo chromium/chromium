@@ -44,6 +44,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsBridge.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsHelper.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsCheckingModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsDataSource.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsHasCompromisedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsHasReusedPasswordsModuleHelper.java",

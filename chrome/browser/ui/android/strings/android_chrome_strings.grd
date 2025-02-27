@@ -1789,6 +1789,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_VIEW_SITES_BUTTON" desc="Text found on the secondary button of the revoked permissions and notifications module warning state. When clicked it will open a subpage where the user can review notifications or revoked permissions.">
         View sites
       </message>
+      <message name="IDS_SAFETY_HUB_LOCAL_PASSWORDS_CHECKING_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the check is in progress.">
+        Checking passwords on this device…
+      </message>
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORDS_COMPROMISED_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the user has local passwords which have been compromised.">
         {NUM_PASSWORDS, plural,
         =1 {1 compromised password on this device}

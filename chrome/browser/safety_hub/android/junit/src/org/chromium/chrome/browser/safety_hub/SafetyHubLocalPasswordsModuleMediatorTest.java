@@ -81,6 +81,10 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
         doReturn(isManaged).when(mDataSource).isManaged();
     }
 
+    private void mockTriggerCheckup(boolean willTriggerCheckup) {
+        doReturn(willTriggerCheckup).when(mDataSource).maybeTriggerPasswordCheckup();
+    }
+
     @Test
     public void countsUnavailable() {
         mockPasswordCounts(/* compromised= */ -1, /* weak= */ -1, /* reused= */ -1);
@@ -371,5 +375,26 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
         assertEquals(SAFE_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertNull(mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    public void loadingState() {
+        mockTriggerCheckup(true);
+
+        SafetyHubLocalPasswordsModuleMediator moduleMediator =
+                new SafetyHubLocalPasswordsModuleMediator(
+                        mPreference, mDataSource, mMediatorDelegateMock, mModuleDelegateMock);
+
+        moduleMediator.setUpModule();
+        moduleMediator.updateModule();
+
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_local_passwords_checking_title);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertNull(mPreference.getSummary());
+        assertNull(mPreference.getIcon());
+        assertNull(mPreference.getPrimaryButtonText());
+        assertNull(mPreference.getSecondaryButtonText());
     }
 }

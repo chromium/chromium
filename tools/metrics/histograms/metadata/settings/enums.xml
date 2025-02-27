@@ -244,6 +244,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unavailable"/>
   <int value="2" label="Info"/>
   <int value="3" label="Safe"/>
+  <int value="4" label="Loading"/>
 </enum>
 
 <enum name="SafetyHubModuleType">

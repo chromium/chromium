@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -31,6 +32,7 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     private View.OnClickListener mSecondaryButtonClickListener;
     private boolean mExpanded = true;
     private Drawable mDrawable;
+    private boolean mHasProgressBar;
 
     public SafetyHubExpandablePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -41,6 +43,14 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+
+        ProgressBar progressBar = (ProgressBar) holder.findViewById(R.id.progress_bar);
+        assert progressBar != null;
+        progressBar.setVisibility(mHasProgressBar ? View.VISIBLE : View.GONE);
+
+        if (mHasProgressBar) {
+            holder.findViewById(R.id.icon_frame).setVisibility(View.VISIBLE);
+        }
 
         TextView title = (TextView) holder.findViewById(android.R.id.title);
         assert title != null;
@@ -145,6 +155,12 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     @Nullable
     View.OnClickListener getPrimaryButtonClickListener() {
         return mPrimaryButtonClickListener;
+    }
+
+    public void setHasProgressBar(boolean hasProgressBar) {
+        if (mHasProgressBar == hasProgressBar) return;
+        mHasProgressBar = hasProgressBar;
+        setIconSpaceReserved(hasProgressBar);
     }
 
     private void updatePreferenceContentDescription(View view) {
