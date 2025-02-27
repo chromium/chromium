@@ -65,6 +65,7 @@ source_set("extensions") {
     "api/declarative_content/declarative_content_page_url_condition_tracker.h",
     "api/declarative_content/default_content_predicate_evaluators.cc",
     "api/declarative_content/default_content_predicate_evaluators.h",
+    "api/developer_private/developer_private_event_router.h",
     "api/developer_private/developer_private_event_router_shared.cc",
     "api/developer_private/developer_private_event_router_shared.h",
     "api/developer_private/developer_private_functions.h",
@@ -323,6 +324,7 @@ source_set("extensions") {
 
   if (is_android) {
     sources += [
+      "api/developer_private/developer_private_event_router_android.h",
       "api/developer_private/developer_private_functions_android.cc",
       "api/developer_private/developer_private_functions_android.h",
     ]
@@ -357,8 +359,8 @@ source_set("extensions") {
       "api/declarative_content/content_action.h",
       "api/developer_private/developer_private_api.cc",
       "api/developer_private/developer_private_api.h",
-      "api/developer_private/developer_private_event_router.cc",
-      "api/developer_private/developer_private_event_router.h",
+      "api/developer_private/developer_private_event_router_desktop.cc",
+      "api/developer_private/developer_private_event_router_desktop.h",
       "api/developer_private/developer_private_functions_desktop.cc",
       "api/developer_private/developer_private_functions_desktop.h",
       "api/developer_private/extension_info_generator.cc",

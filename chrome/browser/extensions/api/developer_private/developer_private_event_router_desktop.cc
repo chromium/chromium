@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_event_router_desktop.h"
 
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
