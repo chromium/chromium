@@ -4,9 +4,11 @@
 
 #include "net/device_bound_sessions/session_service_impl.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/device_bound_sessions/mock_session_store.h"
+#include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_store.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
@@ -17,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
@@ -905,6 +908,72 @@ TEST_F(SessionServiceImplWithStoreTest,
   SessionStore::SessionsMap session_map;
   session_map.insert({SchemefulSite(kTestUrl), std::move(session)});
   FinishLoadingSessions(std::move(session_map));
+
+  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+}
+
+TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
+  // Start loading
+  EXPECT_CALL(store(), LoadSessions).Times(1);
+  service().LoadSessionsAsync();
+
+  base::Time expiry_time = base::Time::Now() + base::Days(1);
+
+  proto::Session session_proto;
+  session_proto.set_id(kSessionId);
+  session_proto.set_refresh_url(kUrlString);
+  session_proto.set_should_defer_when_expired(false);
+  session_proto.set_expiry_time(
+      expiry_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  session_proto.mutable_session_inclusion_rules()->set_origin(
+      "https://example.com");
+  session_proto.mutable_session_inclusion_rules()->set_do_include_site(true);
+
+  proto::CookieCraving* craving_proto = session_proto.add_cookie_cravings();
+  craving_proto->set_name("test_cookie");
+  craving_proto->set_domain("example.com");
+  craving_proto->set_path("/");
+  craving_proto->set_secure(true);
+  craving_proto->set_httponly(true);
+  craving_proto->set_source_port(443);
+  craving_proto->set_creation_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  craving_proto->set_same_site(proto::CookieSameSite::LAX_MODE);
+  craving_proto->set_source_scheme(proto::CookieSourceScheme::SECURE);
+
+  std::unique_ptr<Session> session = Session::CreateFromProto(session_proto);
+  ASSERT_TRUE(session);
+
+  SessionStore::SessionsMap session_map;
+  session_map.insert({SchemefulSite(kTestUrl), std::move(session)});
+  FinishLoadingSessions(std::move(session_map));
+
+  // Create a request that should be deferred due to the session
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get());
+  ASSERT_TRUE(maybe_deferral);
+  EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
+
+  // Now actually defer the request
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
+  EXPECT_CALL(store(), DeleteSession(_, _)).Times(1);
+  EXPECT_CALL(store(), SaveSession(_, _)).Times(1);
+  EXPECT_CALL(store(), RestoreSessionBindingKey(SchemefulSite(kTestUrl),
+                                                Session::Id(kSessionId), _))
+      .WillOnce(RunOnceCallback<2>(unexportable_keys::UnexportableKeyId()));
+
+  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+  TestDeferCompletion defer_completion(
+      future.GetCallback<TestDeferCompletion::CallbackType>());
+  service().DeferRequestForRefresh(request.get(), *maybe_deferral,
+                                   defer_completion.GetRestartCb(),
+                                   defer_completion.GetContinueCb());
 
   EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
 }

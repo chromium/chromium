@@ -186,6 +186,18 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       RefreshCompleteCallback restart_callback,
       RefreshCompleteCallback continue_callback);
 
+  // Callback after unwrapping a session key
+  void OnSessionKeyRestored(URLRequest* request,
+                            const SchemefulSite& site,
+                            const Session::Id& session_id,
+                            Session::KeyIdOrError key_id_or_error);
+
+  // Helper function for starting a refresh
+  void RefreshSessionInternal(URLRequest* request,
+                              const SchemefulSite& site,
+                              Session* session,
+                              unexportable_keys::UnexportableKeyId key_id);
+
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;
   // Functions to call once initialization completes.

@@ -213,30 +213,27 @@ void SessionServiceImpl::DeferRequestForRefresh(
   // Notify the request that it has been deferred for refreshed cookies.
   NotifySessionAccess(request->device_bound_session_access_callback(),
                       SessionAccess::AccessType::kUpdate, site, *session);
-  if (needs_refresh) {
-    const Session::KeyIdOrError& key_id = session->unexportable_key_id();
-    if (!key_id.has_value()) {
+  if (!needs_refresh) {
+    return;
+  }
+
+  const Session::KeyIdOrError& key_id = session->unexportable_key_id();
+  if (!key_id.has_value()) {
+    if (key_id.error() == unexportable_keys::ServiceError::kKeyNotReady) {
+      // Unwrap key and then try to refresh
+      session_store_->RestoreSessionBindingKey(
+          site, session_id,
+          base::BindOnce(&SessionServiceImpl::OnSessionKeyRestored,
+                         weak_factory_.GetWeakPtr(), request, site,
+                         session_id));
+    } else {
       UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
-      return;
     }
 
-    // Trigger refreshing the session.
-    net::NetLogSource net_log_source_for_refresh = net::NetLogSource(
-        net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
-    request->net_log().AddEventReferencingSource(
-        net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
-
-    auto callback =
-        base::BindOnce(&SessionServiceImpl::OnRefreshRequestCompletion,
-                       weak_factory_.GetWeakPtr(),
-                       request->device_bound_session_access_callback(),
-                       std::move(site), session_id);
-    RegistrationFetcher::StartFetchWithExistingKey(
-        RegistrationRequestParam::CreateForRefresh(*session),
-        key_service_.get(), context_.get(), request->isolation_info(),
-        net_log_source_for_refresh, request->initiator(), std::move(callback),
-        *key_id);
+    return;
   }
+
+  RefreshSessionInternal(request, site, session, *key_id);
 }
 
 void SessionServiceImpl::OnRefreshRequestCompletion(
@@ -548,6 +545,47 @@ void SessionServiceImpl::ResumePreInitializationRequest(
   CHECK(!deferral->is_pending_initialization);
   DeferRequestForRefresh(request, *deferral, std::move(restart_callback),
                          std::move(continue_callback));
+}
+
+void SessionServiceImpl::OnSessionKeyRestored(
+    URLRequest* request,
+    const SchemefulSite& site,
+    const Session::Id& session_id,
+    Session::KeyIdOrError key_id_or_error) {
+  if (!key_id_or_error.has_value()) {
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+    return;
+  }
+
+  auto* session = GetSession(site, session_id);
+  if (!session) {
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+    return;
+  }
+
+  session->set_unexportable_key_id(key_id_or_error);
+
+  RefreshSessionInternal(request, site, session, *key_id_or_error);
+}
+
+void SessionServiceImpl::RefreshSessionInternal(
+    URLRequest* request,
+    const SchemefulSite& site,
+    Session* session,
+    unexportable_keys::UnexportableKeyId key_id) {
+  net::NetLogSource net_log_source_for_refresh = net::NetLogSource(
+      net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
+  request->net_log().AddEventReferencingSource(
+      net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
+
+  auto callback = base::BindOnce(
+      &SessionServiceImpl::OnRefreshRequestCompletion,
+      weak_factory_.GetWeakPtr(),
+      request->device_bound_session_access_callback(), site, session->id());
+  RegistrationFetcher::StartFetchWithExistingKey(
+      RegistrationRequestParam::CreateForRefresh(*session), key_service_.get(),
+      context_.get(), request->isolation_info(), net_log_source_for_refresh,
+      request->initiator(), std::move(callback), key_id);
 }
 
 }  // namespace net::device_bound_sessions
