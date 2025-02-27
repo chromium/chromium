@@ -350,7 +350,12 @@ U2FClient* U2FClient::Get() {
 // static
 void U2FClient::IsU2FServiceAvailable(
     base::OnceCallback<void(bool is_supported)> callback) {
-  chromeos::TpmManagerClient::Get()->GetSupportedFeatures(
+  auto* tpm_manager_client = chromeos::TpmManagerClient::Get();
+  if (!tpm_manager_client) {
+    std::move(callback).Run(false);
+    return;
+  }
+  tpm_manager_client->GetSupportedFeatures(
       tpm_manager::GetSupportedFeaturesRequest(),
       base::BindOnce(
           [](base::OnceCallback<void(bool is_available)> callback,

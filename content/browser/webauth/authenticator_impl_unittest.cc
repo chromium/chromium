@@ -1128,22 +1128,6 @@ TEST_F(AuthenticatorImplTest,
 }
 
 TEST_F(AuthenticatorImplTest,
-       GetClientCapabilities_HybridTransport_BluetoothDisabled) {
-  network::ParsedPermissionsPolicy permissions_policy(1);
-  permissions_policy[0].feature =
-      network::mojom::PermissionsPolicyFeature::kBluetooth;
-  // Simulate navigating to a page with this Permissions Policy.
-  auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
-      GURL(kTestOrigin1), main_rfh());
-  navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
-  navigation_simulator->Commit();
-
-  EXPECT_CALL(*mock_adapter_, IsPresent()).Times(0);
-  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
-  ExpectCapability(capabilities, client_capabilities::kHybridTransport, false);
-}
-
-TEST_F(AuthenticatorImplTest,
        GetClientCapabilities_HybridTransport_LowEnergyNotSupported) {
   SetBluetoothLESupported(false);
 

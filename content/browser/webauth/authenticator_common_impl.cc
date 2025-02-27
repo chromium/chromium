@@ -1783,14 +1783,6 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
 
 void AuthenticatorCommonImpl::IsHybridTransportSupported(
     base::OnceCallback<void(bool)> callback) {
-  // Similar to Web Bluetooth API (`navigator.bluetooth.getAvailability()`) we
-  // want respect the policy and return `false` if the policy is enforced.
-  if (!GetRenderFrameHost()->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kBluetooth)) {
-    std::move(callback).Run(false);
-    return;
-  }
-
   if (!device::BluetoothAdapterFactory::Get()->IsLowEnergySupported()) {
     std::move(callback).Run(false);
     return;

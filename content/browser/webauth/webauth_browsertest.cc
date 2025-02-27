@@ -63,6 +63,8 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -1560,6 +1562,39 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       EXPECT_EQ(kCreateWithPaymentPermissionsPolicyMissingMessage, result);
     }
   }
+}
+
+// Regression test for crbug.com/399383355.
+IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
+                       GetClientCapabilitiesCrossOriginIframe) {
+  // Set up a fake bluetooth adapter that reports being present.
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
+      bluetooth_global_values =
+          device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
+  bluetooth_global_values->SetLESupported(true);
+  scoped_refptr<::testing::NiceMock<device::MockBluetoothAdapter>>
+      mock_adapter = base::MakeRefCounted<
+          ::testing::NiceMock<device::MockBluetoothAdapter>>();
+  device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
+  EXPECT_CALL(*mock_adapter, IsPresent())
+      .WillRepeatedly(::testing::Return(true));
+
+  // Create a page with a cross-origin iframe.
+  static constexpr char kOuterHost[] = "acme.com";
+  static constexpr char kInnerHost[] = "notacme.com";
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            GetHttpsURL(kOuterHost, "/page_with_iframe.html")));
+  ASSERT_TRUE(NavigateIframeToURL(shell()->web_contents(), "test_iframe",
+                                  GetHttpsURL(kInnerHost, "/title2.html")));
+
+  // Obtain the client capabilities in the iframe.
+  static constexpr char kScript[] =
+      "PublicKeyCredential.getClientCapabilities().then(caps => "
+      "  caps.hybridTransport"
+      ");";
+  RenderFrameHost* const iframe = ChildFrameAt(shell()->web_contents(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_TRUE(EvalJs(iframe, kScript).ExtractBool());
 }
 
 // Tests that a credentials.create() call triggered by the main frame will
