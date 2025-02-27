@@ -163,8 +163,8 @@ void SiteDetails::UpdateHistograms(
     return;
   }
 
-  UMA_HISTOGRAM_COUNTS_100(
-      "Memory.RenderProcessHost.Count.OriginAgentClusterOverhead",
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Memory.RenderProcessHost.Count2.OriginAgentClusterOverhead",
       extra_processes_from_oac);
   UMA_HISTOGRAM_PERCENTAGE(
       "Memory.RenderProcessHost.Percent.OriginAgentClusterOverhead",

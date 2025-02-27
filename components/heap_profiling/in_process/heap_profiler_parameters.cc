@@ -64,7 +64,7 @@ constexpr base::FeatureParam<int> kNetworkSnapshotProbability{
 
 // Sample 10% of renderer processes by default, because last time this was
 // evaluated (2024-08) the 50th %ile of renderer process count
-// (Memory.RenderProcessHost.Count.All) ranged from 8 on Windows to 18 on Mac.
+// (Memory.RenderProcessHost.Count2.All) ranged from 8 on Windows to 18 on Mac.
 // 10% is an easy default between 1/18 and 1/8.
 constexpr base::FeatureParam<int> kRendererSnapshotProbability{
     &kHeapProfilerReporting, "renderer-prob-pct", 10};

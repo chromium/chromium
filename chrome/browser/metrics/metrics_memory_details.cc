@@ -90,13 +90,13 @@ void MetricsMemoryDetails::UpdateHistograms() {
   CountRenderProcessHosts(&initialized_and_not_dead_rphs, &all_rphs);
   UpdateSiteIsolationMetrics(initialized_and_not_dead_rphs);
 
-  UMA_HISTOGRAM_COUNTS_100("Memory.ProcessCount",
-                           static_cast<int>(browser.processes.size()));
-  UMA_HISTOGRAM_COUNTS_100("Memory.RendererProcessCount", renderer_count);
+  UMA_HISTOGRAM_COUNTS_1000("Memory.ProcessCount2",
+                            static_cast<int>(browser.processes.size()));
+  UMA_HISTOGRAM_COUNTS_1000("Memory.RendererProcessCount2", renderer_count);
 
-  UMA_HISTOGRAM_COUNTS_100("Memory.RenderProcessHost.Count.All", all_rphs);
-  UMA_HISTOGRAM_COUNTS_100(
-      "Memory.RenderProcessHost.Count.InitializedAndNotDead",
+  UMA_HISTOGRAM_COUNTS_1000("Memory.RenderProcessHost.Count2.All", all_rphs);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Memory.RenderProcessHost.Count2.InitializedAndNotDead",
       initialized_and_not_dead_rphs);
 }
 
