@@ -1704,6 +1704,9 @@ Chromium is unable to recover your settings.
           desc="Text that is shown in the more options menu to open the user's activity page.">
           My Activity
         </message>
+        <message name="IDS_LENS_OVERLAY_TOAST_PAGE_CONTENT_NOT_FOUND_MESSAGE">
+          Can't find content in page
+        </message>
         <message name="IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE"
           desc="The label for the button that dismisses the toast message">
           Dismiss
