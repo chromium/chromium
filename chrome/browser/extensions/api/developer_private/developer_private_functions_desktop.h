@@ -354,17 +354,6 @@ class DeveloperPrivatePackDirectoryFunction
   std::string key_path_str_;
 };
 
-class DeveloperPrivateIsProfileManagedFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.isProfileManaged",
-                             DEVELOPERPRIVATE_ISPROFILEMANAGED)
-
- protected:
-  ~DeveloperPrivateIsProfileManagedFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-};
 
 class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
  public:
@@ -641,7 +630,6 @@ class DeveloperPrivateRemoveMultipleExtensionsFunction
   // callback.
   std::optional<bool> accept_bubble_for_testing_;
 };
-
 
 class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction
     : public DeveloperPrivateAPIFunction {

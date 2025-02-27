@@ -35,8 +35,6 @@ DEFINE_EMPTY_FUNC(DeveloperPrivateChoosePathFunction,
                   "developerPrivate.choosePath")
 DEFINE_EMPTY_FUNC(DeveloperPrivatePackDirectoryFunction,
                   "developerPrivate.packDirectory")
-DEFINE_EMPTY_FUNC(DeveloperPrivateIsProfileManagedFunction,
-                  "developerPrivate.isProfileManaged")
 DEFINE_EMPTY_FUNC(DeveloperPrivateLoadDirectoryFunction,
                   "developerPrivate.loadDirectory")
 DEFINE_EMPTY_FUNC(DeveloperPrivateRequestFileSourceFunction,

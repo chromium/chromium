@@ -1365,16 +1365,6 @@ void DeveloperPrivateChoosePathFunction::FileSelectionCanceled() {
   Release();
 }
 
-ExtensionFunction::ResponseAction
-DeveloperPrivateIsProfileManagedFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  return RespondNow(WithArguments(
-      profile && supervised_user::AreExtensionsPermissionsEnabled(profile)));
-}
-
-DeveloperPrivateIsProfileManagedFunction::
-    ~DeveloperPrivateIsProfileManagedFunction() = default;
-
 DeveloperPrivateRequestFileSourceFunction::
     DeveloperPrivateRequestFileSourceFunction() = default;
 
@@ -2084,7 +2074,6 @@ void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted() {
   }
   Respond(NoArguments());
 }
-
 
 DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() = default;

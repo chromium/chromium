@@ -90,6 +90,18 @@ class DeveloperPrivateUpdateProfileConfigurationFunction
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateIsProfileManagedFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.isProfileManaged",
+                             DEVELOPERPRIVATE_ISPROFILEMANAGED)
+
+ protected:
+  ~DeveloperPrivateIsProfileManagedFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateGetUserSiteSettingsFunction
     : public DeveloperPrivateAPIFunction {
  public:

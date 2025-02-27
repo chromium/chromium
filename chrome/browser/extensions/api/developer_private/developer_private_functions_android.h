@@ -53,9 +53,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateChoosePathFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivatePackDirectoryFunction,
                    "developerPrivate.packDirectory",
                    DEVELOPERPRIVATE_PACKDIRECTORY);
-DECLARE_EMPTY_FUNC(DeveloperPrivateIsProfileManagedFunction,
-                   "developerPrivate.isProfileManaged",
-                   DEVELOPERPRIVATE_ISPROFILEMANAGED);
 DECLARE_EMPTY_FUNC(DeveloperPrivateLoadDirectoryFunction,
                    "developerPrivate.loadDirectory",
                    DEVELOPERPRIVATE_LOADUNPACKEDCROS);
