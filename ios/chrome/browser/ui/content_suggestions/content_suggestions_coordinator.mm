@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -869,6 +870,14 @@ using segmentation_platform::TipIdentifier;
       break;
     case ContentSuggestionsModuleType::kTabResumption:
       [self showMagicStackRecentTabs];
+      break;
+    case ContentSuggestionsModuleType::kShopCard:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        id<PriceNotificationsCommands> priceNotificationsCommands =
+            HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                               PriceNotificationsCommands);
+        [priceNotificationsCommands showPriceNotifications];
+      }
       break;
     default:
       break;
