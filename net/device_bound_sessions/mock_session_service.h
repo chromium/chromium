@@ -31,14 +31,14 @@ class SessionServiceMock : public SessionService {
                const NetLogWithSource& net_log,
                const std::optional<url::Origin>& original_request_initiator),
               (override));
-  MOCK_METHOD(std::optional<Session::Id>,
-              GetAnySessionRequiringDeferral,
+  MOCK_METHOD(std::optional<SessionService::DeferralParams>,
+              ShouldDefer,
               (URLRequest * request),
               (override));
   MOCK_METHOD(void,
               DeferRequestForRefresh,
               (URLRequest * request,
-               Session::Id session_id,
+               DeferralParams deferral,
                RefreshCompleteCallback restart_callback,
                RefreshCompleteCallback continue_callback),
               (override));

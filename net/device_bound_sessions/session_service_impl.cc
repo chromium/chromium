@@ -63,7 +63,8 @@ SessionServiceImpl::SessionServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     const URLRequestContext* request_context,
     SessionStore* store)
-    : key_service_(key_service),
+    : pending_initialization_(!!store),
+      key_service_(key_service),
       context_(request_context),
       session_store_(store) {
   CHECK(context_);
@@ -75,7 +76,6 @@ void SessionServiceImpl::LoadSessionsAsync() {
   if (!session_store_) {
     return;
   }
-  pending_initialization_ = true;
   session_store_->LoadSessions(base::BindOnce(
       &SessionServiceImpl::OnLoadSessionsComplete, weak_factory_.GetWeakPtr()));
 }
@@ -117,6 +117,10 @@ void SessionServiceImpl::OnLoadSessionsComplete(
   for (base::OnceClosure& closure : queued_operations) {
     std::move(closure).Run();
   }
+
+  base::UmaHistogramCounts1000(
+      "Net.DeviceBoundSessions.RequestsDeferredForInitialization",
+      requests_before_initialization_);
 }
 
 void SessionServiceImpl::OnRegistrationComplete(
@@ -147,8 +151,11 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
   return unpartitioned_sessions_.equal_range(site);
 }
 
-std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
+std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
     URLRequest* request) {
+  if (pending_initialization_) {
+    return DeferralParams();
+  }
   SchemefulSite site(request->url());
   auto range = GetSessionsForSite(site);
   for (auto it = range.first; it != range.second; ++it) {
@@ -156,7 +163,7 @@ std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
       NotifySessionAccess(request->device_bound_session_access_callback(),
                           SessionAccess::AccessType::kUpdate, site,
                           *it->second);
-      return it->second->id();
+      return DeferralParams(it->second->id());
     }
   }
 
@@ -165,12 +172,26 @@ std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
 
 void SessionServiceImpl::DeferRequestForRefresh(
     URLRequest* request,
-    Session::Id session_id,
+    DeferralParams deferral,
     RefreshCompleteCallback restart_callback,
     RefreshCompleteCallback continue_callback) {
   CHECK(restart_callback);
   CHECK(continue_callback);
   CHECK(request);
+
+  if (deferral.is_pending_initialization) {
+    CHECK(pending_initialization_);
+    requests_before_initialization_++;
+    queued_operations_.push_back(base::BindOnce(
+        &SessionServiceImpl::ResumePreInitializationRequest,
+        // `base::Unretained` is safe because the callback is stored in
+        // `queued_operations_`, which is owned by `this`.
+        base::Unretained(this), request, std::move(restart_callback),
+        std::move(continue_callback)));
+    return;
+  }
+
+  Session::Id session_id = *deferral.session_id;
   bool needs_refresh = false;
   // For the first deferring request, create a new vector and add the request.
   auto [it, inserted] = deferred_requests_.try_emplace(session_id);
@@ -510,6 +531,23 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
 
   return params_or_error.has_value() ? SessionError::ErrorType::kSuccess
                                      : params_or_error.error().type;
+}
+
+void SessionServiceImpl::ResumePreInitializationRequest(
+    URLRequest* request,
+    RefreshCompleteCallback restart_callback,
+    RefreshCompleteCallback continue_callback) {
+  CHECK(!pending_initialization_);
+
+  std::optional<DeferralParams> deferral = ShouldDefer(request);
+  if (!deferral) {
+    std::move(continue_callback).Run();
+    return;
+  }
+
+  CHECK(!deferral->is_pending_initialization);
+  DeferRequestForRefresh(request, *deferral, std::move(restart_callback),
+                         std::move(continue_callback));
 }
 
 }  // namespace net::device_bound_sessions

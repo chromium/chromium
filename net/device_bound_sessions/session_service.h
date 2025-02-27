@@ -32,6 +32,30 @@ class NET_EXPORT SessionService {
   using RefreshCompleteCallback = base::OnceClosure;
   using OnAccessCallback = base::RepeatingCallback<void(const SessionAccess&)>;
 
+  // Indicates the reason for deferring. Exactly one of
+  // `is_pending_initialization` or `session_id` will be truthy.
+  struct NET_EXPORT DeferralParams {
+    // Construct with `is_pending_initialization` set to true.
+    DeferralParams();
+
+    // Constructor with `session_id` having a value
+    explicit DeferralParams(Session::Id session_id);
+    ~DeferralParams();
+
+    DeferralParams(const DeferralParams&);
+    DeferralParams& operator=(const DeferralParams&);
+
+    DeferralParams(DeferralParams&&);
+    DeferralParams& operator=(DeferralParams&&);
+
+    // Set to true when we defer due to missing initialization.
+    bool is_pending_initialization;
+
+    // If `is_pending_initialization` is false, we're deferring due to
+    // missing credentials on this session.
+    std::optional<Session::Id> session_id;
+  };
+
   // Returns nullptr if unexportable key provider is not supported by the
   // platform or the device.
   static std::unique_ptr<SessionService> Create(
@@ -65,14 +89,16 @@ class NET_EXPORT SessionService {
   // cookies added to the request.
   // If multiple sessions needs to be refreshed for this request,
   // any of them can be returned.
-  // Returns the session id if the request should be deferred, returns
-  // std::nullopt if the request does not need to be deferred.
-  virtual std::optional<Session::Id> GetAnySessionRequiringDeferral(
-      URLRequest* request) = 0;
+  // Returns a `DeferralParams` setting `is_pending_initialization` if
+  // the request should be deferred while waiting for initialization, a
+  // `DeferralParams` containing the session id if the request should be
+  // deferred due to a session, and returns std::nullopt if the request
+  // does not need to be deferred.
+  virtual std::optional<DeferralParams> ShouldDefer(URLRequest* request) = 0;
 
   // Defer a request and maybe refresh the corresponding session.
-  // `session_id` is the identifier of the session that is required to be
-  // refreshed.
+  // `deferral` is either the identifier of the session that is required to be
+  // refreshed, or indicates the session is not completely initialized.
   // This will refresh the corresponding session if: another deferred request
   // has not already kicked off refresh, the session can be found, and the
   // associated unexportable key id is valid.
@@ -81,7 +107,7 @@ class NET_EXPORT SessionService {
   // - `continue_callback` sends the request without query for cookies again.
   virtual void DeferRequestForRefresh(
       URLRequest* request,
-      Session::Id session_id,
+      DeferralParams deferral,
       RefreshCompleteCallback restart_callback,
       RefreshCompleteCallback continue_callback) = 0;
 

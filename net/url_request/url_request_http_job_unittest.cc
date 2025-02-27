@@ -1516,8 +1516,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
-  EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
-      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Return(std::nullopt));
   request_->Start();
   EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(1);
   delegate_.RunUntilComplete();
@@ -1546,11 +1545,10 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
   {
     InSequence s;
-    EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
-        .WillOnce(Invoke([](Unused) {
-          std::optional<device_bound_sessions::Session::Id> tag("test");
-          return tag;
-        }));
+    EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Invoke([](Unused) {
+      return device_bound_sessions::SessionService::DeferralParams(
+          device_bound_sessions::Session::Id("test"));
+    }));
     EXPECT_CALL(GetMockService(), DeferRequestForRefresh)
         .WillOnce(base::test::RunOnceClosure<3>());
   }
@@ -1580,8 +1578,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
-  EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
-      .WillOnce(Invoke([](Unused) { return std::nullopt; }));
+  EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Invoke([](Unused) {
+    return std::nullopt;
+  }));
   request_->Start();
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
@@ -1609,8 +1608,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
   {
     InSequence s;
-    EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
-        .WillOnce(Return(std::nullopt));
+    EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Return(std::nullopt));
     EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(0);
   }
   request_->Start();
@@ -1643,8 +1641,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
   {
     InSequence s;
-    EXPECT_CALL(GetMockService(), GetAnySessionRequiringDeferral)
-        .WillOnce(Return(std::nullopt));
+    EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Return(std::nullopt));
     EXPECT_CALL(GetMockService(), SetChallengeForBoundSession).Times(1);
   }
   request_->Start();

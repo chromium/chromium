@@ -265,6 +265,7 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
   if (include_site_) {
     return AsInclusionResult(SchemefulSite(url) == *include_site_);
   }
+
   return AsInclusionResult(same_origin);
 }
 

@@ -951,17 +951,17 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
   device_bound_sessions::SessionService* service =
       request_->context()->device_bound_session_service();
   if (service) {
-    std::optional<device_bound_sessions::Session::Id> id =
-        service->GetAnySessionRequiringDeferral(request_);
+    std::optional<device_bound_sessions::SessionService::DeferralParams>
+        deferral = service->ShouldDefer(request_);
     // If the request needs to be deferred while waiting for refresh, do not
     // start the transaction at this time. This may also kick off a refresh.
-    if (id) {
+    if (deferral) {
       device_bound_session_deferral_count_++;
       if (device_bound_session_deferral_count_ == 1) {
         device_bound_session_first_deferral_ = base::TimeTicks::Now();
       }
       service->DeferRequestForRefresh(
-          request_, *id,
+          request_, *deferral,
           // restart with new cookies callback
           base::BindOnce(&URLRequestHttpJob::RestartTransactionForRefresh,
                          weak_factory_.GetWeakPtr()),
