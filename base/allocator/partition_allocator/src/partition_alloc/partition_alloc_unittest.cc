@@ -4681,7 +4681,51 @@ TEST_P(PartitionAllocTest, ExtraExtrasSize) {
   EXPECT_NE(slot_span1->bucket->slot_size, slot_span2->bucket->slot_size);
 
   root_no_extra->Free(ptr2);
+}
+
+TEST_P(PartitionAllocTest, ExtraExtrasNullfyOffByOneDetection) {
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  GTEST_SKIP()
+      << "This test is not compatible with 32-bit bucket distribution.";
+#else
+  std::unique_ptr<PartitionRoot> root_no_extra = CreateCustomTestRoot(
+      [&]() {
+        PartitionOptions opts = GetCommonPartitionOptions();
+        opts.backup_ref_ptr = PartitionOptions::kEnabled;
+        return opts;
+      }(),
+      {});
+
+  // `ptr1` can be located at page start hence lacks in-slot style
+  // `InSlotMetadata`. See `InSlotMetadataPointer`.
+  int64_t* ptr1 = static_cast<int64_t*>(root_no_extra->Alloc(8));
+  int64_t* ptr2 = static_cast<int64_t*>(root_no_extra->Alloc(8));
+
+  // Off-by-one (8 bytes).
+  EXPECT_DEATH_IF_SUPPORTED((ptr2[1] = 0, root_no_extra->Free(ptr2)), "");
+
+  root_no_extra->Free(ptr2);
+  root_no_extra->Free(ptr1);
+
+  // Repeat the same but with extra extras of 8 bytes.
+  std::unique_ptr<PartitionRoot> root_with_extra = CreateCustomTestRoot(
+      [&]() {
+        PartitionOptions opts = GetCommonPartitionOptions();
+        opts.backup_ref_ptr = PartitionOptions::kEnabled;
+        opts.backup_ref_ptr_extra_extras_size = 8;
+        return opts;
+      }(),
+      {});
+
+  ptr1 = static_cast<int64_t*>(root_with_extra->Alloc(8));
+  ptr2 = static_cast<int64_t*>(root_with_extra->Alloc(8));
+
+  // This off-by-one overwrites the extra extras and does not corrupt
+  // `InSlotMetadata`.
+  ptr2[1] = 0;
+  root_with_extra->Free(ptr2);
   root_with_extra->Free(ptr1);
+#endif  // !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 }
 
 int g_unretained_dangling_raw_ptr_detected_count = 0;
