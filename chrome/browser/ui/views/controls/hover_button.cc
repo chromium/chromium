@@ -79,8 +79,9 @@ class IconWrapper : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
-    const int icon_height = icon_->GetPreferredSize(available_size).height();
-    return gfx::Size(icon_height + icon_label_spacing_, icon_height);
+    const gfx::Size icon_size = icon_->GetPreferredSize(available_size);
+    return gfx::Size(icon_size.width() + icon_label_spacing_,
+                     icon_size.height());
   }
 
   views::View* icon() { return icon_; }
