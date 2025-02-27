@@ -94,6 +94,13 @@ SessionImpl::SessionImpl(
   }
 }
 
+SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
+                         ExecuteRemoteFn execute_remote_fn,
+                         const SamplingParams& sampling_params)
+    : feature_(feature),
+      execute_remote_fn_(std::move(execute_remote_fn)),
+      sampling_params_(sampling_params) {}
+
 SessionImpl::~SessionImpl() {}
 
 on_device_model::mojom::Session& SessionImpl::GetSession() {
@@ -257,6 +264,17 @@ const proto::Any& SessionImpl::GetOnDeviceFeatureMetadata() const {
 
 const SamplingParams SessionImpl::GetSamplingParams() const {
   return sampling_params_;
+}
+
+std::unique_ptr<OptimizationGuideModelExecutor::Session> SessionImpl::Clone() {
+  auto session = std::make_unique<SessionImpl>(feature_, execute_remote_fn_,
+                                               sampling_params_);
+  session->context_ = context_.Clone();
+  session->context_start_time_ = context_start_time_;
+  if (on_device_context_ && on_device_context_->CanUse()) {
+    session->on_device_context_ = on_device_context_->Clone();
+  }
+  return session;
 }
 
 void SessionImpl::GetSizeInTokensInternal(

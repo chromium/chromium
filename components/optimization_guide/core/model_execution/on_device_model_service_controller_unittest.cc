@@ -3532,4 +3532,206 @@ TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
   EXPECT_EQ(*response_.value(), "");
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, CloneUsesAdapterTopKAndTemperature) {
+  auto config = SimpleComposeConfig();
+  config.mutable_sampling_params()->set_top_k(4);
+  config.mutable_sampling_params()->set_temperature(1.5);
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
+
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                                 logger_.GetWeakPtr(), nullptr,
+                                                 SessionConfigParams{});
+  EXPECT_TRUE(session);
+  auto clone = session->Clone();
+  EXPECT_TRUE(clone);
+
+  clone->ExecuteModel(PageUrlRequest("foo"), response_.GetStreamingCallback());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_.value());
+  const std::vector<std::string> partial_responses = ConcatResponses({
+      "Context: execute:foo off:0 max:1024\n",
+      "TopK: 4, Temp: 1.5\n",
+  });
+  EXPECT_EQ(*response_.value(), partial_responses.back());
+  EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       CloneFailsWithFailingRequestSafetyChecks) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  Initialize(standard_assets_);
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    {
+      auto* check = safety_config.add_request_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("request_check: %s", PageUrlField()));
+    }
+    {
+      auto* check = safety_config.mutable_raw_output_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("raw_output_check: %s", StringValueField()));
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  auto clone = session->Clone();
+  EXPECT_TRUE(clone);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  clone->ExecuteModel(PageUrlRequest("unsafe_url"),
+                      response_.GetStreamingCallback());
+  ASSERT_FALSE(response_.GetFinalStatus());
+  EXPECT_EQ(
+      *response_.error(),
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: unsafe_url")
+                          // Raw output check not done.
+                          ));
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: unsafe_url")
+                          // Raw output check not done.
+                          ));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ScoreAfterClone) {
+  Initialize(standard_assets_);
+
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+
+  session->AddContext(UserInputRequest("foo"));
+
+  auto clone = session->Clone();
+  base::test::TestFuture<std::optional<float>> score_future;
+  clone->Score("token", score_future.GetCallback());
+  EXPECT_EQ(score_future.Get(), 0.5);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, AddContextAndClone) {
+  Initialize(standard_assets_);
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+  session->AddContext(UserInputRequest("foo"));
+  auto clone = session->Clone();
+
+  // Cloned session should be able to execute.
+  {
+    ResponseHolder response;
+    clone->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
+    ASSERT_TRUE(response.GetFinalStatus());
+    std::string expected_response =
+        ("Context: ctx:foo off:0 max:4096\n"
+         "Context: execute:foobar off:0 max:1024\n");
+    EXPECT_EQ(*response.value(), expected_response);
+  }
+
+  // Original session should also be able to execute.
+  {
+    ResponseHolder response;
+    session->ExecuteModel(PageUrlRequest("blah"),
+                          response.GetStreamingCallback());
+    ASSERT_TRUE(response.GetFinalStatus());
+    std::string expected_response =
+        ("Context: ctx:foo off:0 max:4096\n"
+         "Context: execute:fooblah off:0 max:1024\n");
+    EXPECT_EQ(*response.value(), expected_response);
+  }
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, CloneBeforeAddContext) {
+  Initialize(standard_assets_);
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+
+  // Clone happens before context is added to the parent session.
+  auto clone = session->Clone();
+  session->AddContext(UserInputRequest("foo"));
+
+  // Cloned session should execute without context.
+  {
+    ResponseHolder response;
+    clone->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
+    ASSERT_TRUE(response.GetFinalStatus());
+    EXPECT_EQ(*response.value(), "Context: execute:bar off:0 max:1024\n");
+  }
+
+  // Original session should execute with context
+  {
+    ResponseHolder response;
+    session->ExecuteModel(PageUrlRequest("blah"),
+                          response.GetStreamingCallback());
+    ASSERT_TRUE(response.GetFinalStatus());
+    std::string expected_response =
+        ("Context: ctx:foo off:0 max:4096\n"
+         "Context: execute:fooblah off:0 max:1024\n");
+    EXPECT_EQ(*response.value(), expected_response);
+  }
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, CancelAddContextAndClone) {
+  Initialize(standard_assets_);
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+  session->AddContext(UserInputRequest("foo"));
+  auto clone = session->Clone();
+  // Deleting the parent session cancels the context chunk.
+  // TODO: crbug.com/396211270 - Make clone independent of parent.
+  session = nullptr;
+
+  ResponseHolder response;
+  clone->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
+  ASSERT_TRUE(response.GetFinalStatus());
+  EXPECT_EQ(*response.value(), "Context: execute:foobar off:0 max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, CloneAddContextDisconnectExecute) {
+  Initialize(standard_assets_);
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+  session->AddContext(UserInputRequest("foo"));
+  auto clone = session->Clone();
+  task_environment_.RunUntilIdle();
+
+  // Launch the service again, which triggers disconnect.
+  fake_launcher_.CrashService();
+  task_environment_.RunUntilIdle();
+
+  ResponseHolder response;
+  clone->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
+  ASSERT_TRUE(response.GetFinalStatus());
+  std::string expected_response =
+      ("Context: ctx:foo off:0 max:4096\n"
+       "Context: execute:foobar off:0 max:1024\n");
+  EXPECT_EQ(*response.value(), expected_response);
+}
+
 }  // namespace optimization_guide

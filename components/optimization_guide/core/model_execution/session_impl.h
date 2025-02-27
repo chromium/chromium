@@ -55,6 +55,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
               std::optional<OnDeviceOptions> on_device_opts,
               ExecuteRemoteFn execute_remote_fn,
               const std::optional<SessionConfigParams>& config_params);
+  SessionImpl(ModelBasedCapabilityKey feature,
+              ExecuteRemoteFn execute_remote_fn,
+              const SamplingParams& sampling_params);
   ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
@@ -79,6 +82,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
       MultimodalMessageReadView request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
   const SamplingParams GetSamplingParams() const override;
+  std::unique_ptr<Session> Clone() override;
 
   // Returns true if the on-device model should be used.
   bool ShouldUseOnDeviceModel() const;

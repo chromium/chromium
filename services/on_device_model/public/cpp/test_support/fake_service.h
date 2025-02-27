@@ -94,7 +94,7 @@ class FakeOnDeviceSession final : public mojom::Session {
   void GenerateImpl(mojom::GenerateOptionsPtr options,
                     mojo::PendingRemote<mojom::StreamingResponder> response);
   void AppendImpl(mojom::AppendOptionsPtr options,
-                  mojo::PendingRemote<mojom::ContextClient> client);
+                  mojo::Remote<mojom::ContextClient> client);
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   std::string adaptation_model_weight_;
