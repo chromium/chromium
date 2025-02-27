@@ -38,6 +38,38 @@ CGFloat const kBottomMargin = 10;
 CGFloat const kButtonHorizontalMargin = 4;
 CGFloat const kContentOptimalWidth = 327;
 
+// Helper method that returns the string to use as title.
+NSString* GetTitleString(bool passkeys_m2_enabled) {
+  if (!passkeys_m2_enabled) {
+    return l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER_IOS18);
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER);
+  }
+}
+
+// Helper method that returns the string to use in the caption view that
+// provides instructions on how to turn off autofill in other apps.
+NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
+  if (!passkeys_m2_enabled) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS18);
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS17);
+  }
+}
+
 }  // namespace
 
 @interface PasswordsInOtherAppsViewController ()
@@ -85,20 +117,20 @@ CGFloat const kContentOptimalWidth = 327;
 
 @end
 
-@implementation PasswordsInOtherAppsViewController
+@implementation PasswordsInOtherAppsViewController {
+  // Whether the Passkeys M2 feature is enabled.
+  BOOL _passkeysM2Enabled;
+}
 
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    bool passkeysM2Enabled = IOSPasskeysM2Enabled();
-    _titleText = l10n_util::GetNSString(
-        passkeysM2Enabled
-            ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER
-            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+    _passkeysM2Enabled = IOSPasskeysM2Enabled();
+    _titleText = GetTitleString(_passkeysM2Enabled);
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
 
     UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-    if (passkeysM2Enabled) {
+    if (_passkeysM2Enabled) {
       _subtitleText = l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
     } else if (idiom == UIUserInterfaceIdiomPad) {
@@ -610,6 +642,11 @@ CGFloat const kContentOptimalWidth = 327;
   BOOL shouldShowTurnOffInstructions =
       sharedManager.ready && sharedManager.autoFillEnabled;
 
+  if (_passkeysM2Enabled) {
+    // TODO(crbug.com/394580626): Remove empty space after hiding this view.
+    self.subtitleLabel.hidden = shouldShowTurnOffInstructions;
+  }
+
   UIView* viewToRemove = shouldShowTurnOffInstructions
                              ? _turnOnInstructionView
                              : _turnOffInstructionView;
@@ -636,14 +673,11 @@ CGFloat const kContentOptimalWidth = 327;
 
 - (NSArray<NSString*>*)steps {
   if (self.useShortInstruction) {
-    bool passkeysM2Enabled = IOSPasskeysM2Enabled();
     return @[
       l10n_util::GetNSString(
-          passkeysM2Enabled
-              ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_1
-              : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
+          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
       l10n_util::GetNSString(
-          passkeysM2Enabled
+          _passkeysM2Enabled
               ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2
               : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
     ];
@@ -692,12 +726,10 @@ CGFloat const kContentOptimalWidth = 327;
 
 #pragma mark - Private
 
-// Returns caption text that shows below the subtitle in turnOffInstructions.
+// Returns caption text that shows below the subtitle in `turnOffInstructions`.
 - (UITextView*)drawCaptionTextView {
   NSString* text;
-  // TODO(crbug.com/389690891): Update the turn off string.
-  text = l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
+  text = GetTurnOffCaptionTitleString(_passkeysM2Enabled);
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kGrey600Color],
     NSFontAttributeName :
@@ -722,6 +754,8 @@ CGFloat const kContentOptimalWidth = 327;
   captionTextView.textAlignment = NSTextAlignmentCenter;
   captionTextView.translatesAutoresizingMaskIntoConstraints = NO;
   captionTextView.adjustsFontForContentSizeCategory = YES;
+  captionTextView.accessibilityIdentifier =
+      kPasswordsInOtherAppsTurnOffCaptionAccessibilityIdentifier;
 
   captionTextView.delegate = self;
 

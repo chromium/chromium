@@ -2947,8 +2947,10 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       grey_sufficientlyVisible(), nil);
   if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
     if (@available(iOS 18, *)) {
-      offMatcher = grey_allOf(grey_accessibilityLabel(@"Leading detail text"),
-                              grey_sufficientlyVisible(), nil);
+      offMatcher = grey_allOf(
+          grey_accessibilityLabel(l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION)),
+          grey_sufficientlyVisible(), nil);
     }
   }
 
