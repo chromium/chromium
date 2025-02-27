@@ -64,8 +64,10 @@ class NET_EXPORT UniqueCookieKey {
 
   ~UniqueCookieKey();
 
-  std::strong_ordering operator<=>(const UniqueCookieKey& other) const =
-      default;
+  friend bool operator==(const UniqueCookieKey& left,
+                         const UniqueCookieKey& right) = default;
+  friend auto operator<=>(const UniqueCookieKey& left,
+                          const UniqueCookieKey& right) = default;
 
   const std::string& name() const { return name_; }
   const std::string& domain() const { return domain_; }

@@ -282,7 +282,8 @@ class COMPONENT_EXPORT(URL) Origin {
 
   // Allows Origin to be used as a key in STL (for example, a std::set or
   // std::map).
-  std::strong_ordering operator<=>(const Origin& other) const = default;
+  friend bool operator==(const Origin& left, const Origin& right) = default;
+  friend auto operator<=>(const Origin& left, const Origin& right) = default;
 
   // Creates a new opaque origin that is guaranteed to be cross-origin to all
   // currently existing origins. An origin created by this method retains its
