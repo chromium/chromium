@@ -93,7 +93,7 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
         Espresso.pressBack();
 
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+        verify(mMockBridge, never()).onAccountSelected(any());
     }
 
     @Test
@@ -115,6 +115,6 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                     sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+        verify(mMockBridge, never()).onAccountSelected(any());
     }
 }

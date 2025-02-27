@@ -144,11 +144,13 @@ public class AccountSelectionJUnitTestBase {
     GURL mTestErrorUrl;
     GURL mTestEmptyErrorUrl;
     Account mAnaAccount;
+    Account mAnaAccountWithUseDifferentAccount;
     Account mBobAccount;
     Account mCarlAccount;
     Account mNewUserAccount;
     Account mNoOneAccount;
     Account mFilteredOutAccount;
+    Account mFilteredOutAccountWithUseDifferentAccount;
     Account mNicolasAccount;
 
     IdentityCredentialTokenError mTokenError;
@@ -260,6 +262,18 @@ public class AccountSelectionJUnitTestBase {
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,
                         mIdpData);
+        mAnaAccountWithUseDifferentAccount =
+                new Account(
+                        "Ana",
+                        "ana@email.example",
+                        "Ana Doe",
+                        "Ana",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpDataWithUseDifferentAccount);
         mBobAccount =
                 new Account(
                         "Bob",
@@ -320,6 +334,18 @@ public class AccountSelectionJUnitTestBase {
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ true,
                         mIdpData);
+        mFilteredOutAccountWithUseDifferentAccount =
+                new Account(
+                        "ID123",
+                        "nicolas@example.com",
+                        "Nicolas Pena",
+                        "Nicolas",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ true,
+                        mIdpDataWithUseDifferentAccount);
         mNicolasAccount =
                 new Account(
                         "NicoId",

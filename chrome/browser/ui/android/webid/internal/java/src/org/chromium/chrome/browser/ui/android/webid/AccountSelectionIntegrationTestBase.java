@@ -90,6 +90,8 @@ public class AccountSelectionIntegrationTestBase {
     IdentityProviderData mIdpDataWithAddAccount;
     Account mReturningAna;
     Account mNewBob;
+    Account mReturningAnaWithAddAccount;
+    Account mNewBobWithAddAccount;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -146,6 +148,32 @@ public class AccountSelectionIntegrationTestBase {
                         /* isBrowserTrustedSignIn= */ false,
                         /* isFilteredOut= */ false,
                         mIdpData);
+
+        mReturningAnaWithAddAccount =
+                new Account(
+                        "Ana",
+                        "ana@one.test",
+                        "Ana Doe",
+                        "Ana",
+                        /* secondaryDescription= */ null,
+                        null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpDataWithAddAccount);
+        mNewBobWithAddAccount =
+                new Account(
+                        "Bob",
+                        "",
+                        "Bob",
+                        "",
+                        /* secondaryDescription= */ null,
+                        null,
+                        /* isSignIn= */ false,
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false,
+                        mIdpDataWithAddAccount);
+
         mNewAccountsReturningAna = Arrays.asList(mReturningAna);
         mNewAccountsNewBob = Arrays.asList(mNewBob);
 
