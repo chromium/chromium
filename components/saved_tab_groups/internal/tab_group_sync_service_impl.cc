@@ -669,11 +669,21 @@ void TabGroupSyncServiceImpl::OnTabGroupUnShareComplete(
 
 void TabGroupSyncServiceImpl::OnCollaborationRemoved(
     const syncer::CollaborationId& collaboration_id) {
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    if (group.collaboration_id().has_value() &&
-        group.collaboration_id().value() == collaboration_id) {
-      model_->SetGroupHidden(group.saved_guid());
-    }
+  std::optional<SavedTabGroup> shared_group =
+      FindGroupWithCollaborationId(collaboration_id);
+  if (!shared_group) {
+    return;
+  }
+
+  model_->SetGroupHidden(shared_group->saved_guid());
+
+  // Since we are deleting the shared group, delete the originating group if
+  // it still exists.
+  if (shared_group->originating_tab_group_guid().has_value()) {
+    const SavedTabGroup* originating_group =
+        model_->Get(shared_group->originating_tab_group_guid().value());
+    CHECK(!originating_group || !originating_group->local_group_id());
+    RemoveGroup(shared_group->originating_tab_group_guid().value());
   }
 }
 
@@ -1632,4 +1642,15 @@ void TabGroupSyncServiceImpl::NotifyTabGroupSharingResult(
   std::move(callback).Run(result);
 }
 
+std::optional<SavedTabGroup>
+TabGroupSyncServiceImpl::FindGroupWithCollaborationId(
+    const syncer::CollaborationId& collaboration_id) {
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (group.collaboration_id().has_value() &&
+        group.collaboration_id().value() == collaboration_id) {
+      return group;
+    }
+  }
+  return std::nullopt;
+}
 }  // namespace tab_groups
