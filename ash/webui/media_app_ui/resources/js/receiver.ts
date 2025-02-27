@@ -473,6 +473,11 @@ const DELEGATE: ClientApiDelegate = {
     const response = await mantisUntrustedService?.classifyImageSafety(image);
     return response.verdict;
   },
+  async outpaintImage(image: number[], mask: number[], seed: number) {
+    const response =
+        await mantisUntrustedService?.outpaintImage(image, mask, seed);
+    return response.result;
+  },
 };
 
 /**

@@ -346,6 +346,17 @@ declare interface ClientApiDelegate {
    * @param image The image to classify.
    */
   classifyImageSafety(image: number[]): Promise<MantisSafetyClassifierVerdict>;
+  /**
+   * Outpaints the image based on the mask and seed. Pass the same `seed` across
+   * method calls to get identical result. The `image` and `mask` are byte
+   * arrays containing the encoded format of an image (e.g., PNG, JPEG).
+   * @param image The image to modify.
+   * @param mask The image indicating which area that outpainting should be
+   *     applied. The area to outpaint should be indicated by the red channel.
+   * @param seed The number to allow reproducibility.
+   */
+  outpaintImage(image: number[], mask: number[], seed: number):
+      Promise<MantisResult>;
 }
 
 /**
