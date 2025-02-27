@@ -26,6 +26,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -77,23 +78,32 @@ namespace {
 
 // This function should match to the user-agent stylesheet.
 AppearanceValue AutoAppearanceFor(const Element& element) {
-  if (IsA<HTMLButtonElement>(element))
+  if (IsA<HTMLButtonElement>(element)) {
     return AppearanceValue::kButton;
-  if (IsA<HTMLMeterElement>(element))
+  }
+  if (IsA<ScrollButtonPseudoElement>(element)) {
+    return AppearanceValue::kButton;
+  }
+  if (IsA<HTMLMeterElement>(element)) {
     return AppearanceValue::kMeter;
-  if (IsA<HTMLProgressElement>(element))
+  }
+  if (IsA<HTMLProgressElement>(element)) {
     return AppearanceValue::kProgressBar;
-  if (IsA<HTMLTextAreaElement>(element))
+  }
+  if (IsA<HTMLTextAreaElement>(element)) {
     return AppearanceValue::kTextArea;
-  if (IsA<SpinButtonElement>(element))
+  }
+  if (IsA<SpinButtonElement>(element)) {
     return AppearanceValue::kInnerSpinButton;
+  }
   if (const auto* select = DynamicTo<HTMLSelectElement>(element)) {
     return select->UsesMenuList() ? AppearanceValue::kMenulist
                                   : AppearanceValue::kListbox;
   }
 
-  if (const auto* input = DynamicTo<HTMLInputElement>(element))
+  if (const auto* input = DynamicTo<HTMLInputElement>(element)) {
     return input->AutoAppearance();
+  }
 
   if (element.IsInUserAgentShadowRoot()) {
     const AtomicString& id_value =

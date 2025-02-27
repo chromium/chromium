@@ -197,7 +197,7 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
       expected_rule_count += 3u;
     }
     if (scroll_button_style_sheet_) {
-      expected_rule_count += 32u;
+      expected_rule_count += 4u;
     }
     if (scroll_marker_style_sheet_) {
       expected_rule_count += 4u;
