@@ -350,8 +350,8 @@ def read_messages(websocket, read_all_messages):
                 filter_lambda=filter_lambda)
 
         if sort:
-            messages.sort(key=lambda x: x["method"] if "method" in x else str(
-                x["id"]) if "id" in x else "")
+            messages.sort(key=lambda x: (x["method"], 0) if "method" in x else
+                          ("", x["id"]) if "id" in x else ("", 0))
         # Stabilize some values through the messages.
         stabilize_key_values(messages, keys_to_stabilize, known_values)
 

@@ -85,7 +85,9 @@ export namespace Bluetooth {
 export namespace Bluetooth {
   export type SimulateAdapterParameters = {
     context: string;
-    state: 'absent' | 'powered-off' | 'powered-on';
+    type: 'create' | 'update' | 'remove';
+    leSupported?: boolean;
+    state?: 'absent' | 'powered-off' | 'powered-on';
   };
 }
 export namespace Bluetooth {

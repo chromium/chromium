@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import type {Bluetooth, EmptyResult} from '../../../protocol/protocol.js';
+import {
+  type Bluetooth,
+  type EmptyResult,
+  InvalidArgumentException,
+  UnsupportedOperationException,
+} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
@@ -35,6 +40,20 @@ export class BluetoothProcessor {
   async simulateAdapter(
     params: Bluetooth.SimulateAdapterParameters,
   ): Promise<EmptyResult> {
+    if (params.type !== 'create') {
+      // http://b/398026399
+      throw new UnsupportedOperationException(
+        `Simulate type "${params.type}" is not supported. Only create type is supported`,
+      );
+    }
+    if (params.state === undefined) {
+      // The bluetooth.simulateAdapter Command
+      // Step 4.2. If params["state"] does not exist, return error with error code invalid argument.
+      // https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
+      throw new InvalidArgumentException(
+        `Parameter "state" is required for creating a Bluetooth adapter`,
+      );
+    }
     const context = this.#browsingContextStorage.getContext(params.context);
     // Bluetooth spec requires overriding the existing adapter (step 6). From the CDP
     // perspective, we need to disable the emulation first.

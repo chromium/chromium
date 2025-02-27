@@ -40,6 +40,7 @@ async def setup_device(websocket, context_id):
             'method': 'bluetooth.simulateAdapter',
             'params': {
                 'context': context_id,
+                'type': 'create',
                 'state': 'powered-on',
             }
         })
@@ -72,8 +73,8 @@ async def setup_device(websocket, context_id):
     }
 }],
                          indirect=True)
-async def test_simulate_adapter_twice(websocket, context_id, state_1, state_2,
-                                      test_headless_mode):
+async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
+                                             state_2, test_headless_mode):
     if test_headless_mode == "old":
         pytest.xfail("Old headless mode does not support Bluetooth")
 
@@ -83,6 +84,7 @@ async def test_simulate_adapter_twice(websocket, context_id, state_1, state_2,
             'params': {
                 'context': context_id,
                 'state': state_1,
+                'type': 'create',
             }
         })
 
@@ -92,6 +94,7 @@ async def test_simulate_adapter_twice(websocket, context_id, state_1, state_2,
             'params': {
                 'context': context_id,
                 'state': state_2,
+                'type': 'create',
             }
         })
 

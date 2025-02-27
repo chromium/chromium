@@ -113,7 +113,9 @@ export namespace Bluetooth {
   export const SimulateAdapterParametersSchema = z.lazy(() =>
     z.object({
       context: z.string(),
-      state: z.enum(['absent', 'powered-off', 'powered-on']),
+      type: z.enum(['create', 'update', 'remove']),
+      leSupported: z.boolean().optional(),
+      state: z.enum(['absent', 'powered-off', 'powered-on']).optional(),
     }),
   );
 }
