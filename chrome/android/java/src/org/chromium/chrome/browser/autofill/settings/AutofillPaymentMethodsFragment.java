@@ -237,8 +237,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         }
 
         if (personalDataManager.isAutofillPaymentMethodsEnabled()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS)) {
+                && (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO))) {
             Preference cardBenefitsPref = new Preference(getStyledContext());
             cardBenefitsPref.setTitle(R.string.autofill_settings_page_card_benefits_label);
             cardBenefitsPref.setSummary(

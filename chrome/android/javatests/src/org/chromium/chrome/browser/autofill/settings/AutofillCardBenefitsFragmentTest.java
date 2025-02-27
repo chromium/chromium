@@ -58,6 +58,7 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
+    ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO
 })
 public class AutofillCardBenefitsFragmentTest {
     @Rule public final AutofillTestRule mRule = new AutofillTestRule();
@@ -347,6 +348,47 @@ public class AutofillCardBenefitsFragmentTest {
                         /* cvc= */ "",
                         /* issuerId= */ "amex",
                         /* productTermsUrl= */ new GURL("http://www.example.com/amex/terms")));
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        assertEquals(2, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
+    }
+
+    // Test to verify terms for cards with the same product description from the different issuers
+    // are listed.
+    @Test
+    @MediumTest
+    public void testCardBenefitsPreferenceScreen_withDuplicateCardProductDescription()
+            throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT);
+        mAutofillTestHelper.addServerCreditCard(
+                new CreditCard(
+                        /* guid= */ "",
+                        /* origin= */ "",
+                        /* isLocal= */ false,
+                        /* isVirtual= */ false,
+                        /* name= */ "capital one",
+                        /* number= */ "378282246310001",
+                        /* networkAndLastFourDigits= */ "",
+                        /* month= */ "10",
+                        /* year= */ AutofillTestHelper.nextYear(),
+                        /* basicCardIssuerNetwork= */ "Capital One",
+                        /* issuerIconDrawableId= */ R.drawable.capitalone_metadata_card,
+                        /* billingAddressId= */ "",
+                        /* serverId= */ "",
+                        /* instrumentId= */ 3333,
+                        /* cardLabel= */ "",
+                        /* nickname= */ "",
+                        /* cardArtUrl= */ null,
+                        /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
+                        /* productDescription= */ SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT
+                                .getProductDescription(),
+                        /* cardNameForAutofillDisplay= */ "Capital One",
+                        /* obfuscatedLastFourDigits= */ "• • • • 0001",
+                        /* cvc= */ "",
+                        /* issuerId= */ "capitalone",
+                        /* productTermsUrl= */ new GURL(
+                                "http://www.example.com/capitalone/terms")));
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
