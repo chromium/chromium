@@ -112,15 +112,20 @@ class ColorPickerElementView : public views::Button {
       return;
     }
     selected_ = selected;
-    GetViewAccessibility().SetCheckedState(
-        selected_ ? ax::mojom::CheckedState::kTrue
-                  : ax::mojom::CheckedState::kFalse);
+    UpdateAccessibleCheckedState();
     SchedulePaint();
   }
 
   bool GetSelected() const { return selected_; }
 
   // views::Button:
+
+  void UpdateAccessibleCheckedState() override {
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
+  }
+
   bool IsGroupFocusTraversable() const override {
     // Tab should only focus the selected element.
     return false;
