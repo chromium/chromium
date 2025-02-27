@@ -13,7 +13,7 @@ GridSizingTree GridSizingTree::CopyForFragmentation() const {
   for (const auto& sizing_data : tree_data_) {
     DCHECK(sizing_data);
     tree_copy.tree_data_.emplace_back(
-        std::make_unique<GridTreeNode>(*sizing_data));
+        MakeGarbageCollected<GridTreeNode>(*sizing_data));
   }
   return tree_copy;
 }
@@ -61,7 +61,7 @@ GridSizingTree::GridTreeNode& GridSizingTree::CreateSizingData(
     DCHECK(!subgrid_index_lookup_map_.Contains(grid_layout_box));
     subgrid_index_lookup_map_.insert(grid_layout_box, tree_data_.size());
   }
-  return *tree_data_.emplace_back(std::make_unique<GridTreeNode>());
+  return *tree_data_.emplace_back(MakeGarbageCollected<GridTreeNode>());
 }
 
 void GridSizingTree::AddSubgriddedItemLookupData(

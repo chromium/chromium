@@ -775,12 +775,13 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           const BoxStrut& borders,
           const LogicalSize& size) -> OutOfFlowLayoutPart::ContainingBlockInfo {
     const auto& grid_style = containing_grid.StyleRef();
-    GridItemData grid_item(candidate.Node(), grid_style);
+    GridItemData* grid_item =
+        MakeGarbageCollected<GridItemData>(candidate.Node(), grid_style);
 
     return {.writing_direction = grid_style.GetWritingDirection(),
             .rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
                 containing_grid.CachedPlacementData(), layout_data, grid_style,
-                borders, size, &grid_item)};
+                borders, size, grid_item)};
   };
 
   if (candidate.inline_container.container) {

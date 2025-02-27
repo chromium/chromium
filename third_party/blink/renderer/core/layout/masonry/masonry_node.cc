@@ -45,10 +45,10 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
   return item_groups;
 }
 
-GridItems MasonryNode::ConstructMasonryItems(
+GridItems* MasonryNode::ConstructMasonryItems(
     const GridLineResolver& line_resolver,
     wtf_size_t start_offset) const {
-  GridItems masonry_items;
+  GridItems* masonry_items = MakeGarbageCollected<GridItems>();
 
   {
     bool should_sort_masonry_items_by_order_property = false;
@@ -57,7 +57,7 @@ GridItems MasonryNode::ConstructMasonryItems(
 
     // This collects all our children, and orders them by their order property.
     for (auto child = FirstChild(); child; child = child.NextSibling()) {
-      auto masonry_item = std::make_unique<GridItemData>(
+      auto* masonry_item = MakeGarbageCollected<GridItemData>(
           To<BlockNode>(child), /*parent_style=*/Style());
 
       // We'll need to sort when we encounter a non-initial order property.
@@ -74,12 +74,12 @@ GridItems MasonryNode::ConstructMasonryItems(
       }
 
       masonry_item->resolved_position.SetSpan(item_span, grid_axis_direction);
-      masonry_items.Append(std::move(masonry_item));
+      masonry_items->Append(std::move(masonry_item));
     }
 
     // Sort items by order property if needed.
     if (should_sort_masonry_items_by_order_property) {
-      masonry_items.SortByOrderProperty();
+      masonry_items->SortByOrderProperty();
     }
   }
   return masonry_items;

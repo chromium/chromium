@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
@@ -22,7 +23,29 @@ namespace extensions {
 namespace {
 const char kCannotUpdateChildAccountProfileSettingsError[] =
     "Cannot change settings for a child account profile.";
+
+std::optional<URLPattern> ParseRuntimePermissionsPattern(
+    const std::string& pattern_str) {
+  constexpr int kValidRuntimePermissionSchemes = URLPattern::SCHEME_HTTP |
+                                                 URLPattern::SCHEME_HTTPS |
+                                                 URLPattern::SCHEME_FILE;
+
+  URLPattern pattern(kValidRuntimePermissionSchemes);
+  if (pattern.Parse(pattern_str) != URLPattern::ParseResult::kSuccess) {
+    return std::nullopt;
+  }
+
+  // We don't allow adding paths for permissions, because they aren't meaningful
+  // in terms of origin access. The frontend should validate this, but there's
+  // a chance something can slip through, so we should fail gracefully.
+  if (pattern.path() != "/*") {
+    return std::nullopt;
+  }
+
+  return pattern;
 }
+
+}  // namespace
 
 namespace developer = api::developer_private;
 
@@ -111,6 +134,105 @@ DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
       ErrorMap::Filter(properties.extension_id, type, error_ids, false));
 
   return RespondNow(NoArguments());
+}
+
+DeveloperPrivateAddHostPermissionFunction::
+    DeveloperPrivateAddHostPermissionFunction() = default;
+DeveloperPrivateAddHostPermissionFunction::
+    ~DeveloperPrivateAddHostPermissionFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateAddHostPermissionFunction::Run() {
+  std::optional<developer::AddHostPermission::Params> params =
+      developer::AddHostPermission::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::optional<URLPattern> pattern =
+      ParseRuntimePermissionsPattern(params->host);
+  if (!pattern) {
+    return RespondNow(Error(kInvalidHost));
+  }
+
+  const Extension* extension = GetExtensionById(params->extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  if (!PermissionsManager::Get(browser_context())
+           ->CanAffectExtension(*extension)) {
+    return RespondNow(Error(kCannotChangeHostPermissions));
+  }
+
+  URLPatternSet new_host_permissions({*pattern});
+  PermissionsUpdater(browser_context())
+      .GrantRuntimePermissions(
+          *extension,
+          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
+                        new_host_permissions.Clone(),
+                        new_host_permissions.Clone()),
+          base::BindOnce(&DeveloperPrivateAddHostPermissionFunction::
+                             OnRuntimePermissionsGranted,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DeveloperPrivateAddHostPermissionFunction::OnRuntimePermissionsGranted() {
+  Respond(NoArguments());
+}
+
+DeveloperPrivateRemoveHostPermissionFunction::
+    DeveloperPrivateRemoveHostPermissionFunction() = default;
+DeveloperPrivateRemoveHostPermissionFunction::
+    ~DeveloperPrivateRemoveHostPermissionFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateRemoveHostPermissionFunction::Run() {
+  std::optional<developer::RemoveHostPermission::Params> params =
+      developer::RemoveHostPermission::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::optional<URLPattern> pattern =
+      ParseRuntimePermissionsPattern(params->host);
+  if (!pattern) {
+    return RespondNow(Error(kInvalidHost));
+  }
+
+  const Extension* extension = GetExtensionById(params->extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
+  if (!manager->CanAffectExtension(*extension)) {
+    return RespondNow(Error(kCannotChangeHostPermissions));
+  }
+
+  URLPatternSet host_permissions_to_remove({*pattern});
+  std::unique_ptr<const PermissionSet> permissions_to_remove =
+      PermissionSet::CreateIntersection(
+          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
+                        host_permissions_to_remove.Clone(),
+                        host_permissions_to_remove.Clone()),
+          *manager->GetRevokablePermissions(*extension),
+          URLPatternSet::IntersectionBehavior::kDetailed);
+  if (permissions_to_remove->IsEmpty()) {
+    return RespondNow(Error("Cannot remove a host that hasn't been granted."));
+  }
+
+  PermissionsUpdater(browser_context())
+      .RevokeRuntimePermissions(
+          *extension, *permissions_to_remove,
+          base::BindOnce(&DeveloperPrivateRemoveHostPermissionFunction::
+                             OnRuntimePermissionsRevoked,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DeveloperPrivateRemoveHostPermissionFunction::
+    OnRuntimePermissionsRevoked() {
+  Respond(NoArguments());
 }
 
 DeveloperPrivateGetUserSiteSettingsFunction::

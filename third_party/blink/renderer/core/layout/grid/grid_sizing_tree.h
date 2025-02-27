@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -25,17 +24,17 @@ class SubgriddedItemData {
  public:
   SubgriddedItemData() = default;
 
-  SubgriddedItemData(const GridItemData& item_data_in_parent,
+  SubgriddedItemData(const GridItemData* item_data_in_parent,
                      const GridLayoutData& parent_layout_data,
                      WritingMode parent_writing_mode)
-      : item_data_in_parent_(&item_data_in_parent),
+      : item_data_in_parent_(item_data_in_parent),
         parent_layout_data_(&parent_layout_data),
         parent_writing_mode_(parent_writing_mode) {}
 
   explicit operator bool() const { return item_data_in_parent_ != nullptr; }
 
   const GridItemData* operator->() const {
-    DCHECK(item_data_in_parent_);
+    DCHECK(item_data_in_parent_.Get());
     return item_data_in_parent_;
   }
 
@@ -73,9 +72,10 @@ class SubgriddedItemData {
     return no_subgridded_item_data;
   }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(item_data_in_parent_); }
+
  private:
-  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
-  const GridItemData* item_data_in_parent_{nullptr};
+  Member<const GridItemData> item_data_in_parent_;
   const GridLayoutData* parent_layout_data_{nullptr};
   WritingMode parent_writing_mode_{WritingMode::kHorizontalTb};
 };
@@ -86,18 +86,30 @@ class CORE_EXPORT GridSizingTree {
   DISALLOW_NEW();
 
  public:
-  struct GridTreeNode {
-    USING_FAST_MALLOC(GridTreeNode);
-
+  struct GridTreeNode : public GarbageCollected<GridTreeNode> {
    public:
-    GridItems grid_items;
+    void Trace(Visitor* visitor) const { visitor->Trace(grid_items); }
+
+    GridItems& GetGridItems() const {
+      if (!grid_items) {
+        grid_items = MakeGarbageCollected<GridItems>();
+      }
+      return *grid_items;
+    }
+
+    void SetGridItems(GridItems* new_grid_items) {
+      grid_items = new_grid_items;
+    }
+
     GridLayoutData layout_data;
     wtf_size_t subtree_size{1};
+
+   private:
+    mutable Member<GridItems> grid_items;
   };
 
   GridSizingTree() = default;
   GridSizingTree(GridSizingTree&&) = default;
-  GridSizingTree(const GridSizingTree&) = delete;
   GridSizingTree& operator=(GridSizingTree&&) = default;
   GridSizingTree& operator=(const GridSizingTree&) = delete;
 
@@ -105,14 +117,13 @@ class CORE_EXPORT GridSizingTree {
 
   GridTreeNode& At(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
-    return *tree_data_[index];
+    return *(tree_data_[index]);
   }
 
   GridSizingTree CopyForFragmentation() const;
 
   // Creates a copy of the current grid geometry for the entire tree in a new
-  // `GridLayoutTree` instance, which doesn't hold the grid items and its
-  // stored in a `scoped_refptr` to be shared by multiple subtrees.
+  // `GridLayoutTree` instance, which doesn't hold the grid items.
   scoped_refptr<const GridLayoutTree> FinalizeTree() const;
 
   wtf_size_t Size() const { return tree_data_.size(); }
@@ -133,6 +144,7 @@ class CORE_EXPORT GridSizingTree {
   void Trace(Visitor* visitor) const {
     visitor->Trace(subgrid_index_lookup_map_);
     visitor->Trace(subgridded_item_data_lookup_map_);
+    visitor->Trace(tree_data_);
   }
 
  private:
@@ -147,7 +159,7 @@ class CORE_EXPORT GridSizingTree {
   HeapHashMap<Member<const LayoutBox>, SubgriddedItemData>
       subgridded_item_data_lookup_map_;
 
-  Vector<std::unique_ptr<GridTreeNode>, 16> tree_data_;
+  HeapVector<Member<GridTreeNode>, 16> tree_data_;
 };
 
 // This class represents a subtree in a `GridSizingTree` and provides seamless
@@ -199,7 +211,7 @@ class GridSizingSubtree
 
   GridItems& GetGridItems() const {
     DCHECK(grid_tree_);
-    return grid_tree_->At(subtree_root_).grid_items;
+    return grid_tree_->At(subtree_root_).GetGridItems();
   }
 
   GridLayoutData& LayoutData() const {

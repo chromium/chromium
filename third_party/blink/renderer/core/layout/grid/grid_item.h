@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -27,9 +26,7 @@ struct OutOfFlowItemPlacement {
   GridItemIndices offset_in_range;
 };
 
-struct CORE_EXPORT GridItemData {
-  USING_FAST_MALLOC(GridItemData);
-
+struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
  public:
   GridItemData() = default;
   GridItemData(const GridItemData&) = default;
@@ -284,11 +281,11 @@ struct CORE_EXPORT GridItemData {
   std::optional<MinMaxSizes> contribution_sizes;
 };
 
-class CORE_EXPORT GridItems {
-  DISALLOW_NEW();
-
+// TODO(crbug.com/399153019) - Refactor this so we don't need to make everything
+// GC'd.
+class CORE_EXPORT GridItems : public GarbageCollected<GridItems> {
  public:
-  using GridItemDataVector = Vector<std::unique_ptr<GridItemData>, 16>;
+  using GridItemDataVector = HeapVector<Member<GridItemData>, 16>;
 
   template <bool is_const>
   class Iterator {
@@ -300,8 +297,8 @@ class CORE_EXPORT GridItems {
 
     using GridItemDataVectorPtr =
         typename std::conditional<is_const,
-                                  const GridItemDataVector*,
-                                  GridItemDataVector*>::type;
+                                  Member<const GridItemDataVector>,
+                                  Member<GridItemDataVector>>::type;
 
     Iterator(GridItemDataVectorPtr item_data, wtf_size_t current_index)
         : current_index_(current_index), item_data_(item_data) {
@@ -327,14 +324,13 @@ class CORE_EXPORT GridItems {
 
     value_type* operator->() const {
       DCHECK_LT(current_index_, item_data_->size());
-      return item_data_->at(current_index_).get();
+      return item_data_->at(current_index_).Get();
     }
 
     value_type& operator*() const { return *operator->(); }
 
    private:
     wtf_size_t current_index_;
-    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
     GridItemDataVectorPtr item_data_;
   };
 
@@ -386,7 +382,8 @@ class CORE_EXPORT GridItems {
   void Append(GridItems* other);
   void SortByOrderProperty();
 
-  void Append(std::unique_ptr<GridItemData>&& new_item_data) {
+  void Append(GridItemData* new_item_data) {
+    DCHECK(new_item_data);
     if (!new_item_data->is_subgridded_to_parent_grid) {
       // Subgridded items are appended after non-subgridded ones; keep moving
       // `first_subgridded_item_index_` while we append non-subgridded items.
@@ -405,13 +402,14 @@ class CORE_EXPORT GridItems {
     item_data_.ReserveInitialCapacity(initial_capacity);
   }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(item_data_); }
+
  private:
   // End index used to iterate over the non-subgridded items of the collection.
   wtf_size_t first_subgridded_item_index_{0};
 
   // Grid items are rearranged in order-modified document order since
   // auto-placement and painting rely on it later in the algorithm.
-  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   GridItemDataVector item_data_;
 };
 

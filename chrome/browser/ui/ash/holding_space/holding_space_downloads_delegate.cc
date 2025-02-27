@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/download/public/common/download_item.h"
-#include "components/download/public/common/download_item_utils.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"

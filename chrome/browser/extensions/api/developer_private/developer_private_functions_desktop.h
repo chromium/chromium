@@ -354,7 +354,6 @@ class DeveloperPrivatePackDirectoryFunction
   std::string key_path_str_;
 };
 
-
 class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("developerPrivate.loadDirectory",
@@ -443,7 +442,6 @@ class DeveloperPrivateOpenDevToolsFunction
   ResponseAction Run() override;
 };
 
-
 class DeveloperPrivateRepairExtensionFunction
     : public DeveloperPrivateAPIFunction {
  public:
@@ -501,49 +499,6 @@ class DeveloperPrivateUpdateExtensionCommandFunction
   ResponseAction Run() override;
 };
 
-class DeveloperPrivateAddHostPermissionFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.addHostPermission",
-                             DEVELOPERPRIVATE_ADDHOSTPERMISSION)
-  DeveloperPrivateAddHostPermissionFunction();
-
-  DeveloperPrivateAddHostPermissionFunction(
-      const DeveloperPrivateAddHostPermissionFunction&) = delete;
-  DeveloperPrivateAddHostPermissionFunction& operator=(
-      const DeveloperPrivateAddHostPermissionFunction&) = delete;
-
- private:
-  ~DeveloperPrivateAddHostPermissionFunction() override;
-
-  ResponseAction Run() override;
-
-  void OnRuntimePermissionsGranted();
-};
-
-class DeveloperPrivateRemoveHostPermissionFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeHostPermission",
-                             DEVELOPERPRIVATE_REMOVEHOSTPERMISSION)
-  DeveloperPrivateRemoveHostPermissionFunction();
-
-  DeveloperPrivateRemoveHostPermissionFunction(
-      const DeveloperPrivateRemoveHostPermissionFunction&) = delete;
-  DeveloperPrivateRemoveHostPermissionFunction& operator=(
-      const DeveloperPrivateRemoveHostPermissionFunction&) = delete;
-
- private:
-  ~DeveloperPrivateRemoveHostPermissionFunction() override;
-
-  ResponseAction Run() override;
-
-  void OnRuntimePermissionsRevoked();
-};
-
-
-
-
 class DeveloperPrivateGetUserAndExtensionSitesByEtldFunction
     : public DeveloperPrivateAPIFunction {
  public:
@@ -561,7 +516,6 @@ class DeveloperPrivateGetUserAndExtensionSitesByEtldFunction
 
   ResponseAction Run() override;
 };
-
 
 class DeveloperPrivateUpdateSiteAccessFunction
     : public DeveloperPrivateAPIFunction {

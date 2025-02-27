@@ -26,7 +26,6 @@ mojom("mojom") {
     "device_oauth2_token_service.mojom",
     "diagnostics_service.mojom",
     "document_scan.mojom",
-    "download_controller.mojom",
     "drive_integration_service.mojom",
     "echo_private.mojom",
     "embedded_accessibility_helper.mojom",

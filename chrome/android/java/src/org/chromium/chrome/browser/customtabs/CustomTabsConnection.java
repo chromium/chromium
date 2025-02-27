@@ -697,6 +697,7 @@ public class CustomTabsConnection {
                                 + " CCTNavigationalPrefetch is not enabled.");
                 return;
             }
+            RecordHistogram.recordBooleanHistogram("CustomTabs.Prefetch.PrefetchCalled", true);
             prefetchInternal(new SessionHolder<>(session), urls, options);
         }
     }

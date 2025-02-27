@@ -57,7 +57,6 @@ class DeviceAttributesAsh;
 class DeviceLocalAccountExtensionServiceAsh;
 class DeviceOAuth2TokenServiceAsh;
 class DocumentScanAsh;
-class DownloadControllerAsh;
 class DriveIntegrationServiceAsh;
 class EchoPrivateAsh;
 class EmbeddedAccessibilityHelperClientAsh;
@@ -156,8 +155,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDocumentScan(
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
-  void BindDownloadController(
-      mojo::PendingReceiver<mojom::DownloadController> receiver) override;
   void BindDriveIntegrationService(
       mojo::PendingReceiver<mojom::DriveIntegrationService> receiver) override;
   void BindEchoPrivate(
@@ -324,10 +321,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 
-  DownloadControllerAsh* download_controller_ash() {
-    return download_controller_ash_.get();
-  }
-
   EchoPrivateAsh* echo_private_ash() { return echo_private_ash_.get(); }
 
   EmbeddedAccessibilityHelperClientAsh*
@@ -459,7 +452,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
-  std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
   std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
   std::unique_ptr<EmbeddedAccessibilityHelperClientAsh>

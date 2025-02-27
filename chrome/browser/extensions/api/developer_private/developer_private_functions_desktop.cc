@@ -220,27 +220,6 @@ developer::LoadError CreateLoadError(
   return response;
 }
 
-std::optional<URLPattern> ParseRuntimePermissionsPattern(
-    const std::string& pattern_str) {
-  constexpr int kValidRuntimePermissionSchemes = URLPattern::SCHEME_HTTP |
-                                                 URLPattern::SCHEME_HTTPS |
-                                                 URLPattern::SCHEME_FILE;
-
-  URLPattern pattern(kValidRuntimePermissionSchemes);
-  if (pattern.Parse(pattern_str) != URLPattern::ParseResult::kSuccess) {
-    return std::nullopt;
-  }
-
-  // We don't allow adding paths for permissions, because they aren't meaningful
-  // in terms of origin access. The frontend should validate this, but there's
-  // a chance something can slip through, so we should fail gracefully.
-  if (pattern.path() != "/*") {
-    return std::nullopt;
-  }
-
-  return pattern;
-}
-
 std::string GetETldPlusOne(const GURL& site) {
   DCHECK(site.is_valid());
   std::string etld_plus_one =
@@ -1544,7 +1523,6 @@ ExtensionFunction::ResponseAction DeveloperPrivateOpenDevToolsFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-
 DeveloperPrivateRepairExtensionFunction::
     ~DeveloperPrivateRepairExtensionFunction() = default;
 
@@ -1683,105 +1661,6 @@ DeveloperPrivateUpdateExtensionCommandFunction::Run() {
   }
 
   return RespondNow(NoArguments());
-}
-
-DeveloperPrivateAddHostPermissionFunction::
-    DeveloperPrivateAddHostPermissionFunction() = default;
-DeveloperPrivateAddHostPermissionFunction::
-    ~DeveloperPrivateAddHostPermissionFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateAddHostPermissionFunction::Run() {
-  std::optional<developer::AddHostPermission::Params> params =
-      developer::AddHostPermission::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::optional<URLPattern> pattern =
-      ParseRuntimePermissionsPattern(params->host);
-  if (!pattern) {
-    return RespondNow(Error(kInvalidHost));
-  }
-
-  const Extension* extension = GetExtensionById(params->extension_id);
-  if (!extension) {
-    return RespondNow(Error(kNoSuchExtensionError));
-  }
-
-  if (!PermissionsManager::Get(browser_context())
-           ->CanAffectExtension(*extension)) {
-    return RespondNow(Error(kCannotChangeHostPermissions));
-  }
-
-  URLPatternSet new_host_permissions({*pattern});
-  PermissionsUpdater(browser_context())
-      .GrantRuntimePermissions(
-          *extension,
-          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        new_host_permissions.Clone(),
-                        new_host_permissions.Clone()),
-          base::BindOnce(&DeveloperPrivateAddHostPermissionFunction::
-                             OnRuntimePermissionsGranted,
-                         this));
-
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void DeveloperPrivateAddHostPermissionFunction::OnRuntimePermissionsGranted() {
-  Respond(NoArguments());
-}
-
-DeveloperPrivateRemoveHostPermissionFunction::
-    DeveloperPrivateRemoveHostPermissionFunction() = default;
-DeveloperPrivateRemoveHostPermissionFunction::
-    ~DeveloperPrivateRemoveHostPermissionFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateRemoveHostPermissionFunction::Run() {
-  std::optional<developer::RemoveHostPermission::Params> params =
-      developer::RemoveHostPermission::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::optional<URLPattern> pattern =
-      ParseRuntimePermissionsPattern(params->host);
-  if (!pattern) {
-    return RespondNow(Error(kInvalidHost));
-  }
-
-  const Extension* extension = GetExtensionById(params->extension_id);
-  if (!extension) {
-    return RespondNow(Error(kNoSuchExtensionError));
-  }
-
-  PermissionsManager* manager = PermissionsManager::Get(browser_context());
-  if (!manager->CanAffectExtension(*extension)) {
-    return RespondNow(Error(kCannotChangeHostPermissions));
-  }
-
-  URLPatternSet host_permissions_to_remove({*pattern});
-  std::unique_ptr<const PermissionSet> permissions_to_remove =
-      PermissionSet::CreateIntersection(
-          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        host_permissions_to_remove.Clone(),
-                        host_permissions_to_remove.Clone()),
-          *manager->GetRevokablePermissions(*extension),
-          URLPatternSet::IntersectionBehavior::kDetailed);
-  if (permissions_to_remove->IsEmpty()) {
-    return RespondNow(Error("Cannot remove a host that hasn't been granted."));
-  }
-
-  PermissionsUpdater(browser_context())
-      .RevokeRuntimePermissions(
-          *extension, *permissions_to_remove,
-          base::BindOnce(&DeveloperPrivateRemoveHostPermissionFunction::
-                             OnRuntimePermissionsRevoked,
-                         this));
-
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void DeveloperPrivateRemoveHostPermissionFunction::
-    OnRuntimePermissionsRevoked() {
-  Respond(NoArguments());
 }
 
 DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::
