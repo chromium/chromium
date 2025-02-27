@@ -212,9 +212,13 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     throw 'Wrong seller ' + browserSignals.seller;
   if ('topLevelSeller' in browserSignals)
     throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
+  if (!(browserSignals.decodeUtf8 instanceof Function))
+    throw 'Wrong decodeUtf8';
+  if (!(browserSignals.encodeUtf8 instanceof Function))
+    throw 'Wrong encodeUtf8';
 
   if (isGenerateBid) {
-    if (Object.keys(browserSignals).length !== 11) {
+    if (Object.keys(browserSignals).length !== 13) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -237,7 +241,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.multiBidLimit !== 1)
       throw 'Wrong multiBidLimit ' + browserSignals.multiBidLimit;
   } else {
-    if (Object.keys(browserSignals).length !== 16) {
+    if (Object.keys(browserSignals).length !== 18) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

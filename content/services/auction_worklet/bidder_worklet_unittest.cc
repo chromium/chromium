@@ -1191,6 +1191,16 @@ class BidderWorkletMultiBidDisabledTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class BidderWorkletTextConversionsTest : public BidderWorkletTest {
+ public:
+  BidderWorkletTextConversionsTest() {
+    feature_list_.InitAndEnableFeature(features::kFledgeTextConversionHelpers);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test the case the BidderWorklet pipe is closed before invoking the
 // GenerateBidCallback. The invocation of the GenerateBidCallback is not
 // observed, since the callback is on the pipe that was just closed. There
@@ -4652,6 +4662,23 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
       R"(!('creativeScanningMetadata' in interestGroup.adComponents[0]))");
 }
 
+TEST_F(BidderWorkletTest, GenerateBidTextConversions) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('encodeUtf8' in browserSignals))");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('decodeUtf8' in browserSignals))");
+}
+
+TEST_F(BidderWorkletTextConversionsTest, GenerateBidTextConversions) {
+  RunGenerateBidExpectingExpressionIsTrue(R"('encodeUtf8' in browserSignals)");
+  RunGenerateBidExpectingExpressionIsTrue(R"('decodeUtf8' in browserSignals)");
+
+  RunGenerateBidExpectingExpressionIsTrue(
+      "browserSignals.encodeUtf8('A')[0] === 65");
+  RunGenerateBidExpectingExpressionIsTrue(
+      "browserSignals.decodeUtf8(new Uint8Array([65, 32, 68])) === 'A D'");
+}
+
 class BidderWorkletCreativeScanningTest : public BidderWorkletTest {
  public:
   BidderWorkletCreativeScanningTest() {
@@ -7527,6 +7554,24 @@ TEST_F(BidderWorkletTest, ReportWinTopLevelTimeout) {
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ top-level execution timed out."});
+}
+
+TEST_F(BidderWorkletTest, ReportWinTextConversions) {
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo('https://foo.test?' + ('encodeUtf8' in browserSignals))",
+      GURL("https://foo.test/?false"));
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo('https://foo.test?' + ('decodeUtf8' in browserSignals))",
+      GURL("https://foo.test/?false"));
+}
+
+TEST_F(BidderWorkletTextConversionsTest, ReportWinTextConversions) {
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo('https://foo.test?' + ('encodeUtf8' in browserSignals))",
+      GURL("https://foo.test/?true"));
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo('https://foo.test?' + ('decodeUtf8' in browserSignals))",
+      GURL("https://foo.test/?true"));
 }
 
 TEST_F(BidderWorkletTest, SendReportToLongUrl) {

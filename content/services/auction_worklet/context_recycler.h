@@ -35,6 +35,7 @@ class SetBidBindings;
 class SetPriorityBindings;
 class SetPrioritySignalsOverrideBindings;
 class SharedStorageBindings;
+class TextConversionHelpers;
 class AuctionConfigLazyFiller;
 class BiddingBrowserSignalsLazyFiller;
 class InterestGroupLazyFiller;
@@ -145,6 +146,11 @@ class CONTENT_EXPORT ContextRecycler {
     return shared_storage_bindings_.get();
   }
 
+  void AddTextConversionHelpers();
+  TextConversionHelpers* text_conversion_helpers() {
+    return text_conversion_helpers_.get();
+  }
+
   void AddInterestGroupLazyFiller();
   InterestGroupLazyFiller* interest_group_lazy_filler() {
     return interest_group_lazy_filler_.get();
@@ -204,6 +210,7 @@ class CONTENT_EXPORT ContextRecycler {
   std::unique_ptr<SetPrioritySignalsOverrideBindings>
       set_priority_signals_override_bindings_;
   std::unique_ptr<SharedStorageBindings> shared_storage_bindings_;
+  std::unique_ptr<TextConversionHelpers> text_conversion_helpers_;
 
   // everything here is owned by one of the unique_ptr's above.
   std::vector<raw_ptr<Bindings, VectorExperimental>> bindings_list_;

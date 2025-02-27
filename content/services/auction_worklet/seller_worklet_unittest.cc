@@ -1007,6 +1007,16 @@ class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
   size_t NumThreads() override { return 2u; }
 };
 
+class SellerWorkletTextConversionsTest : public SellerWorkletTest {
+ public:
+  SellerWorkletTextConversionsTest() {
+    feature_list_.InitAndEnableFeature(features::kFledgeTextConversionHelpers);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class SellerWorkletMultiThreadingTest
     : public SellerWorkletTest,
       public testing::WithParamInterface<std::tuple<size_t, bool>> {
@@ -1935,6 +1945,26 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponentsCreativeScanningMetadata) {
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.adComponentsCreativeScanningMetadata[2] ===
          "3rd" ? 3 : 0)",
+      3);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdTextConversions) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('encodeUtf8' in browserSignals? 3 : 2)", 2);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('decodeUtf8' in browserSignals? 3 : 2)", 2);
+}
+
+TEST_F(SellerWorkletTextConversionsTest, ScoreAdTextConversions) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('encodeUtf8' in browserSignals? 3 : 2)", 3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('decodeUtf8' in browserSignals? 3 : 2)", 3);
+
+  RunScoreAdWithReturnValueExpectingResult("browserSignals.encodeUtf8('A')[0]",
+                                           65);
+  RunScoreAdWithReturnValueExpectingResult(
+      "browserSignals.decodeUtf8(new Uint8Array([65, 68])) === 'AD' ? 3 : 2",
       3);
 }
 
@@ -3425,6 +3455,28 @@ TEST_F(SellerWorkletTest, ReportResultNoAdComponentsCreativeScanningMetadata) {
   RunReportResultCreatedScriptExpectingResult(
       "1", kScript,
       /*expected_signals_for_winner=*/"1", GURL("https://foo.test/?2"));
+}
+
+TEST_F(SellerWorkletTest, ReportResultTextConversions) {
+  RunReportResultCreatedScriptExpectingResult(
+      "('encodeUtf8' in browserSignals) ? 2 : 1",
+      /*extra_code=*/std::string(), "1",
+      /*expected_report_url=*/std::nullopt);
+  RunReportResultCreatedScriptExpectingResult(
+      "('decodeUtf8' in browserSignals) ? 2 : 1",
+      /*extra_code=*/std::string(), "1",
+      /*expected_report_url=*/std::nullopt);
+}
+
+TEST_F(SellerWorkletTextConversionsTest, ReportResultTextConversions) {
+  RunReportResultCreatedScriptExpectingResult(
+      "('encodeUtf8' in browserSignals) ? 2 : 1",
+      /*extra_code=*/std::string(), "2",
+      /*expected_report_url=*/std::nullopt);
+  RunReportResultCreatedScriptExpectingResult(
+      "('decodeUtf8' in browserSignals) ? 2 : 1",
+      /*extra_code=*/std::string(), "2",
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {

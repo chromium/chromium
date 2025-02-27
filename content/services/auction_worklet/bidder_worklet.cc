@@ -60,6 +60,7 @@
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
+#include "content/services/auction_worklet/text_conversion_helpers.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
@@ -861,6 +862,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::operator=(
 
 bool BidderWorklet::V8State::SetBrowserSignals(
     ContextRecycler& context_recycler,
+    v8::Local<v8::Context>& context,
     bool is_for_additional_bid,
     const std::optional<std::string>& interest_group_name_reporting_id,
     const std::optional<std::string>& buyer_reporting_id,
@@ -936,6 +938,11 @@ bool BidderWorklet::V8State::SetBrowserSignals(
        !browser_signals_dict.Set("reportingTimeout",
                                  reporting_timeout.InMilliseconds()))) {
     return false;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kFledgeTextConversionHelpers)) {
+    context_recycler.text_conversion_helpers()->ReInitialize(context,
+                                                             browser_signals);
   }
 
   if (!context_recycler.report_win_lazy_filler()->FillInObject(
@@ -1027,7 +1034,7 @@ bool BidderWorklet::V8State::SetReportAggregateWinArgs(
   }
 
   if (!SetBrowserSignals(
-          context_recycler, is_for_additional_bid,
+          context_recycler, context, is_for_additional_bid,
           interest_group_name_reporting_id, buyer_reporting_id,
           buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id,
           browser_signal_render_url,
@@ -1165,6 +1172,7 @@ void BidderWorklet::V8State::ReportWin(
   }
 
   context_recycler.AddReportWinBrowserSignalsLazyFiller();
+  context_recycler.AddTextConversionHelpers();
 
   DeprecatedUrlLazyFiller deprecated_render_url(
       v8_helper_.get(), &v8_logger, &browser_signal_render_url,
@@ -1175,11 +1183,11 @@ void BidderWorklet::V8State::ReportWin(
           ? *browser_signal_reporting_timeout
           : AuctionV8Helper::kScriptTimeout;
   const bool browser_signals_set = SetBrowserSignals(
-      context_recycler, is_for_additional_bid, interest_group_name_reporting_id,
-      buyer_reporting_id, buyer_and_seller_reporting_id,
-      selected_buyer_and_seller_reporting_id, browser_signal_render_url,
-      &deprecated_render_url, browser_signal_bid, browser_signal_bid_currency,
-      browser_signal_highest_scoring_other_bid,
+      context_recycler, context, is_for_additional_bid,
+      interest_group_name_reporting_id, buyer_reporting_id,
+      buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id,
+      browser_signal_render_url, &deprecated_render_url, browser_signal_bid,
+      browser_signal_bid_currency, browser_signal_highest_scoring_other_bid,
       browser_signal_highest_scoring_other_bid_currency,
       browser_signal_made_highest_scoring_other_bid, browser_signal_ad_cost,
       browser_signal_modeling_signals, browser_signal_join_count,
@@ -1867,6 +1875,10 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
+  if (base::FeatureList::IsEnabled(features::kFledgeTextConversionHelpers)) {
+    context_recycler->text_conversion_helpers()->ReInitialize(context,
+                                                              browser_signals);
+  }
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   // TODO(crbug.com/336164429): Construct the fields of browser signals lazily.
   if (!browser_signals_dict.Set("topWindowHostname",
@@ -2137,6 +2149,7 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   context_recycler->AddSetBidBindings();
   context_recycler->AddSetPriorityBindings();
   context_recycler->AddSetPrioritySignalsOverrideBindings();
+  context_recycler->AddTextConversionHelpers();
   context_recycler->AddInterestGroupLazyFiller();
   context_recycler->AddBiddingBrowserSignalsLazyFiller();
 

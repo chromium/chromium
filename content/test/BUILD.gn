@@ -1851,6 +1851,7 @@ test("content_browsertests") {
     "//content/public/gpu",
     "//content/public/renderer",
     "//content/renderer:for_content_tests",
+    "//content/services/auction_worklet/public/cpp:features",
     "//content/services/auction_worklet/public/cpp:test_support",
     "//content/services/auction_worklet/public/mojom:for_content_tests",
     "//content/shell:content_browsertests_mojom",

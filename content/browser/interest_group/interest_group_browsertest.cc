@@ -93,6 +93,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/shell/browser/shell.h"
@@ -766,7 +767,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          // TODO(crrev.com/c/6096602): Remove once implementation is removed.
          {blink::features::kFledgeDirectFromSellerSignalsWebBundles, {}},
          {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
-         {blink::features::kFledgeTrustedSignalsKVv1CreativeScanning, {}}},
+         {blink::features::kFledgeTrustedSignalsKVv1CreativeScanning, {}},
+         {features::kFledgeTextConversionHelpers, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,

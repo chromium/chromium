@@ -498,6 +498,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
     bool SetBrowserSignals(
         ContextRecycler& context_recycler,
+        v8::Local<v8::Context>& context,
         bool is_for_additional_bid,
         const std::optional<std::string>& interest_group_name_reporting_id,
         const std::optional<std::string>& buyer_reporting_id,
