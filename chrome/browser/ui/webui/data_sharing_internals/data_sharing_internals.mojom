@@ -5,6 +5,8 @@
 module data_sharing_internals.mojom;
 
 import "components/data_sharing/public/protocol/group_data.mojom";
+import "components/data_sharing/public/logger_common.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
@@ -26,4 +28,10 @@ interface PageHandler {
 // Renderer-side handler for internal page to process the updates from
 // the data sharing service.
 interface Page {
+  // Notifies the page of a log event from the Data Sharing services.
+  OnLogMessageAdded(mojo_base.mojom.Time event_time,
+                    logger_common.mojom.LogSource log_source,
+                    string source_file,
+                    int32 source_line,
+                    string message);
 };

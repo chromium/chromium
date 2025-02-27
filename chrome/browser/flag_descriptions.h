@@ -2108,6 +2108,9 @@ extern const char kToolbarPhoneCleanupDescription[];
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 
+extern const char kDataSharingDebugLogsName[];
+extern const char kDataSharingDebugLogsDescription[];
+
 extern const char kTabGroupsDeferRemoteNavigationsId[];
 extern const char kTabGroupsDeferRemoteNavigationsName[];
 extern const char kTabGroupsDeferRemoteNavigationsDescription[];

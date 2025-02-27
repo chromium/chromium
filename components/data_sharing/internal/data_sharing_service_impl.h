@@ -48,6 +48,7 @@ namespace data_sharing {
 class DataSharingNetworkLoader;
 class PreviewServerProxy;
 class AvatarFetcher;
+class Logger;
 
 // The internal implementation of the DataSharingService.
 class DataSharingServiceImpl : public DataSharingService,
@@ -139,6 +140,7 @@ class DataSharingServiceImpl : public DataSharingService,
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUiDelegate() override;
+  Logger* GetLogger() override;
   void AddGroupDataForTesting(GroupData group_data) override;
   void SetPreviewServerProxyForTesting(
       std::unique_ptr<PreviewServerProxy> preview_server_proxy) override;
@@ -219,6 +221,7 @@ class DataSharingServiceImpl : public DataSharingService,
   base::ObserverList<DataSharingService::Observer> observers_;
   std::unique_ptr<PreviewServerProxy> preview_server_proxy_;
   std::unique_ptr<AvatarFetcher> avatar_fetcher_;
+  std::unique_ptr<Logger> logger_;
 
   // An in-memory map of groups that have been removed this session. This is
   // required to be able to inform users about which groups they have been

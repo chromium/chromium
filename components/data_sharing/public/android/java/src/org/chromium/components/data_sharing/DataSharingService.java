@@ -226,4 +226,9 @@ public interface DataSharingService {
 
     /** Returns The current instance of {@link DataSharingUIDelegate}. */
     DataSharingUIDelegate getUiDelegate();
+
+    /**
+     * @return {@link Logger} used for recording data sharing logs.
+     */
+    Logger getLogger();
 }

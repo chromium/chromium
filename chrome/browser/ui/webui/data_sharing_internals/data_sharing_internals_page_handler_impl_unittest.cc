@@ -14,6 +14,7 @@
 #include "components/data_sharing/public/data_sharing_network_loader.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/data_sharing/public/logger_common.mojom.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,6 +54,12 @@ class MockPage : public data_sharing_internals::mojom::Page {
  public:
   MockPage() = default;
   ~MockPage() override = default;
+
+  void OnLogMessageAdded(::base::Time event_time,
+                         ::logger_common::mojom::LogSource log_source,
+                         const std::string& source_file,
+                         int32_t source_line,
+                         const std::string& message) override {}
 
   mojo::PendingRemote<data_sharing_internals::mojom::Page> BindAndGetRemote() {
     DCHECK(!receiver_.is_bound());
