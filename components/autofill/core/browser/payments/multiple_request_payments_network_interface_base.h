@@ -32,14 +32,14 @@ namespace payments {
 
 class PaymentsRequest;
 
-// MultipleRequestPaymentsNetworkInterface issues Payments RPCs and manages
+// MultipleRequestPaymentsNetworkInterfaceBase issues Payments RPCs and manages
 // responses and failure conditions. Multiple requests may be active at a time.
-class MultipleRequestPaymentsNetworkInterface {
+class MultipleRequestPaymentsNetworkInterfaceBase {
  public:
-  MultipleRequestPaymentsNetworkInterface(
-      const MultipleRequestPaymentsNetworkInterface&) = delete;
-  MultipleRequestPaymentsNetworkInterface& operator=(
-      const MultipleRequestPaymentsNetworkInterface&) = delete;
+  MultipleRequestPaymentsNetworkInterfaceBase(
+      const MultipleRequestPaymentsNetworkInterfaceBase&) = delete;
+  MultipleRequestPaymentsNetworkInterfaceBase& operator=(
+      const MultipleRequestPaymentsNetworkInterfaceBase&) = delete;
 
   // Cancels and clears the current `request_`.
   void CancelRequest();
@@ -54,13 +54,13 @@ class MultipleRequestPaymentsNetworkInterface {
   // ownership requirements. `identity_manager` and `account_info_getter` must
   // all outlive `this`. Either delegate might be nullptr. `is_off_the_record`
   // denotes incognito mode.
-  MultipleRequestPaymentsNetworkInterface(
+  MultipleRequestPaymentsNetworkInterfaceBase(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       AccountInfoGetter* account_info_getter,
       bool is_off_the_record = false);
 
-  virtual ~MultipleRequestPaymentsNetworkInterface();
+  virtual ~MultipleRequestPaymentsNetworkInterfaceBase();
 
   // Initiates a Payments request using the state in `request`, ensuring that an
   // OAuth token is available first. Takes ownership of `request`.
@@ -123,7 +123,7 @@ class MultipleRequestPaymentsNetworkInterface {
   // server.
   bool has_retried_authorization_ = false;
 
-  base::WeakPtrFactory<MultipleRequestPaymentsNetworkInterface>
+  base::WeakPtrFactory<MultipleRequestPaymentsNetworkInterfaceBase>
       weak_ptr_factory_{this};
 };
 
