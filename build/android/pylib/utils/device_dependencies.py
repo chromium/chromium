@@ -37,6 +37,7 @@ _EXCLUSIONS = [
 
     # Scripts that are needed by swarming, but not on devices:
     re.compile(r'.*llvm-symbolizer'),
+    re.compile(r'.*devil_util_(?:bin|dist)'),
     re.compile(r'.*md5sum_(?:bin|dist)'),
     re.compile(r'.*/development/scripts/stack'),
     re.compile(r'.*/build/android/pylib/symbols'),

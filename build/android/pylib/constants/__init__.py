@@ -147,6 +147,7 @@ PYTHON_UNIT_TEST_SUITES = {
         os.path.join(DIR_SOURCE_ROOT, 'build', 'android'),
         'test_modules': [
             'devil.android.device_utils_test',
+            # TODO(martinkong): Replace this with devil_util_test
             'devil.android.md5sum_test',
             'devil.utils.cmd_helper_test',
             'pylib.results.json_results_test',
