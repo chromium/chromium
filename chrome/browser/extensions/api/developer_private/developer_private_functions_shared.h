@@ -108,6 +108,24 @@ class DeveloperPrivateGetUserSiteSettingsFunction
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateAddUserSpecifiedSitesFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.addUserSpecifiedSites",
+                             DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITES)
+  DeveloperPrivateAddUserSpecifiedSitesFunction();
+
+  DeveloperPrivateAddUserSpecifiedSitesFunction(
+      const DeveloperPrivateAddUserSpecifiedSitesFunction&) = delete;
+  DeveloperPrivateAddUserSpecifiedSitesFunction& operator=(
+      const DeveloperPrivateAddUserSpecifiedSitesFunction&) = delete;
+
+ private:
+  ~DeveloperPrivateAddUserSpecifiedSitesFunction() override;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions::api
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_SHARED_H_
