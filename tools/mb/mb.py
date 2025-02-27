@@ -412,6 +412,9 @@ class MetaBuildWrapper:
                       help=('extra args to pass to the isolate to run. Use '
                             '"--" as the first arg if you need to pass '
                             'switches'))
+    subp.add_argument('--force',
+                      action='store_true',
+                      help='Bypasses deprecation notice.')
     subp.set_defaults(func=self.CmdRun)
 
     subp = subps.add_parser('validate',
@@ -557,6 +560,15 @@ class MetaBuildWrapper:
     return 0
 
   def CmdRun(self):
+    # TODO(crbug.com/386167803): Remove this mode after this deprecation
+    # notice has been live for a few months.
+    if not self.args.force:
+      self.Print(
+          '`mb run` is deprecated in favor of the UTR. For more info, see '
+          'https://chromium.googlesource.com/chromium/src/+/main/tools/utr/README.md. '
+          'To skip this warning, re-run with "--force". Note that `mb run` '
+          'will be deleted sometime in 2025.')
+      return 1
     vals = self.GetConfig()
     if not vals:
       return 1
