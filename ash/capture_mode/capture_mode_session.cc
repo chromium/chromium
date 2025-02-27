@@ -1553,12 +1553,11 @@ void CaptureModeSession::AddSmartActionsButton() {
 
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
-  // TODO(crbug.com/375967525): Finalize and translate the smart actions button
-  // text.
   AddActionButton(
       base::BindRepeating(&CaptureModeSession::OnSmartActionsButtonPressed,
                           weak_ptr_factory_.GetWeakPtr()),
-      u"More actions", /*icon=*/nullptr,
+      l10n_util::GetStringUTF16(IDS_ASH_SCANNER_SMART_ACTIONS_BUTTON_LABEL),
+      /*icon=*/nullptr,
       ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
       ActionButtonViewID::kSmartActionsButton);
 }

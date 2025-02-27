@@ -6868,6 +6868,9 @@ Here are some things you can try to get started.
 
       <!-- Scanner -->
       <!-- TODO: crbug.com/375967525 - Finalize these strings and mark them as translateable -->
+      <message name="IDS_ASH_SCANNER_SMART_ACTIONS_BUTTON_LABEL" desc="The label on a button that can be clicked to show more actions based on the contents of a screenshot. Example actions include creating a new doc or adding a detected event to the user's calendar.">
+        More actions
+      </message>
       <message name="IDS_ASH_SCANNER_ACTION_CREATE_EVENT_LABEL" desc="The label on a button that can be clicked to create a new calendar event from the contents of a screenshot. Clicking the button will open a draft new event in Google Calendar with the event details pre-filled.">
         Add to Calendar
       </message>
