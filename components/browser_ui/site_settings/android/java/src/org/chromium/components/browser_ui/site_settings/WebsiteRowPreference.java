@@ -204,14 +204,7 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
         if (mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()) {
             if (mSiteEntry.isPartOfRws()) {
-                String rwsSummary =
-                        getContext()
-                                .getResources()
-                                .getQuantityString(
-                                        R.plurals.rws_summary,
-                                        mSiteEntry.getRwsSize(),
-                                        Integer.toString(mSiteEntry.getRwsSize()),
-                                        mSiteEntry.getRwsOwner());
+                String rwsSummary = getContext().getString(R.string.all_sites_rws_label);
                 if (summary.isEmpty()) {
                     summary = rwsSummary;
                 } else {

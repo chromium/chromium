@@ -649,11 +649,6 @@
       =1 {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}
       other {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}}
   </message>
-  <message name="IDS_RWS_SUMMARY" desc="Related Website Sets information, shown as item summary in the all sites settings page for every site which is in the RWS." translateable="false">
-    {COUNT, plural,
-      =1 {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group}
-      other {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group}}
-  </message>
   <message name="IDS_ALLSITES_RWS_LIST_SUMMARY" desc="Related Website Sets cookie info, shown as site summary in the all sites list settings page.">
     {COUNT, plural,
       =1 {Cookies allowed for <ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph> site}
