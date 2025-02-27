@@ -19,6 +19,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -31,12 +34,6 @@
 #include "printing/print_job_constants.h"
 #include "printing/print_settings_conversion_chromeos.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#endif
 
 namespace printing {
 
@@ -201,11 +198,9 @@ LocalPrinterHandlerChromeos::Create(
     content::WebContents* preview_web_contents) {
   auto handler =
       std::make_unique<LocalPrinterHandlerChromeos>(preview_web_contents);
-#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   handler->local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
-#endif
   return handler;
 }
 

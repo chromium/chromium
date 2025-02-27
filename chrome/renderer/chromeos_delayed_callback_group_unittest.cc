@@ -53,14 +53,8 @@ TEST(DelayedCallbackGroup, TimeoutSimple) {
   EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Failing on CrOS ASAN: crbug.com/1290874
-#define MAYBE_TimeoutAndRun DISABLED_TimeoutAndRun
-#else
-#define MAYBE_TimeoutAndRun TimeoutAndRun
-#endif
-
-TEST(DelayedCallbackGroup, MAYBE_TimeoutAndRun) {
+TEST(DelayedCallbackGroup, DISABLED_TimeoutAndRun) {
   const base::TimeDelta kTimeout = base::Seconds(1);
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

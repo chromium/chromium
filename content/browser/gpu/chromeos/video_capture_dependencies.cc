@@ -32,7 +32,6 @@ void VideoCaptureDependencies::CreateJpegDecodeAccelerator(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 // static
 void VideoCaptureDependencies::CreateJpegEncodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
@@ -53,6 +52,5 @@ void VideoCaptureDependencies::CreateJpegEncodeAccelerator(
     LOG(ERROR) << "No GpuProcessHost";
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace content

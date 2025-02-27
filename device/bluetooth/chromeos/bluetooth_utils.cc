@@ -5,7 +5,11 @@
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 #include <optional>
+#include <string_view>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -17,18 +21,10 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "device/base/features.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include <string_view>
-
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#include "device/base/features.h"
 
 namespace device {
 
@@ -42,10 +38,8 @@ const char kSecurityKeyServiceUUID[] = "FFFD";
 
 constexpr base::TimeDelta kMaxDeviceSelectionDuration = base::Seconds(30);
 constexpr base::TimeDelta kConnectionTimeIntervalThreshold = base::Minutes(15);
-#if BUILDFLAG(IS_CHROMEOS)
 constexpr base::TimeDelta kToastShownCountTimeIntervalThreshold =
     base::Hours(24);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr uint8_t kLimitedDiscoveryFlag = 0x01;
 constexpr uint8_t kGeneralDiscoveryFlag = 0x02;
@@ -87,11 +81,9 @@ BluetoothAdapter::DeviceList GetLimitedNumDevices(
 // Filter out unknown devices from the list.
 BluetoothAdapter::DeviceList FilterUnknownDevices(
     const BluetoothAdapter::DeviceList& devices) {
-#if BUILDFLAG(IS_CHROMEOS)
   if (ash::switches::IsUnfilteredBluetoothDevicesEnabled()) {
     return devices;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   BluetoothAdapter::DeviceList result;
   for (BluetoothDevice* device : devices) {
@@ -281,7 +273,6 @@ void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
   NOTREACHED();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 bool IsNonPhonePolyDevice(const device::BluetoothDevice* device) {
   // OUI portions of Bluetooth addresses for devices manufactured by Poly. See
   // https://standards-oui.ieee.org/. This also includes acquisitions by Poly,
@@ -294,7 +285,6 @@ bool IsNonPhonePolyDevice(const device::BluetoothDevice* device) {
   return base::Contains(kNonPhonePolyOuis,
                         device->GetOuiPortionOfBluetoothAddress());
 }
-#endif
 
 // Provide heuristics for which transport to use for a dual device
 BluetoothTransport InferDeviceTransport(const device::BluetoothDevice* device) {
@@ -302,13 +292,11 @@ BluetoothTransport InferDeviceTransport(const device::BluetoothDevice* device) {
     return device->GetType();
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Random address type indicates LE device.
   if (device->GetAddressType() ==
       BluetoothDevice::AddressType::ADDR_TYPE_RANDOM) {
     return BLUETOOTH_TRANSPORT_LE;
   }
-#endif
 
   // Devices without type/appearance most likely signals that it is truly only
   // a LE advertisement for a peripheral which is active, but not pairable. Many
@@ -385,7 +373,6 @@ device::BluetoothAdapter::DeviceList FilterBluetoothDeviceList(
 }
 
 bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
-#if BUILDFLAG(IS_CHROMEOS)
   if (ash::switches::IsUnfilteredBluetoothDevicesEnabled()) {
     return false;
   }
@@ -401,7 +388,6 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
   if (device->IsBonded()) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Always filter out laptops, etc. There is no intended use case or
   // Bluetooth profile in this context.
@@ -415,7 +401,6 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
     return true;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   const BluetoothDevice::UUIDSet& uuids = device->GetUUIDs();
 
   // These UUIDs are specific to Nearby Share and Phone Hub and are used to
@@ -430,12 +415,6 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
   if (uuids.contains(BluetoothUUID(ash::secure_channel::kGattServerUuid))) {
     return true;
   }
-#else
-  // Allow paired devices which are not filtered above to appear in the UI.
-  if (device->IsPaired()) {
-    return false;
-  }
-#endif
 
   switch (InferDeviceTransport(device)) {
     // For LE devices, check the discoverable flag and UUIDs.
@@ -666,7 +645,6 @@ void RecordTimeIntervalBetweenConnections(
       /*max=*/kConnectionTimeIntervalThreshold, 100);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 void MaybeRecordConnectionToastShownCount(PrefService* local_state_pref,
                                           bool triggered_by_connect) {
   bool is_within_24_hrs =
@@ -698,7 +676,6 @@ void MaybeRecordConnectionToastShownCount(PrefService* local_state_pref,
   local_state_pref->SetTime(ash::prefs::kBluetoothToastCountStartTime,
                             base::Time::Now().LocalMidnight());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void RecordFlossManagerClientInit(bool success, base::TimeDelta duration) {
   static constexpr char kSuccessHistogramSuffix[] = "Success";

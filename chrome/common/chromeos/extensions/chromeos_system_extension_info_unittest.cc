@@ -4,15 +4,12 @@
 
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
   const auto& google_extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";

@@ -303,7 +303,6 @@ void ExtensionAppsChromeOs::Initialize() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 void ExtensionAppsChromeOs::GetCompressedIconData(
     const std::string& app_id,
     int32_t size_in_dip,
@@ -312,7 +311,6 @@ void ExtensionAppsChromeOs::GetCompressedIconData(
   apps::GetChromeAppCompressedIconData(profile(), app_id, size_in_dip,
                                        scale_factor, std::move(callback));
 }
-#endif
 
 void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                                     LaunchCallback callback) {
