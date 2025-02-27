@@ -17,27 +17,61 @@
 
 namespace blink {
 namespace {
+using mojom::blink::CanCreateTranslatorResult;
+using mojom::blink::CreateTranslatorError;
 
 const char kExceptionMessageUnableToCreateTranslator[] =
     "Unable to create translator for the given source and target language.";
+const char kLinkToDocument[] =
+    "See "
+    "https://developer.chrome.com/docs/ai/translator-api?#supported-languages "
+    "for more details.";
 
-bool RequiresUserActivation(mojom::blink::CanCreateTranslatorResult result) {
+String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
+  switch (error) {
+    case CreateTranslatorError::kInvalidBinary:
+      return "Failed to load the translation library.";
+    case CreateTranslatorError::kInvalidFunctionPointer:
+      return "The translation library is not compatible.";
+    case CreateTranslatorError::kFailedToInitialize:
+      return "Failed to initialize the translation library.";
+    case CreateTranslatorError::kFailedToCreateTranslator:
+      return "The translation library failed to create a translator.";
+    case CreateTranslatorError::kAcceptLanguagesCheckFailed:
+      return String(base::StrCat(
+          {"The preferred languages check for Translator API failed. ",
+           kLinkToDocument}));
+    case CreateTranslatorError::kExceedsLanguagePackCountLimitation:
+      return String(base::StrCat(
+          {"The Translator API language pack count exceeded the limitation. ",
+           kLinkToDocument}));
+    case CreateTranslatorError::kServiceCrashed:
+      return "The translation service crashed.";
+    case CreateTranslatorError::kDisallowedByPolicy:
+      return "The translation is disallowed by policy.";
+    case CreateTranslatorError::kExceedsServiceCountLimitation:
+      return "The translation service count exceeded the limitation.";
+    case CreateTranslatorError::kExceedsPendingTaskCountLimitation:
+      return "Too many Translator API requests are queued.";
+    case CreateTranslatorError::kInvalidVersion:
+      return "The translation library version is invalid.";
+  }
+}
+
+bool RequiresUserActivation(CanCreateTranslatorResult result) {
   switch (result) {
-    case mojom::blink::CanCreateTranslatorResult::kAfterDownloadLibraryNotReady:
-    case mojom::blink::CanCreateTranslatorResult::
-        kAfterDownloadLanguagePackNotReady:
-    case mojom::blink::CanCreateTranslatorResult::
+    case CanCreateTranslatorResult::kAfterDownloadLibraryNotReady:
+    case CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady:
+    case CanCreateTranslatorResult::
         kAfterDownloadLibraryAndLanguagePackNotReady:
       return true;
-    case mojom::blink::CanCreateTranslatorResult::kReadily:
-    case mojom::blink::CanCreateTranslatorResult::kNoNotSupportedLanguage:
-    case mojom::blink::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
-    case mojom::blink::CanCreateTranslatorResult::
-        kNoExceedsLanguagePackCountLimitation:
-    case mojom::blink::CanCreateTranslatorResult::kNoServiceCrashed:
-    case mojom::blink::CanCreateTranslatorResult::kNoDisallowedByPolicy:
-    case mojom::blink::CanCreateTranslatorResult::
-        kNoExceedsServiceCountLimitation:
+    case CanCreateTranslatorResult::kReadily:
+    case CanCreateTranslatorResult::kNoNotSupportedLanguage:
+    case CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
+    case CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation:
+    case CanCreateTranslatorResult::kNoServiceCrashed:
+    case CanCreateTranslatorResult::kNoDisallowedByPolicy:
+    case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
       return false;
   }
 }
@@ -98,6 +132,10 @@ class CreateTranslatorClient
           std::move(source_language_), std::move(target_language_)));
     } else {
       CHECK(result->is_error());
+      translation_->GetExecutionContext()->AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          ConvertCreateTranslatorErrorToDebugString(result->get_error()));
       GetResolver()->Reject(DOMException::Create(
           kExceptionMessageUnableToCreateTranslator,
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
@@ -105,7 +143,7 @@ class CreateTranslatorClient
     Cleanup();
   }
 
-  void OnGotAvailability(mojom::blink::CanCreateTranslatorResult result) {
+  void OnGotAvailability(CanCreateTranslatorResult result) {
     LocalDOMWindow* const window = LocalDOMWindow::From(GetScriptState());
 
     if (RuntimeEnabledFeatures::TranslationAPIV1Enabled() &&
@@ -171,7 +209,7 @@ ScriptPromise<V8AIAvailability> AITranslatorFactory::availability(
       WTF::BindOnce(
           [](ExecutionContext* execution_context,
              ScriptPromiseResolver<V8AIAvailability>* resolver,
-             mojom::blink::CanCreateTranslatorResult result) {
+             CanCreateTranslatorResult result) {
             CHECK(resolver);
 
             AIAvailability availability =
