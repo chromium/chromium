@@ -89,9 +89,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateAddHostPermissionFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivateRemoveHostPermissionFunction,
                    "developerPrivate.removeHostPermission",
                    DEVELOPERPRIVATE_REMOVEHOSTPERMISSION);
-DECLARE_EMPTY_FUNC(DeveloperPrivateRemoveUserSpecifiedSitesFunction,
-                   "developerPrivate.removeUserSpecifiedSites",
-                   DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITES);
 DECLARE_EMPTY_FUNC(DeveloperPrivateGetUserAndExtensionSitesByEtldFunction,
                    "developerPrivate.getUserAndExtensionSitesByEtld",
                    DEVELOPERPRIVATE_GETUSERANDEXTENSIONSITESBYETLD);

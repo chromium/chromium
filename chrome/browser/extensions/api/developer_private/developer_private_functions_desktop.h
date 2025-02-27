@@ -564,23 +564,6 @@ class DeveloperPrivateRemoveHostPermissionFunction
 
 
 
-class DeveloperPrivateRemoveUserSpecifiedSitesFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeUserSpecifiedSites",
-                             DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITES)
-  DeveloperPrivateRemoveUserSpecifiedSitesFunction();
-
-  DeveloperPrivateRemoveUserSpecifiedSitesFunction(
-      const DeveloperPrivateRemoveUserSpecifiedSitesFunction&) = delete;
-  DeveloperPrivateRemoveUserSpecifiedSitesFunction& operator=(
-      const DeveloperPrivateRemoveUserSpecifiedSitesFunction&) = delete;
-
- private:
-  ~DeveloperPrivateRemoveUserSpecifiedSitesFunction() override;
-
-  ResponseAction Run() override;
-};
 
 class DeveloperPrivateGetUserAndExtensionSitesByEtldFunction
     : public DeveloperPrivateAPIFunction {

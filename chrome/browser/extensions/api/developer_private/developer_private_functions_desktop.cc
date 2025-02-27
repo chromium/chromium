@@ -1823,48 +1823,6 @@ void DeveloperPrivateRemoveHostPermissionFunction::
   Respond(NoArguments());
 }
 
-DeveloperPrivateRemoveUserSpecifiedSitesFunction::
-    DeveloperPrivateRemoveUserSpecifiedSitesFunction() = default;
-DeveloperPrivateRemoveUserSpecifiedSitesFunction::
-    ~DeveloperPrivateRemoveUserSpecifiedSitesFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateRemoveUserSpecifiedSitesFunction::Run() {
-  std::optional<developer::RemoveUserSpecifiedSites::Params> params =
-      developer::RemoveUserSpecifiedSites::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::set<url::Origin> origins;
-  for (const auto& host : params->options.hosts) {
-    GURL url(host);
-    if (!url.is_valid()) {
-      return RespondNow(Error("Invalid host: " + host));
-    }
-    origins.insert(url::Origin::Create(url));
-  }
-
-  PermissionsManager* manager = PermissionsManager::Get(browser_context());
-  switch (params->options.site_set) {
-    case developer::SiteSet::kUserPermitted:
-      for (const auto& origin : origins) {
-        manager->RemoveUserPermittedSite(origin);
-      }
-      break;
-    case developer::SiteSet::kUserRestricted:
-      for (const auto& origin : origins) {
-        manager->RemoveUserRestrictedSite(origin);
-      }
-      break;
-    case developer::SiteSet::kExtensionSpecified:
-      return RespondNow(
-          Error("Site set must be USER_PERMITTED or USER_RESTRICTED"));
-    case developer::SiteSet::kNone:
-      NOTREACHED();
-  }
-
-  return RespondNow(NoArguments());
-}
-
 DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::
     DeveloperPrivateGetUserAndExtensionSitesByEtldFunction() = default;
 DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::
