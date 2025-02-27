@@ -269,7 +269,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         assertEquals(mTab1, tabs.get(1));
 
         verify(mAuxiliarySearchDonor)
-                .donateTabs(eq(tabs), mDonationCompleteCallbackCaptor.capture());
+                .donateEntries(eq(tabs), mDonationCompleteCallbackCaptor.capture());
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         eq(mProfile),
@@ -297,10 +297,10 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         mFaviconImageCallbackCaptor1.getValue().onFaviconAvailable(bitmap, null);
         verify(mAuxiliarySearchDonor, never())
-                .donateTabs(any(Map.class), mDonationCompleteCallbackCaptor.capture());
+                .donateEntries(any(Map.class), mDonationCompleteCallbackCaptor.capture());
         mFaviconImageCallbackCaptor2.getValue().onFaviconAvailable(null, null);
         verify(mAuxiliarySearchDonor)
-                .donateTabs(any(Map.class), mDonationCompleteCallbackCaptor.capture());
+                .donateEntries(any(Map.class), mDonationCompleteCallbackCaptor.capture());
         histogramWatcher.assertExpected();
 
         histogramWatcher =
@@ -412,7 +412,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         mFakeTime.advanceMillis(timeDelta);
         mCallbackCaptor.getAllValues().get(0).onResult(tabs);
 
-        verify(mAuxiliarySearchDonor, never()).donateTabs(any(List.class), any(Callback.class));
+        verify(mAuxiliarySearchDonor, never()).donateEntries(any(List.class), any(Callback.class));
     }
 
     @Test
@@ -457,7 +457,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         mFakeTime.advanceMillis(timeDelta);
         mEntryReadyCallbackCaptor.getAllValues().get(0).onResult(entries);
 
-        verify(mAuxiliarySearchDonor, never()).donateTabs(any(List.class), any(Callback.class));
+        verify(mAuxiliarySearchDonor, never()).donateEntries(any(List.class), any(Callback.class));
     }
 
     @Test

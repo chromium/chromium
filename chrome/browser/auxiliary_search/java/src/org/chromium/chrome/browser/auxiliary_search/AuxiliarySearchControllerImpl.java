@@ -190,7 +190,7 @@ public class AuxiliarySearchControllerImpl
                 };
 
         // Donates the list of tabs without favicons.
-        mDonor.donateTabs(tabs, onDonationCompleteCallback);
+        mDonor.donateEntries(tabs, onDonationCompleteCallback);
 
         if (!mIsFaviconEnabled) {
             return;
@@ -226,7 +226,7 @@ public class AuxiliarySearchControllerImpl
                                     TimeUtils.uptimeMillis() - faviconStartTimeMs);
 
                             if (!tabToFaviconMap.isEmpty()) {
-                                mDonor.donateTabs(tabToFaviconMap, onDonationCompleteCallback);
+                                mDonor.donateEntries(tabToFaviconMap, onDonationCompleteCallback);
                             }
                         }
                     });

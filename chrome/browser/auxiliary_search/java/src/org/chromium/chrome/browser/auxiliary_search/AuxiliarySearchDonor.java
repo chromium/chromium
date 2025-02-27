@@ -313,26 +313,29 @@ public class AuxiliarySearchDonor {
     /**
      * Donates favicons. Only the tabs with favicons will be donated.
      *
-     * @param entries The list of {@link AuxiliarySearchEntry} object which contains a Tab's data.
-     * @param tabToFaviconMap The map of <TabId, favicon>.
+     * @param entries The list of objects to donate.
+     * @param entryToFaviconMap The map of <Entry, favicon>.
      */
     @VisibleForTesting
-    public void donateFavicons(
-            @NonNull List<AuxiliarySearchEntry> entries,
-            @NonNull Map<AuxiliarySearchEntry, Bitmap> tabToFaviconMap,
-            @NonNull Callback<Boolean> callback) {
+    public <T> void donateFavicons(
+            List<T> entries, Map<T, Bitmap> entryToFaviconMap, Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<WebPage>();
 
-        for (AuxiliarySearchEntry entry : entries) {
-            Bitmap favicon = tabToFaviconMap.get(entry);
-            if (favicon != null) {
+        for (T entry : entries) {
+            Bitmap favicon = entryToFaviconMap.get(entry);
+            if (favicon == null) continue;
+
+            if (entry instanceof AuxiliarySearchEntry auxiliarySearchEntry) {
                 docs.add(
                         buildDocument(
-                                entry.getId(),
-                                entry.getUrl(),
-                                entry.getTitle(),
-                                entry.getLastAccessTimestamp(),
+                                auxiliarySearchEntry.getId(),
+                                auxiliarySearchEntry.getUrl(),
+                                auxiliarySearchEntry.getTitle(),
+                                auxiliarySearchEntry.getLastAccessTimestamp(),
                                 favicon));
+            } else {
+                assert entry instanceof AuxiliarySearchDataEntry;
+                // TODO(https://397457989): Implement this method.
             }
         }
 
@@ -341,19 +344,24 @@ public class AuxiliarySearchDonor {
         donateTabsImpl(docs, callback);
     }
 
-    /** Donates a list of tabs. */
+    /** Donates a list of data entries. */
     @VisibleForTesting
-    public void donateTabs(@NonNull List<Tab> tabs, @NonNull Callback<Boolean> callback) {
+    public <T> void donateEntries(List<T> entries, Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<WebPage>();
 
-        for (Tab tab : tabs) {
-            docs.add(
-                    buildDocument(
-                            tab.getId(),
-                            tab.getUrl().getSpec(),
-                            tab.getTitle(),
-                            tab.getTimestampMillis(),
-                            null));
+        for (T entry : entries) {
+            if (entry instanceof Tab tab) {
+                docs.add(
+                        buildDocument(
+                                tab.getId(),
+                                tab.getUrl().getSpec(),
+                                tab.getTitle(),
+                                tab.getTimestampMillis(),
+                                null));
+            } else {
+                assert entry instanceof AuxiliarySearchDataEntry;
+                // TODO(https://397457989): Implement this method.
+            }
         }
 
         donateTabsImpl(docs, callback);
@@ -362,39 +370,33 @@ public class AuxiliarySearchDonor {
     /**
      * Donates tabs with favicons.
      *
-     * @param tabToFaviconMap The map of tab with favicons.
+     * @param entryToFaviconMap The map of tab with favicons.
      */
     @VisibleForTesting
-    public void donateTabs(
-            @NonNull Map<Tab, Bitmap> tabToFaviconMap, @NonNull Callback<Boolean> callback) {
+    public <T> void donateEntries(Map<T, Bitmap> entryToFaviconMap, Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<WebPage>();
 
-        for (Map.Entry<Tab, Bitmap> entry : tabToFaviconMap.entrySet()) {
-            Tab tab = entry.getKey();
-            docs.add(
-                    buildDocument(
-                            tab.getId(),
-                            tab.getUrl().getSpec(),
-                            tab.getTitle(),
-                            tab.getTimestampMillis(),
-                            entry.getValue()));
+        for (Map.Entry<T, Bitmap> item : entryToFaviconMap.entrySet()) {
+            T entry = item.getKey();
+            if (entry instanceof Tab tab) {
+                docs.add(
+                        buildDocument(
+                                tab.getId(),
+                                tab.getUrl().getSpec(),
+                                tab.getTitle(),
+                                tab.getTimestampMillis(),
+                                item.getValue()));
+            } else {
+                assert entry instanceof AuxiliarySearchDataEntry;
+                // TODO(https://397457989): Implement this method.
+            }
         }
         donateTabsImpl(docs, callback);
     }
 
-    /** Donates a list of entries. */
-    @VisibleForTesting
-    public void donateEntries(List<AuxiliarySearchDataEntry> entries, Callback<Boolean> callback) {
-        // TODO(https://397457989): Implement this method.
-    }
-
     @VisibleForTesting
     WebPage buildDocument(
-            int id,
-            @NonNull String url,
-            @NonNull String title,
-            long lastAccessTimestamp,
-            @Nullable Bitmap favicon) {
+            int id, String url, String title, long lastAccessTimestamp, @Nullable Bitmap favicon) {
         String documentId = getDocumentId(id);
         byte[] faviconBytes = null;
         if (favicon != null) {

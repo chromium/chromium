@@ -49,7 +49,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
-public class AuxiliarySearchProviderTest {
+public class AuxiliarySearchProviderUnitTest {
     private static final String TAB_TITLE = "tab";
     private static final String TAB_URL = "https://tab.google.com/";
     private static final long FAKE_NATIVE_PROVIDER = 1;
