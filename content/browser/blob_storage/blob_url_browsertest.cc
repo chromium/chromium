@@ -239,13 +239,13 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
       "test();",
       blob_url);
 
-  EXPECT_FALSE(ExecJs(rfh_b, JsReplace(fetch_blob_url_js, blob_url)));
+  EXPECT_FALSE(ExecJs(rfh_b, fetch_blob_url_js));
 
-  EXPECT_TRUE(ExecJs(rfh_c_2, JsReplace(fetch_blob_url_js, blob_url)));
+  EXPECT_TRUE(ExecJs(rfh_c_2, fetch_blob_url_js));
 
   EXPECT_TRUE(ExecJs(rfh_c, JsReplace("URL.revokeObjectURL($1)", blob_url)));
 
-  EXPECT_FALSE(ExecJs(rfh_c_2, JsReplace(fetch_blob_url_js, blob_url)));
+  EXPECT_FALSE(ExecJs(rfh_c_2, fetch_blob_url_js));
 }
 
 class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
