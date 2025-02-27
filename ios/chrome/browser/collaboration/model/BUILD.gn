@@ -29,6 +29,7 @@ source_set("collaboration_delegate") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:image_util",
     "//url",
   ]

@@ -89,6 +89,9 @@ class IOSCollaborationControllerDelegate
   __weak UIViewController* base_view_controller_;
   NSString* session_id_ = nil;
   AlertCoordinator* alert_coordinator_ = nil;
+  // The scrim displayed on top of the base view to let the user know that
+  // something is happening and prevent interaction with the rest of the app.
+  UIView* scrim_view_ = nil;
 
   base::WeakPtrFactory<IOSCollaborationControllerDelegate> weak_ptr_factory_{
       this};
