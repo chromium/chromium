@@ -41,8 +41,10 @@ import java.util.List;
  */
 /*package*/ class AwPaymentRequestService
         implements BrowserPaymentRequest, PaymentResponseHelperInterface, AndroidIntentLauncher {
-    // The following error string is used only in WebView:
+    // The following error strings are only used in WebView:
     private static final String RETRY_DISABLED = "PaymentResponse.retry() is disabled in WebView.";
+    private static final String MORE_THAN_ONE_APP =
+            "WebView supports launching only one payment app at a time.";
 
     @Nullable private PaymentRequestService mPaymentRequestService;
     private final List<PaymentApp> mApps = new ArrayList<>();
@@ -145,6 +147,12 @@ import java.util.List;
                 || mPaymentRequestService.getSpec() == null
                 || mPaymentRequestService.getSpec().isDestroyed()) {
             return ErrorStrings.INVALID_STATE;
+        }
+
+        if (mApps.size() > 1) {
+            // WebView does not have UI for the user to choose one of their multiple payment apps
+            // that match merchant's PaymentRequest parameters. In this case, abort payment.
+            return MORE_THAN_ONE_APP;
         }
 
         PaymentApp selectedPaymentApp = getSelectedPaymentApp();

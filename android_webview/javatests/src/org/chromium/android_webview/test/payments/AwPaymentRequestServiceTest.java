@@ -49,6 +49,8 @@ import org.chromium.url.Origin;
 @Batch(Batch.PER_CLASS)
 public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     private static final String PAYMENT_METHOD_NAME = "https://payments.test/web-pay";
+    private static final String OTHER_PAYMENT_METHOD_NAME =
+            "https://other-payments.example/web-pay";
 
     @Rule public AwActivityTestRule mActivityTestRule;
     private AwTestContainerView mTestContainerView;
@@ -89,7 +91,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @DisableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestIsNotDefined() throws Exception {
-        loadMerchantCheckoutPage();
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkPaymentRequestDefined");
@@ -107,7 +109,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestIsDefined() throws Exception {
-        loadMerchantCheckoutPage();
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkPaymentRequestDefined");
@@ -125,7 +127,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCannotMakePaymentWithoutApps() throws Exception {
-        loadMerchantCheckoutPage();
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
 
@@ -142,7 +144,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestHasNoEnrolledInstrumentsWithoutApps() throws Exception {
-        loadMerchantCheckoutPage();
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -160,7 +162,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCannotLaunchAppsWithoutApps() throws Exception {
-        loadMerchantCheckoutPage();
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
 
@@ -175,8 +177,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestCanMakePayments() throws Exception {
-        installPaymentApp();
-        loadMerchantCheckoutPage();
+        installPaymentApps(/* multipleApps= */ false);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
 
@@ -192,8 +194,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestHasEnrolledInstrument() throws Exception {
-        installPaymentApp();
-        loadMerchantCheckoutPage();
+        installPaymentApps(/* multipleApps= */ false);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -208,15 +210,58 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testPaymentRequestLaunchPaymentApp() throws Exception {
-        installPaymentApp();
-        loadMerchantCheckoutPage();
+        installPaymentApps(/* multipleApps= */ false);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
-                response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+                response.contains(
+                        String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
         Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+    }
+
+    /**
+     * If the merchant website supports more than one payment method in PaymentRequest API, but the
+     * user has only one matching payment app on the device, then WebView can invoke this one
+     * payment app.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestLaunchPaymentAppWhenMerchantSupportsMultiplePaymentMethods()
+            throws Exception {
+        installPaymentApps(/* multipleApps= */ false);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        String response = mWebMessageListener.waitForOnPostMessage().getAsString();
+        Assert.assertTrue(
+                response.contains(
+                        String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+    }
+
+    /**
+     * If more than one app matches the PaymentRequest parameters from the merchant, then show()
+     * should return an error instead of launching an app, because WebView does not show UI for the
+     * user to choose between their apps.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestCannotLaunchPaymentAppWithMoreThanOneAppAtOnce()
+            throws Exception {
+        installPaymentApps(/* multipleApps= */ true);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+
+        Assert.assertEquals(
+                "NotSupportedError: WebView supports launching only one payment app at a time.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 
     /** Tests that retrying payment is disabled in the WebView implementation of PaymentRequest. */
@@ -224,8 +269,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testCannotRetry() throws Exception {
-        installPaymentApp();
-        loadMerchantCheckoutPage();
+        installPaymentApps(/* multipleApps= */ false);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ false);
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "retryPayment");
 
@@ -234,8 +279,13 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 
-    /** Loads a test web-page for exercising the PaymentRequest API. */
-    private void loadMerchantCheckoutPage() throws Exception {
+    /**
+     * Loads a test web-page for exercising the PaymentRequest API.
+     *
+     * @param multiplePaymentMethods Whether multiple payment methods should be requested in the
+     *     PaymentRequest API call.
+     */
+    private void loadMerchantCheckoutPage(boolean multiplePaymentMethods) throws Exception {
         String checkoutPageHtmlFormat =
                 """
             <!doctype html>
@@ -246,8 +296,15 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
             <button id="retryPayment">Retry payment</button>
 
             <script>
-              const supportedMethods = '%s';
-              const total = {label: 'Total', amount: {value: '0.01', currency: 'USD'}};
+              function createPaymentRequest() {
+                const firstMethod = '%s';
+                const secondMethod = '%s';
+                const total = {label: 'Total', amount: {value: '0.01', currency: 'USD'}};
+                return secondMethod
+                       ? new PaymentRequest([{supportedMethods: firstMethod},
+                                             {supportedMethods: secondMethod}], {total})
+                       : new PaymentRequest([{supportedMethods: firstMethod}], {total});
+              }
 
               function checkPaymentRequestDefined() {
                 if (!window.PaymentRequest) {
@@ -259,7 +316,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
               async function checkCanMakePayment() {
                 try {
-                  const request = new PaymentRequest([{supportedMethods}], {total});
+                  const request = createPaymentRequest();
                   if (await request.canMakePayment()) {
                     resultListener.postMessage('PaymentRequest can make payments.');
                   } else {
@@ -272,7 +329,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
               async function checkHasEnrolledInstrument() {
                 try {
-                  const request = new PaymentRequest([{supportedMethods}], {total});
+                  const request = createPaymentRequest();
                   if (await request.hasEnrolledInstrument()) {
                     resultListener.postMessage('PaymentRequest has enrolled instrument.');
                   } else {
@@ -285,7 +342,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
               async function launchPaymentApp() {
                 try {
-                  const request = new PaymentRequest([{supportedMethods}], {total});
+                  const request = createPaymentRequest();
                   const response = await request.show();
                   await response.complete('success');
                   resultListener.postMessage(JSON.stringify(response));
@@ -296,7 +353,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
               async function retryPayment() {
                 try {
-                  const request = new PaymentRequest([{supportedMethods}], {total});
+                  const request = createPaymentRequest();
                   let response = await request.show();
                   response = await response.retry();
                   await response.complete('success');
@@ -324,7 +381,10 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         String merchantCheckoutPageUrl =
                 mMerchantServer.setResponse(
                         "/checkout",
-                        String.format(checkoutPageHtmlFormat, PAYMENT_METHOD_NAME),
+                        String.format(
+                                checkoutPageHtmlFormat,
+                                PAYMENT_METHOD_NAME,
+                                multiplePaymentMethods ? OTHER_PAYMENT_METHOD_NAME : ""),
                         /* responseHeaders= */ null);
         mActivityTestRule.loadUrlAsync(mAwContents, merchantCheckoutPageUrl);
         Data messageFromPage = mWebMessageListener.waitForOnPostMessage();
@@ -335,8 +395,10 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
      * Injects a fake Android payment app into the package manager delegate, with the correct
      * signature being returned from the downloader. Also turns off connecting to the
      * IS_READY_TO_PAY service or sending the PAY intent to this app.
+     *
+     * @param multipleApps Whether multiple apps should be installed.
      */
-    private void installPaymentApp() {
+    private void installPaymentApps(boolean multipleApps) {
         MockPackageManagerDelegate packageManagerDelegate = new MockPackageManagerDelegate();
         // The SHA256 of the string "AABBCCDDEEFF001122334455" equals to the fingerprints[0].value
         // in the "downloaded" manifest file.
@@ -345,6 +407,15 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 "test.payments.app",
                 PAYMENT_METHOD_NAME,
                 "AABBCCDDEEFF001122334455");
+        if (multipleApps) {
+            // The SHA256 of the string "001122334455AABBCCDDEEFF" equals to the
+            // fingerprints[0].value in the "downloaded" manifest file.
+            packageManagerDelegate.installPaymentApp(
+                    "Other Test Payment App",
+                    "test.payments.other.app",
+                    OTHER_PAYMENT_METHOD_NAME,
+                    "001122334455AABBCCDDEEFF");
+        }
         AndroidPaymentAppFinder.setPackageManagerDelegateForTest(packageManagerDelegate);
         AndroidPaymentAppFinder.setDownloaderForTest(new MockPaymentManifestDownloader());
         AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(new MockAndroidIntentLauncher());
@@ -366,8 +437,24 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                   "id": "test.payments.app",
                   "min_version": "1",
                   "fingerprints": [{
-                  "type": "sha256_cert",
-                  "value": "79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE:06:50:CE:E4:75:80:62:65:02:FB:F6:F9:91:AB:6E:BE:21:7E"
+                    "type": "sha256_cert",
+                    "value": "79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE:06:50:CE:E4:75:80:62:65:02:FB:F6:F9:91:AB:6E:BE:21:7E"
+                  }]
+              }]
+            }
+            """;
+        // The fingerprints[0].value is the SHA256 of the string "001122334455AABBCCDDEEFF".
+        private static final String OTHER_MANIFEST_JSON =
+                """
+            {
+              "default_applications": ["/web-pay/manifest.json"],
+              "related_applications": [{
+                  "platform": "play",
+                  "id": "test.payments.other.app",
+                  "min_version": "1",
+                  "fingerprints": [{
+                    "type": "sha256_cert",
+                    "value": "01:9D:A6:93:7D:A2:1D:64:25:D8:D4:93:37:29:55:20:D9:54:16:A0:99:DD:E3:CA:31:EE:94:A4:70:AD:BD:70"
                   }]
               }]
             }
@@ -376,15 +463,21 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         @Override
         public void downloadPaymentMethodManifest(
                 Origin merchantOrigin, GURL url, ManifestDownloadCallback callback) {
-            assert url.getSpec().equals(PAYMENT_METHOD_NAME);
-            callback.onPaymentMethodManifestDownloadSuccess(url, Origin.create(url), MANIFEST_JSON);
+            callback.onPaymentMethodManifestDownloadSuccess(
+                    url,
+                    Origin.create(url),
+                    url.getSpec().equals(PAYMENT_METHOD_NAME)
+                            ? MANIFEST_JSON
+                            : OTHER_MANIFEST_JSON);
         }
 
         @Override
         public void downloadWebAppManifest(
                 Origin paymentMethodManifestOrigin, GURL url, ManifestDownloadCallback callback) {
-            assert url.getSpec().equals(PAYMENT_METHOD_NAME + "/manifest.json");
-            callback.onWebAppManifestDownloadSuccess(MANIFEST_JSON);
+            callback.onWebAppManifestDownloadSuccess(
+                    url.getSpec().startsWith(PAYMENT_METHOD_NAME)
+                            ? MANIFEST_JSON
+                            : OTHER_MANIFEST_JSON);
         }
     }
 
@@ -398,12 +491,15 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 Intent intent,
                 Callback<String> errorCallback,
                 WindowAndroid.IntentCallback intentCallback) {
-            Intent data = new Intent();
+            Bundle launchParameters = intent.getExtras();
+            String paymentMethodName = launchParameters.getStringArrayList("methodNames").get(0);
+
+            Intent response = new Intent();
             Bundle extras = new Bundle();
-            extras.putString("methodName", PAYMENT_METHOD_NAME);
+            extras.putString("methodName", paymentMethodName);
             extras.putString("details", "{\"key\": \"value\"}");
-            data.putExtras(extras);
-            intentCallback.onIntentCompleted(Activity.RESULT_OK, data);
+            response.putExtras(extras);
+            intentCallback.onIntentCompleted(Activity.RESULT_OK, response);
         }
     }
 }
