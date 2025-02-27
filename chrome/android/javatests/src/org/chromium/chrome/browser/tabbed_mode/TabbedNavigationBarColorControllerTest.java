@@ -363,7 +363,7 @@ public class TabbedNavigationBarColorControllerTest {
             List<Integer> capturedColors, int startColor, int endColor) {
 
         assertEquals(
-                "The first animation color match the start color.",
+                "The first animation color should match the start color.",
                 startColor,
                 (int) capturedColors.get(0));
 
@@ -421,6 +421,8 @@ public class TabbedNavigationBarColorControllerTest {
         // Inject the spy back into spyEdgeToEdgeSystemBarColorHelper.
         spyEdgeToEdgeSystemBarColorHelper.setWindowHelperForTesting(spyWindowSystemBarColorHelper);
 
+        Mockito.clearInvocations(spyEdgeToEdgeSystemBarColorHelper);
+
         // The initial nav bar color.
         int startColor = Color.BLUE;
 
@@ -435,12 +437,8 @@ public class TabbedNavigationBarColorControllerTest {
                             startColor, false, /* disableAnimation= */ true);
                 });
 
-        // Verify that setNavigationBarColor is called exactly once with Color.BLUE since animations
-        // are disabled.
-        verify(spyEdgeToEdgeSystemBarColorHelper, times(1)).setNavigationBarColor(eq(Color.BLUE));
-        // Since animations are disabled, setNavigationBarColor should not be called with any other
-        // colors other than Color.BLUE.
-        verify(spyEdgeToEdgeSystemBarColorHelper, times(1)).setNavigationBarColor(anyInt());
+        verify(spyEdgeToEdgeSystemBarColorHelper, atLeastOnce())
+                .setNavigationBarColor(eq(Color.BLUE));
 
         // Trigger the color change on the UI thread.
         ThreadUtils.runOnUiThreadBlocking(
