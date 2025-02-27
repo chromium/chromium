@@ -745,6 +745,10 @@ void HTMLDialogElement::AttributeChanged(
       params.old_value != params.new_value) {
     SetCloseWatcherEnabledState();
   }
+  if (params.name == html_names::kOpenAttr &&
+      params.old_value != params.new_value) {
+    PseudoStateChanged(CSSSelector::kPseudoOpen);
+  }
 }
 
 void HTMLDialogElement::ParseAttribute(
