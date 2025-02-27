@@ -1461,10 +1461,11 @@ public class StripLayoutHelperManager
     }
 
     public @ColorInt int getBackgroundColor() {
-        return AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
-                ? TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
-                        mContext, mIsIncognito, mIsTopResumedActivity)
-                : TabUiThemeUtil.getTabStripBackgroundColor(mContext, mIsIncognito);
+        return TabUiThemeUtil.getTabStripBackgroundColor(
+                mContext,
+                mIsIncognito,
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                mIsTopResumedActivity);
     }
 
     /**

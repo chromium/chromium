@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
@@ -34,7 +36,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -53,7 +57,8 @@ public class StatusBarColorController
                 StatusIndicatorCoordinator.StatusIndicatorObserver,
                 UrlFocusChangeListener,
                 OmniboxSuggestionsDropdownScrollListener,
-                TopToolbarCoordinator.ToolbarColorObserver {
+                TopToolbarCoordinator.ToolbarColorObserver,
+                TopResumedActivityChangedObserver {
     public static final @ColorInt int UNDEFINED_STATUS_BAR_COLOR = Color.TRANSPARENT;
     public static final @ColorInt int DEFAULT_STATUS_BAR_COLOR = Color.argb(0x01, 0, 0, 0);
 
@@ -111,6 +116,10 @@ public class StatusBarColorController
     private float mTabStripTransitionOverlayAlpha;
     private boolean mAllowToolbarColorOnTablets;
 
+    // Desktop window states.
+    private DesktopWindowStateManager mDesktopWindowStateManager;
+    private boolean mIsTopResumedActivity;
+
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
                 @Override
@@ -143,6 +152,7 @@ public class StatusBarColorController
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param topUiThemeColorProvider The {@link ThemeColorProvider} for top UI.
      * @param edgeToEdgeSystemBarColorHelper Draws status bar color for Edge to Edge.
+     * @param desktopWindowStateManagerSupplier Supplier to retrieve desktop window information.
      */
     public StatusBarColorController(
             Window window,
@@ -153,7 +163,8 @@ public class StatusBarColorController
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ActivityTabProvider tabProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
+            EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
+            OneshotSupplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
         mWindow = window;
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
@@ -259,6 +270,13 @@ public class StatusBarColorController
         mTopUiThemeColor = topUiThemeColorProvider;
         mToolbarColorChanged = false;
         mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;
+        desktopWindowStateManagerSupplier.runSyncOrOnAvailable(
+                desktopWindowStateManager -> {
+                    mDesktopWindowStateManager = desktopWindowStateManager;
+                    mIsTopResumedActivity =
+                            !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
+                    updateStatusBarColor();
+                });
     }
 
     // DestroyObserver implementation.
@@ -275,6 +293,14 @@ public class StatusBarColorController
             mCallbackController.destroy();
             mCallbackController = null;
         }
+    }
+
+    // TopResumedActivityChangedObserver implementation.
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        if (!mIsTablet || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)) return;
+        mIsTopResumedActivity = isTopResumedActivity;
+        updateStatusBarColor();
     }
 
     // TopToolbarCoordinator.UrlExpansionObserver implementation.
@@ -356,7 +382,7 @@ public class StatusBarColorController
 
     /**
      * @param tabModelSelector The {@link TabModelSelector} to check whether incognito model is
-     *                         selected.
+     *     selected.
      */
     public void setTabModelSelector(TabModelSelector tabModelSelector) {
         assert mTabModelSelector == null : "mTabModelSelector should only be set once.";
@@ -410,12 +436,13 @@ public class StatusBarColorController
         }
 
         if (mIsTablet) {
-            // When applicable, the status bar should use the default tab strip color, that is not
-            // affected by an activity focus change.
             return mTabStripHiddenOnTablet
                     ? mToolbarColor
                     : TabUiThemeUtil.getTabStripBackgroundColor(
-                            mWindow.getContext(), mIsIncognitoBranded);
+                            mWindow.getContext(),
+                            mIsIncognitoBranded,
+                            AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
+                            mIsTopResumedActivity);
         }
 
         // When Omnibox gains focus, we want to clear the status bar theme color.
