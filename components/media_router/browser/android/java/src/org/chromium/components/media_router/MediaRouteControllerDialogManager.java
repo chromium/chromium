@@ -4,6 +4,8 @@
 
 package org.chromium.components.media_router;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -16,7 +18,11 @@ import androidx.mediarouter.app.MediaRouteControllerDialogFragment;
 import androidx.mediarouter.media.MediaRouteSelector;
 import androidx.mediarouter.media.MediaRouter;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Manages the dialog responsible for controlling an existing media route. */
+@NullMarked
 public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManager {
     private static final String DIALOG_FRAGMENT_TAG =
             "androidx.mediarouter:MediaRouteControllerDialogFragment";
@@ -44,8 +50,8 @@ public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManag
     public static class Fragment extends MediaRouteControllerDialogFragment {
         private final Handler mHandler = new Handler();
         private final SystemVisibilitySaver mVisibilitySaver = new SystemVisibilitySaver();
-        private BaseMediaRouteDialogManager mManager;
-        private MediaRouter.Callback mCallback;
+        private @Nullable BaseMediaRouteDialogManager mManager;
+        private MediaRouter.@Nullable Callback mCallback;
 
         public Fragment() {
             mHandler.post(
@@ -64,7 +70,7 @@ public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManag
 
         @Override
         public MediaRouteControllerDialog onCreateControllerDialog(
-                Context context, Bundle savedInstanceState) {
+                Context context, @Nullable Bundle savedInstanceState) {
             MediaRouteControllerDialog dialog =
                     super.onCreateControllerDialog(context, savedInstanceState);
             dialog.setCanceledOnTouchOutside(true);
@@ -87,19 +93,21 @@ public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManag
         public void onDismiss(DialogInterface dialog) {
             super.onDismiss(dialog);
             if (mManager == null) return;
+            assert mCallback != null;
 
             mManager.delegate().onDialogCancelled();
+            assumeNonNull(mManager.androidMediaRouter());
             mManager.androidMediaRouter().removeCallback(mCallback);
             mManager.mDialogFragment = null;
         }
     }
-    ;
 
     @Override
-    protected DialogFragment openDialogInternal(FragmentManager fm) {
+    protected @Nullable DialogFragment openDialogInternal(FragmentManager fm) {
         if (fm.findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) return null;
 
         Fragment fragment = new Fragment(this, mCallback);
+        assumeNonNull(androidMediaRouter());
         androidMediaRouter().addCallback(routeSelector(), mCallback);
 
         fragment.show(fm, DIALOG_FRAGMENT_TAG);

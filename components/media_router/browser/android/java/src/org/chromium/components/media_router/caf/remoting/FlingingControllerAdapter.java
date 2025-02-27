@@ -4,25 +4,30 @@
 
 package org.chromium.components.media_router.caf.remoting;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.api.Result;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.FlingingController;
 import org.chromium.components.media_router.MediaController;
 import org.chromium.components.media_router.MediaStatusBridge;
 import org.chromium.components.media_router.MediaStatusObserver;
 
 /** Adapter class for bridging {@link RemoteMediaClient} and {@link FlingController}. */
+@NullMarked
 public class FlingingControllerAdapter implements FlingingController, MediaController {
     private static final String TAG = "FlingCtrlAdptr";
 
     private final StreamPositionExtrapolator mStreamPositionExtrapolator;
     private final RemotingSessionController mSessionController;
     private String mMediaUrl;
-    private MediaStatusObserver mMediaStatusObserver;
+    private @Nullable MediaStatusObserver mMediaStatusObserver;
     private boolean mLoaded;
     private boolean mHasEverReceivedValidMediaSession;
 
@@ -80,6 +85,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     /** Starts loading the media URL, from the given position. */
     public void load(long position, boolean autoplay) {
         if (!mSessionController.isConnected()) return;
+        assumeNonNull(mSessionController.getRemoteMediaClient());
 
         mLoaded = true;
 
@@ -98,6 +104,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     @Override
     public void play() {
         if (!mSessionController.isConnected()) return;
+        assumeNonNull(mSessionController.getRemoteMediaClient());
 
         if (!mLoaded) {
             load(/* position= */ 0, /* autoplay= */ true);
@@ -113,6 +120,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     @Override
     public void pause() {
         if (!mSessionController.isConnected()) return;
+        assumeNonNull(mSessionController.getRemoteMediaClient());
         mSessionController
                 .getRemoteMediaClient()
                 .pause()
@@ -122,6 +130,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     @Override
     public void setMute(boolean mute) {
         if (!mSessionController.isConnected()) return;
+        assumeNonNull(mSessionController.getRemoteMediaClient());
         mSessionController
                 .getRemoteMediaClient()
                 .setStreamMute(mute)
@@ -131,6 +140,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     @Override
     public void setVolume(double volume) {
         if (!mSessionController.isConnected()) return;
+        assumeNonNull(mSessionController.getRemoteMediaClient());
         mSessionController
                 .getRemoteMediaClient()
                 .setStreamVolume(volume)
@@ -140,6 +150,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     @Override
     public void seek(long position) {
         if (!mSessionController.isConnected()) return;
+        assumeNonNull(mSessionController.getRemoteMediaClient());
 
         if (!mLoaded) {
             load(position, /* autoplay= */ true);
@@ -161,6 +172,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
         if (mMediaStatusObserver == null) return;
 
         RemoteMediaClient remoteMediaClient = mSessionController.getRemoteMediaClient();
+        assumeNonNull(remoteMediaClient);
 
         MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
         if (mediaStatus != null) {

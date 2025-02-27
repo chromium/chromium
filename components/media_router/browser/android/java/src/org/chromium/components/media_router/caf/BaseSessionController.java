@@ -4,13 +4,16 @@
 
 package org.chromium.components.media_router.caf;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.CastSessionUtil;
 import org.chromium.components.media_router.FlingingController;
 import org.chromium.components.media_router.MediaSink;
@@ -24,6 +27,7 @@ import java.util.List;
  *
  * Has persistent lifecycle and always attaches itself to the current {@link CastSession}.
  */
+@NullMarked
 public abstract class BaseSessionController {
     private static final String TAG = "BaseSessionCtrl";
 
@@ -42,9 +46,9 @@ public abstract class BaseSessionController {
         void onMetadataUpdated();
     }
 
-    private CastSession mCastSession;
+    private @Nullable CastSession mCastSession;
     private final CafBaseMediaRouteProvider mProvider;
-    private CreateRouteRequestInfo mRouteCreationInfo;
+    private @Nullable CreateRouteRequestInfo mRouteCreationInfo;
     private final RemoteMediaClient.Callback mRemoteMediaClientCallback;
     private final List<Callback> mCallbacks = new ArrayList<>();
 
@@ -63,32 +67,33 @@ public abstract class BaseSessionController {
 
     public void requestSessionLaunch() {
         mRouteCreationInfo = mProvider.getPendingCreateRouteRequestInfo();
+        assumeNonNull(mRouteCreationInfo);
         CastUtils.getCastContext()
                 .setReceiverApplicationId(mRouteCreationInfo.getMediaSource().getApplicationId());
 
         // When the user clicks a route on the MediaRouteChooserDialog, we intercept the click event
         // and do not select the route. Instead the route selection is postponed to here. This will
         // trigger CAF to launch the session.
-        mRouteCreationInfo.routeInfo.select();
+        assumeNonNull(mRouteCreationInfo.routeInfo).select();
     }
 
-    public MediaSource getSource() {
+    public @Nullable MediaSource getSource() {
         return (mRouteCreationInfo != null) ? mRouteCreationInfo.getMediaSource() : null;
     }
 
-    public MediaSink getSink() {
+    public @Nullable MediaSink getSink() {
         return (mRouteCreationInfo != null) ? mRouteCreationInfo.sink : null;
     }
 
-    public CreateRouteRequestInfo getRouteCreationInfo() {
+    public @Nullable CreateRouteRequestInfo getRouteCreationInfo() {
         return mRouteCreationInfo;
     }
 
-    public CastSession getSession() {
+    public @Nullable CastSession getSession() {
         return mCastSession;
     }
 
-    public RemoteMediaClient getRemoteMediaClient() {
+    public @Nullable RemoteMediaClient getRemoteMediaClient() {
         return isConnected() ? mCastSession.getRemoteMediaClient() : null;
     }
 
@@ -118,6 +123,7 @@ public abstract class BaseSessionController {
         return capabilities;
     }
 
+    @EnsuresNonNullIf("mCastSession")
     public boolean isConnected() {
         return mCastSession != null && mCastSession.isConnected();
     }
@@ -202,8 +208,7 @@ public abstract class BaseSessionController {
         notifyCallback((Callback callback) -> callback.onMetadataUpdated());
     }
 
-    @Nullable
-    public FlingingController getFlingingController() {
+    public @Nullable FlingingController getFlingingController() {
         return null;
     }
 
@@ -211,8 +216,8 @@ public abstract class BaseSessionController {
      *  Helper message to get the session ID of the attached session. For stubbing in tests as
      * {@link CastSession#getSessionId()} is final.
      */
-    public String getSessionId() {
-        return isConnected() ? getSession().getSessionId() : null;
+    public @Nullable String getSessionId() {
+        return isConnected() ? mCastSession.getSessionId() : null;
     }
 
     private void notifyCallback(NotifyCallbackAction action) {

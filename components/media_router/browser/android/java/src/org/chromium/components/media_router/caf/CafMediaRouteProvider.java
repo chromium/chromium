@@ -4,16 +4,17 @@
 
 package org.chromium.components.media_router.caf;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.media_router.caf.CastUtils.isSameOrigin;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.mediarouter.media.MediaRouter;
 
 import com.google.android.gms.cast.framework.CastSession;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.ClientRecord;
 import org.chromium.components.media_router.MediaRoute;
@@ -26,13 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** A {@link MediaRouteProvider} implementation for Cast devices and applications, using Cast v3 API. */
+@NullMarked
 public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
     private static final String TAG = "CafMRP";
 
     private static final String AUTO_JOIN_PRESENTATION_ID = "auto-join";
     private static final String PRESENTATION_ID_SESSION_ID_PREFIX = "cast-session_";
 
-    @VisibleForTesting ClientRecord mLastRemovedRouteRecord;
+    @VisibleForTesting @Nullable ClientRecord mLastRemovedRouteRecord;
     // The records for clients, which must match mRoutes. This is used for the saving last record
     // for autojoin.
     private final Map<String, ClientRecord> mClientIdToRecords =
@@ -68,6 +70,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
             return;
         }
 
+        assumeNonNull(sessionController().getSink());
         MediaRoute route =
                 new MediaRoute(sessionController().getSink().getId(), sourceId, presentationId);
         addRoute(route, origin, tabId, nativeRequestId, /* wasLaunched= */ false);
@@ -104,7 +107,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
     }
 
     @Override
-    protected MediaSource getSourceFromId(String sourceId) {
+    protected @Nullable MediaSource getSourceFromId(String sourceId) {
         return CastMediaSource.from(sourceId);
     }
 
@@ -139,7 +142,6 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
         clientRecord.pendingMessages.clear();
     }
 
-    @NonNull
     public CafMessageHandler getMessageHandler() {
         return mMessageHandler;
     }
@@ -150,6 +152,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
 
         for (ClientRecord clientRecord : mClientIdToRecords.values()) {
             // Should be exactly one instance of MediaRoute/ClientRecord at this moment.
+            assert sessionController().getSink() != null;
             mMessageHandler.sendReceiverActionToClient(
                     clientRecord.routeId,
                     sessionController().getSink(),
@@ -158,6 +161,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
         }
 
         mMessageHandler.onSessionStarted();
+        assumeNonNull(sessionController().getSession());
         sessionController().getSession().getRemoteMediaClient().requestStatus();
     }
 
@@ -166,6 +170,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
             MediaRoute route, String origin, int tabId, int nativeRequestId, boolean wasLaunched) {
         super.addRoute(route, origin, tabId, nativeRequestId, wasLaunched);
         CastMediaSource source = CastMediaSource.from(route.getSourceId());
+        assumeNonNull(source);
         final String clientId = source.getClientId();
 
         if (clientId == null || mClientIdToRecords.containsKey(clientId)) return;
@@ -190,15 +195,15 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
         super.removeRouteFromRecord(routeId);
     }
 
-    @Nullable
-    private ClientRecord getClientRecordByRouteId(String routeId) {
+    private @Nullable ClientRecord getClientRecordByRouteId(String routeId) {
         for (ClientRecord record : mClientIdToRecords.values()) {
             if (record.routeId.equals(routeId)) return record;
         }
         return null;
     }
 
-    private CafMediaRouteProvider(MediaRouter androidMediaRouter, MediaRouteManager manager) {
+    private CafMediaRouteProvider(
+            @Nullable MediaRouter androidMediaRouter, MediaRouteManager manager) {
         super(androidMediaRouter, manager);
         mSessionController = new CastSessionController(this);
         mMessageHandler = new CafMessageHandler(this, mSessionController);
@@ -224,7 +229,8 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
         if (source.getAutoJoinPolicy().equals(CastMediaSource.AUTOJOIN_PAGE_SCOPED)) return false;
 
         CastMediaSource currentSource = (CastMediaSource) sessionController().getSource();
-        if (!currentSource.getApplicationId().equals(source.getApplicationId())) return false;
+        assumeNonNull(currentSource);
+        if (!source.getApplicationId().equals(currentSource.getApplicationId())) return false;
 
         if (mClientIdToRecords.isEmpty() && mLastRemovedRouteRecord != null) {
             return isSameOrigin(origin, mLastRemovedRouteRecord.origin)
