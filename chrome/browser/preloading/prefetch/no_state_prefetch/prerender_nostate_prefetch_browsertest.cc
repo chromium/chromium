@@ -51,6 +51,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1652,6 +1653,12 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
 
 class NoStatePrefetchIncognitoBrowserTest : public NoStatePrefetchBrowserTest {
  public:
+  NoStatePrefetchIncognitoBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {}, {content_settings::features::kTrackingProtection3pcd,
+             privacy_sandbox::kAlwaysBlock3pcsIncognito});
+  }
+
   void SetUpOnMainThread() override {
     Profile* normal_profile = current_browser()->profile();
     set_browser(OpenURLOffTheRecord(normal_profile, GURL("about:blank")));
@@ -1660,6 +1667,9 @@ class NoStatePrefetchIncognitoBrowserTest : public NoStatePrefetchBrowserTest {
         prefs::kCookieControlsMode,
         static_cast<int>(content_settings::CookieControlsMode::kOff));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that prerendering works in incognito mode.
