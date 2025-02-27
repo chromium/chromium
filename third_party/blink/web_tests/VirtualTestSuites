@@ -1903,14 +1903,6 @@
     "expires": "Apr 1, 2024"
   },
   {
-    "prefix": "longtask-from-loaf",
-    "owners": ["nrosenthal@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/longtask-timing"],
-    "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
-    "expires": "Feb 1, 2025"
-  },
-  {
     "prefix": "text-size-adjust",
     "owners": ["pdr@chromium.org"],
     "platforms": ["Linux", "Mac"],
