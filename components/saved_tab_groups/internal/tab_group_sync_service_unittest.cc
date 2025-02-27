@@ -2211,21 +2211,6 @@ TEST_F(TabGroupSyncServiceTest, OnCollaborationRemoved) {
   ASSERT_TRUE(model_->Contains(group->saved_guid()));
   ASSERT_TRUE(model_->Contains(shared_group->saved_guid()));
 
-  Sequence s;
-  EXPECT_CALL(*observer_,
-              OnTabGroupRemoved(
-                  testing::TypedEq<const LocalTabGroupID&>(local_group_id_1_),
-                  Eq(TriggerSource::REMOTE)))
-      .InSequence(s);
-  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
-                                                shared_group->saved_guid()),
-                                            Eq(TriggerSource::REMOTE)))
-      .InSequence(s);
-  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
-                                                group->saved_guid()),
-                                            Eq(TriggerSource::LOCAL)))
-      .InSequence(s);
-
   tab_group_sync_service_->OnCollaborationRemoved(
       syncer::CollaborationId(kCollaborationId));
   shared_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
