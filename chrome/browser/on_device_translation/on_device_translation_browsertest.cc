@@ -865,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
                        CrashWhileCallingCanTranslate) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
@@ -1130,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CanTranslateReadily) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   TestCanTranslateResult("en", "ja", CanCreateTranslatorResult::kReadily);
@@ -1141,7 +1141,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateAfterDownloadLanguagePackNotReady) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   TestCanTranslateResult(
       "en", "ja",
@@ -1155,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(
     CanTranslateAfterDownloadLibraryAndLanguagePackNotReady) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   TestCanTranslateResult(
       "en", "ja",
       CanCreateTranslatorResult::kAfterDownloadLibraryAndLanguagePackNotReady);
@@ -1167,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateAfterDownloadLibraryNotReady) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   TestCanTranslateResult(
       "en", "ja", CanCreateTranslatorResult::kAfterDownloadLibraryNotReady);
@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   SetSelectedLanguages("en,xx");
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   TestCanTranslateResult("en", "xx",
                          CanCreateTranslatorResult::kNoNotSupportedLanguage);
 }
@@ -1198,7 +1198,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   SetSelectedLanguages("en,fr");
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Es);
   // The language pack count is 1, which is less than the limitation.
@@ -1230,7 +1230,7 @@ IN_PROC_BROWSER_TEST_F(
   SetSelectedLanguages("hi,fr");
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Es);
   // The language pack count is 1, which is less than the limitation.
@@ -1534,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest,
                        CanTranslateAcceptLanguagesCheckSkipped) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ko);
   TestCanTranslateResult("en", "ko", CanCreateTranslatorResult::kReadily);
@@ -2144,7 +2144,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
                        CanTranslateReadily) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
   NavigateToEmptyPage();
@@ -2161,7 +2161,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
   SetSelectedLanguages("en,fr");
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
   NavigateToEmptyPage();
@@ -2175,7 +2175,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
                        CanTranslateAfterDownloadLibraryNotReady) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(1);
+      .Times(0);
   mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
   NavigateToEmptyPage();
   TestCanTranslateResult(

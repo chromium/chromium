@@ -121,8 +121,6 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
         base::BindRepeating(&OnDeviceTranslationServiceController::
                                 OnTranslateKitBinaryPathChanged,
                             base::Unretained(this)));
-    // Registers the TranslateKit component.
-    ComponentManager::GetInstance().RegisterTranslateKitComponent();
   }
   if (!ComponentManager::GetInstance().HasLanguagePackInfoFromCommandLine()) {
     // Start listening to pref changes for language pack keys.
@@ -182,7 +180,13 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       }
     }
   }
-  // If there is no TranslteKit or there are required language packs that are
+
+  if (!ComponentManager::HasTranslateKitLibraryPathFromCommandLine()) {
+    // Registers the TranslateKit component.
+    ComponentManager::GetInstance().RegisterTranslateKitComponent();
+  }
+
+  // If there is no TranslateKit or there are required language packs that are
   // not installed, we will wait until they are installed to create the
   // translator.
   if (ComponentManager::GetTranslateKitLibraryPath().empty() ||
