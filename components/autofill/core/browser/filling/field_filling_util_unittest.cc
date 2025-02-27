@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/select_control_util.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 
 #include <optional>
 #include <string>
@@ -30,38 +30,6 @@ class FieldFillingUtilTest : public testing::Test {
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
-
-TEST_F(FieldFillingUtilTest, FindShortestSubstringMatchInSelect) {
-  AutofillField field{test::CreateTestSelectField({"États-Unis", "Canada"})};
-
-  // Case 1: Exact match
-  EXPECT_EQ(
-      1, FindShortestSubstringMatchInSelect(u"Canada", false, field.options()));
-
-  // Case 2: Case-insensitive
-  EXPECT_EQ(
-      1, FindShortestSubstringMatchInSelect(u"CANADA", false, field.options()));
-
-  // Case 3: Proper substring
-  EXPECT_EQ(
-      0, FindShortestSubstringMatchInSelect(u"États", false, field.options()));
-
-  // Case 4: Accent-insensitive
-  EXPECT_EQ(0, FindShortestSubstringMatchInSelect(u"Etats-Unis", false,
-                                                  field.options()));
-
-  // Case 5: Whitespace-insensitive
-  EXPECT_EQ(1, FindShortestSubstringMatchInSelect(u"Ca na da", true,
-                                                  field.options()));
-
-  // Case 6: No match (whitespace-sensitive)
-  EXPECT_EQ(std::nullopt, FindShortestSubstringMatchInSelect(u"Ca Na Da", false,
-                                                             field.options()));
-
-  // Case 7: No match (not present)
-  EXPECT_EQ(std::nullopt, FindShortestSubstringMatchInSelect(u"Canadia", true,
-                                                             field.options()));
-}
 
 TEST_F(FieldFillingUtilTest, GetSelectControlByValue) {
   std::vector<const char*> kOptions = {
@@ -110,6 +78,11 @@ TEST_F(FieldFillingUtilTest, GetSelectControlByContents) {
                             /*failure_to_fill=*/nullptr)
           .value_or(u"");
   EXPECT_EQ(u"2", match_value);
+}
+
+TEST(GetObfuscatedValue, ObfuscateValue) {
+  EXPECT_EQ(GetObfuscatedValue(u"12"),
+            u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
 }
 
 }  // namespace autofill

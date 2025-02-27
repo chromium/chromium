@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/entities/field_filling_entity_util.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -313,10 +314,9 @@ Suggestion::Icon GetSuggestionIcon(
 // If `attribute.is_obfuscated` is true, it returns an obfuscated version of
 // the attribute's value. Otherwise, it returns `attribute.value()`.
 std::u16string GetMaybeObfuscatedValue(const AttributeInstance& attribute) {
-  if (!attribute.type().is_obfuscated()) {
-    return attribute.value();
-  }
-  return autofill::GetObfuscatedAttributeValue(attribute);
+  return attribute.type().is_obfuscated()
+             ? autofill::GetObfuscatedValue(attribute.value())
+             : attribute.value();
 }
 
 }  // namespace

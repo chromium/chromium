@@ -16,7 +16,6 @@
 
 namespace autofill {
 
-class AttributeInstance;
 class AutofillField;
 class EntityDataManager;
 class EntityInstance;
@@ -33,9 +32,6 @@ std::pair<std::u16string, std::optional<FieldType>>
 GetFillValueAndTypeForEntity(const EntityInstance& entity,
                              const AutofillField& field,
                              mojom::ActionPersistence action_persistence);
-
-// Returns an obfuscated version of `attribute`'s value.
-std::u16string GetObfuscatedAttributeValue(const AttributeInstance& attribute);
 
 }  // namespace autofill
 

@@ -22,11 +22,11 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
-#include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 

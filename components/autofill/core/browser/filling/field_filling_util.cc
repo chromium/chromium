@@ -1,43 +1,21 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/select_control_util.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
+
+#include <string>
 
 #include "base/i18n/string_search.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
-
-std::optional<size_t> FindShortestSubstringMatchInSelect(
-    const std::u16string& value,
-    bool ignore_whitespace,
-    base::span<const SelectOption> field_options) {
-  std::optional<size_t> best_match;
-
-  std::u16string value_stripped =
-      ignore_whitespace ? RemoveWhitespace(value) : value;
-  base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents searcher(
-      value_stripped);
-  for (size_t i = 0; i < field_options.size(); ++i) {
-    const SelectOption& option = field_options[i];
-    std::u16string option_value =
-        ignore_whitespace ? RemoveWhitespace(option.value) : option.value;
-    std::u16string option_text =
-        ignore_whitespace ? RemoveWhitespace(option.text) : option.text;
-    if (searcher.Search(option_value, nullptr, nullptr) ||
-        searcher.Search(option_text, nullptr, nullptr)) {
-      if (!best_match.has_value() ||
-          field_options[best_match.value()].value.size() >
-              option.value.size()) {
-        best_match = i;
-      }
-    }
-  }
-  return best_match;
-}
 
 std::optional<std::u16string> GetSelectControlValue(
     const std::u16string& value,
@@ -142,6 +120,77 @@ std::optional<std::u16string> GetNumericSelectControlValue(
         "Did not find numeric value to fill in select control element. ";
   }
   return std::nullopt;
+}
+
+std::u16string GetObfuscatedValue(const std::u16string& value) {
+  // Same obfuscation symbol as used for credit cards - see also credit_card.h.
+  //  - \u2022 - Bullet.
+  //  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
+  //  - \u2060 - WORD-JOINER (makes obfuscated string indivisible).
+  static constexpr char16_t kDot[] = u"\u2022\u2060\u2006\u2060";
+  // This is only an approximation of the number of the actual unicode
+  // characters - if we want to match the length exactly, we would need to use
+  // `base::CountUnicodeCharacters`.
+  const size_t obfuscation_length = value.size();
+  std::u16string result;
+  result.reserve(sizeof(kDot) * obfuscation_length);
+  for (size_t i = 0; i < obfuscation_length; ++i) {
+    result.append(kDot);
+  }
+  return result;
+}
+
+// Gets the country value to fill in a select control.
+// Returns an empty string if no value for filling was found.
+std::u16string GetCountrySelectControlValue(
+    const std::u16string& value,
+    base::span<const SelectOption> field_options,
+    std::string* failure_to_fill) {
+  // Search for exact matches.
+  if (std::optional<std::u16string> select_control_value =
+          GetSelectControlValue(value, field_options, failure_to_fill)) {
+    return *select_control_value;
+  }
+  std::string country_code = CountryNames::GetInstance()->GetCountryCode(value);
+  if (country_code.empty()) {
+    if (failure_to_fill) {
+      *failure_to_fill += "Cannot fill empty country code. ";
+    }
+    return {};
+  }
+
+  // Sometimes options contain a country name and phone country code (e.g.
+  // "Germany (+49)"). This can happen if such a <select> is annotated as
+  // autocomplete="tel-country-code". The following lambda strips the phone
+  // country code so that the remainder ideally matches a country name.
+  auto strip_phone_country_code =
+      [](const std::u16string& value) -> std::u16string {
+    static base::NoDestructor<std::unique_ptr<const RE2>> regex_pattern(
+        std::make_unique<const RE2>("[(]?(?:00|\\+)\\s*[1-9]\\d{0,3}[)]?"));
+    std::string u8string = base::UTF16ToUTF8(value);
+    if (RE2::Replace(&u8string, **regex_pattern, "")) {
+      return base::UTF8ToUTF16(
+          base::TrimWhitespaceASCII(u8string, base::TRIM_ALL));
+    }
+    return value;
+  };
+
+  for (const SelectOption& option : field_options) {
+    // Canonicalize each <option> value to a country code, and compare to the
+    // target country code.
+    if (country_code == CountryNames::GetInstance()->GetCountryCode(
+                            strip_phone_country_code(option.value)) ||
+        country_code == CountryNames::GetInstance()->GetCountryCode(
+                            strip_phone_country_code(option.text))) {
+      return option.value;
+    }
+  }
+
+  if (failure_to_fill) {
+    *failure_to_fill +=
+        "Did not find country to fill in select control element. ";
+  }
+  return {};
 }
 
 }  // namespace autofill

@@ -151,15 +151,6 @@ TEST(GetFillValueAndTypeForEntityTest, ObfuscatedAttributes) {
             kNumber);
 }
 
-TEST(GetObfuscatedAttributeValue, ObfuscateValue) {
-  EntityInstance passport = test::GetPassportEntityInstance({.number = u"12"});
-  base::optional_ref<const AttributeInstance> passport_number =
-      passport.attribute(AttributeType(AttributeTypeName::kPassportNumber));
-  ASSERT_TRUE(passport_number);
-  EXPECT_EQ(GetObfuscatedAttributeValue(*passport_number),
-            u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
-}
-
 TEST(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiWithDataSchema};
