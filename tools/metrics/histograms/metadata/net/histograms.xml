@@ -5520,8 +5520,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Reporting.FilteredReportsCount"
-    enum="NetReportingUploadHeaderType" expires_after="2026-02-21">
+<histogram name="Net.Reporting.FilteredReportsCount" units="reports"
+    expires_after="2026-02-21">
   <owner>ricea@chromium.org</owner>
   <owner>patilmayur@microsoft.com</owner>
   <owner>src/net/reporting/OWNERS</owner>
@@ -5547,8 +5547,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Reporting.ReportBodySize"
-    enum="NetReportingUploadHeaderType" expires_after="2026-02-21">
+<histogram name="Net.Reporting.ReportBodySize" units="KB"
+    expires_after="2026-02-21">
   <owner>ricea@chromium.org</owner>
   <owner>patilmayur@microsoft.com</owner>
   <owner>src/net/reporting/OWNERS</owner>
@@ -5559,8 +5559,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Reporting.ReportsCount"
-    enum="NetReportingUploadHeaderType" expires_after="2026-02-21">
+<histogram name="Net.Reporting.ReportsCount" units="reports"
+    expires_after="2026-02-21">
   <owner>ricea@chromium.org</owner>
   <owner>patilmayur@microsoft.com</owner>
   <owner>src/net/reporting/OWNERS</owner>
@@ -5571,8 +5571,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Reporting.ReportTotalSize"
-    enum="NetReportingUploadHeaderType" expires_after="2026-02-21">
+<histogram name="Net.Reporting.ReportTotalSize" units="KB"
+    expires_after="2026-02-21">
   <owner>ricea@chromium.org</owner>
   <owner>patilmayur@microsoft.com</owner>
   <owner>src/net/reporting/OWNERS</owner>
