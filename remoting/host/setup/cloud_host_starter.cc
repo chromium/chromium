@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
 #include "remoting/base/cloud_service_client.h"
 #include "remoting/base/compute_engine_service_client.h"
 #include "remoting/base/http_status.h"
@@ -90,7 +91,9 @@ void CloudHostStarter::RetrieveApiAccessToken() {
   // the access token request if an API_KEY is provided but we want to try to
   // get the identity token for both scenarios.
   compute_engine_service_client_->GetInstanceIdentityToken(
-      /*audience=*/ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+      base::StringPrintf(
+          "https://%s",
+          ServiceUrls::GetInstance()->remoting_cloud_public_endpoint()),
       base::BindOnce(&CloudHostStarter::OnIdentityTokenRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
 }

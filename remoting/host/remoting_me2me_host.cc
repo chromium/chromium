@@ -31,6 +31,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -1725,7 +1726,9 @@ void HostProcess::InitializeSignaling() {
     // generate tokens for calling the private Remoting Cloud API.
     instance_identity_token_getter_ =
         std::make_unique<InstanceIdentityTokenGetter>(
-            ServiceUrls::GetInstance()->remoting_cloud_private_endpoint(),
+            base::StringPrintf(
+                "https://%s",
+                ServiceUrls::GetInstance()->remoting_cloud_private_endpoint()),
             context_->url_loader_factory());
 
     service_client = std::make_unique<CloudHeartbeatServiceClient>(
