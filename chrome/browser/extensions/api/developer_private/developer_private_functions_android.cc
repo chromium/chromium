@@ -60,8 +60,6 @@ DEFINE_EMPTY_FUNC(DeveloperPrivateRemoveHostPermissionFunction,
                   "developerPrivate.removeHostPermission")
 DEFINE_EMPTY_FUNC(DeveloperPrivateGetUserAndExtensionSitesByEtldFunction,
                   "developerPrivate.getUserAndExtensionSitesByEtld")
-DEFINE_EMPTY_FUNC(DeveloperPrivateGetMatchingExtensionsForSiteFunction,
-                  "developerPrivate.getMatchingExtensionsForSite")
 DEFINE_EMPTY_FUNC(DeveloperPrivateUpdateSiteAccessFunction,
                   "developerPrivate.updateSiteAccess")
 DEFINE_EMPTY_FUNC(DeveloperPrivateRemoveMultipleExtensionsFunction,

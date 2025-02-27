@@ -144,6 +144,24 @@ class DeveloperPrivateRemoveUserSpecifiedSitesFunction
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateGetMatchingExtensionsForSiteFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getMatchingExtensionsForSite",
+                             DEVELOPERPRIVATE_GETMATCHINGEXTENSIONSFORSITE)
+  DeveloperPrivateGetMatchingExtensionsForSiteFunction();
+
+  DeveloperPrivateGetMatchingExtensionsForSiteFunction(
+      const DeveloperPrivateGetMatchingExtensionsForSiteFunction&) = delete;
+  DeveloperPrivateGetMatchingExtensionsForSiteFunction& operator=(
+      const DeveloperPrivateGetMatchingExtensionsForSiteFunction&) = delete;
+
+ private:
+  ~DeveloperPrivateGetMatchingExtensionsForSiteFunction() override;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions::api
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_SHARED_H_
