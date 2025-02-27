@@ -440,6 +440,10 @@
       status: "test",
     },
     {
+      name: "AriaNotifyV2",
+      status: "test",
+    },
+    {
       name: "AriaRowColIndexText",
       status: "stable",
     },
