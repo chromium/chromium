@@ -178,21 +178,20 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   self.exporterIsReady = self.passwordExporter.exportState == ExportState::IDLE;
   [self savedPasswordsDidChange];
 
-  bool savingCredentialsManagedByPolicy =
-      _prefService->IsManagedPreference(kCredentialsEnableService);
   [self.consumer setSavePasswordsEnabled:_prefService->GetBoolean(
                                              kCredentialsEnableService)
-                         managedByPolicy:savingCredentialsManagedByPolicy];
+                         managedByPolicy:_prefService->IsManagedPreference(
+                                             kCredentialsEnableService)];
 
   [self.consumer setSignedInAccount:base::SysUTF8ToNSString(
                                         _syncService->GetAccountInfo().email)];
 
   [self.consumer
       setAutomaticPasskeyUpgradesEnabled:_prefService->GetBoolean(
-                                             kAutomaticPasskeyUpgrades)
-                         managedByPolicy:savingCredentialsManagedByPolicy ||
-                                         _prefService->IsManagedPreference(
-                                             kCredentialsEnablePasskeys)];
+                                             kAutomaticPasskeyUpgrades)];
+
+  [self.consumer setSavePasskeysEnabled:_prefService->GetBoolean(
+                                            kCredentialsEnablePasskeys)];
 
   [self passwordAutoFillStatusDidChange];
 
@@ -370,20 +369,22 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
         preferenceName == kCredentialsEnableService)
       << "Unsupported preference: " << preferenceName;
 
-  bool savingCredentialsManagedByPolicy =
-      _prefService->IsManagedPreference(kCredentialsEnableService);
-  bool savingPasskeysManagedByPolicy =
-      _prefService->IsManagedPreference(kCredentialsEnablePasskeys);
   [self.consumer
       setAutomaticPasskeyUpgradesEnabled:_prefService->GetBoolean(
-                                             kAutomaticPasskeyUpgrades)
-                         managedByPolicy:savingCredentialsManagedByPolicy ||
-                                         savingPasskeysManagedByPolicy];
+                                             kAutomaticPasskeyUpgrades)];
 
-  if (preferenceName == kCredentialsEnableService) {
+  if (preferenceName == kAutomaticPasskeyUpgrades) {
+    [self.consumer
+        setAutomaticPasskeyUpgradesEnabled:_prefService->GetBoolean(
+                                               kAutomaticPasskeyUpgrades)];
+  } else if (preferenceName == kCredentialsEnablePasskeys) {
+    [self.consumer setSavePasskeysEnabled:_prefService->GetBoolean(
+                                              kCredentialsEnablePasskeys)];
+  } else {
     [self.consumer setSavePasswordsEnabled:_prefService->GetBoolean(
                                                kCredentialsEnableService)
-                           managedByPolicy:savingCredentialsManagedByPolicy];
+                           managedByPolicy:_prefService->IsManagedPreference(
+                                               kCredentialsEnableService)];
   }
 }
 

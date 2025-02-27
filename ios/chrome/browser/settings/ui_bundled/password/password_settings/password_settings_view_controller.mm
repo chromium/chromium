@@ -146,16 +146,15 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // Whether or not the Password Manager is managed by enterprise policy.
 @property(nonatomic, assign, getter=isManagedByPolicy) BOOL managedByPolicy;
 
-// Whether automatic passkey upgrades setting is managed by enterprise policy.
-// If managed, the switch controlling this settings should not be displayed.
-@property(nonatomic, assign) BOOL automaticPasskeyUpgradesManagedByPolicy;
-
 // Whether automatic passkey upgrades are enabled.
 @property(nonatomic, assign) BOOL automaticPasskeyUpgradesEnabled;
 
 // Indicates whether or not "Offer to Save Passwords" is set to enabled.
 @property(nonatomic, assign, getter=isSavePasswordsEnabled)
     BOOL savePasswordsEnabled;
+
+// Whether saving passkeys is enabled.
+@property(nonatomic, assign) BOOL savePasskeysEnabled;
 
 // The amount of local passwords present on device.
 @property(nonatomic, assign) int localPasswordsCount;
@@ -706,15 +705,12 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // The `setCanExportPasswords` method required for the PasswordSettingsConsumer
 // protocol is provided by property synthesis.
 
-- (void)setAutomaticPasskeyUpgradesEnabled:(BOOL)enabled
-                           managedByPolicy:(BOOL)managed {
-  if (_automaticPasskeyUpgradesEnabled == enabled &&
-      _automaticPasskeyUpgradesManagedByPolicy == managed) {
+- (void)setAutomaticPasskeyUpgradesEnabled:(BOOL)enabled {
+  if (_automaticPasskeyUpgradesEnabled == enabled) {
     return;
   }
 
   _automaticPasskeyUpgradesEnabled = enabled;
-  _automaticPasskeyUpgradesManagedByPolicy = managed;
 
   if (self.modelLoadStatus == ModelNotLoaded) {
     return;
@@ -756,6 +752,22 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   } else {
     [self updateSavePasswordsSwitch];
   }
+
+  [self updateAutomaticPasskeyUpgradesSwitch];
+}
+
+- (void)setSavePasskeysEnabled:(BOOL)enabled {
+  if (_savePasskeysEnabled == enabled) {
+    return;
+  }
+
+  _savePasskeysEnabled = enabled;
+
+  if (self.modelLoadStatus == ModelNotLoaded) {
+    return;
+  }
+
+  [self updateAutomaticPasskeyUpgradesSwitch];
 }
 
 - (void)setLocalPasswordsCount:(int)count
@@ -1180,9 +1192,8 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 }
 
 // Updates the view to by either adding or removing the automatic passkey
-// upgrades switch section based on whether password manager or saving passkeys
-// is controlled by enterprise policy (in those cases there is no point in
-// displaying the switch).
+// upgrades toggle section. The toggle should be visible if saving passkeys and
+// passwords is enabled.
 - (void)updateAutomaticPasskeyUpgradesSwitch {
   if (self.modelLoadStatus != ModelLoadComplete) {
     return;
@@ -1229,12 +1240,10 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 }
 
 // Automatic passkey upgrades switch should be displayed if the feature is
-// enabled and is not managed by an enterprise policy.
-// TODO(crbug.com/358343061): Consult with UX how this should relate to
-// `_savePasswordsEnabled`.
+// enabled and both saving passkeys and password setting is enabled.
 - (BOOL)shouldDisplayPasskeyUpgradesSwitch {
-  return AutomaticPasskeyUpgradeFeatureEnabled() &&
-         !self.automaticPasskeyUpgradesManagedByPolicy;
+  return AutomaticPasskeyUpgradeFeatureEnabled() && _savePasswordsEnabled &&
+         _savePasskeysEnabled;
 }
 
 @end
