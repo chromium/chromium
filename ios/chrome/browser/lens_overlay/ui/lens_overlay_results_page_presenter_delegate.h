@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_RESULTS_PAGE_PRESENTER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_RESULTS_PAGE_PRESENTER_DELEGATE_H_
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 
 // Delegate for the results page presenter.
@@ -18,6 +20,10 @@
 
 // The occlusion insets amount has been determined.
 - (void)onResultsPageVerticalOcclusionInsetsSettled:(CGFloat)offsetNeeded;
+
+// The layout guide for the visible area was adjusted.
+- (void)onResultsPageVisibleAreaLayoutGuideAdjusted:
+    (UILayoutGuide*)visibleAreaLayoutGuide;
 
 @end
 

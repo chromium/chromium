@@ -163,6 +163,16 @@
 
   promise_test(async function (t) {
     t.add_cleanup(resetState);
+    let called = false;
+    invokee.addEventListener("command", (e) => (called = true), { once: true });
+    invokerbutton.setAttribute("form", "aform");
+    invokerbutton.setAttribute("type", "invalid");
+    await clickOn(invokerbutton);
+    assert_false(called, "event was not called");
+  }, "event does NOT dispatch if button is form associated, with explicit type=invalid");
+
+  promise_test(async function (t) {
+    t.add_cleanup(resetState);
     let event;
     invokee.addEventListener("command", (e) => (event = e), { once: true });
     invokerbutton.setAttribute("form", "aform");
@@ -195,8 +205,8 @@
     invokerbutton.setAttribute("form", "aform");
     invokerbutton.setAttribute("type", "reset");
     await clickOn(invokerbutton);
-    assert_true(called, "event was called");
-  }, "event does dispatch if button is form associated, with explicit type=reset");
+    assert_false(called, "event was called");
+  }, "event does NOT dispatch if button is form associated, with explicit type=reset");
 
   promise_test(async function (t) {
     svgInvokee = document.createElementNS("http://www.w3.org/2000/svg", "svg");

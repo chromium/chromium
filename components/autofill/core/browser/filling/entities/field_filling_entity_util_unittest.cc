@@ -151,13 +151,30 @@ TEST(GetFillValueAndTypeForEntityTest, ObfuscatedAttributes) {
             kNumber);
 }
 
-TEST(GetObfuscatedAttributeValue, ObfuscateValue) {
-  EntityInstance passport = test::GetPassportEntityInstance({.number = u"12"});
-  base::optional_ref<const AttributeInstance> passport_number =
-      passport.attribute(AttributeType(AttributeTypeName::kPassportNumber));
-  ASSERT_TRUE(passport_number);
-  EXPECT_EQ(GetObfuscatedAttributeValue(*passport_number),
-            u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
+TEST(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWithDataSchema};
+  EntityInstance passport = test::GetPassportEntityInstance();
+  for (const auto& [type, expectation] :
+       std::vector<std::pair<FieldType, std::u16string>>{
+           {NAME_FULL, u"Pippi Långstrump"},
+           {NAME_FIRST, u"Pippi"},
+           {NAME_LAST, u"Långstrump"}}) {
+    AutofillField field;
+    FieldPrediction prediction;
+    prediction.set_type(PASSPORT_NAME_TAG);
+    prediction.set_source(
+        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+            FieldPrediction::SOURCE_AUTOFILL_AI);
+    field.set_server_predictions({prediction});
+    field.SetTypeTo(type);
+
+    EXPECT_EQ(GetFillValueAndTypeForEntity(passport, field,
+                                           mojom::ActionPersistence::kFill)
+                  .first,
+              expectation)
+        << FieldTypeToStringView(type);
+  }
 }
 
 }  // namespace

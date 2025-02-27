@@ -154,11 +154,6 @@ FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
     const SimpleFontData* last_resort =
         font_cache.GetLastResortFallbackFont(font_description_);
 
-    if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
-      font_selector->ReportLastResortFallbackFontLookup(font_description_,
-                                                        last_resort);
-    }
-
     return UniqueOrNext(MakeGarbageCollected<FontDataForRangeSet>(last_resort),
                         hint_list);
   }
@@ -242,10 +237,6 @@ const SimpleFontData* FontFallbackIterator::FallbackPriorityFont(UChar32 hint) {
       font_fallback_list_->PrimarySimpleFontData(font_description_),
       font_fallback_priority_);
 
-  if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
-    font_selector->ReportFontLookupByFallbackCharacter(
-        hint, font_fallback_priority_, font_description_, font_data);
-  }
   return font_data;
 }
 
@@ -289,10 +280,6 @@ const SimpleFontData* FontFallbackIterator::UniqueSystemFontForHintList(
       font_description_, hint,
       font_fallback_list_->PrimarySimpleFontData(font_description_));
 
-  if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
-    font_selector->ReportFontLookupByFallbackCharacter(
-        hint, FontFallbackPriority::kText, font_description_, font_data);
-  }
   return font_data;
 }
 

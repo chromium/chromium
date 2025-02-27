@@ -18,15 +18,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/components/sensors/fake_sensor_device.h"
 #include "chromeos/components/sensors/fake_sensor_hal_server.h"
 #include "services/device/generic_sensor/sensor_impl.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
@@ -68,19 +65,14 @@ class FakeClient : public PlatformSensor::Client {
 class PlatformSensorProviderChromeOSTest : public ::testing::Test {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS)
     chromeos::sensors::SensorHalDispatcher::Initialize();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     sensor_hal_server_ =
         std::make_unique<chromeos::sensors::FakeSensorHalServer>();
     provider_ = std::make_unique<PlatformSensorProviderChromeOS>();
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_CHROMEOS)
     chromeos::sensors::SensorHalDispatcher::Shutdown();
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void AddDevice(int32_t iio_device_id,
@@ -151,22 +143,11 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
   }
 
   void RegisterSensorHalServer() {
-#if BUILDFLAG(IS_CHROMEOS)
     // MojoConnectionServiceProvider::BootstrapMojoConnectionForIioService is
     // responsible for calling this outside unit tests.
     // This will eventually call PlatformSensorProviderChromeOS::SetUpChannel().
     chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
         sensor_hal_server_->PassRemote());
-#else
-    // As SensorHalDispatcher is only defined in ash, manually setting up Mojo
-    // connection between |fake_sensor_hal_server_| and |provider_|.
-    // This code is duplicating what SensorHalDispatcher::EstablishMojoChannel()
-    // does.
-    mojo::PendingRemote<chromeos::sensors::mojom::SensorService> pending_remote;
-    sensor_hal_server_->CreateChannel(
-        pending_remote.InitWithNewPipeAndPassReceiver());
-    provider_->SetUpChannel(std::move(pending_remote));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   std::unique_ptr<chromeos::sensors::FakeSensorHalServer> sensor_hal_server_;

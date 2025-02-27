@@ -3985,7 +3985,7 @@ enum class ToolbarKind {
   // TODO(crbug.com/335387869): Remove NotFatalUntil and the if below when we're
   // sure this code path is infeasible. The BrowserViewController should always
   // have at least the QuickDeleteViewController on top of it.
-  CHECK(self.viewController.presentedViewController, base::NotFatalUntil::M134);
+  CHECK(self.viewController.presentedViewController, base::NotFatalUntil::M137);
 
   // If BrowserViewController has not presented any view controller, then
   // trigger `completion` immediately.

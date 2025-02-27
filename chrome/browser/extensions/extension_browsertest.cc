@@ -216,7 +216,10 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void ExtensionBrowserTest::SetUpOnMainThread() {
   observer_ =
-      std::make_unique<ChromeExtensionTestNotificationObserver>(browser());
+      browser()
+          ? std::make_unique<ChromeExtensionTestNotificationObserver>(browser())
+          : std::make_unique<ChromeExtensionTestNotificationObserver>(
+                profile());
   if (extension_service()->updater()) {
     extension_service()->updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
@@ -730,7 +733,7 @@ WindowController* ExtensionBrowserTest::GetWindowController() {
   // TODO(b/361838438): Provide an implementation for the desktop android build.
   return nullptr;
 #else
-  return browser()->extension_window_controller();
+  return browser() ? browser()->extension_window_controller() : nullptr;
 #endif
 }
 

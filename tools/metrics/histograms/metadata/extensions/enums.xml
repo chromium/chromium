@@ -2805,6 +2805,9 @@ Called by update_extension_histograms.py.-->
   <int value="1925" label="AUTOFILLPRIVATE_ADDORUPDATEENTITYINSTANCE"/>
   <int value="1926" label="AUTOFILLPRIVATE_REMOVEENTITYINSTANCE"/>
   <int value="1927" label="ACCESSIBILITY_PRIVATE_ENABLELIVECAPTION"/>
+  <int value="1928" label="AUTOFILLPRIVATE_GETALLENTITYTYPES"/>
+  <int value="1929" label="AUTOFILLPRIVATE_GETALLATTRIBUTETYPESFORENTITY"/>
+  <int value="1930" label="AUTOFILLPRIVATE_GETENTITYINSTANCEBYGUID"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

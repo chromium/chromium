@@ -18,6 +18,7 @@
 #include "base/files/safe_base_name.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -350,6 +351,124 @@ TEST_F(FilePathTest, Append) {
     EXPECT_EQ(FilePath::StringType(cases[i].expected), observed_str.value())
         << "i: " << i << ", root: " << root.value() << ", leaf: " << leaf;
   }
+}
+
+// Test UTF8 values within a file path.
+class FilePathUTF8Test : public ::testing::TestWithParam<FilePath::StringType> {
+ protected:
+  FilePath::StringType testcase() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FilePathUTF8TestCases,
+    FilePathUTF8Test,
+    ::testing::Values(FPL("خطأ في عملية التحقق من التحديث 5555"),
+                      FPL("अपडेट जांच में यह गड़बड़ी है 5555"),
+                      FPL("更新確認エラー 5555。")));
+
+TEST_P(FilePathUTF8Test, Test) {
+  FilePath root(FPL(""));
+  FilePath::StringType leaf(testcase());
+  FilePath observed_str = root.Append(leaf);
+  EXPECT_EQ(FilePath::StringType(testcase()), observed_str.value());
+  FilePath observed_path = root.Append(FilePath(leaf));
+  EXPECT_EQ(FilePath::StringType(testcase()), observed_path.value());
+
+#if BUILDFLAG(IS_WIN)
+  std::string utf8 = WideToUTF8(leaf);
+#else
+  std::string utf8 = leaf;
+#endif
+  EXPECT_DCHECK_DEATH({ observed_str = root.AppendASCII(utf8); });
+  EXPECT_DCHECK_DEATH(
+      { observed_str = root.InsertBeforeExtensionASCII(utf8); });
+  EXPECT_DCHECK_DEATH({ observed_str = root.AddExtensionASCII(utf8); });
+
+  observed_str = root.AppendUTF8(utf8);
+  EXPECT_EQ(FilePath::StringType(testcase()), observed_str.value());
+
+  observed_str = root.InsertBeforeExtensionUTF8(utf8);
+  EXPECT_TRUE(observed_str.empty());
+
+  observed_str = root.AddExtensionUTF8(utf8);
+  EXPECT_TRUE(observed_str.empty());
+}
+
+class FilePathUTF8InvalidTest : public ::testing::TestWithParam<std::string> {
+ protected:
+  std::string invalid_utf8_value() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FilePathUTF8InvalidTestCases,
+    FilePathUTF8InvalidTest,
+    ::testing::Values(
+        // Invalid encoding of U+1FFFE (0x8F instead of 0x9F)
+        "\xF0\x8F\xBF\xBE",
+
+        // Surrogate code points
+        "\xED\xA0\x80\xED\xBF\xBF",
+        "\xED\xA0\x8F",
+        "\xED\xBF\xBF",
+
+        // Overlong sequences
+        "\xC0\x80",                  // U+0000
+        "\xC1\x80\xC1\x81",          // "AB"
+        "\xE0\x80\x80",              // U+0000
+        "\xE0\x82\x80",              // U+0080
+        "\xE0\x9F\xBF",              // U+07FF
+        "\xF0\x80\x80\x8D",          // U+000D
+        "\xF0\x80\x82\x91",          // U+0091
+        "\xF0\x80\xA0\x80",          // U+0800
+        "\xF0\x8F\xBB\xBF",          // U+FEFF (BOM)
+        "\xF8\x80\x80\x80\xBF",      // U+003F
+        "\xFC\x80\x80\x80\xA0\xA5",  // U+00A5
+
+        // Beyond U+10FFFF (the upper limit of Unicode codespace)
+        "\xF4\x90\x80\x80",          // U+110000
+        "\xF8\xA0\xBF\x80\xBF",      // 5 bytes
+        "\xFC\x9C\xBF\x80\xBF\x80",  // 6 bytes
+
+        // BOM in UTF-16(BE|LE)
+        "\xFE\xFF",
+        "\xFF\xFE",
+
+        // Strings in legacy encodings. We can certainly make up strings
+        // in a legacy encoding that are valid in UTF-8, but in real data,
+        // most of them are invalid as UTF-8.
+
+        // cafe with U+00E9 in ISO-8859-1
+        "caf\xE9",
+        // U+AC00, U+AC001 in EUC-KR
+        "\xB0\xA1\xB0\xA2",
+        // U+4F60 U+597D in Big5
+        "\xA7\x41\xA6\x6E",
+        // "abc" with U+201[CD] in windows-125[0-8]
+        // clang-format off
+        "\x93" "abc\x94",
+        // clang-format on
+        // U+0639 U+064E U+0644 U+064E in ISO-8859-6
+        "\xD9\xEE\xE4\xEE",
+        // U+03B3 U+03B5 U+03B9 U+03AC in ISO-8859-7
+        "\xE3\xE5\xE9\xDC"));
+
+TEST_P(FilePathUTF8InvalidTest, Test) {
+  FilePath root(FPL(""));
+  FilePath observed_str;
+  EXPECT_DCHECK_DEATH(
+      { observed_str = root.AppendASCII(invalid_utf8_value()); });
+  EXPECT_DCHECK_DEATH({
+    observed_str = root.InsertBeforeExtensionASCII(invalid_utf8_value());
+  });
+  EXPECT_DCHECK_DEATH(
+      { observed_str = root.AddExtensionASCII(invalid_utf8_value()); });
+
+  EXPECT_DCHECK_DEATH(
+      { observed_str = root.AppendUTF8(invalid_utf8_value()); });
+  EXPECT_DCHECK_DEATH(
+      { observed_str = root.InsertBeforeExtensionUTF8(invalid_utf8_value()); });
+  EXPECT_DCHECK_DEATH(
+      { observed_str = root.AddExtensionUTF8(invalid_utf8_value()); });
 }
 
 TEST_F(FilePathTest, StripTrailingSeparators) {

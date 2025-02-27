@@ -169,28 +169,6 @@ bool IdentifiabilityStudySettings::ShouldSampleType(
   return provider_->IsTypeAllowed(type);
 }
 
-bool IdentifiabilityStudySettings::ShouldSampleAnyType(
-    std::initializer_list<IdentifiableSurface::Type> types) const {
-  if (!ShouldSampleAnything()) [[likely]] {
-    return false;
-  }
-
-  if (!is_any_surface_or_type_blocked_) [[likely]] {
-    return true;
-  }
-
-  if (is_meta_experiment_active_) {
-    return true;
-  }
-
-  for (IdentifiableSurface::Type type : types) {
-    if (provider_->IsTypeAllowed(type))
-      return true;
-  }
-
-  return false;
-}
-
 bool IdentifiabilityStudySettings::ShouldSampleAnything() const {
   return IsActive() || IdentifiabilityTracingEnabled();
 }

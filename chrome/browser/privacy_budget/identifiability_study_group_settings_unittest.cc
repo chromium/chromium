@@ -26,7 +26,7 @@ TEST(IdentifiabilityStudyGroupSettingsTest, DisabledBySurfaceCountZero) {
 
 TEST(IdentifiabilityStudyGroupSettingsTest, ValidRandomSurfaceSampling) {
   auto settings =
-      IdentifiabilityStudyGroupSettings::InitFrom(true, 10, 40, "", "", "1,4");
+      IdentifiabilityStudyGroupSettings::InitFrom(true, 10, 40, "", "", "1,11");
   EXPECT_TRUE(settings.enabled());
   EXPECT_FALSE(settings.IsUsingAssignedBlockSampling());
   EXPECT_TRUE(settings.IsUsingRandomSampling());
@@ -35,7 +35,7 @@ TEST(IdentifiabilityStudyGroupSettingsTest, ValidRandomSurfaceSampling) {
   EXPECT_EQ(40, settings.surface_budget());
   const std::vector<blink::IdentifiableSurface::Type> expected_allowed_types{
       blink::IdentifiableSurface::Type::kWebFeature,
-      blink::IdentifiableSurface::Type::kGenericFontLookup};
+      blink::IdentifiableSurface::Type::kHTMLMediaElement_CanPlayType};
   EXPECT_EQ(expected_allowed_types, settings.allowed_random_types());
 }
 

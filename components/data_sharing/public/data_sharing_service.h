@@ -37,6 +37,7 @@ class DataTypeControllerDelegate;
 namespace data_sharing {
 class DataSharingNetworkLoader;
 class DataSharingSDKDelegate;
+class Logger;
 class PreviewServerProxy;
 
 // The core class for managing data sharing.
@@ -292,6 +293,8 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
 
   // Get the current DataSharingUIDelegate instance.
   virtual DataSharingUIDelegate* GetUiDelegate() = 0;
+
+  virtual Logger* GetLogger() = 0;
 
   // Sets a group for testing. When ReadGroup is called, the GroupData that
   // matches GroupId will be returned. This function does not notify observers

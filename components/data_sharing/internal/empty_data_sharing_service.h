@@ -90,6 +90,7 @@ class EmptyDataSharingService : public DataSharingService {
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUiDelegate() override;
+  Logger* GetLogger() override;
   void AddGroupDataForTesting(GroupData group_data) override;
   void SetPreviewServerProxyForTesting(
       std::unique_ptr<PreviewServerProxy> preview_server_proxy) override;

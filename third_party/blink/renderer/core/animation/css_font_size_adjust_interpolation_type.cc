@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/animation/css_font_size_adjust_interpolation_type.h"
 
+#include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 
 namespace blink {

@@ -24,6 +24,8 @@
 
 #include <array>
 #include <bitset>
+#include <concepts>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -442,8 +444,11 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   }
 
   template <typename T>
-  inline T ConvertTo(const CSSLengthResolver&)
-      const;  // Defined in CSSPrimitiveValueMappings.h
+    requires std::integral<T> || std::floating_point<T>
+  inline T ConvertTo(const CSSLengthResolver& length_resolver) const {
+    DCHECK(IsNumber() || IsPercentage());
+    return ClampTo<T>(ComputeNumber(length_resolver));
+  }
 
   int ComputeInteger(const CSSLengthResolver&) const;
   // NOTE: As a special exception, we allow treating percentage values

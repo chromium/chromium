@@ -94,6 +94,7 @@
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/contextual_search/core/browser/public.h"
 #include "components/data_sharing/public/features.h"
+#include "components/data_sharing/public/switches.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/download/public/common/download_features.h"
@@ -10435,6 +10436,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kBookmarkPaneAndroid)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,
+     flag_descriptions::kDataSharingDebugLogsDescription, kOsAll,
+     SINGLE_VALUE_TYPE(data_sharing::kDataSharingDebugLoggingEnabled)},
 
     {"autofill-shared-storage-server-card-data",
      flag_descriptions::kAutofillSharedStorageServerCardDataName,

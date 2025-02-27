@@ -83,9 +83,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/test/kiosk_logged_in_browser_test_mixin.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
-#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 namespace extensions {
@@ -994,25 +993,88 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, KioskOnlyTest) {
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, KioskOnlyUninstallableTest) {
   base::ScopedAllowBlockingForTesting allow_io;
   // Expect kiosk_only extensions are not allowed outside kiosk.
   base::FilePath crx_path = test_data_dir_.AppendASCII("kiosk/kiosk_only.crx");
   EXPECT_FALSE(InstallExtension(crx_path, 0));
-  LOG(INFO) << "Extension didn't install in non-kiosk mode.";
+}
 
-  // Simulate a ChromeOS kiosk user. |scoped_user_manager| will take over
-  // lifetime of |user_manager|.
-  auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-  const AccountId account_id(AccountId::FromUserEmail("example@example.com"));
-  auto* kiosk_user = fake_user_manager->AddKioskAppUser(account_id);
-  fake_user_manager->LoginUser(account_id);
-  TestingProfile kiosk_profile;
-  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(kiosk_user,
-                                                               &kiosk_profile);
+class ExtensionCrxInstallerKioskTest : public ExtensionCrxInstallerTest {
+ public:
+  ExtensionCrxInstallerKioskTest() { set_chromeos_user_ = false; }
 
-  user_manager::ScopedUserManager scoped_user_manager(
-      std::move(fake_user_manager));
+  void SetUp() override {
+    mixin_host_.SetUp();
+    ExtensionCrxInstallerTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mixin_host_.SetUpCommandLine(command_line);
+    ExtensionCrxInstallerTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    mixin_host_.SetUpDefaultCommandLine(command_line);
+    ExtensionCrxInstallerTest::SetUpDefaultCommandLine(command_line);
+  }
+
+  bool SetUpUserDataDirectory() override {
+    return mixin_host_.SetUpUserDataDirectory() &&
+           ExtensionCrxInstallerTest::SetUpUserDataDirectory();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mixin_host_.SetUpInProcessBrowserTestFixture();
+    ExtensionCrxInstallerTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    mixin_host_.SetUpLocalStatePrefService(local_state);
+    ExtensionCrxInstallerTest::SetUpLocalStatePrefService(local_state);
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    mixin_host_.CreatedBrowserMainParts(browser_main_parts);
+    ExtensionCrxInstallerTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+
+  void SetUpOnMainThread() override {
+    mixin_host_.SetUpOnMainThread();
+    ExtensionCrxInstallerTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    mixin_host_.TearDownOnMainThread();
+    ExtensionCrxInstallerTest::TearDownOnMainThread();
+  }
+
+  void PostRunTestOnMainThread() override {
+    mixin_host_.PostRunTestOnMainThread();
+    ExtensionCrxInstallerTest::PostRunTestOnMainThread();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mixin_host_.TearDownInProcessBrowserTestFixture();
+    ExtensionCrxInstallerTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void TearDown() override {
+    mixin_host_.TearDown();
+    ExtensionCrxInstallerTest::TearDown();
+  }
+
+ protected:
+  InProcessBrowserTestMixinHost mixin_host_;
+
+ private:
+  ash::KioskLoggedInBrowserTestMixin kiosk_mixin_{
+      &mixin_host_, "example@kiosk-apps.device-local.localhost"};
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerKioskTest, InstallTest) {
+  base::FilePath crx_path = test_data_dir_.AppendASCII("kiosk/kiosk_only.crx");
   EXPECT_TRUE(InstallExtension(crx_path, 1));
   LOG(INFO) << "Extension installed in simulated kiosk mode.";
 }

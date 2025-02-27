@@ -1,9 +1,9 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SELECT_CONTROL_UTIL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_SELECT_CONTROL_UTIL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FIELD_FILLING_UTIL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FIELD_FILLING_UTIL_H_
 
 #include <optional>
 #include <string>
@@ -13,12 +13,8 @@
 
 namespace autofill {
 
-// Returns the index of the shortest entry in the given select field of which
-// |value| is a substring. Returns -1 if no such entry exists.
-std::optional<size_t> FindShortestSubstringMatchInSelect(
-    const std::u16string& value,
-    bool ignore_whitespace,
-    base::span<const SelectOption> field_options);
+// This file contains functions that are generically usefull for filling or
+// functions that are used by multiple filling subdirectories.
 
 // Searches for an exact match for `value` in `field_options` and returns it
 // if found, or std::nullopt otherwise. Optionally, the caller may pass
@@ -55,6 +51,16 @@ std::optional<std::u16string> GetNumericSelectControlValue(
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill);
 
+// Returns an obfuscated version of `value`.
+std::u16string GetObfuscatedValue(const std::u16string& value);
+
+// Gets the country value to fill in a select control.
+// Returns an empty string if no value for filling was found.
+std::u16string GetCountrySelectControlValue(
+    const std::u16string& value,
+    base::span<const SelectOption> field_options,
+    std::string* failure_to_fill = nullptr);
+
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SELECT_CONTROL_UTIL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FIELD_FILLING_UTIL_H_

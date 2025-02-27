@@ -13,13 +13,7 @@ class PrintPreviewFocusTest : public WebUIMochaFocusTest {
   PrintPreviewFocusTest() { set_test_loader_host(chrome::kChromeUIPrintHost); }
 };
 
-// Web UI interactive tests are flaky on Win10, see https://crbug.com/711256
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FocusPrintButtonOnReady DISABLED_FocusPrintButtonOnReady
-#else
-#define MAYBE_FocusPrintButtonOnReady FocusPrintButtonOnReady
-#endif
-IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, MAYBE_FocusPrintButtonOnReady) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, FocusPrintButtonOnReady) {
   RunTest("chromeos/print_preview/button_strip_interactive_test.js",
           "mocha.run()");
 }
@@ -29,13 +23,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, BlurResetsEmptyNumberInput) {
           "mocha.run()");
 }
 
-// Web UI interactive tests are flaky on Win10, see https://crbug.com/711256
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AutoFocusScalingInput DISABLED_AutoFocusScalingInput
-#else
-#define MAYBE_AutoFocusScalingInput AutoFocusScalingInput
-#endif
-IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, MAYBE_AutoFocusScalingInput) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest, AutoFocusScalingInput) {
   RunTest("chromeos/print_preview/scaling_settings_interactive_test.js",
           "mocha.run()");
 }
@@ -64,7 +52,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsFocusTest,
   RunTestCase("EnterOnInputTriggersPrint");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 class PrintPreviewDestinationDropdownCrosFocusTest
     : public PrintPreviewFocusTest {
  protected:
@@ -80,17 +67,12 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosFocusTest,
                        ClickCloses) {
   RunTestCase("ClickCloses");
 }
-#endif
 
 class PrintPreviewDestinationDialogFocusTest : public PrintPreviewFocusTest {
  protected:
   void RunTestCase(const std::string& testCase) {
     PrintPreviewFocusTest::RunTest(
-#if BUILDFLAG(IS_CHROMEOS)
         "chromeos/print_preview/destination_dialog_cros_interactive_test.js",
-#else
-        "chromeos/print_preview/destination_dialog_interactive_test.js",
-#endif
         base::StringPrintf(
             "runMochaTest('DestinationDialogInteractiveTest', '%s');",
             testCase.c_str()));

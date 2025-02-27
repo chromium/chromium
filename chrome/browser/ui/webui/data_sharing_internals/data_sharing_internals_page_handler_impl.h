@@ -9,13 +9,15 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals.mojom.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/logger.h"
 #include "components/data_sharing/public/protocol/group_data.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class DataSharingInternalsPageHandlerImpl
     : public data_sharing_internals::mojom::PageHandler,
-      public data_sharing::DataSharingService::Observer {
+      public data_sharing::DataSharingService::Observer,
+      public data_sharing::Logger::Observer {
  public:
   DataSharingInternalsPageHandlerImpl(
       mojo::PendingReceiver<data_sharing_internals::mojom::PageHandler>
@@ -32,6 +34,9 @@ class DataSharingInternalsPageHandlerImpl
   // data_sharing_internals::mojom::PageHandler:
   void IsEmptyService(IsEmptyServiceCallback callback) override;
   void GetAllGroups(GetAllGroupsCallback callback) override;
+
+  // data_sharing::Logger::Observer implementation.
+  void OnNewLog(const data_sharing::Logger::Entry& entry) override;
 
  private:
   mojo::Receiver<data_sharing_internals::mojom::PageHandler> receiver_;

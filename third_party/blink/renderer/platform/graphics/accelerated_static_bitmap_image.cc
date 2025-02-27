@@ -64,26 +64,6 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
-    const SkImageInfo& sk_image_info,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::PlatformThreadRef context_thread_ref,
-    scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    viz::ReleaseCallback release_callback) {
-  return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, shared_image_texture_id,
-      gfx::Size(sk_image_info.width(), sk_image_info.height()),
-      sk_image_info.colorType(), sk_image_info.alphaType(),
-      sk_image_info.refColorSpace(), ImageOrientationEnum::kDefault,
-      std::move(context_provider_wrapper), context_thread_ref,
-      std::move(context_task_runner), std::move(release_callback)));
-}
-
-// static
-scoped_refptr<AcceleratedStaticBitmapImage>
-AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-    scoped_refptr<gpu::ClientSharedImage> shared_image,
-    const gpu::SyncToken& sync_token,
-    GLuint shared_image_texture_id,
     const gfx::Size& size,
     SkColorType sk_color_type,
     SkAlphaType alpha_type,
@@ -209,12 +189,10 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   auto source_si_texture = shared_image_->CreateGLTexture(dest_gl);
   auto source_scoped_si_access = source_si_texture->BeginAccess(
       mailbox_ref_->sync_token(), /*readonly=*/true);
-  const bool do_alpha_multiply =
-      sk_image_info_.alphaType() == kUnpremul_SkAlphaType &&
-      unpack_premultiply_alpha == true;
-  const bool do_alpha_unmultiply =
-      sk_image_info_.alphaType() == kPremul_SkAlphaType &&
-      unpack_premultiply_alpha == false;
+  const bool do_alpha_multiply = GetAlphaType() == kUnpremul_SkAlphaType &&
+                                 unpack_premultiply_alpha == true;
+  const bool do_alpha_unmultiply = GetAlphaType() == kPremul_SkAlphaType &&
+                                   unpack_premultiply_alpha == false;
   dest_gl->CopySubTextureCHROMIUM(
       source_scoped_si_access->texture_id(), 0, dest_target, dest_texture_id,
       dest_level, dest_point.x(), dest_point.y(), source_sub_rectangle.x(),

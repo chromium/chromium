@@ -37,9 +37,9 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
         void updateStatusChanged();
     }
 
-    private static final int SAFETY_HUB_JOB_INTERVAL_IN_DAYS = 1;
-    private final Profile mProfile;
+    public static final int SAFETY_HUB_JOB_INTERVAL_IN_DAYS = 1;
 
+    private final Profile mProfile;
     private final Callback<UpdateStatusProvider.UpdateStatus> mUpdateCallback =
             status -> {
                 mUpdateStatus = status;

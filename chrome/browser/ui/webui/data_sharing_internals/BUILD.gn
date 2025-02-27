@@ -6,6 +6,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "data_sharing_internals.mojom" ]
-  public_deps = [ "//components/data_sharing/public/protocol:mojo_bindings" ]
+  public_deps = [
+    "//components/data_sharing/public:interfaces",
+    "//components/data_sharing/public/protocol:mojo_bindings",
+  ]
   webui_module_path = "/"
 }

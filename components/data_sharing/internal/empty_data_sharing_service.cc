@@ -145,6 +145,10 @@ DataSharingUIDelegate* EmptyDataSharingService::GetUiDelegate() {
   return nullptr;
 }
 
+Logger* EmptyDataSharingService::GetLogger() {
+  return nullptr;
+}
+
 void EmptyDataSharingService::AddGroupDataForTesting(GroupData group_data) {}
 void EmptyDataSharingService::SetPreviewServerProxyForTesting(
     std::unique_ptr<PreviewServerProxy> preview_server_proxy) {}

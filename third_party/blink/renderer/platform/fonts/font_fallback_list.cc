@@ -155,9 +155,6 @@ const FontData* FontFallbackList::GetFontData(
     if (!result && !curr_family->FamilyName().empty()) {
       result = FontCache::Get().GetFontData(font_description,
                                             curr_family->FamilyName());
-      font_selector_->ReportFontLookupByUniqueOrFamilyName(
-          curr_family->FamilyName(), font_description,
-          DynamicTo<SimpleFontData>(result));
     }
     if (result) {
       font_selector_->ReportSuccessfulFontFamilyMatch(
@@ -182,10 +179,6 @@ const FontData* FontFallbackList::GetFontData(
   // Still no result. Hand back our last resort fallback font.
   auto* last_resort =
       FontCache::Get().GetLastResortFallbackFont(font_description);
-  if (font_selector_) {
-    font_selector_->ReportLastResortFallbackFontLookup(font_description,
-                                                       last_resort);
-  }
   return last_resort;
 }
 

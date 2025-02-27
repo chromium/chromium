@@ -40,8 +40,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // the texture is bound to the shared image, stays alive and has a read lock
   // on the shared image until the |release_callback| is invoked.
   //
-  // |sk_image_info| provides the metadata associated with the backing.
-  //
   // |context_provider| is the context that the shared image was created with.
   // |context_thread_ref| and |context_task_runner| refer to the thread the
   // context is bound to. If the image is created on a different thread than
@@ -53,17 +51,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   //
   // Note that it is assumed that the mailbox can only be used for read
   // operations, no writes are allowed.
-  static scoped_refptr<AcceleratedStaticBitmapImage>
-  CreateFromCanvasSharedImage(
-      scoped_refptr<gpu::ClientSharedImage>,
-      const gpu::SyncToken&,
-      GLuint shared_image_texture_id,
-      const SkImageInfo& sk_image_info,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::PlatformThreadRef context_thread_ref,
-      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      viz::ReleaseCallback release_callback);
-
   static scoped_refptr<AcceleratedStaticBitmapImage>
   CreateFromCanvasSharedImage(
       scoped_refptr<gpu::ClientSharedImage>,

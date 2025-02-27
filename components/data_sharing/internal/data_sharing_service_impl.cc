@@ -21,6 +21,7 @@
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/internal/data_sharing_network_loader_impl.h"
 #include "components/data_sharing/internal/group_data_proto_utils.h"
+#include "components/data_sharing/internal/logger_impl.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
@@ -109,7 +110,8 @@ DataSharingServiceImpl::DataSharingServiceImpl(
           std::make_unique<PreviewServerProxy>(identity_manager,
                                                url_loader_factory,
                                                channel)),
-      avatar_fetcher_(std::make_unique<AvatarFetcher>()) {
+      avatar_fetcher_(std::make_unique<AvatarFetcher>()),
+      logger_(std::make_unique<LoggerImpl>()) {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COLLABORATION_GROUP,
@@ -690,6 +692,10 @@ DataSharingUIDelegate* DataSharingServiceImpl::GetUiDelegate() {
     sdk_delegate_->ForceInitialize(data_sharing_network_loader_.get());
   }
   return ui_delegate_.get();
+}
+
+Logger* DataSharingServiceImpl::GetLogger() {
+  return logger_.get();
 }
 
 void DataSharingServiceImpl::AddGroupDataForTesting(GroupData group_data) {

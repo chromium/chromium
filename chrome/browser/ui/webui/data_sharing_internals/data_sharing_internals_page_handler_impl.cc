@@ -32,10 +32,16 @@ DataSharingInternalsPageHandlerImpl::DataSharingInternalsPageHandlerImpl(
       page_(std::move(page)),
       data_sharing_service_(data_sharing_service) {
   // TODO(qinmin): adding this class as an observer to |data_sharing_service_|.
+  if (data_sharing_service_->GetLogger()) {
+    data_sharing_service_->GetLogger()->AddObserver(this);
+  }
 }
 
-DataSharingInternalsPageHandlerImpl::~DataSharingInternalsPageHandlerImpl() =
-    default;
+DataSharingInternalsPageHandlerImpl::~DataSharingInternalsPageHandlerImpl() {
+  if (data_sharing_service_->GetLogger()) {
+    data_sharing_service_->GetLogger()->RemoveObserver(this);
+  }
+}
 
 void DataSharingInternalsPageHandlerImpl::IsEmptyService(
     IsEmptyServiceCallback callback) {
@@ -66,4 +72,10 @@ void DataSharingInternalsPageHandlerImpl::GetAllGroups(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), true, std::move(group_data)));
+}
+
+void DataSharingInternalsPageHandlerImpl::OnNewLog(
+    const data_sharing::Logger::Entry& entry) {
+  page_->OnLogMessageAdded(entry.event_time, entry.log_source,
+                           entry.source_file, entry.source_line, entry.message);
 }

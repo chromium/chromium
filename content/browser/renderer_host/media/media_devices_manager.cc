@@ -331,11 +331,7 @@ struct MediaDevicesManager::EnumerationRequest {
 // redundant enumerations.
 class MediaDevicesManager::CacheInfo {
  public:
-  CacheInfo()
-      : current_event_sequence_(0),
-        seq_last_update_(0),
-        seq_last_invalidation_(0),
-        is_update_ongoing_(false) {}
+  CacheInfo() = default;
 
   void InvalidateCache() {
     DCHECK(thread_checker_.CalledOnValidThread());
@@ -371,10 +367,10 @@ class MediaDevicesManager::CacheInfo {
     return ++current_event_sequence_;
   }
 
-  int64_t current_event_sequence_;
-  int64_t seq_last_update_;
-  int64_t seq_last_invalidation_;
-  bool is_update_ongoing_;
+  int64_t current_event_sequence_ = 0;
+  int64_t seq_last_update_ = 0;
+  int64_t seq_last_invalidation_ = 0;
+  bool is_update_ongoing_ = false;
   base::ThreadChecker thread_checker_;
 };
 
@@ -503,7 +499,7 @@ void MediaDevicesManager::EnumerateDevices(
   StartMonitoring(DeviceMonitoringMode(start_audio_monitoring),
                   DeviceMonitoringMode(start_video_monitoring));
 
-  requests_.emplace_back(requested_types, std::move(callback));
+  client_requests_.emplace_back(requested_types, std::move(callback));
   bool all_results_cached = true;
   for (size_t i = 0;
        i < static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes); ++i) {
@@ -513,8 +509,9 @@ void MediaDevicesManager::EnumerateDevices(
     }
   }
 
-  if (all_results_cached)
-    ProcessRequests();
+  if (all_results_cached) {
+    ProcessClientRequests();
+  }
 }
 
 void MediaDevicesManager::EnumerateAndRankDevices(
@@ -1127,8 +1124,9 @@ void MediaDevicesManager::DoEnumerateDevices(MediaDeviceType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(blink::IsValidMediaDeviceType(type));
   CacheInfo& cache_info = cache_infos_[static_cast<size_t>(type)];
-  if (cache_info.is_update_ongoing())
+  if (cache_info.is_update_ongoing()) {
     return;
+  }
   SendLogMessage(base::StringPrintf("DoEnumerateDevices({type=%s})",
                                     DeviceTypeToString(type)));
 
@@ -1217,13 +1215,14 @@ void MediaDevicesManager::DevicesEnumerated(
   SendLogMessage(GetDevicesEnumeratedLogString(type, snapshot));
 
   if (cache_policies_[static_cast<size_t>(type)] == CachePolicy::NO_CACHE) {
-    for (auto& request : requests_)
+    for (auto& request : client_requests_) {
       request.has_seen_result_for_request[static_cast<size_t>(type)] = true;
+    }
   }
 
   // Note that IsLastUpdateValid is always true when policy is NO_CACHE.
   if (cache_infos_[static_cast<size_t>(type)].IsLastUpdateValid()) {
-    ProcessRequests();
+    ProcessClientRequests();
   } else {
     DoEnumerateDevices(type);
   }
@@ -1232,7 +1231,7 @@ void MediaDevicesManager::DevicesEnumerated(
 void MediaDevicesManager::UpdateSnapshot(
     MediaDeviceType type,
     const blink::WebMediaDeviceInfoArray& new_snapshot,
-    bool ignore_group_id) {
+    bool use_group_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(blink::IsValidMediaDeviceType(type));
 
@@ -1248,10 +1247,10 @@ void MediaDevicesManager::UpdateSnapshot(
   // Update the cached snapshot and send notifications only if the device list
   // has changed.
   if (!std::ranges::equal(new_snapshot, old_snapshot,
-                          ignore_group_id ? EqualDeviceExcludingGroupID
-                                          : EqualDeviceIncludingGroupID)) {
+                          use_group_id ? EqualDeviceIncludingGroupID
+                                       : EqualDeviceExcludingGroupID)) {
     // Prevent sending notifications until group IDs are updated using
-    // a heuristic in ProcessRequests().
+    // a heuristic in ProcessClientRequests().
     // TODO(crbug.com/41263713): Remove |is_video_with_group_ids| and the
     // corresponding checks when the video-capture subsystem supports
     // group IDs.
@@ -1291,7 +1290,7 @@ void MediaDevicesManager::UpdateSnapshot(
   }
 }
 
-void MediaDevicesManager::ProcessRequests() {
+void MediaDevicesManager::ProcessClientRequests() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Populate the group ID field for video devices using a heuristic that looks
   // for device coincidences with audio input devices.
@@ -1309,10 +1308,10 @@ void MediaDevicesManager::ProcessRequests() {
                             video_device_info);
     }
     UpdateSnapshot(MediaDeviceType::kMediaVideoInput, video_devices,
-                   false /* ignore_group_id */);
+                   /*use_group_id=*/true);
   }
 
-  std::erase_if(requests_, [this](EnumerationRequest& request) {
+  std::erase_if(client_requests_, [this](EnumerationRequest& request) {
     if (IsEnumerationRequestReady(request)) {
       std::move(request.callback).Run(current_snapshot_);
       return true;

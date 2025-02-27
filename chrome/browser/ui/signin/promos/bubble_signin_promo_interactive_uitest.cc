@@ -14,12 +14,12 @@
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_signin_button_view.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
-#include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -65,17 +65,17 @@ std::unique_ptr<KeyedService> BuildMockSyncService(
 
 }  // namespace
 
-class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
+class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     ManagePasswordsTest::SetUpInProcessBrowserTestFixture();
     url_loader_factory_helper_.SetUp();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &AutofillBubbleSignInPromoInteractiveUITest::
-                    OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&BubbleSignInPromoInteractiveUITest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
         /*disabled_features=*/{});
@@ -162,7 +162,7 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   scoped_refptr<password_manager::TestPasswordStore> local_password_store_;
 };
 
-void AutofillBubbleSignInPromoInteractiveUITest::SavePassword() {
+void BubbleSignInPromoInteractiveUITest::SavePassword() {
   password_manager::PasswordStoreWaiter store_waiter(
       local_password_store_.get());
 
@@ -173,21 +173,21 @@ void AutofillBubbleSignInPromoInteractiveUITest::SavePassword() {
   store_waiter.WaitOrReturn();
 }
 
-void AutofillBubbleSignInPromoInteractiveUITest::SaveAddress(
+void BubbleSignInPromoInteractiveUITest::SaveAddress(
     autofill::AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> profile) {
   address_data_manager().AddProfile(*profile);
 }
 
-void AutofillBubbleSignInPromoInteractiveUITest::TriggerSaveAddressBubble(
+void BubbleSignInPromoInteractiveUITest::TriggerSaveAddressBubble(
     const AutofillProfile& address) {
   client().ConfirmSaveAddressProfile(
       address, nullptr, false,
-      base::BindOnce(&AutofillBubbleSignInPromoInteractiveUITest::SaveAddress,
+      base::BindOnce(&BubbleSignInPromoInteractiveUITest::SaveAddress,
                      base::Unretained(this)));
 }
 
-void AutofillBubbleSignInPromoInteractiveUITest::SignIn(
+void BubbleSignInPromoInteractiveUITest::SignIn(
     signin_metrics::AccessPoint access_point) {
   ActivateSyncService();
   signin::MakeAccountAvailable(
@@ -199,19 +199,18 @@ void AutofillBubbleSignInPromoInteractiveUITest::SignIn(
           .Build("test@email.com"));
 }
 
-bool AutofillBubbleSignInPromoInteractiveUITest::IsSignInURL() {
+bool BubbleSignInPromoInteractiveUITest::IsSignInURL() {
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
   return tab_helper->IsChromeSigninPage();
 }
 
-bool AutofillBubbleSignInPromoInteractiveUITest::IsSignedIn() {
+bool BubbleSignInPromoInteractiveUITest::IsSignedIn() {
   return signin_util::GetSignedInState(identity_manager()) ==
          signin_util::SignedInState::kSignedIn;
 }
 
-void AutofillBubbleSignInPromoInteractiveUITest::ExtendAccountInfo(
-    AccountInfo& info) {
+void BubbleSignInPromoInteractiveUITest::ExtendAccountInfo(AccountInfo& info) {
   info.given_name = "FirstName";
   info.full_name = "FirstName LastName";
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
@@ -220,7 +219,7 @@ void AutofillBubbleSignInPromoInteractiveUITest::ExtendAccountInfo(
 /////////////////////////////////////////////////////////////////
 ///// Password Sign in Promo
 
-IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        PasswordSignInPromoNoAccountPresent) {
   base::HistogramTester histogram_tester;
 
@@ -289,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       signin_metrics::AccessPoint::kPasswordBubble, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        PasswordSignInPromoWithWebSignedInAccount) {
   base::HistogramTester histogram_tester;
 
@@ -366,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       signin_metrics::AccessPoint::kPasswordBubble, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        PasswordSignInPromoWithAccountSignInPending) {
   // Sign in with an account, and put its refresh token into an error
   // state. This simulates the "sign in pending" state.
@@ -448,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 /////////////////////////////////////////////////////////////////
 ///// Address Sign in Promo
 
-IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        AddressSignInPromoNoAccountPresent) {
   base::HistogramTester histogram_tester;
 
@@ -516,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        AddressSignInPromoWithWebSignedInAccount) {
   base::HistogramTester histogram_tester;
 
@@ -592,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        AddressSignInPromoWithAccountSignInPending) {
   // Sign in with an account, and put its refresh token into an error
   // state. This simulates the "sign in pending" state.
@@ -669,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        AddressSignInPromoDismissedEscapeKey) {
   base::HistogramTester histogram_tester;
 
@@ -702,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
                        AddressSignInPromoDismissedCloseButton) {
   base::HistogramTester histogram_tester;
 

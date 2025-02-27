@@ -132,6 +132,7 @@ struct MEDIA_EXPORT H265StRefPicSet {
 
 struct MEDIA_EXPORT H265VUIParameters {
   H265VUIParameters();
+  H265VUIParameters(H265VUIParameters&&) noexcept;
 
   // Syntax elements.
   int sar_width;
@@ -155,6 +156,7 @@ struct MEDIA_EXPORT H265VUIParameters {
 
 struct MEDIA_EXPORT H265VPS {
   H265VPS();
+  H265VPS(H265VPS&&) noexcept;
 
   int vps_video_parameter_set_id;
   bool vps_base_layer_internal_flag;
@@ -177,6 +179,7 @@ struct MEDIA_EXPORT H265VPS {
 
 struct MEDIA_EXPORT H265SPS {
   H265SPS();
+  H265SPS(H265SPS&&) noexcept;
 
   // Syntax elements.
   int sps_video_parameter_set_id;
@@ -267,6 +270,7 @@ struct MEDIA_EXPORT H265SPS {
 
 struct MEDIA_EXPORT H265PPS {
   H265PPS();
+  H265PPS(H265PPS&&) noexcept;
 
   enum {
     kMaxNumTileColumnWidth = 19,  // From VAAPI.

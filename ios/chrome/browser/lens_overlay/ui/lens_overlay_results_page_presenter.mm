@@ -29,15 +29,6 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 // by the bottom sheet presentation.
 const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
-// The percentage of the previous movement of the bottom sheet that should be
-// added as compensation to the next one in order to reduce the visual motion
-// delay.
-const CGFloat kCompensationPercentageOfPreviousMovement = 0.7;
-
-// The movement amount (in points) from which it is worth compensating to match
-// the delay induced by the sampling of the `CADisplayLink`.
-const CGFloat kPreviousMovementCompensationThreshold = 2.0;
-
 }  // namespace
 
 @interface LensOverlayResultsPagePresenter () <LensOverlayPanTrackerDelegate,
@@ -66,8 +57,11 @@ const CGFloat kPreviousMovementCompensationThreshold = 2.0;
   /// The constraint corresponding to the bottom offset of the visible area.
   NSLayoutConstraint* _visibleAreaBottomConstraint;
 
-  /// The previous recorded height for the bottom sheet.
-  CGFloat _lastRecordedSheetPresentationHeight;
+  /// Whether the presenting animation is in progress.
+  BOOL _presentingAnimationInProgress;
+
+  // The layout guide that defines the unobstructed area by the presentation.
+  UILayoutGuide* _visibleAreaLayoutGuide;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -127,6 +121,9 @@ const CGFloat kPreviousMovementCompensationThreshold = 2.0;
     [_visibleAreaLayoutGuide.rightAnchor
         constraintEqualToAnchor:_baseViewController.view.rightAnchor],
   ]];
+
+  [_delegate
+      onResultsPageVisibleAreaLayoutGuideAdjusted:_visibleAreaLayoutGuide];
 }
 
 - (void)presentResultsPageAnimated:(BOOL)animated
@@ -187,18 +184,26 @@ const CGFloat kPreviousMovementCompensationThreshold = 2.0;
       [self panGestureRecognizersOnWindow];
 
   [self setUpVisibleAreaLayoutGuideIfNeeded];
+
+  _presentingAnimationInProgress = YES;
+  [self monitorResultsBottomSheetPosition];
+
   __weak __typeof(self) weakSelf = self;
   [_baseViewController
       presentViewController:_resultViewController
                    animated:animated
                  completion:^{
-                   [weakSelf monitorResultsBottomSheetPosition];
+                   [weakSelf didFinishPresentingResultsPage];
                    [weakSelf handlePanRecognizersAddedAfter:
                                  panRecognizersBeforePresenting];
                    if (completion) {
                      completion();
                    }
                  }];
+}
+
+- (void)didFinishPresentingResultsPage {
+  _presentingAnimationInProgress = NO;
 }
 
 - (void)revealBottomSheetIfHidden {
@@ -267,6 +272,13 @@ const CGFloat kPreviousMovementCompensationThreshold = 2.0;
     return;
   }
 
+  // Early return if the bottom sheet is not displayed yet.
+  CALayer* presentationLayer =
+      _resultViewController.view.layer.presentationLayer;
+  if (!presentationLayer) {
+    return;
+  }
+
   CGRect presentedFrame = _resultViewController.view.frame;
   CGRect newFrame =
       [_resultViewController.view convertRect:presentedFrame
@@ -278,12 +290,9 @@ const CGFloat kPreviousMovementCompensationThreshold = 2.0;
   // currently being displayed onscreen as it accurately keeps track of the
   // bottom sheet positon throughout the animations (e.g. when the user finishes
   // dragging the sheet).
-  CGRect presentationLayerFrame =
-      _resultViewController.view.layer.presentationLayer.frame;
   CGRect presentationLayerConvertedFrame =
-      [_resultViewController.view.layer.presentationLayer
-          convertRect:presentationLayerFrame
-              toLayer:_baseViewController.view.layer];
+      [presentationLayer convertRect:presentationLayer.frame
+                             toLayer:_baseViewController.view.layer];
   CGFloat presentationLayerHeight =
       containerHeight - presentationLayerConvertedFrame.origin.y;
 
@@ -295,8 +304,10 @@ const CGFloat kPreviousMovementCompensationThreshold = 2.0;
   BOOL sheetClosedThresholdReached =
       currentSheetHeight <= kThresholdHeightForClosingSheet;
   BOOL userTouchesTheScreen = _windowPanTracker.isPanning;
-  BOOL shouldDestroyLensUI =
-      sheetClosedThresholdReached && !userTouchesTheScreen;
+
+  BOOL shouldDestroyLensUI = sheetClosedThresholdReached &&
+                             !userTouchesTheScreen &&
+                             !_presentingAnimationInProgress;
   if (shouldDestroyLensUI) {
     [_displayLink invalidate];
     [self sheetPresentationHeightChanged:0];
@@ -306,31 +317,13 @@ const CGFloat kPreviousMovementCompensationThreshold = 2.0;
 }
 
 - (void)sheetPresentationHeightChanged:(CGFloat)sheetHeight {
-  // Monitoring using `CADisplayLink` provides accurate frame updates during
-  // bottom sheet release animations, but its sampling introduces a delay
-  // between the layout guide update and the sheet movement.
-  // To mitigate this at high panning speeds (when the difference is higher than
-  // `kPreviousMovementCompensationThreshold`, we apply a proportional
-  // compensation based on the difference from the last reported height.
-
-  CGFloat motionSmoothenFactor = 0.0;
-  CGFloat previousMovement =
-      _lastRecordedSheetPresentationHeight != 0
-          ? sheetHeight - _lastRecordedSheetPresentationHeight
-          : 0;
-  if (ABS(previousMovement) >= kPreviousMovementCompensationThreshold) {
-    motionSmoothenFactor =
-        previousMovement * kCompensationPercentageOfPreviousMovement;
-  }
-
   CGFloat estimatedMediumDetentHeight =
       _detentsManager.estimatedMediumDetentHeight;
   CGFloat maximumOffset =
       estimatedMediumDetentHeight + kVisibleAreaMediumDetentThreshold;
-  CGFloat bottomOffset = MIN(sheetHeight, maximumOffset) + motionSmoothenFactor;
+  CGFloat bottomOffset = MIN(sheetHeight, maximumOffset);
 
   _visibleAreaBottomConstraint.constant = -bottomOffset;
-  _lastRecordedSheetPresentationHeight = sheetHeight;
 }
 
 - (void)adjustSelectionOcclusionInsets {

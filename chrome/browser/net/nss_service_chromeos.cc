@@ -265,7 +265,7 @@ class NssService::NSSCertDatabaseChromeOSManager
 
     auto public_slot = crypto::GetPublicSlotForChromeOSUser(username_hash_);
 
-#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
     if (!public_slot) {
       // This is a "for testing" branch. The code below will intentionally crash
       // when the public slot fails to load. By default prevent this from

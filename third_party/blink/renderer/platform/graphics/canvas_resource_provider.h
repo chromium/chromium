@@ -116,7 +116,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ShouldInitialize initialize_provider,
       CanvasResourceHost* resource_host = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider> CreateSharedBitmapProvider(
+  static std::unique_ptr<CanvasResourceProvider>
+  CreateSoftwareSharedImageProvider(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,

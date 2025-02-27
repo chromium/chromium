@@ -31,6 +31,8 @@
 #include "media/gpu/mac/vt_video_encode_accelerator_mac.h"
 #endif
 #if BUILDFLAG(IS_WIN)
+#include "media/gpu/windows/d3d12_helpers.h"
+#include "media/gpu/windows/d3d12_video_encode_accelerator.h"
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #endif
 #if BUILDFLAG(USE_V4L2_CODEC)
@@ -92,6 +94,36 @@ std::unique_ptr<VideoEncodeAccelerator> CreateMediaFoundationVEA(
       new MediaFoundationVideoEncodeAccelerator(
           gpu_preferences, gpu_workarounds, gpu_device.luid));
 }
+
+Microsoft::WRL::ComPtr<IDXGIAdapter> GetDxgiAdapterByLuid(CHROME_LUID luid) {
+  Microsoft::WRL::ComPtr<IDXGIFactory4> dxgi_factory4;
+  if (FAILED(::CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory4)))) {
+    LOG(ERROR) << "Failed to create DXGI factory";
+    return nullptr;
+  }
+  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
+  if (FAILED(dxgi_factory4->EnumAdapterByLuid(
+          {.LowPart = luid.LowPart, .HighPart = luid.HighPart},
+          IID_PPV_ARGS(&adapter)))) {
+    LOG(ERROR) << "Failed to enum adapter by LUID";
+    return nullptr;
+  }
+  return adapter;
+}
+
+std::unique_ptr<VideoEncodeAccelerator> CreateD3D12VEA(
+    const gpu::GPUInfo::GPUDevice& gpu_device) {
+  // TODO(crbug.com/40275246): Consider use secondary adapter in case the
+  // default one does not support the desired codec but others do.
+  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter =
+      GetDxgiAdapterByLuid(gpu_device.luid);
+  if (!adapter) {
+    LOG(ERROR) << "Failed to get an adapter by LUID";
+    return nullptr;
+  }
+  return base::WrapUnique<VideoEncodeAccelerator>(
+      new D3D12VideoEncodeAccelerator(CreateD3D12Device(adapter.Get())));
+}
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -142,6 +174,10 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
   vea_factory_functions.push_back(base::BindRepeating(&CreateVTVEA));
 #endif
 #if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAccelerator)) {
+    vea_factory_functions.push_back(
+        base::BindRepeating(&CreateD3D12VEA, gpu_device));
+  }
   vea_factory_functions.push_back(base::BindRepeating(
       &CreateMediaFoundationVEA, gpu_preferences, gpu_workarounds, gpu_device));
 #endif

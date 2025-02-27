@@ -45,6 +45,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/service/local_data_description.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -464,7 +465,8 @@ void BookmarkBubbleView::ShowBubble(
     // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
     // widget to account for it.
     bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
-        profile, delegate_ptr, signin_metrics::AccessPoint::kBookmarkBubble,
+        web_contents, signin_metrics::AccessPoint::kBookmarkBubble,
+        syncer::LocalDataItemModel::DataId(), delegate_ptr,
         ui::ButtonStyle::kDefault));
 #endif
   }

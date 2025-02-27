@@ -19,6 +19,7 @@
 #include "components/sync/engine/get_updates_delegate.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/data_type_test_util.h"
 #include "components/sync/test/mock_debug_info_getter.h"
 #include "components/sync/test/mock_invalidation.h"

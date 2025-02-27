@@ -7,14 +7,10 @@ pkg_config("system_libusb") {
 
 shim_headers("libusb_shim") {
   root_path = "src/libusb"
-  headers = [
-    "libusb.h",
-  ]
+  headers = [ "libusb.h" ]
 }
 
 source_set("libusb") {
-  deps = [
-    ":libusb_shim",
-  ]
+  deps = [ ":libusb_shim" ]
   public_configs = [ ":system_libusb" ]
 }

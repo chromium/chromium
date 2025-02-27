@@ -391,6 +391,10 @@
   <message name="IDS_SITE_SETTINGS_PAGE_INTRUSIVE_ADS_A11Y" desc="The screen reader announcement describing a toggle with two states to either allow all ads or to block intrusive ads. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can show any ad to you. When off, sites can’t show intrusive or misleading ads.
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_ADS_PAGE_DESCRIPTION" desc="Description of intrusive ads content setting.">
+    Sites usually show ads so that they can provide content or services free of charge. But, some sites are known to show intrusive or misleading ads.
+  </message>
+
   <!-- Anti-abuse -->
 
   <message name="IDS_ANTI_ABUSE_DESCRIPTION" desc="A setting that, if turned on, will enable anti-abuse functionality.">
@@ -435,6 +439,9 @@
   <message name="IDS_ANDROID_AR_CAMERA_PERMISSION_OFF" desc="The message to show when the camera permission needs to be turned on in Android settings in order to use Augmented Reality.">
     To let <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> use AR, also turn on camera in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_AR_PAGE_DESCRIPTION" desc="Description of Augmented reality content setting.">
+    Sites usually track your camera position for AR features, like games or heads-up directions
+  </message>
 
   <!-- Automatic downloads -->
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTOMATIC_DOWNLOADS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to download multiple files at once. It is important to keep this string as two full sentences terminated by a period.">
@@ -442,6 +449,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_AUTOMATIC_DOWNLOADS" desc="The description for the allow Automatic Downloads for website dialog.">
     Allow a site to download multiple files automatically.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_AUTOMATIC_DOWNLOADS_PAGE_DESCRIPTION" desc="Description of automatic downloads content setting.">
+    Sites might automatically download related files together to save you time
   </message>
 
   <!-- Background sync -->
@@ -451,6 +461,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_BACKGROUND_SYNC" desc="The description for the allow Background Sync for website dialog.">
     Allow Background Sync for a specific site.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_BACKGROUND_SYNC_PAGE_DESCRIPTION" desc="Description of background sync content setting.">
+    After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message
   </message>
 
   <!-- Javascript Optimizer -->
@@ -522,6 +535,9 @@
   <message name="IDS_ANDROID_CAMERA_PERMISSION_OFF" desc="The message to show when the camera permission needs to be turned on not just in Chrome, but also in Android settings.">
     To let <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> access your camera, also turn on camera in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CAMERA_PAGE_DESCRIPTION" desc="Description of camera content setting.">
+    Sites usually use your video camera for communication features like video chatting
+  </message>
 
   <!-- Clipboard -->
 
@@ -536,6 +552,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_CLIPBOARD_BLOCKED_LIST" desc="Summary text explaining that the clipboard permission is set to block read access on some sites. To be shown in the list of permission categories.">
     Blocked from reading clipboard
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CLIPBOARD_PAGE_DESCRIPTION" desc="Description of clipboard content setting.">
+    Sites usually read your clipboard for features like keeping the formatting of text that you copied
   </message>
 
   <!-- Site data page -->
@@ -675,6 +694,9 @@
   <message name="IDS_WEBSITE_SETTINGS_DESKTOP_SITE_BLOCK" desc="Summary text explaining that Chrome will request mobile view for a website.">
     Mobile site
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_DESKTOP_SITE_PAGE_DESCRIPTION" desc="Description of Desktop site content setting.">
+    You can ask to see the desktop version of sites
+  </message>
 
   <!-- Federated Identity -->
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_FEDERATED_IDENTITY_ALLOW" desc="The description for the allow third-party sign-in for website dialog.">
@@ -691,6 +713,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_FEDERATED_IDENTITY_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to use AR. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can show sign-in prompts. When off, sites can't show sign-in prompts.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY_PAGE_DESCRIPTION" desc="Description of third-party sign-in content setting.">
+    Lets you sign in to websites using the account that you have with an identity service
   </message>
 
   <!-- File editing -->
@@ -725,6 +750,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_IDLE_DETECTION_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to use idle detection. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can ask to know when you’re actively using your device. When off, sites can’t know when you’re actively using your device.
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION_PAGE_DESCRIPTION" desc="Description of your device use content setting.">
+    Sites usually detect when you're actively using your device to set your availability on chat apps
+  </message>
 
   <!-- JavaScript -->
 
@@ -739,6 +767,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_BLOCK" desc="The description for the block Javascript for website dialog.">
     Block JavaScript for a specific site.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_PAGE_DESCRIPTION" desc="Description of the JavaScript content setting.">
+    Sites usually use JavaScript to display interactive features, like video games or web forms
   </message>
 
   <!-- Location -->
@@ -761,6 +792,9 @@
   <message name="IDS_WEBSITE_LOCATION_SETTINGS" is_accessibility_with_no_ui="true" desc="Accessibility string for the location settings">
     Open Location Settings
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_LOCATION_PAGE_DESCRIPTION" desc="Description of the location content setting.">
+     Sites usually use your location for relevant features or info, like local news or nearby shops
+   </message>
 
   <!-- Microphone -->
 
@@ -772,6 +806,9 @@
   </message>
   <message name="IDS_ANDROID_MICROPHONE_PERMISSION_OFF" desc="The message to show when the microphone permission needs to be turned on not just in Chrome, but also in Android settings.">
     To let <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> access your microphone, also turn on microphone in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_MIC_PAGE_DESCRIPTION" desc="Description of the microphone content settings.">
+    Sites usually use your microphone for communication features like video chatting
   </message>
 
   <!-- Motion/Light sensors -->
@@ -794,6 +831,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_MOTION_SENSORS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to access motion sensors. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can use your device’s motion sensors. When off, sites can’t use motion sensors.
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_PAGE_DESCRIPTION" desc="Description of the motion sensors content setting.">
+    Sites usually use your device's motion sensors for features like virtual reality or fitness tracking
+  </message>
 
   <!-- NFC -->
 
@@ -811,6 +851,9 @@
   </message>
   <message name="IDS_ANDROID_NFC_UNSUPPORTED" desc="The message to show when NFC is not supported globally in Android">
     This device can't read NFC
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_NFC_PAGE_DESCRIPTION" desc="Description of the NFC content setting.">
+    Sites usually use near-field communication (NFC) to work with nearby tags or devices, like scanning badges or tapping to pay
   </message>
 
   <!-- Notifications -->
@@ -833,6 +876,9 @@
   <message name="IDS_WEBSITE_NOTIFICATION_SETTINGS" desc="Accessibility string for the notification settings">
     Open notification settings
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_NOTIFICATIONS_PAGE_DESCRIPTION" desc="Description of the notifications content setting.">
+    Sites usually send notifications to let you know about breaking news or chat messages.
+  </message>
 
   <!-- Pop-ups and redirects -->
 
@@ -841,6 +887,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_POPUPS_REDIRECTS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can use pop-ups and redirects. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can use pop-ups and redirects. When off, sites can’t use pop-ups and redirects.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_POPUPS_PAGE_DESCRIPTION" desc="Description of the pop-ups content setting.">
+    Sites might send pop-ups to show ads, or use redirects to lead you to websites you may not want to visit
   </message>
 
   <!-- Protected content -->
@@ -853,6 +902,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PROTECTED_CONTENT_BLOCKED" desc="Summary text explaining that sites are blocked from playing protected content.">
     Block sites from playing protected content
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_PROTECTED_CONTENT_PAGE_DESCRIPTION" desc="Description of the protected content content setting.">
+    To play content protected by copyright, sites may need to use a content protection service. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>
 
   <!-- Sound -->
@@ -874,6 +926,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_SOUND_BLOCK" desc="The description for the mute sound for website dialog.">
     Mute sound for a specific site.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SOUND_PAGE_DESCRIPTION" desc="Description of the sound content setting.">
+    Sites might play sound to provide audio for music, videos and other media
   </message>
 
   <!-- Storage -->
@@ -927,6 +982,9 @@
   <message name="IDS_WEBSITE_SETTINGS_USB" desc="Title for USB settings, which control which of the user's USB devices can be accessed from websites.">
     USB
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_USB_PAGE_DESCRIPTION" desc="Description of the USB devices content settings">
+    Sites usually connect to USB devices for features like printing a document or saving to a storage device
+  </message>
 
   <!-- Virtual reality -->
 
@@ -938,6 +996,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_VR_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to use VR. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can ask to use virtual reality devices. When off, sites can’t use virtual reality devices.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_VR_PAGE_DESCRIPTION" desc="Description of the virtual reality content setting.">
+    Sites usually use your virtual reality devices and data to let you enter VR sessions
   </message>
 
   <!-- Auto-darken web content -->

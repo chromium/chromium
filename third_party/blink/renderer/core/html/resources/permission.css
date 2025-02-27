@@ -41,6 +41,7 @@ permission::-internal-permission-text {
   line-height: normal;
   margin: auto;
   min-height: inherit;
+  max-height: inherit;
   outline: none;
   user-select:none;
   white-space:nowrap;

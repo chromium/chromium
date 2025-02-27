@@ -1849,6 +1849,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "data-sharing-debug-logs",
+    "owners": [
+      "dtrainor@google.com",
+      "chrome-tab-group-eng@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "data-sharing-join-only",
     "owners": [ "haileywang@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 140

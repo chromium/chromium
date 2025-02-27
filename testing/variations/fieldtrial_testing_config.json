@@ -8159,6 +8159,25 @@
             ]
         }
     ],
+    "DisableCompressParkableStrings": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CompressParkableStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableGeoLanguageModel": [
         {
             "platforms": [
@@ -8271,25 +8290,6 @@
                     ],
                     "hardware_classes": [
                         "drallion"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DisableParkableStrings": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "CompressParkableStrings"
                     ]
                 }
             ]
@@ -11610,21 +11610,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IOSBrowserEditMenuMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSChooseFromDrive": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSChooseFromDrive"
                     ]
                 }
             ]
@@ -22437,6 +22422,36 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SimpleCachePrioritizedCaching"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SingleCACertVerificationPhase1": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SingleCACertVerificationPhase1"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SingleCACertVerificationPhase2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SingleCACertVerificationPhase2"
                     ]
                 }
             ]

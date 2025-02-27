@@ -1345,17 +1345,6 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "prefix": "popover-anchor-relationships-disabled",
-    "owners": ["masonf@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/html/semantics/popovers",
-      "external/wpt/html/semantics/forms/the-select-element/customizable-select"
-    ],
-    "args": ["--disable-blink-features=PopoverAnchorRelationships"],
-    "expires": "Jun 1, 2025"
-  },
-  {
     "prefix": "dialog-close-when-open-removed-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],

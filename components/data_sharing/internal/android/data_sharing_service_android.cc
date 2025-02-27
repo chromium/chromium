@@ -18,6 +18,9 @@
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 #include "components/data_sharing/public/android/conversion_utils.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/logger.h"
+#include "components/data_sharing/public/logger_common.mojom.h"
+#include "components/data_sharing/public/logger_utils.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -286,6 +289,15 @@ void DataSharingServiceAndroid::GetSharedEntitiesPreview(
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetUiDelegate(
     JNIEnv* env) {
   return data_sharing_service_->GetUiDelegate()->GetJavaObject();
+}
+
+void DataSharingServiceAndroid::Log(
+    JNIEnv* env,
+    /*logger_common::mojom::LogSource*/ jint source,
+    const JavaParamRef<jstring>& message) {
+  DATA_SHARING_LOG(static_cast<logger_common::mojom::LogSource>(source),
+                   data_sharing_service_->GetLogger(),
+                   ConvertJavaStringToUTF8(env, message));
 }
 
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetJavaObject() {

@@ -457,6 +457,11 @@ FilePath FilePath::InsertBeforeExtension(StringViewType suffix) const {
 
 FilePath FilePath::InsertBeforeExtensionASCII(std::string_view suffix) const {
   DCHECK(IsStringASCII(suffix));
+  return InsertBeforeExtensionUTF8(suffix);
+}
+
+FilePath FilePath::InsertBeforeExtensionUTF8(std::string_view suffix) const {
+  DCHECK(IsStringUTF8(suffix));
 #if BUILDFLAG(IS_WIN)
   return InsertBeforeExtension(UTF8ToWide(suffix));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -486,6 +491,11 @@ FilePath FilePath::AddExtension(StringViewType extension) const {
 
 FilePath FilePath::AddExtensionASCII(std::string_view extension) const {
   DCHECK(IsStringASCII(extension));
+  return AddExtensionUTF8(extension);
+}
+
+FilePath FilePath::AddExtensionUTF8(std::string_view extension) const {
+  DCHECK(IsStringUTF8(extension));
 #if BUILDFLAG(IS_WIN)
   return AddExtension(UTF8ToWide(extension));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -591,6 +601,11 @@ FilePath FilePath::Append(const SafeBaseName& component) const {
 
 FilePath FilePath::AppendASCII(std::string_view component) const {
   DCHECK(base::IsStringASCII(component));
+  return AppendUTF8(component);
+}
+
+FilePath FilePath::AppendUTF8(std::string_view component) const {
+  DCHECK(base::IsStringUTF8(component));
 #if BUILDFLAG(IS_WIN)
   return Append(UTF8ToWide(component));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

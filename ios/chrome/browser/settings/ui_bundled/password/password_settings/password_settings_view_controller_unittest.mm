@@ -78,9 +78,7 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysOfferToSavePasswords) {
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysOfferToSavePasswordsManagedByPolicy) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setSavePasswordsEnabled:NO managedByPolicy:YES];
+  [controller() setSavePasswordsEnabled:NO managedByPolicy:YES];
   TableViewInfoButtonItem* managedSavePasswordsItem =
       static_cast<TableViewInfoButtonItem*>(GetTableViewItem(/*section=*/0, 0));
   EXPECT_NSEQ(managedSavePasswordsItem.text,
@@ -89,9 +87,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysMovePasswordsToAccountButtonWithLocalPasswords) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setLocalPasswordsCount:2 withUserEligibility:YES];
+  [controller() setLocalPasswordsCount:2 withUserEligibility:YES];
 
   TableViewDetailTextItem* movePasswordsToAccountDescriptionItem =
       static_cast<TableViewDetailTextItem*>(
@@ -118,9 +114,7 @@ TEST_F(PasswordSettingsViewControllerTest,
     base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
     CreateController();
 
-    id<PasswordSettingsConsumer> consumer =
-        base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-    [consumer setPasswordsInOtherAppsEnabled:NO];
+    [controller() setPasswordsInOtherAppsEnabled:NO];
 
     TableViewMultiDetailTextItem* passwords_in_other_apps_item =
         static_cast<TableViewMultiDetailTextItem*>(
@@ -148,10 +142,7 @@ TEST_F(PasswordSettingsViewControllerTest,
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(kIOSPasskeysM2);
     CreateController();
-
-    id<PasswordSettingsConsumer> consumer =
-        base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-    [consumer setPasswordsInOtherAppsEnabled:NO];
+    [controller() setPasswordsInOtherAppsEnabled:NO];
 
     TableViewMultiDetailTextItem* passwords_in_other_apps_item =
         static_cast<TableViewMultiDetailTextItem*>(
@@ -168,9 +159,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 }
 
 TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setPasswordsInOtherAppsEnabled:YES];
+  [controller() setPasswordsInOtherAppsEnabled:YES];
 
   TableViewMultiDetailTextItem* passwords_in_other_apps_item =
       static_cast<TableViewMultiDetailTextItem*>(
@@ -198,6 +187,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
+  [controller() setSavePasswordsEnabled:YES managedByPolicy:NO];
+  [controller() setSavePasskeysEnabled:YES];
 
   TableViewSwitchItem* automaticPasskeyUpgradesSwitch =
       static_cast<TableViewSwitchItem*>(
@@ -211,9 +202,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysChangeGPMPinButtonForEligibleUser) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setupChangeGPMPinButton];
+  [controller() setupChangeGPMPinButton];
 
   TableViewImageItem* changeGPMPinDescription =
       static_cast<TableViewImageItem*>(GetTableViewItem(
@@ -235,9 +224,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        CallsPresentationDelegateOnGPMPinButtonTap) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setupChangeGPMPinButton];
+  [controller() setupChangeGPMPinButton];
 
   id mockPresentationDelegate =
       OCMProtocolMock(@protocol(PasswordSettingsPresentationDelegate));
@@ -254,10 +241,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysEncryptionOptedInForOptedInState) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setOnDeviceEncryptionState:
-                PasswordSettingsOnDeviceEncryptionStateOptedIn];
+  [controller() setOnDeviceEncryptionState:
+                    PasswordSettingsOnDeviceEncryptionStateOptedIn];
 
   TableViewImageItem* onDeviceEncryptionOptedInDescription =
       static_cast<TableViewImageItem*>(GetTableViewItem(
@@ -280,10 +265,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysEncryptionOptInButtonInOfferOptInState) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setOnDeviceEncryptionState:
-                PasswordSettingsOnDeviceEncryptionStateOfferOptIn];
+  [controller() setOnDeviceEncryptionState:
+                    PasswordSettingsOnDeviceEncryptionStateOfferOptIn];
 
   TableViewImageItem* onDeviceEncryptionOptInDescription =
       static_cast<TableViewImageItem*>(GetTableViewItem(
@@ -305,10 +288,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        ExportButtonDisabledWhenUserNotEligible) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setCanExportPasswords:NO];
-  [consumer updateExportPasswordsButton];
+  [controller() setCanExportPasswords:NO];
+  [controller() updateExportPasswordsButton];
   EXPECT_TRUE(GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections(),
                                /*item=*/0)
                   .accessibilityTraits &
@@ -317,10 +298,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        ExportButtonEnabledWhenUserEligible) {
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setCanExportPasswords:YES];
-  [consumer updateExportPasswordsButton];
+  [controller() setCanExportPasswords:YES];
+  [controller() updateExportPasswordsButton];
   EXPECT_FALSE(GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections(),
                                 /*item=*/0)
                    .accessibilityTraits &
@@ -335,11 +314,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
-
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setCanDeleteAllCredentials:NO];
-  [consumer updateDeleteAllCredentialsSection];
+  [controller() setCanDeleteAllCredentials:NO];
+  [controller() updateDeleteAllCredentialsSection];
   EXPECT_TRUE(
       GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections() + 1,
                        /*item=*/0)
@@ -355,11 +331,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
-
-  id<PasswordSettingsConsumer> consumer =
-      base::apple::ObjCCast<PasswordSettingsViewController>(controller());
-  [consumer setCanDeleteAllCredentials:YES];
-  [consumer updateDeleteAllCredentialsSection];
+  [controller() setCanDeleteAllCredentials:YES];
+  [controller() updateDeleteAllCredentialsSection];
   EXPECT_FALSE(
       GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections() + 1,
                        /*item=*/0)

@@ -651,13 +651,11 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
   viz::ReleaseCallback release_callback =
       base::BindOnce(&XRWebGLDrawingBuffer::NotifyMailboxReleased, buffer);
   exported_color_buffers_.insert(buffer);
-  const SkImageInfo sk_image_info =
-      SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       buffer->shared_image, buffer->produce_sync_token,
-      /* shared_image_texture_id = */ 0, sk_image_info,
-      drawing_buffer_->ContextProviderWeakPtr(),
+      /* shared_image_texture_id = */ 0, size_, kN32_SkColorType,
+      kPremul_SkAlphaType, nullptr, drawing_buffer_->ContextProviderWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback));

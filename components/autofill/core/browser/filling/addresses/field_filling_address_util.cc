@@ -23,9 +23,9 @@
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
-#include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
@@ -214,59 +214,6 @@ std::u16string GetStateSelectControlValue(
   // Try to match a normalized `value` of the state and the `field_options`.
   return GetNormalizedStateSelectControlValue(
       value, field_options, country_code, *address_normalizer, failure_to_fill);
-}
-
-// Gets the country value to fill in a select control.
-// Returns an empty string if no value for filling was found.
-std::u16string GetCountrySelectControlValue(
-    const std::u16string& value,
-    base::span<const SelectOption> field_options,
-    std::string* failure_to_fill = nullptr) {
-  // Search for exact matches.
-  if (std::optional<std::u16string> select_control_value =
-          GetSelectControlValue(value, field_options, failure_to_fill)) {
-    return *select_control_value;
-  }
-  std::string country_code = CountryNames::GetInstance()->GetCountryCode(value);
-  if (country_code.empty()) {
-    if (failure_to_fill) {
-      *failure_to_fill += "Cannot fill empty country code. ";
-    }
-    return {};
-  }
-
-  // Sometimes options contain a country name and phone country code (e.g.
-  // "Germany (+49)"). This can happen if such a <select> is annotated as
-  // autocomplete="tel-country-code". The following lambda strips the phone
-  // country code so that the remainder ideally matches a country name.
-  auto strip_phone_country_code =
-      [](const std::u16string& value) -> std::u16string {
-    static base::NoDestructor<std::unique_ptr<const RE2>> regex_pattern(
-        std::make_unique<const RE2>("[(]?(?:00|\\+)\\s*[1-9]\\d{0,3}[)]?"));
-    std::string u8string = base::UTF16ToUTF8(value);
-    if (RE2::Replace(&u8string, **regex_pattern, "")) {
-      return base::UTF8ToUTF16(
-          base::TrimWhitespaceASCII(u8string, base::TRIM_ALL));
-    }
-    return value;
-  };
-
-  for (const SelectOption& option : field_options) {
-    // Canonicalize each <option> value to a country code, and compare to the
-    // target country code.
-    if (country_code == CountryNames::GetInstance()->GetCountryCode(
-                            strip_phone_country_code(option.value)) ||
-        country_code == CountryNames::GetInstance()->GetCountryCode(
-                            strip_phone_country_code(option.text))) {
-      return option.value;
-    }
-  }
-
-  if (failure_to_fill) {
-    *failure_to_fill +=
-        "Did not find country to fill in select control element. ";
-  }
-  return {};
 }
 
 // Returns appropriate street address for `field`. Translates newlines into

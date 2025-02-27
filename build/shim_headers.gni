@@ -30,7 +30,8 @@ template("shim_headers") {
 
     outputs = []
     foreach(h, invoker.headers) {
-      outputs += [ shim_headers_path + "/" + rebase_path(invoker.root_path,"//") + "/" + h ]
+      outputs += [ shim_headers_path + "/" +
+                   rebase_path(invoker.root_path, "//") + "/" + h ]
     }
   }
 

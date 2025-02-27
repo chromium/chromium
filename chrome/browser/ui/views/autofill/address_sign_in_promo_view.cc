@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
-#include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -32,10 +32,9 @@ AddressSignInPromoView::AddressSignInPromoView(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   // Show the sign in promo.
-  auto* sign_in_promo =
-      AddChildView(std::make_unique<AutofillBubbleSignInPromoView>(
-          web_contents, signin_metrics::AccessPoint::kAddressBubble,
-          syncer::LocalDataItemModel::DataId(autofill_profile.guid())));
+  auto* sign_in_promo = AddChildView(std::make_unique<BubbleSignInPromoView>(
+      web_contents, signin_metrics::AccessPoint::kAddressBubble,
+      syncer::LocalDataItemModel::DataId(autofill_profile.guid())));
 
   SetInitiallyFocusedView(sign_in_promo->GetSignInButton());
 }

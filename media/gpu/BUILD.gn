@@ -247,6 +247,8 @@ component("gpu") {
       "windows/d3d12_video_encode_accelerator.h",
       "windows/d3d12_video_encode_delegate.cc",
       "windows/d3d12_video_encode_delegate.h",
+      "windows/d3d12_video_encode_h264_delegate.cc",
+      "windows/d3d12_video_encode_h264_delegate.h",
       "windows/d3d12_video_encoder_wrapper.cc",
       "windows/d3d12_video_encoder_wrapper.h",
       "windows/d3d12_video_helpers.cc",
@@ -286,6 +288,8 @@ component("gpu") {
       sources += [
         "windows/d3d11_h265_accelerator.cc",
         "windows/d3d11_h265_accelerator.h",
+        "windows/d3d12_video_encode_h265_delegate.cc",
+        "windows/d3d12_video_encode_h265_delegate.h",
       ]
     }
     deps += [
@@ -657,6 +661,7 @@ source_set("unit_tests") {
       "windows/d3d12_video_encode_accelerator_unittest.cc",
       "windows/d3d12_video_encode_delegate_unittest.cc",
       "windows/d3d12_video_encode_delegate_unittest.h",
+      "windows/d3d12_video_encode_h264_delegate_unittest.cc",
       "windows/mf_audio_encoder_unittest.cc",
       "windows/mf_video_processor_accelerator_unittest.cc",
       "windows/scoped_d3d_buffers_unittest.cc",
@@ -667,6 +672,10 @@ source_set("unit_tests") {
       "dxguid.lib",
       "d3d12.lib",
     ]
+
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [ "windows/d3d12_video_encode_h265_delegate_unittest.cc" ]
+    }
   }
 
   if (is_apple) {

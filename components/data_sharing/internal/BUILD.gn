@@ -35,6 +35,8 @@ static_library("internal") {
     "group_data_proto_utils.h",
     "group_data_store.cc",
     "group_data_store.h",
+    "logger_impl.cc",
+    "logger_impl.h",
     "partial_failure_sdk_delegate_wrapper.cc",
     "partial_failure_sdk_delegate_wrapper.h",
     "preview_server_proxy.cc",
@@ -95,6 +97,7 @@ source_set("unit_tests") {
     "group_data_model_unittest.cc",
     "group_data_proto_utils_unittest.cc",
     "group_data_store_unittest.cc",
+    "logger_impl_unittest.cc",
     "partial_failure_sdk_delegate_wrapper_unittest.cc",
     "preview_server_proxy_unittest.cc",
   ]
@@ -156,6 +159,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//components/data_sharing/public:interfaces_java",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",
       "//net/android:net_java",

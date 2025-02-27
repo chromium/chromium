@@ -133,6 +133,10 @@ using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
 
 namespace {
 
+BASE_FEATURE(kCheckExternalExtensionInstallLocation,
+             "CheckExternalExtensionInstallLocation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool g_external_updates_disabled_for_test_ = false;
 
 // Wait this long after an extensions becomes idle before updating it.
@@ -170,26 +174,44 @@ bool ShouldBlockCommandLineExtension(Profile& profile) {
 void ExtensionService::CheckExternalUninstall(const std::string& id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  // Check if the providers know about this extension.
-  for (const auto& provider : external_extension_providers_) {
-    DCHECK(provider->IsReady());
-    if (provider->HasExtension(id)) {
-      return;  // Yup, known extension, don't uninstall.
-    }
-  }
-
   // We get the list of external extensions to check from preferences.
   // It is possible that an extension has preferences but is not loaded.
   // For example, an extension that requires experimental permissions
   // will not be loaded if the experimental command line flag is not used.
   // In this case, do not uninstall.
-  if (!registry_->GetInstalledExtension(id)) {
+  const Extension* extension = registry_->GetInstalledExtension(id);
+  if (!extension) {
     // We can't call UninstallExtension with an unloaded/invalid
     // extension ID.
-    LOG(WARNING) << "Attempted uninstallation of unloaded/invalid extension "
+    LOG(WARNING) << "Checking uninstallation of unloaded/invalid extension "
                  << "with id: " << id;
     return;
   }
+
+  // Check if the providers know about this extension.
+  bool known_extension = false;
+  for (const auto& provider : external_extension_providers_) {
+    DCHECK(provider->IsReady());
+    // TODO(https://crbug.com/397903880): Remove this if-check and always check
+    // manifest location in M138.
+    if (base::FeatureList::IsEnabled(kCheckExternalExtensionInstallLocation)) {
+      mojom::ManifestLocation location_in_provider =
+          mojom::ManifestLocation::kInvalidLocation;
+      if (provider->GetExtensionDetails(id, &location_in_provider, nullptr) &&
+          location_in_provider == extension->location()) {
+        known_extension = true;
+        break;
+      }
+    } else if (provider->HasExtension(id)) {
+      known_extension = true;
+      break;
+    }
+  }
+  if (known_extension) {
+    // Yup, known extension, don't uninstall.
+    return;
+  }
+
   UninstallExtension(id, UNINSTALL_REASON_ORPHANED_EXTERNAL_EXTENSION, nullptr);
 }
 

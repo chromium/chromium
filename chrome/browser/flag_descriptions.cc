@@ -3636,6 +3636,11 @@ const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";
 
+const char kDataSharingDebugLogsName[] = "Enable data sharing debug logs";
+const char kDataSharingDebugLogsDescription[] =
+    "Enables the data sharing infrastructure to log and save debug messages "
+    "that can be shown in the internals page.";
+
 const char kTabGroupsDeferRemoteNavigationsId[] =
     "tab-groups-defer-remote-navigations";
 const char kTabGroupsDeferRemoteNavigationsName[] =

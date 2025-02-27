@@ -89,23 +89,6 @@ class TestFontSelector : public FontSelector {
       const AtomicString& font_family_name) override {}
   void ReportSuccessfulLocalFontMatch(const AtomicString& font_name) override {}
   void ReportFailedLocalFontMatch(const AtomicString& font_name) override {}
-  void ReportFontLookupByUniqueOrFamilyName(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override {}
-  void ReportFontLookupByUniqueNameOnly(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data,
-      bool is_loading_fallback = false) override {}
-  void ReportFontLookupByFallbackCharacter(
-      UChar32 hint,
-      FontFallbackPriority fallback_priority,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override {}
-  void ReportLastResortFallbackFontLookup(
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) override {}
   void ReportNotDefGlyph() const override {}
   void ReportEmojiSegmentGlyphCoverage(unsigned, unsigned) override {}
   ExecutionContext* GetExecutionContext() const override { return nullptr; }

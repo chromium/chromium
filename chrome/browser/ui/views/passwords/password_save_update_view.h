@@ -9,7 +9,6 @@
 #include "base/token.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
-#include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"

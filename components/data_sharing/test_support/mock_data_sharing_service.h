@@ -96,6 +96,7 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD1(SetSDKDelegate, void(std::unique_ptr<DataSharingSDKDelegate>));
   MOCK_METHOD1(SetUIDelegate, void(std::unique_ptr<DataSharingUIDelegate>));
   MOCK_METHOD0(GetUiDelegate, DataSharingUIDelegate*());
+  MOCK_METHOD0(GetLogger, Logger*());
   MOCK_METHOD1(AddGroupDataForTesting, void(GroupData));
   MOCK_METHOD1(SetPreviewServerProxyForTesting,
                void(std::unique_ptr<PreviewServerProxy>));

@@ -33,11 +33,11 @@ struct TestCaseItem {
 
 const auto kTestCase1 =
     std::to_array<TestCaseItem>({{"http://foo1.com/", u"Foo1"}});
-const auto kTestCase2 = std::to_array<TestCaseItem>({
+constexpr auto kTestCase2 = std::to_array<TestCaseItem>({
     {"http://foo1.com/", u"Foo1"},
     {"http://foo2.com/", u"Foo2"},
 });
-const auto kTestCase3 = std::to_array<TestCaseItem>({
+constexpr auto kTestCase3 = std::to_array<TestCaseItem>({
     {"http://foo1.com/", u"Foo1"},
     {"http://foo2.com/", u"Foo2"},
     {"http://foo3.com/", u"Foo3"},

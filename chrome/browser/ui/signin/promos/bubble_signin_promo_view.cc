@@ -10,11 +10,13 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_promo_util.h"
@@ -26,9 +28,12 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -155,15 +160,29 @@ signin_metrics::PromoAction GetPromoAction(bool is_signin_promo,
 }  // namespace
 
 BubbleSignInPromoView::BubbleSignInPromoView(
-    Profile* profile,
-    BubbleSignInPromoDelegate* delegate,
+    content::WebContents* web_contents,
     signin_metrics::AccessPoint access_point,
+    syncer::LocalDataItemModel::DataId data_id,
+    BubbleSignInPromoDelegate* delegate,
     ui::ButtonStyle button_style)
-    : delegate_(delegate) {
+    : access_point_(access_point),
+      delegate_(
+          std::make_unique<BubbleSignInPromoDelegate>(*web_contents,
+                                                      access_point,
+                                                      std::move(data_id))),
+      delegate_ptr_(delegate ? delegate : delegate_.get()) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->GetOriginalProfile();
   DCHECK(!profile->IsGuestSession());
+  CHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile));
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   signin::SignInPromoType promo_type =
       signin::GetSignInPromoTypeFromAccessPoint(access_point);
+  SignedInState signed_in_state =
+      signin_util::GetSignedInState(identity_manager);
   bool is_autofill_promo = signin::IsAutofillSigninPromo(access_point);
   bool is_extension_signin_promo =
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -174,14 +193,13 @@ BubbleSignInPromoView::BubbleSignInPromoView(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   bool is_signin_promo = is_autofill_promo || is_extension_signin_promo;
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account;
   // Signin promos can be shown in incognito, they use an empty account list.
   if (!profile->IsOffTheRecord()) {
     account = signin_ui_util::GetSingleAccountForPromos(identity_manager);
   }
 
+  // Set the layout.
   const views::LayoutOrientation orientation =
       account.IsEmpty() && !is_autofill_promo
           ? views::LayoutOrientation::kHorizontal
@@ -196,9 +214,6 @@ BubbleSignInPromoView::BubbleSignInPromoView(
                                views::MaximumFlexSizeRule::kPreferred, true));
   SetLayoutManager(std::move(layout));
 
-  SignedInState signed_in_state =
-      signin_util::GetSignedInState(identity_manager);
-
   // Set the parameters depending on the signed in state and type of promo.
   int title_resource_id =
       GetSubtitleID(is_signin_promo, promo_type, signed_in_state);
@@ -210,15 +225,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   signin_metrics::PromoAction promo_action =
       GetPromoAction(is_signin_promo, signed_in_state);
 
-  int title_max_width = is_extension_signin_promo
-                            ? kExtensionsExplicitSigninTitleMaxWidth
-                            : kTitleMaxWidth;
-
-  if (promo_action !=
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
-    signin_metrics::LogSignInOffered(access_point, promo_action);
-  }
-
+  // Set subtitle.
   std::u16string title_text = l10n_util::GetStringUTF16(title_resource_id);
   std::unique_ptr<views::Label> title = std::make_unique<views::Label>(
       title_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -226,6 +233,10 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title->SetMultiLine(true);
   if (orientation == views::LayoutOrientation::kHorizontal) {
+    int title_max_width =
+        promo_type == signin::SignInPromoType::kExtension && is_signin_promo
+            ? kExtensionsExplicitSigninTitleMaxWidth
+            : kTitleMaxWidth;
     title->SetMaximumWidth(title_max_width);
   } else {
     title->SetProperty(
@@ -240,10 +251,10 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   }
   AddChildView(std::move(title));
 
+  // Create button with callback.
+  std::unique_ptr<BubbleSignInPromoSignInButtonView> signin_button_pointer;
   views::Button::PressedCallback callback = base::BindRepeating(
       &BubbleSignInPromoView::SignIn, base::Unretained(this));
-
-  std::unique_ptr<BubbleSignInPromoSignInButtonView> signin_button_pointer;
 
   if (account.IsEmpty()) {
     signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
@@ -282,7 +293,14 @@ BubbleSignInPromoView::BubbleSignInPromoView(
     signin_button_view_ = AddChildView(std::move(signin_button_pointer));
   }
 
+  // Record metrics and prefs.
+  if (promo_action !=
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
+    signin_metrics::LogSignInOffered(access_point, promo_action);
+  }
+
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(access_point);
+  signin::RecordSignInPromoShown(access_point, profile);
 }
 
 BubbleSignInPromoView::~BubbleSignInPromoView() = default;
@@ -293,9 +311,63 @@ views::View* BubbleSignInPromoView::GetSignInButton() const {
 
 void BubbleSignInPromoView::SignIn() {
   std::optional<AccountInfo> account = signin_button_view_->account();
-  delegate_->OnSignIn(account.value_or(AccountInfo()));
+  delegate_ptr_->OnSignIn(account.value_or(AccountInfo()));
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
+}
+
+void BubbleSignInPromoView::AddedToWidget() {
+  if (signin::IsAutofillSigninPromo(access_point_)) {
+    scoped_widget_observation_.Observe(GetWidget());
+  }
+}
+
+void BubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
+  // This should only be recorded for autofill bubble promos. Not for those
+  // displayed in another bubble's footer.
+  if (!signin::IsAutofillSigninPromo(access_point_)) {
+    return;
+  }
+
+  scoped_widget_observation_.Reset();
+  std::string dismiss_action;
+
+  switch (widget->closed_reason()) {
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      dismiss_action = "CloseButton";
+      break;
+    case views::Widget::ClosedReason::kEscKeyPressed:
+      dismiss_action = "EscapeKey";
+      break;
+    case views::Widget::ClosedReason::kUnspecified:
+    case views::Widget::ClosedReason::kLostFocus:
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      // Don't record anything if the bubble was not actively dismissed by the
+      // user.
+      return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(
+      delegate_->GetWebContents()->GetBrowserContext());
+  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      IdentityManagerFactory::GetForProfile(profile));
+
+  // Count the number of times the promo was dismissed in order to not show it
+  // anymore after 2 dismissals.
+  if (account.gaia.empty()) {
+    int dismiss_count = profile->GetPrefs()->GetInteger(
+        prefs::kAutofillSignInPromoDismissCountPerProfile);
+    profile->GetPrefs()->SetInteger(
+        prefs::kAutofillSignInPromoDismissCountPerProfile, dismiss_count + 1);
+  } else {
+    SigninPrefs(*profile->GetPrefs())
+        .IncrementAutofillSigninPromoDismissCount(account.gaia);
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Signin.SignInPromo.Dismissed", dismiss_action}),
+      access_point_);
 }
 
 BEGIN_METADATA(BubbleSignInPromoView)

@@ -28,16 +28,16 @@ typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
 // export is already in progress, and YES when idle.
 - (void)setCanExportPasswords:(BOOL)canExportPasswords;
 
-// Indicates whether automatic passkey upgrades setting is `enabled` and
-// `managed` by enterprise policy. If managed, the view should not display the
-// switch for it.
-- (void)setAutomaticPasskeyUpgradesEnabled:(BOOL)enabled
-                           managedByPolicy:(BOOL)managed;
+// Indicates whether automatic passkey upgrades setting is `enabled`.
+- (void)setAutomaticPasskeyUpgradesEnabled:(BOOL)enabled;
 
 // Indicates whether or not the "Offer to save passwords and passkeys" feature
 // is `enabled` and if it is managed by an enterprise policy.
 - (void)setSavePasswordsEnabled:(BOOL)enabled
                 managedByPolicy:(BOOL)managedByPolicy;
+
+// Indicates whether saving passkeys is `enabled`.
+- (void)setSavePasskeysEnabled:(BOOL)enabled;
 
 // The count of local passwords passed along with the user eligibility to see
 // the move passwords to account section.

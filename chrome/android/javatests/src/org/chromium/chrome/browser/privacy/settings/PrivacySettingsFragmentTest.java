@@ -86,6 +86,7 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Child account can leak to other tests in the suite.")
+@EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
 // Disable TrackingProtection3pcd as we use prefs instead of the feature in these tests.
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class PrivacySettingsFragmentTest {

@@ -3210,8 +3210,6 @@ static_library("ui") {
         "views/profiles/profile_picker_dice_sign_in_toolbar.h",
         "views/profiles/profile_picker_glic_flow_controller.cc",
         "views/profiles/profile_picker_glic_flow_controller.h",
-        "views/promos/autofill_bubble_signin_promo_view.cc",
-        "views/promos/autofill_bubble_signin_promo_view.h",
         "webui/signin/batch_upload_handler.cc",
         "webui/signin/batch_upload_handler.h",
         "webui/signin/batch_upload_ui.cc",

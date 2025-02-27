@@ -220,6 +220,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//base:supplier_java",
     "//base:tasks_java",
+    "//base:time_utils_java",
     "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",

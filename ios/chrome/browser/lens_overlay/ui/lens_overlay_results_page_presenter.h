@@ -27,9 +27,6 @@
 // Delegate for the presenter events.
 @property(nonatomic, weak) id<LensOverlayResultsPagePresenterDelegate> delegate;
 
-// The layout guide that defines the unobstructed area by the presentation.
-@property(nonatomic, readonly) UILayoutGuide* visibleAreaLayoutGuide;
-
 // Creates a new instance of the presenter.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                   resultPageViewController:
