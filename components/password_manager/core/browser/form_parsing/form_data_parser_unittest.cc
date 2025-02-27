@@ -86,6 +86,7 @@ struct FieldDataDescription {
   const std::u16string_view name = kNonimportantValue;
   FormControlType form_control_type = FormControlType::kInputText;
   autofill::FieldType server_predicted_type = autofill::MAX_VALID_FIELD_TYPE;
+  bool is_server_override = false;
   autofill::FieldType model_predicted_type = autofill::MAX_VALID_FIELD_TYPE;
   bool may_use_prefilled_placeholder = false;
   // If not -1, indicates on which rank among predicted usernames this should
@@ -380,7 +381,7 @@ class FormParserTest : public testing::Test {
             field_description.server_predicted_type,
             /*may_use_prefilled_placeholder=*/
             field_description.may_use_prefilled_placeholder,
-            /*is_override=*/false);
+            field_description.is_server_override);
       }
       if (model_predictions && (field_description.model_predicted_type !=
                                 autofill::MAX_VALID_FIELD_TYPE)) {
@@ -3857,6 +3858,73 @@ TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_NotRecorded) {
   ASSERT_EQ(1u, ukm_entries.size());
   EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
       ukm_entries[0], "UnrelatedFields.AnyFieldIsMasked"));
+}
+
+TEST_F(FormParserTest, ModelPredictionsAndManualOverrides) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Server overrides have priority over model predictions.",
+          .fields =
+              {
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .is_server_override = true,
+                   .model_predicted_type = autofill::PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Server override is respected when it says the field is not "
+              "related to passwords.",
+          .fields =
+              {
+                  {.value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type =
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .is_server_override = true,
+                   .model_predicted_type = autofill::PASSWORD,
+                   .manual_generation_enabled = false},
+              },
+      },
+      {
+          .description_for_logging =
+              "Nothing happens when the model prediction matches the override.",
+          .fields =
+              {
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .is_server_override = true,
+                   .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Manual generation enabled fields are handled correctly when "
+              "model predictions are overridden.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::NO_SERVER_DATA,
+                   .model_predicted_type = autofill::USERNAME},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::NO_SERVER_DATA,
+                   .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .is_server_override = true,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE,
+                   .manual_generation_enabled = true},
+              },
+      },
+  });
 }
 
 }  // namespace
