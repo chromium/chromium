@@ -6,6 +6,14 @@
 
 namespace autofill::features {
 
+#if BUILDFLAG(IS_IOS)
+// When enabled, save card fix flow values for missing cardholder name and
+// expiry date won't be defaulted as detected on iOS.
+BASE_FEATURE(kAutofillDisableDefaultSaveCardFixFlowDetection,
+             "AutofillDisableDefaultSaveCardFixFlowDetection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // When enabled, local credit card migration flows will not be offered.
 BASE_FEATURE(kAutofillDisableLocalCardMigration,
              "AutofillDisableLocalCardMigration",
