@@ -15,6 +15,10 @@
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/gpu/windows/d3d12_video_encode_h265_delegate.h"
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
 namespace media {
 
 namespace {
@@ -35,6 +39,10 @@ class VideoEncodeDelegateFactory
     switch (VideoCodecProfileToVideoCodec(profile)) {
       case VideoCodec::kH264:
         return std::make_unique<D3D12VideoEncodeH264Delegate>(video_device);
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      case VideoCodec::kHEVC:
+        return std::make_unique<D3D12VideoEncodeH265Delegate>(video_device);
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       default:
         return nullptr;
     }

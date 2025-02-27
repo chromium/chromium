@@ -211,6 +211,8 @@ H265SPS::H265SPS() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H265SPS::H265SPS(H265SPS&&) noexcept = default;
+
 H265ProfileTierLevel::H265ProfileTierLevel() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
@@ -219,13 +221,19 @@ H265VUIParameters::H265VUIParameters() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H265VUIParameters::H265VUIParameters(H265VUIParameters&&) noexcept = default;
+
 H265PPS::H265PPS() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H265PPS::H265PPS(H265PPS&&) noexcept = default;
+
 H265VPS::H265VPS() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
+
+H265VPS::H265VPS(H265VPS&&) noexcept = default;
 
 H265RefPicListsModifications::H265RefPicListsModifications() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));

@@ -57,6 +57,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncoderWrapper {
 
   union {
     D3D12_VIDEO_ENCODER_PROFILE_H264 h264_profile_;
+    D3D12_VIDEO_ENCODER_PROFILE_HEVC hevc_profile_;
   } profile_data_;
   D3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS
   resolve_metadata_input_arguments_{};

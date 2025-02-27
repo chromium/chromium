@@ -288,6 +288,8 @@ component("gpu") {
       sources += [
         "windows/d3d11_h265_accelerator.cc",
         "windows/d3d11_h265_accelerator.h",
+        "windows/d3d12_video_encode_h265_delegate.cc",
+        "windows/d3d12_video_encode_h265_delegate.h",
       ]
     }
     deps += [
@@ -670,6 +672,10 @@ source_set("unit_tests") {
       "dxguid.lib",
       "d3d12.lib",
     ]
+
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [ "windows/d3d12_video_encode_h265_delegate_unittest.cc" ]
+    }
   }
 
   if (is_apple) {
