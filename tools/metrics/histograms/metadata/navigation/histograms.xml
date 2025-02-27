@@ -2626,6 +2626,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.URLLoader.ParseHeaders.{Case}" units="microseconds"
+    expires_after="2025-09-25">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the round trip time to parse headers for {Case}.
+
+    Note: The metrics is reported from all clients. Some of clients may not have
+    high resolution timer that can send metrics with microseconds precision.
+  </summary>
+  <token key="Case">
+    <variant name="InProcessTime"
+        summary="the case network service is the same process with the
+                 browser process"/>
+    <variant name="RoundTripTimeForNonNetworkResponse"
+        summary="non main path to parse the headers with the network
+                 service's parse header IPC call"/>
+    <variant name="RoundTripTimeForVerify"
+        summary="main path to verify the parsed headers with the network
+                 service's parse header results"/>
+  </token>
+</histogram>
+
 <histogram name="Navigation.UserAgentStringType" enum="UserAgentStringType"
     expires_after="2025-03-30">
   <owner>miketaylr@chromium.org</owner>

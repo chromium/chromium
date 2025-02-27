@@ -860,6 +860,9 @@ void NetworkService::ParseHeaders(
     const GURL& url,
     const scoped_refptr<net::HttpResponseHeaders>& headers,
     ParseHeadersCallback callback) {
+  base::ScopedUmaHistogramTimer parse_headers_time(
+      "NetworkService.ParsedHeaders.IPCHandleTime",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   std::move(callback).Run(PopulateParsedHeaders(headers.get(), url));
 }
 
