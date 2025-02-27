@@ -32,6 +32,7 @@ import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
 import {MapperServerCdpConnection} from './MapperCdpConnection.js';
+import {PipeTransport} from './PipeTransport.js';
 import {getMapperTabSource} from './reader.js';
 import type {SimpleTransport} from './SimpleTransport.js';
 
@@ -93,10 +94,12 @@ export class BrowserInstance {
       throw new Error('Could not find Chrome binary');
     }
 
+    const pipe = chromeArguments.includes('--remote-debugging-pipe');
     const launchArguments = {
       executablePath,
       args: chromeArguments,
       env: process.env,
+      pipe,
     };
 
     debugInternal(`Launching browser`, {
@@ -106,16 +109,20 @@ export class BrowserInstance {
 
     const browserProcess = launch(launchArguments);
 
-    const cdpEndpoint = await browserProcess.waitForLineOutput(
-      CDP_WEBSOCKET_ENDPOINT_REGEX,
-    );
+    let cdpConnection;
+    if (pipe) {
+      cdpConnection = await this.#establishPipeConnection(browserProcess);
+    } else {
+      const cdpEndpoint = await browserProcess.waitForLineOutput(
+        CDP_WEBSOCKET_ENDPOINT_REGEX,
+      );
 
-    // There is a conflict between prettier and eslint here.
-    // prettier-ignore
-    const cdpConnection = await this.#establishCdpConnection(
-      cdpEndpoint
-    );
-
+      // There is a conflict between prettier and eslint here.
+      // prettier-ignore
+      cdpConnection = await this.#establishCdpConnection(
+        cdpEndpoint
+      );
+    }
     // 2. Get `BiDi-CDP` mapper JS binaries.
     const mapperTabSource = await getMapperTabSource();
 
@@ -165,5 +172,21 @@ export class BrowserInstance {
         resolve(connection);
       });
     });
+  }
+
+  static #establishPipeConnection(
+    browserProcess: Process,
+  ): Promise<MapperCdpConnection> {
+    debugInternal(
+      'Establishing pipe connection to browser process with cdpUrl: ',
+      browserProcess.nodeProcess.pid,
+    );
+    const {3: pipeWrite, 4: pipeRead} = browserProcess.nodeProcess.stdio;
+    const transport = new PipeTransport(
+      pipeWrite as NodeJS.WritableStream,
+      pipeRead as NodeJS.ReadableStream,
+    );
+    const connection = new MapperCdpConnection(transport);
+    return Promise.resolve(connection);
   }
 }

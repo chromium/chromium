@@ -448,3 +448,23 @@ export namespace Bluetooth {
     ) as Protocol.Bluetooth.SimulatePreconnectedPeripheralParameters;
   }
 }
+
+/** @see https://w3c.github.io/webdriver-bidi/#module-webExtension */
+export namespace WebModule {
+  export function parseInstallParams(
+    params: unknown,
+  ): Protocol.WebExtension.InstallParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.WebExtension.InstallParametersSchema,
+    );
+  }
+  export function parseUninstallParams(
+    params: unknown,
+  ): Protocol.WebExtension.UninstallParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.WebExtension.UninstallParametersSchema,
+    );
+  }
+}

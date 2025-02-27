@@ -26,6 +26,7 @@ import type {
   Storage,
   Permissions,
   Bluetooth,
+  WebExtension,
 } from '../protocol/protocol.js';
 
 import type {BidiCommandParameterParser} from './BidiParser.js';
@@ -237,6 +238,16 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   parseSetCookieParams(params: unknown): Storage.SetCookieParameters {
     return params as Storage.SetCookieParameters;
+  }
+  // keep-sorted end
+
+  // WebExtenstion module
+  // keep-sorted start block=yes
+  parseInstallParams(params: unknown): WebExtension.InstallParameters {
+    return params as WebExtension.InstallParameters;
+  }
+  parseUninstallParams(params: unknown): WebExtension.UninstallParameters {
+    return params as WebExtension.UninstallParameters;
   }
   // keep-sorted end
 }

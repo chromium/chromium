@@ -192,6 +192,7 @@ export class MapperServerCdpConnection {
     await browserClient.sendCommand('Target.exposeDevToolsProtocol', {
       bindingName: 'cdp',
       targetId: mapperTabTargetId,
+      inheritPermissions: true,
     });
 
     await mapperCdpClient.sendCommand('Runtime.addBinding', {

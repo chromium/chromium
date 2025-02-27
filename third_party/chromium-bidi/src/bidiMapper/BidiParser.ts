@@ -26,6 +26,7 @@ import type {
   Script,
   Session,
   Storage,
+  WebExtension,
 } from '../protocol/protocol.js';
 
 export interface BidiCommandParameterParser {
@@ -146,5 +147,11 @@ export interface BidiCommandParameterParser {
   parseDeleteCookiesParams(params: unknown): Storage.DeleteCookiesParameters;
   parseGetCookiesParams(params: unknown): Storage.GetCookiesParameters;
   parseSetCookieParams(params: unknown): Storage.SetCookieParameters;
+  // keep-sorted end
+
+  // WebExtenstion module
+  // keep-sorted start block=yes
+  parseInstallParams(params: unknown): WebExtension.InstallParameters;
+  parseUninstallParams(params: unknown): WebExtension.UninstallParameters;
   // keep-sorted end
 }

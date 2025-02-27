@@ -545,3 +545,22 @@ async def user_context_id(websocket):
     })
 
     return result['userContext']
+
+
+@pytest.fixture
+def unpacked_extension_location(tmp_path):
+    """
+    Return a factory for path to the unpacked extension with the given files.
+    Args:
+        files_dict: a dictionary with file name keys and file contents values.
+    Returns:
+        The absolute path (as string) to the folder containing the extension
+        files.
+    """
+    def extension(files_dict):
+        for name, content in files_dict.items():
+            file = tmp_path / name
+            file.write_text(content)
+        return str(tmp_path)
+
+    return extension

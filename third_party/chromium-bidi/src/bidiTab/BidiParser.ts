@@ -26,6 +26,7 @@ import type {
   Script,
   Session,
   Storage,
+  WebExtension,
 } from '../protocol/protocol.js';
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
@@ -232,6 +233,16 @@ export class BidiParser implements BidiCommandParameterParser {
   }
   parseSetCookieParams(params: unknown): Storage.SetCookieParameters {
     return Parser.Storage.parseSetCookieParams(params);
+  }
+  // keep-sorted end
+
+  // WebExtenstion module
+  // keep-sorted start block=yes
+  parseInstallParams(params: unknown): WebExtension.InstallParameters {
+    return Parser.WebModule.parseInstallParams(params);
+  }
+  parseUninstallParams(params: unknown): WebExtension.UninstallParameters {
+    return Parser.WebModule.parseUninstallParams(params);
   }
   // keep-sorted end
 }
