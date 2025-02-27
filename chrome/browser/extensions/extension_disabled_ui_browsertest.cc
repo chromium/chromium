@@ -33,6 +33,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -132,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, AcceptPermissions) {
 
   ExtensionTestMessageListener listener("v2.onInstalled");
   listener.set_failure_message("FAILED");
-  extension_service()->GrantPermissionsAndEnableExtension(extension);
+  extensions::ExtensionRegistrar::Get(profile())
+      ->GrantPermissionsAndEnableExtension(*extension);
   EXPECT_EQ(size_before + 1, extension_registry()->enabled_extensions().size());
   EXPECT_EQ(0u, extension_registry()->disabled_extensions().size());
   ASSERT_FALSE(GetExtensionDisabledGlobalError());

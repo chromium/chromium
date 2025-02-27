@@ -22,6 +22,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/extension_builder.h"
@@ -470,7 +471,7 @@ TEST_P(SupervisedUserExtensionTest, UpdateWithPermissionsIncrease) {
 
   // Simulate supervised user approving the extension without further parent
   // approval.
-  service()->GrantPermissionsAndEnableExtension(extension);
+  registrar()->GrantPermissionsAndEnableExtension(*extension);
 
   // The extension should be enabled.
   CheckEnabled(id);
@@ -548,7 +549,7 @@ TEST_P(SupervisedUserExtensionTest,
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
   // Now the extension is blocked since it requires additional permissions.
   // Simulate child granting approval for the new permissions.
-  service()->GrantPermissionsAndEnableExtension(extension2);
+  registrar()->GrantPermissionsAndEnableExtension(*extension2);
 
   if (ApplyParentalControlsOnExtensions() &&
       GetExtensionManagementSwitch() ==
@@ -912,7 +913,7 @@ TEST_P(SupervisedUserExtensionTest,
   ASSERT_TRUE(extension2);
 
   // Grant the upgraded permissions.
-  service()->GrantPermissionsAndEnableExtension(extension2);
+  registrar()->GrantPermissionsAndEnableExtension(*extension2);
   if (should_be_enabled) {
     // When no parental controls apply, or when Managed by the Extensions
     // switch, the extensions becomes enabled upon granting the increased
@@ -1104,7 +1105,7 @@ TEST_P(SupervisedUserWithEnabledExtensionParentalControlsTest,
 
   // Try to enable the extension without parent approval to prove that it's
   // necessary.
-  service()->GrantPermissionsAndEnableExtension(extension);
+  registrar()->GrantPermissionsAndEnableExtension(*extension);
   // The extension is still disabled.
   CheckDisabledForCustodianApproval(id);
   CheckDisabledForPermissionsIncrease(id);
@@ -1116,7 +1117,7 @@ TEST_P(SupervisedUserWithEnabledExtensionParentalControlsTest,
   CheckDisabledForPermissionsIncrease(id);
 
   // Now grant permissions and try to enable again.
-  service()->GrantPermissionsAndEnableExtension(extension);
+  registrar()->GrantPermissionsAndEnableExtension(*extension);
   // The extension should be enabled.
   CheckEnabled(id);
 }

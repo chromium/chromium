@@ -358,12 +358,6 @@ class ExtensionService : public ExtensionServiceInterface,
   void UnblockAllExtensions();
 
   // Updates the |extension|'s granted permissions lists to include all
-  // permissions in the |extension|'s manifest and re-enables the
-  // extension.
-  // DEPRECATED: Prefer ExtensionRegistrar::GrantPermissionsAndEnableExtension.
-  void GrantPermissionsAndEnableExtension(const Extension* extension);
-
-  // Updates the |extension|'s granted permissions lists to include all
   // permissions in the |extensions|'s manifest.
   void GrantPermissions(const Extension* extension);
 

@@ -904,11 +904,6 @@ void ExtensionService::UnblockAllExtensions() {
   external_install_manager_->UpdateExternalExtensionAlert();
 }
 
-void ExtensionService::GrantPermissionsAndEnableExtension(
-    const Extension* extension) {
-  extension_registrar_->GrantPermissionsAndEnableExtension(*extension);
-}
-
 void ExtensionService::GrantPermissions(const Extension* extension) {
   CHECK(extension);
   PermissionsUpdater(profile()).GrantActivePermissions(extension);

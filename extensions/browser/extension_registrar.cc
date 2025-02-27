@@ -77,6 +77,10 @@ void ExtensionRegistrar::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
+base::WeakPtr<ExtensionRegistrar> ExtensionRegistrar::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void ExtensionRegistrar::Shutdown() {
   // Setting to `nullptr`, because this raw pointer may become dangling once
   // the `ExtensionSystem` keyed service is destroyed.

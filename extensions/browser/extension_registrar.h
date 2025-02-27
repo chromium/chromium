@@ -140,6 +140,9 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // The provided Delegate should outlive this object.
   void SetDelegate(Delegate* delegate);
 
+  // Returns a weak pointer to `this`.
+  base::WeakPtr<ExtensionRegistrar> GetWeakPtr();
+
   // KeyedService overrides:
   // Called when the associated Profile is going to be destroyed.
   void Shutdown() override;

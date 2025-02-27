@@ -213,6 +213,7 @@ class AppContextMenuTest : public AppListTestBase {
     menu_delegate_.reset();
     controller_.reset();
     menu_manager_.reset();
+    AppListTestBase::TearDown();
   }
 
  protected:

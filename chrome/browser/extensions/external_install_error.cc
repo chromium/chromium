@@ -38,6 +38,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -338,9 +339,8 @@ void ExternalInstallError::OnInstallPromptDone(
   switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
       if (extension) {
-        ExtensionSystem::Get(browser_context_)
-            ->extension_service()
-            ->GrantPermissionsAndEnableExtension(extension);
+        ExtensionRegistrar::Get(browser_context_)
+            ->GrantPermissionsAndEnableExtension(*extension);
       }
       break;
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:

@@ -68,8 +68,6 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
     CHECK(supervised_user_metrics_service_);
   }
 
-  void TearDown() override {}
-
  protected:
   scoped_refptr<const extensions::Extension> MakeExtension(std::string name) {
     scoped_refptr<const extensions::Extension> extension =
@@ -130,7 +128,7 @@ TEST_F(SupervisedUserExtensionsMetricsDelegateImplTest,
   // Check that the test takes mimics recording metrics for 2 consecutive days
   // (crbug.com/347993521).
   ASSERT_EQ(new_day, start_day + 1);
-  
+
   EXPECT_EQ(supervised_user::SupervisedUserMetricsService::GetDayIdForTesting(
                 base::Time::Now()),
             new_day);

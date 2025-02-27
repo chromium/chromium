@@ -29,6 +29,7 @@
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -607,7 +608,8 @@ void ExtensionSyncService::OnExtensionInstalled(
       // changes to this extension, so we don't want to trigger sync activity
       // from the call to GrantPermissionsAndEnableExtension.
       base::AutoReset<bool> ignore_updates(&ignore_updates_, true);
-      extension_service()->GrantPermissionsAndEnableExtension(extension);
+      extensions::ExtensionRegistrar::Get(profile_)
+          ->GrantPermissionsAndEnableExtension(*extension);
     }
     if (compare_result >= 0)
       pending_updates_.erase(it);
