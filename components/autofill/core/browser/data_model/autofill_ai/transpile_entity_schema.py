@@ -159,6 +159,19 @@ def generate_cpp_functions(schema):
   yield '  }'
   yield '  NOTREACHED();'
   yield '}'
+  yield 'base::span<const DenseSet<AttributeType>> EntityType::strike_keys() const {'
+  yield '  switch (name_) {'
+  for entity in schema:
+    yield f'    case {entity_name(entity["name"])}: {{'
+    if entity.get("strike keys", []):
+      yield f'      static constexpr auto as = std::array{{{", ".join(attribute_dense_set(entity["name"], attributes) for attributes in entity.get("strike keys", []))}}};'
+      yield f'      return as;'
+    else:
+      yield f'      return {{}};'
+    yield f'    }}'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
   yield ''
   yield 'bool EntityType::syncable() const {'
   yield '  switch (name_) {'

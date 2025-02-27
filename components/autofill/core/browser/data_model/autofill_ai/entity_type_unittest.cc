@@ -61,6 +61,12 @@ TEST(AutofillEntityTypeTest, MergeConstraints) {
                                          AttributeType(kPassportExpiryDate))));
 }
 
+TEST(AutofillEntityTypeTest, StrikeKeys) {
+  EntityType e = EntityType(EntityTypeName::kPassport);
+  EXPECT_THAT(e.strike_keys(), ElementsAre(UnorderedElementsAre(AttributeType(
+                                   AttributeTypeName::kPassportNumber))));
+}
+
 TEST(AutofillEntityTypeTest, NameAsString) {
   EntityType e = EntityType(EntityTypeName::kPassport);
   AttributeType a = *e.attributes().begin();
