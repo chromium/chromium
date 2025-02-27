@@ -429,8 +429,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
         std::optional<VerificationStatus> verification_status =
             ToSafeVerificationStatus(underlying_verification_status);
         if (field_type != UNKNOWN_TYPE && verification_status) {
-          attribute.SetRawInfoWithVerificationStatus(
-              /*pass_key=*/{}, field_type, value, *verification_status);
+          attribute.SetRawInfoWithVerificationStatus(field_type, value,
+                                                     *verification_status);
         }
       }
     }

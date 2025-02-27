@@ -120,7 +120,6 @@ void AttributeInstance::SetInfoWithVerificationStatus(
 }
 
 void AttributeInstance::SetRawInfoWithVerificationStatus(
-    base::PassKey<EntityTable> pass_key,
     FieldType type,
     const std::u16string& value,
     VerificationStatus status) {
