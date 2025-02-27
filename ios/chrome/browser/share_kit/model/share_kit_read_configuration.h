@@ -22,6 +22,13 @@
 // most current group.
 @property(nonatomic, copy) NSString* consistencyToken;
 
+// Token secret is used to grant the requester access to something they wouldn't
+// otherwise have access to. For example, when reading a group before the
+// requester has joined it. This token secret is retrieved from the group
+// invitation link. A token secret is specific to a group.
+// NOTE: Only ONE token secret can be provided per ShareKitReadConfiguration.
+@property(nonatomic, copy) NSString* tokenSecret;
+
 @end
 
 // Configuration object for reading a shared group.
