@@ -374,8 +374,8 @@ class CONTENT_EXPORT MediaDevicesManager
                          const blink::WebMediaDeviceInfoArray& snapshot);
   void UpdateSnapshot(MediaDeviceType type,
                       const blink::WebMediaDeviceInfoArray& new_snapshot,
-                      bool ignore_group_id = true);
-  void ProcessRequests();
+                      bool use_group_id = false);
+  void ProcessClientRequests();
   bool IsEnumerationRequestReady(const EnumerationRequest& request_info);
 
   // Helpers to handle device-change notification.
@@ -440,7 +440,7 @@ class CONTENT_EXPORT MediaDevicesManager
   CacheInfos cache_infos_;
 
   BoolDeviceTypes cache_is_populated_;
-  std::vector<EnumerationRequest> requests_;
+  std::vector<EnumerationRequest> client_requests_;
   MediaDeviceEnumeration current_snapshot_;
   DeviceMonitoringMode monitoring_started_for_audio_{false};
   DeviceMonitoringMode monitoring_started_for_video_{false};
