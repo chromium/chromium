@@ -554,6 +554,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="2885950158625301909">Finn ut mer</translation>
 <translation id="2891209721153296020">«Fjern merking»</translation>
 <translation id="2894949423239620203">Kabelen kan påvirke ytelsen</translation>
+<translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2914580577416829331">Skjermbilder</translation>
 <translation id="2924416280450782352">Kan ikke vise elementene. Prøv å åpne dette panelet på nytt.</translation>
 <translation id="292506373491190801">Fra en hendelse som pågår nå</translation>
@@ -1909,7 +1910,6 @@ Nylig installert</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
 <translation id="7360036564632145207">Hvis du endrer innstillingen for datatilgangsbeskyttelse for eksterne enheter, kan det optimalisere ytelsen</translation>
 <translation id="736045644501761622">Angi bakgrunn og stil</translation>
-<translation id="7368041336688136012">Du må være minst 18 år for å bruke Hjelp meg å lese og Hjelp meg å skrive samt lage bilder med AI.</translation>
 <translation id="7371404428569700291">Ta opp vinduet</translation>
 <translation id="7372069265635026568">Minne: <ph name="AVAILABLE_MEMORY" /> er ledig av totalt <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Dette gir mikrofontilgang til alle apper og nettsteder som har mikrofontillatelsen</translation>

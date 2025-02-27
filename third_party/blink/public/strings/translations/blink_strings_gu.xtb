@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">કૃપા કરીને એક માન્ય મૂલ્ય દાખલ કરો. બે નિકટતમ માન્ય મૂલ્યો <ph name="VALID_VALUE_LOW" /> અને <ph name="VALID_VALUE_HIGHER" /> છે.</translation>
 <translation id="4522570452068850558">વિગતો</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ને અનુસરી રહેલા ભાગમાં '<ph name="INVALIDCHARACTER" />' પ્રતીક શામેલ હોવું જોઈએ નહીં.</translation>
+<translation id="4703271465972936359">ઑડિયો ટ્રૅક</translation>
 <translation id="4718048029184481307">ચિત્રમાં ચિત્રમાંથી ચલાવી રહ્યાં છીએ</translation>
 <translation id="4812940957355064477">કૃપા કરીને એક નંબર દાખલ કરો.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> પસંદ કર્યા</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">કાસ્ટ કરો</translation>
 <translation id="5630795885300617244">10 સેકન્ડ છોડવા માટે ડાબે અથવા જમણે બે વાર ટૅપ કરો</translation>
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
+<translation id="5868587040512539609">વીડિયો ટ્રૅક</translation>
 <translation id="588258955323874662">પૂર્ણસ્ક્રીન</translation>
 <translation id="5888666972993069672">હવે <ph name="DEVICE_FRIENDLY_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="5939518447894949180">રીસેટ કરો</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">પ્રિટી-પ્રિન્ટ</translation>
 <translation id="6550675742724504774">વિકલ્પો</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
+<translation id="6661136971638885481">ટ્રૅક #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">અન્ય...</translation>
 <translation id="6709093583001123835">મૂલ્ય <ph name="VALUE" /> હોવું આવશ્યક છે.</translation>
 <translation id="6709570249143506788">ખરાબ પ્લેબૅક ક્વૉલિટી</translation>

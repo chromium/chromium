@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">বেছে নেওয়া ফাইল বাতিল করুন</translation>
 <translation id="3140825265190223781">সেভ করা পাসওয়ার্ড ও পাসকী</translation>
 <translation id="3143515551205905069">সিঙ্ক বাতিল করুন</translation>
+<translation id="3144126448740580210">সম্পন্ন হয়েছে</translation>
 <translation id="314837624430314508">লেটেস্ট খবর, প্রাইস ট্র্যাকিং আপডেট করুন এবং আরও অনেক কিছু বিষয়ে আপ-টু-ডেট থাকুন।</translation>
 <translation id="3157387275655328056">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="315778507796115851">ইতিহাস</translation>
@@ -1229,7 +1230,6 @@
 <translation id="6295751040240588413">কার্ডের ডাকনাম সঠিক নয়</translation>
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
 <translation id="6301104306974789820">দাম ট্র্যাক করা সংক্রান্ত বিজ্ঞপ্তি পান</translation>
-<translation id="6310451064941005489">পাসওয়ার্ডের বিকল্প</translation>
 <translation id="6316141353357700666">আপনাকে প্রদর্শিত পাসওয়ার্ডের তালিকা থেকে আপনি যেটি ব্যবহার করতে চান সেটি বেছে নিন।</translation>
 <translation id="6321526113093607004">বুকমার্কে যোগ করুন</translation>
 <translation id="6337234675334993532">এনক্রিপশন</translation>
@@ -1354,6 +1354,7 @@
 <translation id="6722623263381062480">প্রাপ্ত ট্যাব</translation>
 <translation id="6723740634201835758">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="672735642903863329">আপনার সবকটি ডিভাইসে, বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু পান।</translation>
+<translation id="6729493062119577923">শেয়ার করা ট্যাব গ্রুপের অ্যাক্টিভিটি</translation>
 <translation id="6732087373923685049">ক্যামেরা</translation>
 <translation id="6746338529702829275">আপনার অ্যাকাউন্ট ডেটা পর্যালোচনা করুন</translation>
 <translation id="6755200887046212842">অ্যাকাউন্টগুলি পরিচালনা করুন</translation>
@@ -1405,6 +1406,7 @@
 <translation id="6979737339423435258">শুরু থেকে</translation>
 <translation id="6983306615164277634">এছাড়াও, অ্যাড্রেস বারের অবস্থান পরিবর্তন করার জন্য আপনি এটি টাচ করে ধরে রাখতে পারবেন।</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998251471716094661">প্রোডাক্টের দাম ট্র্যাক করুন ও কোনও সাইটে দাম কমে গেলে সেই সম্পর্কিত সতর্কতা পান</translation>
 <translation id="7004032350256606903">আপনার সংস্থা আপনাকে 'ব্যক্তিগত' মোডে ব্রাউজ করতে বলছে।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">সেটিংসে ডিফল্ট হিসেবে সেট করুন…</translation>
@@ -1583,6 +1585,7 @@
 <translation id="7812377703891978671">আপনি নিজের সব ব্রাউজিং ইতিহাস <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> বোতাম বেছে নেওয়ার মাধ্যমে অ্যাক্সেস করতে পারবেন।</translation>
 <translation id="78146569776629510">ডাউনলোড</translation>
 <translation id="7815852444315004084">এখনকার মতো লুকান</translation>
+<translation id="7825973332242257878">ট্যাব গ্রুপ</translation>
 <translation id="7831876841288640403">আপনার অ্যাড্রেস বারের সেই পজিশনটি বেছে নিন যেটি আপনার জন্য সবচেয়ে ভালো কাজ করবে।</translation>
 <translation id="7839994177130598711">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় আপনার পরিবারের সদস্যরা এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="7840771868269352570">আপনার বেছে নেওয়া আইটেমগুলি সরানো হবে।</translation>

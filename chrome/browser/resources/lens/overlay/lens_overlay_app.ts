@@ -205,10 +205,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private isLensOverlayContextualSearchboxEnabled: boolean;
   // Whether the contextual searchbox is visible to the user.
   private isLensOverlayContextualSearchboxVisible: boolean = false;
-  // Whether the contextual searchbox should be auto-focused when the overlay is
-  // first opened.
-  private autoFocusSearchbox: boolean =
-      loadTimeData.getValue('autoFocusSearchbox');
   private toastMessage: string = '';
   // What the current page content type is.
   private pageContentType: PageContentType = PageContentType.kUnknown;
@@ -554,17 +550,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private onInitialFlashAnimationEnd() {
     this.initialFlashAnimationHasEnded = true;
     this.$.initialGradient.setScrimVisible();
-    // The searchbox is not focusable until the animation has ended.
-    if (this.autoFocusSearchbox &&
-        this.isLensOverlayContextualSearchboxVisible) {
-      this.focusSearchbox();
-    }
-  }
-
-  private focusSearchbox() {
-    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
-        ?.shadowRoot!.querySelector<HTMLElement>('input')
-        ?.focus();
   }
 
   private computeShouldFadeOutButtons(): boolean {

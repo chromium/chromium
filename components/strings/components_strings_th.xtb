@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 องศา</translation>
 <translation id="1594030484168838125">เลือก</translation>
 <translation id="1599199147673445968">บัตรใหม่ใช่ไหม <ph name="BEGIN_LINK" />ป้อนรายละเอียดบัตร<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">สร้างไฟล์ Zip</translation>
 <translation id="1604192142734009334">สุขภาพและความงาม</translation>
 <translation id="160851722280695521">เล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
@@ -659,6 +660,7 @@
 <translation id="2145193671493396738">ข่าวเศรษฐกิจ</translation>
 <translation id="214556005048008348">ยกเลิกการชำระเงิน</translation>
 <translation id="2147117373852943630">เครื่องดนตรี</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> ต้องการใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณ</translation>
 <translation id="2148613324460538318">เพิ่มบัตร</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2149968176347646218">การเชื่อมต่อไม่ปลอดภัย</translation>
@@ -2262,7 +2264,6 @@
 <translation id="5001526427543320409">คุกกี้ของบุคคลที่สาม</translation>
 <translation id="5002932099480077015">หากเปิดใช้ Chrome จะเก็บสำเนาการ์ดของคุณในอุปกรณ์นี้เพื่อให้การกรอกฟอร์มทำได้เร็วขึ้น</translation>
 <translation id="5007392906805964215">ดู</translation>
-<translation id="500790844453430087">กลุ่มแท็บ "<ph name="GROUP_TITLE_1" />" และ "<ph name="GROUP_TITLE_2" />" ใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="5011561501798487822">ภาษาที่ตรวจพบ</translation>
 <translation id="5015510746216210676">ชื่อเครื่อง:</translation>
 <translation id="5017554619425969104">ข้อความที่คุณคัดลอก</translation>

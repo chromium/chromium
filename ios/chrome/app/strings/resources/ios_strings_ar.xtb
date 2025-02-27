@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">تجاهل الاختيار</translation>
 <translation id="3140825265190223781">كلمات المرور ومفاتيح المرور المحفوظة</translation>
 <translation id="3143515551205905069">إلغاء المزامنة</translation>
+<translation id="3144126448740580210">تم</translation>
 <translation id="314837624430314508">يمكنك متابعة آخر الأخبار وتغيّرات الأسعار وغير ذلك.</translation>
 <translation id="3157387275655328056">الإضافة إلى قائمة القراءة</translation>
 <translation id="315778507796115851">السجلّ</translation>
@@ -1226,7 +1227,6 @@
 <translation id="6295751040240588413">لقب البطاقة غير صالح</translation>
 <translation id="629730747756840877">الحساب</translation>
 <translation id="6301104306974789820">الحصول على الإشعارات الخاصة بتتبُّع أسعار المنتجات</translation>
-<translation id="6310451064941005489">خيارات كلمة المرور</translation>
 <translation id="6316141353357700666">اختَر كلمة المرور التي تريد استخدامها من القائمة التي تظهر.</translation>
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="6337234675334993532">التشفير</translation>
@@ -1403,6 +1403,7 @@
 <translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6983306615164277634">يمكنك أيضًا النقر مع الاستمرار على شريط العناوين لتغيير مكانه.</translation>
 <translation id="6990519590575500580">‏استخدام Facetime</translation>
+<translation id="6998251471716094661">يمكنك تتبُّع أسعار المنتجات والحصول على تنبيهات عند انخفاض الأسعار على أي موقع إلكتروني</translation>
 <translation id="7004032350256606903">تفرض مؤسستك سياسة التصفُّح بخصوصية تامّة.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">الضبط كمتصفِّح تلقائي من خلال "الإعدادات"…</translation>
@@ -1581,6 +1582,7 @@
 <translation id="7812377703891978671">يمكنك الوصول إلى جميع سجلّات التصفُّح من خلال اختيار <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">عمليات التنزيل</translation>
 <translation id="7815852444315004084">إخفاء الآن</translation>
+<translation id="7825973332242257878">مجموعات علامات التبويب</translation>
 <translation id="7831876841288640403">يمكنك وضع شريط العناوين في المكان الذي يناسبك.</translation>
 <translation id="7839994177130598711">‏يمكن لأفراد عائلتك حاليًا استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">ستتم إزالة العناصر التي اخترتها.</translation>

@@ -554,6 +554,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="2885950158625301909">Mëso më shumë</translation>
 <translation id="2891209721153296020">"Anulo zgjedhjen"</translation>
 <translation id="2894949423239620203">Kablloja mund të ndikojë te cilësia e funksionimit</translation>
+<translation id="2902312830803030883">Më shumë veprime</translation>
 <translation id="2914580577416829331">Regjistrimet e ekranit</translation>
 <translation id="2924416280450782352">Artikujt nuk mund të shfaqen. Provo ta rihapësh këtë panel.</translation>
 <translation id="292506373491190801">Nga ngjarja që po ndodh tani</translation>
@@ -1909,7 +1910,6 @@ Instalim i ri</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
 <translation id="7360036564632145207">Ndryshimi i mbrojtjes së qasjes te të dhënat e tua për pajisjet periferike mund të optimizojë cilësinë e funksionimit</translation>
 <translation id="736045644501761622">Cakto imazhin e sfondit dhe stilin</translation>
-<translation id="7368041336688136012">Duhet të jesh të paktën 18 vjeç për të përdorur "Më ndihmo të shkruaj", "Më ndihmo të lexoj" dhe për të krijuar imazhe me IA.</translation>
 <translation id="7371404428569700291">Regjistro dritaren</translation>
 <translation id="7372069265635026568">Memoria: <ph name="AVAILABLE_MEMORY" /> në dispozicion nga <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="737315737514430195">Kjo lejon qasjen te mikrofoni për të gjitha aplikacionet dhe uebsajtet me lejen e mikrofonit</translation>

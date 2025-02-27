@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">பூனைகள்</translation>
 <translation id="5907649332524363701">கீபோர்டு வண்ணம்</translation>
 <translation id="5908813850962688338">இந்தப் புதுப்பிப்பை நிறுவ சில நிமிடங்கள் ஆகும். புதுப்பிப்பு பதிவிறக்கப்படும்போது உங்கள் சாதனத்தைப் பவரில் பிளக்-இன் செய்து ஆனில் வைத்திருக்கவும். இந்தச் செயல்பாட்டின்போது உங்கள் சாதனம் சில முறை மறுபடி தொடங்குவதுடன் கருப்புத் திரையையும் காட்டலாம். நிறுவலை நிறைவுசெய்ய உங்கள் சாதனத்தை மீண்டும் தொடங்குமாறு உங்களிடம் கேட்கப்படும்.</translation>
+<translation id="5915794087373112615"><ph name="NUM_SECONDS" /> வினாடிகளில் உங்கள் திரை ஆசிரியருக்குக் காட்டப்படும்</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் ஃபைல் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டன.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> ஐத் தேர்ந்தெடுக்கும்</translation>
 <translation id="7618774594543487847">நியூட்ரல்</translation>
 <translation id="7620771111601174153">உதவி மையத்தில் மேலும் அறிக</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">கடைசியாக மீட்டமைத்த நேரம்</translation>
 <translation id="7633068090678117093">பின்புல படம்</translation>
 <translation id="763873111564339966">கருநீலம்</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">வெளிரிய பழுப்பு</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> பின்னணியில் <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ஆடியோ ரெக்கார்டிங்கைத் தொடங்க தொடங்க மைக்கை இணைக்கவும்</translation>
 <translation id="8067126283828232460">APN இணைக்கப்பட்டது.</translation>
 <translation id="8067208048261192356">பழுப்பு</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ஐ நீக்கும்</translation>

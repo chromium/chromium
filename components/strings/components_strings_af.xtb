@@ -356,6 +356,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1593359183944365958">270 grade</translation>
 <translation id="1594030484168838125">Kies</translation>
 <translation id="1599199147673445968">Nuwe kaart? <ph name="BEGIN_LINK" />Voer kaartbesonderhede in<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Skoonheid en fiksheid</translation>
 <translation id="160851722280695521">Speel die Dino Run-speletjie in Chrome</translation>
 <translation id="161042844686301425">Siaanblou</translation>
@@ -772,6 +773,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verval op <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Instelling word deur jou administrateur gekontroleer</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wil saambind</translation>
+<translation id="2344529975040861103">Jy kan hierdie kaart outovul omdat jou rekening aan Google Pay gekoppel is</translation>
 <translation id="2346319942568447007">Prent wat jy gekopieer het</translation>
 <translation id="2348509731468399833">Prysnasporing is gestop.</translation>
 <translation id="2349957959687031096">Knoppie om Incognito-oortjie oop te maak; aktiveer om ’n nuwe Incognito-oortjie oop te maak om privaat te blaai</translation>
@@ -2261,7 +2263,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5001526427543320409">Derdepartywebkoekies</translation>
 <translation id="5002932099480077015">As dit geaktiveer is, sal Chrome 'n kopie van jou kaart op hierdie toestel berg om vorms vinniger in te vul.</translation>
 <translation id="5007392906805964215">Gaan na</translation>
-<translation id="500790844453430087">“<ph name="GROUP_TITLE_1" />”- en “<ph name="GROUP_TITLE_2" />”-oortjiegroepe is nie meer beskikbaar nie</translation>
 <translation id="5011561501798487822">Bespeurde taal</translation>
 <translation id="5015510746216210676">Masjiennaam:</translation>
 <translation id="5017554619425969104">Teks wat jy gekopieer het</translation>
@@ -4576,6 +4577,7 @@ Bykomende besonderhede:
 <translation id="9139318394846604261">Inkopies</translation>
 <translation id="9140198744651252040">Chrome-blaaier wil jou vingerafdruk gebruik om wagwoorde te outovul</translation>
 <translation id="9141013498910525015">Bestuur adresse</translation>
+<translation id="9143898823728499852">Jy kan hierdie kaart outovul omdat jou <ph name="CARD_ISSUER_NAME" />-rekening aan Google Pay gekoppel is</translation>
 <translation id="9144951720726881238">Vervaldatum:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Meld weer aan<ph name="END_LINK" /> 
     en kom dan terug na hierdie oortjie om skryfhulp te kry</translation>

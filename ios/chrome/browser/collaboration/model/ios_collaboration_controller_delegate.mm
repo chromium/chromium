@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -57,6 +58,9 @@ const CGFloat kFaviconMinimumSize = 8.0;
 
 // The desired size of tab favicons in points.
 const CGFloat kFaviconSize = 16.0;
+
+// The opacity of the scrim view.
+const CGFloat kScrimOpacity = 0.3;
 
 // Maximum delay to return preview items.
 constexpr base::TimeDelta kFetchPreviewItemsTimeDelay = base::Seconds(15);
@@ -102,8 +106,19 @@ IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 void IOSCollaborationControllerDelegate::PrepareFlowUI(
     base::OnceCallback<void()> exit_callback,
     ResultCallback result) {
+  // TODO(crbug.com/399584431): Improve the design of the spinner/scrim.
+  scrim_view_ = [[UIView alloc] init];
+  scrim_view_.backgroundColor = [UIColor colorWithWhite:0 alpha:kScrimOpacity];
+  UIActivityIndicatorView* activity_view = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  activity_view.translatesAutoresizingMaskIntoConstraints = NO;
+  [scrim_view_ addSubview:activity_view];
+  AddSameCenterConstraints(scrim_view_, activity_view);
+  [activity_view startAnimating];
+  scrim_view_.translatesAutoresizingMaskIntoConstraints = NO;
+  [base_view_controller_.view addSubview:scrim_view_];
+  AddSameConstraints(base_view_controller_.view, scrim_view_);
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
-  // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
@@ -297,11 +312,11 @@ void IOSCollaborationControllerDelegate::PromoteTabGroup(
 }
 
 void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
-  // TODO(crbug.com/377306986): Implement this.
+  // TODO(crbug.com/399595276): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::OnFlowFinished() {
-  // TODO(crbug.com/377306986): Implement this.
+  [scrim_view_ removeFromSuperview];
 }
 
 void IOSCollaborationControllerDelegate::OnAuthenticationComplete(

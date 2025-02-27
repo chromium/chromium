@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">cats</translation>
 <translation id="5907649332524363701">key colour</translation>
 <translation id="5908813850962688338">Installing this update will take a few minutes. Keep your device plugged in and powered on when the update is being downloaded. Your device may reboot itself several times and show a black screen during this process. You will be prompted to restart your device to complete installation.</translation>
+<translation id="5915794087373112615">Your teacher will view your screen in <ph name="NUM_SECONDS" /> seconds</translation>
 <translation id="5916084858004523819">Prohibited</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7618216277886673749">Select <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Find out more in the Help Centre</translation>
+<translation id="7623327321610992184">OnTask pod</translation>
 <translation id="763165478673169849">Last reset time</translation>
 <translation id="7633068090678117093">Background image</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1524,6 +1526,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> on a <ph name="CHARACTERS_BACKGROUND" /> background</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Connect a mic to start recording audio</translation>
 <translation id="8067126283828232460">APN is connected.</translation>
 <translation id="8067208048261192356">brown</translation>
 <translation id="8067224607978179455">Delete <ph name="ACTION_NAME" /></translation>

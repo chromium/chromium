@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/network_change_notifier.h"
@@ -63,6 +64,10 @@ class IpProtectionCoreImpl
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
   void GeoObserved(const std::string& geo_id) override;
+  bool HasTrackingProtectionException(
+      const GURL& first_party_url) const override;
+  void SetTrackingProtectionContentSetting(
+      const ContentSettingsForOneType& settings) override;
 
   IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
       ProxyLayer proxy_layer);
@@ -104,6 +109,10 @@ class IpProtectionCoreImpl
 
   // Feature flag to safely introduce token caching by geo.
   const bool enable_token_caching_by_geo_;
+
+  // List of TRACKING_PROTECTION content setting exceptions.
+  std::vector<content_settings::HostIndexedContentSettings>
+      tp_content_settings_;
 
   base::WeakPtrFactory<IpProtectionCoreImpl> weak_ptr_factory_{this};
 };

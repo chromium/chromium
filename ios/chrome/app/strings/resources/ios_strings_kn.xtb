@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">ಆಯ್ಕೆಯನ್ನು ತ್ಯಜಿಸಿ</translation>
 <translation id="3140825265190223781">ಸೇವ್ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳು</translation>
 <translation id="3143515551205905069">ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ರದ್ದುಪಡಿಸಿ</translation>
+<translation id="3144126448740580210">ಮುಗಿದಿದೆ</translation>
 <translation id="314837624430314508">ಇತ್ತೀಚಿನ ಸುದ್ದಿ, ದರ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಪ್‌ಡೇಟ್‌ಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳ ಕುರಿತು ಅಪ್‌ಡೇಟ್‌ ಆಗಿರಿ.</translation>
 <translation id="3157387275655328056">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="315778507796115851">ಇತಿಹಾಸ</translation>
@@ -1115,6 +1116,7 @@
 <translation id="5817176759448082654">ಪಾಸ್‌ವರ್ಡ್ ಪರಿಶೀಲನೆ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">ಸಿಂಕ್ ಆಗುತ್ತಿದೆ…</translation>
+<translation id="583923961930319521">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="5844284118433003733">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ ಸಂಯೋಜಿಸಲಾಗುತ್ತದೆ, ಇದು ಎಲ್ಲಾ Google ಸೇವೆಗಳಾದ್ಯಂತ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಭದ್ರತಾ ಇನ್ಸಿಡೆಂಟ್ ಸಂದರ್ಭದಲ್ಲಿ Gmail ನಲ್ಲಿ ರಕ್ಷಣೆ ಹೆಚ್ಚಾಗುತ್ತದೆ.</translation>
 <translation id="5854790677617711513">30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದು</translation>
 <translation id="5857770089550859117">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಪಾಸ್‌ಫ್ರೇಸ್ ಅಗತ್ಯವಿದೆ.</translation>
@@ -1228,7 +1230,6 @@
 <translation id="6295751040240588413">ಕಾರ್ಡ್‌ನ ಅಡ್ಡಹೆಸರು ಅಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="629730747756840877">ಖಾತೆ</translation>
 <translation id="6301104306974789820">ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
-<translation id="6310451064941005489">ಪಾಸ್‌ವರ್ಡ್‌ ಆಯ್ಕೆಗಳು</translation>
 <translation id="6316141353357700666">ಕಾಣಿಸಿಕೊಳ್ಳುವ ಪಟ್ಟಿಯಿಂದ ನೀವು ಬಳಸಲು ಬಯಸುವ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆರಿಸಿ.</translation>
 <translation id="6321526113093607004">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="6337234675334993532">ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
@@ -1405,6 +1406,7 @@
 <translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
 <translation id="6983306615164277634">ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಲು ನೀವು ಅಡ್ರೆಸ್ ಬಾರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿದಿಟ್ಟುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998251471716094661">ಉತ್ಪನ್ನಗಳ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ ಮತ್ತು ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದಾಗ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7004032350256606903">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಯ ಪ್ರಕಾರ ನೀವು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಡೀಫಾಲ್ಟ್‌ ಮಾಡಿ…</translation>
@@ -1583,6 +1585,7 @@
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಎಲ್ಲಾ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ನೀವು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="78146569776629510">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="7815852444315004084">ಸದ್ಯಕ್ಕೆ ಮರೆಮಾಡಿ</translation>
+<translation id="7825973332242257878">ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
 <translation id="7831876841288640403">ನಿಮಗೆ ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯ ಸ್ಥಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="7839994177130598711">ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="7840771868269352570">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
@@ -1689,6 +1692,7 @@
 <translation id="8221665793629393739">ಮರುಭೇಟಿ ನೀಡಲು ನಿಮ್ಮ ರಿಮೈಂಡರ್</translation>
 <translation id="8230355548492839438">ಹಿಂದಿನದನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8232956427053453090">ಡೇಟಾವನ್ನುಇರಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="8233237502828137700">ಬ್ಯಾನರ್ ಪ್ರೋಮೋವನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="8238711781852526820">"ದರ ಟ್ರ್ಯಾಕಿಂಗ್" ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8258999165172757081">ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>

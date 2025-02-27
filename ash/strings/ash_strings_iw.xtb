@@ -554,6 +554,7 @@
 <translation id="2885950158625301909">מידע נוסף</translation>
 <translation id="2891209721153296020">"ביטול הבחירה"</translation>
 <translation id="2894949423239620203">חיבור כבל עשוי להשפיע על הביצועים</translation>
+<translation id="2902312830803030883">פעולות נוספות</translation>
 <translation id="2914580577416829331">צילומי מסך</translation>
 <translation id="2924416280450782352">לא ניתן להציג את הפריטים. אפשר לנסות לפתוח את החלונית הזו מחדש.</translation>
 <translation id="292506373491190801">מאירוע שמתקיים עכשיו</translation>
@@ -1909,7 +1910,6 @@
 <translation id="735745346212279324">‏VPN מנותק</translation>
 <translation id="7360036564632145207">הביצועים עשויים להשתפר אם ההגדרות של הגנת הגישה לנתונים עבור ציוד היקפי ישונו</translation>
 <translation id="736045644501761622">הגדרה של טפט וסגנון</translation>
-<translation id="7368041336688136012">‏צריך להיות בגיל 18 לפחות כדי להשתמש בתכונות "עזרה בקריאה", "עזרה בכתיבה", וכדי ליצור תמונות באמצעות AI.</translation>
 <translation id="7371404428569700291">חלון ההקלטה</translation>
 <translation id="7372069265635026568">נפח זיכרון פנוי של <ph name="AVAILABLE_MEMORY" /> מתוך <ph name="TOTAL_MEMORY" /> סה"כ</translation>
 <translation id="737315737514430195">הפעולה הזו מאפשרת גישה למיקרופון לכל האפליקציות והאתרים עם הרשאת הגישה למיקרופון</translation>

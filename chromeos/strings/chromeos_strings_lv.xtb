@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">kaķi</translation>
 <translation id="5907649332524363701">taustiņu krāsa</translation>
 <translation id="5908813850962688338">Šī atjauninājuma instalēšana ilgs dažas minūtes. Atjauninājuma lejupielādes laikā ierīcei ir jābūt pievienotai barošanas avotam un ieslēgtai. Šī procesa laikā ierīce var tikt vairākas reizes atkārtoti palaista, kā arī var tikt rādīts melns ekrāns. Lai pabeigtu instalēšanu, jums tiks piedāvāts restartēt ierīci.</translation>
+<translation id="5915794087373112615">Skolotājs varēs skatīt jūsu ekrānu pēc <ph name="NUM_SECONDS" /> s</translation>
 <translation id="5916084858004523819">Aizliegts</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fails ir sekmīgi noskenēts un saglabāts mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1525,6 +1526,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8054112564438735763">smilškrāsa</translation>
 <translation id="8062968459344882447">Objekts <ph name="CHARACTERS_SUBJECTS" /> šādā krāsā: <ph name="CHARACTERS_COLOR" />. Fona krāsa: <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Pievienojiet mikrofonu, lai sāktu audio ierakstīšanu</translation>
 <translation id="8067126283828232460">APN ir savienots.</translation>
 <translation id="8067208048261192356">brūna</translation>
 <translation id="8067224607978179455">Dzēst darbību <ph name="ACTION_NAME" /></translation>

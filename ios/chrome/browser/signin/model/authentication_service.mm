@@ -296,18 +296,6 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
   }
 }
 
-bool AuthenticationService::IsAccountSwitchInProgress() {
-  return account_switch_in_progress_;
-}
-
-base::ScopedClosureRunner
-AuthenticationService::DeclareAccountSwitchInProgress() {
-  CHECK(!account_switch_in_progress_);
-  account_switch_in_progress_ = true;
-  return base::ScopedClosureRunner(
-      base::BindOnce(&AuthenticationService::AccountSwitchDone, GetWeakPtr()));
-}
-
 void AuthenticationService::SetReauthPromptForSignInAndSync() {
   pref_service_->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, true);
 }
@@ -792,11 +780,6 @@ void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
   syncer::KeepAccountKeyedPrefValuesOnlyForUsers(
       pref_service_, prefs::kSigninHasAcceptedManagementDialog,
       available_gaia_ids);
-}
-
-void AuthenticationService::AccountSwitchDone() {
-  CHECK(account_switch_in_progress_, base::NotFatalUntil::M140);
-  account_switch_in_progress_ = false;
 }
 
 NSArray<id<SystemIdentity>>* AuthenticationService::ActiveIdentities() {

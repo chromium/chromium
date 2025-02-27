@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 градусов</translation>
 <translation id="1594030484168838125">Выбрать</translation>
 <translation id="1599199147673445968">Новая карта? <ph name="BEGIN_LINK" />Введите реквизиты<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Создать ZIP-архив</translation>
 <translation id="1604192142734009334">Красота и фитнес</translation>
 <translation id="160851722280695521">Играть в игру Dino Run в Chrome</translation>
 <translation id="161042844686301425">Голубой</translation>
@@ -772,6 +773,7 @@
 <translation id="2330137317877982892">Карта <ph name="CREDIT_CARD" />, действует до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Эта настройка управляется администратором</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
+<translation id="2344529975040861103">Вы можете использовать для автозаполнения данные этой карты, потому что ваш аккаунт связан с Google Pay.</translation>
 <translation id="2346319942568447007">Скопированное изображение</translation>
 <translation id="2348509731468399833">Отслеживание цен приостановлено.</translation>
 <translation id="2349957959687031096">Кнопка "Открыть вкладку в режиме инкогнито". Нажмите ее, чтобы открыть такую вкладку.</translation>
@@ -2260,7 +2262,6 @@
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
 <translation id="5002932099480077015">Chrome будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
-<translation id="500790844453430087">Группы вкладок "<ph name="GROUP_TITLE_1" />" и "<ph name="GROUP_TITLE_2" />" больше не доступны.</translation>
 <translation id="5011561501798487822">Автоматически определенный язык</translation>
 <translation id="5015510746216210676">Имя компьютера:</translation>
 <translation id="5017554619425969104">Скопированный текст</translation>
@@ -4576,6 +4577,7 @@
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9140198744651252040">Chrome запрашивает использование отпечатка пальца, чтобы подтверждать автозаполнение паролей.</translation>
 <translation id="9141013498910525015">Управление адресами</translation>
+<translation id="9143898823728499852">Вы можете использовать для автозаполнения данные этой карты, потому что ваш аккаунт в сервисе "<ph name="CARD_ISSUER_NAME" />" связан с Google Pay.</translation>
 <translation id="9144951720726881238">Срок действия:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Войдите в аккаунт<ph name="END_LINK" />
     ещё раз, а затем вернитесь на эту вкладку, чтобы сгенерировать текст.</translation>

@@ -41,6 +41,10 @@
 - (void)fetchLatestShopCardItem {
   // Populate the item if it is not already initialized.
   _shopCardItem = [[ShopCardItem alloc] init];
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+    _shopCardItem.shouldShowSeeMore = YES;
+  }
+
   _shopCardItem.shopCardData = [[ShopCardData alloc] init];
 
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {

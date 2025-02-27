@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">صرف‌نظر کردن از انتخاب</translation>
 <translation id="3140825265190223781">گذرواژه‌ها و گذرکلیدهای ذخیره‌شده</translation>
 <translation id="3143515551205905069">لغو همگام‌سازی</translation>
+<translation id="3144126448740580210">تمام</translation>
 <translation id="314837624430314508">با جدیدترین اخبار، به‌روزرسانی‌های پیگیری قیمت، و موارد دیگر همراه باشید.</translation>
 <translation id="3157387275655328056">افزودن به فهرست خواندن</translation>
 <translation id="315778507796115851">سابقه</translation>
@@ -1228,7 +1229,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6295751040240588413">نام مستعار کارت نامعتبر است</translation>
 <translation id="629730747756840877">حساب</translation>
 <translation id="6301104306974789820">دریافت اعلان‌های پیگیری قیمت</translation>
-<translation id="6310451064941005489">گزینه‌های گذرواژه</translation>
 <translation id="6316141353357700666">در فهرستی که خواهید دید، گذرواژه موردنظر برای استفاده را انتخاب کنید.</translation>
 <translation id="6321526113093607004">افزودن به نشانک‌ها</translation>
 <translation id="6337234675334993532">رمزگذاری</translation>
@@ -1405,6 +1405,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6983306615164277634">برای تغییر موقعیت نوار نشانی، همچنین می‌توانید آن را لمس کنید و نگه دارید.</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998251471716094661">قیمت محصولات را پیگیری کنید و برای کاهش قیمت در هر سایتی هشدار دریافت کنید</translation>
 <translation id="7004032350256606903">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">انتخاب کردن به‌عنوان پیش‌فرض در «تنظیمات»…</translation>
@@ -1583,6 +1584,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7812377703891978671">با انتخاب <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> می‌توانید به کل سابقه مرورتان دسترسی داشته باشید.</translation>
 <translation id="78146569776629510">بارگیری‌ها</translation>
 <translation id="7815852444315004084">فعلاً پنهان شود</translation>
+<translation id="7825973332242257878">گروه برگه</translation>
 <translation id="7831876841288640403">جایگاهی را برای نوار نشانی انتخاب کنید که مناسب‌ترین برای شما است.</translation>
 <translation id="7839994177130598711">‏اعضای خانواده‌تان اکنون می‌توانند هنگام ورود به سیستم <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> بااستفاده از «مدیر گذرواژه Google»، نام کاربری و گذرواژه شما را به‌کار ببرند.</translation>
 <translation id="7840771868269352570">موارد انتخاب‌شده برداشته خواهد شد.</translation>

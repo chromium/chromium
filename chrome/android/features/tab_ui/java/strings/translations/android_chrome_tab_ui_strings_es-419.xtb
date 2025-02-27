@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Conserva este grupo para agregar pestañas más tarde o bórralo si ya no lo necesitas.
 
 Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pestañas "<ph name="TITLE_OF_GROUP" />", y se borrará de todos los dispositivos.</translation>
+<translation id="1326654401173629446">El grupo "<ph name="TAB_GROUP_NAME" />" ya no está disponible</translation>
 <translation id="1329584516321524826">Recién actualizada</translation>
 <translation id="1340839264183302272">Abandonar grupo</translation>
 <translation id="1419023007528516122">Esta acción borrará el grupo de tu dispositivo de forma permanente</translation>
@@ -23,6 +24,7 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="161042844686301425">Cian</translation>
 <translation id="1645759014353344461">Se agruparon <ph name="TABS_COUNT_MANY" /> pestañas</translation>
 <translation id="1657719826150349398">Mover la pestaña hacia abajo</translation>
+<translation id="1697284962337958118">Agregar a</translation>
 <translation id="1713541401465507417">Cerrar todos los grupos y las pestañas</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Se agrupó <ph name="TABS_COUNT_ONE" /> pestaña</translation>

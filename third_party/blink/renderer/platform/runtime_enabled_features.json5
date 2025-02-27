@@ -1130,7 +1130,7 @@
       // queries support in conditions.
       // https://drafts.csswg.org/css-values-5/#if-notation.
       name: "CSSInlineIfForMediaQueries",
-      status: "test",
+      status: "experimental",
     },
     {
       // CSS if() function for custom properties. Flag is used only for style
@@ -1144,7 +1144,7 @@
       // queries support in conditions.
       // https://drafts.csswg.org/css-values-5/#if-notation.
       name: "CSSInlineIfForSupportsQueries",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://chromestatus.com/feature/6289894144212992

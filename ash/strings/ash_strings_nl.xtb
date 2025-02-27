@@ -554,6 +554,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2885950158625301909">Meer informatie</translation>
 <translation id="2891209721153296020">Deselecteren</translation>
 <translation id="2894949423239620203">De kabel kan invloed hebben op de prestaties</translation>
+<translation id="2902312830803030883">Meer acties</translation>
 <translation id="2914580577416829331">Schermopnamen</translation>
 <translation id="2924416280450782352">Kan geen items tonen. Probeer dit deelvenster opnieuw te openen.</translation>
 <translation id="292506373491190801">Vanuit actuele afspraak</translation>
@@ -1909,7 +1910,6 @@ Nieuwe installatie</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
 <translation id="736045644501761622">Achtergrond en stijl instellen</translation>
-<translation id="7368041336688136012">Je moet 18 jaar of ouder zijn om Help me met lezen en Help me met schrijven te gebruiken en afbeeldingen te maken met AI.</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> geheugen van in totaal <ph name="TOTAL_MEMORY" /> beschikbaar</translation>
 <translation id="737315737514430195">Hierdoor wordt microfoontoegang toegestaan voor alle apps en websites met microfoonrechten</translation>

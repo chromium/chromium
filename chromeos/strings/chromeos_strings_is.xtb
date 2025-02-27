@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">kettir</translation>
 <translation id="5907649332524363701">litur lykils</translation>
 <translation id="5908813850962688338">Það tekur nokkrar mínútur að setja upp þessa uppfærslu. Hafðu tækið í sambandi og kveikt á því þegar verið er að sækja uppfærsluna. Tækið þitt kann að endurræsast nokkrum sinnum og skjárinn gæti orðið svartur meðan á ferlinu stendur. Þú færð beiðni um að endurræsa tækið til að ljúka uppsetningu.</translation>
+<translation id="5915794087373112615">Kennarinn þinn mun sjá skjáinn þinn eftir <ph name="NUM_SECONDS" /> sekúndur</translation>
 <translation id="5916084858004523819">Bannað</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skráin var skönnuð og vistuð í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7618216277886673749">Velja <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Hlutlaust</translation>
 <translation id="7620771111601174153">Fáðu frekari upplýsingar í hjálparmiðstöðinni</translation>
+<translation id="7623327321610992184">OnTask-klefi</translation>
 <translation id="763165478673169849">Tími síðustu endurstillingar</translation>
 <translation id="7633068090678117093">Bakgrunnsmynd</translation>
 <translation id="763873111564339966">dimmfjólublár</translation>
@@ -1524,6 +1526,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8054112564438735763">drapplitur</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> á <ph name="CHARACTERS_BACKGROUND" /> bakgrunni</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Tengdu hljóðnema til að byrja að taka upp hljóð</translation>
 <translation id="8067126283828232460">Aðgangsstaður er tengdur.</translation>
 <translation id="8067208048261192356">brúnn</translation>
 <translation id="8067224607978179455">Eyða <ph name="ACTION_NAME" /></translation>

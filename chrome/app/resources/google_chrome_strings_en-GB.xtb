@@ -52,7 +52,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1682634494516646069">Google Chrome cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="1689338313606606627">Chrome can make this tab inactive to improve your browsing experience and keep things fast.</translation>
 <translation id="1698376642261615901">Google Chrome is a web browser that runs web pages and applications with lightning speed. It's fast, stable and easy to use. Browse the web more safely with malware and phishing protection built into Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome will relaunch in an hour}other{Chrome will relaunch in # hours}}</translation>
 <translation id="1722488837206509557">This will allow you to select from available devices and display content on them.</translation>
@@ -273,7 +272,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
-<translation id="4575717501879784448">Chrome can make these tabs inactive to improve your browsing experience and free up resources.</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
@@ -306,14 +304,12 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4970761609246024540">Welcome to Chrome profiles</translation>
 <translation id="4970880042055371251">Chrome OS version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="4997044641749333913">Chrome can make these tabs inactive to improve your browsing experience and keep things fast.</translation>
 <translation id="5003967926796347400">Click 'Google Password Manager'</translation>
 <translation id="5114340746415930644">Enter your passphrase to use and save Chrome data in your account, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Sign in to Chrome when you sign in to other Google services</translation>
 <translation id="5126049312684316860">Chrome preloads even more pages that you're likely to visit, so that they load more quickly when you visit them.</translation>
 <translation id="5132929315877954718">Discover great apps, games, extensions and themes for Google Chrome.</translation>
 <translation id="5139423532931106058">Customise your Chrome profile</translation>
-<translation id="5161361450770099246">Chrome can make this tab inactive to improve your browsing experience and free up resources.</translation>
 <translation id="5163087008893166964">Welcome to Chrome; new browser window opened</translation>
 <translation id="5166439563123238795">Chrome needs permission to track your hands</translation>
 <translation id="5170938038195470297">Your profile cannot be used because it is from a newer version of Google Chrome.

@@ -554,6 +554,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="2885950158625301909">Więcej informacji</translation>
 <translation id="2891209721153296020">„Odznacz”</translation>
 <translation id="2894949423239620203">Kabel może wpływać na wydajność</translation>
+<translation id="2902312830803030883">Więcej czynności</translation>
 <translation id="2914580577416829331">Zrzuty ekranu</translation>
 <translation id="2924416280450782352">Nie można wyświetlić elementów. Spróbuj ponownie otworzyć ten panel.</translation>
 <translation id="292506373491190801">Z trwającego wydarzenia</translation>
@@ -1908,7 +1909,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="735745346212279324">VPN odłączona</translation>
 <translation id="7360036564632145207">Wydajność może się poprawić, jeśli zmienisz ustawienie Zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
 <translation id="736045644501761622">Ustaw tapetę i styl</translation>
-<translation id="7368041336688136012">Aby korzystać z funkcji Pomóż mi czytać i Pomóż mi pisać oraz tworzyć obrazy za pomocą AI, musisz mieć ukończone 18 lat.</translation>
 <translation id="7371404428569700291">Nagraj okno</translation>
 <translation id="7372069265635026568">Dostępna pamięć: <ph name="AVAILABLE_MEMORY" /> z <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Zezwala to na dostęp do mikrofonu w przypadku wszystkich aplikacji i stron internetowych, które mają uprawnienia do korzystania z niego</translation>

@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">ਬਿੱਲੀਆਂ</translation>
 <translation id="5907649332524363701">ਕੁੰਜੀ ਦਾ ਰੰਗ</translation>
 <translation id="5908813850962688338">ਇਸ ਅੱਪਡੇਟ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗਣਗੇ। ਅੱਪਡੇਟ ਦੇ ਡਾਊਨਲੋਡ ਹੋਣ ਵੇਲੇ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਲੱਗ-ਇਨ ਕਰ ਕੇ ਅਤੇ ਚਾਲੂ ਰੱਖੋ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸ ਪ੍ਰਕਿਰਿਆ ਦੌਰਾਨ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਕਈ ਵਾਰ ਆਪਣੇ ਆਪ ਰੀਬੂਟ ਹੋ ਜਾਵੇ ਅਤੇ ਕਾਲੀ ਸਕ੍ਰੀਨ ਦਿਖੇ। ਸਥਾਪਨਾ ਪੂਰੀ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕਿਹਾ ਜਾਵੇਗਾ।</translation>
+<translation id="5915794087373112615">ਤੁਹਾਡੇ ਅਧਿਆਪਕ ਨੂੰ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ <ph name="NUM_SECONDS" /> ਸਕਿੰਟ ਵਿੱਚ ਦਿਖੇਗੀ</translation>
 <translation id="5916084858004523819">ਪਾਬੰਦੀ ਲਗਾਈ ਗਈ</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀ ਗਈ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ।}one{ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀ ਗਈ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ।}other{ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀਆਂ ਗਈਆਂ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ।}}</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8054112564438735763">ਬੇਜ</translation>
 <translation id="8062968459344882447">ਇੱਕ <ph name="CHARACTERS_BACKGROUND" /> ਬੈਕਗ੍ਰਾਊਂਡ 'ਤੇ <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ਆਡੀਓ ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਮਾਈਕ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="8067126283828232460">APN ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="8067208048261192356">ਭੂਰਾ</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ਨੂੰ ਮਿਟਾਓ</translation>

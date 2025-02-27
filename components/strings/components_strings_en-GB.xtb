@@ -356,6 +356,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1593359183944365958">270 degrees</translation>
 <translation id="1594030484168838125">Choose</translation>
 <translation id="1599199147673445968">New card? <ph name="BEGIN_LINK" />Enter card details<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">ZIP</translation>
 <translation id="1604192142734009334">Beauty and fitness</translation>
 <translation id="160851722280695521">Play the Dino Run game in Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -772,6 +773,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
+<translation id="2344529975040861103">You can autofill this card because your account is linked to Google Pay</translation>
 <translation id="2346319942568447007">Image that you copied</translation>
 <translation id="2348509731468399833">Price tracking stopped.</translation>
 <translation id="2349957959687031096">Open Incognito tab button, activate to open a new Incognito tab to browse privately</translation>
@@ -2261,7 +2263,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5002932099480077015">If enabled, Chrome will store a copy of your card on this device for faster form filling.</translation>
 <translation id="5007392906805964215">Review</translation>
-<translation id="500790844453430087">'<ph name="GROUP_TITLE_1" />' and '<ph name="GROUP_TITLE_2" />' tab groups no longer available</translation>
 <translation id="5011561501798487822">Detected language</translation>
 <translation id="5015510746216210676">Machine name:</translation>
 <translation id="5017554619425969104">Text that you copied</translation>
@@ -4577,6 +4578,7 @@ Additional details:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome browser would like to use fingerprint to autofill passwords</translation>
 <translation id="9141013498910525015">Manage addresses</translation>
+<translation id="9143898823728499852">You can autofill this card because your <ph name="CARD_ISSUER_NAME" /> account is linked to Google Pay</translation>
 <translation id="9144951720726881238">Expiry date:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Sign in<ph name="END_LINK" />
     again, then come back to this tab to get writing help</translation>

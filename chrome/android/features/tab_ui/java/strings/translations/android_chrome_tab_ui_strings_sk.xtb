@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Ponechajte si túto skupinu, aby ste mohli neskôr pridať karty, alebo ju odstráňte (ak ju už nepotrebujete).
 
 Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name="TITLE_OF_GROUP" /> a zo všetkých zariadení sa vymaže.</translation>
+<translation id="1326654401173629446">Skupina kariet <ph name="TAB_GROUP_NAME" /> už nie je k dispozícii</translation>
 <translation id="1329584516321524826">Práve aktualizované</translation>
 <translation id="1340839264183302272">Opustiť skupinu</translation>
 <translation id="1419023007528516122">Týmto natrvalo odstránite skupinu zo svojho zariadenia</translation>
@@ -23,6 +24,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="161042844686301425">Azúrová</translation>
 <translation id="1645759014353344461">Počet zoskupených kariet: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Presunúť kartu nadol</translation>
+<translation id="1697284962337958118">Pridať do</translation>
 <translation id="1713541401465507417">Zavrieť všetky karty a skupiny</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Bola zoskupená <ph name="TABS_COUNT_ONE" /> karta</translation>

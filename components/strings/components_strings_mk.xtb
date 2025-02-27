@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 степени</translation>
 <translation id="1594030484168838125">Избери</translation>
 <translation id="1599199147673445968">Нова картичка? <ph name="BEGIN_LINK" />Внесете податоци за картичката<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Убавина и физичка подготвеност</translation>
 <translation id="160851722280695521">Играјте ја играта „Трчање на диносаурусот“ во Chrome</translation>
 <translation id="161042844686301425">Тиркизна</translation>
@@ -772,6 +773,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Поставка што ја контролира администраторот</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сака да се спари</translation>
+<translation id="2344529975040861103">Може да ја пополните картичкава автоматски бидејќи вашата сметка е поврзана со Google Pay</translation>
 <translation id="2346319942568447007">Сликата што ја копиравте</translation>
 <translation id="2348509731468399833">Следењето на цената е сопрено.</translation>
 <translation id="2349957959687031096">Копче за отворање картичка „Инкогнито“, активирајте го за да отворите нова картичка „Инкогнито“ за приватно прелистување</translation>
@@ -2261,7 +2263,6 @@
 <translation id="5001526427543320409">Колачиња од трети страни</translation>
 <translation id="5002932099480077015">Ако е овозможено, Chrome ќе складира копија од картичката на уредот за побрзо пополнување формулари.</translation>
 <translation id="5007392906805964215">Прегледајте</translation>
-<translation id="500790844453430087">Групите картички „<ph name="GROUP_TITLE_1" />“ и „<ph name="GROUP_TITLE_2" />“ веќе не се достапни</translation>
 <translation id="5011561501798487822">Откриен јазик</translation>
 <translation id="5015510746216210676">Име на уредот:</translation>
 <translation id="5017554619425969104">Текстот што го копиравте</translation>
@@ -4576,6 +4577,7 @@
 <translation id="9139318394846604261">Купување</translation>
 <translation id="9140198744651252040">Прелистувачот Chrome сака да го користи вашиот отпечаток за да пополнува лозинки автоматски</translation>
 <translation id="9141013498910525015">Управувајте со адресите</translation>
+<translation id="9143898823728499852">Може да ја пополните картичкава автоматски бидејќи вашата сметка на <ph name="CARD_ISSUER_NAME" /> е поврзана со Google Pay</translation>
 <translation id="9144951720726881238">Датум на истекување:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Најавете се<ph name="END_LINK" />
     повторно, па вратете се на картичкава за да добиете помош при пишување</translation>

@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -21,6 +22,10 @@ class FormStructure;
 class LogManager;
 class StrikeDatabase;
 }  // namespace autofill
+
+namespace base {
+class Uuid;
+}  // namespace base
 
 namespace autofill_ai {
 
@@ -67,15 +72,22 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // Strike database related methods:
   void AddStrikeForSaveAttempt(const GURL& url,
                                const autofill::EntityInstance& entity);
+  void ClearStrikesForSave(const GURL& url,
+                           const autofill::EntityInstance& entity);
   bool IsSaveBlockedByStrikeDatabase(
       const GURL& url,
       const autofill::EntityInstance& entity) const;
 
-  // Updates the `EntityDataManager` and the strike databases depending on
-  // whether the prompt was accepted.
-  enum class PromptType { kUpdate, kSave };
-  void HandleSaveOrUpdatePromptResult(
-      PromptType prompt_type,
+  // Updates the `EntityDataManager` and the save strike database depending on
+  // the prompt `result`.
+  void HandleSavePromptResult(
+      const GURL& form_url,
+      const autofill::EntityInstance& entity,
+      AutofillAiClient::SaveOrUpdatePromptResult result);
+  // Updates the `EntityDataManager` and the update strike database depending on
+  // the prompt `result`.
+  void HandleUpdatePromptResult(
+      const base::Uuid& entity_uuid,
       AutofillAiClient::SaveOrUpdatePromptResult result);
 
   void OnReceivedAXTree(const autofill::FormData& form,

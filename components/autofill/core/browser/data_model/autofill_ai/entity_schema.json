@@ -11,6 +11,9 @@
     "merge constraints": [
       [ "Number", "Expiry date" ]
     ],
+    "strike keys": [
+      [ "Number" ]
+    ],
     "disambiguation order": [ "Name", "Country", "Expiry date" ],
     "syncable": false
   },

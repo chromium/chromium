@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">انتخاب کو مسترد کریں</translation>
 <translation id="3140825265190223781">محفوظ کردہ پاس ورڈز اور پاس کیز</translation>
 <translation id="3143515551205905069">مطابقت پذیری منسوخ کریں</translation>
+<translation id="3144126448740580210">ہوگیا</translation>
 <translation id="314837624430314508">تازہ ترین خبروں، قیمت کی ٹریکنگ کی اپ ڈیٹس اور مزید سے باخبر رہیں۔</translation>
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="315778507796115851">سرگزشت</translation>
@@ -1228,7 +1229,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6295751040240588413">کارڈ کا غلط عرفی نام</translation>
 <translation id="629730747756840877">اکاؤنٹ</translation>
 <translation id="6301104306974789820">قیمت کی ٹریکنگ سے متعلق اطلاعات حاصل کریں</translation>
-<translation id="6310451064941005489">پاس ورڈ کے اختیارات</translation>
 <translation id="6316141353357700666">ظاہر ہونے والی فہرست میں سے وہ پاس ورڈ منتخب کریں جسے آپ استعمال کرنا چاہتے ہیں۔</translation>
 <translation id="6321526113093607004">بُک مارکس میں شامل کریں</translation>
 <translation id="6337234675334993532">مرموزکاری</translation>
@@ -1405,6 +1405,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6979737339423435258">ہر وقت</translation>
 <translation id="6983306615164277634">آپ پوزیشن تبدیل کرنے کے لیے ایڈریس بار کو چھو سکتے ہیں اور دبا کر رکھ سکتے ہیں۔</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998251471716094661">پروڈکٹس کی قیمتوں کو ٹریک کریں اور کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کریں</translation>
 <translation id="7004032350256606903">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">ترتیبات میں ڈیفالٹ بنائیں…</translation>
@@ -1583,6 +1584,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7812377703891978671">آپ <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> کا انتخاب کر کے اپنی براؤزنگ کی تمام سرگزشت تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="78146569776629510">ڈاؤن لوڈز</translation>
 <translation id="7815852444315004084">ابھی کیلئے چھپائیں</translation>
+<translation id="7825973332242257878">ٹیب گروپس</translation>
 <translation id="7831876841288640403">اپنے ایڈریس بار کی وہ پوزیشن منتخب کریں جو آپ کے لیے بہترین ہو۔</translation>
 <translation id="7839994177130598711">‏آپ کے فیملی ممبرز Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> میں سائن ان کرنے کے لیے اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتے ہیں۔</translation>
 <translation id="7840771868269352570">آپ کے منتخب کردہ آئٹمز کو ہٹا دیا جائے گا۔</translation>

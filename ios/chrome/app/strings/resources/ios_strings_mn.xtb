@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">Сонголтыг болих</translation>
 <translation id="3140825265190223781">Хадгалсан нууц үг, нэвтрэх түлхүүр</translation>
 <translation id="3143515551205905069">Синкийг цуцлах</translation>
+<translation id="3144126448740580210">ДУУССАН</translation>
 <translation id="314837624430314508">Хамгийн сүүлийн үеийн мэдээ, үнэ мөшгөх шинэчлэлт болон бусад зүйлийн мэдээллийг авч байгаарай.</translation>
 <translation id="3157387275655328056">Унших жагсаалтад нэмэх</translation>
 <translation id="315778507796115851">Түүх</translation>
@@ -1228,7 +1229,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6295751040240588413">Картын хоч буруу байна</translation>
 <translation id="629730747756840877">Данс</translation>
 <translation id="6301104306974789820">Үнэ хянах мэдэгдэл авах</translation>
-<translation id="6310451064941005489">Нууц үгний сонголтууд</translation>
 <translation id="6316141353357700666">Та гарч ирэх жагсаалтаас ашиглахыг хүсэж буй нууц үгээ сонгоно уу.</translation>
 <translation id="6321526113093607004">Хавчуургaд нэмэх</translation>
 <translation id="6337234675334993532">Шифрлэх</translation>
@@ -1405,6 +1405,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6979737339423435258">Бүх цаг</translation>
 <translation id="6983306615164277634">Та мөн байрлалыг өөрчлөхийн тулд хаяг оруулах хэсэгт хүрээд удаан дарах боломжтой.</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998251471716094661">Бүтээгдэхүүнүүдийн үнийг хянаж, аливаа сайт дээр үнэ буурахад дохио аваарай</translation>
 <translation id="7004032350256606903">Танай байгууллага танаас нууцлалтайгаар үзэхийг шаардаж байна.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Тохиргоонд өгөгдмөл болгох…</translation>
@@ -1583,6 +1584,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7812377703891978671">Та <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />-г сонгосноор хөтчийн бүх түүхдээ хандах боломжтой.</translation>
 <translation id="78146569776629510">Татаж авсан файл</translation>
 <translation id="7815852444315004084">Одоохондоо нуух</translation>
+<translation id="7825973332242257878">Табын бүлгүүд</translation>
 <translation id="7831876841288640403">Танд хамгийн сайн тохирох хаяг оруулах хэсгийн байрлалыг сонгоно уу.</translation>
 <translation id="7839994177130598711">Танай гэр бүлийн гишүүд одоо Google Password Manager-г ашиглан <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-д нэвтрэх үедээ таны хэрэглэгчийн нэр болон нууц үгийг ашиглах боломжтой.</translation>
 <translation id="7840771868269352570">Таны сонгосон зүйлсийг устгах болно.</translation>

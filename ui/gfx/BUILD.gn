@@ -795,6 +795,7 @@ test("gfx_unittests") {
     sources += [
       "font_fallback_win_unittest.cc",
       "win/get_elevation_icon_unittest.cc",
+      "win/hwnd_util_unittest.cc",
     ]
   }
   if (is_ios) {
@@ -953,6 +954,7 @@ test("gfx_unittests") {
     libs = [
       "d2d1.lib",
       "d3d10_1.lib",
+      "dwmapi.lib",
       "dwrite.lib",
       "imm32.lib",
       "oleacc.lib",

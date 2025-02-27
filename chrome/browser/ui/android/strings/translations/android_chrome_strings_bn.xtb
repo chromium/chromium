@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1009406586654360474">Google Password Manager খুলুন ও সেটিংসে যান। “ইমপোর্ট করুন“ এবং সেই CSV ফাইল যোগ করুন যাতে আপনার ইমপোর্ট করা পাসওয়ার্ড আছে।</translation>
+<translation id="1010283278930414892">এই ডিভাইসে কোনও সেভ করা পাসওয়ার্ড নেই</translation>
 <translation id="1011749477052068769">এখানে সরান</translation>
 <translation id="1014147525163127655">এই ডিভাইসে <ph name="ORIGIN" /> সাইটের জন্য কোনও পাসকী নেই</translation>
 <translation id="1016498331642356377">আপনার আওয়াজ ব্যবহার করে দ্রুত সার্চ করুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
@@ -142,6 +143,7 @@
 <translation id="1568636008098739136">এই পৃষ্ঠার কন্টেন্ট শুনুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে রাখুন।</translation>
 <translation id="1571041387761170095">দুর্বল বা একই পাসওয়ার্ড আবার ব্যবহার করা যাবে না</translation>
 <translation id="1571304935088121812">ইউজারনেম কপি করুন</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{এই ডিভাইসে চুরি হয়ে যাওয়া ১টি পাসওয়ার্ড আছে}one{এই ডিভাইসে চুরি হয়ে যাওয়া #টি পাসওয়ার্ড আছে}other{এই ডিভাইসে চুরি হয়ে যাওয়া #টি পাসওয়ার্ড আছে}}</translation>
 <translation id="1594635596540195766">নিচে তালিকাতে সাজেস্ট করা <ph name="SUGGESTIONS_COUNT" />টি আইটেম।</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যবহার করুন</translation>
 <translation id="160275202205869636">এটি চালু হলে, আপনার Google অ্যাকাউন্টে ডেটা ব্যবহার করে সেভ করুন। বন্ধ থাকলে, শুধুমাত্র এই ডিভাইসে ডেটা সেভ হয়।</translation>
@@ -163,6 +165,7 @@
 <translation id="1724977129262658800">আপনার পাসওয়ার্ড এডিট করতে আনলক করুন</translation>
 <translation id="1726477445370128854">Chrome-এর মতে আপনি দেখতে পারেন এমন পৃষ্ঠা প্রিলোড করা হলে আরও দ্রুত ব্রাউজ ও সার্চ করতে পারবেন</translation>
 <translation id="1728803206919861584">ছদ্মবেশী মোডের বাইরে পাসকী সেভ করতে চান?</translation>
+<translation id="1732514748744806741">আপনার পাসওয়ার্ড যদি চুরি হয়ে যায়, আপনাকে তা জানানো হবে</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{১টি সাইট সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে}one{#টি সাইট সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে}other{#টি সাইট সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে}}</translation>
 <translation id="1749561566933687563">আপনার বুকমার্কগুলি সিঙ্ক করুন</translation>
 <translation id="1750238553597293878">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড ব্যবহার করতে থাকুন</translation>
@@ -1336,6 +1339,7 @@
 <translation id="7022756207310403729">ব্রাউজারে খুলুন</translation>
 <translation id="7025769836128625875">এটি পরীক্ষামূলক AI ফিচার, তাই সব সময় সঠিক তথ্য দেখায় না। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
+<translation id="7053256416619638731">এই ডিভাইসে আপনার পাসওয়ার্ড শক্তিশালী করুন</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7054588988317389591">ছবির বিবরণ পেতে চান?</translation>
 <translation id="7057969023583258980">সম্পূর্ণ Chrome ইতিহাস খুলুন</translation>
@@ -1586,6 +1590,7 @@
 <translation id="8110024788458304985">Chrome-এর ফিচার ও পারফর্ম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন</translation>
 <translation id="8110087112193408731">ডিজিটাল ওয়েলবিং-এ আপনার Chrome অ্যাক্টিভিটি দেখতে চান?</translation>
 <translation id="8118117428362942925">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">এই ডিভাইসে চুরি হয়ে যাওয়া পাসওয়ার্ড নেই</translation>
 <translation id="8122623268651408616">সবচেয়ে নতুন অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="8127542551745560481">হোমপেজ এডিট করুন</translation>
 <translation id="8130309322784422030">আপনার সেভ করা সাইন-ইন সংক্রান্ত তথ্য হয়ত পুরনো হয়ে গেছে</translation>

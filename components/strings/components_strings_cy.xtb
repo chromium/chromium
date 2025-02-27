@@ -356,6 +356,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1593359183944365958">270 gradd</translation>
 <translation id="1594030484168838125">Dewis</translation>
 <translation id="1599199147673445968">Cerdyn newydd? <ph name="BEGIN_LINK" />Rhowch Fanylion y Cerdyn<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Harddwch a Ffitrwydd</translation>
 <translation id="160851722280695521">Chwarae'r gêm Dino Run yn Chrome</translation>
 <translation id="161042844686301425">Gwyrddlas</translation>
@@ -772,6 +773,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2330137317877982892">Mae <ph name="CREDIT_CARD" /> yn darfod ar <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Rheolir y gosodiad gan eich gweinyddwr</translation>
 <translation id="2340263603246777781">Mae <ph name="ORIGIN" /> eisiau paru</translation>
+<translation id="2344529975040861103">Gallwch awtolenwi'r cerdyn hwn oherwydd bod eich cyfrif yn gysylltiedig â Google Pay</translation>
 <translation id="2346319942568447007">Llun y gwnaethoch ei gopïo</translation>
 <translation id="2348509731468399833">Olrhain prisiau wedi stopio.</translation>
 <translation id="2349957959687031096">Botwm agor tab Anhysbys, gweithredwch i agor tab Anhysbys newydd i bori'n breifat</translation>
@@ -2261,7 +2263,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5001526427543320409">Cwcis trydydd parti</translation>
 <translation id="5002932099480077015">Os yw wedi'i alluogi, bydd Chrome yn storio copi o'ch cerdyn ar y ddyfais hon er mwyn llenwi ffurflenni yn gyflymach.</translation>
 <translation id="5007392906805964215">Adolygu</translation>
-<translation id="500790844453430087">Nid yw'r grwpiau tabiau "<ph name="GROUP_TITLE_1" />" a "<ph name="GROUP_TITLE_2" />" ar gael mwyach</translation>
 <translation id="5011561501798487822">Iaith a Ganfyddir</translation>
 <translation id="5015510746216210676">Enw'r Peiriant:</translation>
 <translation id="5017554619425969104">Testun y gwnaethoch ei gopïo</translation>
@@ -4576,6 +4577,7 @@ Manylion ychwanegol:
 <translation id="9139318394846604261">Siopa</translation>
 <translation id="9140198744651252040">Hoffai'r porwr Chrome ddefnyddio olion bysedd i awtolenwi cyfrineiriau</translation>
 <translation id="9141013498910525015">Rheoli Cyfeiriadau</translation>
+<translation id="9143898823728499852">Gallwch awtolenwi'r cerdyn hwn oherwydd bod eich cyfrif <ph name="CARD_ISSUER_NAME" /> yn gysylltiedig â Google Pay.</translation>
 <translation id="9144951720726881238">Dyddiad darfod:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Mewngofnodwch<ph name="END_LINK" />
     eto, yna dewch yn ôl i'r tab hwn i gael help ysgrifennu</translation>

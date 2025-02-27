@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 градус</translation>
 <translation id="1594030484168838125">Таңдау</translation>
 <translation id="1599199147673445968">Жаңа карта ма? <ph name="BEGIN_LINK" />Карта деректемелерін енгізіңіз<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Сұлулық және фитнес</translation>
 <translation id="160851722280695521">Chrome-да Dino Run ойынын ойнау</translation>
 <translation id="161042844686301425">Көгілдір</translation>
@@ -772,6 +773,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Әкімші басқаратын параметр</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сайты жұптасқысы келеді</translation>
+<translation id="2344529975040861103">Бұл картаны автоматты түрде толтыра аласыз, себебі аккаунтыңыз Google Pay-мен байланыстырылған.</translation>
 <translation id="2346319942568447007">Көшірілген сурет</translation>
 <translation id="2348509731468399833">Баға бақылау тоқтатылды.</translation>
 <translation id="2349957959687031096">"Инкогнито қойындысын ашу" түймесі, құпия шолу мақсатында жаңа инкогнито қойындысын ашу үшін белсендіріңіз</translation>
@@ -1943,6 +1945,7 @@
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Файлды Microsoft OneDrive қызметіне жүктеп салу кідіртілді</translation>
+<translation id="4389931020843542579">Қойындылар тобы жүктеліп жатыр.</translation>
 <translation id="4390472908992056574">Жиек</translation>
 <translation id="4395550503472021297">Бұл саясат келесі саясаттардың әдепкі әрекетін басқарады: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Банк веб-сайтында растауға арналған қалқымалы терезені ашады</translation>
@@ -2260,7 +2263,6 @@
 <translation id="5001526427543320409">Үшінші тарап cookie файлдары</translation>
 <translation id="5002932099480077015">Құсбелгі қойылса, Chrome нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыға сақтап қояды.</translation>
 <translation id="5007392906805964215">Көру</translation>
-<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" және "<ph name="GROUP_TITLE_2" />" қойындылар топтары бұдан былай қолжетімді емес.</translation>
 <translation id="5011561501798487822">Анықталған тіл</translation>
 <translation id="5015510746216210676">Құрылғы атауы:</translation>
 <translation id="5017554619425969104">Көшірілген мәтін</translation>
@@ -4575,6 +4577,7 @@
 <translation id="9139318394846604261">Шопинг</translation>
 <translation id="9140198744651252040">Chrome құпия сөздерді автоматты түрде толтыру үшін саусағыңыздың ізін пайдаланғысы келеді.</translation>
 <translation id="9141013498910525015">Мекенжайларды басқару</translation>
+<translation id="9143898823728499852">Бұл картаны автоматты түрде толтыра аласыз, себебі <ph name="CARD_ISSUER_NAME" /> аккаунтыңыз Google Pay-мен байланыстырылған.</translation>
 <translation id="9144951720726881238">Жарамдылық мерзімі:</translation>
 <translation id="9145910032514306808">Жазу бойынша көмек алу үшін аккаунтқа қайта <ph name="BEGIN_LINK" />кіріп<ph name="END_LINK" />, осы қойындыға оралыңыз.</translation>
 <translation id="9145936855791010051">Салыстыру</translation>

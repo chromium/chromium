@@ -281,10 +281,7 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
 
   size_t offset;
   int description;
-  if (blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd &&
-      !(base::FeatureList::IsEnabled(
-            privacy_sandbox::kAlwaysBlock3pcsIncognito) &&
-        is_incognito)) {
+  if (blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd) {
     description = IDS_PAGE_INFO_COOKIES_DESCRIPTION;
     settings_text_for_link =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);

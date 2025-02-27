@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <string_view>
-#include <tuple>
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
@@ -22,7 +20,6 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -35,7 +32,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/signin/public/base/consent_level.h"
@@ -47,7 +43,6 @@
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -304,88 +299,6 @@ IN_PROC_BROWSER_TEST_F(SelfHostedKioskEnterpriseTest, SelfHostedChromeApp) {
   // Update checks should be made to the private store instead of CWS.
   EXPECT_GT(private_cws().GetUpdateCheckCountAndReset(), 0);
   EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
-}
-
-class KioskEnterpriseEphemeralTest
-    : public KioskEnterpriseTest,
-      public testing::WithParamInterface<std::tuple<
-          /*ephemeral_users_enabled=*/bool,
-          /*kiosk_ephemeral_mode=*/policy::DeviceLocalAccount::EphemeralMode>> {
- public:
-  KioskEnterpriseEphemeralTest(const KioskEnterpriseEphemeralTest&) = delete;
-  KioskEnterpriseEphemeralTest& operator=(const KioskEnterpriseEphemeralTest&) =
-      delete;
-
- protected:
-  KioskEnterpriseEphemeralTest() = default;
-
-  bool GetEphemeralUsersEnabled() const { return std::get<0>(GetParam()); }
-
-  policy::DeviceLocalAccount::EphemeralMode GetKioskEphemeralMode() const {
-    return std::get<1>(GetParam());
-  }
-
-  bool GetExpectedEphemeralUser() const {
-    switch (GetKioskEphemeralMode()) {
-      case policy::DeviceLocalAccount::EphemeralMode::kUnset:
-      case policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy:
-        return GetEphemeralUsersEnabled();
-      case policy::DeviceLocalAccount::EphemeralMode::kDisable:
-        return false;
-      case policy::DeviceLocalAccount::EphemeralMode::kEnable:
-        return true;
-    }
-  }
-
-  void ConfigureEphemeralPolicies(
-      const std::string& account_id,
-      const std::string& app_id,
-      const std::string& update_url,
-      policy::DeviceLocalAccount::EphemeralMode ephemeral_mode,
-      bool ephemeral_users_enabled) {
-    std::vector<policy::DeviceLocalAccount> accounts;
-    accounts.emplace_back(policy::DeviceLocalAccountType::kKioskApp,
-                          ephemeral_mode, account_id, app_id, update_url);
-    policy::SetDeviceLocalAccountsForTesting(owner_settings_service_.get(),
-                                             accounts);
-    settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,
-                                ephemeral_users_enabled);
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    KioskEnterpriseEphemeralTest,
-    testing::Combine(
-        testing::Values(false, true),
-        testing::Values(
-            policy::DeviceLocalAccount::EphemeralMode::kUnset,
-            policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy,
-            policy::DeviceLocalAccount::EphemeralMode::kDisable,
-            policy::DeviceLocalAccount::EphemeralMode::kEnable)));
-
-IN_PROC_BROWSER_TEST_P(KioskEnterpriseEphemeralTest,
-                       EnterpriseKioskAppEphemeral) {
-  // Prepare Fake CWS to serve app crx.
-  SetTestApp(kTestEnterpriseKioskAppId);
-  SetupTestAppUpdateCheck();
-
-  // Configure device policies.
-  ConfigureEphemeralPolicies(
-      kTestEnterpriseAccountId, kTestEnterpriseKioskAppId, /*update_url=*/"",
-      GetKioskEphemeralMode(), GetEphemeralUsersEnabled());
-
-  EXPECT_TRUE(LaunchApp(kTestEnterpriseKioskAppId));
-
-  KioskSessionInitializedWaiter().Wait();
-
-  // Check installer status.
-  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
-  EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
-
-  EXPECT_EQ(
-      GetExpectedEphemeralUser(),
-      FakeUserDataAuthClient::TestApi::Get()->IsCurrentSessionEphemeral());
 }
 
 }  // namespace ash

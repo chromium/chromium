@@ -45,6 +45,12 @@ const IfCondition* CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
           (supports_parsing_result == CSSSupportsParser::Result::kSupported);
       return MakeGarbageCollected<IfTestSupports>(result);
     }
+    if (stream.Peek().GetType() == kIdentToken &&
+        supports_query_parser_.ConsumeSupportsDeclaration(stream) &&
+        guard.Release()) {
+      stream.ConsumeWhitespace();
+      return MakeGarbageCollected<IfTestSupports>(true);
+    }
   }
   if (RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled() &&
       stream.Peek().GetType() == kFunctionToken &&

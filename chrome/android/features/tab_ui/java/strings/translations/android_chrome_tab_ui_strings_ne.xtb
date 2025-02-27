@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा अबदेखि चाहिँदैन भने यसलाई मेटाउनुहोस्।
 
 तपाईंले यो ट्याब समूह हटाउनुभयो भने सबै जना तत्कालै <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सेस गुमाउने छन् र यसलाई सबै डिभाइसहरूबाट मेटाइने छ।</translation>
+<translation id="1326654401173629446">"<ph name="TAB_GROUP_NAME" />" ट्याब समूह उपलब्ध हुन छाडेको छ</translation>
 <translation id="1329584516321524826">अहिले भर्खरै अद्यावधिक गरियो</translation>
 <translation id="1340839264183302272">समूह छाड्नुहोस्</translation>
 <translation id="1419023007528516122">तपाईंले यसो गर्नुभयो भने तपाईंको डिभाइसबाट यो समूह सदाका लागि मेटाइने छ</translation>
@@ -23,6 +24,7 @@
 <translation id="161042844686301425">सायन</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबद्ध गरिएका छन्</translation>
 <translation id="1657719826150349398">ट्याब सारेर तल लैजानुहोस्</translation>
+<translation id="1697284962337958118">यहाँ राख्नुहोस्</translation>
 <translation id="1713541401465507417">सबै ट्याब र समूहहरू बन्द गर्नुहोस्</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ट्याब समूहबद्ध गरिएको छ</translation>

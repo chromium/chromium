@@ -63,11 +63,6 @@
   BOOL _blockUpdates;
   // The authentication flow,
   AuthenticationFlow* _authenticationFlow;
-  // This object is set iff an account switch is in progress.
-  // DEPRECATED. This should be removed once all the UI has been migrated to the
-  // new API.
-  // Replaced by `_accountSwitchingBatchClosureRunner`.
-  base::ScopedClosureRunner _accountSwitchInProgress;
   // The lifetime of this ScopedClosureRunner denotes a batch of primary account
   // changes. UI listens to batched changes to avoid visual artifacts during an
   // account switch.
@@ -130,7 +125,6 @@
 }
 
 - (void)disconnect {
-  _accountSwitchInProgress.RunAndReset();
   _accountSwitchingBatchClosureRunner.RunAndReset();
   _signinCompletionIdentity = nil;
   _blockUpdates = YES;
@@ -342,8 +336,6 @@
     return;
   }
 
-  _accountSwitchInProgress =
-      _authenticationService->DeclareAccountSwitchInProgress();
   _accountSwitchingBatchClosureRunner =
       _identityManager->StartBatchOfPrimaryAccountChanges();
   [self.delegate signOutFromTargetRect:targetRect
@@ -468,7 +460,6 @@
   if (!signoutSuccess) {
     // User had not signed-out. Allow to interact with the UI.
     self.userInteractionsBlocked = NO;
-    _accountSwitchInProgress.RunAndReset();
     _accountSwitchingBatchClosureRunner.RunAndReset();
     [self restartUpdates];
     return;
@@ -488,7 +479,6 @@
                    toIdentity:(id<SystemIdentity>)newIdentity {
   CHECK(_authenticationFlow);
   _authenticationFlow = nil;
-  _accountSwitchInProgress.RunAndReset();
   _accountSwitchingBatchClosureRunner.RunAndReset();
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;

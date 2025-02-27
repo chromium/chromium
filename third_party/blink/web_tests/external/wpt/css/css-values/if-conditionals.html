@@ -522,7 +522,39 @@
           else: false_value)`,
         'true_value');
 
-  // media() and style() queries in the condition
+  // supports() queries in the condition
+  test_if(`if(supports((display: table-cell)): true_value;
+          else: false_value)`,
+        'true_value');
+  test_if(`if(supports(display: table-cell): true_value;
+          else: false_value)`,
+        'true_value');
+  test_if(`if(supports(display): true_value;
+          else: false_value)`,
+        'false_value');
+  test_if(`if(supports(display: invalid): true_value;
+          else: false_value)`,
+        'false_value');
+  test_if(`if(supports(not (transform-origin: 10em 10em 10em)): true_value;
+          else: false_value)`,
+        'false_value')
+  test_if(`if(supports(selector(h2 > p)): true_value;
+          else: false_value)`,
+        'true_value');
+  test_if(`if(supports((selector(h2 > p))): true_value;
+          else: false_value)`,
+        'true_value');
+  test_if(`if(supports((display: table-cell) and (display: list-item) and (display: contents)): true_value;
+          else: false_value)`,
+        'true_value');
+  test_if(`if(supports((display: invalid) and (display: list-item) and (display: contents)): true_value;
+          else: false_value)`,
+        'false_value');
+  test_if(`if(supports((display: table-cell) and (invalid: list-item) and (display: contents)): true_value;
+          else: false_value)`,
+        'false_value');
+
+  // media(), style() and supports() queries in the condition
   test_if(`if((media(screen and (min-width: 1px))) or (style(--x)): true_value;
           else: false_value)`,
         'true_value');
@@ -530,6 +562,9 @@
           else: false_value)`,
         'false_value');
   test_if(`if((media((min-color: 1) and (height <= 999999px))) and (style(--x)): true_value;
+          else: false_value)`,
+        'true_value');
+  test_if(`if((media((min-color: 8) and (height <= 600px)) and style(--x: 3px)) or supports(display: table-cell): true_value;
           else: false_value)`,
         'true_value');
 

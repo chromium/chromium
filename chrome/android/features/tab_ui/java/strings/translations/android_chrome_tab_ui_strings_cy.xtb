@@ -11,6 +11,7 @@
 <translation id="1293272072740285747">Cadw'r grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu ddileu ef os nad oes ei angen arnoch fwyach.
 
 Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="TITLE_OF_GROUP" />" ar unwaith, a bydd yn cael ei ddileu o bob dyfais.</translation>
+<translation id="1326654401173629446">Nid yw'r grŵp tabiau "<ph name="TAB_GROUP_NAME" />" ar gael mwyach</translation>
 <translation id="1329584516321524826">Newydd ddiweddaru</translation>
 <translation id="1340839264183302272">Gadael y grŵp</translation>
 <translation id="1419023007528516122">Bydd hyn yn dileu'r grŵp o'ch dyfais yn barhaol</translation>
@@ -22,6 +23,7 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="161042844686301425">Gwyrddlas</translation>
 <translation id="1645759014353344461">Mae <ph name="TABS_COUNT_MANY" /> o dabiau wedi'u grwpio</translation>
 <translation id="1657719826150349398">Symud tab i lawr</translation>
+<translation id="1697284962337958118">Ychwanegu at</translation>
 <translation id="1713541401465507417">Cau pob tab a grŵp</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Dysgu rhagor<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Mae <ph name="TABS_COUNT_ONE" /> tab wedi'i grwpio</translation>

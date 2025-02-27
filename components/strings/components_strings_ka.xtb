@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 გრადუსი</translation>
 <translation id="1594030484168838125">არჩევა</translation>
 <translation id="1599199147673445968">ახალი ბარათი გაქვთ? <ph name="BEGIN_LINK" />შეიყვანეთ ბარათის მონაცემები<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">სილამაზე და ფიტნესი</translation>
 <translation id="160851722280695521">დინოზავრის გარბენის თამაშის თამაში Chrome-ში</translation>
 <translation id="161042844686301425">ციანი</translation>
@@ -659,6 +660,7 @@
 <translation id="2145193671493396738">ეკონომიკის სიახლეები</translation>
 <translation id="214556005048008348">გადახდის გაუქმება</translation>
 <translation id="2147117373852943630">მუსიკალური ინსტრუმენტები</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" />-ს სურს, გამოიყენოს მის მიერ თქვენ შესახებ შენახული ინფორმაცია</translation>
 <translation id="2148613324460538318">ბარათის დამატება</translation>
 <translation id="2148716181193084225">დღეს</translation>
 <translation id="2149968176347646218">კავშირი დაუცველია</translation>
@@ -2263,7 +2265,6 @@
 <translation id="5001526427543320409">მესამე მხარის ქუქი-ჩანაწერები</translation>
 <translation id="5002932099480077015">თუ ჩართულია, Chrome თქვენი ბარათის ასლს ამ მოწყობილობაში ფორმათა უფრო სწრაფად შევსებისთვის შეინახავს.</translation>
 <translation id="5007392906805964215">გადახედვა</translation>
-<translation id="500790844453430087">ჩანართების ჯგუფები „<ph name="GROUP_TITLE_1" />“ და „<ph name="GROUP_TITLE_2" />“ აღარ არის ხელმისაწვდომი</translation>
 <translation id="5011561501798487822">აღმოჩენილია ენა</translation>
 <translation id="5015510746216210676">მოწყობილობის სახელი:</translation>
 <translation id="5017554619425969104">თქვენ მიერ კოპირებული ტექსტი</translation>

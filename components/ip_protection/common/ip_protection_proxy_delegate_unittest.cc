@@ -136,6 +136,14 @@ class MockIpProtectionCore : public IpProtectionCore {
 
   void GeoObserved(const std::string& geo_id) override {}
 
+  bool HasTrackingProtectionException(
+      const GURL& first_party_url) const override {
+    return false;
+  }
+
+  void SetTrackingProtectionContentSetting(
+      const ContentSettingsForOneType& settings) override {}
+
   void SetIpProtectionEnabled(bool value) { is_ip_protection_enabled_ = value; }
 
   // Set the proxy list returned from `ProxyList()`.

@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">gats</translation>
 <translation id="5907649332524363701">color de les tecles</translation>
 <translation id="5908813850962688338">La instal·lació d'aquesta actualització tardarà uns quants minuts. Mantén el dispositiu endollat i encès mentre es baixa l'actualització. És possible que el dispositiu es reiniciï diverses vegades i que mostri una pantalla negra durant el procés. Se't demanarà que reiniciïs el dispositiu per completar la instal·lació.</translation>
+<translation id="5915794087373112615">El professor veurà la teva pantalla d'aquí a <ph name="NUM_SECONDS" /> segons</translation>
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1525,6 +1526,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8054112564438735763">beix</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> sobre un fons <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Connecta un micròfon per començar a gravar àudio</translation>
 <translation id="8067126283828232460">L'APN està connectat.</translation>
 <translation id="8067208048261192356">marró</translation>
 <translation id="8067224607978179455">Suprimeix <ph name="ACTION_NAME" /></translation>

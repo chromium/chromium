@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 degrés</translation>
 <translation id="1594030484168838125">Choisir</translation>
 <translation id="1599199147673445968">Nouvelle carte? <ph name="BEGIN_LINK" />Entrer les détails de la carte<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Compresser</translation>
 <translation id="1604192142734009334">Soins du corps et mise en forme</translation>
 <translation id="160851722280695521">Jouer au jeu du dinosaure dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -772,6 +773,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Paramètre géré par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> veut s'associer</translation>
+<translation id="2344529975040861103">Vous pouvez remplir automatiquement cette carte, car votre compte est associé à Google Pay.</translation>
 <translation id="2346319942568447007">L'image que vous avez copiée</translation>
 <translation id="2348509731468399833">Suivi des prix arrêté.</translation>
 <translation id="2349957959687031096">Bouton Ouvrir l'onglet de navigation privée, activez-le pour ouvrir un nouvel onglet de navigation privée pour naviguer en mode privé</translation>
@@ -2261,7 +2263,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5001526427543320409">Témoins tiers</translation>
 <translation id="5002932099480077015">Si l’option est activée, Chrome gardera une copie de votre carte sur cet appareil pour remplir plus rapidement vos formulaires.</translation>
 <translation id="5007392906805964215">Examiner</translation>
-<translation id="500790844453430087">Les groupes d'onglets « <ph name="GROUP_TITLE_1" /> » et « <ph name="GROUP_TITLE_2" /> » ne sont plus accessibles</translation>
 <translation id="5011561501798487822">Langue détectée</translation>
 <translation id="5015510746216210676">Nom de la machine :</translation>
 <translation id="5017554619425969104">Texte que vous avez copié</translation>
@@ -4576,6 +4577,7 @@ Détails supplémentaires :
 <translation id="9139318394846604261">Magasinage</translation>
 <translation id="9140198744651252040">Le navigateur Chrome souhaite utiliser l'empreinte digitale pour remplir automatiquement les mots de passe</translation>
 <translation id="9141013498910525015">Gérer les adresses</translation>
+<translation id="9143898823728499852">Vous pouvez remplir automatiquement cette carte, car votre compte <ph name="CARD_ISSUER_NAME" /> est associé à Google Pay.</translation>
 <translation id="9144951720726881238">Date d'expiration :</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Connectez-vous<ph name="END_LINK" /> à nouveau, puis revenez sur cet onglet pour obtenir de l'aide à la rédaction</translation>
 <translation id="9145936855791010051">Comparer</translation>

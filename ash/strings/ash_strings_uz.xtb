@@ -554,6 +554,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="2885950158625301909">Batafsil</translation>
 <translation id="2891209721153296020">“Belgilamaslik”</translation>
 <translation id="2894949423239620203">Kabel unumdorlikka taʼsir qilishi mumkin</translation>
+<translation id="2902312830803030883">Boshqa amallar</translation>
 <translation id="2914580577416829331">Ekran tasvirlari</translation>
 <translation id="2924416280450782352">Elementlar chiqmadi. Bu panelni qaytadan oching.</translation>
 <translation id="292506373491190801">Ayni vaqtdagi tadbirdan</translation>
@@ -1909,7 +1910,6 @@ yangi oʻrnatilgan</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
 <translation id="7360036564632145207">Samaradorlikni oshirish uchun tashqi qurilmalarga maʼlumotlaringizga kirish huquqlarini oʻzgartiring</translation>
 <translation id="736045644501761622">Fon rasmi va uslubini sozlash</translation>
-<translation id="7368041336688136012">AI yordamida rasmlar yaratish, oʻqishda yordam va matn yordamchisi funksiyalaridan foydalanish uchun 18 yoshga kirgan boʻlishingiz lozim.</translation>
 <translation id="7371404428569700291">Yozib olish oynasi</translation>
 <translation id="7372069265635026568">Xotira: <ph name="AVAILABLE_MEMORY" /> / <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Bunda mikrofonga ruxsat beriladi. Barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>

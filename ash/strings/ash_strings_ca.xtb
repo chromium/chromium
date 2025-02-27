@@ -554,6 +554,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2885950158625301909">Més informació</translation>
 <translation id="2891209721153296020">"Desselecciona"</translation>
 <translation id="2894949423239620203">És possible que el cable afecti el rendiment</translation>
+<translation id="2902312830803030883">Més accions</translation>
 <translation id="2914580577416829331">Captures de pantalla</translation>
 <translation id="2924416280450782352">No es poden mostrar els elements. Prova de tornar a obrir aquest tauler.</translation>
 <translation id="292506373491190801">De l'esdeveniment en curs</translation>
@@ -1909,7 +1910,6 @@ Instal·lació nova</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>
 <translation id="7360036564632145207">Canviar l'opció de configuració de la protecció d'accés a les dades per a perifèrics pot optimitzar el rendiment</translation>
 <translation id="736045644501761622">Estableix l'estil i el fons de pantalla</translation>
-<translation id="7368041336688136012">Has de tenir 18 anys com a mínim per utilitzar Ajuda'm a llegir o Ajuda'm a escriure, i per crear imatges amb IA.</translation>
 <translation id="7371404428569700291">Grava la finestra</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de memòria disponible d'un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Permet l'accés al micròfon a totes les aplicacions i a tots els llocs web amb permís per accedir al micròfon</translation>

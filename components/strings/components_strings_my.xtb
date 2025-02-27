@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">၂၇၀ ဒီဂရီ</translation>
 <translation id="1594030484168838125">ရွေးချယ်ရန်</translation>
 <translation id="1599199147673445968">ကတ် အသစ်လား? <ph name="BEGIN_LINK" />ကတ် အသေးစိတ်ထည့်ရန်<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">အလှအပ၊ ကြံ့ခိုင်ရေး</translation>
 <translation id="160851722280695521">Chrome တွင် Dino Run ဂိမ်းကစားရန်</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -773,6 +774,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />၊ <ph name="EXPIRATION_DATE_ABBR" /> တွင် သက်တမ်းကုန်မည်</translation>
 <translation id="2337852623177822836">သင်၏ စီမံခန့်ခွဲသူက ထိန်းချုပ်ထားသော ဆက်တင်</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> သည် တွဲချိတ်လိုပါသည်</translation>
+<translation id="2344529975040861103">သင့်အကောင့်ကို Google Pay နှင့် လင့်ခ်ချိတ်ထားသဖြင့် ဤကတ်ကို အော်တိုဖြည့်နိုင်သည်</translation>
 <translation id="2346319942568447007">သင်မိတ္တူကူးထားသော ပုံ</translation>
 <translation id="2348509731468399833">ဈေးနှုန်းခြေရာခံခြင်း ရပ်သွားသည်။</translation>
 <translation id="2349957959687031096">ရုပ်ဖျက်တဘ်အသစ်တစ်ခုဖြင့် သီးသန့်ဘရောက်စ်လုပ်ရန်အတွက် ‘ရုပ်ဖျက်တဘ် ဖွင့်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -2262,7 +2264,6 @@
 <translation id="5001526427543320409">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီး</translation>
 <translation id="5002932099480077015">ဖွင့်ပေးထားလျှင်၊ ပုံစံဖြည့်မှု မြန်လာစေရန် Chrome က သင့်ကဒ်၏ ကော်ပီကို သိမ်းထားပေးမည်။</translation>
 <translation id="5007392906805964215">ပြန်ကြည့်ရန်</translation>
-<translation id="500790844453430087">“<ph name="GROUP_TITLE_1" />” နှင့် “<ph name="GROUP_TITLE_2" />” တဘ်အုပ်စုများ မရနိုင်တော့ပါ</translation>
 <translation id="5011561501798487822">တွေ့ရှိသော ဘာသာစကား</translation>
 <translation id="5015510746216210676">စက်ပစ္စည်း အမည်-</translation>
 <translation id="5017554619425969104">သင် မိတ္တူကူးထားသော စာသား</translation>
@@ -4578,6 +4579,7 @@
 <translation id="9139318394846604261">စျေးဝယ်ခြင်း</translation>
 <translation id="9140198744651252040">Chrome ဘရောင်ဇာသည် စကားဝှက်များ အော်တိုဖြည့်ရန် လက်ဗွေကို အသုံးပြုလိုသည်</translation>
 <translation id="9141013498910525015">လိပ်စာများ စီမံရန်</translation>
+<translation id="9143898823728499852">သင်၏ <ph name="CARD_ISSUER_NAME" /> အကောင့်ကို Google Pay နှင့် လင့်ခ်ချိတ်ထားသဖြင့် ဤကတ်ကို အော်တိုဖြည့်နိုင်သည်</translation>
 <translation id="9144951720726881238">သက်တမ်းကုန်ဆုံးရက်-</translation>
 <translation id="9145910032514306808">ထပ်မံ၍ <ph name="BEGIN_LINK" />လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" />၊ 
     ထို့နောက် ရေးသားမှုအကူအညီ ရယူရန် ဤတဘ်သို့ပြန်လာပါ</translation>

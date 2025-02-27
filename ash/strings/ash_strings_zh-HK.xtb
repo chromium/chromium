@@ -554,6 +554,7 @@
 <translation id="2885950158625301909">瞭解詳情</translation>
 <translation id="2891209721153296020">「取消選取」</translation>
 <translation id="2894949423239620203">連接線可能會影響效能</translation>
+<translation id="2902312830803030883">更多操作</translation>
 <translation id="2914580577416829331">螢幕截圖</translation>
 <translation id="2924416280450782352">無法顯示項目。請嘗試重新開啟此面板。</translation>
 <translation id="292506373491190801">來自正在進行的活動</translation>
@@ -1907,7 +1908,6 @@
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7360036564632145207">變更周邊裝置的資料存取保護可以優化效能</translation>
 <translation id="736045644501761622">設定桌布和樣式</translation>
-<translation id="7368041336688136012">你必須年滿 18 歲，才可使用「幫我閱讀」、「幫我寫」和 AI 圖像生成功能。</translation>
 <translation id="7371404428569700291">記錄視窗</translation>
 <translation id="7372069265635026568">總記憶體係 <ph name="TOTAL_MEMORY" />，仲可以使用 <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="737315737514430195">此操作會允許具備麥克風權限的所有應用程式和網站存取麥克風</translation>

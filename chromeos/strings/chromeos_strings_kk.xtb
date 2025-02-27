@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">мысықтар</translation>
 <translation id="5907649332524363701">перне түсі</translation>
 <translation id="5908813850962688338">Бұл жаңартуды орнату бірнеше минутқа созылады. Жаңарту жүктеп алынып жатқан кезде, құрылғыны қуат көзінен ажыратпаңыз. Бұл процесс кезінде құрылғы өздігінен өшіп қосылып, қара экран көрсетілуі мүмкін. Орнатуды аяқтау үшін сізден құрылғыны өшіріп қосу сұралады.</translation>
+<translation id="5915794087373112615">Мұғалім экраныңызды <ph name="NUM_SECONDS" /> секундтан кейін көреді.</translation>
 <translation id="5916084858004523819">Тыйым салынды</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлыңыз сканерленді және <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> қалтасына сақталды.}other{Файлдарыңыз сканерленді және <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> қалтасына сақталды.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> таңдау</translation>
 <translation id="7618774594543487847">Бейтарап</translation>
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
+<translation id="7623327321610992184">OnTask подкасты</translation>
 <translation id="763165478673169849">Соңғы рет нөлденген уақыт</translation>
 <translation id="7633068090678117093">Фондық сурет</translation>
 <translation id="763873111564339966">индиго</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">сарғыш қоңыр</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> фондағы <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Аудио жазуды бастау үшін микрофонды қосыңыз.</translation>
 <translation id="8067126283828232460">APN қосылған.</translation>
 <translation id="8067208048261192356">қоңыр</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> жою</translation>

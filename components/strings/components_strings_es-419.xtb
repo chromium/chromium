@@ -356,6 +356,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1593359183944365958">270 grados</translation>
 <translation id="1594030484168838125">Seleccionar</translation>
 <translation id="1599199147673445968">¿Tienes una tarjeta nueva? <ph name="BEGIN_LINK" />Ingresa sus detalles aquí<ph name="END_LINK" />.</translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Belleza y estado físico</translation>
 <translation id="160851722280695521">Jugar al juego del dinosaurio de Chrome</translation>
 <translation id="161042844686301425">Cian</translation>
@@ -772,6 +773,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Configuración controlada por tu administrador</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> desea sincronizarse</translation>
+<translation id="2344529975040861103">Puedes autocompletar esta tarjeta porque tu cuenta está vinculada a Google Pay</translation>
 <translation id="2346319942568447007">Imagen que copiaste</translation>
 <translation id="2348509731468399833">Se detuvo el seguimiento de precios.</translation>
 <translation id="2349957959687031096">Botón Abrir una pestaña de incógnito: actívalo para abrir una nueva pestaña de incógnito y así navegar de forma privada</translation>
@@ -2262,7 +2264,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5002932099480077015">Si se habilita esta opción, Chrome almacenará una copia de la tarjeta en el dispositivo para llenar más rápidamente los formularios.</translation>
 <translation id="5007392906805964215">Revisar</translation>
-<translation id="500790844453430087">Los grupos de pestañas "<ph name="GROUP_TITLE_1" />" y "<ph name="GROUP_TITLE_2" />" ya no están disponibles</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
 <translation id="5015510746216210676">Nombre de la máquina:</translation>
 <translation id="5017554619425969104">Texto que copiaste</translation>
@@ -4579,6 +4580,7 @@ Detalles adicionales:
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9140198744651252040">El navegador Chrome quiere usar la huella dactilar para autocompletar contraseñas</translation>
 <translation id="9141013498910525015">Administrar direcciones</translation>
+<translation id="9143898823728499852">Puedes autocompletar esta tarjeta porque tu cuenta de <ph name="CARD_ISSUER_NAME" /> está vinculada a Google Pay</translation>
 <translation id="9144951720726881238">Fecha de vencimiento:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Accede<ph name="END_LINK" />
     de nuevo y, luego, regresa a esta pestaña para obtener ayuda con la escritura</translation>

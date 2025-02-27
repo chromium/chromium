@@ -718,13 +718,11 @@ TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,
       DefaultCookieInfoForTests();
   cookie_info.is_incognito = true;
   content_view()->SetCookieInfo(cookie_info);
-
   EXPECT_EQ(
       third_party_cookies_description_label()->GetText(),
       l10n_util::GetStringFUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION,
-          l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK)));
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
 }
 
 TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,

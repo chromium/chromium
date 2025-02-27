@@ -17,9 +17,54 @@
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/gfx/win/hwnd_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace glic {
+
+namespace {
+#if BUILDFLAG(IS_WIN)
+
+struct IsBrowserTopmostWindowState {
+  HWND browser_hwnd = nullptr;
+  bool browser_is_topmost_window = false;
+};
+
+// Window enumerator used to determine if the top most visible window, other
+// than the system tray, is the browser window it is looking for. This is called
+// in z-order, i.e., topmost window first.
+// Window enumerator, so returning FALSE stops enumerating.
+// `lParam` is a pointer to IsBrowserTopmostWindowState, which contains the
+// browser HWND it is looking for. When finished enumerating, it sets
+// topmost_visible_non_opaque_hwnd to the topmost non system tray HWND it
+// finds.
+BOOL CALLBACK IsBrowserWindowTopmostWindowEnumerator(HWND hwnd, LPARAM lParam) {
+  struct IsBrowserTopmostWindowState* state =
+      reinterpret_cast<struct IsBrowserTopmostWindowState*>(lParam);
+  if (hwnd == state->browser_hwnd) {
+    state->browser_is_topmost_window = true;
+    return FALSE;
+  } else if (gfx::GetClassName(hwnd) != L"Shell_TrayWnd" &&
+             gfx::IsWindowVisibleAndFullyOpaque(hwnd, nullptr)) {
+    state->browser_is_topmost_window = false;
+    return FALSE;
+  }
+  return TRUE;
+}
+
+bool IsBrowserWindowTopmostWindow(Browser* browser) {
+  HWND browser_hwnd =
+      browser->window()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+
+  struct IsBrowserTopmostWindowState state{browser_hwnd, false};
+  EnumWindows(&IsBrowserWindowTopmostWindowEnumerator,
+              reinterpret_cast<LPARAM>(&state));
+  return state.browser_is_topmost_window;
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace
 
 bool IsBrowserGlicCompatible(Profile* profile, Browser* browser) {
   // A browser is not compatible if it:
@@ -46,20 +91,18 @@ Browser* FindBrowserForAttachment(Profile* profile) {
 }
 
 bool IsBrowserInForeground(Browser* browser) {
-  bool in_foreground = browser->IsActive();
+  if (browser->IsActive()) {
+    return true;
+  }
 #if BUILDFLAG(IS_WIN)
   // On Windows, clicking the status bar icon makes an active browser window
   // inactive, but it will still be the last active browser. Attach to the
-  // last active browser if it's not occluded or minimized.
-  if (!in_foreground) {
-    in_foreground = browser->window()
-                        ->GetNativeWindow()
-                        ->GetHost()
-                        ->GetNativeWindowOcclusionState() ==
-                    aura::Window::OcclusionState::VISIBLE;
-  }
+  // last active browser if it's the foremost visible window, other than the
+  // system tray.
+  return IsBrowserWindowTopmostWindow(browser);
+#else
+  return false;
 #endif  // BUILDFLAG(IS_WIN)
-  return in_foreground;
 }
 
 class BrowserAttachObservationImpl : public BrowserAttachObservation,

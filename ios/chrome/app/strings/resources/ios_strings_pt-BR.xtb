@@ -511,6 +511,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3138611310073113613">Descartar seleção</translation>
 <translation id="3140825265190223781">Senhas e chaves de acesso salvas</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
+<translation id="3144126448740580210">CONCLUÍDO</translation>
 <translation id="314837624430314508">Fique por dentro das últimas notícias, atualizações de monitoramento de preços e muito mais.</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="315778507796115851">Histórico</translation>
@@ -1228,7 +1229,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6295751040240588413">Apelido do cartão inválido</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Receber notificações de monitoramento de preço</translation>
-<translation id="6310451064941005489">Opções de senha</translation>
 <translation id="6316141353357700666">Escolha a senha que você quer usar na lista que aparecer.</translation>
 <translation id="6321526113093607004">Adicionar aos favoritos</translation>
 <translation id="6337234675334993532">Criptografia</translation>
@@ -1405,6 +1405,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6979737339423435258">Todo o período</translation>
 <translation id="6983306615164277634">Você também pode tocar na barra de endereço e mantê-la pressionada para mudar a posição.</translation>
 <translation id="6990519590575500580">Converse por FaceTime</translation>
+<translation id="6998251471716094661">Monitore os preços dos produtos e receba alertas quando houver uma redução em algum site</translation>
 <translation id="7004032350256606903">Sua organização requer o uso do modo de navegação privada.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Definir como padrão nas Configurações…</translation>
@@ -1583,6 +1584,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7812377703891978671">Você pode acessar todo seu histórico de navegação selecionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Downloads</translation>
 <translation id="7815852444315004084">Ocultar por enquanto</translation>
+<translation id="7825973332242257878">Grupos de guias</translation>
 <translation id="7831876841288640403">Escolha a posição da barra de endereço ideal para você.</translation>
 <translation id="7839994177130598711">Os membros da sua família agora podem usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
 <translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>

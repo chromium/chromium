@@ -51,6 +51,7 @@ source_set("ip_protection_core") {
     "//base",
     "//net",
   ]
+  deps = [ "//components/content_settings/core/common" ]
 }
 
 source_set("ip_protection_core_impl") {
@@ -71,6 +72,7 @@ source_set("ip_protection_core_impl") {
     ":ip_protection_token_manager",
     ":ip_protection_token_manager_impl",
     ":masked_domain_list_manager",
+    "//components/content_settings/core/common",
   ]
 }
 

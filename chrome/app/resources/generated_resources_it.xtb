@@ -459,6 +459,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1303101771013849280">File HTML preferiti</translation>
 <translation id="1303671224831497365">Nessun dispositivo Bluetooth trovato</translation>
 <translation id="130491383855577612">App e file Linux sostituiti</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Rimuovi 1 estensione e i dati che ha salvato su questo dispositivo}other{Rimuovi {ACCOUNT_EXTENSIONS_COUNT} estensioni e i dati che hanno salvato su questo dispositivo}}</translation>
 <translation id="1306518237408758433">Apri <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Modifica impostazioni</translation>
 <translation id="1307165550267142340">Il PIN è stato creato</translation>
@@ -836,6 +837,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1575741822946219011">Lingue e metodi di immissione</translation>
 <translation id="1576594961618857597">Avatar bianco predefinito</translation>
 <translation id="1576729678809834061">Segnala questo risultato di ricerca</translation>
+<translation id="1578110287710452646">Punto di ridimensionamento affiancato</translation>
 <translation id="1578488449637163638">Scuro</translation>
 <translation id="1578558981922970608">Termina</translation>
 <translation id="157931050206866263">Scopri di più sulle scansioni di malware</translation>
@@ -1206,6 +1208,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1826192255355608658">Sincronizza i preferiti, le password, la cronologia e altri dati del browser Chrome</translation>
 <translation id="1826516787628120939">Verifica in corso...</translation>
 <translation id="1826657447823925402">Scorrimento invertito disattivato</translation>
+<translation id="1827416268933303617">Colore <ph name="COLOR_NAME" /></translation>
 <translation id="1827504459960247692">Nome hotspot</translation>
 <translation id="1828378091493947763">Questo plug-in non è supportato sul dispositivo in uso</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Apri tutti}=1{&amp;Apri preferito}other{&amp;Apri tutti ({COUNT})}}</translation>
@@ -6697,6 +6700,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5749214722697335450">Invia dati su utilizzo e diagnostica. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Questi dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva, questi dati potrebbero essere salvati nel tuo Account Google. <ph name="BEGIN_LINK1" />Scopri di più sulle metriche<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Controlla disponibilità del tethering</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Questa estensione è salvata nel tuo Account Google, ma i dati che ha salvato solo su questo dispositivo potrebbero essere eliminati}other{Queste estensioni sono salvate nel tuo Account Google, ma i dati che hanno salvato solo su questo dispositivo potrebbero essere eliminati}}</translation>
 <translation id="5753570386948603678">Elimina dalla cronologia</translation>
 <translation id="5756163054456765343">Centro assistenza</translation>
 <translation id="5757187557809630523">traccia successiva</translation>

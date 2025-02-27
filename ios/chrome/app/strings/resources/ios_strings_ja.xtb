@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">選択を破棄</translation>
 <translation id="3140825265190223781">保存済みのパスワードとパスキー</translation>
 <translation id="3143515551205905069">同期をキャンセル</translation>
+<translation id="3144126448740580210">完了</translation>
 <translation id="314837624430314508">最新のニュースや価格トラッキングの更新などをチェックできます。</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="315778507796115851">履歴</translation>
@@ -1115,6 +1116,7 @@
 <translation id="5817176759448082654">パスワード チェックアップ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">同期しています…</translation>
+<translation id="583923961930319521">すべてのデバイスでパスワードを使用する</translation>
 <translation id="5844284118433003733">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
 <translation id="5854790677617711513">30 日以上経過</translation>
 <translation id="5857770089550859117">同期を開始するにはパスフレーズが必要です。</translation>
@@ -1228,7 +1230,6 @@
 <translation id="6295751040240588413">無効なカード ニックネーム</translation>
 <translation id="629730747756840877">アカウント</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
-<translation id="6310451064941005489">パスワードのオプション</translation>
 <translation id="6316141353357700666">表示されたリストから使用するパスワードを選択します。</translation>
 <translation id="6321526113093607004">ブックマークに追加</translation>
 <translation id="6337234675334993532">暗号化</translation>
@@ -1405,6 +1406,7 @@
 <translation id="6979737339423435258">全期間</translation>
 <translation id="6983306615164277634">アドレスバーを長押しして位置を変更することもできます。</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998251471716094661">商品の価格をトラッキングし、値下げしたサイトがある場合に通知を受け取ります</translation>
 <translation id="7004032350256606903">組織がシークレット モードで閲覧するよう求めています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">[設定] でデフォルトにする…</translation>
@@ -1583,6 +1585,7 @@
 <translation id="7812377703891978671">[<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />] を選択すると、すべての閲覧履歴にアクセスできます。</translation>
 <translation id="78146569776629510">ダウンロード</translation>
 <translation id="7815852444315004084">今は表示しない</translation>
+<translation id="7825973332242257878">タブグループ</translation>
 <translation id="7831876841288640403">アドレスバーの最適な場所を選択します。</translation>
 <translation id="7839994177130598711">ファミリー メンバーが Google パスワード マネージャーを使用して <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> にログインする際に、あなたのユーザー名とパスワードを使用できるようになりました。</translation>
 <translation id="7840771868269352570">選択したアイテムが削除されます。</translation>
@@ -1689,6 +1692,7 @@
 <translation id="8221665793629393739">再訪問のリマインダー</translation>
 <translation id="8230355548492839438">前を検索</translation>
 <translation id="8232956427053453090">データを保持</translation>
+<translation id="8233237502828137700">バナー プロモーションを閉じる</translation>
 <translation id="8238711781852526820">[価格の追跡] を非表示にする</translation>
 <translation id="8258999165172757081">追加済み</translation>
 <translation id="8261506727792406068">削除</translation>

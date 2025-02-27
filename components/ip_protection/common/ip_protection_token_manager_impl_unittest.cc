@@ -147,6 +147,12 @@ class MockIpProtectionCore : public IpProtectionCore {
   void QuicProxiesFailed() override {}
   std::vector<net::ProxyChain> GetProxyChainList() override { return {}; }
   void RequestRefreshProxyList() override {}
+  bool HasTrackingProtectionException(
+      const GURL& first_party_url) const override {
+    return false;
+  }
+  void SetTrackingProtectionContentSetting(
+      const ContentSettingsForOneType& settings) override {}
 };
 
 struct HistogramState {
