@@ -607,12 +607,12 @@ bool AXImageAnnotator::ImageNameHasMostlyStopwords(
   // Compute how many characters remain after removing stopwords.
   int remaining_codepoints = GetLengthAfterRemovingStopwords(image_name);
 
-  // If there are 3 or fewer unicode codepoints remaining, classify
+  // If there are less than 3 unicode codepoints remaining, classify
   // the string as "mostly stopwords".
   //
   // More details and analysis in this (Google-internal) design doc:
   // http://goto.google.com/augment-existing-image-descriptions
-  return (remaining_codepoints <= 3);
+  return (remaining_codepoints < 3);
 }
 
 #if defined(CONTENT_IMPLEMENTATION)
