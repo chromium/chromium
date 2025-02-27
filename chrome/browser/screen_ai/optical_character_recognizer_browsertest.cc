@@ -421,18 +421,9 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_PdfMetrics) {
   histograms.ExpectBucketCount("Accessibility.ScreenAI.OCR.LinesCount.PDF",
                                expected_lines_count, expected_calls);
 
-  // Since the text in the image is just one letter, the detected language code
-  // is "und" (undefined).
-  constexpr uint64_t kHashCodeForUnd = 350748440;
-  unsigned expected_languages_count =
-      (expected_call_success && IsOcrAvailable()) ? 1 : 0;
-
+  // Since the text in the image is just one letter, language is not detected.
   histograms.ExpectTotalCount(
-      "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF",
-      expected_languages_count);
-  histograms.ExpectBucketCount(
-      "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF", kHashCodeForUnd,
-      expected_languages_count);
+      "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF",0);
 
   // Expect measured latency and image size, but we don't know how long it
   // taskes to process and how large the image is.

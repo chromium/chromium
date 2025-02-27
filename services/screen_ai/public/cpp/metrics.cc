@@ -26,7 +26,9 @@ std::optional<uint64_t> GetMostDetectedLanguageInOcrData(
   std::map<std::string, size_t> detected_language_count_map;
   for (const auto& line : ocr_data.lines()) {
     for (const auto& word : line.words()) {
-      detected_language_count_map[word.language()]++;
+      if (word.language().size()) {
+        detected_language_count_map[word.language()]++;
+      }
     }
   }
 
