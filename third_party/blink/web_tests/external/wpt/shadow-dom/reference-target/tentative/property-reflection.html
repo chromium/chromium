@@ -47,7 +47,7 @@
         }
         referencing_element.remove();
         host_container.setHTMLUnsafe("");
-      }, `${referencing_element_type}.${reflected_property} has reflection behavior ${expected_behavior} when pointing to ${referenced_element_type} with reference target${element_creation_method.name}`);
+      }, `${referencing_element_type}.${reflected_property} has reflection behavior ${expected_behavior} when pointing to ${referenced_element_type} with reference target${element_creation_method.method_name}`);
     }
 
     const element_creation_methods = [
@@ -69,8 +69,8 @@
         return host;
       }
     ];
-    element_creation_methods[0].name = '';
-    element_creation_methods[1].name = ' via options';
+    element_creation_methods[0].method_name = '';
+    element_creation_methods[1].method_name = ' via options';
     // We want to test types of elements that are associated with properties that can reflect other
     // elements and can therefore interact with reference target in interesting ways.
     // The HTML5_LABELABLE_ELEMENTS are defined in https://html.spec.whatwg.org/#category-label,
