@@ -325,7 +325,7 @@ export declare interface GlicBrowserHost {
   getMetrics?(): GlicBrowserHostMetrics;
 
   /**
-   * @todo Not yet implemented. https://crbug.com/381437495
+   * @todo Not yet implemented for PDFs. https://crbug.com/395859365
    *
    * Scrolls to and (optionally) highlights content specified by an input
    * selector. Returns a promise that resolves when the selected content is
@@ -774,7 +774,18 @@ export enum ScrollToErrorReason {
    * Invalid params were provided to scrollTo(), or the browser doesn't support
    * scrollTo() yet.
    */
-  NOT_SUPPORTED = 0
+  NOT_SUPPORTED = 0,
+  /** scrollTo() was called again before this call finished processing. */
+  NEWER_SCROLL_TO_CALL = 1,
+  /** There is no tab currently in focus. */
+  NO_FOCUSED_TAB = 2,
+  /** The selector did not match any content in the document. */
+  NO_MATCH_FOUND = 3,
+  /**
+   * The currently focused tab changed or navigated while processing the
+   * scrollTo() call.
+   */
+  FOCUSED_TAB_CHANGED_OR_NAVIGATED = 4,
 }
 
 /**

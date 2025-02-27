@@ -7,7 +7,6 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/browser_conditions.h"
 #include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic_annotation_manager.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -178,7 +178,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
         pref_service_(profile_->GetPrefs()),
         active_state_calculator_(&glic_service_->window_controller()),
-        receiver_(this, std::move(receiver)) {
+        receiver_(this, std::move(receiver)),
+        annotation_manager_(
+            std::make_unique<GlicAnnotationManager>(glic_service_)) {
     active_state_calculator_.AddObserver(this);
   }
 
@@ -402,8 +404,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "feature enabled.");
       return;
     }
-    NOTIMPLEMENTED();
-    std::move(callback).Run(mojom::ScrollToErrorReason::kNotSupported);
+    annotation_manager_->ScrollTo(std::move(params), std::move(callback));
   }
 
   // GlicWindowController::StateObserver implementation.
@@ -485,6 +486,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
+  std::unique_ptr<GlicAnnotationManager> annotation_manager_;
 };
 
 GlicPageHandler::GlicPageHandler(

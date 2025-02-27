@@ -62,7 +62,9 @@ interface PageElementTypes {
   desktopScreenshotErrorReason: HTMLSpanElement;
   createTabInBackground: HTMLInputElement;
   canAttachCheckbox: HTMLInputElement;
-  scrollToTextInput: HTMLInputElement;
+  scrollToExactText: HTMLInputElement;
+  scrollToTextFragmentTextStart: HTMLInputElement;
+  scrollToTextFragmentTextEnd: HTMLInputElement;
   scrollToBn: HTMLButtonElement;
   fileDrop: HTMLDivElement;
   fileDropList: HTMLDivElement;
@@ -534,23 +536,36 @@ $.audioDuckingOff.addEventListener('click', () => {
 });
 
 $.scrollToBn.addEventListener('click', async () => {
-  const text = $.scrollToTextInput.value;
-  if (!text) {
-    logMessage('scrollTo called with empty text.');
-    return;
-  }
   if (!(getBrowser()!.scrollTo)) {
     logMessage(
         `scrollTo is not enabled. Run with --enable-features=GlicScrollTo.`);
     return;
   }
-  logMessage(`scrollTo called with "${text}"`);
+
   try {
-    await getBrowser()!.scrollTo!({
-      selector: {exactText: {text: text}},
-      highlight: true,
-    });
-    logMessage(`scrollTo succeeded.`);
+    const exactText = $.scrollToExactText.value;
+    if (exactText) {
+      logMessage(`scrollTo called with "${exactText}"`);
+      await getBrowser()!.scrollTo!({
+        selector: {exactText: {text: exactText}},
+        highlight: true,
+      });
+      logMessage('scrollTo succeeded!');
+      return;
+    }
+
+    const textStart = $.scrollToTextFragmentTextStart.value;
+    const textEnd = $.scrollToTextFragmentTextEnd.value;
+    if (textStart && textEnd) {
+      logMessage(`scrollTo called with text fragment: {textStart: "${
+          textStart}", textEnd: "${textEnd}"}`);
+      await getBrowser()!.scrollTo!
+          ({selector: {textFragment: {textStart, textEnd}}});
+      logMessage('scrollTo succeeded!');
+      return;
+    }
+
+    logMessage('scrollTo: no selector specified');
   } catch (error) {
     logMessage(`scrollTo failed: ${error}`);
   }

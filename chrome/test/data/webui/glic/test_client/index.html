@@ -37,6 +37,10 @@ found in the LICENSE file.
     font-size: 15pt;
     user-select: none;
   }
+  .section h2 {
+    font-size: 13pt;
+    user-select: none;
+  }
   .section {
     background-color: #eee;
     box-shadow: 0 0 0.5em #999;
@@ -258,8 +262,20 @@ found in the LICENSE file.
 </div>
 <div class="section">
   <h1>Scroll-To and Highlight</h1>
-  <input id="scrollToTextInput" type="text" placeholder="Add text to scroll to and highlight">
-  <button id="scrollToBn">Scroll!</button>
+  <div>
+    <h2>
+      Exact Text Selector
+    </h2>
+    <input id="scrollToExactText" type="text" placeholder="Add exact text to scroll to and highlight">
+  </div>
+  <div>
+    <h2>
+      Text Fragment Selector
+    </h2>
+    <input id="scrollToTextFragmentTextStart" type="text" placeholder="textStart">
+    <input id="scrollToTextFragmentTextEnd" type="text" placeholder="textEnd">
+  </div>
+  <button id="scrollToBn" style="margin-top: 12px;">Scroll!</button>
 </div>
 <br />
 <div id="status"></div>

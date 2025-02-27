@@ -146,12 +146,14 @@ std::optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
                       ValueOrDefault(prefix), ValueOrDefault(suffix));
 }
 
-std::string TextFragment::ToEscapedString() const {
+std::string TextFragment::ToEscapedString(EscapedStringFormat format) const {
   if (text_start_.empty()) {
     return std::string();
   }
   std::stringstream ss;
-  ss << kTextDirectiveParameterName;
+  if (format == EscapedStringFormat::kWithTextDirective) {
+    ss << kTextDirectiveParameterName;
+  }
 
   if (!prefix_.empty()) {
     ss << Escape(prefix_) << "-,";

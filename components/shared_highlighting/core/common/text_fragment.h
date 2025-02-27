@@ -46,10 +46,17 @@ class TextFragment {
   const std::string& prefix() const { return prefix_; }
   const std::string& suffix() const { return suffix_; }
 
-  // Converts the current fragment to its escaped URL parameter format:
-  // text=[prefix-,]textStart[,textEnd][,-suffix]
-  // Returns an empty string if |text_start| does not have a value.
-  std::string ToEscapedString() const;
+  // Converts the current fragment to its escaped URL parameter format. Returns
+  // an empty string if |text_start| does not have a value.
+  enum class EscapedStringFormat {
+    // [prefix-,]textStart[,textEnd][,=suffix]
+    kWithoutTextDirective,
+    // text=[prefix-,]textStart[,textEnd][,=suffix]
+    kWithTextDirective,
+  };
+  std::string ToEscapedString(
+      EscapedStringFormat format =
+          EscapedStringFormat::kWithTextDirective) const;
 
   // Converts the current fragment to a dictionary Value.
   base::Value ToValue() const;
