@@ -267,11 +267,4 @@ def MediaRecorderTestCases() -> List[ExpectedColorTestCase]:
           video_expected_colors,
           crop_action=ca.NonWhiteContentCropAction(),
       ),
-      ExpectedColorTestCase(
-          'content/test/data/gpu/pixel_media_recorder_from_video_element.html',
-          'MediaRecorderFromVideoElementWithOoprCanvasDisabled',
-          60,
-          video_expected_colors,
-          crop_action=ca.NonWhiteContentCropAction(),
-          extra_browser_args=['--disable-features=CanvasOopRasterization']),
   ]

@@ -1573,15 +1573,6 @@ class PixelTestPages():
                       matching_algorithm=match_algo,
                       timeout=timeout),
 
-        # Safeguard against repeating crbug.com/1337101
-        PixelTestPage(
-            'pixel_video_from_canvas_2d_alpha.html',
-            base_name + '_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster',
-            crop_action=standard_crop,
-            browser_args=['--disable-features=CanvasOopRasterization'],
-            matching_algorithm=match_algo,
-            timeout=timeout),
-
         # Safeguard against repeating crbug.com/1371308
         PixelTestPage(
             'pixel_video_from_canvas_2d.html',

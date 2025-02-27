@@ -34,12 +34,6 @@ const char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 const char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";
 
-const char kCanvasOopRasterizationName[] =
-    "Out-of-process 2D canvas rasterization.";
-const char kCanvasOopRasterizationDescription[] =
-    "The rasterization of 2d canvas contents is performed in the GPU process. "
-    "Requires that out-of-process rasterization be enabled.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kCapturedSurfaceControlName[] = "Captured Surface Control";
 const char kCapturedSurfaceControlDescription[] =

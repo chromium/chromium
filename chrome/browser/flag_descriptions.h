@@ -570,9 +570,6 @@ extern const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[];
 extern const char kCanvasHibernationName[];
 extern const char kCanvasHibernationDescription[];
 
-extern const char kCanvasOopRasterizationName[];
-extern const char kCanvasOopRasterizationDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
