@@ -100,6 +100,23 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
       });
 
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
+
+  source->AddBoolean("mantisExpandBackground",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kMediaAppImageMantisExpandBackground));
+  source->AddBoolean("mantisRemoveBackground",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kMediaAppImageMantisRemoveBackground));
+  source->AddBoolean("mantisReimagine",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kMediaAppImageMantisReimagine));
+  source->AddBoolean(
+      "mantisErase",
+      base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantisErase));
+  source->AddBoolean("mantisMakeASticker",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kMediaAppImageMantisMakeASticker));
+
   source->AddBoolean("lensInGallery",
                      IsLensInGalleryEnabled(profile, pref_service));
   source->AddBoolean("pdfReadonly",
