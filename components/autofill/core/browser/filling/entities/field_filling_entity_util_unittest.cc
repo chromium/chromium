@@ -160,5 +160,31 @@ TEST(GetObfuscatedAttributeValue, ObfuscateValue) {
             u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
 }
 
+TEST(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWithDataSchema};
+  EntityInstance passport = test::GetPassportEntityInstance();
+  for (const auto& [type, expectation] :
+       std::vector<std::pair<FieldType, std::u16string>>{
+           {NAME_FULL, u"Pippi Långstrump"},
+           {NAME_FIRST, u"Pippi"},
+           {NAME_LAST, u"Långstrump"}}) {
+    AutofillField field;
+    FieldPrediction prediction;
+    prediction.set_type(PASSPORT_NAME_TAG);
+    prediction.set_source(
+        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+            FieldPrediction::SOURCE_AUTOFILL_AI);
+    field.set_server_predictions({prediction});
+    field.SetTypeTo(type);
+
+    EXPECT_EQ(GetFillValueAndTypeForEntity(passport, field,
+                                           mojom::ActionPersistence::kFill)
+                  .first,
+              expectation)
+        << FieldTypeToStringView(type);
+  }
+}
+
 }  // namespace
 }  // namespace autofill

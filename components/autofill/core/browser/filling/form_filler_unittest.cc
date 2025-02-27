@@ -1520,8 +1520,10 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   FormData form = test::GetFormData({.fields = {
                                          // Passport number:
                                          {.role = UNKNOWN_TYPE},
-                                         // Passport name:
-                                         {.role = NAME_FULL},
+                                         // Passport first name:
+                                         {.role = NAME_FIRST},
+                                         // Passport last name:
+                                         {.role = NAME_LAST},
                                          // Issuing country:
                                          {.role = ADDRESS_HOME_COUNTRY},
                                          // Issue date:
@@ -1538,27 +1540,25 @@ TEST_F(FormFillerTest, FillPassportEntity) {
         {test::CreateFieldPrediction(types)...});
   };
   set_server_type(0, PASSPORT_NUMBER);
-  set_server_type(1, NAME_FULL, PASSPORT_NAME_TAG);
-  set_server_type(2, ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY_TAG);
-  set_server_type(3, PASSPORT_ISSUE_DATE_TAG);
-  set_server_type(4, PASSPORT_EXPIRATION_DATE_TAG);
+  set_server_type(1, NAME_FIRST, PASSPORT_NAME_TAG);
+  set_server_type(2, NAME_LAST, PASSPORT_NAME_TAG);
+  // TODO(crbug.com/389625753): The classified type should be
+  // ADDRESS_HOME_COUNTRY when countries get special handling.
+  set_server_type(3, PASSPORT_ISSUING_COUNTRY_TAG);
+  set_server_type(4, PASSPORT_ISSUE_DATE_TAG);
+  set_server_type(5, PASSPORT_EXPIRATION_DATE_TAG);
   form_structure->UpdateAutofillCount();
 
-  EntityInstance passport = test::GetPassportEntityInstance({
-      .name = u"Pippi Långstrump",
-      .number = u"123456",
-      .country = u"Sweden",
-      .expiry_date = u"12/2019",
-      .issue_date = u"01/2010",
-  });
+  EntityInstance passport = test::GetPassportEntityInstance();
 
   std::vector<FormFieldData> filled_fields =
       FillAutofillFormData(form, form.fields()[0], &passport).fields();
-  EXPECT_EQ(filled_fields[0].value(), u"123456");
-  EXPECT_EQ(filled_fields[1].value(), u"Pippi Långstrump");
-  EXPECT_EQ(filled_fields[2].value(), u"Sweden");
-  EXPECT_EQ(filled_fields[3].value(), u"01/2010");
-  EXPECT_EQ(filled_fields[4].value(), u"12/2019");
+  EXPECT_EQ(filled_fields[0].value(), u"123");
+  EXPECT_EQ(filled_fields[1].value(), u"Pippi");
+  EXPECT_EQ(filled_fields[2].value(), u"Långstrump");
+  EXPECT_EQ(filled_fields[3].value(), u"Sweden");
+  EXPECT_EQ(filled_fields[4].value(), u"01/2010");
+  EXPECT_EQ(filled_fields[5].value(), u"12/2019");
 }
 
 // Test that we can still fill a form when a field has been removed from it.
