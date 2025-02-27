@@ -3178,7 +3178,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         if (currentTab == null) {
             BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
             MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
-            assertOnLastBackPress();
             moveTaskToBack(true);
             return true;
         }
@@ -3197,7 +3196,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 !shouldCloseTab || TabAssociatedApp.isOpenedFromExternalApp(currentTab);
 
         BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
-        assertOnLastBackPress();
 
         if (minimizeApp) {
             if (shouldCloseTab) {
@@ -3216,17 +3214,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             return true;
         }
         return false;
-    }
-
-    private void assertOnLastBackPress() {
-        final Tab currentTab = getActivityTab();
-        var activityTab = getActivityTabProvider().get();
-        MinimizeAppAndCloseTabBackPressHandler.assertOnLastBackPress(
-                currentTab,
-                activityTab,
-                this::backShouldCloseTab,
-                mLayoutStateProviderSupplier,
-                isActivityFinishingOrDestroyed());
     }
 
     private void initializeBackPressHandlers() {
@@ -3248,9 +3235,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     new MinimizeAppAndCloseTabBackPressHandler(
                             getActivityTabProvider(),
                             this::backShouldCloseTab,
-                            this::sendToBackground,
-                            this::assertOnLastBackPress,
-                            getLayoutStateProviderSupplier());
+                            this::sendToBackground);
             mBackPressManager.addHandler(
                     mMinimizeAppAndCloseTabBackPressHandler,
                     BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
