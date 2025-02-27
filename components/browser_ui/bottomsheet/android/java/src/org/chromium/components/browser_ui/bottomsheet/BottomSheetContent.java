@@ -56,12 +56,6 @@ public interface BottomSheetContent {
         int LOW = 1;
     }
 
-    /** Interface to listen when the size of a BottomSheetContent changes. */
-    interface ContentSizeListener {
-        /** Called when the size of the view has changed. */
-        void onSizeChanged(int width, int height, int oldWidth, int oldHeight);
-    }
-
     /**
      * Gets the {@link View} that holds the content to be displayed in the Chrome Home bottom sheet.
      *
