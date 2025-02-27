@@ -687,6 +687,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                 animated:YES];
 }
 
+- (void)onResultsPageVisibleAreaLayoutGuideAdjusted:
+    (UILayoutGuide*)visibleAreaLayoutGuide {
+  _selectionViewController.visibleAreaLayoutGuide = visibleAreaLayoutGuide;
+}
+
 #pragma mark - LensOverlayMediatorDelegate
 
 - (void)lensOverlayMediatorDidOpenOverlayMenu:(LensOverlayMediator*)mediator {
@@ -1308,8 +1313,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 // Called when the results bottom sheet is presented.
 - (void)resultsBottomSheetPresented {
   [self dismissRestorationWindow];
-  _selectionViewController.visibleAreaLayoutGuide =
-      _resultsPagePresenter.visibleAreaLayoutGuide;
   if (_associatedTabHelper) {
     _associatedTabHelper->ClearViewportSnapshot();
   }
