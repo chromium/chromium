@@ -149,16 +149,4 @@ TEST_F(MouseKeysTrayTest, MouseKeysActiveOnReenable) {
   EXPECT_TRUE(IsActive());
 }
 
-using MouseKeysTrayTestFeatureDisabled = AshTestBase;
-
-TEST_F(MouseKeysTrayTestFeatureDisabled, TrayHidden) {
-  Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(true);
-  // Tray should exist even when the feature is disabled.
-  EXPECT_TRUE(GetTray());
-  // However, it shouldn't be visible.
-  EXPECT_FALSE(IsVisible());
-  Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(false);
-  EXPECT_FALSE(IsVisible());
-}
-
 }  // namespace ash
