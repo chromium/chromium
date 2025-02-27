@@ -27,7 +27,6 @@
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1085,7 +1084,7 @@ class MockOnDeviceVisionSession : public on_device_model::mojom::Session {
   MockOnDeviceVisionSession() = default;
   ~MockOnDeviceVisionSession() override = default;
 
-  // on_device_model::mojom::Session
+  // on_device_model::mojom::Session:
   MOCK_METHOD(
       void,
       AddContext,
@@ -1143,19 +1142,8 @@ class AILanguageModelVisionTest : public AILanguageModelTest {
     AITestUtils::AITestBase::SetUp();
   }
 
-  on_device_model::mojom::Session& StartMockOnDeviceVisionSession(
-      std::unique_ptr<MockOnDeviceVisionSession> mock_session) {
-    mojo::Remote<on_device_model::mojom::Session> session;
-    receivers_.Add(std::move(mock_session),
-                   session.BindNewPipeAndPassReceiver());
-    auto id = remotes_.Add(std::move(session));
-    return *remotes_.Get(id);
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  mojo::UniqueReceiverSet<on_device_model::mojom::Session> receivers_;
-  mojo::RemoteSet<on_device_model::mojom::Session> remotes_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1177,6 +1165,32 @@ INSTANTIATE_TEST_SUITE_P(
 // Test Prompt() with image input.
 // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
 TEST_P(AILanguageModelVisionTest, Basic) {
+  MockOnDeviceVisionSession mock_on_device_vision_session;
+  EXPECT_CALL(mock_on_device_vision_session, Append(_, _))
+      .WillOnce([&](on_device_model::mojom::AppendOptionsPtr options,
+                    mojo::PendingRemote<on_device_model::mojom::ContextClient>
+                        client) {
+        auto pieces = options->input->pieces;
+        EXPECT_EQ(pieces.size(), 4u);
+        EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[0]));
+        EXPECT_TRUE(std::holds_alternative<std::string>(pieces[1]));
+        EXPECT_TRUE(std::holds_alternative<SkBitmap>(pieces[2]));
+        EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[3]));
+      });
+  EXPECT_CALL(mock_on_device_vision_session, Generate(_, _))
+      .WillOnce(
+          [&](on_device_model::mojom::GenerateOptionsPtr options,
+              mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
+                  pending_responder) {
+            mojo::Remote<on_device_model::mojom::StreamingResponder> responder(
+                std::move(pending_responder));
+            auto chunk = on_device_model::mojom::ResponseChunk::New();
+            chunk->text = "Lovely, thanks for sharing";
+            responder->OnResponse(std::move(chunk));
+            responder->OnComplete(
+                on_device_model::mojom::ResponseSummary::New());
+          });
+
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -1191,49 +1205,17 @@ TEST_P(AILanguageModelVisionTest, Basic) {
         EXPECT_CALL(*session, AddContext(_)).Times(0);
         EXPECT_CALL(*session, ExecuteModel(_, _)).Times(0);
         EXPECT_CALL(*session, GetSession())
-            .WillOnce([&]() -> on_device_model::mojom::Session& {
-              auto mock_session = std::make_unique<MockOnDeviceVisionSession>();
-              EXPECT_CALL(*mock_session, Execute(_, _))
-                  .WillOnce([&](on_device_model::mojom::InputOptionsPtr input,
-                                mojo::PendingRemote<
-                                    on_device_model::mojom::StreamingResponder>
-                                    pending_responder) {
-                    mojo::Remote<on_device_model::mojom::StreamingResponder>
-                        responder(std::move(pending_responder));
-                    auto pieces = input->input->pieces;
-                    EXPECT_EQ(pieces.size(), 4u);
-                    EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[0]));
-                    EXPECT_TRUE(std::holds_alternative<std::string>(pieces[1]));
-                    EXPECT_TRUE(std::holds_alternative<SkBitmap>(pieces[2]));
-                    EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[3]));
-                    auto chunk = on_device_model::mojom::ResponseChunk::New();
-                    chunk->text = "Lovely, thanks for sharing";
-                    responder->OnResponse(std::move(chunk));
-                    responder->OnComplete(
-                        on_device_model::mojom::ResponseSummary::New());
-                  });
-              on_device_model::mojom::Session& result =
-                  StartMockOnDeviceVisionSession(std::move(mock_session));
-              return result;
-            });
+            .WillRepeatedly(ReturnRef(mock_on_device_vision_session));
         return session;
       });
 
   mojo::Remote<blink::mojom::AILanguageModel> mock_session =
       CreateMockSession();
   AITestUtils::MockModelStreamingResponder mock_responder;
-  base::RunLoop responder_run_loop;
-  EXPECT_CALL(mock_responder, OnStreaming(_, _))
-      .WillOnce(testing::Invoke(
-          [&](const std::string& text,
-              blink::mojom::ModelStreamingResponderAction action) {
-            EXPECT_THAT(text, "Lovely, thanks for sharing");
-          }));
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_responder, OnStreaming("Lovely, thanks for sharing", _));
   EXPECT_CALL(mock_responder, OnCompletion(_))
-      .WillOnce(testing::Invoke(
-          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-            responder_run_loop.Quit();
-          }));
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
   on_device_model::mojom::InputPtr input = on_device_model::mojom::Input::New();
   input->pieces.push_back(ml::Token::kUser);
@@ -1242,5 +1224,5 @@ TEST_P(AILanguageModelVisionTest, Basic) {
   input->pieces.push_back(ml::Token::kEnd);
   mock_session->Prompt(std::move(input),
                        mock_responder.BindNewPipeAndPassRemote());
-  responder_run_loop.Run();
+  run_loop.Run();
 }
