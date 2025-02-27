@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module arc.mojom;
 
@@ -16,6 +16,7 @@ enum GetArcSafetySessionResult {
   [Default] kGenericError,
   kSafetyServiceNotFound,
   kBindSafetyServiceError,
+  [MinVersion=1] kServiceNotAvailable,
 };
 
 // Handles requests from OnDeviceSafetyInstance that interacts with chrome.

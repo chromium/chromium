@@ -11,6 +11,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "cloud_safety_session.h"
 #include "components/user_manager/user_manager.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace ash {
@@ -63,6 +64,11 @@ void CrosSafetyService::GetArcSafetySessionComplete(
       std::move(callback).Run(
           cros_safety::mojom::GetOnDeviceSafetySessionResult::kHadesNotReady);
       break;
+    case arc::mojom::GetArcSafetySessionResult::kServiceNotAvailable:
+      std::move(callback).Run(
+          cros_safety::mojom::GetOnDeviceSafetySessionResult::
+              kArcSafetyServiceNotAvailable);
+      break;
     default:
       LOG(ERROR) << "Unknown GetArcSafetySessionResult: " << result;
       std::move(callback).Run(
@@ -88,8 +94,8 @@ void CrosSafetyService::CreateOnDeviceSafetySession(
            ->arc_bridge_service()
            ->on_device_safety()
            ->IsConnected()) {
-    std::move(callback).Run(
-        cros_safety::mojom::GetOnDeviceSafetySessionResult::kGenericError);
+    std::move(callback).Run(cros_safety::mojom::GetOnDeviceSafetySessionResult::
+                                kOnDeviceSafetyNotConnected);
     return;
   }
 
@@ -98,15 +104,17 @@ void CrosSafetyService::CreateOnDeviceSafetySession(
       GetArcSafetySession);
 
   if (!on_device_safety_instance) {
-    std::move(callback).Run(
-        cros_safety::mojom::GetOnDeviceSafetySessionResult::kGenericError);
+    std::move(callback).Run(cros_safety::mojom::GetOnDeviceSafetySessionResult::
+                                kArcGetInstanceForMethodFailed);
     return;
   }
 
   on_device_safety_instance->GetArcSafetySession(
       std::move(session),
-      base::BindOnce(&CrosSafetyService::GetArcSafetySessionComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&CrosSafetyService::GetArcSafetySessionComplete,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+          arc::mojom::GetArcSafetySessionResult::kServiceNotAvailable));
 }
 
 void CrosSafetyService::CreateCloudSafetySession(
