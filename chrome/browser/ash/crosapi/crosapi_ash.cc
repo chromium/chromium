@@ -62,7 +62,6 @@
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
 #include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
-#include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
@@ -220,7 +219,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ash::TelemetryManagementServiceAsh>()),
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
-      resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
@@ -615,11 +613,6 @@ void CrosapiAsh::BindRemoteAppsLacrosBridge(
 
 void CrosapiAsh::BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) {
   remoting_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindResourceManager(
-    mojo::PendingReceiver<mojom::ResourceManager> receiver) {
-  resource_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindScreenAIDownloader(

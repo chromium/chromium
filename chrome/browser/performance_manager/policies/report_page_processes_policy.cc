@@ -53,8 +53,7 @@ void ReportPageProcessesOnUIThread(
                            page_process.second.last_visible);
   }
 
-  client->ReportBrowserProcesses(ash::ResourcedClient::Component::kAsh,
-                                 processes);
+  client->ReportBrowserProcesses(processes);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

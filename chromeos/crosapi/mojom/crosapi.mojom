@@ -499,10 +499,7 @@ interface Crosapi {
   [MinVersion=141] BindPrintPreviewCrosDelegate@143(
       pending_receiver<PrintPreviewCrosDelegate> receiver);
 
-  // Binds the Resource Manager interface for querying resource status.
-  // Added in M93.
-  [MinVersion=36] BindResourceManager@41(
-      pending_receiver<ResourceManager> receiver);
+  // BindResourceManager@41 was removed.
 
   // REMOVED_29@29 was removed.
   // BindSearchControllerFactory@138 was removed.

@@ -94,7 +94,6 @@ class NonclosableAppToastServiceAsh;
 class PrintingMetricsAsh;
 #endif  // BUILDFLAG(USE_CUPS)
 class RemotingAsh;
-class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
@@ -256,8 +255,6 @@ class CrosapiAsh : public mojom::Crosapi {
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)
       override;
   void BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) override;
-  void BindResourceManager(
-      mojo::PendingReceiver<mojom::ResourceManager> receiver) override;
   void BindScreenAIDownloader(
       mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) override;
   void BindSensorHalClient(
@@ -494,7 +491,6 @@ class CrosapiAsh : public mojom::Crosapi {
       telemetry_management_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
-  std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
   std::unique_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;

@@ -125,8 +125,6 @@ static_library("crosapi") {
     "primary_profile_creation_waiter.h",
     "remoting_ash.cc",
     "remoting_ash.h",
-    "resource_manager_ash.cc",
-    "resource_manager_ash.h",
     "screen_ai_downloader_ash.cc",
     "screen_ai_downloader_ash.h",
     "structured_metrics_service_ash.cc",
