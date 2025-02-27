@@ -8,6 +8,7 @@
 
 #include "base/task/thread_pool.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -26,9 +27,7 @@ namespace {
 // Helper used to convert the captured DesktopFrame to a JPEG.
 std::vector<uint8_t> ConvertFrameToJpeg(
     std::unique_ptr<webrtc::DesktopFrame> frame) {
-  if (!frame) {
-    return {};
-  }
+  CHECK(frame);
   SkImageInfo image_info =
       SkImageInfo::Make(frame->size().width(), frame->size().height(),
                         kBGRA_8888_SkColorType, kPremul_SkAlphaType);
@@ -49,6 +48,7 @@ std::vector<uint8_t> ConvertFrameToJpeg(
   }
   return std::move(*jpeg_data);
 }
+
 }  // namespace
 
 GlicScreenshotCapturer::GlicScreenshotCapturer() = default;
@@ -98,7 +98,8 @@ void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
     DVLOG(1) << "Unknown error while selecting source: " << err;
     SignalError(glic::mojom::CaptureScreenshotErrorReason::kUnknown);
     return;
-  } else if (id.is_null()) {
+  }
+  if (id.is_null()) {
     SignalError(glic::mojom::CaptureScreenshotErrorReason::
                     kUserCancelledScreenPickerDialog);
     return;
@@ -111,8 +112,6 @@ void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
   }
   desktop_capturer_->CaptureFrame();
 }
-
-void GlicScreenshotCapturer::OnFrameCaptureStart() {}
 
 void GlicScreenshotCapturer::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
@@ -140,7 +139,7 @@ void GlicScreenshotCapturer::SignalScreenshotResult(
   screenshot->width_pixels = frame_size_.width();
   screenshot->height_pixels = frame_size_.height();
   screenshot->mime_type = "image/jpeg";
-  screenshot->data = jpeg_data;
+  screenshot->data = std::move(jpeg_data);
   screenshot->origin_annotations = mojom::ImageOriginAnnotations::New();
   std::move(capture_callback_)
       .Run(
