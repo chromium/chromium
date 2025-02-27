@@ -11,21 +11,14 @@ or used in depot_tools' autoninja or siso wrapper.
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-import use_siso_default
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.path.pardir))
 import gn_helpers
 
 def use_reclient_value(output_dir):
   """Returns use_reclient value."""
-  use_remoteexec = None
-  use_reclient = None
-  use_siso = use_siso_default.use_siso_default(output_dir)
   args = gn_helpers.ReadArgsGN(output_dir)
   use_remoteexec = args.get('use_remoteexec', False)
   use_reclient = args.get('use_reclient')
-  use_siso = args.get('use_siso', use_siso)
   # If args.gn has use_reclient, use it.
   if use_reclient is not None:
     return use_reclient
