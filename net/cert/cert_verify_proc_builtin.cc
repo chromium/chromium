@@ -300,7 +300,8 @@ class PathBuilderDelegateDataImpl : public bssl::CertPathBuilderDelegateData {
 
   bssl::OCSPVerifyResult stapled_ocsp_verify_result;
   SignedCertificateTimestampAndStatusList scts;
-  ct::CTPolicyCompliance ct_policy_compliance;
+  ct::CTPolicyCompliance ct_policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
 };
 
 // TODO(eroman): The path building code in this file enforces its idea of weak
