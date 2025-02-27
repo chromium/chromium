@@ -56,9 +56,12 @@ class VizGpuChannelHostProvider : public GpuChannelHostProvider,
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   int num_context_lost_ = 0;
+  base::RepeatingClosure task_gpu_channel_lost_on_provider_thread_;
 
   base::ObserverList<Observer, true /*check_empty*/, false /*allow_reentrancy*/>
       observers_;
+
+  base::WeakPtrFactory<VizGpuChannelHostProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace video_effects
