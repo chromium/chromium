@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -63,13 +64,17 @@ namespace autofill_ai {
 
 namespace {
 
+using autofill::AttributeInstance;
+using autofill::AttributeType;
+using autofill::EntityInstance;
+using autofill::EntityType;
 using autofill::LogBuffer;
 using autofill::LoggingScope;
 using autofill::LogMessage;
 using autofill::SuggestionType;
 
-bool CheckIfEntitySatisfiesConstraints(const autofill::EntityInstance& entity) {
-  autofill::DenseSet<autofill::AttributeType> attribute_types;
+bool CheckIfEntitySatisfiesConstraints(const EntityInstance& entity) {
+  autofill::DenseSet<AttributeType> attribute_types;
   for (const autofill::AttributeInstance& attribute_instance :
        entity.attributes()) {
     attribute_types.insert(attribute_instance.type());
@@ -77,16 +82,15 @@ bool CheckIfEntitySatisfiesConstraints(const autofill::EntityInstance& entity) {
 
   return std::ranges::any_of(
       entity.type().import_constraints(),
-      [&](const autofill::DenseSet<autofill::AttributeType>& constraint) {
+      [&](const autofill::DenseSet<AttributeType>& constraint) {
         return attribute_types.contains_all(constraint);
       });
 }
 
-std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
+std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     const autofill::FormStructure& submitted_form) {
-  std::map<
-      autofill::Section,
-      std::map<autofill::EntityType, std::vector<autofill::AttributeInstance>>>
+  std::map<autofill::Section,
+           std::map<EntityType, std::vector<autofill::AttributeInstance>>>
       section_to_entity_types_attributes;
   for (const std::unique_ptr<autofill::AutofillField>& field :
        submitted_form.fields()) {
@@ -95,8 +99,8 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     if (!autofill_ai_server_prediction) {
       continue;
     }
-    std::optional<autofill::AttributeType> field_attribute_type =
-        autofill::AttributeType::FromFieldType(*autofill_ai_server_prediction);
+    std::optional<AttributeType> field_attribute_type =
+        AttributeType::FromFieldType(*autofill_ai_server_prediction);
     CHECK(field_attribute_type);
     // TODO(crbug.com/389629676): Save data format.
     std::u16string value = field->value(autofill::ValueSemantics::kCurrent);
@@ -113,14 +117,14 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
                                               value);
   }
 
-  std::vector<autofill::EntityInstance> entities_found_in_form;
+  std::vector<EntityInstance> entities_found_in_form;
   for (auto& [section, entity_to_attributes] :
        section_to_entity_types_attributes) {
     for (auto& [entity_name, attributes] : entity_to_attributes) {
-      autofill::EntityInstance entity = autofill::EntityInstance(
-          autofill::EntityType(entity_name), std::move(attributes),
-          base::Uuid::GenerateRandomV4(), /*nickname=*/std::string(""),
-          base::Time::Now());
+      EntityInstance entity =
+          EntityInstance(EntityType(entity_name), std::move(attributes),
+                         base::Uuid::GenerateRandomV4(),
+                         /*nickname=*/std::string(""), base::Time::Now());
       if (!CheckIfEntitySatisfiesConstraints(entity)) {
         continue;
       }
@@ -135,15 +139,15 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
 // nor is a subset of any of them. This means that a save prompt should be
 // displayed.
 bool ShouldShowNewEntitySavePrompt(
-    const autofill::EntityInstance& entity,
-    base::span<const autofill::EntityInstance> current_entities) {
+    const EntityInstance& entity,
+    base::span<const EntityInstance> current_entities) {
   return std::ranges::none_of(
-      current_entities, [&](const autofill::EntityInstance& existing_entity) {
+      current_entities, [&](const EntityInstance& existing_entity) {
         // Entities of different type should not be merged.
         if (entity.type() != existing_entity.type()) {
           return false;
         }
-        autofill::EntityInstance::EntityMergeability mergeability =
+        EntityInstance::EntityMergeability mergeability =
             existing_entity.GetEntityMergeability(entity);
         // If `entity` can be merged into `existing_entity`, a save prompt
         // should not be shown.
@@ -162,15 +166,15 @@ bool ShouldShowNewEntitySavePrompt(
 // Finds an entity in `current_entities` which `entity` can be merged into.
 // Returns both the updated entity and the original entity.
 // Returns `std::nullopt` if no suitable entity is found.
-std::optional<std::pair<autofill::EntityInstance, autofill::EntityInstance>>
-MaybeUpdateEntity(const autofill::EntityInstance& entity,
-                  base::span<const autofill::EntityInstance> current_entities) {
-  for (const autofill::EntityInstance& existing_entity : current_entities) {
+std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
+    const EntityInstance& entity,
+    base::span<const EntityInstance> current_entities) {
+  for (const EntityInstance& existing_entity : current_entities) {
     // Entities of different type should not be merged.
     if (entity.type() != existing_entity.type()) {
       continue;
     }
-    autofill::EntityInstance::EntityMergeability mergeability =
+    EntityInstance::EntityMergeability mergeability =
         existing_entity.GetEntityMergeability(entity);
     if (mergeability.mergeable_attributes.empty()) {
       continue;
@@ -184,11 +188,11 @@ MaybeUpdateEntity(const autofill::EntityInstance& entity,
          existing_entity.attributes()) {
       new_attributes.emplace_back(std::move(curr_attribute));
     }
-    return std::make_pair(autofill::EntityInstance(
-                              existing_entity.type(), std::move(new_attributes),
-                              existing_entity.guid(),
-                              existing_entity.nickname(), base::Time::Now()),
-                          existing_entity);
+    return std::make_pair(
+        EntityInstance(existing_entity.type(), std::move(new_attributes),
+                       existing_entity.guid(), existing_entity.nickname(),
+                       base::Time::Now()),
+        existing_entity);
   }
   return std::nullopt;
 }
@@ -308,36 +312,40 @@ void AutofillAiManager::MaybeImportForm(
     std::move(autofill_callback).Run(std::move(form), false);
     return;
   }
-  std::vector<autofill::EntityInstance> entity_instances_from_form =
+  std::vector<EntityInstance> entity_instances_from_form =
       GetPossibleEntitiesFromSubmittedForm(*form);
   if (entity_instances_from_form.empty()) {
     std::move(autofill_callback).Run(std::move(form), false);
     return;
   }
 
-  base::span<const autofill::EntityInstance> current_entities =
+  base::span<const EntityInstance> current_entities =
       entity_manager->GetEntityInstances();
-  std::ranges::sort(entity_instances_from_form,
-                    autofill::EntityInstance::ImportOrder);
+  std::ranges::sort(entity_instances_from_form, EntityInstance::ImportOrder);
 
-  for (autofill::EntityInstance& entity : entity_instances_from_form) {
+  for (EntityInstance& entity : entity_instances_from_form) {
     if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
-      client_->ShowSaveOrUpdateBubble(
-          std::move(entity),
-          /*old_entity=*/std::nullopt,
-          BindOnce(&AutofillAiManager::HandleSaveOrUpdatePromptResult,
-                   GetWeakPtr(), PromptType::kSave));
+      if (IsSaveBlockedByStrikeDatabase(form->source_url(), entity)) {
+        continue;
+      }
+      auto prompt_result_callback =
+          BindOnce(&AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
+                   form->source_url(), entity);
+      client_->ShowSaveOrUpdateBubble(std::move(entity),
+                                      /*old_entity=*/std::nullopt,
+                                      std::move(prompt_result_callback));
       std::move(autofill_callback).Run(std::move(form), true);
       return;
-    } else if (std::optional<std::pair<autofill::EntityInstance,
-                                       autofill::EntityInstance>>
-                   maybe_entity_to_update =
-                       MaybeUpdateEntity(entity, current_entities)) {
-      client_->ShowSaveOrUpdateBubble(
-          std::move(maybe_entity_to_update->first),
-          std::move(maybe_entity_to_update->second),
-          BindOnce(&AutofillAiManager::HandleSaveOrUpdatePromptResult,
-                   GetWeakPtr(), PromptType::kUpdate));
+    }
+    if (std::optional<std::pair<EntityInstance, EntityInstance>>
+            entity_to_update = MaybeUpdateEntity(entity, current_entities)) {
+      auto& [new_entity, old_entity] = *entity_to_update;
+      auto prompt_result_callback =
+          BindOnce(&AutofillAiManager::HandleUpdatePromptResult, GetWeakPtr(),
+                   old_entity.guid());
+      client_->ShowSaveOrUpdateBubble(std::move(new_entity),
+                                      std::move(old_entity),
+                                      std::move(prompt_result_callback));
       std::move(autofill_callback).Run(std::move(form), true);
       return;
     }
@@ -345,16 +353,38 @@ void AutofillAiManager::MaybeImportForm(
   std::move(autofill_callback).Run(std::move(form), false);
 }
 
-void AutofillAiManager::HandleSaveOrUpdatePromptResult(
-    PromptType prompt_type,
+void AutofillAiManager::HandleSavePromptResult(
+    const GURL& form_url,
+    const autofill::EntityInstance& entity,
     AutofillAiClient::SaveOrUpdatePromptResult result) {
   if (!result.entity) {
+    AddStrikeForSaveAttempt(form_url, entity);
     return;
   }
+
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return;
   }
+
+  ClearStrikesForSave(form_url, entity);
+  entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
+}
+
+void AutofillAiManager::HandleUpdatePromptResult(
+    const base::Uuid& entity_uuid,
+    AutofillAiClient::SaveOrUpdatePromptResult result) {
+  if (!result.entity) {
+    // TODO(crbug.com/399062284): Add strikes for updates.
+    return;
+  }
+
+  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  if (!entity_manager) {
+    return;
+  }
+
+  // TODO(crbug.com/399062284): Reset update strikes.
   entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
 }
 
@@ -366,7 +396,7 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
     return {};
   }
 
-  base::span<const autofill::EntityInstance> entities =
+  base::span<const EntityInstance> entities =
       entity_manager->GetEntityInstances();
   if (entities.empty()) {
     return {};
@@ -402,19 +432,29 @@ autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {
   return client_->GetAutofillClient().GetCurrentLogManager();
 }
 
-void AutofillAiManager::AddStrikeForSaveAttempt(
-    const GURL& url,
-    const autofill::EntityInstance& entity) {
-  if (!save_strike_db_by_host_ || !url.has_host()) {
+void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,
+                                                const EntityInstance& entity) {
+  if (!save_strike_db_by_host_ || !url.is_valid() || !url.has_host()) {
     return;
   }
   save_strike_db_by_host_->AddStrike(AutofillAiSaveStrikeDatabaseByHost::GetId(
       entity.type().name_as_string(), url.host()));
 }
 
+void AutofillAiManager::ClearStrikesForSave(
+    const GURL& url,
+    const autofill::EntityInstance& entity) {
+  if (!save_strike_db_by_host_ || !url.is_valid() || !url.has_host()) {
+    return;
+  }
+  save_strike_db_by_host_->ClearStrikes(
+      AutofillAiSaveStrikeDatabaseByHost::GetId(entity.type().name_as_string(),
+                                                url.host()));
+}
+
 bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
     const GURL& url,
-    const autofill::EntityInstance& entity) const {
+    const EntityInstance& entity) const {
   if (!save_strike_db_by_host_) {
     return true;
   }
