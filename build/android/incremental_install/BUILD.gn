@@ -16,7 +16,7 @@ android_library("bootstrap_java") {
   ]
   deps = [ "third_party/AndroidHiddenApiBypass:hidden_api_bypass_java" ]
   jacoco_never_instrument = true
-  chromium_code = false # Disable build_java default dep.
+  chromium_code = false  # Disable build_java default dep.
 }
 
 dist_dex("apk_dex") {

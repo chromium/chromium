@@ -1,5 +1,5 @@
 config("vulkan_memory_allocator_config") {
-  libs = ["VulkanMemoryAllocator"]
+  libs = [ "VulkanMemoryAllocator" ]
 }
 
 source_set("vulkan_memory_allocator") {
