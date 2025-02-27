@@ -652,8 +652,11 @@ class WizardControllerFlowTest : public WizardControllerTest {
     // Default to now showing auto enrollment check screen. If you want to show
     // this screen, you can override the flags.
     command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableUnifiedStateDetermination,
-        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+        switches::kEnterpriseEnableForcedReEnrollment,
+        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentNever);
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableInitialEnrollment,
+        policy::AutoEnrollmentTypeChecker::kInitialEnrollmentNever);
   }
 
   void InitNetworkPortalDetector() {
@@ -1080,8 +1083,12 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
     WizardControllerFlowTest::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableUnifiedStateDetermination,
-        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
+        switches::kEnterpriseEnableForcedReEnrollment,
+        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnrollmentInitialModulus, "1");
+    command_line->AppendSwitchASCII(switches::kEnterpriseEnrollmentModulusLimit,
+                                    "2");
   }
 
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -1153,6 +1160,10 @@ class WizardControllerUnifiedEnrollmentTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WizardControllerDeviceStateTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
   }
 
   void ProgressUntilAutoEnrollmentCheckScreen() {

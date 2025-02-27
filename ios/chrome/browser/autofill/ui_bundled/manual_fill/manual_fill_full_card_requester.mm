@@ -6,7 +6,7 @@
 
 #import <vector>
 
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"

@@ -9,7 +9,7 @@
 #import "base/base_paths.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "testing/gtest/include/gtest/gtest.h"

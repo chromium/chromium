@@ -195,6 +195,8 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
   node.target_id = wire.target_id;
+  node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
+  node.backdrop_filters = wire.backdrop_filters;
 
   node.subtree_has_copy_request = wire.subtree_has_copy_request;
   node.closest_ancestor_with_copy_request_id =
@@ -376,8 +378,14 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.SetOffsetToTransformParent(wire.offset_to_transform_parent);
 
   if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
-    static_cast<cc::TileDisplayLayerImpl&>(layer).SetSolidColor(
-        wire.solid_color);
+    auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);
+    tile_display_layer.SetSolidColor(wire.solid_color);
+    tile_display_layer.SetIsBackdropFilterMask(wire.is_backdrop_filter_mask);
+    if (wire.is_backdrop_filter_mask) {
+      tile_display_layer.SetContentsResourceId(wire.resource_id.value(),
+                                               wire.texture_size.value(),
+                                               wire.uv_size.value());
+    }
   }
 
   const cc::PropertyTrees& property_trees =

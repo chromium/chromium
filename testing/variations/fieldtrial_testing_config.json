@@ -6221,23 +6221,6 @@
             ]
         }
     ],
-    "ContentCaptureExperiment": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableExperiment",
-                    "enable_features": [
-                        "ContentCaptureTriggeringForExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContentUsesBrowserThemeColorMode": [
         {
             "platforms": [
@@ -18390,6 +18373,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgeAuctionDownloaderStaleWhileRevalidate"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProtectedAudienceAuctionTextConversionHelpers": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeTextConversionHelpers"
                     ]
                 }
             ]

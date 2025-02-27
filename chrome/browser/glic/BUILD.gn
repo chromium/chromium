@@ -69,6 +69,8 @@ source_set("impl") {
     "browser_conditions.h",
     "fre_util.cc",
     "fre_util.h",
+    "glic_annotation_manager.cc",
+    "glic_annotation_manager.h",
     "glic_border_view.cc",
     "glic_button_controller.cc",
     "glic_cookie_synchronizer.cc",

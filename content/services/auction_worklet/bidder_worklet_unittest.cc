@@ -98,13 +98,13 @@ const uint8_t kToyWasm[] = {
     0x7f, 0x00, 0x41, 0xfb, 0x00, 0x0b, 0x07, 0x0e, 0x01, 0x0a, 0x74,
     0x65, 0x73, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x73, 0x74, 0x03, 0x00};
 
-const auto kTestPrivateKey = std::to_array<uint8_t>({
+constexpr auto kTestPrivateKey = std::to_array<uint8_t>({
     0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
     0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
     0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
 });
 
-const auto kTestPublicKey = std::to_array<uint8_t>({
+constexpr auto kTestPublicKey = std::to_array<uint8_t>({
     0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
     0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
@@ -1185,6 +1185,16 @@ class BidderWorkletMultiBidDisabledTest : public BidderWorkletTest {
  public:
   BidderWorkletMultiBidDisabledTest() {
     feature_list_.InitAndDisableFeature(blink::features::kFledgeMultiBid);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class BidderWorkletTextConversionsTest : public BidderWorkletTest {
+ public:
+  BidderWorkletTextConversionsTest() {
+    feature_list_.InitAndEnableFeature(features::kFledgeTextConversionHelpers);
   }
 
  protected:
@@ -4652,6 +4662,23 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
       R"(!('creativeScanningMetadata' in interestGroup.adComponents[0]))");
 }
 
+TEST_F(BidderWorkletTest, GenerateBidTextConversions) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('encodeUtf8' in browserSignals))");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('decodeUtf8' in browserSignals))");
+}
+
+TEST_F(BidderWorkletTextConversionsTest, GenerateBidTextConversions) {
+  RunGenerateBidExpectingExpressionIsTrue(R"('encodeUtf8' in browserSignals)");
+  RunGenerateBidExpectingExpressionIsTrue(R"('decodeUtf8' in browserSignals)");
+
+  RunGenerateBidExpectingExpressionIsTrue(
+      "browserSignals.encodeUtf8('A')[0] === 65");
+  RunGenerateBidExpectingExpressionIsTrue(
+      "browserSignals.decodeUtf8(new Uint8Array([65, 32, 68])) === 'A D'");
+}
+
 class BidderWorkletCreativeScanningTest : public BidderWorkletTest {
  public:
   BidderWorkletCreativeScanningTest() {
@@ -7527,6 +7554,24 @@ TEST_F(BidderWorkletTest, ReportWinTopLevelTimeout) {
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ top-level execution timed out."});
+}
+
+TEST_F(BidderWorkletTest, ReportWinTextConversions) {
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo('https://foo.test?' + ('encodeUtf8' in browserSignals))",
+      GURL("https://foo.test/?false"));
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo('https://foo.test?' + ('decodeUtf8' in browserSignals))",
+      GURL("https://foo.test/?false"));
+}
+
+TEST_F(BidderWorkletTextConversionsTest, ReportWinTextConversions) {
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo('https://foo.test?' + ('encodeUtf8' in browserSignals))",
+      GURL("https://foo.test/?true"));
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo('https://foo.test?' + ('decodeUtf8' in browserSignals))",
+      GURL("https://foo.test/?true"));
 }
 
 TEST_F(BidderWorkletTest, SendReportToLongUrl) {

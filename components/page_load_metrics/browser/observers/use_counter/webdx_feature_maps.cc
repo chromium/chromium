@@ -357,14 +357,6 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kBadging},
           {WebFeature::kBadgeSetWithoutNotificationPermissionInWorker,
            WebDXFeature::kBadging},
-          {WebFeature::kWebAppManifestCaptureLinks, WebDXFeature::kManifest},
-          {WebFeature::kWebAppManifestHasComments, WebDXFeature::kManifest},
-          {WebFeature::kWebAppManifestLaunchHandler, WebDXFeature::kManifest},
-          {WebFeature::kWebAppManifestScopeExtensions, WebDXFeature::kManifest},
-          {WebFeature::kWebAppManifestIdField, WebDXFeature::kManifest},
-          {WebFeature::kWebAppWindowControlsOverlay, WebDXFeature::kManifest},
-          {WebFeature::kWebAppBorderless, WebDXFeature::kManifest},
-          {WebFeature::kWebAppTabbed, WebDXFeature::kManifest},
           {WebFeature::kBeforeInstallPromptEvent,
            WebDXFeature::kBeforeInstallPrompt},
           {WebFeature::kBeforeInstallPromptEventUserChoice,
@@ -375,7 +367,6 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kBeforeInstallPrompt},
           {WebFeature::kV8BeforeInstallPromptEvent_Platforms_AttributeGetter,
            WebDXFeature::kBeforeInstallPrompt},
-          {WebFeature::kWebAppManifestUpdate, WebDXFeature::kManifest},
       }};
 
   return *kMap;

@@ -311,6 +311,42 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
   }
 };
 
+using WebAppWebDXManifestBrowserTest = WebAppBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(WebAppWebDXManifestBrowserTest, UsageMeasured) {
+  base::HistogramTester histogram_tester;
+  GURL test_url = https_server()->GetURL("/banners/manifest_test_page.html");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                     blink::mojom::WebDXFeature::kManifest, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppWebDXManifestBrowserTest, DefaultNotMeasured) {
+  base::HistogramTester histogram_tester;
+  GURL test_url = https_server()->GetURL("/banners/no_manifest_test_page.html");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                     blink::mojom::WebDXFeature::kManifest, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppWebDXManifestBrowserTest, InvalidNotMeasured) {
+  base::HistogramTester histogram_tester;
+  GURL test_url =
+      https_server()->GetURL("/banners/invalid_manifest_test_page.html");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                     blink::mojom::WebDXFeature::kManifest, 0);
+}
+
 // A dedicated test fixture for Borderless, which requires a command
 // line switch to enable manifest parsing.
 class WebAppBrowserTest_Borderless : public WebAppBrowserTest {

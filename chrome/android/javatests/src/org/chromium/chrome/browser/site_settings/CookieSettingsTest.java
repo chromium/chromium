@@ -13,12 +13,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.junit.Assert.assertEquals;
 
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +32,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -61,6 +64,7 @@ public class CookieSettingsTest {
                     .build();
 
     private SettingsActivity mSettingsActivity;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
@@ -69,6 +73,21 @@ public class CookieSettingsTest {
                 SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
         mSettingsActivity = mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+        mUserActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
+    }
+
+    @Test
+    @SmallTest
+    public void shouldRecordUserActionWhenCookiePreferenceChanges() throws IOException {
+        onView(withId(R.id.block_third_party_with_aux)).perform(click());
+        assertEquals(1, mUserActionTester.getActionCount("Settings.ThirdPartyCookies.Block"));
+        onView(withId(R.id.block_third_party_incognito_with_aux)).perform(click());
+        assertEquals(1, mUserActionTester.getActionCount("Settings.ThirdPartyCookies.Allow"));
     }
 
     // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.

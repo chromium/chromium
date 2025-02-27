@@ -50,11 +50,11 @@ suite('ReadAloudHighlight', () => {
   };
 
   function emitNextGranularity() {
-    return emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
   }
 
   function emitPreviousGranularity() {
-    return emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+    emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
   setup(async () => {
@@ -84,10 +84,10 @@ suite('ReadAloudHighlight', () => {
     let currentHighlights: NodeListOf<Element>;
     let previousHighlights: NodeListOf<Element>;
 
-    setup(async () => {
+    setup(() => {
       app.playSpeech();
-      await emitNextGranularity();
-      return emitNextGranularity();
+      emitNextGranularity();
+      emitNextGranularity();
     });
 
     test('all segments highlighted', () => {
@@ -104,8 +104,8 @@ suite('ReadAloudHighlight', () => {
       assertEquals(sentenceSegment2, currentHighlights[1]!.textContent);
     });
 
-    test('going back after multiple segments resets all segments', async () => {
-      await emitPreviousGranularity();
+    test('going back after multiple segments resets all segments', () => {
+      emitPreviousGranularity();
 
       currentHighlights =
           app.$.container.querySelectorAll('.current-read-highlight');
@@ -119,9 +119,9 @@ suite('ReadAloudHighlight', () => {
     });
   });
 
-  test('on speak next sentence highlights are correct', async () => {
+  test('on speak next sentence highlights are correct', () => {
     app.playSpeech();
-    await emitNextGranularity();
+    emitNextGranularity();
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
     const previousHighlight =
@@ -135,11 +135,11 @@ suite('ReadAloudHighlight', () => {
     let currentHighlight: HTMLElement|null;
     let previousHighlights: NodeListOf<Element>;
 
-    setup(async () => {
+    setup(() => {
       app.playSpeech();
-      await emitNextGranularity();
-      await emitNextGranularity();
-      await emitNextGranularity();
+      emitNextGranularity();
+      emitNextGranularity();
+      emitNextGranularity();
 
       currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -161,10 +161,10 @@ suite('ReadAloudHighlight', () => {
     let currentHighlight: HTMLElement|null;
     let previousHighlights: NodeListOf<Element>;
 
-    setup(async () => {
+    setup(() => {
       app.playSpeech();
-      await emitNextGranularity();
-      await emitPreviousGranularity();
+      emitNextGranularity();
+      emitPreviousGranularity();
 
       currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -177,11 +177,11 @@ suite('ReadAloudHighlight', () => {
       assertEquals(0, previousHighlights.length);
     });
 
-    test('going back before first sentence does not crash', async () => {
-      await emitPreviousGranularity();
-      await emitPreviousGranularity();
-      await emitPreviousGranularity();
-      await emitPreviousGranularity();
+    test('going back before first sentence does not crash', () => {
+      emitPreviousGranularity();
+      emitPreviousGranularity();
+      emitPreviousGranularity();
+      emitPreviousGranularity();
 
       currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -192,8 +192,8 @@ suite('ReadAloudHighlight', () => {
     });
 
     test(
-        'going forward after going back shows correct highlights', async () => {
-          await emitNextGranularity();
+        'going forward after going back shows correct highlights', () => {
+          emitNextGranularity();
           currentHighlight =
               app.$.container.querySelector('.current-read-highlight');
           previousHighlights =
@@ -203,7 +203,7 @@ suite('ReadAloudHighlight', () => {
           assertEquals(1, previousHighlights.length);
           assertEquals(sentence1, previousHighlights[0]!.textContent);
 
-          await emitNextGranularity();
+          emitNextGranularity();
           const currentHighlights =
               app.$.container.querySelectorAll('.current-read-highlight');
           previousHighlights =
@@ -261,8 +261,8 @@ suite('ReadAloudHighlight', () => {
       assertEquals(sentence1, previousHighlights![0]!.textContent);
     });
 
-    test('next granularity shows correct highlights', async () => {
-      await emitNextGranularity();
+    test('next granularity shows correct highlights', () => {
+      emitNextGranularity();
 
       currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -274,8 +274,8 @@ suite('ReadAloudHighlight', () => {
       assertEquals(sentence2, previousHighlights![1]!.textContent);
     });
 
-    test('previous granularity shows correct highlights', async () => {
-      await emitPreviousGranularity();
+    test('previous granularity shows correct highlights', () => {
+      emitPreviousGranularity();
 
       currentHighlight =
           app.$.container.querySelector('.current-read-highlight');

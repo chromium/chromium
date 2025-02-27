@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "ui/gfx/image/image.h"
 
 namespace autofill {

@@ -287,6 +287,8 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       entity_id(match.entity_id),
       website_uri(match.website_uri),
       document_type(match.document_type),
+      enterprise_search_aggregator_type(
+          match.enterprise_search_aggregator_type),
       tail_suggest_common_prefix(match.tail_suggest_common_prefix),
       contents(match.contents),
       contents_class(match.contents_class),
@@ -358,6 +360,8 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   entity_id = std::move(match.entity_id);
   website_uri = std::move(match.website_uri);
   document_type = std::move(match.document_type);
+  enterprise_search_aggregator_type =
+      std::move(match.enterprise_search_aggregator_type);
   tail_suggest_common_prefix = std::move(match.tail_suggest_common_prefix);
   contents = std::move(match.contents);
   contents_class = std::move(match.contents_class);
@@ -436,6 +440,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   entity_id = match.entity_id;
   website_uri = match.website_uri;
   document_type = match.document_type;
+  enterprise_search_aggregator_type = match.enterprise_search_aggregator_type;
   tail_suggest_common_prefix = match.tail_suggest_common_prefix;
   contents = match.contents;
   contents_class = match.contents_class;
@@ -1531,21 +1536,38 @@ int AutocompleteMatch::GetSortingOrder() const {
     return 3;
   }
 #endif  // !BUILDFLAG(IS_IOS)
+
   if (answer_template && actions.size() > 0 &&
       OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
     return 4;
   }
+
+  switch (enterprise_search_aggregator_type) {
+    case EnterpriseSearchAggregatorType::NONE:
+      break;
+    case EnterpriseSearchAggregatorType::QUERY:
+      return 5;
+    case EnterpriseSearchAggregatorType::PEOPLE:
+      return 6;
+    case EnterpriseSearchAggregatorType::CONTENT:
+      return 7;
+  }
+
   if (IsSearchType(type)) {
     return 3;
   }
+
   // Group boosted shortcuts above searches.
   if (shortcut_boosted) {
     return 2;
   }
+
   if (type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER)
-    return 5;
+    return 8;
+
   if (IsIPHSuggestion())
-    return 6;
+    return 9;
+
   return 4;
 }
 

@@ -204,7 +204,7 @@ suite('WordHighlighting', () => {
   test('sentence highlight used with espeak voice', async () => {
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi eSpeak'});
-    await emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
     const sentence = 'Hello, how are you!';
     setSimpleAxTreeWithText(sentence);
     app.updateBoundary(0);

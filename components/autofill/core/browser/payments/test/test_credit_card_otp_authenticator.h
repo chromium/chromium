@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_TEST_CREDIT_CARD_OTP_AUTHENTICATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_TEST_CREDIT_CARD_OTP_AUTHENTICATOR_H_
 
-#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
-
 #include <string>
 
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
 namespace autofill {
 

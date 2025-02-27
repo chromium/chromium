@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent} from './common.js';
+import {setDefaultSpeechSynthesis} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -25,7 +25,7 @@ suite('UpdateContent', () => {
     'That\'s ancient history, been there, done that!',
   ];
 
-  setup(async () => {
+  setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
@@ -48,11 +48,8 @@ suite('UpdateContent', () => {
         .addText(textNodeIds[3]!, /* parentId= */ 8, texts[3]!)
         .build(readingMode);
 
-    app.enabledLangs = ['en-US'];
-
-    const selectedVoice =
-        createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
-    return emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
+    setDefaultSpeechSynthesis(app);
+    app.getSpeechSynthesisVoice();
   });
 
   test('playable if done with distillation', async () => {

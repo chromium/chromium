@@ -9,7 +9,7 @@ import {MetricsBrowserProxyImpl, playFromSelectionTimeout, spinnerDebounceTimeou
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import type {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
+import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 export async function createApp(): Promise<AppElement> {
@@ -25,10 +25,8 @@ export function mockMetrics(): TestMetricsBrowserProxy {
   return metrics;
 }
 
-export function emitEvent(
-    app: AppElement, name: string, options?: any): Promise<void> {
+export function emitEvent(app: AppElement, name: string, options?: any): void {
   app.$.toolbar.dispatchEvent(new CustomEvent(name, options));
-  return microtasksFinished();
 }
 
 // TODO(crbug.com/40927698): Remove this function and use the above one once
@@ -36,7 +34,17 @@ export function emitEvent(
 export function emitEventForPolymer(
     target: HTMLElement, name: string, options?: any): void {
   target.dispatchEvent(new CustomEvent(name, options));
-  flush();
+}
+
+// Creates a FakeSpeechSynthesis object with default voices and updates the app
+// to use it.
+export function setDefaultSpeechSynthesis(app: AppElement):
+    FakeSpeechSynthesis {
+  const speechSynthesis = new FakeSpeechSynthesis();
+  speechSynthesis.setDefaultVoices();
+  app.synth = speechSynthesis;
+  app.enabledLangs = ['en'];
+  return speechSynthesis;
 }
 
 // Runs the requestAnimationFrame callback immediately

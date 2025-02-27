@@ -7,7 +7,7 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 
 namespace autofill {

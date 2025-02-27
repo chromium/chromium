@@ -229,14 +229,17 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
-    public void onAccountSelected(GURL idpConfigUrl, Account account) {
+    public void onAccountSelected(Account account) {
         if (mNativeView != 0) {
             // This call passes the account fields directly as String and GURL parameters as an
             // optimization to avoid needing multiple JNI getters on the Account class on for each
             // field.
             AccountSelectionBridgeJni.get()
                     .onAccountSelected(
-                            mNativeView, idpConfigUrl, account.getId(), account.isSignIn());
+                            mNativeView,
+                            account.getIdentityProviderData().getIdpMetadata().getConfigUrl(),
+                            account.getId(),
+                            account.isSignIn());
         }
     }
 

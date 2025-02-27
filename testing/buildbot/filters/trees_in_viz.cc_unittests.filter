@@ -1,9 +1,3 @@
-# TODO(crbug.com/389148369) Complete implementation of copy output requests
--PixelResourceTest/LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList.Test/SkiaGL_GPU
--PixelResourceTest/LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList.Test/SkiaGL_OneCopy
--PixelResourceTest/LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList.Test/SkiaVulkan_GPU
--PixelResourceTest/LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList.Test/Software_Bitmap
-
 # These tests rely on LayerTreeHostImpl to produce CompositorFrames, which it
 # doesn't do in TreesInViz mode.
 -LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles.RunMultiThread_DelegatingRenderer

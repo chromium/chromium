@@ -8,7 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"

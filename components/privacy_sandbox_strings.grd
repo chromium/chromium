@@ -843,7 +843,7 @@
 
     <!-- RWS - All Sites -->
     <!-- TODO(b:396463421): Mark strings translateable when content is finalized -->
-    <message name="IDS_ALL_SITES_RWS_LABEL" desc="" translateable="false">
+    <message name="IDS_ALL_SITES_RWS_LABEL" desc="" translateable="false" formatter_data="android_java">
       Has related sites
     </message>
     <message name="IDS_ALL_SITES_SHOW_RWS_BUTTON" desc="" translateable="false">

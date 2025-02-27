@@ -7,6 +7,7 @@ source_set("strike_databases") {
     "autofill_ai_save_strike_database_by_attribute.h",
     "autofill_ai_save_strike_database_by_host.cc",
     "autofill_ai_save_strike_database_by_host.h",
+    "autofill_ai_update_strike_database.h",
   ]
   deps = [ "//base" ]
   public_deps = [ "//components/autofill/core/browser" ]

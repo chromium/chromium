@@ -115,7 +115,6 @@ suite('PrefsTest', () => {
         setVoices(
             app, speechSynthesis,
             [createSpeechSynthesisVoice({lang: 'en', name: 'Google Yu'})]);
-        app.onVoicesChanged();
 
         // Once voices are available, settings should be restored.
         assertTrue(!!app.getSpeechSynthesisVoice());
@@ -135,7 +134,6 @@ suite('PrefsTest', () => {
             setVoices(app, speechSynthesis, [
               createSpeechSynthesisVoice({lang: 'es', name: 'Google Kristi'}),
             ]);
-            app.onVoicesChanged();
 
             // Once voices are available, settings should be restored.
             assertTrue(!!app.getSpeechSynthesisVoice());
@@ -158,7 +156,6 @@ suite('PrefsTest', () => {
               createSpeechSynthesisVoice(
                   {lang: 'en-uk', name: 'Google Kristi'}),
             ]);
-            app.onVoicesChanged();
 
             // Once voices are available, settings should be restored.
             const selectedVoice = app.getSpeechSynthesisVoice();
@@ -168,7 +165,7 @@ suite('PrefsTest', () => {
 
       test(
           'onVoicesChanged after settings restored, settings aren\'t updated',
-          async () => {
+          () => {
             chrome.readingMode.getStoredVoice = () => 'Google Shari';
 
             // When there's no voices available, there shouldn't be a speech
@@ -185,14 +182,13 @@ suite('PrefsTest', () => {
               createSpeechSynthesisVoice({lang: 'en', name: 'Google Shari'}),
               futureSelectedVoice,
             ]);
-            app.onVoicesChanged();
 
             // Once voices are available, settings should be restored.
             let selectedVoice = app.getSpeechSynthesisVoice();
             assertTrue(!!selectedVoice);
             assertEquals('Google Shari', selectedVoice.name);
 
-            await emitEvent(
+            emitEvent(
                 app, ToolbarEvent.VOICE,
                 {detail: {selectedVoice: futureSelectedVoice}});
             selectedVoice = app.getSpeechSynthesisVoice();
@@ -202,7 +198,6 @@ suite('PrefsTest', () => {
             // We have to update the stored voice so onVoicesChanged recognizes
             // a user chosen voice.
             chrome.readingMode.getStoredVoice = () => 'Google Kristi';
-
             app.onVoicesChanged();
 
             // After onVoicesChanged, the most recently selected voice should
@@ -304,17 +299,14 @@ suite('PrefsTest', () => {
           assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
         });
 
-        test(
-            'uses current voice if there\'s none for this language',
-            async () => {
-              app.speechSynthesisLanguage = langWithNoVoices;
-              await emitEvent(
-                  app, ToolbarEvent.VOICE,
-                  {detail: {selectedVoice: otherVoice}});
-              app.enabledLangs = [otherVoice.lang];
-              app.restoreSettingsFromPrefs();
-              assertEquals(otherVoice, app.getSpeechSynthesisVoice());
-            });
+        test('uses current voice if there\'s none for this language', () => {
+          app.speechSynthesisLanguage = langWithNoVoices;
+          emitEvent(
+              app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
+          app.enabledLangs = [otherVoice.lang];
+          app.restoreSettingsFromPrefs();
+          assertEquals(otherVoice, app.getSpeechSynthesisVoice());
+        });
 
         test('uses the device default if there\'s no current voice', () => {
           app.speechSynthesisLanguage = langWithNoVoices;

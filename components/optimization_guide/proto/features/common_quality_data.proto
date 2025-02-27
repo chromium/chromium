@@ -196,7 +196,7 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 4
+// Next ID: 5
 message AnnotatedPageContent {
   AnnotatedPageContentVersion version = 1;
 
@@ -204,6 +204,13 @@ message AnnotatedPageContent {
 
   // The data for the main frame of the page.
   FrameData main_frame_data = 3;
+
+  // The interaction information for the page--the subtree represented by the
+  // AnnotatedPageContent. This is for top-level interactions, such as the mouse
+  // position and focused element, for which there can only be one unique value
+  // for the entire page. Includes interaction information for the main frame
+  // and embedded iframes.
+  PageInteractionInfo page_interaction_info = 4;
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
@@ -360,7 +367,8 @@ message InteractionInfo {
   // Whether the content node is focusable.
   bool is_focusable = 7;
 
-  // Whether the content node is focused.
+  // [DEPRECATED - Moved to page-level interaction info]
+  // [Whether the content node is focused.
   bool is_focused = 8;
 
   // Whether the content node is draggable.
@@ -507,14 +515,70 @@ message IframeData {
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 2
+// Next ID: 3
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1;
+
+  // Interaction information for the frame.
+  FrameInteractionInfo frame_interaction_info = 2;
+}
+
+// The interaction information for the frame. This is for interactions that
+// are specific to the frame, such as the current selection.
+// Next ID: 2
+message FrameInteractionInfo {
+  // The current selection.
+  Selection selection = 1;
+}
+
+// Represents a selection in the page. This is a frame-level concept.
+message Selection {
+  // The content node ID of the start node. Note that this could be the same as
+  // the end node ID. This node is always before or equal to the end node.
+  int32 start_node_id = 1;
+
+  // The character offset of the start of the selection from the start of the
+  // text contained in start node.
+  int32 start_offset = 2;
+
+  // The content node ID of the end node. Note that this could be the same as
+  // the start node ID. This node is always after or equal to the start node.
+  int32 end_node_id = 3;
+
+  // The character offset of the end of the selection from the start of the
+  // text contained in end node.
+  int32 end_offset = 4;
+
+  // The selected text.
+  string selected_text = 5;
 }
 
 message TableRowData {
   TableRowType type = 1;
+}
+
+// Represents the interaction information for the page. This is for top-level
+// interactions, such as the mouse position and focused element, for which
+// there can only be one unique value. Includes interaction information for
+// the main frame and embedded iframes.
+// Next ID: 4
+message PageInteractionInfo {
+  // The content node ID of the content node that is currently focused.
+  int32 focused_node_id = 1;
+
+  // The content node ID of the content node that is currently focused by a
+  // screen reader. If this is set, it means that a screen reader is being used.
+  int32 accessibility_focused_node_id = 2;
+
+  // The last known mouse position, in the page coordinate system.
+  Point mouse_position = 3;
+}
+
+message Point {
+  int32 x = 1;
+
+  int32 y = 2;
 }
 
 message FormData {

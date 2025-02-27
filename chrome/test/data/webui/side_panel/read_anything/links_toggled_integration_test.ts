@@ -9,8 +9,7 @@ import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, ToolbarEvent} from 'chrome-unt
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
-import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
+import {createApp, emitEvent, setDefaultSpeechSynthesis} from './common.js';
 
 suite('LinksToggledIntegration', () => {
   let app: AppElement;
@@ -80,16 +79,11 @@ suite('LinksToggledIntegration', () => {
     chrome.readingMode.setContentForTesting(axTree, [3, 5]);
     await microtasksFinished();
 
-    const speechSynthesis = new FakeSpeechSynthesis();
+    const speechSynthesis = setDefaultSpeechSynthesis(app);
     // Read only the first sentence and then stop. This ensures we can check
     // the state of links and highlights while playing. Otherwise, speech may
     // finish before we can check that.
     speechSynthesis.setMaxSegments(1);
-    app.synth = speechSynthesis;
-    app.enabledLangs = ['en-US'];
-    const selectedVoice =
-        createSpeechSynthesisVoice({lang: 'en-US', name: 'Google Kristi'});
-    return emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
   });
 
   test('container has links by default', () => {
@@ -128,17 +122,12 @@ suite('LinksToggledIntegration', () => {
       assertTrue(!!currentHighlight);
     });
 
-    suite('and after speech finishes', () => {
-      setup(async () => {
-        for (let i = 0; i < axTree.nodes.length + 1; i++) {
-          await emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
-        }
-        return microtasksFinished();
-      });
 
-      test('container has links again', () => {
-        assertContainerHasLinks(true);
-      });
+    test('and after speech finishes, container has links again', () => {
+      for (let i = 0; i < axTree.nodes.length + 1; i++) {
+        emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+      }
+      assertContainerHasLinks(true);
     });
   });
 

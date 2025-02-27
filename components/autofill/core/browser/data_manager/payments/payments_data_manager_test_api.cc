@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_art_image.h"
 
 namespace autofill {
 

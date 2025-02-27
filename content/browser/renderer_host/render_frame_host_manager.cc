@@ -929,35 +929,36 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     if (!frame_tree_node_->frame_tree().IsHidden())
       render_frame_host_->GetView()->Show();
 
+    bool is_prerendering = render_frame_host_->lifecycle_state() ==
+                           LifecycleStateImpl::kPrerendering;
+    auto* rwhi = static_cast<RenderWidgetHostImpl*>(
+        render_frame_host_->GetView()->GetRenderWidgetHost());
+
     // TODO(crbug.com/40264716): For same RenderFrameHost, it isn't clear
-    // whether we should start the new content timer, but to be safe, we start
-    // it here. The TODO here is to remove this call when we can.
+    // whether we should start the paint-holding timeout; but to be safe, we
+    // start it here. The TODO here is to remove this call when we can.
     //
     // Note that this is only OK to do for non-prerender. For prerendering path,
     // setting this timeout is incorrect because it causes a clear of graphical
     // output on prerender activation.
-    if (render_frame_host_->lifecycle_state() !=
-        LifecycleStateImpl::kPrerendering) {
-      auto* rwhi = static_cast<RenderWidgetHostImpl*>(
-          render_frame_host_->GetView()->GetRenderWidgetHost());
+    rwhi->InitializePaintHolding(!is_prerendering);
 
-      rwhi->StartNewContentRenderingTimeout();
-      // Force the timer to expire immediately if we don't allow main frame
-      // paint holding.
-      if (frame_tree_node_->IsMainFrame() && !allow_paint_holding) {
-        // We post task here, since this evicts a surface but the embedding of a
-        // new surface would be done in the same stack as this call. The
-        // ordering of whether the new surface has or has not yet been embedded
-        // differs for different platforms, and we always want the new surface
-        // to be embedded before we evict. Hence, we post a task. In practice
-        // this still disables paint holding unless this task is delayed for a
-        // long time.
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &RenderWidgetHostImpl::ForceFirstFrameAfterNavigationTimeout,
-                rwhi->GetWeakPtr()));
-      }
+    // Force the timer to expire immediately if we don't allow main frame
+    // paint-holding.
+    if (!is_prerendering && frame_tree_node_->IsMainFrame() &&
+        !allow_paint_holding) {
+      // We post task here, since this evicts a surface but the embedding of a
+      // new surface would be done in the same stack as this call. The
+      // ordering of whether the new surface has or has not yet been embedded
+      // differs for different platforms, and we always want the new surface
+      // to be embedded before we evict. Hence, we post a task. In practice
+      // this still disables paint-holding unless this task is delayed for a
+      // long time.
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &RenderWidgetHostImpl::ForceFirstFrameAfterNavigationTimeout,
+              rwhi->GetWeakPtr()));
     }
   }
 
@@ -5365,12 +5366,11 @@ void RenderFrameHostManager::CommitPending(
     }
   }
 
-  // If we took fallback content, we need to start a timeout timer to clear it
-  // in case the new renderer does not produce a timely frame.
-  if (should_take_fallback_content) {
-    static_cast<RenderWidgetHostImpl*>(new_view->GetRenderWidgetHost())
-        ->StartNewContentRenderingTimeout();
-  }
+  // If we took the fallback content, we mark paint-holding as active to start a
+  // timeout to clear the fallback content in case the new renderer does not
+  // produce a timely frame.
+  static_cast<RenderWidgetHostImpl*>(new_view->GetRenderWidgetHost())
+      ->InitializePaintHolding(should_take_fallback_content);
 
   // The process will no longer try to exit, so we can decrement the count.
   render_frame_host_->GetProcess()->RemovePendingView();

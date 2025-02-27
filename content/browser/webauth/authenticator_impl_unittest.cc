@@ -241,7 +241,7 @@ typedef struct {
   AuthenticatorStatus expected_status;
 } OriginClaimedAuthorityPair;
 
-const auto kValidRpTestCases = std::to_array<OriginClaimedAuthorityPair>({
+constexpr auto kValidRpTestCases = std::to_array<OriginClaimedAuthorityPair>({
     {"http://localhost", "localhost", AuthenticatorStatus::SUCCESS},
     {"https://myawesomedomain", "myawesomedomain",
      AuthenticatorStatus::SUCCESS},
@@ -270,7 +270,7 @@ const auto kValidRpTestCases = std::to_array<OriginClaimedAuthorityPair>({
      AuthenticatorStatus::SUCCESS},
 });
 
-const auto kInvalidRpTestCases = std::to_array<OriginClaimedAuthorityPair>({
+constexpr auto kInvalidRpTestCases = std::to_array<OriginClaimedAuthorityPair>({
     {"https://google.com", "com", AuthenticatorStatus::BAD_RELYING_PARTY_ID},
     {"http://google.com", "google.com", AuthenticatorStatus::INVALID_DOMAIN},
     {"http://myawesomedomain", "myawesomedomain",
@@ -1256,7 +1256,7 @@ TEST_F(AuthenticatorImplTest, ReportOriginAndRpIds) {
   }
 }
 
-const auto kValidAppIdCases = std::to_array<OriginClaimedAuthorityPair>({
+constexpr auto kValidAppIdCases = std::to_array<OriginClaimedAuthorityPair>({
     {"https://example.com", "https://example.com",
      AuthenticatorStatus::SUCCESS},
     {"https://www.example.com", "https://example.com",

@@ -52,9 +52,6 @@ public class OnscreenContentProvider {
                 mContentCaptureConsumers.add(consumer);
             }
         }
-        if (ContentCaptureFeatures.shouldTriggerContentCaptureForExperiment()) {
-            mContentCaptureConsumers.add(new ExperimentContentCaptureConsumer());
-        }
         if (!mContentCaptureConsumers.isEmpty()) {
             createNativeObject();
         }

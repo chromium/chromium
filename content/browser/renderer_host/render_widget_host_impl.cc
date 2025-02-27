@@ -491,7 +491,7 @@ RenderWidgetHostImpl::~RenderWidgetHostImpl() {
       }
       base::UmaHistogramTimes("Renderer.ContentProduction.DelayFromUnhide",
                               delay_from_unhide);
-    } else {
+    } else if (!paint_holding_activated_) {
       base::TimeTicks now = base::TimeTicks::Now();
 
       base::TimeDelta commit_to_unhide_delay;
@@ -1514,7 +1514,18 @@ void RenderWidgetHostImpl::DidNavigate() {
   }
 }
 
-void RenderWidgetHostImpl::StartNewContentRenderingTimeout() {
+void RenderWidgetHostImpl::InitializePaintHolding(bool active) {
+  paint_holding_activated_ = active;
+
+  if (!active) {
+    // Input router remains inactive in the post-navigation page while
+    // paint-holding shows the user a snapshot of previous page.  If
+    // paint-holding is not active, there is no need to hold back input from the
+    // new page.
+    input_router()->MakeActive();
+    return;
+  }
+
   if (!new_content_rendering_timeout_) {
     return;
   }

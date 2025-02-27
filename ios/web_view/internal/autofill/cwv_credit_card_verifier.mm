@@ -5,7 +5,7 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"

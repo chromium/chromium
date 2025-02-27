@@ -6,7 +6,7 @@ import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createApp, createSpeechSynthesisVoice} from './common.js';
+import {createApp, createSpeechSynthesisVoice, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -34,6 +34,18 @@ suite('Automatic voice selection', () => {
   ];
 
   let app: AppElement;
+  let speechSynthesis: FakeSpeechSynthesis;
+
+  function addNaturalVoices() {
+    setVoices(
+        app, speechSynthesis,
+        voices.concat(
+            createSpeechSynthesisVoice(
+                {lang: defaultLang, name: 'Google Wall-e (Natural)'}),
+            createSpeechSynthesisVoice(
+                {lang: defaultLang, name: 'Google Andy (Natural)'}),
+            ));
+  }
 
   setup(async () => {
     // Clearing the DOM should always be done first.
@@ -45,56 +57,38 @@ suite('Automatic voice selection', () => {
     chrome.readingMode.isReadAloudEnabled = true;
 
     app = await createApp();
-    app.synth = new FakeSpeechSynthesis();
-
-    app.synth.getVoices = () => voices;
+    speechSynthesis = new FakeSpeechSynthesis();
+    app.synth = speechSynthesis;
+    setVoices(app, speechSynthesis, voices);
 
     // Initializes some class variables needed for voice selection logic
     app.restoreEnabledLanguagesFromPref();
   });
 
-  test('with no user selected voices', () => {
-    chrome.readingMode.getStoredVoice = () => '';
-    app.selectPreferredVoice();
+  test(
+      'with no user selected voices, switches to a Natural voice if it later ' +
+          'becomes available',
+      () => {
+        chrome.readingMode.getStoredVoice = () => '';
+        app.selectPreferredVoice();
+        assertEquals(firstVoiceWithLang, app.getSpeechSynthesisVoice());
 
-    // Test that it chooses the first voice with the same language
-    assertEquals(firstVoiceWithLang, app.getSpeechSynthesisVoice());
+        addNaturalVoices();
 
-    // Test that it switches to a Natural voice if it later becomes available
-    const voices = app.synth.getVoices();
-    app.synth.getVoices = () => {
-      return voices.concat(
-          createSpeechSynthesisVoice(
-              {lang: defaultLang, name: 'Google Wall-e (Natural)'}),
-          createSpeechSynthesisVoice(
-              {lang: defaultLang, name: 'Google Andy (Natural)'}),
-      );
-    };
-    app.onVoicesChanged();
+        assertEquals(
+            'Google Wall-e (Natural)', app.getSpeechSynthesisVoice()?.name);
+      });
 
-    assertEquals(
-        'Google Wall-e (Natural)', app.getSpeechSynthesisVoice()?.name);
-  });
+  test(
+      'with a user selected voices, does not switch to a Natural voice if it ' +
+          'later becomes available',
+      () => {
+        chrome.readingMode.getStoredVoice = () => secondVoiceWithLang.name;
+        app.selectPreferredVoice();
+        assertEquals(secondVoiceWithLang, app.getSpeechSynthesisVoice());
 
-  test('with a user selected voices', () => {
-    chrome.readingMode.getStoredVoice = () => secondVoiceWithLang.name;
-    app.selectPreferredVoice();
-    // Test that it chooses the user stored voice
-    assertEquals(secondVoiceWithLang, app.getSpeechSynthesisVoice());
+        addNaturalVoices();
 
-    // Test that it does not switch to a Natural voice when it later becomes
-    // available',
-    const voices = app.synth.getVoices();
-    app.synth.getVoices = () => {
-      return voices.concat(
-          createSpeechSynthesisVoice(
-              {lang: defaultLang, name: 'Google Wall-e (Natural)'}),
-          createSpeechSynthesisVoice(
-              {lang: defaultLang, name: 'Google Andy (Natural)'}),
-      );
-    };
-    app.onVoicesChanged();
-
-    assertEquals(secondVoiceWithLang, app.getSpeechSynthesisVoice());
-  });
+        assertEquals(secondVoiceWithLang, app.getSpeechSynthesisVoice());
+      });
 });

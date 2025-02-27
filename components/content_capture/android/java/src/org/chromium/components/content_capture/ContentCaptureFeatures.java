@@ -26,14 +26,8 @@ public class ContentCaptureFeatures {
         return sEnableDebugLogging;
     }
 
-    public static boolean shouldTriggerContentCaptureForExperiment() {
-        return ContentCaptureFeaturesJni.get().shouldTriggerContentCaptureForExperiment();
-    }
-
     @NativeMethods
     public interface Natives {
         boolean isEnabled();
-
-        boolean shouldTriggerContentCaptureForExperiment();
     }
 }

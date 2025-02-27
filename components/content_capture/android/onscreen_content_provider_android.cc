@@ -231,10 +231,6 @@ void OnscreenContentProviderAndroid::DidUpdateFavicon(
 }
 
 bool OnscreenContentProviderAndroid::ShouldCapture(const GURL& url) {
-  // Capture all urls for experiment, the url will be checked
-  // before the content is sent to the consumers.
-  if (features::ShouldTriggerContentCaptureForExperiment())
-    return true;
   JNIEnv* env = AttachCurrentThread();
   return Java_OnscreenContentProvider_shouldCapture(
       env, java_ref_, ConvertUTF8ToJavaString(env, url.spec()));

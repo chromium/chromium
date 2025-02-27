@@ -9,7 +9,9 @@ import "cc/mojom/layer_type.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
 // Extra fields in a cc::SurfaceLayerImpl that has been added to a tree or
@@ -85,6 +87,14 @@ struct Layer {
   // Optional field that will be set if this Layer is a PictureLayer that is
   // actually a solid color.
   skia.mojom.SkColor4f? solid_color;
+
+  // Will be set to true for PictureLayers that are backdrop filter masks.
+  bool is_backdrop_filter_mask;
+
+  // Will be set for PictureLayers that are backdrop filter masks.
+  ResourceId? resource_id;
+  gfx.mojom.Size? texture_size;
+  gfx.mojom.SizeF? uv_size;
 
   // Optional stable identifier that may be referenced in property trees and
   // animations. Identifies a client-side object which can be represented by
@@ -273,6 +283,10 @@ struct EffectNode {
   // The index of the ancestor EffectNode which induces a render surface. Must
   // be a valid index in the same effect tree.
   int32 target_id;
+
+  cc.mojom.ElementId? backdrop_mask_element_id;
+
+  FilterOperations backdrop_filters;
 
   // The CopyOutputRequests that have been made for this node.
   array<CopyOutputRequest> copy_output_requests;

@@ -14,7 +14,7 @@
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"

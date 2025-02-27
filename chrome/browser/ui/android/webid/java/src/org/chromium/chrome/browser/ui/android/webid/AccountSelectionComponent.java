@@ -27,10 +27,9 @@ public interface AccountSelectionComponent {
      */
     interface Delegate {
         /**
-         * Called when the user select one of the accounts shown in the
-         * AccountSelectionComponent.
+         * Called when the user select one of the accounts shown in the AccountSelectionComponent.
          */
-        void onAccountSelected(GURL idpConfigUrl, Account account);
+        void onAccountSelected(Account account);
 
         /**
          * Called when the user dismisses the AccountSelectionComponent. Not called if a suggestion

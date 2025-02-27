@@ -9,8 +9,8 @@ import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted:
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText} from './common.js';
-import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, setDefaultSpeechSynthesis, setSimpleAxTreeWithText} from './common.js';
+import type {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 
 suite('Speech', () => {
   let app: AppElement;
@@ -79,12 +79,7 @@ suite('Speech', () => {
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, leafIds);
-    speechSynthesis = new FakeSpeechSynthesis();
-    app.synth = speechSynthesis;
-    speechSynthesis.setDefaultVoices();
-
-    app.enabledLangs = ['en'];
-    app.getSpeechSynthesisVoice();
+    speechSynthesis = setDefaultSpeechSynthesis(app);
   });
 
   suite('on play', () => {
@@ -167,9 +162,6 @@ suite('Speech', () => {
 
     setup(() => {
       mockTimer = new MockTimer();
-      const selectedVoice =
-          createSpeechSynthesisVoice({lang: 'en-US', name: 'Google Kristi'});
-      return emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
     });
 
     test('first play starts from selected node', () => {
@@ -324,11 +316,11 @@ suite('Speech', () => {
     });
   });
 
-  test('next granularity plays from there', async () => {
+  test('next granularity plays from there', () => {
     chrome.readingMode.initAxPositionWithNode(2);
     const expectedNumSentences = totalSentences - 1;
 
-    await emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
 
     assertEquals(expectedNumSentences, speechSynthesis.spokenUtterances.length);
     const utteranceTexts = getSpokenTexts();
@@ -336,14 +328,14 @@ suite('Speech', () => {
     assertTrue(paragraph2.every(sentence => utteranceTexts.includes(sentence)));
   });
 
-  test('previous granularity plays from there', async () => {
+  test('previous granularity plays from there', () => {
     speechSynthesis.setMaxSegments(8);
     chrome.readingMode.initAxPositionWithNode(2);
     app.playSpeech();
     speechSynthesis.clearSpokenUtterances();
 
     speechSynthesis.setMaxSegments(1);
-    await emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+    emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
 
     assertEquals(1, speechSynthesis.spokenUtterances.length);
     assertEquals(
@@ -352,63 +344,58 @@ suite('Speech', () => {
 
   test(
       'after previous granularity, onstart stops repositioning for speech',
-      async () => {
+      () => {
         speechSynthesis.setMaxSegments(7);
         chrome.readingMode.initAxPositionWithNode(2);
         app.playSpeech();
         speechSynthesis.clearSpokenUtterances();
 
         speechSynthesis.setMaxSegments(1);
-        await emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+        emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
 
         assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
         app.playSpeech();
         assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
       });
 
-  test(
-      'after next granularity, onstart stops repositioning for speech',
-      async () => {
-        speechSynthesis.setMaxSegments(1);
-        chrome.readingMode.initAxPositionWithNode(2);
-        app.playSpeech();
-        speechSynthesis.clearSpokenUtterances();
+  test('after next granularity, onstart stops repositioning for speech', () => {
+    speechSynthesis.setMaxSegments(1);
+    chrome.readingMode.initAxPositionWithNode(2);
+    app.playSpeech();
+    speechSynthesis.clearSpokenUtterances();
 
-        speechSynthesis.setMaxSegments(1);
-        await emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+    speechSynthesis.setMaxSegments(1);
+    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
 
-        assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
-        app.playSpeech();
-        assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
-      });
+    assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
+    app.playSpeech();
+    assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
+  });
 
-  test(
-      'interrupt error after next granularity keeps playing speech',
-      async () => {
-        speechSynthesis.setMaxSegments(1);
-        chrome.readingMode.initAxPositionWithNode(2);
-        app.playSpeech();
-        speechSynthesis.clearSpokenUtterances();
+  test('interrupt error after next granularity keeps playing speech', () => {
+    speechSynthesis.setMaxSegments(1);
+    chrome.readingMode.initAxPositionWithNode(2);
+    app.playSpeech();
+    speechSynthesis.clearSpokenUtterances();
 
-        app.speechPlayingState.isSpeechTreeInitialized = true;
-        app.speechPlayingState.isAudioCurrentlyPlaying = true;
+    app.speechPlayingState.isSpeechTreeInitialized = true;
+    app.speechPlayingState.isAudioCurrentlyPlaying = true;
 
-        speechSynthesis.setMaxSegments(1);
-        speechSynthesis.triggerErrorEventOnNextSpeak('interrupted');
-        await emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+    speechSynthesis.setMaxSegments(1);
+    speechSynthesis.triggerErrorEventOnNextSpeak('interrupted');
+    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
 
-        assertTrue(app.speechPlayingState.isAudioCurrentlyPlaying);
-        assertTrue(app.speechPlayingState.isSpeechActive);
+    assertTrue(app.speechPlayingState.isAudioCurrentlyPlaying);
+    assertTrue(app.speechPlayingState.isSpeechActive);
 
-        // Because we triggered onerror in fake_speech_synthesis, onstart was
-        // never triggered on the current utterance, so this should still be
-        // true after the next button press.
-        assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
-      });
+    // Because we triggered onerror in fake_speech_synthesis, onstart was
+    // never triggered on the current utterance, so this should still be
+    // true after the next button press.
+    assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
+  });
 
   test(
-      'interrupt error after previous granularity keeps playing speech',
-      async () => {
+      'interrupt error after previous granularity keeps playing speech', () => {
         speechSynthesis.setMaxSegments(7);
         chrome.readingMode.initAxPositionWithNode(2);
         app.playSpeech();
@@ -418,7 +405,7 @@ suite('Speech', () => {
 
         speechSynthesis.setMaxSegments(1);
         speechSynthesis.triggerErrorEventOnNextSpeak('interrupted');
-        await emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+        emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
 
         assertTrue(app.speechPlayingState.isAudioCurrentlyPlaying);
         assertTrue(app.speechPlayingState.isSpeechActive);
@@ -477,14 +464,14 @@ suite('Speech', () => {
       assertEquals(longSentences, spoken);
     });
 
-    test('on text-too-long error smaller text segment plays', async () => {
+    test('on text-too-long error smaller text segment plays', () => {
       // Remote voices already reduce the size of a speech segment to avoid
       // the bug where speech stops without an error callback.
       speechSynthesis.useLocalVoices();
       speechSynthesis.setDefaultVoices();
       chrome.readingMode.onVoiceChange = () => {};
-      await emitEvent(
-          app, 'select-voice',
+      emitEvent(
+          app, ToolbarEvent.VOICE,
           {detail: {selectedVoice: speechSynthesis.getVoices()[5]}});
 
       speechSynthesis.triggerErrorEventOnNextSpeak('text-too-long');
@@ -517,17 +504,19 @@ suite('Speech', () => {
 
   suite('while playing', () => {
     setup(() => {
+      app.getSpeechSynthesisVoice();
       chrome.readingMode.initAxPositionWithNode(2);
       app.speechPlayingState.isSpeechTreeInitialized = true;
       app.speechPlayingState.hasSpeechBeenTriggered = true;
       app.speechPlayingState.isSpeechActive = true;
+      return microtasksFinished();
     });
 
 
-    test('voice change cancels and restarts speech', async () => {
+    test('voice change cancels and restarts speech', () => {
       chrome.readingMode.onVoiceChange = () => {};
-      await emitEvent(
-          app, 'select-voice',
+      emitEvent(
+          app, ToolbarEvent.VOICE,
           {detail: {selectedVoice: speechSynthesis.getVoices()[1]}});
 
       assertGT(speechSynthesis.spokenUtterances.length, 0);
@@ -535,8 +524,8 @@ suite('Speech', () => {
       assertFalse(speechSynthesis.paused);
     });
 
-    test('rate change cancels and restarts speech', async () => {
-      await emitEvent(app, ToolbarEvent.RATE);
+    test('rate change cancels and restarts speech', () => {
+      emitEvent(app, ToolbarEvent.RATE);
 
       assertGT(speechSynthesis.spokenUtterances.length, 0);
       assertTrue(speechSynthesis.canceled);
@@ -599,14 +588,13 @@ suite('Speech', () => {
         chrome.readingMode.onVoiceChange = () => {};
       });
 
-      test('cancels and selects default voice', async () => {
-        await emitEvent(app, 'select-voice', {
+      test('cancels and selects default voice', () => {
+        emitEvent(app, ToolbarEvent.VOICE, {
           detail: {
             selectedVoice:
                 createSpeechSynthesisVoice({lang: 'en', name: 'Lisie'}),
           },
         });
-        await microtasksFinished();
 
         assertFalse(speechSynthesis.speaking);
         assertTrue(speechSynthesis.canceled);
@@ -618,12 +606,12 @@ suite('Speech', () => {
 
       test(
           'with voice still in getVoices() cancels and selects another voice',
-          async () => {
+          () => {
             // Updating the language triggers a font update, which is unneeded
             // for this test.
             app.$.toolbar.updateFonts = () => {};
             chrome.readingMode.setLanguageForTesting('en');
-            await emitEvent(app, 'select-voice', {
+            emitEvent(app, ToolbarEvent.VOICE, {
               detail: {
                 selectedVoice: createSpeechSynthesisVoice(
                     {lang: 'en', name: 'Google Lauren', default: true}),
@@ -640,13 +628,13 @@ suite('Speech', () => {
 
       test(
           'continues to select default voice if no voices available in language',
-          async () => {
+          () => {
             // Updating the language triggers a font update, which is unneeded
             // for this test.
             app.$.toolbar.updateFonts = () => {};
             chrome.readingMode.setLanguageForTesting('elvish');
 
-            await emitEvent(app, 'select-voice', {
+            emitEvent(app, ToolbarEvent.VOICE, {
               detail: {
                 selectedVoice: createSpeechSynthesisVoice(
                     {lang: 'en', name: 'Google Lauren'}),
@@ -667,12 +655,12 @@ suite('Speech', () => {
         speechSynthesis.triggerErrorEventOnNextSpeak('invalid-argument');
       });
 
-      test('cancels and uses default rate', async () => {
+      test('cancels and uses default rate', () => {
         let speechRate = 4;
         chrome.readingMode.onSpeechRateChange = rate => {
           speechRate = rate;
         };
-        await emitEvent(app, 'select-voice', {
+        emitEvent(app, ToolbarEvent.VOICE, {
           detail: {
             selectedVoice:
                 createSpeechSynthesisVoice({lang: 'en', name: 'Google Lisie'}),
@@ -687,8 +675,8 @@ suite('Speech', () => {
     });
 
     suite('and voice preview is played', () => {
-      setup(async () => {
-        await emitEvent(app, 'preview-voice', {detail: {previewVoice: null}});
+      setup(() => {
+        emitEvent(app, 'preview-voice', {detail: {previewVoice: null}});
       });
 
       test('cancels speech and plays preview', () => {
@@ -698,10 +686,10 @@ suite('Speech', () => {
         assertEquals(1, speechSynthesis.spokenUtterances.length);
       });
 
-      test('then resumes speech after voice menu is closed', async () => {
+      test('then resumes speech after voice menu is closed', () => {
         speechSynthesis.clearSpokenUtterances();
 
-        await emitEvent(
+        emitEvent(
             app, 'voice-menu-close',
             {detail: {voicePlayingWhenMenuOpened: true}});
 

@@ -38,7 +38,6 @@ suite('UpdateVoicePack', () => {
     app = await createApp();
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
-    app.getSpeechSynthesisVoice();
   });
 
   suite('setVoicePackLocalStatus', () => {
@@ -213,7 +212,6 @@ suite('UpdateVoicePack', () => {
               {lang: lang, name: 'Google Portuguese 1'},
               {lang: lang, name: 'Google Portuguese 2'},
             ]);
-            app.onVoicesChanged();
             app.updateVoicePackStatus(lang, 'kOther');
             await microtasksFinished();
 
@@ -244,7 +242,6 @@ suite('UpdateVoicePack', () => {
 
     setup(() => {
       toast = app.$.languageToast;
-      app.getSpeechSynthesisVoice();
     });
 
     test('does not show if already installed', async () => {
@@ -284,16 +281,16 @@ suite('UpdateVoicePack', () => {
     });
 
     test('does not show with language menu open', async () => {
-      await emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
       await installLanguage();
       assertFalse(toast.$.toast.open);
     });
 
     test('shows again after language menu close', async () => {
-      await emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
       await installLanguage();
 
-      await emitEvent(app, ToolbarEvent.LANGUAGE_MENU_CLOSE);
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_CLOSE);
       await installLanguage();
       assertTrue(toast.$.toast.open);
     });
@@ -425,7 +422,7 @@ suite('UpdateVoicePack', () => {
 
   test(
       'with flag does not switch to newly available voices if it\'s not for the current language',
-      async () => {
+      () => {
         const installedLang = 'en-us';
         chrome.readingMode.baseLanguageForSpeech = 'pt-br';
         app.enabledLangs = [chrome.readingMode.baseLanguageForSpeech];
@@ -433,7 +430,7 @@ suite('UpdateVoicePack', () => {
           name: 'Portuguese voice 1',
           lang: chrome.readingMode.baseLanguageForSpeech,
         });
-        await emitEvent(
+        emitEvent(
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: currentVoice}});
         chrome.readingMode.getStoredVoice = () => '';
         setVoices(app, speechSynthesis, [currentVoice]);

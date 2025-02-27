@@ -42,14 +42,9 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
  private:
   friend class FakeEnterpriseSearchAggregatorProvider;
 
-  ~EnterpriseSearchAggregatorProvider() override;
+  using SuggestionType = AutocompleteMatch::EnterpriseSearchAggregatorType;
 
-  // The types of suggestions provided by the response body.
-  enum class SuggestionType {
-    QUERY,
-    PEOPLE,
-    CONTENT,
-  };
+  ~EnterpriseSearchAggregatorProvider() override;
 
   // Determines whether the profile/session/window meet the feature
   // prerequisites.

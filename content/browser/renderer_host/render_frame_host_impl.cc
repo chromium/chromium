@@ -14860,7 +14860,7 @@ void RenderFrameHost::LogSandboxedIframesIsolationMetrics() {
   DCHECK(SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() ||
          sandboxed_rphs.size() == 0);
   base::UmaHistogramCounts1000(
-      "Memory.RenderProcessHost.Count.SandboxedIframeOverhead",
+      "Memory.RenderProcessHost.Count2.SandboxedIframeOverhead",
       sandboxed_rphs.size());
 }
 

@@ -1926,7 +1926,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.ProcessCount" units="processes"
+<histogram name="Memory.ProcessCount2" units="processes"
     expires_after="2025-08-24">
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
@@ -2061,7 +2061,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.RendererProcessCount" units="processes"
+<histogram name="Memory.RendererProcessCount2" units="processes"
     expires_after="2025-07-13">
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
@@ -2076,11 +2076,11 @@ chromium-metrics-reviews@google.com.
 
     WARNINGS: Not reliable on Android, see https://crbug.com/875400. Ignores
     processes that do not host a widget, see https://crbug.com/949977#c36.
-    Consider using Memory.RenderProcessHost.Count.* instead.
+    Consider using Memory.RenderProcessHost.Count2.* instead.
   </summary>
 </histogram>
 
-<histogram name="Memory.RenderProcessHost.Count.All" units="processes"
+<histogram name="Memory.RenderProcessHost.Count2.All" units="processes"
     expires_after="2025-08-10">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -2100,7 +2100,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.RenderProcessHost.Count.InitializedAndNotDead"
+<histogram name="Memory.RenderProcessHost.Count2.InitializedAndNotDead"
     units="processes" expires_after="2025-08-10">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -2120,7 +2120,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.RenderProcessHost.Count.OriginAgentClusterOverhead"
+<histogram name="Memory.RenderProcessHost.Count2.OriginAgentClusterOverhead"
     units="processes" expires_after="2025-07-27">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
@@ -2145,7 +2145,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.RenderProcessHost.Count.SandboxedIframeOverhead"
+<histogram name="Memory.RenderProcessHost.Count2.SandboxedIframeOverhead"
     units="processes" expires_after="2025-03-30">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
@@ -2166,7 +2166,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The percentage of the total renderer process count that is due to
     origin-keyed processes, based on the overhead estimate from
-    Memory.RenderProcessHost.Count.OriginAgentClusterProcesses. That value is
+    Memory.RenderProcessHost.Count2.OriginAgentClusterProcesses. That value is
     computed assuming no coalescing of multiple BrowsingInstances into a single
     RenderProcess (including no subframe process reuse), and only when
     cross-process origin isolation occurs due to origin-keying. Given this, the

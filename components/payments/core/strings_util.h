@@ -9,7 +9,7 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/payments/core/payment_options_provider.h"
 
 namespace autofill {

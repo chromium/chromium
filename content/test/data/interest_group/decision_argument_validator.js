@@ -193,10 +193,14 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     throw 'Wrong dataVersion ' + browserSignals.dataVersion;
   if (browserSignals.bidCurrency !== 'USD')
     throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
+  if (!(browserSignals.decodeUtf8 instanceof Function))
+    throw 'Wrong decodeUtf8';
+  if (!(browserSignals.encodeUtf8 instanceof Function))
+    throw 'Wrong encodeUtf8';
 
   // Fields that vary by method.
   if (isScoreAd) {
-    if (Object.keys(browserSignals).length !== 11) {
+    if (Object.keys(browserSignals).length !== 13) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -217,7 +221,7 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
       throw 'Wrong forDebuggingOnlySampling ' +
           browserSignals.forDebuggingOnlySampling;
   } else {
-    if (Object.keys(browserSignals).length !== 10) {
+    if (Object.keys(browserSignals).length !== 12) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

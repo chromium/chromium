@@ -280,11 +280,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'e5a33102401cccf4381adde182b7b88c2c84f1ae',
+  'skia_revision': 'c16b145749d44524b7d5b096c1ec5229c7bcb16a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '6d71bc0d89d7a042738f1b91c711554f5efe8aa9',
+  'v8_revision': 'af4e7443f90cfbb6a77c33d7a55e4fc7f8a7fed9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'a72735113a448d0afc2046b0ef30b237522549cb',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'd9b1f6cb32dd704a5e71f912d2c679fad7944dff',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -2445,7 +2445,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '736ec22ea12a7668f6df65d2566c70ffb3933834',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '0665c31b59a3dcc94110679e2dd48116b8a796e7',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2813,7 +2813,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '6e95644b2c90021099f05af3b23458c23525ca0b',
+    Var('webrtc_git') + '/src.git' + '@' + '0842b33e7b01f2f9b04755e549946e2838d4c73e',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -2943,7 +2943,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': '-SbhVlmuGlNF_bQqVun6vTlCbgV9orhCj0ha48ryXqgC',
+        'version': '_KCD-Xp-PWJsKHm8vrUu08urhxYJD2bjFLFpZa1JZg0C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2954,7 +2954,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'yyd2STXSNNVhXWsZfzJWLS0yckjjywxYP0RUfAwh6aMC',
+        'version': 'hyOBke6zBUyHpkkWXL5xO3Nke-I_6oOvxtmTN0Rn5vUC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4552,7 +4552,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'e727a7e37060019cdabbeb15dded5155434734c7',
+        '603e0c376fbb1e48a3518e51f40ff8d36a2b9f22',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

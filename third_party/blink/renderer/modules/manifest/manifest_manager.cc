@@ -283,6 +283,8 @@ void ManifestManager::ParseManifestFromPage(const KURL& document_url,
   CHECK(!result.manifest().scope.IsEmpty() &&
         result.manifest().scope.IsValid());
 
+  // At this point, the manifest is validly parsed, and is not the default one.
+  UseCounter::CountWebDXFeature(GetSupplementable(), WebDXFeature::kManifest);
   RecordMetrics(result.manifest());
   ResolveCallbacks(std::move(result));
 }

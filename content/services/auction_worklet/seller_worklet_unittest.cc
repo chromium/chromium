@@ -90,13 +90,13 @@ const char kTrustedScoringSignalsResponse[] = R"(
   }
 )";
 
-const auto kTestPrivateKey = std::to_array<uint8_t>({
+constexpr auto kTestPrivateKey = std::to_array<uint8_t>({
     0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
     0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
     0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
 });
 
-const auto kTestPublicKey = std::to_array<uint8_t>({
+constexpr auto kTestPublicKey = std::to_array<uint8_t>({
     0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
     0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
@@ -1005,6 +1005,16 @@ class SellerWorkletTest : public testing::Test,
 class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
  private:
   size_t NumThreads() override { return 2u; }
+};
+
+class SellerWorkletTextConversionsTest : public SellerWorkletTest {
+ public:
+  SellerWorkletTextConversionsTest() {
+    feature_list_.InitAndEnableFeature(features::kFledgeTextConversionHelpers);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class SellerWorkletMultiThreadingTest
@@ -1935,6 +1945,26 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponentsCreativeScanningMetadata) {
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.adComponentsCreativeScanningMetadata[2] ===
          "3rd" ? 3 : 0)",
+      3);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdTextConversions) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('encodeUtf8' in browserSignals? 3 : 2)", 2);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('decodeUtf8' in browserSignals? 3 : 2)", 2);
+}
+
+TEST_F(SellerWorkletTextConversionsTest, ScoreAdTextConversions) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('encodeUtf8' in browserSignals? 3 : 2)", 3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"('decodeUtf8' in browserSignals? 3 : 2)", 3);
+
+  RunScoreAdWithReturnValueExpectingResult("browserSignals.encodeUtf8('A')[0]",
+                                           65);
+  RunScoreAdWithReturnValueExpectingResult(
+      "browserSignals.decodeUtf8(new Uint8Array([65, 68])) === 'AD' ? 3 : 2",
       3);
 }
 
@@ -3425,6 +3455,28 @@ TEST_F(SellerWorkletTest, ReportResultNoAdComponentsCreativeScanningMetadata) {
   RunReportResultCreatedScriptExpectingResult(
       "1", kScript,
       /*expected_signals_for_winner=*/"1", GURL("https://foo.test/?2"));
+}
+
+TEST_F(SellerWorkletTest, ReportResultTextConversions) {
+  RunReportResultCreatedScriptExpectingResult(
+      "('encodeUtf8' in browserSignals) ? 2 : 1",
+      /*extra_code=*/std::string(), "1",
+      /*expected_report_url=*/std::nullopt);
+  RunReportResultCreatedScriptExpectingResult(
+      "('decodeUtf8' in browserSignals) ? 2 : 1",
+      /*extra_code=*/std::string(), "1",
+      /*expected_report_url=*/std::nullopt);
+}
+
+TEST_F(SellerWorkletTextConversionsTest, ReportResultTextConversions) {
+  RunReportResultCreatedScriptExpectingResult(
+      "('encodeUtf8' in browserSignals) ? 2 : 1",
+      /*extra_code=*/std::string(), "2",
+      /*expected_report_url=*/std::nullopt);
+  RunReportResultCreatedScriptExpectingResult(
+      "('decodeUtf8' in browserSignals) ? 2 : 1",
+      /*extra_code=*/std::string(), "2",
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {

@@ -253,6 +253,9 @@ void AnnotationAgentImpl::ScrollIntoView() const {
           ScrollAlignment::CenterAlways(), ScrollAlignment::CenterAlways(),
           mojom::blink::ScrollType::kProgrammatic);
   params->cross_origin_boundaries = false;
+  if (type_ == mojom::blink::AnnotationType::kGlic) {
+    params->behavior = mojom::blink::ScrollBehavior::kSmooth;
+  }
 
   scroll_into_view_util::ScrollRectToVisible(*first_node.GetLayoutObject(),
                                              bounding_box, std::move(params));
@@ -345,6 +348,8 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
 
   // See IsValidRangeForTextFinder for why we treat kTextFinder differently
   // here.
+  // TODO(crbug.com/381438975): Consider using IsValidRangeForTextFinder for
+  // kGlic as well.
   bool pending_range_valid = type_ == mojom::blink::AnnotationType::kTextFinder
                                  ? IsValidRangeForTextFinder(pending_range_)
                                  : IsValidRange(pending_range_);

@@ -21,5 +21,6 @@ include_rules = [
   "+ui/base",
   "+ui/android",
   "+third_party/blink/public/common/features.h",
-  "+third_party/blink/public/mojom/devtools/console_message.mojom.h"
+  "+third_party/blink/public/mojom/devtools/console_message.mojom.h",
+  "+third_party/fuzztest"
 ]

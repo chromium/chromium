@@ -4,6 +4,7 @@
 
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 
+#include <memory>
 #include <optional>
 #include <ranges>
 #include <string>
@@ -52,7 +53,9 @@
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
 #include "components/autofill_ai/core/browser/autofill_ai_utils.h"
 #include "components/autofill_ai/core/browser/autofill_ai_value_filter.h"
+#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_host.h"
+#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_update_strike_database.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -66,6 +69,7 @@ namespace {
 
 using autofill::AttributeInstance;
 using autofill::AttributeType;
+using autofill::DenseSet;
 using autofill::EntityInstance;
 using autofill::EntityType;
 using autofill::LogBuffer;
@@ -74,17 +78,16 @@ using autofill::LogMessage;
 using autofill::SuggestionType;
 
 bool CheckIfEntitySatisfiesConstraints(const EntityInstance& entity) {
-  autofill::DenseSet<AttributeType> attribute_types;
+  DenseSet<AttributeType> attribute_types;
   for (const autofill::AttributeInstance& attribute_instance :
        entity.attributes()) {
     attribute_types.insert(attribute_instance.type());
   }
 
-  return std::ranges::any_of(
-      entity.type().import_constraints(),
-      [&](const autofill::DenseSet<AttributeType>& constraint) {
-        return attribute_types.contains_all(constraint);
-      });
+  return std::ranges::any_of(entity.type().import_constraints(),
+                             [&](const DenseSet<AttributeType>& constraint) {
+                               return attribute_types.contains_all(constraint);
+                             });
 }
 
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
@@ -197,14 +200,51 @@ std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
   return std::nullopt;
 }
 
+// Given an `entity`, returns the string to use as a strike key for each entry
+// in `entity.type().strike_keys()`.
+std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity) {
+  auto value_for_strike_key = [&](DenseSet<AttributeType> types) {
+    // A list of (attribute_type_name, attribute_value) pairs.
+    std::vector<std::pair<std::string, std::string>> key_value_pairs =
+        base::ToVector(types, [&](AttributeType attribute_type) {
+          base::optional_ref<const AttributeInstance> attribute =
+              entity.attribute(attribute_type);
+          return std::pair(std::string(attribute_type.name_as_string()),
+                           attribute ? base::UTF16ToUTF8(attribute->value())
+                                     : std::string());
+        });
+
+    // We sort the keys to ensure they remain stable even if the ordering in
+    // the DenseSet changes.
+    std::ranges::sort(key_value_pairs);
+
+    // Now join them to create a strike key of the following format:
+    // "attribute_type_name1;attribute_value1;attribute_type_name2;..."
+    std::vector<std::string> string_pieces;
+    string_pieces.reserve(2 * key_value_pairs.size());
+    for (auto& [key, value] : key_value_pairs) {
+      string_pieces.emplace_back(std::move(key));
+      string_pieces.emplace_back(std::move(value));
+    }
+    return base::JoinString(string_pieces, ";");
+  };
+
+  return base::ToVector(entity.type().strike_keys(), value_for_strike_key);
+}
+
 }  // namespace
 
 AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
                                      autofill::StrikeDatabase* strike_database)
     : client_(CHECK_DEREF(client)) {
   if (strike_database) {
+    save_strike_db_by_attribute_ =
+        std::make_unique<AutofillAiSaveStrikeDatabaseByAttribute>(
+            strike_database);
     save_strike_db_by_host_ =
         std::make_unique<AutofillAiSaveStrikeDatabaseByHost>(strike_database);
+    update_strike_db_ =
+        std::make_unique<AutofillAiUpdateStrikeDatabase>(strike_database);
   }
 }
 
@@ -261,7 +301,7 @@ void AutofillAiManager::OnReceivedAXTree(
 }
 
 void AutofillAiManager::OnSuggestionsShown(
-    const autofill::DenseSet<SuggestionType>& shown_suggestion_types,
+    const DenseSet<SuggestionType>& shown_suggestion_types,
     const autofill::FormGlobalId& form_id) {
   if (shown_suggestion_types.contains(SuggestionType::kFillAutofillAi)) {
     logger_.OnFillingSuggestionsShown(form_id);
@@ -340,6 +380,9 @@ void AutofillAiManager::MaybeImportForm(
     if (std::optional<std::pair<EntityInstance, EntityInstance>>
             entity_to_update = MaybeUpdateEntity(entity, current_entities)) {
       auto& [new_entity, old_entity] = *entity_to_update;
+      if (IsUpdateBlockedByStrikeDatabase(old_entity.guid())) {
+        continue;
+      }
       auto prompt_result_callback =
           BindOnce(&AutofillAiManager::HandleUpdatePromptResult, GetWeakPtr(),
                    old_entity.guid());
@@ -375,7 +418,7 @@ void AutofillAiManager::HandleUpdatePromptResult(
     const base::Uuid& entity_uuid,
     AutofillAiClient::SaveOrUpdatePromptResult result) {
   if (!result.entity) {
-    // TODO(crbug.com/399062284): Add strikes for updates.
+    AddStrikeForUpdateAttempt(entity_uuid);
     return;
   }
 
@@ -384,7 +427,7 @@ void AutofillAiManager::HandleUpdatePromptResult(
     return;
   }
 
-  // TODO(crbug.com/399062284): Reset update strikes.
+  ClearStrikesForUpdate(entity_uuid);
   entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
 }
 
@@ -434,33 +477,71 @@ autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {
 
 void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,
                                                 const EntityInstance& entity) {
-  if (!save_strike_db_by_host_ || !url.is_valid() || !url.has_host()) {
-    return;
+  if (save_strike_db_by_host_ && url.is_valid() && url.has_host()) {
+    save_strike_db_by_host_->AddStrike(
+        AutofillAiSaveStrikeDatabaseByHost::GetId(
+            entity.type().name_as_string(), url.host()));
   }
-  save_strike_db_by_host_->AddStrike(AutofillAiSaveStrikeDatabaseByHost::GetId(
-      entity.type().name_as_string(), url.host()));
+  if (save_strike_db_by_attribute_) {
+    for (const std::string& key : GetAttributeStrikeKeys(entity)) {
+      save_strike_db_by_attribute_->AddStrike(key);
+    }
+  }
+}
+
+void AutofillAiManager::AddStrikeForUpdateAttempt(
+    const base::Uuid& entity_uuid) {
+  if (update_strike_db_) {
+    update_strike_db_->AddStrike(entity_uuid.AsLowercaseString());
+  }
 }
 
 void AutofillAiManager::ClearStrikesForSave(
     const GURL& url,
     const autofill::EntityInstance& entity) {
-  if (!save_strike_db_by_host_ || !url.is_valid() || !url.has_host()) {
-    return;
+  if (save_strike_db_by_host_ && url.is_valid() && url.has_host()) {
+    save_strike_db_by_host_->ClearStrikes(
+        AutofillAiSaveStrikeDatabaseByHost::GetId(
+            entity.type().name_as_string(), url.host()));
   }
-  save_strike_db_by_host_->ClearStrikes(
-      AutofillAiSaveStrikeDatabaseByHost::GetId(entity.type().name_as_string(),
-                                                url.host()));
+  if (save_strike_db_by_attribute_) {
+    for (const std::string& key : GetAttributeStrikeKeys(entity)) {
+      save_strike_db_by_attribute_->ClearStrikes(key);
+    }
+  }
+}
+
+void AutofillAiManager::ClearStrikesForUpdate(const base::Uuid& entity_uuid) {
+  if (update_strike_db_) {
+    update_strike_db_->ClearStrikes(entity_uuid.AsLowercaseString());
+  }
 }
 
 bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
     const GURL& url,
     const EntityInstance& entity) const {
-  if (!save_strike_db_by_host_) {
+  if (!save_strike_db_by_host_ ||
+      save_strike_db_by_host_->ShouldBlockFeature(
+          AutofillAiSaveStrikeDatabaseByHost::GetId(
+              entity.type().name_as_string(), url.host()))) {
     return true;
   }
-  return save_strike_db_by_host_->ShouldBlockFeature(
-      AutofillAiSaveStrikeDatabaseByHost::GetId(entity.type().name_as_string(),
-                                                url.host()));
+
+  if (!save_strike_db_by_attribute_ ||
+      std::ranges::any_of(
+          GetAttributeStrikeKeys(entity), [&](const std::string& key) {
+            return save_strike_db_by_attribute_->ShouldBlockFeature(key);
+          })) {
+    return true;
+  }
+
+  return false;
+}
+
+bool AutofillAiManager::IsUpdateBlockedByStrikeDatabase(
+    const base::Uuid& entity_uuid) const {
+  return !update_strike_db_ ||
+         update_strike_db_->ShouldBlockFeature(entity_uuid.AsLowercaseString());
 }
 
 base::WeakPtr<AutofillAiManager> AutofillAiManager::GetWeakPtr() {

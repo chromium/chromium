@@ -223,7 +223,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 .get(ContinueButtonProperties.PROPERTIES)
                 .mOnClickListener
                 .onResult(mAnaAccount);
-        verify(mMockDelegate).onAccountSelected(mTestConfigUrl, mAnaAccount);
+        verify(mMockDelegate).onAccountSelected(mAnaAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
@@ -248,7 +248,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 .model
                 .get(AccountProperties.ON_CLICK_LISTENER)
                 .onResult(mCarlAccount);
-        verify(mMockDelegate).onAccountSelected(mTestConfigUrl, mCarlAccount);
+        verify(mMockDelegate).onAccountSelected(mCarlAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
@@ -292,7 +292,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.onAccountSelected(mAnaAccount);
-        verify(mMockDelegate).onAccountSelected(mTestConfigUrl, mAnaAccount);
+        verify(mMockDelegate).onAccountSelected(mAnaAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
@@ -312,7 +312,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertFalse(mMediator.wasDismissed());
         assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
 
-        verify(mMockDelegate, never()).onAccountSelected(mTestConfigUrl, mNewUserAccount);
+        verify(mMockDelegate, never()).onAccountSelected(mNewUserAccount);
     }
 
     @Test
@@ -334,7 +334,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         pressBack();
         assertTrue(mMediator.wasDismissed());
 
-        verify(mMockDelegate, never()).onAccountSelected(mTestConfigUrl, mNewUserAccount);
+        verify(mMockDelegate, never()).onAccountSelected(mNewUserAccount);
     }
 
     @Test
@@ -364,7 +364,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 /* newAccounts= */ Collections.EMPTY_LIST);
         // Auto reauthenticates if no action is taken.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mMockDelegate).onAccountSelected(mTestConfigUrl, mAnaAccount);
+        verify(mMockDelegate).onAccountSelected(mAnaAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
@@ -382,7 +382,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         // Auto reauthenticates even if dismissed.
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
-        verify(mMockDelegate).onAccountSelected(mTestConfigUrl, mAnaAccount);
+        verify(mMockDelegate).onAccountSelected(mAnaAccount);
         if (mRpMode == RpMode.PASSIVE) {
             verify(mMockDelegate).onAccountsDisplayed();
         }
@@ -449,7 +449,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.onAccountSelected(mNewUserAccount);
-        verify(mMockDelegate).onAccountSelected(mTestConfigUrl, mNewUserAccount);
+        verify(mMockDelegate).onAccountSelected(mNewUserAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
@@ -614,7 +614,9 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     public void testFilteredOutAccountNoClickListener() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                Arrays.asList(mAnaAccount, mFilteredOutAccount),
+                Arrays.asList(
+                        mAnaAccountWithUseDifferentAccount,
+                        mFilteredOutAccountWithUseDifferentAccount),
                 Arrays.asList(mIdpDataWithUseDifferentAccount),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
@@ -662,10 +664,10 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         // Show a newly logged in filtered account.
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                Arrays.asList(mFilteredOutAccount),
+                Arrays.asList(mFilteredOutAccountWithUseDifferentAccount),
                 Arrays.asList(mIdpDataWithUseDifferentAccount),
                 /* isAutoReauthn= */ false,
-                Arrays.asList(mFilteredOutAccount));
+                Arrays.asList(mFilteredOutAccountWithUseDifferentAccount));
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
         assertEquals(2, mSheetAccountItems.size());

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 
 // Data source for each individual credit card.
 @interface CreditCardData : NSObject

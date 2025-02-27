@@ -556,11 +556,14 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // navigations, this is called before the renderer is shown.
   void DidNavigate();
 
-  // Called after every cross-document navigation. The displayed graphics of
-  // the renderer is cleared after a certain timeout if it does not produce a
-  // new CompositorFrame after navigation. This is called after either
-  // navigation (for non-prerender pages) or activation (for prerender pages).
-  void StartNewContentRenderingTimeout();
+  // Called after every cross-document navigation.  When `active` is true, the
+  // displayed graphics of the renderer is cleared after a certain timeout if it
+  // does not produce a new CompositorFrame after navigation.
+  //
+  // This is called after either navigation (for non-prerender pages) or
+  // activation (for prerender pages).
+  // TODO(mustaq@chromium.org): Is this still correct for prerendered pages?
+  void InitializePaintHolding(bool active);
 
   // Customize the value of `new_content_rendering_delay_` for testing.
   void SetNewContentRenderingTimeoutForTesting(base::TimeDelta timeout);
@@ -1453,6 +1456,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       render_process_blocked_state_changed_subscription_;
 
   std::unique_ptr<input::TimeoutMonitor> new_content_rendering_timeout_;
+
+  bool paint_holding_activated_ = false;
 
   int next_browser_snapshot_id_ = 1;
   using PendingSnapshotMap = std::map<int, GetSnapshotFromBrowserCallback>;

@@ -222,8 +222,22 @@ struct ScrollToTextFragmentSelector {
 // glic_api.ts
 [Stable, Extensible]
 enum ScrollToErrorReason {
-  // The browser doesn't support ScrollTo.
-  [Default] kNotSupported = 0
+  // Default error reason. Used when the browser doesn't support ScrollTo, the
+  // params are invalid, or during shutdown.
+  [Default] kNotSupported = 0,
+
+  // ScrollTo() was called again before this call finished processing.
+  [MinVersion=1] kNewerScrollToCall,
+
+  // There is no tab currently in focus.
+  [MinVersion=1] kNoFocusedTab,
+
+  // The input selector did not match any content in the document.
+  [MinVersion=1] kNoMatchFound,
+
+  // The currently focused tab changed or navigated while processing the
+  // ScrollTo() call.
+  [MinVersion=1] kFocusedTabChangedOrNavigated,
 };
 
 // Access to the browser from the web client by proxy through the WebUI.

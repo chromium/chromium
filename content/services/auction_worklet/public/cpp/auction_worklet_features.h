@@ -63,6 +63,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL);
 
+// Provide encodeUtf8/decodeUtf8 helpers.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeTextConversionHelpers);
+
 }  // namespace features
 
 #endif  // CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_AUCTION_WORKLET_FEATURES_H_
