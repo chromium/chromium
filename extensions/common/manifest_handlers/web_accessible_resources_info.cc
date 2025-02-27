@@ -169,24 +169,21 @@ bool IsResourceWebAccessibleImpl(
     const GURL& target_url,
     const std::optional<url::Origin>& initiator_origin,
     const GURL& upstream_url) {
-  std::string relative_path = target_url.path();
-
-  // Set the initiator_url.
-  GURL initiator_url;
-  if (initiator_origin) {
-    if (initiator_origin->opaque()) {
-      initiator_url =
-          initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL();
-    } else {
-      initiator_url = initiator_origin->GetURL();
-    }
-  }
-
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(&extension);
   if (!info) {
     return false;
   }
 
+  // Set the initiator_url.
+  GURL initiator_url;
+  if (initiator_origin) {
+    initiator_url =
+        initiator_origin->opaque()
+            ? initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
+            : initiator_url = initiator_origin->GetURL();
+  }
+
+  std::string relative_path = target_url.path();
   bool using_dynamic_url_extension_feature = base::FeatureList::IsEnabled(
       extensions_features::kExtensionDynamicURLRedirection);
 
