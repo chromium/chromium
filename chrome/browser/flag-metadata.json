@@ -4309,6 +4309,11 @@
       "expiry_milestone": 133
   },
   {
+    "name": "enterprise-file-obfuscation",
+    "owners": ["haihan@google.com", "cbe-cep-eng@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enterprise-real-time-url-check-on-android",
     "owners": ["thefrog@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
     "expiry_milestone": 138

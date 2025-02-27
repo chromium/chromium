@@ -8155,6 +8155,14 @@ const char kSupervisedUserForceSigninWithCapabilitiesDescription[] =
     "signed in to Chrome to instead use account capabilities.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+const char kEnterpriseFileObfuscationName[] = "Enterprise File Obfuscation";
+const char kEnterpriseFileObfuscationDescription[] =
+    "Enables temporary file obfuscation during download for enterprise users. "
+    "Downloaded files remain obfuscated on disk while WebProtect performs deep "
+    "scanning, preventing access before verification is complete.";
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.
