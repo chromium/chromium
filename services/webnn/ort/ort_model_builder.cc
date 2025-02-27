@@ -12,8 +12,15 @@ namespace webnn {
 
 namespace {
 
+// Domains
 constexpr char kOrtDomainName[] = "";
+constexpr char kMSDomainName[] = "com.microsoft";
+
+// Opsets
 constexpr int32_t kOrtOpsetVersion = 21;
+// EPContext op is used for exporting the EP context cache model.
+// https://onnxruntime.ai/docs/execution-providers/EP-Context-Design.html#onnxruntime-ep-context-cache-feature-design
+constexpr int32_t kEPContextOpsetVersion = 1;
 
 // Define the minimum size(in bytes) to use external data.
 constexpr size_t kMinExternalDataSize = 128;
@@ -208,8 +215,9 @@ OrtModelBuilder::BuildAndTakeModelInfo() {
   CHECK_STATUS(GetOrtModelBuilderApi()->SetGraphOutputs(
       graph_, graph_outputs.data(), graph_outputs.size()));
 
-  std::vector<const char*> domain_names = {kOrtDomainName};
-  std::vector<int32_t> opset_versions = {kOrtOpsetVersion};
+  std::array<const char*, 2> domain_names = {kOrtDomainName, kMSDomainName};
+  std::array<int32_t, 2> opset_versions = {kOrtOpsetVersion,
+                                           kEPContextOpsetVersion};
 
   CHECK_STATUS(GetOrtModelBuilderApi()->CreateModel(
       domain_names.data(), opset_versions.data(), domain_names.size(),

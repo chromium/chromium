@@ -63,6 +63,7 @@ inline constexpr char kWebNNOrtOVGpuPrecision[] = "webnn-ort-ov-gpu-precision";
 // --webnn-ort-use-ov-model-cache. Note, the folder needs to be accessible from
 // the GPU process sandbox or --no-sandbox must be used. Usage: --no-sandbox
 // --webnn-ort-use-ov-model-cache=./ModelCache
+// This switch doesn't work if --webnn-ort-dump-model is enabled.
 inline constexpr char kWebNNOrtUseOVModelCache[] =
     "webnn-ort-use-ov-model-cache";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)

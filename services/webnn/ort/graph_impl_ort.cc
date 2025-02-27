@@ -194,22 +194,30 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
                                               "Failed to create graph."));
   }
 
-  // TODO(https://github.com/shiyi9801/chromium/issues/72): Investigate if there
-  // is another way to dump the model for OpenVINO EP.
-  // OpenVINO EP doesn't support dumping the optimized model since it contains
-  // compiled nodes which cannnot be serialized.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtDumpModel) &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtUseOpenvino)) {
+          switches::kWebNNOrtDumpModel)) {
     static uint64_t dump_count = 0;
     base::FilePath dump_directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             switches::kWebNNOrtDumpModel);
     base::FilePath dump_path = dump_directory.AppendASCII(
         base::StringPrintf("model%d.onnx", dump_count++));
-    CALL_ORT_FUNC(ort_api->SetOptimizedModelFilePath(
-        session_options, dump_path.value().c_str()));
+
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebNNOrtUseOpenvino)) {
+      CALL_ORT_FUNC(ort_api->SetOptimizedModelFilePath(
+          session_options, dump_path.value().c_str()));
+    } else {
+      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+          session_options, kOrtSessionOptionEpContextEnable,
+          /*config_value=*/"1"));
+      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+          session_options, kOrtSessionOptionEpContextEmbedMode,
+          /*config_value=*/"1"));
+      CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+          session_options, kOrtSessionOptionEpContextFilePath,
+          base::SysWideToUTF8(dump_path.value()).c_str()));
+    }
 
     // TODO(https://github.com/shiyi9801/chromium/issues/54): Support saving
     // tensors created with `CreateTensorWithDataAsOrtValue()` or
