@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_color_map.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -133,8 +134,8 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags));
 
-  MOCK_METHOD1(drawPicture, void(PaintRecord record));
-  MOCK_METHOD2(drawPicture, void(PaintRecord record, bool local_ctm));
+  MOCK_METHOD1(drawPicture, void(cc::PaintRecord record));
+  MOCK_METHOD2(drawPicture, void(cc::PaintRecord record, bool local_ctm));
   MOCK_CONST_METHOD0(getLocalToDevice, SkM44());
 
   MOCK_METHOD3(Annotate,

@@ -28,8 +28,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IDENTIFIER_VALUE_MAPPINGS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IDENTIFIER_VALUE_MAPPINGS_H_
 
 #include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
@@ -1235,7 +1235,7 @@ inline CSSIdentifierValue::CSSIdentifierValue(CSSBoxType css_box)
       value_id_ = CSSValueID::kContentBox;
       break;
     case CSSBoxType::kMissing:
-      // The missing box should convert to a null primitive value.
+      // The missing box should convert to a null value.
       NOTREACHED();
   }
 }
@@ -2220,4 +2220,4 @@ inline PositionVisibility CSSIdentifierValue::ConvertTo() const {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IDENTIFIER_VALUE_MAPPINGS_H_
