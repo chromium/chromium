@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
@@ -85,12 +86,12 @@ void UserTiming::AddMarkToPerformanceTimeline(
 
   String serialized_detail = GetSerializedDetail(detail);
   const base::TimeTicks callTime = base::TimeTicks::Now();
-  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+  uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
 
   if (ExecutionContext* execution_context =
           performance_->GetExecutionContext()) {
     v8::Isolate* isolate = execution_context->GetIsolate();
-    v8::CpuProfiler::CollectSample(isolate, trace_id);
+    v8::CpuProfiler::CollectSample(isolate, sample_trace_id);
   }
   const auto trace_event_details = [&](perfetto::EventContext ctx) {
     ctx.event()->set_name(mark.name().Utf8().c_str());
@@ -98,7 +99,7 @@ void UserTiming::AddMarkToPerformanceTimeline(
       auto dict = std::move(trace_context).WriteDictionary();
       dict.Add("startTime", mark.startTime());
       dict.Add("callTime", callTime);
-      dict.Add("sampleTraceId", trace_id);
+      dict.Add("sampleTraceId", sample_trace_id);
       // Only set when performance_ is a WindowPerformance.
       // performance_->timing() returns null when performance_ is a
       // WorkerPerformance.

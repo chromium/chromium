@@ -92,6 +92,8 @@ class CORE_EXPORT InspectorTraceEvents
   InspectorTraceEvents(const InspectorTraceEvents&) = delete;
   InspectorTraceEvents& operator=(const InspectorTraceEvents&) = delete;
 
+  static uint64_t GetNextSampleTraceId();
+
   void WillSendRequest(ExecutionContext*,
                        DocumentLoader*,
                        const KURL& fetch_context_url,
