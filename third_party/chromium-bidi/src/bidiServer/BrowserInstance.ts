@@ -111,7 +111,7 @@ export class BrowserInstance {
 
     let cdpConnection;
     if (pipe) {
-      cdpConnection = await this.#establishPipeConnection(browserProcess);
+      cdpConnection = this.#establishPipeConnection(browserProcess);
     } else {
       const cdpEndpoint = await browserProcess.waitForLineOutput(
         CDP_WEBSOCKET_ENDPOINT_REGEX,
@@ -176,9 +176,9 @@ export class BrowserInstance {
 
   static #establishPipeConnection(
     browserProcess: Process,
-  ): Promise<MapperCdpConnection> {
+  ): MapperCdpConnection {
     debugInternal(
-      'Establishing pipe connection to browser process with cdpUrl: ',
+      'Establishing pipe connection to browser process with pid: ',
       browserProcess.nodeProcess.pid,
     );
     const {3: pipeWrite, 4: pipeRead} = browserProcess.nodeProcess.stdio;
@@ -186,7 +186,6 @@ export class BrowserInstance {
       pipeWrite as NodeJS.WritableStream,
       pipeRead as NodeJS.ReadableStream,
     );
-    const connection = new MapperCdpConnection(transport);
-    return Promise.resolve(connection);
+    return new MapperCdpConnection(transport);
   }
 }
