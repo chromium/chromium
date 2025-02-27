@@ -96,12 +96,11 @@ std::deque<FieldSuggestion> MergeManualAndServerOverrides(
     std::deque<FieldSuggestion> server_overrides) {
   std::deque<FieldSuggestion> result;
   while (!manual_overrides.empty() && !server_overrides.empty()) {
-    // If the manual override has a no type or format string specified, it means
-    // that the server prediction should be used.
-    result.push_back(!manual_overrides.front().predictions().empty() ||
-                             manual_overrides.front().has_format_string()
-                         ? manual_overrides.front()
-                         : server_overrides.front());
+    // If the manual override has a no type specified, it means that the
+    // server prediction should be used.
+    result.push_back(manual_overrides.front().predictions().empty()
+                         ? server_overrides.front()
+                         : manual_overrides.front());
 
     manual_overrides.pop_front();
     // Generally consume the first element of each override source. However,
@@ -633,23 +632,17 @@ GetSuggestionsMapFromResponse(
   if (base::FeatureList::IsEnabled(
           features::test::kAutofillOverridePredictions)) {
     auto maybe_insert_overrides =
-        [&fields_suggestions](const base::FeatureParam<std::string>& param,
-                              OverrideFormat format) {
+        [&fields_suggestions](const base::FeatureParam<std::string>& param) {
           if (std::string param_value = param.Get(); !param_value.empty()) {
-            InsertParsedOverrides(
-                ParseServerPredictionOverrides(param_value, format),
-                fields_suggestions);
+            InsertParsedOverrides(ParseServerPredictionOverrides(param_value),
+                                  fields_suggestions);
           }
         };
     maybe_insert_overrides(
-        features::test::kAutofillOverridePredictionsSpecification,
-        OverrideFormat::kSpec);
+        features::test::kAutofillOverridePredictionsSpecification);
     maybe_insert_overrides(
         features::test::
-            kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification,
-        OverrideFormat::kSpec);
-    maybe_insert_overrides(features::test::kAutofillOverridePredictionsJson,
-                           OverrideFormat::kJson);
+            kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification);
   }
 #endif
   return fields_suggestions;
