@@ -1,5 +1,6 @@
 include_rules = [
   "+components/privacy_sandbox/masked_domain_list",
+  "+components/content_settings/core/common",
   "+components/signin/public",
   "+content/public/browser",
   "+content/public/test",

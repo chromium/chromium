@@ -19,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
@@ -199,6 +200,18 @@ class IpProtectionCoreImplTest : public testing::Test {
         net::features::kEnableIpProtectionProxy, std::move(parameters));
   }
 
+  ContentSettingsForOneType CreateSetting(const std::string& first_party_url,
+                                          ContentSetting setting) {
+    content_settings::RuleMetaData metadata;
+    metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
+
+    return {ContentSettingPatternSource(
+        ContentSettingsPattern::Wildcard(),
+        ContentSettingsPattern::FromString(first_party_url),
+        base::Value(setting), content_settings::ProviderType::kNone,
+        /*incognito=*/true, metadata)};
+  }
+
   base::HistogramTester histogram_tester_;
 
   // TODO(abhipatel): Reorder scoped_feature_list_ to be
@@ -209,6 +222,25 @@ class IpProtectionCoreImplTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Verify that a TRACKING PROTECTION exception is created for a given url.
+TEST_F(IpProtectionCoreImplTest, TrackingProtectionExceptionAddedAndRetrieved) {
+  const std::string kUrl = "https://example.com";
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
+  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
+                                                    /*exclusion_list=*/{});
+  auto ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*use_regular_mdl=*/true);
+
+  EXPECT_FALSE(ip_protection_core->HasTrackingProtectionException(GURL(kUrl)));
+
+  ip_protection_core->SetTrackingProtectionContentSetting(
+      CreateSetting(kUrl, CONTENT_SETTING_ALLOW));
+
+  EXPECT_TRUE(ip_protection_core->HasTrackingProtectionException(GURL(kUrl)));
+}
 
 // Verify that RequestShouldBeProxied measures the time taken to call Matches().
 TEST_F(IpProtectionCoreImplTest, RequestShouldBeProxiedMeasured) {

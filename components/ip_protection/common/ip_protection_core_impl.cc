@@ -14,6 +14,8 @@
 
 #include "base/check.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/content_settings/core/common/content_settings_rules.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
@@ -248,6 +250,26 @@ void IpProtectionCoreImpl::set_ip_protection_enabled(bool enabled) {
   // disabled via the try again after time returned by the next TryGetAuthToken
   // call, but the GetProxyConfig calls will continue and receive failures until
   // the feature is re-enabled.
+}
+
+bool IpProtectionCoreImpl::HasTrackingProtectionException(
+    const GURL& first_party_url) const {
+  for (const content_settings::HostIndexedContentSettings& index :
+       tp_content_settings_) {
+    if (const content_settings::RuleEntry* result =
+            index.Find(GURL(), first_party_url);
+        result != nullptr) {
+      return content_settings::ValueToContentSetting(result->second.value) ==
+             CONTENT_SETTING_ALLOW;
+    }
+  }
+  return false;
+}
+
+void IpProtectionCoreImpl::SetTrackingProtectionContentSetting(
+    const ContentSettingsForOneType& settings) {
+  tp_content_settings_ =
+      content_settings::HostIndexedContentSettings::Create(settings);
 }
 
 }  // namespace ip_protection
