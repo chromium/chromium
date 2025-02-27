@@ -1027,7 +1027,6 @@ class CONTENT_EXPORT WebContentsImpl
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
   net::handles::NetworkHandle GetTargetNetwork() override;
-  void DisconnectFileSelectListenerIfAny() override;
 
   void GetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,

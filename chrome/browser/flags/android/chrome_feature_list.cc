@@ -127,7 +127,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidBcivBottomControls,
     &features::kAndroidBcivZeroBrowserFrames,
     &features::kAndroidBrowserControlsInViz,
-    &features::kAndroidDisconnectFileChooserOnTabDeactivateKillSwitch,
     &features::kGenericSensorExtraClasses,
     &features::kBackForwardCache,
     &features::kBoardingPassDetector,
