@@ -2202,6 +2202,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.SelfCompact2.Renderer.SelfCompactionTime" units="ms"
+    expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    How long self-compaction took. Recorded after self-compaction has finished.
+  </summary>
+</histogram>
+
 <histogram name="Memory.SelfCompact2.Renderer.TimeSinceLastCancel" units="ms"
     expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
