@@ -416,7 +416,7 @@ const base::FeatureParam<std::string>
 // same service worker that controls their parent.
 BASE_FEATURE(kServiceWorkerSrcdocSupport,
              "ServiceWorkerSrcdocSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // (crbug.com/340949948): Killswitch for the fix to address the ServiceWorker
 // main and subreosurce loader lifetime issue, which introduces fetch() failure
