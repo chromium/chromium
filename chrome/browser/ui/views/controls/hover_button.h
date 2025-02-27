@@ -78,7 +78,8 @@ class HoverButton : public views::LabelButton {
       bool add_vertical_label_spacing = true,
       const std::u16string& footer = std::u16string(),
       int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+          views::DISTANCE_RELATED_LABEL_HORIZONTAL),
+      bool multiline_subtitle = false);
 
   HoverButton(const HoverButton&) = delete;
   HoverButton& operator=(const HoverButton&) = delete;

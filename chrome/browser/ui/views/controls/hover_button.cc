@@ -145,7 +145,8 @@ HoverButton::HoverButton(PressedCallback callback,
                          std::unique_ptr<views::View> secondary_view,
                          bool add_vertical_label_spacing,
                          const std::u16string& footer,
-                         int icon_label_spacing)
+                         int icon_label_spacing,
+                         bool multiline_subtitle)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -188,6 +189,7 @@ HoverButton::HoverButton(PressedCallback callback,
   if (!subtitle.empty()) {
     std::unique_ptr<views::Label> subtitle_label =
         CreateSecondaryLabel(subtitle);
+    subtitle_label->SetMultiLine(multiline_subtitle);
     subtitle_ = label_wrapper->AddChildView(std::move(subtitle_label));
   }
   if (!footer.empty()) {
