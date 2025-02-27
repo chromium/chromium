@@ -639,6 +639,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.Prefetch.PrefetchCalled" enum="Boolean"
+    expires_after="2025-08-27">
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    UseCounter for Custom Tabs Prefetch API. True should be recorded when
+    CustomTabsConnection.prefetch is called. False should never be recorded.
+    Android CCT only.
+  </summary>
+</histogram>
+
 <histogram
     name="CustomTabs.RetainableSessionsV2.TimeBetweenLaunch{IdentifierType}"
     units="seconds" expires_after="2025-05-11">
