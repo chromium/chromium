@@ -5068,6 +5068,24 @@
             ]
         }
     ],
+    "ChromeWebStoreNavigationThrottle": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeWebStoreNavigationThrottle"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeWideEchoCancellation": [
         {
             "platforms": [
