@@ -76,8 +76,8 @@ void TestLensOverlayQueryController::StartQueryFlow(
     GURL page_url,
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-    base::span<const uint8_t> underlying_content_bytes,
-    lens::MimeType underlying_content_type,
+    base::span<const lens::PageContent> underlying_page_contents,
+    lens::MimeType primary_content_type,
     float ui_scale_factor,
     base::TimeTicks invocation_time) {
   // Deep copy significant_region_boxes to avoid lifetime issues after the
@@ -89,7 +89,7 @@ void TestLensOverlayQueryController::StartQueryFlow(
 
   LensOverlayQueryController::StartQueryFlow(
       screenshot, page_url, page_title, std::move(significant_region_boxes),
-      underlying_content_bytes, underlying_content_type, ui_scale_factor,
+      underlying_page_contents, primary_content_type, ui_scale_factor,
       invocation_time);
 }
 
