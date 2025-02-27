@@ -105,8 +105,13 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   views::BubbleDialogDelegateView::CreateBubble(g_manage_passwords_bubble_);
 
   g_manage_passwords_bubble_->ShowForReason(reason);
-  g_manage_passwords_bubble_->RegisterWindowClosingCallback(
-      base::BindOnce([]() { g_manage_passwords_bubble_ = nullptr; }));
+  g_manage_passwords_bubble_->RegisterWindowClosingCallback(base::BindOnce(
+      [](PasswordBubbleViewBase* closing_bubble) {
+        if (closing_bubble == g_manage_passwords_bubble_) {
+          g_manage_passwords_bubble_ = nullptr;
+        }
+      },
+      bubble));
 
   if (features::IsToolbarPinningEnabled()) {
     auto* passwords_action_item = actions::ActionManager::Get().FindAction(
