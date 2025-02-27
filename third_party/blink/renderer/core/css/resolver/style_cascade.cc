@@ -2336,8 +2336,10 @@ KleeneValue StyleCascade::EvalIfTest(const IfCondition& if_condition,
                ? KleeneValue::kTrue
                : KleeneValue::kFalse;
   }
-  // Should be either style() or media() query, supports() queries are
-  // invalidated during parse time.
+  if (auto* n = DynamicTo<IfTestSupports>(if_condition)) {
+    DCHECK(RuntimeEnabledFeatures::CSSInlineIfForSupportsQueriesEnabled());
+    return n->GetResult() ? KleeneValue::kTrue : KleeneValue::kFalse;
+  }
   NOTREACHED();
 }
 
