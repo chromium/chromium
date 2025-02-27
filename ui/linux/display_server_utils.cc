@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
-#include "third_party/angle/src/gpu_info_util/SystemInfo.h"
 #include "ui/base/ui_base_features.h"
 #endif
 
@@ -120,23 +119,7 @@ void MaybeOverrideDefaultAsAuto(base::CommandLine& command_line) {
           features::kOverrideDefaultOzonePlatformHintToAuto)) {
     return;
   }
-
-  // We do not override users on NVIDIA to --ozone-platform-hint=auto because of
-  // flickering due to missing linux-drm-syncobj.
-  // https://gitlab.freedesktop.org/wayland/wayland-protocols/merge_requests/90
-  angle::SystemInfo system_info;
-  bool success = angle::GetSystemInfo(&system_info);
-  if (system_info.gpus.empty()) {
-    return;
-  }
-  if (system_info.activeGPUIndex < 0) {
-    system_info.activeGPUIndex = 0;
-  }
-
-  if (success && system_info.gpus[system_info.activeGPUIndex].vendorId !=
-                     angle::kVendorID_NVIDIA) {
-    command_line.AppendSwitchASCII(switches::kOzonePlatformHint, "auto");
-  }
+  command_line.AppendSwitchASCII(switches::kOzonePlatformHint, "auto");
 #endif  // BUILDFLAG(IS_OZONE_WAYLAND)
 }
 
