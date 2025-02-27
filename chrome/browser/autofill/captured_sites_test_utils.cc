@@ -646,7 +646,7 @@ WebPageReplayServerWrapper::WebPageReplayServerWrapper(
     const bool start_as_replay,
     int host_http_port,
     int host_https_port,
-    const std::vector<std::string> extra_args)
+    std::vector<std::string> extra_args)
     : host_http_port_(host_http_port),
       host_https_port_(host_https_port),
       start_as_replay_(start_as_replay),

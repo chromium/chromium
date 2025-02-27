@@ -158,7 +158,7 @@ class WebPageReplayServerWrapper {
       int host_http_port = 8080,
       int host_https_port = 8081,
       // Passes additional arguments used in the WPR command.
-      const std::vector<std::string> extra_args = {});
+      std::vector<std::string> extra_args = {});
 
   WebPageReplayServerWrapper(const WebPageReplayServerWrapper&) = delete;
   WebPageReplayServerWrapper& operator=(const WebPageReplayServerWrapper&) =
