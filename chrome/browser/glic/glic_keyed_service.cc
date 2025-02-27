@@ -117,13 +117,15 @@ GlicPageHandler* GlicKeyedService::GetPageHandler(
 }
 
 void GlicKeyedService::DidSelectProfile(Profile* profile) {
-  // If the user selected a different profile, toggle glic in the new profile.
-  if (profile && profile != profile_) {
-    GlicKeyedService* service =
-        GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-    service->ToggleUI(nullptr, /*prevent_close=*/true,
-                      InvocationSource::kProfilePicker);
+  if (!GlicEnabling::IsEnabledForProfile(profile)) {
+    return;
   }
+  // Toggle glic but prevent close if it is already open for the selected
+  // profile.
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  service->ToggleUI(nullptr, /*prevent_close=*/true,
+                    InvocationSource::kProfilePicker);
 }
 
 base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
