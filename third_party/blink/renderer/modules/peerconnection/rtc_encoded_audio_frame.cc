@@ -12,11 +12,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/timing/performance.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -83,15 +81,6 @@ SetMetadataValidationOutcome IsAllowedSetMetadataChange(
     }
   }
   return SetMetadataValidationOutcome{true, String()};
-}
-
-Performance* GetPerformanceFromExecutionContext(ExecutionContext* context) {
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    return DOMWindowPerformance::performance(*window);
-  } else if (auto* worker = DynamicTo<WorkerGlobalScope>(context)) {
-    return WorkerGlobalScopePerformance::performance(*worker);
-  }
-  NOTREACHED();
 }
 
 }  // namespace
@@ -192,23 +181,20 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata(
     metadata->setMimeType(WTF::String::FromUTF8(*delegate_->MimeType()));
   }
   if (RuntimeEnabledFeatures::RTCEncodedFrameTimestampsEnabled()) {
-    Performance* performance =
-        GetPerformanceFromExecutionContext(execution_context);
     if (std::optional<base::TimeTicks> receive_time =
             delegate_->ReceiveTime()) {
       metadata->setReceiveTime(
-          performance->MonotonicTimeToDOMHighResTimeStamp(*receive_time));
+          CalculateRTCEncodedFrameTimestamp(execution_context, *receive_time));
     }
     if (std::optional<base::TimeTicks> capture_time =
             delegate_->CaptureTime()) {
       metadata->setCaptureTime(
-          performance->MonotonicTimeToDOMHighResTimeStamp(*capture_time));
+          CalculateRTCEncodedFrameTimestamp(execution_context, *capture_time));
     }
     if (std::optional<base::TimeDelta> sender_capture_time_offset =
             delegate_->SenderCaptureTimeOffset()) {
-      metadata->setSenderCaptureTimeOffset(
-          performance->MonotonicTimeToDOMHighResTimeStamp(
-              base::TimeTicks() + *sender_capture_time_offset));
+      metadata->setSenderCaptureTimeOffset(CalculateRTCEncodedFrameTimestamp(
+          execution_context, base::TimeTicks() + *sender_capture_time_offset));
     }
   }
   return metadata;

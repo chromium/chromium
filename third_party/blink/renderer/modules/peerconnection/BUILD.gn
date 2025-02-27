@@ -40,6 +40,8 @@ blink_modules_sources("peerconnection") {
     "peer_connection_features.h",
     "peer_connection_tracker.cc",
     "peer_connection_tracker.h",
+    "peer_connection_util.cc",
+    "peer_connection_util.h",
     "rtc_certificate.cc",
     "rtc_certificate.h",
     "rtc_certificate_generator.cc",

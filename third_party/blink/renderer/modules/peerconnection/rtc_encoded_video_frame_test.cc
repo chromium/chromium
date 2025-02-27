@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -105,7 +106,7 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
 
   RTCEncodedVideoFrameMetadata* retrieved_metadata =
-      encoded_frame->getMetadata();
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
   EXPECT_EQ(7u, retrieved_metadata->synchronizationSource());
   EXPECT_EQ(13, retrieved_metadata->payloadType());
   EXPECT_EQ(2, retrieved_metadata->frameId());
@@ -134,7 +135,10 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataPreservesVP9CodecSpecifics) {
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
   DummyExceptionStateForTesting exception_state;
 
-  encoded_frame->setMetadata(encoded_frame->getMetadata(), exception_state);
+  encoded_frame->setMetadata(
+      v8_scope.GetExecutionContext(),
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext()),
+      exception_state);
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 
   EXPECT_EQ(actual_metadata.GetFrameId(), webrtc_metadata.GetFrameId());
@@ -160,7 +164,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataMissingFieldsFails) {
       RTCEncodedVideoFrameMetadata::Create();
 
   DummyExceptionStateForTesting exception_state;
-  encoded_frame->setMetadata(empty_metadata, exception_state);
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), empty_metadata,
+                             exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot setMetadata: new metadata has member(s) missing.");
@@ -214,7 +219,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithoutFeatureFailsModifications) {
       CreateMetadata(/*change_all_fields=*/true);
 
   DummyExceptionStateForTesting exception_state;
-  encoded_frame->setMetadata(new_metadata, exception_state);
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), new_metadata,
+                             exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot setMetadata: invalid modification of "
@@ -243,7 +249,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithFeatureAllowsModifications) {
       CreateMetadata(/*change_all_fields=*/true);
 
   DummyExceptionStateForTesting exception_state;
-  encoded_frame->setMetadata(new_metadata, exception_state);
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), new_metadata,
+                             exception_state);
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 
   EXPECT_EQ(actual_metadata.GetFrameId(), new_metadata->frameId());
@@ -273,7 +280,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
 
   RTCEncodedVideoFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
-  RTCEncodedVideoFrameMetadata* metadata = encoded_frame->getMetadata();
+  RTCEncodedVideoFrameMetadata* metadata =
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
 
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
@@ -281,7 +289,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
                                  /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
-  encoded_frame->setMetadata(metadata, exception_state);
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), metadata,
+                             exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -308,7 +317,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsInvalidDependencies) {
   new_metadata->setDependencies({new_metadata->frameId()});
 
   DummyExceptionStateForTesting exception_state;
-  encoded_frame->setMetadata(new_metadata, exception_state);
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), new_metadata,
+                             exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot setMetadata: new metadata has invalid frame "
@@ -336,7 +346,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooEarlyDependencies) {
   new_metadata->setDependencies({0});
 
   DummyExceptionStateForTesting exception_state;
-  encoded_frame->setMetadata(new_metadata, exception_state);
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), new_metadata,
+                             exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot setMetadata: new metadata has invalid frame "
@@ -363,7 +374,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooManyDependencies) {
   new_metadata->setDependencies({1, 2, 3, 4, 5, 6, 7, 8, 9});
 
   DummyExceptionStateForTesting exception_state;
-  encoded_frame->setMetadata(new_metadata, exception_state);
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), new_metadata,
+                             exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot setMetadata: new metadata has too many dependencies.");
@@ -385,12 +397,14 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataModifiesRtpTimestamp) {
 
   RTCEncodedVideoFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
-  RTCEncodedVideoFrameMetadata* metadata = encoded_frame->getMetadata();
+  RTCEncodedVideoFrameMetadata* metadata =
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
   metadata->setRtpTimestamp(new_timestamp);
 
   DummyExceptionStateForTesting exception_state;
 
-  encoded_frame->setMetadata(metadata, exception_state);
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), metadata,
+                             exception_state);
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 }
 
@@ -405,21 +419,25 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorPreservesVP9CodecSpecifics) {
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
   DummyExceptionStateForTesting exception_state;
 
-  RTCEncodedVideoFrame* new_frame =
-      RTCEncodedVideoFrame::Create(encoded_frame, exception_state);
+  ExecutionContext* execution_context = v8_scope.GetExecutionContext();
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      execution_context, encoded_frame, exception_state);
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
-  EXPECT_EQ(new_frame->getMetadata()->frameId(), webrtc_metadata.GetFrameId());
-  EXPECT_EQ(new_frame->getMetadata()->width(), webrtc_metadata.GetWidth());
-  EXPECT_EQ(new_frame->getMetadata()->height(), webrtc_metadata.GetHeight());
-  EXPECT_EQ(new_frame->getMetadata()->spatialIndex(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->frameId(),
+            webrtc_metadata.GetFrameId());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->width(),
+            webrtc_metadata.GetWidth());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->height(),
+            webrtc_metadata.GetHeight());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->spatialIndex(),
             webrtc_metadata.GetSpatialIndex());
-  EXPECT_EQ(new_frame->getMetadata()->temporalIndex(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->temporalIndex(),
             webrtc_metadata.GetTemporalIndex());
-  EXPECT_EQ(new_frame->getMetadata()->synchronizationSource(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->synchronizationSource(),
             webrtc_metadata.GetSsrc());
   std::vector<uint32_t> actual_csrcs;
   for (const auto& dependency :
-       new_frame->getMetadata()->contributingSources()) {
+       new_frame->getMetadata(execution_context)->contributingSources()) {
     actual_csrcs.push_back(dependency);
   }
   EXPECT_EQ(actual_csrcs, webrtc_metadata.GetCsrcs());
@@ -440,7 +458,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorMissingFieldsFails) {
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      encoded_frame, empty_frame_options, exception_state);
+      v8_scope.GetExecutionContext(), encoded_frame, empty_frame_options,
+      exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new VideoFrame: new metadata has member(s) "
@@ -471,7 +490,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithoutFeatureFailsModifications) {
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      encoded_frame, frame_options, exception_state);
+      v8_scope.GetExecutionContext(), encoded_frame, frame_options,
+      exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new VideoFrame: invalid modification of "
@@ -504,28 +524,33 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithFeatureAllowsModifications) {
   frame_options->setMetadata(new_metadata);
 
   DummyExceptionStateForTesting exception_state;
+  ExecutionContext* execution_context = v8_scope.GetExecutionContext();
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      encoded_frame, frame_options, exception_state);
+      execution_context, encoded_frame, frame_options, exception_state);
 
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 
-  EXPECT_EQ(new_frame->getMetadata()->frameId(), new_metadata->frameId());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->frameId(),
+            new_metadata->frameId());
   Vector<int64_t> actual_dependencies;
-  for (const auto& dependency : new_frame->getMetadata()->dependencies()) {
+  for (const auto& dependency :
+       new_frame->getMetadata(execution_context)->dependencies()) {
     actual_dependencies.push_back(dependency);
   }
   EXPECT_EQ(actual_dependencies, new_metadata->dependencies());
-  EXPECT_EQ(new_frame->getMetadata()->width(), new_metadata->width());
-  EXPECT_EQ(new_frame->getMetadata()->height(), new_metadata->height());
-  EXPECT_EQ(new_frame->getMetadata()->spatialIndex(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->width(),
+            new_metadata->width());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->height(),
+            new_metadata->height());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->spatialIndex(),
             new_metadata->spatialIndex());
-  EXPECT_EQ(new_frame->getMetadata()->temporalIndex(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->temporalIndex(),
             new_metadata->temporalIndex());
-  EXPECT_EQ(new_frame->getMetadata()->synchronizationSource(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->synchronizationSource(),
             new_metadata->synchronizationSource());
   Vector<uint32_t> actual_csrcs;
   for (const auto& dependency :
-       new_frame->getMetadata()->contributingSources()) {
+       new_frame->getMetadata(execution_context)->contributingSources()) {
     actual_csrcs.push_back(dependency);
   }
   EXPECT_EQ(actual_csrcs, new_metadata->contributingSources());
@@ -534,8 +559,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithFeatureAllowsModifications) {
 TEST_F(RTCEncodedVideoFrameTest, ConstructorFromNull) {
   V8TestingScope v8_scope;
   DummyExceptionStateForTesting exception_state;
-  RTCEncodedVideoFrame* new_frame =
-      RTCEncodedVideoFrame::Create(nullptr, exception_state);
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      v8_scope.GetExecutionContext(), nullptr, exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -559,8 +584,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorOnEmptyFrameWorks) {
                                  /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
-  RTCEncodedVideoFrame* new_frame =
-      RTCEncodedVideoFrame::Create(encoded_frame, exception_state);
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      v8_scope.GetExecutionContext(), encoded_frame, exception_state);
 
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_NE(new_frame, nullptr);
@@ -578,7 +603,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
   RTCEncodedVideoFrameOptions* frame_options =
       RTCEncodedVideoFrameOptions::Create();
-  frame_options->setMetadata(encoded_frame->getMetadata());
+  frame_options->setMetadata(
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext()));
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
   encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
@@ -586,7 +612,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      encoded_frame, frame_options, exception_state);
+      v8_scope.GetExecutionContext(), encoded_frame, frame_options,
+      exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -620,7 +647,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorRejectsInvalidDependencies) {
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      encoded_frame, frame_options, exception_state);
+      v8_scope.GetExecutionContext(), encoded_frame, frame_options,
+      exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new VideoFrame: new metadata has invalid "
@@ -639,29 +667,32 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorCopiesMetadata) {
   RTCEncodedVideoFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
   DummyExceptionStateForTesting exception_state;
-  RTCEncodedVideoFrame* new_frame =
-      RTCEncodedVideoFrame::Create(encoded_frame, exception_state);
+  ExecutionContext* execution_context = v8_scope.GetExecutionContext();
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      execution_context, encoded_frame, exception_state);
 
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 
-  EXPECT_EQ(new_frame->getMetadata()->frameId(),
-            encoded_frame->getMetadata()->frameId());
-  EXPECT_EQ(new_frame->getMetadata()->dependencies(),
-            encoded_frame->getMetadata()->dependencies());
-  EXPECT_EQ(new_frame->getMetadata()->width(),
-            encoded_frame->getMetadata()->width());
-  EXPECT_EQ(new_frame->getMetadata()->height(),
-            encoded_frame->getMetadata()->height());
-  EXPECT_EQ(new_frame->getMetadata()->spatialIndex(),
-            encoded_frame->getMetadata()->spatialIndex());
-  EXPECT_EQ(new_frame->getMetadata()->temporalIndex(),
-            encoded_frame->getMetadata()->temporalIndex());
-  EXPECT_EQ(new_frame->getMetadata()->synchronizationSource(),
-            encoded_frame->getMetadata()->synchronizationSource());
-  EXPECT_EQ(new_frame->getMetadata()->contributingSources(),
-            encoded_frame->getMetadata()->contributingSources());
-  EXPECT_EQ(new_frame->getMetadata()->rtpTimestamp(),
-            encoded_frame->getMetadata()->rtpTimestamp());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->frameId(),
+            encoded_frame->getMetadata(execution_context)->frameId());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->dependencies(),
+            encoded_frame->getMetadata(execution_context)->dependencies());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->width(),
+            encoded_frame->getMetadata(execution_context)->width());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->height(),
+            encoded_frame->getMetadata(execution_context)->height());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->spatialIndex(),
+            encoded_frame->getMetadata(execution_context)->spatialIndex());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->temporalIndex(),
+            encoded_frame->getMetadata(execution_context)->temporalIndex());
+  EXPECT_EQ(
+      new_frame->getMetadata(execution_context)->synchronizationSource(),
+      encoded_frame->getMetadata(execution_context)->synchronizationSource());
+  EXPECT_EQ(
+      new_frame->getMetadata(execution_context)->contributingSources(),
+      encoded_frame->getMetadata(execution_context)->contributingSources());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->rtpTimestamp(),
+            encoded_frame->getMetadata(execution_context)->rtpTimestamp());
 }
 
 TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataGetsNewMetadata) {
@@ -680,41 +711,46 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataGetsNewMetadata) {
   frame_options->setMetadata(new_metadata);
 
   DummyExceptionStateForTesting exception_state;
+  ExecutionContext* execution_context = v8_scope.GetExecutionContext();
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      encoded_frame, frame_options, exception_state);
+      execution_context, encoded_frame, frame_options, exception_state);
 
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 
   // |new_frame|'s metadata is same as |new_metadata|.
-  EXPECT_EQ(new_frame->getMetadata()->frameId(), new_metadata->frameId());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->frameId(),
+            new_metadata->frameId());
   Vector<int64_t> actual_dependencies;
-  for (const auto& dependency : new_frame->getMetadata()->dependencies()) {
+  for (const auto& dependency :
+       new_frame->getMetadata(execution_context)->dependencies()) {
     actual_dependencies.push_back(dependency);
   }
   EXPECT_EQ(actual_dependencies, new_metadata->dependencies());
-  EXPECT_EQ(new_frame->getMetadata()->width(), new_metadata->width());
-  EXPECT_EQ(new_frame->getMetadata()->height(), new_metadata->height());
-  EXPECT_EQ(new_frame->getMetadata()->spatialIndex(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->width(),
+            new_metadata->width());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->height(),
+            new_metadata->height());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->spatialIndex(),
             new_metadata->spatialIndex());
-  EXPECT_EQ(new_frame->getMetadata()->temporalIndex(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->temporalIndex(),
             new_metadata->temporalIndex());
-  EXPECT_EQ(new_frame->getMetadata()->synchronizationSource(),
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->synchronizationSource(),
             new_metadata->synchronizationSource());
   Vector<uint32_t> actual_csrcs;
   for (const auto& dependency :
-       new_frame->getMetadata()->contributingSources()) {
+       new_frame->getMetadata(execution_context)->contributingSources()) {
     actual_csrcs.push_back(dependency);
   }
   EXPECT_EQ(actual_csrcs, new_metadata->contributingSources());
 
   // |new_frame|'s metadata is different from original |encoded_frame|'s
   // metadata.
-  EXPECT_NE(new_frame->getMetadata()->frameId(),
-            encoded_frame->getMetadata()->frameId());
-  EXPECT_NE(new_frame->getMetadata()->dependencies(),
-            encoded_frame->getMetadata()->dependencies());
-  EXPECT_NE(new_frame->getMetadata()->rtpTimestamp(),
-            encoded_frame->getMetadata()->rtpTimestamp());
+  EXPECT_NE(new_frame->getMetadata(execution_context)->frameId(),
+            encoded_frame->getMetadata(execution_context)->frameId());
+  EXPECT_NE(new_frame->getMetadata(execution_context)->dependencies(),
+            encoded_frame->getMetadata(execution_context)->dependencies());
+  EXPECT_NE(new_frame->getMetadata(execution_context)->rtpTimestamp(),
+            encoded_frame->getMetadata(execution_context)->rtpTimestamp());
 }
 
 TEST_F(RTCEncodedVideoFrameTest,
@@ -737,7 +773,8 @@ TEST_F(RTCEncodedVideoFrameTest,
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      encoded_frame, frame_options, exception_state);
+      v8_scope.GetExecutionContext(), encoded_frame, frame_options,
+      exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new VideoFrame: invalid modification of "
