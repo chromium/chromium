@@ -4,10 +4,12 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions_shared.h"
 
+#include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/permissions_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -68,6 +70,21 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   return RespondNow(NoArguments());
+}
+
+DeveloperPrivateGetUserSiteSettingsFunction::
+    DeveloperPrivateGetUserSiteSettingsFunction() = default;
+DeveloperPrivateGetUserSiteSettingsFunction::
+    ~DeveloperPrivateGetUserSiteSettingsFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetUserSiteSettingsFunction::Run() {
+  developer::UserSiteSettings user_site_settings =
+      DeveloperPrivateEventRouter::ConvertToUserSiteSettings(
+          PermissionsManager::Get(browser_context())
+              ->GetUserPermissionsSettings());
+
+  return RespondNow(WithArguments(user_site_settings.ToValue()));
 }
 
 }  // namespace api

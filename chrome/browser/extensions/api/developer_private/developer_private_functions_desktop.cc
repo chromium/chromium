@@ -1823,21 +1823,6 @@ void DeveloperPrivateRemoveHostPermissionFunction::
   Respond(NoArguments());
 }
 
-DeveloperPrivateGetUserSiteSettingsFunction::
-    DeveloperPrivateGetUserSiteSettingsFunction() = default;
-DeveloperPrivateGetUserSiteSettingsFunction::
-    ~DeveloperPrivateGetUserSiteSettingsFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateGetUserSiteSettingsFunction::Run() {
-  developer::UserSiteSettings user_site_settings =
-      DeveloperPrivateEventRouter::ConvertToUserSiteSettings(
-          PermissionsManager::Get(browser_context())
-              ->GetUserPermissionsSettings());
-
-  return RespondNow(WithArguments(user_site_settings.ToValue()));
-}
-
 DeveloperPrivateAddUserSpecifiedSitesFunction::
     DeveloperPrivateAddUserSpecifiedSitesFunction() = default;
 DeveloperPrivateAddUserSpecifiedSitesFunction::
