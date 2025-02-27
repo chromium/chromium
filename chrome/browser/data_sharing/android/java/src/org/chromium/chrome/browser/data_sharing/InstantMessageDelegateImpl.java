@@ -223,7 +223,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
         for (AttachedWindowInfo info : mAttachList) {
             TabGroupModelFilter tabGroupModelFilter = info.tabGroupModelFilter;
-            int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
+            int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
             if (rootId == Tab.INVALID_TAB_ID) continue;
 
             // If we had a valid rootId, this is the right window.
@@ -294,7 +294,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private void doOpenTab(Token tabGroupId, String url, TabGroupModelFilter tabGroupModelFilter) {
         url = TextUtils.isEmpty(url) ? UrlConstants.NTP_URL : url;
-        int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
+        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
         TabGroupUtils.openUrlInGroup(
                 tabGroupModelFilter, url, rootId, TabLaunchType.FROM_TAB_GROUP_UI);
     }
@@ -476,7 +476,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             @Nullable String syncId = MessageUtils.extractSyncTabGroupId(message);
             @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
             @Nullable Token token = extractLocalId(syncGroup);
-            int rootId = tabGroupModelFilter.getRootIdFromStableId(token);
+            int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(token);
             int tabCount = tabGroupModelFilter.getRelatedTabCountForRootId(rootId);
             return TabGroupTitleUtils.getDefaultTitle(context, tabCount);
         } else {

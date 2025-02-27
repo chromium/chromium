@@ -644,7 +644,7 @@ public class DataSharingTabManager {
                         .get()
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(false);
-        int rootId = filter.getRootIdFromStableId(group.localId.tabGroupId);
+        int rootId = filter.getRootIdFromTabGroupId(group.localId.tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
         mDataSharingTabGroupsDelegate.openTabGroupWithTabId(rootId);
     }

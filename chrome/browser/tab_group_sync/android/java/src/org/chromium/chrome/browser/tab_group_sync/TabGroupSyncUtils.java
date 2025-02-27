@@ -63,20 +63,20 @@ public final class TabGroupSyncUtils {
      */
     public static boolean isInCurrentWindow(
             TabGroupModelFilter tabGroupModelFilter, LocalTabGroupId localId) {
-        int rootId = tabGroupModelFilter.getRootIdFromStableId(localId.tabGroupId);
+        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(localId.tabGroupId);
         return rootId != Tab.INVALID_TAB_ID;
     }
 
     /** Conversion method to get a {@link LocalTabGroupId} from a root ID. */
     public static LocalTabGroupId getLocalTabGroupId(TabGroupModelFilter filter, int rootId) {
-        Token tabGroupId = filter.getStableIdFromRootId(rootId);
+        Token tabGroupId = filter.getTabGroupIdFromRootId(rootId);
         return tabGroupId == null ? null : new LocalTabGroupId(tabGroupId);
     }
 
     /** Conversion method to get a root ID from a {@link LocalTabGroupId}. */
     public static int getRootId(TabGroupModelFilter filter, LocalTabGroupId localTabGroupId) {
         assert localTabGroupId != null;
-        return filter.getRootIdFromStableId(localTabGroupId.tabGroupId);
+        return filter.getRootIdFromTabGroupId(localTabGroupId.tabGroupId);
     }
 
     /** Util method to get a {@link LocalTabGroupId} from a tab. */
@@ -197,7 +197,7 @@ public final class TabGroupSyncUtils {
      */
     public static long getTabGroupLastAccessTime(
             Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
-        int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
+        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
         List<Tab> tabs = tabGroupModelFilter.getRelatedTabListForRootId(rootId);
         long mostRecentAccessTime = 0;
         for (Tab tab : tabs) {

@@ -119,7 +119,7 @@ public class TabClosureParamsUnitTest {
     @Test
     public void testCloseTabsParams_TabGroup() {
         List<Tab> tabs = List.of(mTab1, mTab2);
-        when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID)).thenReturn(tabs);
         TabClosureParams params =
                 TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB_GROUP_ID).build();

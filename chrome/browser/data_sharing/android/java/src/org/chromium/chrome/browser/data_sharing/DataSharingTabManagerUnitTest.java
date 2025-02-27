@@ -286,7 +286,7 @@ public class DataSharingTabManagerUnitTest {
                 .when(mTabGroupModelFilterProvider)
                 .getTabGroupModelFilter(anyBoolean());
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(SYNC_GROUP_ID1);
-        doReturn(TAB_GROUP_ROOT_ID).when(mTabGroupModelFilter).getRootIdFromStableId(any());
+        doReturn(TAB_GROUP_ROOT_ID).when(mTabGroupModelFilter).getRootIdFromTabGroupId(any());
     }
 
     @Test

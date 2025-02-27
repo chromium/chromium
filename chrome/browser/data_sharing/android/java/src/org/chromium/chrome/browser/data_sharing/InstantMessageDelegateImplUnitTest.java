@@ -140,7 +140,7 @@ public class InstantMessageDelegateImplUnitTest {
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mManagedMessageDispatcher);
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(TAB_ID);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
@@ -187,7 +187,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testDisplayInstantaneousMessage_NotInTabModel() {
-        when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID))
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID))
                 .thenReturn(Tab.INVALID_TAB_ID);
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_REMOVED), mSuccessCallback);
@@ -334,7 +334,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationMemberAdded_FallbackTitle() {
-        when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(TAB_ID);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt()))
                 .thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
@@ -396,7 +396,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationRemoved_FallbackTitle() {
-        when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(TAB_ID);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt()))
                 .thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
