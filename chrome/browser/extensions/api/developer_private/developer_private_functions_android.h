@@ -62,9 +62,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateRequestFileSourceFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivateOpenDevToolsFunction,
                    "developerPrivate.openDevTools",
                    DEVELOPERPRIVATE_OPENDEVTOOLS);
-DECLARE_EMPTY_FUNC(DeveloperPrivateDeleteExtensionErrorsFunction,
-                   "developerPrivate.deleteExtensionErrors",
-                   DEVELOPERPRIVATE_DELETEEXTENSIONERRORS);
 DECLARE_EMPTY_FUNC(DeveloperPrivateRepairExtensionFunction,
                    "developerPrivate.repairExtension",
                    DEVELOPERPRIVATE_REPAIREXTENSION);

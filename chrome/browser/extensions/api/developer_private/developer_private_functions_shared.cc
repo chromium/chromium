@@ -84,6 +84,35 @@ DeveloperPrivateIsProfileManagedFunction::Run() {
 DeveloperPrivateIsProfileManagedFunction::
     ~DeveloperPrivateIsProfileManagedFunction() = default;
 
+DeveloperPrivateDeleteExtensionErrorsFunction::
+    ~DeveloperPrivateDeleteExtensionErrorsFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
+  std::optional<developer::DeleteExtensionErrors::Params> params =
+      developer::DeleteExtensionErrors::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const developer::DeleteExtensionErrorsProperties& properties =
+      params->properties;
+
+  ErrorConsole* error_console = ErrorConsole::Get(browser_context());
+  int type = -1;
+  if (properties.type != developer::ErrorType::kNone) {
+    type = properties.type == developer::ErrorType::kManifest
+               ? static_cast<int>(ExtensionError::Type::kManifestError)
+               : static_cast<int>(ExtensionError::Type::kRuntimeError);
+  }
+  std::set<int> error_ids;
+  if (properties.error_ids) {
+    error_ids.insert(properties.error_ids->begin(),
+                     properties.error_ids->end());
+  }
+  error_console->RemoveErrors(
+      ErrorMap::Filter(properties.extension_id, type, error_ids, false));
+
+  return RespondNow(NoArguments());
+}
+
 DeveloperPrivateGetUserSiteSettingsFunction::
     DeveloperPrivateGetUserSiteSettingsFunction() = default;
 DeveloperPrivateGetUserSiteSettingsFunction::

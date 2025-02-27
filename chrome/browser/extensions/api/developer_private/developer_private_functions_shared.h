@@ -102,6 +102,17 @@ class DeveloperPrivateIsProfileManagedFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateDeleteExtensionErrorsFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.deleteExtensionErrors",
+                             DEVELOPERPRIVATE_DELETEEXTENSIONERRORS)
+
+ protected:
+  ~DeveloperPrivateDeleteExtensionErrorsFunction() override;
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateGetUserSiteSettingsFunction
     : public DeveloperPrivateAPIFunction {
  public:

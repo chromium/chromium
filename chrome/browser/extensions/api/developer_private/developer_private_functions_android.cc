@@ -41,8 +41,6 @@ DEFINE_EMPTY_FUNC(DeveloperPrivateRequestFileSourceFunction,
                   "developerPrivate.requestFileSource")
 DEFINE_EMPTY_FUNC(DeveloperPrivateOpenDevToolsFunction,
                   "developerPrivate.openDevTools")
-DEFINE_EMPTY_FUNC(DeveloperPrivateDeleteExtensionErrorsFunction,
-                  "developerPrivate.deleteExtensionErrors")
 DEFINE_EMPTY_FUNC(DeveloperPrivateRepairExtensionFunction,
                   "developerPrivate.repairExtension")
 DEFINE_EMPTY_FUNC(DeveloperPrivateShowOptionsFunction,
