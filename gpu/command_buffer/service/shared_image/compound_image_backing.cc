@@ -257,14 +257,14 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
                                           AccessMode::kWrite);
     return wrapped_->BeginWriteAccess(surface_props, update_rect);
   }
-  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() final {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() final {
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
                                           AccessMode::kWrite);
     return wrapped_->BeginWriteAccess();
   }
   void EndWriteAccess() final { wrapped_->EndWriteAccess(); }
 
-  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() final {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() final {
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
                                           AccessMode::kRead);
     return wrapped_->BeginReadAccess();

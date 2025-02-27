@@ -33,6 +33,8 @@
 
 namespace gpu {
 namespace {
+using GraphiteTextureHolder = SkiaImageRepresentation::GraphiteTextureHolder;
+
 struct ReadPixelsContext {
   std::unique_ptr<const SkImage::AsyncReadResult> async_result;
   bool finished = false;
@@ -72,10 +74,10 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
       auto color_type = viz::ToClosestSkColorType(format(), plane);
       void* release_context =
-          scoped_refptr<WrappedGraphiteTextureHolder>(texture_holders[plane])
+          scoped_refptr<GraphiteTextureHolder>(texture_holders[plane])
               .release();
       auto release_proc = [](void* context) {
-        static_cast<WrappedGraphiteTextureHolder*>(context)->Release();
+        static_cast<GraphiteTextureHolder*>(context)->Release();
       };
       auto surface = SkSurfaces::WrapBackendTexture(
           context_state_->gpu_main_graphite_recorder(),
@@ -92,8 +94,9 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     return write_surfaces_;
   }
 
-  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override {
-    return backing_impl()->GetGraphiteBackendTextures();
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess()
+      override {
+    return backing_impl()->GetWrappedGraphiteTextureHolders();
   }
 
   void EndWriteAccess() override {
@@ -103,9 +106,9 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     write_surfaces_.clear();
   }
 
-  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override {
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override {
     CHECK(write_surfaces_.empty());
-    return backing_impl()->GetGraphiteBackendTextures();
+    return backing_impl()->GetWrappedGraphiteTextureHolders();
   }
 
   void EndReadAccess() override { CHECK(write_surfaces_.empty()); }
@@ -243,7 +246,7 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
     return false;
   }
 
-  texture_holders_ = std::vector<scoped_refptr<WrappedGraphiteTextureHolder>>{
+  texture_holders_ = std::vector<scoped_refptr<GraphiteTextureHolder>>{
       base::MakeRefCounted<WrappedGraphiteTextureHolder>(
           std::move(texture), context_state_, created_task_runner_)};
   SetCleared();
@@ -271,9 +274,9 @@ bool WrappedGraphiteTextureBacking::UploadFromMemory(
 
   bool updated = true;
   for (size_t i = 0; i < texture_holders_.size(); ++i) {
-    updated = updated &&
-              recorder()->updateBackendTexture(texture_holders_[i]->texture(),
-                                               &pixmaps[i], /*numLevels=*/1);
+    updated = updated && recorder()->updateBackendTexture(
+                             texture_holders_[i]->texture(), &pixmaps[i],
+                             /*numLevels=*/1);
   }
   if (!updated) {
     LOG(ERROR) << "Graphite updateBackendTexture() failed";
@@ -351,18 +354,9 @@ bool WrappedGraphiteTextureBacking::InsertRecordingAndSubmit() {
   return true;
 }
 
-const std::vector<scoped_refptr<WrappedGraphiteTextureHolder>>&
+const std::vector<scoped_refptr<GraphiteTextureHolder>>&
 WrappedGraphiteTextureBacking::GetWrappedGraphiteTextureHolders() {
   return texture_holders_;
-}
-
-std::vector<skgpu::graphite::BackendTexture>
-WrappedGraphiteTextureBacking::GetGraphiteBackendTextures() {
-  std::vector<skgpu::graphite::BackendTexture> textures;
-  for (auto holder : texture_holders_) {
-    textures.push_back(std::move(holder->texture()));
-  }
-  return textures;
 }
 
 std::unique_ptr<SkiaGraphiteImageRepresentation>

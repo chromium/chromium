@@ -30,10 +30,10 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect) override;
-  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() override;
   void EndWriteAccess() override;
 
-  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override;
   void EndReadAccess() override;
   bool SupportsMultipleConcurrentReadAccess() override;
 
@@ -47,7 +47,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       MemoryTypeTracker* tracker,
       int array_slice);
 
-  std::vector<skgpu::graphite::BackendTexture> CreateBackendTextures(
+  std::vector<scoped_refptr<GraphiteTextureHolder>> CreateBackendTextures(
       wgpu::Texture texture,
       bool readonly);
 

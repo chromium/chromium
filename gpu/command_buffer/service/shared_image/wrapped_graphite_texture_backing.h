@@ -13,6 +13,7 @@
 #include "base/types/pass_key.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_graphite_texture_holder.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -95,9 +96,9 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
  private:
   class SkiaGraphiteImageRepresentationImpl;
 
-  const std::vector<scoped_refptr<WrappedGraphiteTextureHolder>>&
+  const std::vector<
+      scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>&
   GetWrappedGraphiteTextureHolders();
-  std::vector<skgpu::graphite::BackendTexture> GetGraphiteBackendTextures();
   bool InsertRecordingAndSubmit();
 
   skgpu::graphite::Recorder* recorder() const {
@@ -105,7 +106,8 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
   }
 
   scoped_refptr<SharedContextState> context_state_;
-  std::vector<scoped_refptr<WrappedGraphiteTextureHolder>> texture_holders_;
+  std::vector<scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>
+      texture_holders_;
 
   // Only stored for thread safe backings.
   scoped_refptr<base::SingleThreadTaskRunner> created_task_runner_;

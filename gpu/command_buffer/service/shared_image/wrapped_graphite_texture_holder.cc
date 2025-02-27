@@ -13,7 +13,7 @@ WrappedGraphiteTextureHolder::WrappedGraphiteTextureHolder(
     skgpu::graphite::BackendTexture backend_texture,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : texture_(std::move(backend_texture)),
+    : GraphiteTextureHolder(std::move(backend_texture)),
       context_state_(std::move(context_state)),
       task_runner_(std::move(task_runner)) {}
 

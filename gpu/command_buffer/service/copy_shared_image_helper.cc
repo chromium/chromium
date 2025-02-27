@@ -658,6 +658,8 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
   absl::Cleanup cleanup = [&]() { dest_scoped_access.reset(); };
   viz::SharedImageFormat dest_format = dest_shared_image->format();
   auto* gr_context = shared_context_state_->gr_context();
+  const bool need_graphite_submit =
+      dest_scoped_access->NeedGraphiteContextSubmit();
   for (int plane = 0; plane < dest_format.NumberOfPlanes(); plane++) {
     bool written = false;
     if (gr_context) {
@@ -667,16 +669,22 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
           /*finishedProc=*/nullptr, /*finishedContext=*/nullptr);
     } else {
       CHECK(shared_context_state_->graphite_context());
-      written =
-          shared_context_state_->gpu_main_graphite_recorder()
-              ->updateBackendTexture(
-                  dest_scoped_access->graphite_texture(plane), &pixmaps[plane],
-                  /*numLevels=*/1);
+      auto graphite_texture_ref =
+          dest_scoped_access->graphite_texture_holder(plane);
+      auto* graphite_texture_ptr = graphite_texture_ref.release();
+      using graphite_texture_ptr_type = decltype(graphite_texture_ptr);
+      auto release_proc = [](void* context, skgpu::CallbackResult) {
+        static_cast<graphite_texture_ptr_type>(context)->Release();
+      };
+      written = shared_context_state_->gpu_main_graphite_recorder()
+                    ->updateBackendTexture(
+                        graphite_texture_ptr->texture(), &pixmaps[plane],
+                        /*numLevels=*/1, release_proc, graphite_texture_ptr);
     }
     if (!written) {
       dest_scoped_access->ApplyBackendSurfaceEndState();
       shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
-                                               /*need_graphite_submit=*/true);
+                                               need_graphite_submit);
       return base::unexpected(
           GLError(GL_INVALID_OPERATION, "glWritePixelsYUV",
                   "Failed to upload pixels to dest shared image"));
@@ -685,7 +693,7 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
   shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
-                                           /*need_graphite_submit=*/true);
+                                           need_graphite_submit);
 
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
