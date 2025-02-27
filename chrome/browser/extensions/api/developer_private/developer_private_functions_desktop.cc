@@ -58,7 +58,6 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
-#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
@@ -2086,26 +2085,6 @@ void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted() {
   Respond(NoArguments());
 }
 
-DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::
-    DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction() =
-        default;
-DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::
-    ~DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction() =
-        default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::Run() {
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents) {
-    return RespondNow(Error(kCouldNotFindWebContentsError));
-  }
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  SafetyHubMenuNotificationServiceFactory::GetForProfile(profile)
-      ->DismissActiveNotificationOfModule(
-          safety_hub::SafetyHubModuleType::EXTENSIONS);
-  return RespondNow(NoArguments());
-}
 
 DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() = default;

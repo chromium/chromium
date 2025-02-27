@@ -65,9 +65,6 @@ DEFINE_EMPTY_FUNC(DeveloperPrivateUpdateSiteAccessFunction,
 DEFINE_EMPTY_FUNC(DeveloperPrivateRemoveMultipleExtensionsFunction,
                   "developerPrivate.removeMultipleExtensions")
 DEFINE_EMPTY_FUNC(
-    DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction,
-    "developerPrivate.dismissSafetyHubExtensionsMenuNotification")
-DEFINE_EMPTY_FUNC(
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction,
     "developerPrivate.dismissMv2DeprecationNoticeForExtension")
 DEFINE_EMPTY_FUNC(DeveloperPrivateUploadExtensionToAccountFunction,

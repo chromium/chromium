@@ -99,10 +99,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateRemoveMultipleExtensionsFunction,
                    "developerPrivate.removeMultipleExtensions",
                    DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS);
 DECLARE_EMPTY_FUNC(
-    DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction,
-    "developerPrivate.dismissSafetyHubExtensionsMenuNotification",
-    DEVELOPERPRIVATE_DISMISSSAFETYHUBEXTENSIONSMENUNOTIFICATION);
-DECLARE_EMPTY_FUNC(
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction,
     "developerPrivate.dismissMv2DeprecationNoticeForExtension",
     DEVELOPERPRIVATE_DISMISSMV2DEPRECATIONNOTICEFOREXTENSION);

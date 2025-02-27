@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -245,6 +246,27 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
   return RespondNow(
       ArgumentList(developer::GetMatchingExtensionsForSite::Results::Create(
           matching_extensions)));
+}
+
+DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::
+    DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction() =
+        default;
+DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::
+    ~DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction() =
+        default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::Run() {
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotFindWebContentsError));
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  SafetyHubMenuNotificationServiceFactory::GetForProfile(profile)
+      ->DismissActiveNotificationOfModule(
+          safety_hub::SafetyHubModuleType::EXTENSIONS);
+  return RespondNow(NoArguments());
 }
 
 }  // namespace api
