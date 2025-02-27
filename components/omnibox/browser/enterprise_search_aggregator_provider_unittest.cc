@@ -45,8 +45,6 @@ class FakeEnterpriseSearchAggregatorProvider
         update_results_future_(
             std::make_unique<base::test::TestFuture<void>>()) {}
 
-  using EnterpriseSearchAggregatorProvider::SuggestionType;
-
   using EnterpriseSearchAggregatorProvider::CreateMatch;
   using EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider;
   using EnterpriseSearchAggregatorProvider::IsProviderAllowed;
@@ -228,6 +226,7 @@ class MockAutocompleteProviderListener : public AutocompleteProviderListener {
               (bool updated_matches, const AutocompleteProvider* provider),
               (override));
 };
+
 class EnterpriseSearchAggregatorProviderTest : public testing::Test {
  protected:
   EnterpriseSearchAggregatorProviderTest() {
@@ -280,11 +279,13 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
   provider_->adjusted_input_ = CreateInput(u"input text", true);
 
   auto match = provider_->CreateMatch(
-      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1000,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1000,
       "https://url.com", "https://example.com/image.png", u"title",
       u"additional text");
   EXPECT_EQ(match.destination_url.spec(), "https://url.com/");
   EXPECT_EQ(match.fill_into_edit, u"https://url.com");
+  EXPECT_EQ(match.enterprise_search_aggregator_type,
+            AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY);
   EXPECT_EQ(match.description, u"title");
   EXPECT_EQ(match.contents, u"additional text");
   EXPECT_EQ(match.image_url.spec(), "https://example.com/image.png");
@@ -370,7 +371,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
        StartCallsStopForScopedEmptyInput) {
   provider_->adjusted_input_ = CreateInput(u"keyword", true);
   provider_->matches_ = {provider_->CreateMatch(
-      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1500,
       "https://cached.org", "", u"cached", u"cached")};
 
   EXPECT_CALL(*mock_listener_.get(), OnProviderUpdate(_, provider_.get()))
@@ -388,7 +389,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStopForZeroSuggest) {
   input.set_focus_type(metrics::INTERACTION_FOCUS);
   provider_->adjusted_input_ = input;
   provider_->matches_ = {provider_->CreateMatch(
-      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1500,
       "https://cached.org", "", u"cached", u"cached")};
 
   EXPECT_CALL(*mock_listener_.get(), OnProviderUpdate(_, provider_.get()))
@@ -488,7 +489,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_Start) {
   AutocompleteInput input = CreateInput(u"keyword query", false);
   provider_->adjusted_input_ = input;
   provider_->matches_ = {provider_->CreateMatch(
-      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1500,
       "https://cached.org", "", u"cached", u"cached")};
 
   // Call `Start()`, old match should still be present.
@@ -503,7 +504,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_ErrorResponse) {
   AutocompleteInput input = CreateInput(u"keyword q", true);
   provider_->adjusted_input_ = input;
   provider_->matches_ = {provider_->CreateMatch(
-      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1500,
       "https://cached.org", "", u"cached", u"cached")};
 
   EXPECT_CALL(*mock_listener_.get(), OnProviderUpdate(true, provider_.get()))
@@ -526,7 +527,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   AutocompleteInput input = CreateInput(u"keyword q", false);
   provider_->adjusted_input_ = input;
   provider_->matches_ = {provider_->CreateMatch(
-      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1500,
       "https://cached.org", "", u"cached", u"cached")};
 
   EXPECT_CALL(*mock_listener_.get(), OnProviderUpdate(true, provider_.get()))
@@ -547,7 +548,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_EmptyResponse) {
   AutocompleteInput input = CreateInput(u"keyword query", false);
   provider_->adjusted_input_ = input;
   provider_->matches_ = {provider_->CreateMatch(
-      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1500,
       "https://cached.org", "", u"cached", u"cached")};
 
   // Matches are updated (cleared) when response is empty.
@@ -571,7 +572,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   AutocompleteInput input = CreateInput(u"keyword query", false);
   provider_->adjusted_input_ = input;
   provider_->matches_ = {provider_->CreateMatch(
-      FakeEnterpriseSearchAggregatorProvider::SuggestionType::QUERY, true, 1500,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1500,
       "https://cached.org", "", u"cached", u"cached")};
 
   EXPECT_CALL(*mock_listener_.get(), OnProviderUpdate(true, provider_.get()))

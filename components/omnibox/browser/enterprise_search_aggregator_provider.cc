@@ -385,6 +385,8 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
     match.image_url = GURL(image_url);
   }
 
+  match.enterprise_search_aggregator_type = suggestion_type;
+
   match.description = AutocompleteMatch::SanitizeString(description);
   match.description_class = ClassifyTermMatches(
       FindTermMatches(adjusted_input_.text(), match.description),

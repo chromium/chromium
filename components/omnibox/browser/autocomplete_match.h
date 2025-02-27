@@ -211,6 +211,15 @@ struct AutocompleteMatch {
     DOCUMENT_TYPE_SIZE
   };
 
+  // Enterprise search aggregator subtype, for suggestions from the
+  // EnterpriseSearchAggregatorProvider provider.
+  enum class EnterpriseSearchAggregatorType {
+    NONE = 0,
+    QUERY,
+    PEOPLE,
+    CONTENT,
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class RichAutocompletionType {
@@ -806,8 +815,12 @@ struct AutocompleteMatch {
   // URI.
   std::string website_uri;
 
-  // Optional override to use for types that specify an icon sub-type.
+  // Used for document suggestions to show the mime-corresponding icons.
   DocumentType document_type = DocumentType::NONE;
+
+  // Used for enterprise search aggregator suggestions for grouping.
+  EnterpriseSearchAggregatorType enterprise_search_aggregator_type =
+      EnterpriseSearchAggregatorType::NONE;
 
   // Holds the common part of tail suggestion. Used to indent the contents.
   // Can't simply store the character length of the string, as different
