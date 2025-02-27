@@ -33,59 +33,75 @@ class OrcaPolicyTest : public PolicyTest {
                                ash::features::kOrcaUseAccountCapabilities});
   }
 
+ public:
+  Profile* profile() { return browser()->profile(); }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OrcaPolicyTest,
-                       EnablesOrcaOnManagedProfilesIfOrcaPolicyUnset) {
-  Profile* profile = browser()->profile();
-  auto geolocation_provider =
-      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au");
+IN_PROC_BROWSER_TEST_F(OrcaPolicyTest, EnablesChromeOSHMWIfOrcaPolicyUnset) {
   ash::input_method::EditorMediator editor_mediator(
-      profile, std::move(geolocation_provider));
+      profile(),
+      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au"));
 
-  EXPECT_FALSE(
-      profile->GetPrefs()->IsManagedPreference(ash::prefs::kOrcaEnabled));
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(ash::prefs::kHmwManagedSettings),
+            0);
   EXPECT_TRUE(editor_mediator.IsAllowedForUse());
+  EXPECT_TRUE(editor_mediator.CanAccessFeedback());
 }
 
-IN_PROC_BROWSER_TEST_F(OrcaPolicyTest,
-                       EnableOrcaOnManagedProfilesIfOrcaPolicyEnabled) {
-  Profile* profile = browser()->profile();
-  auto geolocation_provider =
-      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au");
+IN_PROC_BROWSER_TEST_F(
+    OrcaPolicyTest,
+    EnablesChromeOSHMWAndFeedbackIfPolicySetToEnabledWithAIImprovement) {
   ash::input_method::EditorMediator editor_mediator(
-      profile, std::move(geolocation_provider));
+      profile(),
+      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au"));
   PolicyMap policies;
 
   policies.Set(key::kHelpMeWriteSettings, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
   UpdateProviderPolicy(policies);
 
-  EXPECT_TRUE(
-      profile->GetPrefs()->IsManagedPreference(ash::prefs::kOrcaEnabled));
-  EXPECT_TRUE(profile->GetPrefs()->GetBoolean(ash::prefs::kOrcaEnabled));
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(ash::prefs::kHmwManagedSettings),
+            0);
   EXPECT_TRUE(editor_mediator.IsAllowedForUse());
+  EXPECT_TRUE(editor_mediator.CanAccessFeedback());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OrcaPolicyTest,
+    EnablesChromeOSHMWButDisableFeedbackIfPolicySetToEnabledWithoutAIImprovement) {
+  ash::input_method::EditorMediator editor_mediator(
+      profile(),
+      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au"));
+  PolicyMap policies;
+
+  policies.Set(key::kHelpMeWriteSettings, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+  UpdateProviderPolicy(policies);
+
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(ash::prefs::kHmwManagedSettings),
+            1);
+  EXPECT_TRUE(editor_mediator.IsAllowedForUse());
+  EXPECT_FALSE(editor_mediator.CanAccessFeedback());
 }
 
 IN_PROC_BROWSER_TEST_F(OrcaPolicyTest,
-                       EnableOrcaOnManagedProfilesIfOrcaPolicyDisabled) {
-  Profile* profile = browser()->profile();
-  auto geolocation_provider =
-      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au");
+                       DisableChromeOSHMWFeedbackIfPolicySetToDisabled) {
   ash::input_method::EditorMediator editor_mediator(
-      profile, std::move(geolocation_provider));
+      profile(),
+      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au"));
   PolicyMap policies;
 
   policies.Set(key::kHelpMeWriteSettings, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(2), nullptr);
   UpdateProviderPolicy(policies);
 
-  EXPECT_TRUE(
-      profile->GetPrefs()->IsManagedPreference(ash::prefs::kOrcaEnabled));
-  EXPECT_FALSE(profile->GetPrefs()->GetBoolean(ash::prefs::kOrcaEnabled));
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(ash::prefs::kHmwManagedSettings),
+            2);
   EXPECT_TRUE(editor_mediator.IsAllowedForUse());
+  EXPECT_FALSE(editor_mediator.CanAccessFeedback());
 }
 
 }  // namespace policy

@@ -115,6 +115,9 @@ class EditorMediator : public EditorContext::Observer,
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
 
+  // Checks if feedbacks can be accessed.
+  bool CanAccessFeedback();
+
   // Checks if the review notice banner can be shown in the settings page.
   bool CanShowNoticeBanner() const;
 

@@ -229,7 +229,7 @@ TEST_P(EditorSwitchAvailabilityWithPolicyTest,
 
   TestingProfile profile;
   profile.GetTestingPrefService()->SetManagedPref(
-      prefs::kOrcaEnabled, base::Value(test_case.enabled_by_policy));
+      prefs::kHmwManagedSettings, base::Value(test_case.enabled_by_policy));
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;

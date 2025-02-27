@@ -393,6 +393,208 @@ suite('<search-and-assistant-settings-card>', () => {
       });
     });
 
+    suite('Help me write enterprise policy', () => {
+      setup(() => {
+        loadTimeData.overrideValues({
+          isMagicBoostFeatureEnabled: true,
+        });
+      });
+
+      for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
+        suite(`is ${desc}`, () => {
+          let hmwToggle: SettingsToggleButtonElement;
+
+          setup(() => {
+            createSearchAndAssistantCard();
+            searchAndAssistantSettingsCard.prefs = {
+              assistive_input: {
+                orca_enabled: {
+                  value: true,
+                  type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                },
+              },
+              settings: {
+                magic_boost_enabled: {
+                  value: true,
+                  type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                },
+                managed: {
+                  help_me_write: {
+                    value,
+                    type: chrome.settingsPrivate.PrefType.NUMBER,
+                  },
+                },
+              },
+
+            };
+            flush();
+
+            const nullableHmwToggle =
+                searchAndAssistantSettingsCard.shadowRoot!
+                    .querySelector<SettingsToggleButtonElement>(
+                        '#helpMeWriteToggle');
+            assertTrue(nullableHmwToggle !== null);
+            hmwToggle = nullableHmwToggle;
+          });
+
+          test('Hmw toggle should appear', () => {
+            assertTrue(isVisible(hmwToggle));
+          });
+
+          test('Hmw enterprise toggle should not appear', () => {
+            const hmwEnterpriseToggle =
+                searchAndAssistantSettingsCard.shadowRoot!
+                    .querySelector<SettingsToggleButtonElement>(
+                        '#helpMeWriteEnterpriseToggle');
+            assertFalse(isVisible(hmwEnterpriseToggle));
+          });
+
+          test('Hmw toggle reflects pref value', () => {
+            assertTrue(isVisible(hmwToggle));
+            assertTrue(hmwToggle.checked);
+            assertTrue(searchAndAssistantSettingsCard.get(
+                'prefs.assistive_input.orca_enabled.value'));
+
+            hmwToggle.click();
+            assertFalse(hmwToggle.checked);
+            assertFalse(searchAndAssistantSettingsCard.get(
+                'prefs.assistive_input.orca_enabled.value'));
+          });
+
+          test(
+              'then changes to disallowed, ' +
+                  'Hmw enterprise toggle is deep-linkable',
+              async () => {
+                searchAndAssistantSettingsCard.set(
+                    'prefs.settings.managed.help_me_write.value', 2);
+                flush();
+
+                const hmwEnterpriseToggle =
+                    searchAndAssistantSettingsCard.shadowRoot!
+                        .querySelector<SettingsToggleButtonElement>(
+                            '#helpMeWriteEnterpriseToggle');
+                assertTrue(hmwEnterpriseToggle !== null);
+
+                const setting = settingMojom.Setting.kShowOrca;
+                const params = new URLSearchParams();
+                params.append('settingId', setting.toString());
+                Router.getInstance().navigateTo(defaultRoute, params);
+
+                await waitAfterNextRender(hmwEnterpriseToggle);
+                assertEquals(
+                    hmwEnterpriseToggle,
+                    searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+                    `Element should be focused for settingId=${setting}.'`);
+              });
+        });
+      }
+
+      suite('is disallowed', () => {
+        let hmwEnterpriseToggle: SettingsToggleButtonElement;
+
+        setup(() => {
+          createSearchAndAssistantCard();
+          searchAndAssistantSettingsCard.prefs = {
+            settings: {
+              magic_boost_enabled: {
+                value: true,
+                type: chrome.settingsPrivate.PrefType.BOOLEAN,
+              },
+              managed: {
+                help_me_write: {
+                  value: 2,
+                  type: chrome.settingsPrivate.PrefType.NUMBER,
+                },
+              },
+            },
+            assistive_input: {
+              orca_enabled: {
+                value: true,
+                type: chrome.settingsPrivate.PrefType.BOOLEAN,
+              },
+            },
+          };
+          flush();
+
+          const nullableHmwEnterpriseToggle =
+              searchAndAssistantSettingsCard.shadowRoot!
+                  .querySelector<SettingsToggleButtonElement>(
+                      '#helpMeWriteEnterpriseToggle');
+          assertTrue(nullableHmwEnterpriseToggle !== null);
+          hmwEnterpriseToggle = nullableHmwEnterpriseToggle;
+        });
+
+        test('Hmw enterprise toggle should appear', () => {
+          assertTrue(isVisible(hmwEnterpriseToggle));
+        });
+
+        test('Hmw toggle should not appear', () => {
+          const hmwToggle = searchAndAssistantSettingsCard.shadowRoot!
+                                .querySelector<SettingsToggleButtonElement>(
+                                    '#helpMeWriteToggle');
+          assertFalse(isVisible(hmwToggle));
+        });
+
+        test('Hmw enterprise toggle appears unchecked', () => {
+          assertTrue(isVisible(hmwEnterpriseToggle));
+          assertFalse(hmwEnterpriseToggle.checked);
+        });
+
+        test('Hmw enterprise toggle does not respond to clicks', () => {
+          assertTrue(isVisible(hmwEnterpriseToggle));
+          hmwEnterpriseToggle.click();
+
+          assertFalse(hmwEnterpriseToggle.checked);
+          assertTrue(searchAndAssistantSettingsCard.get(
+              'prefs.assistive_input.orca_enabled.value'));
+          assertEquals(
+              2,
+              searchAndAssistantSettingsCard.get(
+                  'prefs.settings.managed.help_me_write.value'));
+        });
+
+        test('Hmw enterprise toggle is deep-linkable', async () => {
+          const setting = settingMojom.Setting.kShowOrca;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(defaultRoute, params);
+
+          await waitAfterNextRender(hmwEnterpriseToggle);
+          assertEquals(
+              hmwEnterpriseToggle,
+              searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+              `Element should be focused for settingId=${setting}.'`);
+        });
+
+        for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
+          test(
+              `then changes to ${desc}, Hmw toggle is deep-linkable`,
+              async () => {
+                searchAndAssistantSettingsCard.set(
+                    'prefs.settings.managed.help_me_write.value', value);
+                flush();
+
+                const hmwToggle =
+                    searchAndAssistantSettingsCard.shadowRoot!
+                        .querySelector<SettingsToggleButtonElement>(
+                            '#helpMeWriteToggle');
+                assertTrue(hmwToggle !== null);
+
+                const setting = settingMojom.Setting.kShowOrca;
+                const params = new URLSearchParams();
+                params.append('settingId', setting.toString());
+                Router.getInstance().navigateTo(defaultRoute, params);
+
+                await waitAfterNextRender(hmwToggle);
+                assertEquals(
+                    hmwToggle,
+                    searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+                    `Element should be focused for settingId=${setting}.'`);
+              });
+        }
+      });
+    });
+
     suite('Lobster setting toggle', () => {
       [{
         isMagicBoostFeatureEnabled: false,

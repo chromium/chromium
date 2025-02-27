@@ -194,6 +194,9 @@
           "settings.managed.help_me_read": {
             "value": 0
           },
+          "settings.managed.help_me_write": {
+            "value": 0
+          },
           "ash.gen_ai_photo_editing_settings": {
             "value": 0
           },
@@ -235,6 +238,9 @@
           "settings.managed.help_me_read": {
             "value": 1
           },
+          "settings.managed.help_me_write": {
+            "value": 1
+          },
           "ash.gen_ai_photo_editing_settings": {
             "value": 1
           },
@@ -256,6 +262,7 @@
           "GenAIWallpaperSettings": 2,
           "GenAIVcBackgroundSettings": 2,
           "HelpMeReadSettings": 2,
+          "HelpMeWriteSettings": 2,
           "GenAIPhotoEditingSettings": 2,
 	  "GenAISmartGroupingSettings": 2
         },
@@ -288,6 +295,9 @@
             "value": 2
           },
           "settings.managed.help_me_read": {
+            "value": 2
+          },
+          "settings.managed.help_me_write": {
             "value": 2
           },
           "ash.gen_ai_photo_editing_settings": {

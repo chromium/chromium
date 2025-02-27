@@ -110,6 +110,12 @@ export class SearchAndAssistantSettingsCardElement extends
             'prefs.settings.managed.help_me_read.value)',
       },
 
+      isHmwAllowedByEnterprisePolicy_: {
+        type: Boolean,
+        computed: 'isEnterprisePolicyAllowed_(' +
+            'prefs.settings.managed.help_me_write.value)',
+      },
+
       enterprisePolicyToggleUncheckedValues_: {
         type: Array,
         readOnly: true,

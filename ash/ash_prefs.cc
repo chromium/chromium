@@ -103,6 +103,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_enterprise_policy_enums.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
@@ -216,6 +217,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
         prefs::kHmrManagedSettings,
         static_cast<int>(
             mahi_utils::HmrEnterprisePolicy::kAllowedWithModelImprovement));
+    registry->RegisterIntegerPref(
+        prefs::kHmwManagedSettings,
+        base::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
+                                kAllowedWithModelImprovement));
     registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
     registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
     registry->RegisterBooleanPref(prefs::kLobsterEnabled, true);
