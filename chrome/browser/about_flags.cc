@@ -10465,12 +10465,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAndroidPdfAssistContent)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"page-info-sharing", flag_descriptions::kChromePageInfoSharingName,
-     flag_descriptions::kChromePageInfoSharingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kChromeSharePageInfo)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"multi-calendar-in-quick-settings",
      flag_descriptions::kMultiCalendarSupportName,

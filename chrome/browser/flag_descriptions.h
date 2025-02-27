@@ -2505,9 +2505,6 @@ extern const char kAndroidOpenPdfInlineBackportDescription[];
 extern const char kAndroidPdfAssistContentName[];
 extern const char kAndroidPdfAssistContentDescription[];
 
-extern const char kChromePageInfoSharingName[];
-extern const char kChromePageInfoSharingDescription[];
-
 extern const char kAndroidTabDeclutterName[];
 extern const char kAndroidTabDeclutterDescription[];
 

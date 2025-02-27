@@ -6592,72 +6592,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Passkey confirmation sheet closed
       </message>
 
-      <!-- Share with Summary Bottom Sheet -->
-      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_TITLE" desc="Title of a bottomsheet that appears when generating a summary to share along a web page.">
-        Summary
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_DESCRIPTION" desc="Accessibility string that describes a bottomsheet that appears when generating a summary to share along a web page." formatter_data="android_java" is_accessibility_with_no_ui="true">
-        Share with summary sheet
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_OPENED" desc="Accessibility string that describes opening a bottomsheet that appears when generating a summary to share along a web page." formatter_data="android_java" is_accessibility_with_no_ui="true">
-        Share with summary sheet opened
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that appears when generating a summary to share along a web page." formatter_data="android_java" is_accessibility_with_no_ui="true">
-        Share with summary sheet closed
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_POSITIVE_FEEDBACK_DESCRIPTION" desc="Accessibility string that describes a thumbs up button to provide positive feedback on a generated summary." formatter_data="android_java" is_accessibility_with_no_ui="true">
-        Thumbs up submits feedback that you like this summary
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_NEGATIVE_FEEDBACK_DESCRIPTION" desc="Accessibility string that describes a thumbs down button to provide negative feedback on a generated summary." formatter_data="android_java" is_accessibility_with_no_ui="true">
-        Thumbs down submits feedback that you dislike this summary
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_ADD_SUMMARY" desc="Label of a button to add a generated summary to a share sheet.">
-        Add summary
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_ERROR_MESSAGE" desc="Error message shown after a summary failed to generate.">
-        Something went wrong. Summary couldn\u2019t be completed
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_DISCLAIMER" desc="Disclaimer at the bottom of a sheet with a generated summary. The learn more link will open a help article.">
-        This is an experimental AI feature and won\u2019t always get it right. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_TITLE" desc="Title of a bottom sheet that appears when providing feedback for a generated web page summary.">
-        Select an issue
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_SUBMIT" desc="Button label to submit feedback on a generated web page summary.">
-        Submit
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_DESCRIPTION" desc="Accessibility string that describes a bottomsheet that appears when providing feedback on a generated web page summary." formatter_data="android_java" is_accessibility_with_no_ui="true">
-        Share with summary feedback sheet
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_OPENED" desc="Accessibility string that describes opening a bottomsheet that appears when providing feedback on a generated web page summary." formatter_data="android_java" is_accessibility_with_no_ui="true">
-        Share with summary feedback sheet opened
-      </message>
-      <message name="IDS_SHARING_CREATE_SUMMARY" desc="Label of share sheet action to create a summary of the currently shared page.">
+      <message name="IDS_SHARING_CREATE_SUMMARY" desc="Label of menu item to create a summary of the currently shared page.">
         Create summary
-      </message>
-      <message name="IDS_SHARING_REMOVE_SUMMARY" desc="Label of share sheet action to remove a summary when sharing a web page.">
-        Remove summary
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that appears when providing feedback on a generated web page summary." formatter_data="android_java" is_accessibility_with_no_ui="true">
-        Share with summary feedback sheet closed
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_DISCLAIMER" desc="Disclaimer at the bottom of a bottom sheet to provide feedback for a generated web page summary.">
-        The URL of the page you\u2019re providing feedback for will be sent to Google, and may be reviewed by humans to improve this feature
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_OFFENSIVE" desc="Label of a radio button item for providing feedback on a generated summary that's offensive or unsafe.">
-        Offensive or unsafe
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_INACCURATE" desc="Label of a radio button item for providing feedback on a generated summary that's inaccurate.">
-        Inaccurate
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_REPETITIVE" desc="Label of a radio button item for providing feedback on a generated summary that's repetitive.">
-        Repetitive
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_MISSING_INFO" desc="Label of a radio button item for providing feedback on a generated summary that's missing information.">
-        Missing information
-      </message>
-      <message name="IDS_SHARE_WITH_SUMMARY_FEEDBACK_LABEL_OTHER" desc="Label of a radio button item for providing feedback on a generated summary that doesn't fit any other category.">
-        Other
       </message>
 
       <!-- Data Sharing -->

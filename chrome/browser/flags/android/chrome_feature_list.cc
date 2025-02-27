@@ -243,7 +243,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
-    &kChromeSharePageInfo,
     &kChromeSurveyNextAndroid,
     &kClankStartupLatencyInjection,
     &kClankWhatsNew,
@@ -740,10 +739,6 @@ BASE_FEATURE(kDontAutoHideBrowserControls,
 BASE_FEATURE(kCacheDeprecatedSystemLocationSetting,
              "CacheDeprecatedSystemLocationSetting",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeSharePageInfo,
-             "ChromeSharePageInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeSurveyNextAndroid,
              "ChromeSurveyNextAndroid",
