@@ -79,6 +79,9 @@ enum class FieldLocation {
   // This specifies a field that needs to succeed the trigger field in the
   // form.
   kSuccessor,
+  // This specifies a filed that is present anywhere in the form apart from the
+  // trigger field.
+  kAnywhere,
 };
 
 // Container class for conditions that all need to be true for a field to be

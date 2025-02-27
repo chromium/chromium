@@ -181,36 +181,45 @@ std::optional<size_t> FindFieldMeetingCondition(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     size_t start_index,
     const FieldCondition& condition) {
-  int direction = [&condition] {
-    switch (condition.location) {
-      case FieldLocation::kPredecessor:
-      case FieldLocation::kLastClassifiedPredecessor:
-        return -1;
-      case FieldLocation::kTriggerField:
-        NOTREACHED();
-      case FieldLocation::kNextClassifiedSuccessor:
-      case FieldLocation::kSuccessor:
-        return 1;
+  // This function is called with `start_index` pointing to the trigger field.
+  // It will search in the direction of `condition.location` for a field that
+  // meets the `condition`, and returns whether it found one.
+  auto search = [&](int direction) -> std::optional<size_t> {
+    for (int i = start_index + direction;
+         i >= 0 && i < static_cast<int>(fields.size()); i += direction) {
+      const AutofillField& candidate_field = *fields[i];
+      if (IsFieldConditionFulfilledIgnoringLocation(context, condition,
+                                                    candidate_field)) {
+        return static_cast<size_t>(i);
+      }
+      if (candidate_field.Type().GetStorableType() != UNKNOWN_TYPE &&
+          ((direction > 0 &&
+            condition.location == FieldLocation::kNextClassifiedSuccessor) ||
+           (direction < 0 &&
+            condition.location == FieldLocation::kLastClassifiedPredecessor))) {
+        // Don't try any further once we have checked the last/next classified
+        // field.
+        break;
+      }
     }
-  }();
+    return std::nullopt;
+  };
 
-  for (int i = start_index + direction;
-       i >= 0 && i < static_cast<int>(fields.size()); i += direction) {
-    const AutofillField& candidate_field = *fields[i];
-    if (IsFieldConditionFulfilledIgnoringLocation(context, condition,
-                                                  candidate_field)) {
-      return static_cast<size_t>(i);
-    }
-
-    if (candidate_field.Type().GetStorableType() != UNKNOWN_TYPE &&
-        (condition.location == FieldLocation::kLastClassifiedPredecessor ||
-         condition.location == FieldLocation::kNextClassifiedSuccessor)) {
-      // Don't try any further once we have checked the last/next classified
-      // field.
-      break;
-    }
+  // Determine search strategy based on `condition.location`.
+  switch (condition.location) {
+    case FieldLocation::kPredecessor:
+    case FieldLocation::kLastClassifiedPredecessor:
+      return search(/*direction=*/-1);  // Backward search.
+    case FieldLocation::kTriggerField:
+      NOTREACHED();
+    case FieldLocation::kNextClassifiedSuccessor:
+    case FieldLocation::kSuccessor:
+      return search(/*direction=*/1);  // Forward search.
+    case FieldLocation::kAnywhere:
+      // Try forward first, then backward.
+      const std::optional<size_t> forward_result = search(/*direction=*/1);
+      return forward_result ? forward_result : search(/*direction=*/-1);
   }
-
   return std::nullopt;
 }
 
