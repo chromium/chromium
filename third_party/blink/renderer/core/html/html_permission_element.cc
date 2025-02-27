@@ -877,6 +877,7 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
                                     kMaxHorizontalPaddingToFontSizeRatio,
                                 /*should_multiply_by_content_size=*/false));
       builder.SetPaddingRight(builder.PaddingLeft());
+      builder.SetWidth(Length::FitContent());
     } else {
       builder.ResetPaddingLeft();
       builder.ResetPaddingRight();
@@ -898,6 +899,7 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
         /*upper_bound=*/builder.FontSize() * kMaxVerticalPaddingToFontSizeRatio,
         /*should_multiply_by_content_size=*/false));
     builder.SetPaddingBottom(builder.PaddingTop());
+    builder.SetHeight(Length::FitContent());
   } else {
     builder.ResetPaddingTop();
     builder.ResetPaddingBottom();
