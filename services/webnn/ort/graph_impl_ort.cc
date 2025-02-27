@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -40,6 +41,7 @@ namespace {
 //
 // Keys:
 constexpr char kOVPrecision[] = "precision";
+constexpr char kOVCacheDir[] = "cache_dir";
 // Values:
 constexpr char kOVDeviceType[] = "device_type";
 constexpr char kOVDeviceGPU[] = "GPU";
@@ -252,6 +254,18 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
         provider_options_values.push_back(kOVDeviceNPU);
         break;
       }
+    }
+
+    std::string cache_dir;
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebNNOrtUseOVModelCache)) {
+      base::FilePath cache_path =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+              switches::kWebNNOrtUseOVModelCache);
+
+      cache_dir = base::SysWideToUTF8(cache_path.value());
+      provider_options_keys.push_back(kOVCacheDir);
+      provider_options_values.push_back(cache_dir.c_str());
     }
 
     // It is recommended to disable the graph optimization for OpenVINO

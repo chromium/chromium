@@ -58,6 +58,13 @@ inline constexpr char kWebNNOrtDisableCpuFallback[] =
 // More details for the inference precision and execution mode can be found at
 // https://docs.openvino.ai/2025/openvino-workflow/running-inference/optimize-inference/precision-control.html
 inline constexpr char kWebNNOrtOVGpuPrecision[] = "webnn-ort-ov-gpu-precision";
+
+// Enable model caching for OV EP with cache folder specified by
+// --webnn-ort-use-ov-model-cache. Note, the folder needs to be accessible from
+// the GPU process sandbox or --no-sandbox must be used. Usage: --no-sandbox
+// --webnn-ort-use-ov-model-cache=./ModelCache
+inline constexpr char kWebNNOrtUseOVModelCache[] =
+    "webnn-ort-use-ov-model-cache";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace switches
