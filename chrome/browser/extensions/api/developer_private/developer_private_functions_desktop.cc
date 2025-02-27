@@ -123,53 +123,7 @@ namespace extensions {
 namespace developer = api::developer_private;
 
 namespace {
-const char kNoSuchExtensionError[] = "No such extension.";
-const char kRequiresUserGestureError[] = "This action requires a user gesture.";
-const char kCouldNotShowSelectFileDialogError[] =
-    "Could not show a file chooser.";
-const char kFileSelectionCanceled[] = "File selection was canceled.";
-const char kNoSuchRendererError[] = "No such renderer.";
-const char kInvalidPathError[] = "Invalid path.";
-const char kManifestKeyIsRequiredError[] =
-    "The 'manifestKey' argument is required for manifest files.";
-const char kCouldNotFindWebContentsError[] =
-    "Could not find a valid web contents.";
-const char kNoOptionsPageForExtensionError[] =
-    "Extension does not have an options page.";
-const char kCannotRepairHealthyExtension[] =
-    "Cannot repair a healthy extension.";
-const char kCannotRepairPolicyExtension[] =
-    "Cannot repair a policy-installed extension.";
-const char kCannotChangeHostPermissions[] =
-    "Cannot change host permissions for the given extension.";
-const char kCannotSetPinnedWithoutAction[] =
-    "Cannot set pinned action state for an extension with no action.";
-const char kInvalidHost[] = "Invalid host.";
-const char kInvalidLazyBackgroundPageParameter[] =
-    "isServiceWorker can not be set for lazy background page based extensions.";
-const char kInvalidRenderProcessId[] =
-    "render_process_id can be set to -1 for only lazy background page based or "
-    "service-worker based extensions.";
-const char kFailToUninstallEnterpriseOrComponentExtensions[] =
-    "Cannot uninstall the enterprise or component extensions in your list.";
-const char kFailToUninstallNoneExistentExtensions[] =
-    "Cannot uninstall non-existent extensions in your list.";
-const char kUserCancelledError[] = "User cancelled uninstall";
-const char kNoExtensionError[] = "Extension with ID '*' doesn't exist.";
-const char kExtensionNotAffectedByMV2Deprecation[] =
-    "Extension with ID '*' is not affected by the MV2 deprecation.";
-const char kCannotRepairNonWebstoreExtension[] =
-    "Cannot repair an extension that is not installed from the Chrome Web "
-    "Store.";
-const char kCannotDismissExtensionOnUnsupportedStage[] =
-    "Cannot dismiss the MV2 deprecation notice for extension with ID '*' on "
-    "the unsupported stage.";
-const char kUserNotSignedIn[] = "User is not signed in.";
-const char kCannotUploadExtensionToAccount[] =
-    "Extension with ID '*' cannot be uploaded to the user's account.";
-
-const char kUnpackedAppsFolder[] = "apps_target";
-const char kManifestFile[] = "manifest.json";
+constexpr char kUnpackedAppsFolder[] = "apps_target";
 
 base::FilePath* g_drop_path_for_testing = nullptr;
 
