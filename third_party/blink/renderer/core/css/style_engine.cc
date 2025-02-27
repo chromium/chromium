@@ -3822,7 +3822,7 @@ void StyleEngine::RecalcPositionTryStyleForPseudoElement(
       &GetDocument(), /*within-selector_checking=*/false);
   SelectorFilterParentScope filter_scope(
       FlatTreeTraversal::ParentElement(
-          *pseudo_element.UltimateOriginatingElement()),
+          pseudo_element.UltimateOriginatingElement()),
       SelectorFilterParentScope::ScopeType::kRoot);
   pseudo_element.RecalcStyle(style_recalc_change, style_recalc_context);
 }

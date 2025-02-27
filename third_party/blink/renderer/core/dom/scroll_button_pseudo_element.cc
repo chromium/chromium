@@ -72,8 +72,8 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
       is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RETURN ||
                       To<KeyboardEvent>(event).keyCode() == VKEY_SPACE);
 
-  Element* scrolling_element = UltimateOriginatingElement();
-  auto* scroller = DynamicTo<LayoutBox>(scrolling_element->GetLayoutObject());
+  Element& scrolling_element = UltimateOriginatingElement();
+  auto* scroller = DynamicTo<LayoutBox>(scrolling_element.GetLayoutObject());
 
   bool should_intercept = scroller && scroller->IsScrollContainer() &&
                           event.target() == this &&
@@ -82,7 +82,7 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
     PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
 
     LogicalToPhysical<bool> mapping(
-        scrolling_element->GetComputedStyle()->GetWritingDirection(),
+        scrolling_element.GetComputedStyle()->GetWritingDirection(),
         GetPseudoId() == kPseudoIdScrollButtonInlineStart,
         GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
         GetPseudoId() == kPseudoIdScrollButtonBlockStart,
@@ -128,9 +128,8 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
   if (!isConnected()) {
     return true;
   }
-  Element* originating_element = UltimateOriginatingElement();
-  CHECK(originating_element);
-  LayoutBox* scroller = DynamicTo<LayoutBox>(originating_element->GetLayoutObject());
+  LayoutBox* scroller =
+      DynamicTo<LayoutBox>(UltimateOriginatingElement().GetLayoutObject());
   if (!scroller || !scroller->IsScrollContainer()) {
     return true;
   }

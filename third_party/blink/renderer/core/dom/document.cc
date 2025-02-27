@@ -5697,7 +5697,7 @@ Element* Document::SequentialFocusNavigationStartingPoint(
         sequential_focus_navigation_starting_point_->startContainer() !=
             focused_element_ &&
         type == mojom::blink::FocusType::kForward) {
-      return scroll_marker->UltimateOriginatingElement();
+      return &scroll_marker->UltimateOriginatingElement();
     }
     return focused_element_.Get();
   }
