@@ -122,7 +122,7 @@ if (!is_android) {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
       sources = [
-        "promos/autofill_bubble_signin_promo_interactive_uitest.cc",
+        "promos/bubble_signin_promo_interactive_uitest.cc",
         "signin_view_controller_interactive_uitest.cc",
       ]
       deps = [

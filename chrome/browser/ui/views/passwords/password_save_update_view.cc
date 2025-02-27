@@ -21,11 +21,11 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
-#include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -209,7 +209,7 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   accessibility_alert_ = AddChildView(std::move(accessibility_view));
 
   // Show the sign in promo.
-  auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
+  auto sign_in_promo = std::make_unique<BubbleSignInPromoView>(
       controller_.GetWebContents(),
       signin_metrics::AccessPoint::kPasswordBubble,
       PasswordFormUniqueKey(controller_.pending_password()));

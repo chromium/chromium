@@ -33,6 +33,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/service/local_data_description.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -96,10 +97,11 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
 
 #if !BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<views::View> CreateSigninPromoView(
-    Profile* profile,
+    content::WebContents* web_contents,
     BubbleSignInPromoDelegate* delegate) {
   return std::make_unique<BubbleSignInPromoView>(
-      profile, delegate, signin_metrics::AccessPoint::kExtensionInstallBubble);
+      web_contents, signin_metrics::AccessPoint::kExtensionInstallBubble,
+      syncer::LocalDataItemModel::DataId(), delegate);
 }
 #endif
 
@@ -140,7 +142,8 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   if (model_->show_sign_in_promo()) {
 #if !BUILDFLAG(IS_CHROMEOS)
-    SetFootnoteView(CreateSigninPromoView(browser->profile(), this));
+    SetFootnoteView(CreateSigninPromoView(
+        browser->tab_strip_model()->GetActiveWebContents(), this));
 #endif
   }
   SetIcon(ui::ImageModel::FromImageSkia(model_->MakeIconOfSize(kMaxIconSize)));
