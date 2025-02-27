@@ -306,8 +306,9 @@ void AddWidevine(const media::KeySystemCapability& capability,
   SupportedCodecs codecs = media::EME_CODEC_NONE;
   SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
 #if BUILDFLAG(IS_WIN)
-  SupportedCodecs hw_secure_codecs_clear_lead_support_not_required =
-      media::EME_CODEC_NONE;
+  // The experimental key system has a different set of hardware codecs, where
+  // these hardware codecs do not require clear lead support.
+  SupportedCodecs hw_secure_codecs_experimental = media::EME_CODEC_NONE;
 #endif
   base::flat_set<::media::EncryptionScheme> encryption_schemes;
   base::flat_set<::media::EncryptionScheme> hw_secure_encryption_schemes;
@@ -342,7 +343,7 @@ void AddWidevine(const media::KeySystemCapability& capability,
 #if BUILDFLAG(IS_WIN)
     // For the experimental Widevine key system, we do not have to filter the
     // hardware secure codecs by whether they support clear lead or not.
-    hw_secure_codecs_clear_lead_support_not_required =
+    hw_secure_codecs_experimental =
         GetSupportedCodecs(hw_secure_capability,
                            /*requires_clear_lead_support=*/false);
 #endif  // BUILDFLAG(IS_WIN)
@@ -423,10 +424,10 @@ void AddWidevine(const media::KeySystemCapability& capability,
     // experimental key system would not serve clear lead content.
     auto experimental_key_system_info = std::make_unique<WidevineKeySystemInfo>(
         codecs, encryption_schemes, session_types,
-        hw_secure_codecs_clear_lead_support_not_required,
-        hw_secure_encryption_schemes, hw_secure_session_types,
-        max_experimental_audio_robustness, max_experimental_video_robustness,
-        persistent_state_support, distinctive_identifier_support);
+        hw_secure_codecs_experimental, hw_secure_encryption_schemes,
+        hw_secure_session_types, max_experimental_audio_robustness,
+        max_experimental_video_robustness, persistent_state_support,
+        distinctive_identifier_support);
     experimental_key_system_info->set_experimental();
 
     key_systems->emplace_back(std::move(experimental_key_system_info));
