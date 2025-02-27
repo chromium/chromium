@@ -47,7 +47,7 @@ namespace {
 
 // These are the fonts that Blink tries to load in getLastResortFallbackFont,
 // and will crash if none can be loaded.
-const auto kLastResortFontNames = std::to_array<const wchar_t*>(
+constexpr auto kLastResortFontNames = std::to_array<const wchar_t*>(
     {L"Sans", L"Arial", L"MS UI Gothic", L"Microsoft Sans Serif", L"Segoe UI",
      L"Calibri", L"Times New Roman", L"Courier New"});
 
