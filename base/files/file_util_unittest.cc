@@ -1734,26 +1734,35 @@ TEST_F(FileUtilTest, ContentUriGetInfo) {
       *test::android::GetInMemoryContentUriFromCacheDirFilePath(file);
   FilePath content_uri_dir_in_memory =
       *test::android::GetInMemoryContentUriFromCacheDirFilePath(dir);
-  FilePath content_uri_dir_tree =
+  FilePath content_uri_document =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(file);
+  FilePath content_uri_document_tree =
       *test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(dir);
 
   // GetInfo() should work the same for files and content-URIs.
   File::Info info;
   File::Info content_uri_info;
   File::Info content_uri_in_memory_info;
+  File::Info content_uri_document_info;
   EXPECT_TRUE(GetFileInfo(file, &info));
   EXPECT_TRUE(GetFileInfo(content_uri_file, &content_uri_info));
+  EXPECT_TRUE(GetFileInfo(content_uri_document, &content_uri_document_info));
   EXPECT_TRUE(
       GetFileInfo(content_uri_file_in_memory, &content_uri_in_memory_info));
   EXPECT_EQ(12u, info.size);
   EXPECT_EQ(12u, content_uri_info.size);
   EXPECT_EQ(12u, content_uri_in_memory_info.size);
+  EXPECT_EQ(12u, content_uri_document_info.size);
   EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
   // Java InMemory provider sets last-modified to unix epoch.
   EXPECT_EQ(content_uri_in_memory_info.last_modified, Time::FromTimeT(0));
+  // Java DocumentProvider only does resolution to seconds.
+  EXPECT_EQ(info.last_modified.ToTimeT(),
+            content_uri_document_info.last_modified.ToTimeT());
   EXPECT_FALSE(info.is_directory);
   EXPECT_FALSE(content_uri_info.is_directory);
   EXPECT_FALSE(content_uri_in_memory_info.is_directory);
+  EXPECT_FALSE(content_uri_document_info.is_directory);
 
   // GetInfo() should work the same for dirs and content-URIs.
   EXPECT_TRUE(GetFileInfo(dir, &info));
@@ -1762,7 +1771,7 @@ TEST_F(FileUtilTest, ContentUriGetInfo) {
   EXPECT_FALSE(
       GetFileInfo(content_uri_dir_in_memory, &content_uri_in_memory_info));
   File::Info content_uri_tree_info;
-  EXPECT_TRUE(GetFileInfo(content_uri_dir_tree, &content_uri_tree_info));
+  EXPECT_TRUE(GetFileInfo(content_uri_document_tree, &content_uri_tree_info));
   EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
   // Java uses FileEnumerator::FileInfo which only does resolution to seconds.
   EXPECT_EQ(info.last_modified.ToTimeT(),
