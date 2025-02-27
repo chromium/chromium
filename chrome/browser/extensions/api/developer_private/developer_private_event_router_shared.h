@@ -26,6 +26,9 @@
 
 namespace extensions {
 
+// By observing these keyed services, we create dependencies on them. Those
+// dependencies are maintained in developer_private_api.cc in the
+// DeclareFactoryDependencies() template function instantiation.
 class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
                                           public ErrorConsole::Observer,
                                           public ProcessManagerObserver,

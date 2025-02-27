@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"  // nogncheck
 #include "chrome/browser/extensions/api/braille_display_private/braille_display_private_api.h"
-#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/font_settings/font_settings_api.h"
 #include "chrome/browser/extensions/api/history/history_api.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
@@ -79,6 +79,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   // APIs supported on Win/Mac/Linux plus desktop Android go here.
   extensions::CookiesAPI::GetFactoryInstance();
   extensions::ExtensionNotificationDisplayHelperFactory::GetInstance();
+  extensions::DeveloperPrivateAPI::GetFactoryInstance();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ActivityLogAPI::GetFactoryInstance();
@@ -89,7 +90,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::BookmarkManagerPrivateAPI::GetFactoryInstance();
   extensions::BrailleDisplayPrivateAPI::GetFactoryInstance();
   extensions::CommandService::GetFactoryInstance();
-  extensions::DeveloperPrivateAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::DocumentScanAPIHandler::GetFactoryInstance();
 #endif
