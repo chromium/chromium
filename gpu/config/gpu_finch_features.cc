@@ -724,10 +724,6 @@ bool EnablePruneOldTransferCacheEntries() {
   return base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
 }
 
-bool IsCanvasOopRasterizationEnabled() {
-  return true;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 bool IsAndroidSurfaceControlEnabled() {
   const auto* build_info = base::android::BuildInfo::GetInstance();

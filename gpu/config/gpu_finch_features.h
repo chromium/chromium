@@ -116,7 +116,6 @@ GPU_EXPORT bool IsSkiaGraphitePrecompilationEnabled(
     const base::CommandLine* command_line);
 GPU_EXPORT bool EnablePurgeGpuImageDecodeCache();
 GPU_EXPORT bool EnablePruneOldTransferCacheEntries();
-GPU_EXPORT bool IsCanvasOopRasterizationEnabled();
 
 #if BUILDFLAG(IS_ANDROID)
 GPU_EXPORT bool IsAndroidSurfaceControlEnabled();
