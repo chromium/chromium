@@ -85,6 +85,7 @@ TEST_F(IpProtectionCoreImplMojoTest,
       /*masked_domain_list_manager=*/nullptr,
       std::move(ipp_proxy_config_manager),
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      /*probabilistic_reveal_token_registry=*/nullptr,
       /*is_ip_protection_enabled=*/true);
 
   ip_protection_core.AuthTokensMayBeAvailable();
@@ -97,6 +98,7 @@ TEST_F(IpProtectionCoreImplMojoTest, ChangeEnabledStatus) {
       /*masked_domain_list_manager=*/nullptr,
       /*ip_protection_proxy_config_manager=*/nullptr,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      /*probabilistic_reveal_token_registry=*/nullptr,
       /*is_ip_protection_enabled=*/false);
   EXPECT_FALSE(ip_protection_core.IsIpProtectionEnabled());
 

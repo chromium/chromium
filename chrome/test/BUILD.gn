@@ -6614,6 +6614,7 @@ test("unit_tests") {
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
     "//components/ip_protection/common:masked_domain_list_manager",
+    "//components/ip_protection/common:probabilistic_reveal_token_registry",
     "//components/language/core/browser",
     "//components/language_detection/core",
     "//components/lens",

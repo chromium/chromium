@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "components/content_settings/core/common/content_settings.h"
-
 class GURL;
 
 namespace net {
@@ -91,6 +90,11 @@ class IpProtectionCore {
   // Sets the TRACKING_PROTECTION content settings list to `settings`.
   virtual void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) = 0;
+
+  // Check whether the given request URL is eligible to receive
+  // ProbabilisticRevealToken headers.
+  virtual bool ShouldRequestIncludeProbabilisticRevealToken(
+      const GURL& request_url) = 0;
 };
 
 }  // namespace ip_protection

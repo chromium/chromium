@@ -31,6 +31,7 @@ namespace ip_protection {
 class IpProtectionProxyConfigManager;
 class IpProtectionTokenManager;
 class MaskedDomainListManager;
+class ProbabilisticRevealTokenRegistry;
 enum class ProxyLayer;
 
 // The generic implementation of IpProtectionCore. Subclasses provide additional
@@ -46,6 +47,7 @@ class IpProtectionCoreImpl
           ip_protection_proxy_config_manager,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
           ip_protection_token_managers,
+      ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
       bool use_regular_mdl = false);
   ~IpProtectionCoreImpl() override;
@@ -68,6 +70,8 @@ class IpProtectionCoreImpl
       const GURL& first_party_url) const override;
   void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) override;
+  bool ShouldRequestIncludeProbabilisticRevealToken(
+      const GURL& request_url) override;
 
   IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
       ProxyLayer proxy_layer);
@@ -97,6 +101,10 @@ class IpProtectionCoreImpl
   // Proxy layer managers for cache of blind-signed auth tokens.
   std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
       ipp_token_managers_;
+
+  // The PRT registry, owned by the NetworkService.
+  raw_ptr<ProbabilisticRevealTokenRegistry>
+      probabilistic_reveal_token_registry_;
 
   bool is_ip_protection_enabled_;
 

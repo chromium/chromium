@@ -23,6 +23,7 @@
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
+#include "components/ip_protection/common/probabilistic_reveal_token_registry.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
@@ -76,11 +77,13 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
         ip_protection_proxy_config_manager,
     std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
         ip_protection_token_managers,
+    ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
     bool is_ip_protection_enabled,
     bool use_regular_mdl)
     : masked_domain_list_manager_(masked_domain_list_manager),
       ipp_proxy_config_manager_(std::move(ip_protection_proxy_config_manager)),
       ipp_token_managers_(std::move(ip_protection_token_managers)),
+      probabilistic_reveal_token_registry_(probabilistic_reveal_token_registry),
       is_ip_protection_enabled_(is_ip_protection_enabled),
       ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
       enable_token_caching_by_geo_(
@@ -223,6 +226,11 @@ void IpProtectionCoreImpl::GeoObserved(const std::string& geo_id) {
       token_manager->SetCurrentGeo(geo_id);
     }
   }
+}
+
+bool IpProtectionCoreImpl::ShouldRequestIncludeProbabilisticRevealToken(
+    const GURL& request_url) {
+  return probabilistic_reveal_token_registry_->IsRegistered(request_url);
 }
 
 void IpProtectionCoreImpl::OnNetworkChanged(

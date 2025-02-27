@@ -20,6 +20,7 @@ namespace ip_protection {
 class IpProtectionCoreHostRemote;
 class IpProtectionProxyConfigManager;
 class IpProtectionTokenManager;
+class ProbabilisticRevealTokenRegistry;
 
 // The Mojo implementation of IpProtectionCore, providing methods for CoreHost
 // to call on the core, and supporting initialization.
@@ -31,6 +32,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       mojo::PendingReceiver<ip_protection::mojom::CoreControl> pending_receiver,
       scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
       MaskedDomainListManager* masked_domain_list_manager,
+      ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
       bool use_regular_mdl = false);
   ~IpProtectionCoreImplMojo() override;
@@ -43,6 +45,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
           ip_protection_proxy_config_manager,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
           ip_protection_token_managers,
+      ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled);
 
   // `CoreControl` implementation.
@@ -62,6 +65,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
           ip_protection_proxy_config_manager,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
           ip_protection_token_managers,
+      ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
       bool use_regular_mdl = false);
 

@@ -72,6 +72,7 @@ source_set("ip_protection_core_impl") {
     ":ip_protection_token_manager",
     ":ip_protection_token_manager_impl",
     ":masked_domain_list_manager",
+    ":probabilistic_reveal_token_registry",
     "//components/content_settings/core/common",
   ]
 }
@@ -114,6 +115,7 @@ source_set("ip_protection_core_impl_mojo") {
     ":ip_protection_token_manager",
     ":ip_protection_token_manager_impl",
     ":ip_protection_token_mojo_fetcher",
+    ":probabilistic_reveal_token_registry",
     "//base",
     "//net",
   ]
@@ -752,4 +754,29 @@ bundle_data("tests_bundle_data") {
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+source_set("probabilistic_reveal_token_registry") {
+  sources = [
+    "probabilistic_reveal_token_registry.cc",
+    "probabilistic_reveal_token_registry.h",
+  ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+  deps = [ "//net" ]
+}
+
+source_set("probabilistic_reveal_token_registry_unittest") {
+  testonly = true
+  sources = [ "probabilistic_reveal_token_registry_unittest.cc" ]
+  deps = [
+    ":probabilistic_reveal_token_registry",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
 }

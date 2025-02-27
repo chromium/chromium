@@ -154,6 +154,7 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*masked_domain_list_manager=*/nullptr,
         /*ip_protection_proxy_config_manager=*/nullptr,
         std::move(ip_protection_token_managers),
+        /*probabilistic_reveal_token_registry=*/nullptr,
         /*is_ip_protection_enabled=*/true);
   }
 
@@ -165,6 +166,7 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*ip_protection_proxy_config_manager=*/nullptr,
         /*ip_protection_token_managers=*/
         std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+        /*probabilistic_reveal_token_registry=*/nullptr,
         /*is_ip_protection_enabled=*/true, /*use_regular_mdl=*/use_regular_mdl);
   }
 
@@ -177,6 +179,7 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*masked_domain_list_manager=*/nullptr,
         std::move(ip_protection_proxy_config_manager),
         std::move(ip_protection_token_managers),
+        /*probabilistic_reveal_token_registry=*/nullptr,
         /*is_ip_protection_enabled=*/true);
   }
 
