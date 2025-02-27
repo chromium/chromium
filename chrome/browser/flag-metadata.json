@@ -4458,7 +4458,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 145
   },
   {
     "name": "fast-pair-devices-bluetooth-settings",
@@ -4482,7 +4482,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 145
   },
   {
     "name": "fast-pair-keyboards",
@@ -4490,7 +4490,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 145
   },
   {
     "name": "fast-pair-pwa-companion",
