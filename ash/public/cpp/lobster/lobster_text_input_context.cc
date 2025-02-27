@@ -17,6 +17,8 @@ LobsterTextInputContext::LobsterTextInputContext(
       caret_bounds(caret_bounds),
       support_image_insertion(can_insert_image) {}
 
+LobsterTextInputContext::LobsterTextInputContext() = default;
+
 LobsterTextInputContext::~LobsterTextInputContext() = default;
 
 }  // namespace ash

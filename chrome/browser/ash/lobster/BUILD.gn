@@ -37,8 +37,9 @@ static_library("lobster") {
     "lobster_service.h",
     "lobster_service_provider.cc",
     "lobster_service_provider.h",
-    "lobster_system_state_provider.cc",
     "lobster_system_state_provider.h",
+    "lobster_system_state_provider_impl.cc",
+    "lobster_system_state_provider_impl.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -74,9 +75,12 @@ static_library("test_support") {
   sources = [
     "lobster_test_utils.cc",
     "lobster_test_utils.h",
+    "mock_lobster_system_state_provider.cc",
+    "mock_lobster_system_state_provider.h",
   ]
 
   deps = [
+    ":lobster",
     "//ash/public/cpp:cpp",
     "//base",
     "//base/test:test_support",
@@ -98,7 +102,7 @@ source_set("unit_tests") {
     "lobster_feedback_unittest.cc",
     "lobster_image_provider_from_snapper_unittest.cc",
     "lobster_service_unittest.cc",
-    "lobster_system_state_provider_unittest.cc",
+    "lobster_system_state_provider_impl_unittest.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

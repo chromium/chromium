@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
+#include "chrome/browser/ash/lobster/lobster_system_state_provider_impl.h"
 
 #include <array>
 
@@ -111,7 +111,7 @@ specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
 
 }  // namespace
 
-LobsterSystemStateProvider::LobsterSystemStateProvider(
+LobsterSystemStateProviderImpl::LobsterSystemStateProviderImpl(
     PrefService* pref,
     signin::IdentityManager* identity_manager)
     : pref_(pref),
@@ -122,9 +122,9 @@ LobsterSystemStateProvider::LobsterSystemStateProvider(
                         return g_browser_process->variations_service();
                       })) {}
 
-LobsterSystemStateProvider::~LobsterSystemStateProvider() = default;
+LobsterSystemStateProviderImpl::~LobsterSystemStateProviderImpl() = default;
 
-ash::LobsterSystemState LobsterSystemStateProvider::GetSystemState(
+ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
     const ash::LobsterTextInputContext& text_input_context) {
   ash::LobsterSystemState system_state(ash::LobsterStatus::kEnabled,
                                        /*failed_checks=*/{});
