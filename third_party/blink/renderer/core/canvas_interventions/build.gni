@@ -5,7 +5,13 @@
 blink_core_sources_canvas_interventions = [
   "canvas_interventions_helper.cc",
   "canvas_interventions_helper.h",
+  "noise_hash.cc",
+  "noise_hash.h",
+  "noise_helper.cc",
+  "noise_helper.h",
 ]
 
-blink_core_tests_canvas_interventions =
-    [ "canvas_interventions_helper_unittest.cc" ]
+blink_core_tests_canvas_interventions = [
+  "canvas_interventions_helper_unittest.cc",
+  "noise_helper_unittest.cc",
+]
