@@ -8002,6 +8002,15 @@ const char kBatchUploadDesktopDescription[] =
     "Passwords and Addresses";
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
+const char kEnableExtensionsExplicitBrowserSigninName[] =
+    "Enable Extensions Explicit Sign In";
+const char kEnableExtensionsExplicitBrowserSigninDescription[] =
+    "Enables users to perform an explicit signin upon installing an extension. "
+    "After this, syncing for extensions will be enabled when in transport mode "
+    "(when a user is signed in but has not turned on full sync).";
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 const char kEnableBoundSessionCredentialsName[] =
     "Device Bound Session Credentials";
