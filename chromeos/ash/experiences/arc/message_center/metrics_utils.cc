@@ -8,17 +8,9 @@
 
 namespace ash::metrics_utils {
 
-void LogArcNotificationActionEnabled(bool action_enabled) {
-  base::UmaHistogramBoolean("Arc.Notifications.ActionEnabled", action_enabled);
-}
-
 void LogArcNotificationInlineReplyEnabled(bool inline_reply_enabled) {
   base::UmaHistogramBoolean("Arc.Notifications.InlineReplyEnabled",
                             inline_reply_enabled);
-}
-
-void LogArcNotificationStyle(arc::mojom::ArcNotificationStyle style) {
-  base::UmaHistogramEnumeration("Arc.Notifications.Style", style);
 }
 
 void LogArcNotificationIsCustomNotification(bool is_custom_notification) {
