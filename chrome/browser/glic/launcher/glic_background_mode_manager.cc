@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
@@ -37,6 +38,7 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
     OnProfileAdded(profile);
   }
+  EnableLaunchOnStartup(enabled_pref_);
   UpdateState();
 }
 
@@ -133,7 +135,15 @@ void GlicBackgroundModeManager::ExitBackgroundMode() {
 }
 
 void GlicBackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
-  // TODO(crbug.com/378140958): Implement function
+#if BUILDFLAG(IS_WIN)
+  if (should_launch) {
+    StartupLaunchManager::GetInstance()->RegisterLaunchOnStartup(
+        StartupLaunchReason::kGlic);
+  } else {
+    StartupLaunchManager::GetInstance()->UnregisterLaunchOnStartup(
+        StartupLaunchReason::kGlic);
+  }
+#endif
 }
 
 void GlicBackgroundModeManager::RegisterHotkey(ui::Accelerator updated_hotkey) {

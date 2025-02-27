@@ -4,8 +4,11 @@
 
 #include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 
+#include <memory>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_test_util.h"
@@ -19,11 +22,20 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+namespace {
+class TestStartupLaunchManager : public StartupLaunchManager {
+ public:
+  TestStartupLaunchManager() = default;
+  MOCK_METHOD1(UpdateLaunchOnStartup, void(bool should_launch_on_startup));
+};
+}  // namespace
 
 namespace glic {
 
@@ -177,4 +189,22 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
   EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
   EXPECT_TRUE(global_accelerator_listener->IsShortcutHandlingSuspended());
 }
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, LaunchOnStartup) {
+  auto launch_manager = std::make_unique<TestStartupLaunchManager>();
+  StartupLaunchManager::SetInstanceForTesting(launch_manager.get());
+
+  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true))
+      .Times(testing::Exactly(1));
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  testing::Mock::VerifyAndClearExpectations(launch_manager.get());
+  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(false))
+      .Times(testing::Exactly(1));
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               false);
+  testing::Mock::VerifyAndClearExpectations(launch_manager.get());
+}
+#endif
 }  // namespace glic
