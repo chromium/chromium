@@ -6613,6 +6613,8 @@ static_library("browser") {
 
   if (enterprise_cloud_content_analysis) {
     sources += [
+      "enterprise/connectors/analysis/clipboard_analysis_request.cc",
+      "enterprise/connectors/analysis/clipboard_analysis_request.h",
       "enterprise/connectors/analysis/content_analysis_delegate.cc",
       "enterprise/connectors/analysis/content_analysis_delegate.h",
       "enterprise/connectors/analysis/content_analysis_delegate_base.h",
