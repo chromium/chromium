@@ -1,7 +1,7 @@
 Name: grpc
 URL: https://github.com/grpc/grpc
 License: BSD-3-Clause, Apache-2.0, MPL-2.0
-License File: src/LICENSE
+License File: source/LICENSE
 Version: v1.54.0-dev
 Revision: a363b6c001139b9c8ffb7cd63f60a72f15349c3b
 Security Critical: yes
@@ -22,5 +22,5 @@ Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
 
 Note: Please also remember to check if `plugin_registry/grpc_plugin_registry.cc`
 needs update! Upstream sometimes introduces new plugins in
-`/src/src/core/plugin_registry/grpc_plugin_registry.cc` and we may need to update
+`/source/src/core/plugin_registry/grpc_plugin_registry.cc` and we may need to update
 our custom `grpc_plugin_registry.cc`.
