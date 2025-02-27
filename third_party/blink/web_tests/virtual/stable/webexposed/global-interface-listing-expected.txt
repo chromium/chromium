@@ -5989,7 +5989,6 @@ interface NamedNodeMap
 interface NavigateEvent : Event
     attribute @@toStringTag
     getter canIntercept
-    getter canTransition
     getter destination
     getter downloadRequest
     getter formData

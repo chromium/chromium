@@ -2920,6 +2920,9 @@
       public: true,
     },
     {
+      name: "NavigateEventCanTransition",
+    },
+    {
       name: "NavigateEventCommitBehavior",
       status: "experimental",
     },
