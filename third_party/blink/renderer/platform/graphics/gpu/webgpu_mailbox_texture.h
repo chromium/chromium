@@ -83,7 +83,6 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   uint32_t GetTextureIdForTest() { return wire_texture_id_; }
   uint32_t GetTextureGenerationForTest() { return wire_texture_generation_; }
   const wgpu::Device& GetDeviceForTest() { return device_; }
-  const gpu::Mailbox& GetMailbox() { return shared_image_->mailbox(); }
 
  private:
   WebGPUMailboxTexture(

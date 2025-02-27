@@ -275,6 +275,7 @@ gpu::SyncToken WebGPUMailboxTexture::Dissociate() {
       }
     }
   }
+  shared_image_.reset();
   return finished_access_token;
 }
 
