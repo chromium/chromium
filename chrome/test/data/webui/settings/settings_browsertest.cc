@@ -14,7 +14,6 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -781,15 +780,7 @@ IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, DiscardIndicator) {
           "runMochaSuite('DiscardIndicator')");
 }
 
-class SettingsPerformancePagePerformanceInterventionTest
-    : public SettingsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      performance_manager::features::kPerformanceInterventionUI};
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePagePerformanceInterventionTest,
-                       PerformanceIntervention) {
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, PerformanceIntervention) {
   RunTest("settings/performance_page_test.js",
           "runMochaSuite('PerformanceIntervention')");
 }
