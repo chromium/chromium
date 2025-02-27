@@ -418,8 +418,9 @@ template("build_webui") {
       extra_deps += [ ":css_wrapper_files" ]
     }
 
+    deps = [ "//tools/typescript/definitions:build_ts" ]
     if (defined(invoker.ts_deps)) {
-      deps = invoker.ts_deps
+      deps += invoker.ts_deps
     }
 
     definitions = [ "//tools/typescript/definitions/strings.d.ts" ]
