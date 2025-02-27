@@ -94,6 +94,8 @@ INSTANTIATE_TEST_SUITE_P(
         kSmartActionsButtonNotShownDueToFeatureChecks,
         kSmartActionsButtonNotShownDueToTextDetectionCancelled,
         kSmartActionsButtonNotShownDueToNoTextDetected,
+        kSmartActionsButtonNotShownDueToCanShowUiFalse,
+        kSmartActionsButtonNotShownDueToOffline,
     }));
 
 TEST_P(ScannerMetricsParameterisedTest, Record) {
