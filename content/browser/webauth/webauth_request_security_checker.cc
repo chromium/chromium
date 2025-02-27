@@ -10,8 +10,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/bad_message.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
@@ -84,7 +86,14 @@ std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
 WebAuthRequestSecurityChecker::RemoteValidation::Create(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
+  if (!url_loader_factory) {
+    std::move(callback).Run(
+        blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
+    return nullptr;
+  }
+
   // The relying party may allow other origins to use its RP ID based on the
   // contents of a .well-known file.
   std::string canonicalized_domain_storage;
@@ -111,14 +120,6 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
   GURL::Replacements replace_host;
   replace_host.SetHostStr(canonicalized_domain);
   well_known_url = well_known_url.ReplaceComponents(replace_host);
-
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      GetContentClient()->browser()->GetSystemSharedURLLoaderFactory();
-  if (!url_loader_factory) {
-    std::move(callback).Run(
-        blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
-    return nullptr;
-  }
 
   auto network_request = std::make_unique<network::ResourceRequest>();
   network_request->url = well_known_url;
@@ -256,8 +257,9 @@ bool WebAuthRequestSecurityChecker::IsSameOriginWithAncestors(
     const url::Origin& origin) {
   RenderFrameHost* parent = render_frame_host_->GetParentOrOuterDocument();
   while (parent) {
-    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin))
+    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
       return false;
+    }
     parent = parent->GetParentOrOuterDocument();
   }
   return true;
@@ -376,8 +378,19 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     return nullptr;
   }
 
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+  if (!WebAuthRequestSecurityChecker::
+          UseSystemSharedURLLoaderFactoryForTesting()) {
+    url_loader_factory = render_frame_host_->GetStoragePartition()
+                             ->GetURLLoaderFactoryForBrowserProcess();
+  }
+  if (!url_loader_factory) {
+    url_loader_factory =
+        GetContentClient()->browser()->GetSystemSharedURLLoaderFactory();
+  }
+
   return RemoteValidation::Create(caller_origin, relying_party_id,
-                                  std::move(callback));
+                                  url_loader_factory, std::move(callback));
 }
 
 blink::mojom::AuthenticatorStatus
@@ -513,6 +526,13 @@ bool WebAuthRequestSecurityChecker::
   *list = {unique_credential_descriptors.begin(),
            unique_credential_descriptors.end()};
   return true;
+}
+
+// static
+bool& WebAuthRequestSecurityChecker::
+    UseSystemSharedURLLoaderFactoryForTesting() {
+  static bool value = false;
+  return value;
 }
 
 }  // namespace content

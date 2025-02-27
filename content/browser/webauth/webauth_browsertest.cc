@@ -40,6 +40,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/authenticator_impl.h"
+#include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -177,6 +178,11 @@ constexpr char kRpIdNoEntryMessage[] =
     "of, nor equal to the current domain. Subsequently, fetching the "
     ".well-known/webauthn resource of the claimed RP ID was "
     "successful, but no listed origin matched the caller.";
+
+constexpr char kRpIdFetchFailedMessage[] =
+    "SecurityError: The relying party ID is not a registrable domain suffix "
+    "of, nor equal to the current domain. Subsequently, an attempt to fetch "
+    "the .well-known/webauthn resource of the claimed RP ID failed.";
 
 constexpr char kMaxLargeBlobMessage[] =
     "NotSupportedError: The 'largeBlob' extension's 'write' parameter exceeds "
@@ -1845,6 +1851,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Create) {
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response(
       "application/json", GetHttpsURL("www.acme.com", "/").spec());
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters))
                            .ExtractString();
@@ -1852,11 +1860,30 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Create) {
   EXPECT_EQ(kOkMessage, result);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateFetchFailed) {
+  CreateParameters parameters;
+  parameters.rp_id = "foo.com";
+  // Set up the system URL loader factory to respond to requests, but do not
+  // force its use. This will result in the browser context-specific URL
+  // loader factory being used, which will fail to handle the request.
+  test_client()->set_webauthn_origins_response(
+      "application/json", GetHttpsURL("www.acme.com", "/").spec());
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      false;
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              BuildCreateCallWithParameters(parameters))
+                           .ExtractString();
+
+  EXPECT_EQ(kRpIdFetchFailedMessage, result);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadContentType) {
   CreateParameters parameters;
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response(
       "text/plain", GetHttpsURL("www.acme.com", "/").spec());
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters))
                            .ExtractString();
@@ -1869,6 +1896,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadOrigin) {
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response("application/json",
                                                "https://nottherightdomain.com");
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters))
                            .ExtractString();
@@ -1882,6 +1911,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Timeout) {
   parameters.rp_id = "foo.com";
   parameters.timeout = kShortTimeout;
   test_client()->sinkhole_webauthn_origins_requests();
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters))
                            .ExtractString();
@@ -1902,6 +1933,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response(
       "application/json", GetHttpsURL("www.acme.com", "/").spec());
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildGetCallWithParameters(parameters))
                            .ExtractString();

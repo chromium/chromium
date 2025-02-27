@@ -63,6 +63,7 @@
 #include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
+#include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -620,6 +621,9 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
+    WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+        true;
+
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
         &AuthenticatorTestBase::OnMojoError, base::Unretained(this)));
 
@@ -645,6 +649,8 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
 
   void TearDown() override {
     RenderViewHostTestHarness::TearDown();
+    WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+        false;
 
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 

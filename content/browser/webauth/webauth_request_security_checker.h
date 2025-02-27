@@ -23,7 +23,8 @@ class Value;
 
 namespace network {
 class SimpleURLLoader;
-}
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace content {
 
@@ -60,6 +61,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     static std::unique_ptr<RemoteValidation> Create(
         const url::Origin& caller_origin,
         const std::string& relying_party_id,
+        scoped_refptr<network::SharedURLLoaderFactory>
+            shared_url_loader_factory,
         base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
     // ValidateWellKnownJSON implements the core of remote validation. It isn't
@@ -153,6 +156,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
 
   [[nodiscard]] bool DeduplicateCredentialDescriptorListAndValidateLength(
       std::vector<device::PublicKeyCredentialDescriptor>* list);
+
+  static bool& UseSystemSharedURLLoaderFactoryForTesting();
 
  protected:
   friend class base::RefCounted<WebAuthRequestSecurityChecker>;
