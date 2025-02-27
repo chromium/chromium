@@ -52,7 +52,7 @@ void VideoFrameResourceProvider::Initialize(
 
   resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
       media_context_provider, resource_provider_.get(),
-      std::move(shared_image_interface), settings_.use_stream_video_draw_quad,
+      std::move(shared_image_interface),
       settings_.use_gpu_memory_buffer_resources, max_texture_size);
 }
 

@@ -465,7 +465,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       base::SysInfo::IsLowEndDevice() && !IsSmallScreen(screen_size) &&
       !platform->IsSynchronousCompositingEnabledForAndroidWebView();
 
-  settings.use_stream_video_draw_quad = true;
   settings.using_synchronous_renderer_compositor = use_synchronous_compositor;
   if (use_synchronous_compositor) {
     // Root frame in Android WebView uses system scrollbars, so make ours

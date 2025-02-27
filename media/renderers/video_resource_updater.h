@@ -82,7 +82,6 @@ class MEDIA_EXPORT VideoResourceUpdater
       viz::RasterContextProvider* context_provider,
       viz::ClientResourceProvider* resource_provider,
       scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
-      bool use_stream_video_draw_quad,
       bool use_gpu_memory_buffer_resources,
       int max_resource_size);
 
@@ -215,7 +214,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
   const raw_ptr<viz::ClientResourceProvider, DanglingUntriaged>
       resource_provider_;
-  const bool use_stream_video_draw_quad_;
   const bool use_gpu_memory_buffer_resources_;
   const int max_resource_size_;
   const int tracing_id_;
