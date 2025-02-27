@@ -168,6 +168,11 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
   bool IsPopup() override { return true; }
 
+  Element* GetPopupClientOwnerElement() override {
+    CHECK(popup_ && popup_->popup_client_);
+    return &popup_->popup_client_->OwnerElement();
+  }
+
  private:
   void CloseWindow() override {
     // This skips past the PopupClient by calling ClosePopup() instead of

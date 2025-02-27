@@ -1503,6 +1503,80 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
+// The color picker's popup behaves differently on Android/iOS-Blink, this test
+// doesn't apply.
+#if !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       GetBoundsRectIframesForColorPicker) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <iframe style='border-width: 80px; padding: 20px;'
+            srcdoc="
+              <input type='color' aria-label='Input' />
+            ">
+          </iframe>
+        </body>
+      </html>)HTML"));
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Input");
+
+  ui::AXNode* root = GetManager()->GetRoot();
+  ASSERT_NE(nullptr, root);
+
+  const ui::AXNode* iframe = root->children()[0]->children()[0]->children()[0];
+  ASSERT_NE(nullptr, iframe);
+  ASSERT_EQ(iframe->GetRole(), ax::mojom::Role::kIframe);
+
+  const ui::AXTreeID iframe_tree_id = ui::AXTreeID::FromString(
+      iframe->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
+  ui::BrowserAccessibilityManager* iframe_manager =
+      ui::BrowserAccessibilityManager::FromID(iframe_tree_id);
+  ASSERT_NE(nullptr, iframe_manager);
+
+  ui::AXNode* input_node =
+      iframe_manager->GetRoot()->children()[0]->children()[0]->children()[0];
+  ASSERT_NE(nullptr, input_node);
+  ui::BrowserAccessibility* input = iframe_manager->GetFromAXNode(input_node);
+
+  // Get the list of ControlsIds; should initially be empty.
+  {
+    const auto& controls_ids =
+        input->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
+    ASSERT_EQ(0u, controls_ids.size());
+  }
+  // Expand the popup and wait for it to appear.
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kClicked);
+
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    input->AccessibilityPerformAction(action_data);
+
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+  // Get the list of ControlsIds again; should now include the popup.
+  {
+    const auto& controls_ids =
+        input->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
+    ASSERT_EQ(1u, controls_ids.size());
+    const ui::BrowserAccessibility* popup_area =
+        iframe_manager->GetFromID(controls_ids[0]);
+    ASSERT_NE(nullptr, popup_area);
+
+    // Ensure that the bounding box of the popup area is at least 100 pixels
+    // (iframe's border-with and padding) from the origin.
+    gfx::Rect popup_bounds = popup_area->GetUnclippedRootFrameBoundsRect();
+    EXPECT_GT(popup_bounds.x(), 100);
+    EXPECT_GT(popup_bounds.y(), 100);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_IOS) &&
+        // BUILDFLAG(USE_BLINK))
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(

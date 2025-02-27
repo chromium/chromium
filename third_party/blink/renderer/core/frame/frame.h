@@ -454,6 +454,9 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // Returns all the resources under the frame tree of this node.
   HeapVector<Member<Resource>> AllResourcesUnderFrame();
 
+  // Iterates through the frame owner's ancestor nodes and adjusts the offset.
+  void AdjustOffsetByAncestorFrames(gfx::Point* origin_point);
+
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or
   // opener's WindowAgentFactory. Pass nullptr if the frame is isolated from

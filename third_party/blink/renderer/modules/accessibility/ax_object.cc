@@ -120,6 +120,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlight_type.h"
+#include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -7306,12 +7307,26 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
       out_bounds_in_container.set_size(gfx::SizeF(view->Size()));
 
       // If it's a popup, account for the popup window's offset.
-      if (view->GetPage()->GetChromeClient().IsPopup()) {
+      auto& chrome_client = view->GetPage()->GetChromeClient();
+      if (chrome_client.IsPopup()) {
         gfx::Rect frame_rect = view->FrameToScreen(view->FrameRect());
         LocalFrameView* root_view =
             AXObjectCache().GetDocument().GetFrame()->View();
         gfx::Rect root_frame_rect =
             root_view->FrameToScreen(root_view->FrameRect());
+        // If a color picker popup is found inside of an iframe, account for the
+        // distance from the current frame to the parent frame.
+        auto* owner_element = chrome_client.GetPopupClientOwnerElement();
+        if (auto* input_element = DynamicTo<HTMLInputElement>(owner_element)) {
+          if (input_element->FormControlType() ==
+              FormControlType::kInputColor) {
+            gfx::Point origin(root_frame_rect.origin());
+            owner_element->GetDocument()
+                .GetFrame()
+                ->AdjustOffsetByAncestorFrames(&origin);
+            root_frame_rect.set_origin(origin);
+          }
+        }
 
         // Screen coordinates are in DIP without device scale factor applied.
         // Accessibility expects device scale factor applied here which is
