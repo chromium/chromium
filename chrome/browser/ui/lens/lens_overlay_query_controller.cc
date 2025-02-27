@@ -61,6 +61,7 @@
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_polygon.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_request_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
@@ -363,7 +364,7 @@ lens::Payload CreatePageContentPayload(base::span<const uint8_t> content_bytes,
     // If compression is successful, set the compression type and return.
     // Otherwise, fall back to the original bytes.
     if (ZstdCompressBytes(content_bytes, payload.mutable_content_data())) {
-      payload.set_compression_type(lens::Payload::ZSTD);
+      payload.set_compression_type(lens::CompressionType::ZSTD);
       return payload;
     }
   }
@@ -1299,7 +1300,7 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
 
   // Create the partial page content payload.
   lens::Payload payload;
-  payload.set_request_type(lens::Payload::REQUEST_TYPE_EARLY_PARTIAL_PDF);
+  payload.set_request_type(lens::RequestType::REQUEST_TYPE_EARLY_PARTIAL_PDF);
 
   // Add the partial page content to the payload.
   lens::LensOverlayDocument* partial_pdf_document =
