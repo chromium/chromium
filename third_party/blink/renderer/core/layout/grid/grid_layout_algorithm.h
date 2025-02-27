@@ -278,11 +278,6 @@ class CORE_EXPORT GridLayoutAlgorithm
   // Set reading flow nodes so they can be accessed by LayoutBox.
   void SetReadingFlowNodes(const GridSizingTree& sizing_tree);
 
-  LayoutUnit ComputeGridItemAvailableSize(
-      const GridItemData& grid_item,
-      const GridLayoutTrackCollection& track_collection,
-      LayoutUnit* start_offset = nullptr) const;
-
   LogicalSize grid_available_size_;
   LogicalSize grid_min_available_size_;
   LogicalSize grid_max_available_size_;

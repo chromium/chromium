@@ -189,8 +189,8 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
     LogicalOffset offset = {layout_data.Columns().GetSetOffset(0),
                             layout_data.Rows().GetSetOffset(0)};
 
-    LogicalSize size = {layout_data.Columns().ComputeSetSpanSize(),
-                        layout_data.Rows().ComputeSetSpanSize()};
+    LogicalSize size = {layout_data.Columns().CalculateSetSpanSize(),
+                        layout_data.Rows().CalculateSetSpanSize()};
 
     container_builder_.SetInflowBounds(LogicalRect(offset, size));
   }
@@ -273,7 +273,7 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
   if (const auto* layout_subtree =
           GetConstraintSpace().GetGridLayoutSubtree()) {
     return FixedMinMaxSizes(
-        layout_subtree->LayoutData().Columns().ComputeSetSpanSize());
+        layout_subtree->LayoutData().Columns().CalculateSetSpanSize());
   }
 
   // If we have inline size containment ignore all children.
@@ -306,7 +306,7 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
                                      sizing_constraint);
       }
     }
-    return sizing_data.layout_data.Columns().ComputeSetSpanSize();
+    return sizing_data.layout_data.Columns().CalculateSetSpanSize();
   };
 
   MinMaxSizes sizes{ComputeTotalColumnSize(SizingConstraint::kMinContent),
@@ -662,7 +662,7 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
   if (contain_intrinsic_block_size_) {
     *intrinsic_block_size = *contain_intrinsic_block_size_;
   } else {
-    *intrinsic_block_size = layout_data.Rows().ComputeSetSpanSize() +
+    *intrinsic_block_size = layout_data.Rows().CalculateSetSpanSize() +
                             border_scrollbar_padding.BlockSum();
 
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
@@ -774,7 +774,7 @@ LayoutUnit GridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
 
   return grid_sizing_tree.TreeRootData()
              .layout_data.Rows()
-             .ComputeSetSpanSize() +
+             .CalculateSetSpanSize() +
          BorderScrollbarPadding().BlockSum();
 }
 
@@ -1083,8 +1083,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
                              : BlockContributionSize();
 
           auto spanned_tracks_definite_max_size =
-              track_collection.ComputeSetSpanSize(begin_set_index,
-                                                  end_set_index);
+              track_collection.CalculateSetSpanSize(begin_set_index,
+                                                    end_set_index);
 
           if (spanned_tracks_definite_max_size != kIndefiniteSize) {
             // Further clamp the minimum size to less than or equal to the
@@ -1363,12 +1363,11 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
 
     LayoutUnit inline_offset, block_offset;
     LogicalSize containing_grid_area_size = {
-        ComputeGridItemAvailableSize(
-            *subgridded_item, subgridded_item.ParentLayoutData().Columns(),
-            &inline_offset),
-        ComputeGridItemAvailableSize(*subgridded_item,
-                                     subgridded_item.ParentLayoutData().Rows(),
-                                     &block_offset)};
+        subgridded_item->CalculateAvailableSize(subgridded_item.Columns(),
+                                                &inline_offset),
+        subgridded_item->CalculateAvailableSize(subgridded_item.Rows(),
+                                                &block_offset)};
+
     // TODO(kschmi) : Add a cache slot parameter to
     //  `CreateConstraintSpaceForLayout` to avoid variables above.
     const auto space =
@@ -1599,8 +1598,8 @@ Vector<BlockSizeDependentGridItem> BlockSizeDependentGridItems(
 
     const auto& set_indices = grid_item.SetIndices(kForRows);
     BlockSizeDependentGridItem dependent_item = {
-        set_indices, track_collection.ComputeSetSpanSize(set_indices.begin,
-                                                         set_indices.end)};
+        set_indices, track_collection.CalculateSetSpanSize(set_indices.begin,
+                                                           set_indices.end)};
     dependent_items.emplace_back(std::move(dependent_item));
   }
   return dependent_items;
@@ -1612,7 +1611,7 @@ bool MayChangeBlockSizeDependentGridItemContributions(
   DCHECK_EQ(track_collection.Direction(), kForRows);
 
   for (const auto& grid_item : dependent_items) {
-    const LayoutUnit block_size = track_collection.ComputeSetSpanSize(
+    const LayoutUnit block_size = track_collection.CalculateSetSpanSize(
         grid_item.row_set_indices.begin, grid_item.row_set_indices.end);
 
     DCHECK_NE(block_size, kIndefiniteSize);
@@ -3086,10 +3085,8 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
   LayoutUnit inline_offset, block_offset;
 
   LogicalSize containing_grid_area_size = {
-      ComputeGridItemAvailableSize(grid_item, layout_data.Columns(),
-                                   &inline_offset),
-      ComputeGridItemAvailableSize(grid_item, layout_data.Rows(),
-                                   &block_offset)};
+      grid_item.CalculateAvailableSize(layout_data.Columns(), &inline_offset),
+      grid_item.CalculateAvailableSize(layout_data.Rows(), &block_offset)};
 
   if (containing_grid_area) {
     containing_grid_area->offset.inline_offset = inline_offset;
@@ -3130,11 +3127,13 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
 
   if (track_direction == kForColumns) {
-    containing_grid_area_size.block_size = ComputeGridItemAvailableSize(
-        *subgridded_item, subgridded_item.Rows(writing_mode));
+    containing_grid_area_size.block_size =
+        subgridded_item->CalculateAvailableSize(
+            subgridded_item.Rows(writing_mode));
   } else {
-    containing_grid_area_size.inline_size = ComputeGridItemAvailableSize(
-        *subgridded_item, subgridded_item.Columns(writing_mode));
+    containing_grid_area_size.inline_size =
+        subgridded_item->CalculateAvailableSize(
+            subgridded_item.Columns(writing_mode));
   }
 
   auto fixed_available_size =
@@ -3233,7 +3232,7 @@ class BaselineAccumulator {
       LayoutUnit minor_baseline = rows.MinorBaseline(i);
       if (minor_baseline != LayoutUnit::Min()) {
         LayoutUnit baseline_offset =
-            set_offset + rows.ComputeSetSpanSize(i, i + 1) - minor_baseline;
+            set_offset + rows.CalculateSetSpanSize(i, i + 1) - minor_baseline;
         if (!first_minor_baseline_)
           first_minor_baseline_.emplace(i, baseline_offset);
         last_minor_baseline_.emplace(i, baseline_offset);
@@ -4317,25 +4316,6 @@ void ComputeOutOfFlowOffsetAndSize(
 }
 
 }  // namespace
-
-LayoutUnit GridLayoutAlgorithm::ComputeGridItemAvailableSize(
-    const GridItemData& grid_item,
-    const GridLayoutTrackCollection& track_collection,
-    LayoutUnit* start_offset) const {
-  DCHECK(!grid_item.IsOutOfFlow());
-  DCHECK(!grid_item.is_subgridded_to_parent_grid);
-
-  const auto& [begin_set_index, end_set_index] =
-      grid_item.SetIndices(track_collection.Direction());
-
-  if (start_offset) {
-    *start_offset = track_collection.GetSetOffset(begin_set_index);
-  }
-
-  const auto available_size =
-      track_collection.ComputeSetSpanSize(begin_set_index, end_set_index);
-  return available_size.MightBeSaturated() ? LayoutUnit() : available_size;
-}
 
 // static
 LogicalRect GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(

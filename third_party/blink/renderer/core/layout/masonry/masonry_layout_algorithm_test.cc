@@ -69,21 +69,21 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   std::unique_ptr<GridSizingTrackCollection> grid_axis_tracks_;
-  // Virtual items represent the contributions of item groups in the track
-  // sizing algorithm.
+  // Virtual items represent the contributions of item groups in track sizing
+  // and are not directly related to any children of the container.
   GridItems virtual_masonry_items_;
   // Children of the container to be laid out are represented by masonry items.
   GridItems masonry_items_;
 };
 
-TEST_F(MasonryLayoutAlgorithmTest, BuildTrackSizesAndMasonryItems) {
+TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
-      #masonry {
-        display: masonry;
-        masonry-template-tracks: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
-      }
+    #masonry {
+      display: masonry;
+      masonry-template-tracks: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
+    }
     </style>
     <div id="masonry">
       <div>1</div>
@@ -104,10 +104,9 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildTrackSizesAndMasonryItems) {
 
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
-
   MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
-  EXPECT_EQ(MasonryItemCount(), 0U);
 
+  EXPECT_EQ(MasonryItemCount(), 0U);
   ComputeGeometry(algorithm);
   EXPECT_EQ(MasonryItemCount(), 5U);
 
