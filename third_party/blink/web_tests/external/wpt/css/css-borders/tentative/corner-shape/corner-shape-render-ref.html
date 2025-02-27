@@ -98,7 +98,7 @@ function cornerTo(x, y, corner) {
 ctx.clearRect(0, 0, width, height);
 ctx.beginPath();
 
-// Outer path
+
 moveTo(width - outer_width[1][0], 0);
 cornerTo(width, outer_width[1][1], "top-right");
 lineTo(width, height - outer_width[3][1]);
@@ -163,6 +163,10 @@ cornerTo(
   "top-left"
 );
 
+if ("background-color" in style) {
+  ctx.fillStyle = style["background-color"];
+  ctx.fill("nonzero");
+}
 ctx.fillStyle = "black";
 ctx.fill("evenodd");
 </script>
