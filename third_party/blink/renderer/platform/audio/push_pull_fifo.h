@@ -41,15 +41,11 @@ class PLATFORM_EXPORT PushPullFIFO final {
   USING_FAST_MALLOC(PushPullFIFO);
 
  public:
-  // Maximum FIFO length. (512 render quanta)
-  static const uint32_t kMaxFIFOLength;
-
   struct PullResult {
     uint32_t frames_provided = 0;
     size_t frames_to_render = 0;
   };
 
-  // |fifo_length| cannot exceed |kMaxFIFOLength|. Otherwise it crashes.
   // ||render_quantum_frames| is the render size used by the audio graph.  It
   // |defaults to 128, the original and default render size.
   explicit PushPullFIFO(unsigned number_of_channels,
