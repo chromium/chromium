@@ -17,6 +17,7 @@
 
 namespace gfx {
 class Size;
+class Rect;
 
 // A version of the GetClassNameW API that returns the class name in an
 // std::wstring. An empty result indicates a failure to get the class name.
@@ -38,6 +39,14 @@ COMPONENT_EXPORT(GFX) bool DoesWindowBelongToActiveWindow(HWND window);
 // have cloaked windows which are windows with WS_VISIBLE attribute but not
 // displayed.
 COMPONENT_EXPORT(GFX) bool IsWindowCloaked(HWND hwnd);
+
+// Returns true if we are interested in `hwnd` for purposes of occlusion
+// calculation. We are interested in `hwnd` if it is a window that is
+// visible, opaque, bounded, and not a popup or floating window. If we are
+// interested in `hwnd`, and `window_rect` is not null, stores the window
+// rectangle in `window_rect`.
+COMPONENT_EXPORT(GFX)
+bool IsWindowVisibleAndFullyOpaque(HWND hwnd, gfx::Rect* window_rect);
 
 // Returns true if `window` is on the current virtual desktop, false if isn't,
 // and std::nullopt if a COM method fails. Since this calls COM methods,

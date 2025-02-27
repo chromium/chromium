@@ -281,26 +281,15 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       HotkeyOpensDetachedWithOccludedBrowser) {
+                       HotkeyOpensDetachedWithNonActiveBrowser) {
   RunTestSequence(
       // Glic should open attached to active browser.
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
       ActivateSurface(kBrowserViewElementId));
 
+  // This will make some other window the foreground window.
   browser()->window()->Deactivate();
-
-  // Mark browser window as occluded. If this test is flaky, it might be
-  // because we haven't disabled the kCalculateNativeWinOcclusion feature. But,
-  // Toggle(), which checks if the window is occluded, should get called
-  // synchronously, before the background occlusion calculation has a chance to
-  // mark the browser window as visible.
-  browser()
-      ->window()
-      ->GetNativeWindow()
-      ->GetHost()
-      ->SetNativeWindowOcclusionState(aura::Window::OcclusionState::OCCLUDED,
-                                      {});
 
   RunTestSequence(
       SimulateGlicHotkey(),

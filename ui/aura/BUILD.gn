@@ -308,11 +308,6 @@ test("aura_unittests") {
     "window_unittest.cc",
   ]
 
-  if (is_win) {
-    sources += [ "native_window_occlusion_tracker_unittest.cc" ]
-    libs = [ "dwmapi.lib" ]
-  }
-
   deps = [
     ":test_support",
     "//base/test:test_support",
