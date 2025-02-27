@@ -1025,9 +1025,18 @@
       </message>
 
       <!-- Tab Group Removed Message Strings -->
-      <message name="IDS_TAB_GROUP_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Description text on the message card which is shown when user is no longer a part of the tab group. [CHAR_LIMIT=40]">
-        The "<ph name="TAB_GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group is no longer available
+      <message name="IDS_ONE_TAB_GROUP_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Description text on the message card which is shown when user is no longer a part of one tab group. [CHAR_LIMIT=40]">
+        "<ph name="TAB_GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group no longer available
       </message>
+      <message name="IDS_TWO_TAB_GROUPS_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Description text on the message card which is shown when user is no longer a part of two tab groups. [CHAR_LIMIT=60]">
+         "<ph name="TAB_GROUP_NAME_1">%1$s<ex>Travel</ex></ph>" and "<ph name="TAB_GROUP_NAME_2">%2$s<ex>Vacation</ex></ph>" tab groups no longer available
+      </message>
+      <message name="IDS_GENERIC_TAB_GROUPS_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Generic description text on the message card which is shown when user is no longer a part of 1 or more tab groups. [CHAR_LIMIT=40]">
+          {TAB_GROUPS_COUNT, plural,
+            =1 {<ph name="TAB_GROUPS_COUNT_ONE">%1$d<ex>1</ex></ph> tab group no longer available}
+            other {<ph name="TAB_GROUPS_COUNT_MANY">%1$d<ex>5</ex></ph> tab groups no longer available}
+          }
+       </message>
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_REMOVED_DISMISS_BUTTON" desc="The accessibility text to read when the 'X' button on the tab removed message card is focused">
         Dismiss the card.
       </message>

@@ -116,8 +116,10 @@ public class TabGroupListMediatorUnitTest {
     private static final int ROOT_ID2 = 2;
     private static final String GROUP_NAME1 = "Shopping";
     private static final String GROUP_NAME2 = "Travel";
+    private static final String GROUP_NAME3 = "Chamber of Secrets";
     private static final String MESSAGE_ID1 = "MESSAGE_ID1";
     private static final String MESSAGE_ID2 = "MESSAGE_ID2";
+    private static final String MESSAGE_ID3 = "MESSAGE_ID3";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -751,7 +753,7 @@ public class TabGroupListMediatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
-    public void testOneTabGroupRemovedMessageCard() {
+    public void testTabGroupRemovedMessageCard() {
         List<PersistentMessage> messageList =
                 List.of(makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1));
         when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
@@ -761,12 +763,60 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(1, mModelList.size());
 
         PropertyModel model = mModelList.get(0).model;
-        assertEquals(
-                "The \"Shopping\" tab group is no longer available", model.get(DESCRIPTION_TEXT));
+        assertEquals("\"Shopping\" tab group no longer available", model.get(DESCRIPTION_TEXT));
         assertEquals(MESSAGE, model.get(CARD_TYPE));
-        assertEquals(
-                MESSAGE_ID1,
-                model.get(TabGroupMessageCardViewProperties.MESSAGING_BACKEND_SERVICE_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testTabGroupRemovedMessageCardWithAtLeastOneUnnamedGroupTitle() {
+        List<PersistentMessage> messageList =
+                List.of(
+                        makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1),
+                        makeTabGroupRemovedMessage(MESSAGE_ID2, ""));
+        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+
+        createMediator();
+
+        assertEquals(1, mModelList.size());
+
+        PropertyModel model = mModelList.get(0).model;
+        assertEquals("2 tab groups no longer available", model.get(DESCRIPTION_TEXT));
+        assertEquals(MESSAGE, model.get(CARD_TYPE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testTabGroupRemovedMessageCardWithThreeGroupsRemoved() {
+        List<PersistentMessage> messageList =
+                List.of(
+                        makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1),
+                        makeTabGroupRemovedMessage(MESSAGE_ID2, GROUP_NAME2),
+                        makeTabGroupRemovedMessage(MESSAGE_ID3, GROUP_NAME3));
+        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+
+        createMediator();
+
+        assertEquals(1, mModelList.size());
+
+        PropertyModel model = mModelList.get(0).model;
+        assertEquals("3 tab groups no longer available", model.get(DESCRIPTION_TEXT));
+        assertEquals(MESSAGE, model.get(CARD_TYPE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testTabGroupRemovedMessageCardWithOneUnnamedGroupTitle() {
+        List<PersistentMessage> messageList = List.of(makeTabGroupRemovedMessage(MESSAGE_ID1, ""));
+        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+
+        createMediator();
+
+        assertEquals(1, mModelList.size());
+
+        PropertyModel model = mModelList.get(0).model;
+        assertEquals("1 tab group no longer available", model.get(DESCRIPTION_TEXT));
+        assertEquals(MESSAGE, model.get(CARD_TYPE));
     }
 
     @Test
@@ -792,29 +842,19 @@ public class TabGroupListMediatorUnitTest {
 
         createMediator();
 
-        assertEquals(4, mModelList.size());
+        assertEquals(3, mModelList.size());
 
         PropertyModel model1 = mModelList.get(0).model;
         assertEquals(
-                "The \"Shopping\" tab group is no longer available", model1.get(DESCRIPTION_TEXT));
+                "\"Shopping\" and \"Travel\" tab groups no longer available",
+                model1.get(DESCRIPTION_TEXT));
         assertEquals(MESSAGE, model1.get(CARD_TYPE));
-        assertEquals(
-                MESSAGE_ID1,
-                model1.get(TabGroupMessageCardViewProperties.MESSAGING_BACKEND_SERVICE_ID));
 
-        PropertyModel model2 = mModelList.get(1).model;
-        assertEquals(
-                "The \"Travel\" tab group is no longer available", model2.get(DESCRIPTION_TEXT));
-        assertEquals(MESSAGE, model2.get(CARD_TYPE));
-        assertEquals(
-                MESSAGE_ID2,
-                model2.get(TabGroupMessageCardViewProperties.MESSAGING_BACKEND_SERVICE_ID));
-
-        PropertyModel barModel = mModelList.get(2).model;
+        PropertyModel barModel = mModelList.get(1).model;
         assertEquals(new Pair<>("Bar", 3), barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
-        PropertyModel fooModel = mModelList.get(3).model;
+        PropertyModel fooModel = mModelList.get(2).model;
         assertEquals(new Pair<>("Foo", 2), fooModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }
@@ -842,28 +882,23 @@ public class TabGroupListMediatorUnitTest {
 
         createMediator();
 
-        // Dismiss the second message card.
-        PropertyModel modelToBeRemoved = mModelList.get(1).model;
+        // Dismiss the message card.
+        PropertyModel modelToBeRemoved = mModelList.get(0).model;
         modelToBeRemoved.get(UI_DISMISS_ACTION_PROVIDER).dismiss(ALL);
 
-        assertEquals(3, mModelList.size());
+        assertEquals(2, mModelList.size());
+        verify(mMessagingBackendService)
+                .clearPersistentMessage(
+                        MESSAGE_ID1, Optional.of(PersistentNotificationType.TOMBSTONED));
         verify(mMessagingBackendService)
                 .clearPersistentMessage(
                         MESSAGE_ID2, Optional.of(PersistentNotificationType.TOMBSTONED));
 
-        PropertyModel model1 = mModelList.get(0).model;
-        assertEquals(
-                "The \"Shopping\" tab group is no longer available", model1.get(DESCRIPTION_TEXT));
-        assertEquals(MESSAGE, model1.get(CARD_TYPE));
-        assertEquals(
-                MESSAGE_ID1,
-                model1.get(TabGroupMessageCardViewProperties.MESSAGING_BACKEND_SERVICE_ID));
-
-        PropertyModel barModel = mModelList.get(1).model;
+        PropertyModel barModel = mModelList.get(0).model;
         assertEquals(new Pair<>("Bar", 3), barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
-        PropertyModel fooModel = mModelList.get(2).model;
+        PropertyModel fooModel = mModelList.get(1).model;
         assertEquals(new Pair<>("Foo", 2), fooModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }
@@ -888,7 +923,7 @@ public class TabGroupListMediatorUnitTest {
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(newMessageCard);
         ShadowLooper.idleMainLooper();
 
-        assertEquals(2, mModelList.size());
+        assertEquals(1, mModelList.size());
 
         // Disable sync which should clear all the backend messages.
         when(mSyncService.getActiveDataTypes()).thenReturn(Set.of());
