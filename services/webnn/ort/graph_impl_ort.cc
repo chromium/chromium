@@ -30,6 +30,22 @@ namespace webnn::ort {
 
 namespace {
 
+// These OpenVINO EP specific keys and values must align with the implementation
+// of the ORT OpenVINO EP. Misalignment of keys will be ignored. Misalignment of
+// values may cause errors.
+// More details can be found at:
+// https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/core/providers/openvino/openvino_provider_factory.cc
+// and
+// https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#summary-of-options,
+//
+// Keys:
+constexpr char kOVPrecision[] = "precision";
+// Values:
+constexpr char kOVDeviceType[] = "device_type";
+constexpr char kOVDeviceGPU[] = "GPU";
+constexpr char kOVDeviceCPU[] = "CPU";
+constexpr char kOVDeviceNPU[] = "NPU";
+
 struct Session {
   Session(ScopedOrtEnvPtr env,
           ScopedOrtSessionPtr session,
@@ -206,26 +222,34 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
         /*config_value=*/"1"));
   }
 
+  std::vector<const char*> provider_options_keys;
+  std::vector<const char*> provider_options_values;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtUseOpenvino)) {
-    std::string openvino_device_type;
     switch (device_type) {
       case mojom::CreateContextOptions::Device::kCpu: {
-        openvino_device_type = "CPU";
+        provider_options_keys.push_back(kOVDeviceType);
+        provider_options_values.push_back(kOVDeviceCPU);
         break;
       }
       case mojom::CreateContextOptions::Device::kGpu: {
-        bool use_gpu_fp32 = base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebNNOrtUseOVGpuFP32);
-        // "GPU" will use FP16 inference precision by default. Notice that the
-        // "GPU_FP32" may be deprecated in the future.
-        // TODO(https://github.com/shiyi9801/chromium/issues/159): Set the
-        // inference precision or execution mode for GPU separately.
-        openvino_device_type = use_gpu_fp32 ? "GPU_FP32" : "GPU";
+        provider_options_keys.push_back(kOVDeviceType);
+        provider_options_values.push_back(kOVDeviceGPU);
+
+        // "GPU" will use FP16 inference precision by default.
+        if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                switches::kWebNNOrtOVGpuPrecision)) {
+          std::string gpu_precision =
+              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                  switches::kWebNNOrtOVGpuPrecision);
+          provider_options_keys.push_back(kOVPrecision);
+          provider_options_values.push_back(gpu_precision.data());
+        }
         break;
       }
       case mojom::CreateContextOptions::Device::kNpu: {
-        openvino_device_type = "NPU";
+        provider_options_keys.push_back(kOVDeviceType);
+        provider_options_values.push_back(kOVDeviceNPU);
         break;
       }
     }
@@ -236,13 +260,11 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
         session_options, GraphOptimizationLevel::ORT_DISABLE_ALL));
 
-    OrtOpenVINOProviderOptions openvino_options;
-    openvino_options.device_type = openvino_device_type.c_str();
-
-    // TODO(https://github.com/shiyi9801/chromium/issues/74): Fail early when
-    // creating the context if the OpenVINO EP is not supported.
-    if (ORT_CALL_FAILED(ort_api->SessionOptionsAppendExecutionProvider_OpenVINO(
-            session_options, &openvino_options))) {
+    if (ORT_CALL_FAILED(
+            ort_api->SessionOptionsAppendExecutionProvider_OpenVINO_V2(
+                session_options, provider_options_keys.data(),
+                provider_options_values.data(),
+                provider_options_keys.size()))) {
       return base::unexpected(
           mojom::Error::New(mojom::Error::Code::kUnknownError,
                             "OnnxRuntime OpenVINO EP is not supported."));

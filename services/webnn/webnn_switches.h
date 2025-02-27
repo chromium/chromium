@@ -43,10 +43,21 @@ inline constexpr char kWebNNOrtUseOpenvino[] = "webnn-ort-use-openvino";
 inline constexpr char kWebNNOrtDisableCpuFallback[] =
     "webnn-ort-disable-cpu-fallback";
 
-// For GPU, OV EP will use FP16 inference precision by default, this switch will
-// force OV EP to use FP32 inference precision to get better accuracy, but it
-// may result in decreased performance.
-inline constexpr char kWebNNOrtUseOVGpuFP32[] = "webnn-ort-use-ov-gpu-fp32";
+// For GPU, OV EP will use FP16 inference precision by default. You can specify
+// the flag to use FP32 or ACCURACY to get better accuracy, but it may result in
+// decreased performance.
+//
+// Usage1: --webnn-ort-ov-gpu-precision=FP32
+// It will set underlying OV inference precison to
+// "ov::hint::inference_precision(ov::element::f32)".
+//
+// Usage2: --webnn-ort-ov-gpu-precision=ACCURACY
+// It will set underlying OV execution mode to
+// "ov::hint::ExecutionMode::ACCURACY"
+//
+// More details for the inference precision and execution mode can be found at
+// https://docs.openvino.ai/2025/openvino-workflow/running-inference/optimize-inference/precision-control.html
+inline constexpr char kWebNNOrtOVGpuPrecision[] = "webnn-ort-ov-gpu-precision";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace switches
