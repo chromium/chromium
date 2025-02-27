@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -167,7 +168,7 @@ TEST(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
     field.set_server_predictions({prediction});
-    field.SetTypeTo(type);
+    field.SetTypeTo(type, AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(GetFillValueAndTypeForEntity(passport, field,
                                            mojom::ActionPersistence::kFill)

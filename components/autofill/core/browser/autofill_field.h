@@ -51,6 +51,16 @@ enum class ValueSemantics {
   kInitial,
 };
 
+// Enum representing prediction sources that are recognized.
+enum class AutofillPredictionSource {
+  kServerCrowdsourcing = 0,
+  kServerOverride = 1,
+  kHeuristics = 2,
+  kAutocomplete = 3,
+  kRationalization = 4,
+  kMaxValue = kRationalization
+};
+
 class AutofillField : public FormFieldData {
  public:
   using FieldLogEventType = absl::variant<absl::monostate,
@@ -147,17 +157,18 @@ class AutofillField : public FormFieldData {
   // reset to |ComputedType| if some internal value change (e.g. on call to
   // (|set_heuristic_type|).
   // |SetTypeTo| cannot be called with type.GetStorableType() == NO_SERVER_DATA.
-  void SetTypeTo(const AutofillType& type);
+  void SetTypeTo(const AutofillType& type,
+                 std::optional<AutofillPredictionSource> source);
 
-  // This function returns |ComputedType| unless the value has been overridden
-  // by |SetTypeTo|.
-  // (i.e. overall_type_ != NO_SERVER_DATA ? overall_type_ : ComputedType())
+  // The type of `GetOverallPredictionResult()`.
   AutofillType Type() const;
 
-  // This function automatically chooses among the Autofill server, heuristic
-  // and html type, depending on the data available for this field alone. This
-  // type does not take into account the rationalization involving the
-  // surrounding fields.
+  // The prediction source of `GetOverallPredictionResult()`.
+  // Note that if no prediction was made by any source, PredictionSource will be
+  // std::nullopt. Type() would return UNKNOWN_TYPE in such a case.
+  std::optional<AutofillPredictionSource> PredictionSource() const;
+
+  // The type of `GetComputedPredictionResult()`.
   AutofillType ComputedType() const;
 
   // The rank of a field is N iff this field is preceded by N other fields
@@ -452,17 +463,31 @@ class AutofillField : public FormFieldData {
   }
 
 #if defined(UNIT_TEST)
-  const std::array<FieldType, static_cast<size_t>(HeuristicSource::kMaxValue) + 1>&
+  const std::array<FieldType,
+                   static_cast<size_t>(HeuristicSource::kMaxValue) + 1>&
   local_type_predictions() const {
     return local_type_predictions_;
   }
 #endif
 
  private:
+  struct PredictionResult {
+    AutofillType type;
+    std::optional<AutofillPredictionSource> source;
+  };
+
   explicit AutofillField(FieldSignature field_signature);
 
   // Whether the heuristics or server predict a credit card field.
   bool IsCreditCardPrediction() const;
+
+  // Combines the server, heuristic and HTML type based predictions. Doesn't
+  // take server overwrites or rationalization into consideration.
+  PredictionResult GetComputedPredictionResult() const;
+
+  // Returns the GetComputedPredictionResult(), unless there is a server
+  // overwrite or the result was overwritten using `SetTypeTo()`.
+  PredictionResult GetOverallPredictionResult() const;
 
   std::optional<FieldSignature> field_signature_;
 
@@ -500,12 +525,15 @@ class AutofillField : public FormFieldData {
   std::array<FieldType, static_cast<size_t>(HeuristicSource::kMaxValue) + 1>
       local_type_predictions_;
 
-  // The rationalized `ComputedType()`. This is the type used for all
-  // autofilling operations. It defaults to `ComputedType()` and is invalidated
-  // when `set_heuristic_type()`, `set_server_predictions()` or `SetHtmlType()`
-  // are called. Rationalization potentially overwrites it using `SetTypeTo()`.
-  // The result is cached to prevent frequent re-evaluation of `ComputedType()`.
-  mutable AutofillType overall_type_;
+  // The rationalized `GetComputedPredictionResult()`. This is the type used for
+  // all autofilling operations. It defaults to `GetComputedPredictionResult()`
+  // and is invalidated when `set_heuristic_type()`, `set_server_predictions()`
+  // or `SetHtmlType()` are called. Rationalization potentially overwrites it
+  // using `SetTypeTo()`. The result is cached to prevent frequent re-evaluation
+  // of `GetComputedPredictionResult()`.
+  // Nullopt if no result is cached. If it has a value, the type is guaranteed
+  // to be different from NO_SERVER_DATA.
+  mutable std::optional<PredictionResult> overall_type_;
 
   // The type of the field, as specified by the site author in HTML.
   HtmlFieldType html_type_ = HtmlFieldType::kUnspecified;

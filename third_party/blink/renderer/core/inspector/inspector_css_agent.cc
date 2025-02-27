@@ -192,7 +192,7 @@ Element* GetPseudoIdAndTag(Element* element,
   if (try_pseudo) {
     pseudo_element = try_pseudo;
     resolved_element = is_transition
-                           ? pseudo_element->UltimateOriginatingElement()
+                           ? &pseudo_element->UltimateOriginatingElement()
                            : pseudo_element->ParentOrShadowHostElement();
     // TODO(khushalsagar) : This should never be null.
     if (!resolved_element)

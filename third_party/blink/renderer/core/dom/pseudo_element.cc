@@ -588,17 +588,18 @@ void PseudoElement::AccessKeyAction(
   // assistive tech can still attempt to interact with pseudo elements if
   // they are in the AX tree (usually due to their text/image content).
   // Just pass this request to the originating element.
-  DCHECK(UltimateOriginatingElement());
-  UltimateOriginatingElement()->AccessKeyAction(creation_scope);
+  UltimateOriginatingElement().AccessKeyAction(creation_scope);
 }
 
-Element* PseudoElement::UltimateOriginatingElement() const {
+Element& PseudoElement::UltimateOriginatingElement() const {
   auto* parent = parentElement();
 
   while (parent && parent->IsPseudoElement())
     parent = parent->parentElement();
 
-  return parent;
+  // Should not invoke this method on disposed pseudo elements.
+  CHECK(parent);
+  return *parent;
 }
 
 bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,

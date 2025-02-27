@@ -177,19 +177,14 @@ TEST_F(UniquePositionTest, DeserializeObsoleteGzippedPosition) {
   EXPECT_PRED_FORMAT2(Equals, kHugePosition, pos);
 }
 
-#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
-#define MAYBE_UncompressTooLongRepeatingDigit DISABLED_UncompressTooLongRepeatingDigit
-#else
-#define MAYBE_UncompressTooLongRepeatingDigit UncompressTooLongRepeatingDigit
-#endif
-TEST_F(UniquePositionTest, MAYBE_UncompressTooLongRepeatingDigit) {
+TEST_F(UniquePositionTest, UncompressTooLongRepeatingDigit) {
   // First 4 bytes represent the digit to expand, and the next 4 bytes is the
   // number of bytes.
   constexpr char kSerializedCstr[] = {'\x12', '\x12', '\x12', '\x12',
                                       '\x88', '\x88', '\x88', '\x88'};
 
   sync_pb::UniquePosition proto;
-  proto.set_custom_compressed_v1(kSerializedCstr);
+  proto.set_custom_compressed_v1(kSerializedCstr, sizeof(kSerializedCstr));
   proto.mutable_custom_compressed_v1()->append(
       base::RandBytesAsString(UniquePosition::kSuffixLength));
   UniquePosition unique_position = UniquePosition::FromProto(proto);

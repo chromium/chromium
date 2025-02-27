@@ -2416,13 +2416,13 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
 }
 
 static bool MatchesUAShadowElement(Element& element, const AtomicString& id) {
-  Element* originating_element =
+  Element& originating_element =
       element.IsPseudoElement()
           ? To<PseudoElement>(element).UltimateOriginatingElement()
-          : &element;
-  ShadowRoot* root = originating_element->ContainingShadowRoot();
+          : element;
+  ShadowRoot* root = originating_element.ContainingShadowRoot();
   return root && root->IsUserAgent() &&
-         originating_element->ShadowPseudoId() == id;
+         originating_element.ShadowPseudoId() == id;
 }
 
 bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,

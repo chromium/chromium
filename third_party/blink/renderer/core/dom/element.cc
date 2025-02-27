@@ -1702,7 +1702,7 @@ ScrollMarkerPseudoElement* Element::FindScrollMarkerForTargetedScroll() {
       // |dom_marker| is the preferred scroll marker. Otherwise the
       // scroll-marker belonging to the ::column is preferred.
       LayoutBox* dom_marker_box =
-          dom_marker->UltimateOriginatingElement()->GetLayoutBox();
+          dom_marker->UltimateOriginatingElement().GetLayoutBox();
       PhysicalRect dom_search_target_rect = dom_marker_box->LocalToAncestorRect(
           dom_marker_box->PhysicalBorderBoxRect(), containing_box);
       if (current_scroll_area) {
@@ -1727,7 +1727,7 @@ void Element::ScrollIntoViewNoVisualUpdate(
   LayoutObject* target = nullptr;
   auto* pseudo_element = DynamicTo<PseudoElement>(this);
   if (pseudo_element) {
-    originating_element = pseudo_element->UltimateOriginatingElement();
+    originating_element = &pseudo_element->UltimateOriginatingElement();
     if (pseudo_element->parentNode()->IsColumnPseudoElement()) {
       // The originating element of a ::column is a multicol container. See if
       // it also is the scrollable container that is to be scrolled, or if it's
@@ -8875,7 +8875,7 @@ const ComputedStyle* Element::StyleForPseudoElement(
       }
       Element* originating_element_or_self =
           IsPseudoElement()
-              ? To<PseudoElement>(this)->UltimateOriginatingElement()
+              ? &To<PseudoElement>(this)->UltimateOriginatingElement()
               : this;
       if (auto* quote =
               DynamicTo<HTMLQuoteElement>(originating_element_or_self)) {
@@ -11259,7 +11259,7 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollButtonInlineEnd:
       case kPseudoIdScrollButtonBlockEnd:
         return pseudo_element->UltimateOriginatingElement()
-            ->ImplicitAnchorElement();
+            .ImplicitAnchorElement();
       default:
         return nullptr;
     }

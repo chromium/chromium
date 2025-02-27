@@ -40,6 +40,8 @@ test("services_unittests") {
   fuzztests = [
     "GetAttributionSupportHeader.IsSupportValid",
     "SerializeAttributionReportingEligibleHeader.IsEligibleValid",
+    "TrustTokenKeyCommitmentFuzzer.ParsesOneIssuerCorrectly",
+    "TrustTokenKeyCommitmentFuzzer.ParsesMultipleIssuersCorrectly",
   ]
 
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]

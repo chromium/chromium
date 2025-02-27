@@ -25,7 +25,7 @@ ScrollMarkerChooser::GetScrollTargetOffsetData(const Element* scroll_marker) {
   if (auto* scroll_marker_pseudo =
           DynamicTo<ScrollMarkerPseudoElement>(scroll_marker)) {
     target_box =
-        scroll_marker_pseudo->UltimateOriginatingElement()->GetLayoutBox();
+        scroll_marker_pseudo->UltimateOriginatingElement().GetLayoutBox();
   }
   CHECK(target_box);
   const LayoutObject* scroll_marker_object = scroll_marker->GetLayoutObject();

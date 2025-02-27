@@ -95,7 +95,7 @@ class CORE_EXPORT PseudoElement : public Element {
   // DOM element which the pseudo element tree originates from.
   // This is different from |parentElement()| which returns the element's direct
   // ancestor.
-  Element* UltimateOriginatingElement() const;
+  Element& UltimateOriginatingElement() const;
 
   virtual void Dispose();
 

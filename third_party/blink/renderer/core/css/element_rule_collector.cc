@@ -354,8 +354,8 @@ ElementRuleCollector::ElementRuleCollector(
       can_use_fast_reject_(selector_filter_.ParentStackIsConsistent(
           context.GetElement().IsPseudoElement()
               ? LayoutTreeBuilderTraversal::ParentElement(
-                    *To<PseudoElement>(context.GetElement())
-                         .UltimateOriginatingElement())
+                    To<PseudoElement>(context.GetElement())
+                        .UltimateOriginatingElement())
               : context.ParentElement())),
       matching_ua_rules_(false),
       suppress_visited_(false),

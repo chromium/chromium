@@ -27,8 +27,7 @@ export type PasswordManagerAuthTimeoutListener = () => void;
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  *
- * Needs to stay in sync with PasswordCheckInteraction in enums.xml and
- * password_manager_metrics_util.h.
+ * Needs to stay in sync with PasswordCheckInteraction in enums.xml.
  */
 export enum PasswordCheckInteraction {
   START_CHECK_AUTOMATICALLY = 0,
@@ -46,8 +45,7 @@ export enum PasswordCheckInteraction {
 }
 
 /**
- * Should be kept in sync with
- * |password_manager::metrics_util::PasswordViewPageInteractions|.
+ * Should be kept in sync with PasswordViewPageInteractions in enums.xml.
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  */

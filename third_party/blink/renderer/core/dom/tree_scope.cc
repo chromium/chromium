@@ -577,9 +577,9 @@ Element* TreeScope::AdjustedFocusedElement() const {
   // https://github.com/flackr/carousel/tree/main/scroll-marker#what-is-the-documentactiveelement-of-a-focused-pseudo-element
   if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(element)) {
     CHECK(scroll_marker->ScrollMarkerGroup());
-    element = scroll_marker->ScrollMarkerGroup()->UltimateOriginatingElement();
+    element = &scroll_marker->ScrollMarkerGroup()->UltimateOriginatingElement();
   } else if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
-    element = pseudo_element->UltimateOriginatingElement();
+    element = &pseudo_element->UltimateOriginatingElement();
   }
 
   CHECK(!element->IsPseudoElement());

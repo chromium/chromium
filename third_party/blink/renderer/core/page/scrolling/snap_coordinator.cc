@@ -255,7 +255,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
     // a ::column pseudo-element.
     const auto& column_pseudo = To<ColumnPseudoElement>(snap_area);
     const auto* multicol_box = DynamicTo<LayoutBox>(
-        column_pseudo.UltimateOriginatingElement()->GetLayoutObject());
+        column_pseudo.UltimateOriginatingElement().GetLayoutObject());
     DCHECK(multicol_box->IsFragmentationContextRoot());
     quads.push_back(multicol_box->LocalRectToAncestorQuad(
         column_pseudo.ColumnRect(), &snap_container, mapping_mode));

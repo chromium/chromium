@@ -68,7 +68,7 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
       scroll_into_view_util::CreateScrollIntoViewParams(
           *scroll_marker->parentElement()->GetComputedStyle());
   scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params),
-                                              UltimateOriginatingElement());
+                                              &UltimateOriginatingElement());
   GetDocument().SetFocusedElement(scroll_marker,
                                   FocusParams(SelectionBehaviorOnFocus::kNone,
                                               mojom::blink::FocusType::kNone,
@@ -80,7 +80,7 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
   // and TODO(378698659): the first element in ::column's view for column
   // scroll marker, but it's not clear yet what how to implement that.
   GetDocument().SetSequentialFocusNavigationStartingPoint(
-      scroll_marker->UltimateOriginatingElement());
+      &scroll_marker->UltimateOriginatingElement());
 }
 
 bool ScrollMarkerGroupPseudoElement::SetSelected(
@@ -129,11 +129,8 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
     const ScrollOffset& offset) {
   // Implements scroll tracking for scroll marker controls as per
   // https://drafts.csswg.org/css-overflow-5/#scroll-container-scroll.
-  Element* originating_element = UltimateOriginatingElement();
-  if (!originating_element) {
-    return false;
-  }
-  auto* scroller = DynamicTo<LayoutBox>(originating_element->GetLayoutObject());
+  auto* scroller =
+      DynamicTo<LayoutBox>(UltimateOriginatingElement().GetLayoutObject());
   if (!scroller || !scroller->IsScrollContainer()) {
     return false;
   }

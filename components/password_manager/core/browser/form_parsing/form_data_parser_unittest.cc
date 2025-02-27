@@ -62,9 +62,6 @@ enum class ElementRole {
   CONFIRMATION_PASSWORD,
   // Used for fields tagged only for webauthn autocomplete.
   WEBAUTHN,
-  // Fields that are are eligible for manual password generation due to having
-  // weak signals of being a password field.
-  MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
 };
 
 // Expected FormFieldData are constructed based on these descriptions.
@@ -95,6 +92,9 @@ struct FieldDataDescription {
   // be. Unused ranks will be padded with unique IDs (not found in any fields).
   int predicted_username = -1;
   uint64_t max_length_attr = FormFieldData::kDefaultMaxLength;
+  // Manual generation depends by default on the HTML field type.
+  bool manual_generation_enabled =
+      (form_control_type == FormControlType::kInputPassword);
 };
 
 // Describes a test case for the parser.
@@ -166,9 +166,6 @@ void UpdateResultWithIdByRole(ParseResultIds* result,
     case ElementRole::CONFIRMATION_PASSWORD:
       DCHECK(result->confirmation_password_id.is_null());
       result->confirmation_password_id = id;
-      break;
-    case ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD:
-      result->manual_generation_enabled_ids.push_back(id);
       break;
   }
 }
@@ -365,6 +362,17 @@ class FormParserTest : public testing::Test {
                                    field_description.role);
         }
       }
+
+      if (field_description.manual_generation_enabled) {
+        if (fill_result) {
+          fill_result->manual_generation_enabled_ids.push_back(renderer_id);
+        }
+        // Only non-empty fields are considered in the saving mode.
+        if (save_result && !field_description.value.empty()) {
+          save_result->manual_generation_enabled_ids.push_back(renderer_id);
+        }
+      }
+
       if (server_predictions && (field_description.server_predicted_type !=
                                  autofill::MAX_VALID_FIELD_TYPE)) {
         server_predictions->fields.emplace_back(
@@ -1291,10 +1299,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
                   {.form_control_type = FormControlType::kInputText,
                    .server_predicted_type =
                        autofill::USERNAME_AND_EMAIL_ADDRESS},
-                  {.role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
-                   .form_control_type = FormControlType::kInputText,
-                   .server_predicted_type = autofill::NEW_PASSWORD},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::NEW_PASSWORD,
+                   .manual_generation_enabled = true},
               },
       },
       {
@@ -1303,10 +1310,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
           .fields =
               {
                   {.form_control_type = FormControlType::kInputText},
-                  {.role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
-                   .form_control_type = FormControlType::kInputText,
-                   .server_predicted_type = autofill::NEW_PASSWORD},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::NEW_PASSWORD,
+                   .manual_generation_enabled = true},
               },
       },
       {
@@ -1339,11 +1345,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
                   {.form_control_type = FormControlType::kInputText,
                    .server_predicted_type =
                        autofill::USERNAME_AND_EMAIL_ADDRESS},
-                  {.role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
-                   .form_control_type = FormControlType::kInputText,
-                   .server_predicted_type =
-                       autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .manual_generation_enabled = true},
               },
       },
       {
@@ -1352,11 +1356,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
           .fields =
               {
                   {.form_control_type = FormControlType::kInputText},
-                  {.role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
-                   .form_control_type = FormControlType::kInputText,
-                   .server_predicted_type =
-                       autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.form_control_type = FormControlType::kInputText,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .manual_generation_enabled = true},
               },
       },
   });
@@ -1958,7 +1960,8 @@ TEST_F(FormParserTest, IgnoreCvcFields) {
                    .form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
-                       autofill::CREDIT_CARD_VERIFICATION_CODE},
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -1974,7 +1977,8 @@ TEST_F(FormParserTest, IgnoreCvcFields) {
                   {.form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
-                       autofill::CREDIT_CARD_VERIFICATION_CODE},
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
               },
       },
       {
@@ -2020,11 +2024,13 @@ TEST_F(FormParserTest, ServerHintsForCvcFieldsOverrideAutocomplete) {
                    .form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER},
+                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER,
+                   .manual_generation_enabled = false},
                   {.autocomplete_attribute = "new-password",
                    .form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
-                       autofill::CREDIT_CARD_VERIFICATION_CODE},
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2060,7 +2066,8 @@ TEST_F(FormParserTest, CCNumber) {
               {
                   {.form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER},
+                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER,
+                   .manual_generation_enabled = false},
               },
       },
       {
@@ -2089,7 +2096,8 @@ TEST_F(FormParserTest, CCNumber) {
                    .server_predicted_type = autofill::CREDIT_CARD_NAME_FULL},
                   {.name = u"ccnumber",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER},
+                   .server_predicted_type = autofill::CREDIT_CARD_NUMBER,
+                   .manual_generation_enabled = false},
                   {.name = u"expiration",
                    .form_control_type = FormControlType::kInputText,
                    .server_predicted_type =
@@ -2097,7 +2105,8 @@ TEST_F(FormParserTest, CCNumber) {
                   {.name = u"cvc",
                    .form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
-                       autofill::CREDIT_CARD_VERIFICATION_CODE},
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -2172,7 +2181,8 @@ TEST_F(FormParserTest, NotPasswordField) {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2185,7 +2195,8 @@ TEST_F(FormParserTest, NotPasswordField) {
               {
                   {.form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -2201,7 +2212,8 @@ TEST_F(FormParserTest, OneTimeCodeField) {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::ONE_TIME_CODE},
+                   .server_predicted_type = autofill::ONE_TIME_CODE,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2214,7 +2226,8 @@ TEST_F(FormParserTest, OneTimeCodeField) {
               {
                   {.form_control_type = FormControlType::kInputText},
                   {.form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::ONE_TIME_CODE},
+                   .server_predicted_type = autofill::ONE_TIME_CODE,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -2335,13 +2348,16 @@ TEST_F(FormParserTest, NotPasswordFieldDespiteAutocompleteAttribute) {
                    .form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
                   {.autocomplete_attribute = "new-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
                   {.autocomplete_attribute = "password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2355,7 +2371,8 @@ TEST_F(FormParserTest, NotPasswordFieldDespiteAutocompleteAttribute) {
                   {.form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::NOT_PASSWORD},
+                   .server_predicted_type = autofill::NOT_PASSWORD,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -2372,7 +2389,8 @@ TEST_F(FormParserTest, OneTimeCodeFieldDespiteAutocompleteAttribute) {
                    .form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::ONE_TIME_CODE},
+                   .server_predicted_type = autofill::ONE_TIME_CODE,
+                   .manual_generation_enabled = false},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2386,7 +2404,8 @@ TEST_F(FormParserTest, OneTimeCodeFieldDespiteAutocompleteAttribute) {
                   {.form_control_type = FormControlType::kInputText},
                   {.autocomplete_attribute = "current-password",
                    .form_control_type = FormControlType::kInputPassword,
-                   .server_predicted_type = autofill::ONE_TIME_CODE},
+                   .server_predicted_type = autofill::ONE_TIME_CODE,
+                   .manual_generation_enabled = false},
               },
       },
   });
@@ -3493,9 +3512,9 @@ TEST_F(FormParserTest, ManualGenerationEnabledFields) {
            "Fields with variations of the word password are eligible for "
            "manual password generation.",
        .fields = {{
-           .role = ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
            .name = u"password",
            .form_control_type = FormControlType::kInputText,
+           .manual_generation_enabled = true,
        }}},
   });
   CheckTestData({
@@ -3511,16 +3530,14 @@ TEST_F(FormParserTest, ManualGenerationEnabledFields) {
                    .form_control_type = FormControlType::kInputPassword,
                },
                {
-                   .role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
                    .name = u"password2",
                    .form_control_type = FormControlType::kInputPassword,
+                   .manual_generation_enabled = true,
                },
                {
-                   .role =
-                       ElementRole::MANUAL_PASSWORD_GENERATION_ENABLED_FIELD,
                    .name = u"password3",
                    .form_control_type = FormControlType::kInputPassword,
+                   .manual_generation_enabled = true,
                },
            }},
   });
