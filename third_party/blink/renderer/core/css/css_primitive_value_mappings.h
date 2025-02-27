@@ -36,9 +36,7 @@
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_reflection_direction.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -51,48 +49,10 @@
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
-#include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/theme_types.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
-
-// TODO(sashab): Move these to CSSPrimitiveValue.h.
-template <>
-inline int16_t CSSPrimitiveValue::ConvertTo(
-    const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber() || IsPercentage());
-  return ClampTo<int16_t>(ComputeNumber(length_resolver));
-}
-
-template <>
-inline uint16_t CSSPrimitiveValue::ConvertTo(
-    const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber() || IsPercentage());
-  return ClampTo<uint16_t>(ComputeNumber(length_resolver));
-}
-
-template <>
-inline int CSSPrimitiveValue::ConvertTo(
-    const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber() || IsPercentage());
-  return ClampTo<int>(ComputeNumber(length_resolver));
-}
-
-template <>
-inline unsigned CSSPrimitiveValue::ConvertTo(
-    const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber() || IsPercentage());
-  return ClampTo<unsigned>(ComputeNumber(length_resolver));
-}
-
-template <>
-inline float CSSPrimitiveValue::ConvertTo(
-    const CSSLengthResolver& length_resolver) const {
-  DCHECK(IsNumber() || IsPercentage());
-  return ClampTo<float>(ComputeNumber(length_resolver));
-}
 
 // TODO(sashab): Move these to CSSIdentifierValueMappings.h, and update to use
 // the CSSValuePool.
