@@ -21,10 +21,15 @@ IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, Experiment) {
 
 IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, Url) {
   // Invoke the test from a URL with an experiment reference tag, i.e.,
-  // chrome://flags/#test-feature.
+  // `chrome://flags/#test-feature`.
   set_test_loader_host(std::string(chrome::kChromeUIFlagsHost) +
                        "/#test-feature");
-  RunTestWithoutTestLoader("flags/url_test.js", "mocha.run()");
+  RunTestWithoutTestLoader("flags/url_test.js", "runMochaSuite('UrlTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, UrlWithInvalidHash) {
+  RunTest("flags/url_test.js",
+          "runMochaSuite('UrlWithInvalidReferencedFlagHashTest')");
 }
 
 class FlagsDeprecatedUiBrowserTest : public WebUIMochaBrowserTest {
