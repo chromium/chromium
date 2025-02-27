@@ -243,10 +243,6 @@ class HeightTransitionHandler {
         // Do not allow callback to pass through when object is destroyed.
         if (mIsDestroyed) return;
 
-        // Invalid width / height will be ignored. This can happen when the mControlContainer is
-        // created hidden after theme changes. See crbug.com/1511599.
-        if (mTabStripWidth <= 0 || controlContainerView().getHeight() == 0) return;
-
         boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold;
         if (showTabStrip == mTabStripVisible && !mForceUpdateHeight) {
             // Do not transition if visibility does not change, unless we want to continue the
