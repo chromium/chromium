@@ -53,11 +53,12 @@ external/wpt/infrastructure/reftest/reftest_ref_timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_timeout.html [ Timeout ]
 wpt_internal/infrastructure/fail-before-timeout.html [ Timeout ]
 
+# Reftest failure related to off-main-thread interaction (imperceptible AA differences)
+crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]  # Reftest image failure
+crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]  # Reftest image failure
+
 # *** BEGIN Graphite failures on Mac-ARM ***
 
-# Reftest failure related to off-main-thread interaction (imperceptible AA differences)
-crbug.com/395909730 [ Mac14-arm64 ] virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]
-crbug.com/395909730 [ Mac14-arm64 ] virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]
 # Reftest failures with off-by-1 color values
 crbug.com/395915411 [ Mac14-arm64 ] external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]
 crbug.com/395915411 [ Mac14-arm64 ] external/wpt/css/filter-effects/backdrop-filter-backdrop-root-opacity.html [ Failure ]
@@ -282,8 +283,6 @@ crbug.com/380039243 crbug.com/382294240 wpt_internal/html/canvas/placeElement/pl
 # --- END canvasRenderingContext.placeElement() implementation
 
 # --- Skia roll test suppressions
-
-crbug.com/1494899 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]
 
 # --- END Skia roll test suppresions
 
@@ -1800,9 +1799,6 @@ crbug.com/483653 accessibility/scroll-containers.html [ Crash Failure Pass Timeo
 
 # Temporarily disabled until document marker serialization is enabled for AXInlineTextBox
 crbug.com/1227485 accessibility/spelling-markers.html [ Failure ]
-
-# Bugs caused by enabling DMSAA on OOPR-Canvas
-crbug.com/1229486 virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Failure ]
 
 # Temporarily disabled after chromium change
 crbug.com/492511 [ Mac ] virtual/text-antialias/atsui-negative-spacing-features.html [ Failure ]
@@ -6435,7 +6431,6 @@ crbug.com/1358333 [ Mac ] external/wpt/webmessaging/event.origin.sub.htm [ Failu
 
 # Disable flakes on mac builders
 crbug.com/1363708 [ Mac12 Release ] http/tests/media/gc-while-network-loading.html [ Pass Timeout ]
-crbug.com/1363683 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 crbug.com/1364129 [ Mac ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
 
 # Disable web test flakes on linux (Debug Leak)
@@ -7281,7 +7276,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbar-prevent-default.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/elements/resolve-alien-node.js [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/oopif/oopif-elements-inspect.js [ Skip Timeout ]
-crbug.com/1446040 [ Mac ] virtual/oopr-canvas2d/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 
 crbug.com/1401170 [ Debug ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Failure ]
 
@@ -7905,7 +7899,6 @@ crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBi
 [ Mac14-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure ]
 [ Mac14-arm64 ] virtual/gpu-rasterization/images/color-profile-munsell-adobe-to-srgb-webgl.html [ Skip Timeout ]
 [ Mac14-arm64 ] virtual/gpu/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
-[ Mac14-arm64 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
 [ Mac14-arm64 ] virtual/scalefactor200/css3/filters/effect-hue-rotate-hw.html [ Failure ]
 [ Mac14-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-colorspace.html [ Failure ]
 [ Mac14-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-subregion.html [ Failure ]
