@@ -258,11 +258,15 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.hard_swish_input;
   }
-  static webnn::SupportedDataTypes instance_normalization_input(
+  static webnn::SupportedTensors instance_normalization_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.instance_normalization_input;
   }
-  static webnn::SupportedDataTypes layer_normalization_input(
+  static webnn::SupportedTensors instance_normalization_scale(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.instance_normalization_scale;
+  }
+  static webnn::SupportedTensors layer_normalization_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.layer_normalization_input;
   }
@@ -504,6 +508,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadHardSwishInput(&out->hard_swish_input) &&
            data.ReadInstanceNormalizationInput(
                &out->instance_normalization_input) &&
+           data.ReadInstanceNormalizationScale(
+               &out->instance_normalization_scale) &&
            data.ReadLayerNormalizationInput(&out->layer_normalization_input) &&
            data.ReadLeakyReluInput(&out->leaky_relu_input) &&
            data.ReadLinearInput(&out->linear_input) &&

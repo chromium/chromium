@@ -141,8 +141,12 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*hard_swish_input=*/
        {{webnn::OperandDataType::kFloat32}, kMaxRank},
-       /*instance_normalization_input=*/{webnn::OperandDataType::kFloat32},
-       /*layer_normalization_input=*/{webnn::OperandDataType::kFloat32},
+       /*instance_normalization_input=*/
+       {{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*instance_normalization_scale=*/
+       {{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*layer_normalization_input=*/
+       {{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*leaky_relu_input=*/
        {{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*linear_input=*/
@@ -246,7 +250,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

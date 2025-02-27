@@ -1244,8 +1244,13 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*hard_swish_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.normalization.instance_norm
+       /*instance_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, {3, 4}},
+       /*instance_normalization_scale=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*layer_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*leaky_relu_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        // TODO: crbug.com/338667172 - Consider enhancing the data type support
@@ -3659,10 +3664,8 @@ base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForInstanceNormalization(
     const mojom::InstanceNormalization& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  const OperandInfo& input_operand_info =
-      GetOperandInfo(operation.input_operand_id);
-  CHECK(context_properties_.data_type_limits.instance_normalization_input.Has(
-      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+  CHECK(context_properties_.data_type_limits.instance_normalization_input
+            .Supports(GetOperand(operation.input_operand_id).descriptor));
 
   if (operation.layout != mojom::InputOperandLayout::kChannelsFirst) {
     // TODO(crbug.com/338398666) Support channels-last by adding transposes.
@@ -3684,6 +3687,8 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
                                         *operation.bias_operand_id));
   }
 
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
   SetInputWithValue(
       *op->mutable_inputs(), kOpParamEpsilon,
       CreateFloatValue(input_operand_info.mil_data_type, operation.epsilon));
@@ -3697,11 +3702,11 @@ base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForLayerNormalization(
     const mojom::LayerNormalization& operation,
     CoreML::Specification::MILSpec::Block& block) {
+  CHECK(context_properties_.data_type_limits.layer_normalization_input.Supports(
+      GetOperand(operation.input_operand_id).descriptor));
+
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  CHECK(context_properties_.data_type_limits.layer_normalization_input.Has(
-      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-
   // CoreML doesn't support empty axes. When axes is empty, the mean equals to
   // input, output = bias + (scale * 0)
   if (operation.axes.empty()) {

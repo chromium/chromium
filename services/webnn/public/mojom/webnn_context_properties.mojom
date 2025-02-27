@@ -59,6 +59,7 @@ struct DataTypeLimits {
   SupportedDataTypes arg_min_max_output;
 
   SupportedTensors batch_normalization_input;
+  // Also used to validate variance, scale and bias.
   SupportedTensors batch_normalization_mean;
   SupportedTensors cast_input;
   SupportedTensors clamp_input;
@@ -131,8 +132,10 @@ struct DataTypeLimits {
   SupportedDataTypes gru_cell_input;
   SupportedTensors hard_sigmoid_input;
   SupportedTensors hard_swish_input;
-  SupportedDataTypes instance_normalization_input;
-  SupportedDataTypes layer_normalization_input;
+  SupportedTensors instance_normalization_input;
+  // Also used to validate bias.
+  SupportedTensors instance_normalization_scale;
+  SupportedTensors layer_normalization_input;
   SupportedTensors leaky_relu_input;
   SupportedTensors linear_input;
   SupportedDataTypes lstm_input;

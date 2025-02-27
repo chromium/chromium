@@ -225,9 +225,13 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.hard_swish_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.instance_normalization_input
-      .RetainAll(DataTypeConstraint::kFloat16To32);
+      .IntersectWith(
+          {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)});
+  backend_context_properties.data_type_limits.instance_normalization_scale
+      .IntersectWith(
+          {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)});
   backend_context_properties.data_type_limits.layer_normalization_input
-      .RetainAll(DataTypeConstraint::kFloat16To32);
+      .data_types.RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.leaky_relu_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.linear_input.data_types.RetainAll(

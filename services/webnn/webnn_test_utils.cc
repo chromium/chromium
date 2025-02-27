@@ -644,8 +644,9 @@ ContextProperties GetContextPropertiesForTesting() {
        {SupportedDataTypes::All(), kMaxRank},
        /*hard_swish_input=*/
        {SupportedDataTypes::All(), kMaxRank},
-       /*instance_normalization_input=*/SupportedDataTypes::All(),
-       /*layer_normalization_input=*/SupportedDataTypes::All(),
+       /*instance_normalization_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*instance_normalization_scale=*/{SupportedDataTypes::All(), kMaxRank},
+       /*layer_normalization_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*leaky_relu_input=*/
        {SupportedDataTypes::All(), kMaxRank},
        /*linear_input=*/{SupportedDataTypes::All(), kMaxRank},

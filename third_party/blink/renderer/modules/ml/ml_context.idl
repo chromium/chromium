@@ -119,9 +119,9 @@ dictionary MLLstmCellSupportLimits {
 };
 
 dictionary MLNormalizationSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits scale;
-  MLDataTypeLimits bias;
+  MLTensorLimits input;
+  MLTensorLimits scale;
+  MLTensorLimits bias;
   MLDataTypeLimits output;
 };
 

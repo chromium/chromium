@@ -31,13 +31,16 @@ namespace webnn {
 namespace {
 
 // The error message labels for corresponding operands.
+static constexpr char kBiasParam[] = "bias";
 static constexpr char kConditionParam[] = "condition";
 static constexpr char kFalseValueParam[] = "falseValue";
 static constexpr char kIndicesParam[] = "indices";
+static constexpr char kMeanParam[] = "mean";
 static constexpr char kScaleParam[] = "scale";
 static constexpr char kSlopeParam[] = "slope";
 static constexpr char kTrueValueParam[] = "trueValue";
 static constexpr char kUpdatesParam[] = "updates";
+static constexpr char kVarianceParam[] = "variance";
 static constexpr char kZeroPointParam[] = "zeroPoint";
 
 // Calculate the output size for conv2d based on WebNN spec:
@@ -466,21 +469,22 @@ ValidateNormalizationOperandIsCompatibleWithInput(
     const OperandDescriptor& operand,
     const OperandDataType input_data_type,
     size_t input_size_on_axis,
-    std::string_view label) {
+    std::string_view label,
+    std::string_view argument_name) {
   if (operand.data_type() != input_data_type) {
     return base::unexpected(ErrorWithLabel(
-        label, "the data type doesn't match the input data type."));
-  }
-  if (operand.Rank() != 1) {
-    return base::unexpected(
-        ErrorWithLabel(label, "the operand should be a 1-D tensor."));
+        label,
+        base::StrCat(
+            {"For ", argument_name,
+             " operand: the data type doesn't match the input data type."})));
   }
 
   if (operand.shape()[0] != input_size_on_axis) {
     return base::unexpected(ErrorWithLabel(
         label,
-        "the size of operand must be equal to the size of the feature "
-        "dimension of the input."));
+        base::StrCat({"For ", argument_name,
+                      " operand: the size of operand must be equal to the size "
+                      "of the feature dimension of the input."})));
   }
 
   return base::ok();
@@ -521,45 +525,57 @@ ValidateBatchNormalizationAndInferOutput(
 
   uint32_t input_size_on_axis = input.shape()[attributes.axis];
   // Validate mean operand.
-  const auto validation_mean =
-      ValidateNormalizationOperandIsCompatibleWithInput(
-          mean, input.data_type(), input_size_on_axis, label);
-  if (!validation_mean.has_value()) {
-    return base::unexpected(
-        ErrorWithLabel(label, "For mean operand: " + validation_mean.error()));
+  if (!context_properties.data_type_limits.batch_normalization_mean.Supports(
+          mean)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedArgumentError(
+            kMeanParam, mean,
+            context_properties.data_type_limits.batch_normalization_mean)));
   }
+  RETURN_IF_ERROR(ValidateNormalizationOperandIsCompatibleWithInput(
+      mean, input.data_type(), input_size_on_axis, label, kMeanParam));
 
   // Validate variance operand.
-  const auto validation_variance =
-      ValidateNormalizationOperandIsCompatibleWithInput(
-          variance, input.data_type(), input_size_on_axis, label);
-  if (!validation_variance.has_value()) {
+  if (!context_properties.data_type_limits.batch_normalization_mean.Supports(
+          variance)) {
     return base::unexpected(ErrorWithLabel(
-        label, "For variance operand: " + validation_variance.error()));
+        label,
+        NotSupportedArgumentError(
+            kVarianceParam, variance,
+            context_properties.data_type_limits.batch_normalization_mean)));
   }
+  RETURN_IF_ERROR(ValidateNormalizationOperandIsCompatibleWithInput(
+      variance, input.data_type(), input_size_on_axis, label, kVarianceParam));
 
   // Validate scale operand.
   if (attributes.scale) {
-    const auto validation_scale =
-        ValidateNormalizationOperandIsCompatibleWithInput(
-            attributes.scale.value(), input.data_type(), input_size_on_axis,
-            label);
-    if (!validation_scale.has_value()) {
+    if (!context_properties.data_type_limits.batch_normalization_mean.Supports(
+            attributes.scale.value())) {
       return base::unexpected(ErrorWithLabel(
-          label, "For scale operand: " + validation_scale.error()));
+          label,
+          NotSupportedArgumentError(
+              kScaleParam, attributes.scale.value(),
+              context_properties.data_type_limits.batch_normalization_mean)));
     }
+    RETURN_IF_ERROR(ValidateNormalizationOperandIsCompatibleWithInput(
+        attributes.scale.value(), input.data_type(), input_size_on_axis, label,
+        kScaleParam));
   }
 
   // Validate bias operand.
   if (attributes.bias) {
-    const auto validation_bias =
-        ValidateNormalizationOperandIsCompatibleWithInput(
-            attributes.bias.value(), input.data_type(), input_size_on_axis,
-            label);
-    if (!validation_bias.has_value()) {
+    if (!context_properties.data_type_limits.batch_normalization_mean.Supports(
+            attributes.bias.value())) {
       return base::unexpected(ErrorWithLabel(
-          label, "For bias operand: " + validation_bias.error()));
+          label,
+          NotSupportedArgumentError(
+              kBiasParam, attributes.bias.value(),
+              context_properties.data_type_limits.batch_normalization_mean)));
     }
+    RETURN_IF_ERROR(ValidateNormalizationOperandIsCompatibleWithInput(
+        attributes.bias.value(), input.data_type(), input_size_on_axis, label,
+        kBiasParam));
   }
 
   // The output tensor of batchNormalization is the same shape as the input
@@ -1794,16 +1810,12 @@ ValidateInstanceNormalizationAndInferOutput(
     const InstanceNormalizationAttributes& attributes) {
   const std::string& label = attributes.label;
   // Validate the input operand.
-  if (input.Rank() != 4) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should be a 4-D tensor."));
-  }
-  if (!context_properties.data_type_limits.instance_normalization_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.instance_normalization_input
+           .Supports(input)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            input.data_type(),
+        NotSupportedInputArgumentError(
+            input,
             context_properties.data_type_limits.instance_normalization_input)));
   }
 
@@ -1819,26 +1831,31 @@ ValidateInstanceNormalizationAndInferOutput(
 
   // Validate scale operand.
   if (attributes.scale.has_value()) {
-    const auto validation_scale =
-        ValidateNormalizationOperandIsCompatibleWithInput(
-            attributes.scale.value(), input.data_type(), input.shape()[axis],
-            label);
-    if (!validation_scale.has_value()) {
+    if (!context_properties.data_type_limits.instance_normalization_scale
+             .Supports(attributes.scale.value())) {
       return base::unexpected(ErrorWithLabel(
-          label, "For scale operand: " + validation_scale.error()));
+          label,
+          NotSupportedArgumentError(kScaleParam, attributes.scale.value(),
+                                    context_properties.data_type_limits
+                                        .instance_normalization_scale)));
     }
+    RETURN_IF_ERROR(ValidateNormalizationOperandIsCompatibleWithInput(
+        attributes.scale.value(), input.data_type(), input.shape()[axis], label,
+        kScaleParam));
   }
 
   // Validate the bias operand.
   if (attributes.bias.has_value()) {
-    const auto validation_bias =
-        ValidateNormalizationOperandIsCompatibleWithInput(
-            attributes.bias.value(), input.data_type(), input.shape()[axis],
-            label);
-    if (!validation_bias.has_value()) {
+    if (!context_properties.data_type_limits.instance_normalization_scale
+             .Supports(attributes.bias.value())) {
       return base::unexpected(ErrorWithLabel(
-          label, "For bias operand: " + validation_bias.error()));
+          label, NotSupportedArgumentError(kBiasParam, attributes.bias.value(),
+                                           context_properties.data_type_limits
+                                               .instance_normalization_scale)));
     }
+    RETURN_IF_ERROR(ValidateNormalizationOperandIsCompatibleWithInput(
+        attributes.bias.value(), input.data_type(), input.shape()[axis], label,
+        kBiasParam));
   }
 
   return input;
@@ -1860,12 +1877,12 @@ ValidateLayerNormalizationAndInferOutput(
     const LayerNormalizationAttributes& attributes) {
   const std::string& label = attributes.label;
   // Validate the input operand.
-  if (!context_properties.data_type_limits.layer_normalization_input.Has(
-          input.data_type())) {
+  if (!context_properties.data_type_limits.layer_normalization_input.Supports(
+          input)) {
     return base::unexpected(ErrorWithLabel(
         label,
-        NotSupportedInputArgumentTypeError(
-            input.data_type(),
+        NotSupportedInputArgumentError(
+            input,
             context_properties.data_type_limits.layer_normalization_input)));
   }
 
