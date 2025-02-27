@@ -951,7 +951,9 @@ void OnListFamilyMembersResponse(
 
   if (level == SceneActivationLevelForegroundActive &&
       profileInitStage == ProfileInitStage::kFinal) {
-    [self tryPresentSigninUpgradePromo];
+    if (!IsFullscreenSigninPromoManagerMigrationEnabled()) {
+      [self tryPresentSigninUpgradePromo];
+    }
     [self handleExternalIntents];
 
     if (!initializingUIInColdStart &&
@@ -1111,7 +1113,8 @@ void OnListFamilyMembersResponse(
                            initWithPromosManager:promosManager]];
 
   if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
-    [sceneState addAgent:[[SigninFullscreenPromoSceneAgent alloc] init]];
+    [sceneState addAgent:[[SigninFullscreenPromoSceneAgent alloc]
+                             initWithPromosManager:promosManager]];
   }
 }
 
@@ -1292,6 +1295,35 @@ void OnListFamilyMembersResponse(
   _sceneURLLoadingService.reset();
 }
 
+- (BOOL)shouldPresentSigninUpgradePromo {
+  if (![self isTabAvailableToPresentViewController]) {
+    return NO;
+  }
+  if (!signin::ShouldPresentUserSigninUpgrade(
+          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+              ->GetProfile(),
+          version_info::GetVersion())) {
+    return NO;
+  }
+  // Don't show the promo in Incognito mode.
+  if (self.currentInterface == self.incognitoInterface) {
+    return NO;
+  }
+  // Don't show promos if the app was launched from a URL.
+  if (self.startupParameters) {
+    return NO;
+  }
+  // Don't show the promo if the window is not active.
+  if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive) {
+    return NO;
+  }
+  // Don't show the promo if already presented.
+  if (self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce) {
+    return NO;
+  }
+  return YES;
+}
+
 // Formats string for display on iPadOS application switcher with the
 // domain of the foreground tab and the tab count. Assumes the scene is
 // visible. Will return nil if there are no tabs.
@@ -1407,36 +1439,6 @@ void OnListFamilyMembersResponse(
       base::UmaHistogramBoolean("IOS.ReconcileEULAPref", true);
     }
   });
-}
-
-// Returns YES if the sign-in upgrade promo should be presented.
-- (BOOL)shouldPresentSigninUpgradePromo {
-  if (![self isTabAvailableToPresentViewController]) {
-    return NO;
-  }
-  if (!signin::ShouldPresentUserSigninUpgrade(
-          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetProfile(),
-          version_info::GetVersion())) {
-    return NO;
-  }
-  // Don't show the promo in Incognito mode.
-  if (self.currentInterface == self.incognitoInterface) {
-    return NO;
-  }
-  // Don't show promos if the app was launched from a URL.
-  if (self.startupParameters) {
-    return NO;
-  }
-  // Don't show the promo if the window is not active.
-  if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive) {
-    return NO;
-  }
-  // Don't show the promo if already presented.
-  if (self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce) {
-    return NO;
-  }
-  return YES;
 }
 
 // Presents the sign-in upgrade promo.

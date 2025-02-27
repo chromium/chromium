@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -102,6 +103,9 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   config.features_enabled.push_back(switches::kForceStartupSigninPromo);
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableUpgradeSigninPromo);
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kEnableIPH +
+                                   "=IPH_iOSPromoSigninFullscreen");
   // Without relaunch upgrade signin promo will not be shown again.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;

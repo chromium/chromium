@@ -10,6 +10,11 @@
 @interface SigninFullscreenPromoDisplayHandler
     : NSObject <StandardPromoDisplayHandler>
 
+#pragma mark - PromoProtocol
+
+// PromosManagerCommands handler.
+@property(nonatomic, weak) id<PromosManagerCommands> handler;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_PROMO_SIGNIN_FULLSCREEN_PROMO_DISPLAY_HANDLER_H_

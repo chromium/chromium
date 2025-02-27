@@ -60,6 +60,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public:feature_constants",
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser:features",
     "//components/sync/base:features",

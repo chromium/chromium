@@ -9,9 +9,13 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
+class PromosManager;
+
 // A scene agent that registers the Signin fullscreen promo in the promo
 // manager.
 @interface SigninFullscreenPromoSceneAgent : ObservingSceneAgent
+
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager;
 
 @end
 
