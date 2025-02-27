@@ -31,7 +31,6 @@
 #include "base/types/pass_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
