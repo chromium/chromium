@@ -63,9 +63,8 @@ class MODULES_EXPORT NavigatorWebInstall final
   HeapMojoRemote<mojom::blink::WebInstallService>& GetService();
   void OnConnectionError();
   bool CheckPreconditionsMaybeThrow(ScriptState*, ExceptionState&);
-  bool ValidateInstallUrlMaybeThrow(const String& install_url, ScriptState*);
-  KURL ValidateAndResolveManifestIdMaybeThrow(const String& manifest_id,
-                                              ScriptState*);
+  bool IsInstallUrlValid(const String& install_url);
+  KURL ValidateAndResolveManifestId(const String& manifest_id);
 
   HeapMojoRemote<mojom::blink::WebInstallService> service_;
 };
