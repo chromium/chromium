@@ -19,14 +19,14 @@ class PhysicalBoxFragment;
 class CORE_EXPORT AbstractInlineTextBox final
     : public GarbageCollected<AbstractInlineTextBox> {
  private:
-  // Returns existing or newly created |AbstractInlineTextBox|.
-  // * |cursor| should be attached to a text item.
-  static AbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor);
   static void WillDestroy(const InlineCursor& cursor);
 
   friend class LayoutText;
 
  public:
+  // Returns existing or newly created |AbstractInlineTextBox|.
+  // * |cursor| should be attached to a text item.
+  static AbstractInlineTextBox* GetOrCreate(const InlineCursor& cursor);
   explicit AbstractInlineTextBox(const InlineCursor& cursor);
   ~AbstractInlineTextBox();
   void Trace(Visitor* visitor) const;
@@ -57,17 +57,25 @@ class CORE_EXPORT AbstractInlineTextBox final
   void CharacterWidths(Vector<float>&) const;
   void GetWordBoundaries(Vector<WordBoundaries>&) const;
   String GetText() const;
-  bool IsFirst() const;
-  bool IsLast() const;
+
+  // Returns true if the AbstractInlineTextBox is the first/last in the
+  // LayoutObject. Note that this **is different** from
+  // NextOnLine/PreviousOnLine, where they are allowed to cross boundaries
+  // between layoutObjects.
+  bool IsFirstForLayoutObject() const;
+
+  // Deprecated. These are just used in the comparison between the current
+  // algorithm with the new one. See
+  // features::IsAccessibilityBlockFlowIteratorEnabled().
   AbstractInlineTextBox* NextOnLine() const;
   AbstractInlineTextBox* PreviousOnLine() const;
   bool IsLineBreak() const;
   bool NeedsTrailingSpace() const;
   InlineCursor GetCursor() const;
+  InlineCursor GetCursorOnLine() const;
 
  private:
   LayoutText* GetFirstLetterPseudoLayoutText() const;
-  InlineCursor GetCursorOnLine() const;
   String GetTextContent() const;
 
   // FragmentItem index in root_box_fragment_'s FragmentItems.

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -211,35 +213,21 @@ AXObject* AXInlineTextBox::NextOnLine() const {
   if (IsDetached())
     return nullptr;
 
-  if (inline_text_box_->IsLast()) {
-    // Do not serialize nextOnlineID if it can be inferred from the parent.
-    return ::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
-               ? nullptr
-               : ParentObject()->NextOnLine();
-  }
-
-  if (AbstractInlineTextBox* next_on_line = inline_text_box_->NextOnLine()) {
-    return AXObjectCache().Get(next_on_line);
-  }
-  return nullptr;
+  // TODO(crbug.com/399206210): Investigate whether
+  // AXInlineTextBox::NextOnLine of list markers should point to the list item
+  // content.
+  return NeighboringOnLine(Direction::kNext);
 }
 
 AXObject* AXInlineTextBox::PreviousOnLine() const {
   if (IsDetached())
     return nullptr;
 
-  if (inline_text_box_->IsFirst()) {
-    // Do not serialize previousOnlineID if it can be inferred from the parent.
-    return ::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
-               ? nullptr
-               : ParentObject()->PreviousOnLine();
+  if (IsPartOfAListItem()) {
+    return ParentObject()->PreviousOnLine();
   }
 
-  AbstractInlineTextBox* previous_on_line = inline_text_box_->PreviousOnLine();
-  if (previous_on_line)
-    return AXObjectCache().Get(previous_on_line);
-
-  return nullptr;
+  return NeighboringOnLine(Direction::kPrevious);
 }
 
 void AXInlineTextBox::SerializeMarkerAttributes(
@@ -424,6 +412,74 @@ int AXInlineTextBox::TextLength() const {
 
 void AXInlineTextBox::ClearChildren() {
   // An AXInlineTextBox has no children to clear.
+}
+
+bool AXInlineTextBox::IsPartOfAListItem() const {
+  // An AXInlineTextBox that is part of a list item needs special handling, as
+  // the list marker content is rendered in a separate box than the list item
+  // content, but accessibility still wants to connect the two in the same line.
+  if (ParentObject()->ParentObject()->RoleValue() ==
+      ax::mojom::blink::Role::kListItem) {
+    return true;
+  }
+  return false;
+}
+
+AXObject* AXInlineTextBox::NeighboringOnLine(const Direction direction) const {
+  InlineCursor cursor = inline_text_box_->GetCursorOnLine();
+  AbstractInlineTextBox* candidate = nullptr;
+  while (cursor && !candidate) {
+    direction == Direction::kNext ? cursor.MoveToNext()
+                                  : cursor.MoveToPrevious();
+    if (!cursor) {
+      return nullptr;
+    }
+    switch (cursor.Current().Item()->Type()) {
+      case FragmentItem::kText:
+      case FragmentItem::kGeneratedText:
+        if (cursor.Current().GetLayoutObject()->IsText()) {
+          candidate = AbstractInlineTextBox::GetOrCreate(cursor);
+        }
+        break;
+
+      case FragmentItem::kLine:
+        return nullptr;
+
+      case FragmentItem::kBox:
+        if (cursor.Current().Item()->BoxFragment()) {
+          // TODO(crbug.com/399204651): Implement navigating into separate
+          // PhysicalBox
+          // fragments.
+          return ::features::
+                         IsAccessibilityPruneRedundantInlineConnectivityEnabled()
+                     ? nullptr
+                 : direction == Direction::kNext
+                     ? ParentObject()->NextOnLine()
+                     : ParentObject()->PreviousOnLine();
+        }
+        // Inline-box continues on to the next/previous item.
+        break;
+
+      case FragmentItem::kInvalid:
+        NOTREACHED();
+    }
+  }
+
+  if (!candidate) {
+    return nullptr;
+  }
+
+  if (AXObject* obj = AXObjectCache().Get(candidate)) {
+    return obj;
+  }
+
+  // If an AbstractInlineTextBox exists, but no AXObject is associated with
+  // it, this means that the text is associated with an inert or aria-hiden
+  // node. Delegate to the parent the decision.
+  return ::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
+             ? nullptr
+         : direction == Direction::kNext ? ParentObject()->NextOnLine()
+                                         : ParentObject()->PreviousOnLine();
 }
 
 }  // namespace blink

@@ -83,6 +83,19 @@ class AbstractInlineTextBoxCache final {
 
 AbstractInlineTextBoxCache* AbstractInlineTextBoxCache::s_instance_ = nullptr;
 
+// Returns true if the cursor position is on the same line, and has not moved to
+// a nested or different line.
+// TODO(crbug.com/399204651): Implement navigating into separate PhysicalBox
+// fragments.
+// This function returns false if we encounter a box fragment because the
+// current implementation does not navigate into other PhysicalBox fragments. In
+// this case this returns false and accessibility delegates the approach to the
+// parent to figure out the next / previous on line.
+bool IsCursorPositionOnTheLine(InlineCursor& cursor) {
+  return cursor && cursor.Current().Item()->Type() != FragmentItem::kLine &&
+         !cursor.Current().Item()->BoxFragment();
+}
+
 }  // namespace
 
 AbstractInlineTextBox* AbstractInlineTextBox::GetOrCreate(
@@ -141,7 +154,7 @@ void AbstractInlineTextBox::Detach() {
 LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
   // We only want to apply the first letter to the first inline text box
   // for a LayoutObject.
-  if (!IsFirst()) {
+  if (!IsFirstForLayoutObject()) {
     return nullptr;
   }
 
@@ -502,7 +515,7 @@ String AbstractInlineTextBox::GetText() const {
   return result;
 }
 
-bool AbstractInlineTextBox::IsFirst() const {
+bool AbstractInlineTextBox::IsFirstForLayoutObject() const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return true;
@@ -511,20 +524,11 @@ bool AbstractInlineTextBox::IsFirst() const {
   return cursor == first_fragment;
 }
 
-bool AbstractInlineTextBox::IsLast() const {
-  InlineCursor cursor = GetCursor();
-  if (!cursor)
-    return true;
-  cursor.MoveToNextForSameLayoutObject();
-  return !cursor;
-}
-
 AbstractInlineTextBox* AbstractInlineTextBox::NextOnLine() const {
   InlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;
-  for (cursor.MoveToNext();
-       cursor && cursor.Current().Item()->Type() != FragmentItem::kLine;
+  for (cursor.MoveToNext(); IsCursorPositionOnTheLine(cursor);
        cursor.MoveToNext()) {
     if (cursor.Current().GetLayoutObject()->IsText())
       return GetOrCreate(cursor);
@@ -536,8 +540,7 @@ AbstractInlineTextBox* AbstractInlineTextBox::PreviousOnLine() const {
   InlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;
-  for (cursor.MoveToPrevious();
-       cursor && cursor.Current().Item()->Type() != FragmentItem::kLine;
+  for (cursor.MoveToPrevious(); IsCursorPositionOnTheLine(cursor);
        cursor.MoveToPrevious()) {
     if (cursor.Current().GetLayoutObject()->IsText())
       return GetOrCreate(cursor);

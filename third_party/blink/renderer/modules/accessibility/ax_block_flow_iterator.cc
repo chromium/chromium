@@ -237,9 +237,13 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
       previous_on_line = fragment_index;
     }
 
-    // TODO (accessibility): Handle box fragments with children stored in a
-    // separate physical box fragment. We should be able to process these in
-    // a single pass and make AXNodeObject::NextOnLine a trivial lookup.
+    // TODO(crbug.com/399204651): Implement navigating into separate PhysicalBox
+    // fragments.
+    if (it->IsContainer() && it->BoxFragment()) {
+      /// A physical box exists for this item, meaning that the next and
+      /// previous for this particular item needs to be cleared.
+      previous_on_line = std::nullopt;
+    }
   }
 }
 
