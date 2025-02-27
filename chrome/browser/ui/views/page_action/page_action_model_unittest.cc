@@ -131,12 +131,14 @@ TEST_F(PageActionModelTest, SetActionItemProperties) {
                                                 .SetText(kTestText)
                                                 .SetTooltipText(kTooltipText)
                                                 .SetImage(kTestImage)
+                                                .SetIsShowingBubble(true)
                                                 .Build()
                                                 .get());
 
   EXPECT_EQ(model_.GetText(), kTestText);
   EXPECT_EQ(model_.GetImage(), kTestImage);
   EXPECT_EQ(model_.GetTooltipText(), kTooltipText);
+  EXPECT_EQ(model_.GetActionItemIsShowingBubble(), true);
 }
 
 }  // namespace
