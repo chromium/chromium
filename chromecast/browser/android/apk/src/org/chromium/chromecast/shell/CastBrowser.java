@@ -6,9 +6,6 @@ package org.chromium.chromecast.shell;
 
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
-/**
- * Interface into the cast_browser module.
- *  Defined to satisfy the module interface requirement.
- *  */
+/** Interface into the cast_browser module. Defined to satisfy the module interface requirement. */
 @ModuleInterface(module = "cast_browser", impl = "org.chromium.chromecast.shell.CastBrowserImpl")
 public interface CastBrowser {}

@@ -82,7 +82,7 @@ public class CastWebContentsComponent {
         @Override
         public void start(StartParams params) {
             if (mStarted) return; // No-op if already started.
-            if (DEBUG) Log.d(TAG, "start: SHOW_WEB_CONTENT in activity");
+            Log.d(TAG, "start: SHOW_WEB_CONTENT in activity");
             startCastActivity(
                     params.webContents,
                     mEnableTouchInput,
@@ -117,7 +117,7 @@ public class CastWebContentsComponent {
 
     private void sendStopWebContentEvent() {
         Intent intent = CastWebContentsIntentUtils.requestStopWebContents(mSessionId);
-        if (DEBUG) Log.d(TAG, "stop: send STOP_WEB_CONTENT intent: " + intent);
+        Log.d(TAG, "stop: send STOP_WEB_CONTENT intent: " + intent);
         sendIntentSync(intent);
         sResumeIntent.reset();
     }
@@ -132,7 +132,7 @@ public class CastWebContentsComponent {
 
                     @Override
                     public void onServiceDisconnected(ComponentName name) {
-                        if (DEBUG) Log.d(TAG, "onServiceDisconnected");
+                        Log.d(TAG, "onServiceDisconnected");
 
                         if (mComponentClosedHandler != null) {
                             mComponentClosedHandler.onComponentClosed();
@@ -142,7 +142,7 @@ public class CastWebContentsComponent {
 
         @Override
         public void start(StartParams params) {
-            if (DEBUG) Log.d(TAG, "start");
+            Log.d(TAG, "start");
             Intent intent =
                     CastWebContentsIntentUtils.requestStartCastService(
                             params.webContents, mSessionId);
@@ -152,7 +152,7 @@ public class CastWebContentsComponent {
 
         @Override
         public void stop() {
-            if (DEBUG) Log.d(TAG, "stop");
+            Log.d(TAG, "stop");
             ContextUtils.getApplicationContext().unbindService(mConnection);
         }
     }
@@ -160,7 +160,6 @@ public class CastWebContentsComponent {
     public static final Controller<Intent> sResumeIntent = new Controller<Intent>();
 
     private static final String TAG = "CastWebComponent";
-    private static final boolean DEBUG = true;
 
     private final OnComponentClosedHandler mComponentClosedHandler;
     private final String mSessionId;
@@ -180,16 +179,14 @@ public class CastWebContentsComponent {
             boolean enableTouchInput,
             boolean turnOnScreen,
             boolean keepScreenOn) {
-        if (DEBUG) {
-            Log.d(
-                    TAG,
-                    "New CastWebContentsComponent: sid=%s, touchInput=%b, turnOnScreen=%b,"
-                            + " keepScreenOn=%b",
-                    sessionId,
-                    enableTouchInput,
-                    turnOnScreen,
-                    keepScreenOn);
-        }
+        Log.d(
+                TAG,
+                "New CastWebContentsComponent: sid=%s, touchInput=%b, turnOnScreen=%b,"
+                        + " keepScreenOn=%b",
+                sessionId,
+                enableTouchInput,
+                turnOnScreen,
+                keepScreenOn);
 
         mComponentClosedHandler = onComponentClosedHandler;
         mEnableTouchInput = enableTouchInput;
@@ -215,25 +212,21 @@ public class CastWebContentsComponent {
 
     private void onReceiveIntent(Intent intent) {
         if (CastWebContentsIntentUtils.isIntentOfActivityStopped(intent)) {
-            if (DEBUG) Log.d(TAG, "onReceive ACTION_ACTIVITY_STOPPED instance=" + mSessionId);
+            Log.d(TAG, "onReceive ACTION_ACTIVITY_STOPPED instance=" + mSessionId);
             if (mComponentClosedHandler != null) mComponentClosedHandler.onComponentClosed();
         } else if (CastWebContentsIntentUtils.isIntentOfVisibilityChange(intent)) {
             int visibilityType = CastWebContentsIntentUtils.getVisibilityType(intent);
-            if (DEBUG) {
-                Log.d(
-                        TAG,
-                        "onReceive ACTION_ON_VISIBILITY_CHANGE instance="
-                                + mSessionId
-                                + "; visibilityType="
-                                + visibilityType);
-            }
+            Log.d(
+                    TAG,
+                    "onReceive ACTION_ON_VISIBILITY_CHANGE instance="
+                            + mSessionId
+                            + "; visibilityType="
+                            + visibilityType);
             if (mSurfaceEventHandler != null) {
                 mSurfaceEventHandler.onVisibilityChange(visibilityType);
             }
         } else if (CastWebContentsIntentUtils.isIntentOfRequestMediaPlayingStatus(intent)) {
-            if (DEBUG) {
-                Log.d(TAG, "onReceive ACTION_REQUEST_MEDIA_PLAYING_STATUS instance=" + mSessionId);
-            }
+            Log.d(TAG, "onReceive ACTION_REQUEST_MEDIA_PLAYING_STATUS instance=" + mSessionId);
             // Just broadcast current value.
             setMediaPlaying(mMediaPlaying);
         }
@@ -246,10 +239,10 @@ public class CastWebContentsComponent {
 
     public void start(StartParams params, boolean isHeadless) {
         if (isHeadless) {
-            if (DEBUG) Log.d(TAG, "Creating service delegate...");
+            Log.d(TAG, "Creating service delegate...");
             start(params, new ServiceDelegate());
         } else {
-            if (DEBUG) Log.d(TAG, "Creating activity delegate...");
+            Log.d(TAG, "Creating activity delegate...");
             start(params, new ActivityDelegate());
         }
     }
@@ -257,18 +250,16 @@ public class CastWebContentsComponent {
     @VisibleForTesting
     void start(StartParams params, Delegate delegate) {
         mDelegate = delegate;
-        if (DEBUG) {
-            Log.d(
-                    TAG,
-                    "Starting WebContents with delegate: "
-                            + mDelegate.getClass().getSimpleName()
-                            + "; Instance ID: "
-                            + mSessionId
-                            + "; App ID: "
-                            + params.appId
-                            + "; shouldRequestAudioFocus: "
-                            + params.shouldRequestAudioFocus);
-        }
+        Log.d(
+                TAG,
+                "Starting WebContents with delegate: "
+                        + mDelegate.getClass().getSimpleName()
+                        + "; Instance ID: "
+                        + mSessionId
+                        + "; App ID: "
+                        + params.appId
+                        + "; shouldRequestAudioFocus: "
+                        + params.shouldRequestAudioFocus);
         mHasWebContentsState.set(params.webContents);
         mDelegate.start(params);
         mStarted = true;
@@ -276,46 +267,44 @@ public class CastWebContentsComponent {
 
     public void stop() {
         if (!mStarted) return;
-        if (DEBUG) {
-            Log.d(
-                    TAG,
-                    "stop with delegate: "
-                            + mDelegate.getClass().getSimpleName()
-                            + "; Instance ID: "
-                            + mSessionId);
-        }
+        Log.d(
+                TAG,
+                "stop with delegate: "
+                        + mDelegate.getClass().getSimpleName()
+                        + "; Instance ID: "
+                        + mSessionId);
         mHasWebContentsState.reset();
-        if (DEBUG) Log.d(TAG, "Call delegate to stop");
+        Log.d(TAG, "Call delegate to stop");
         mDelegate.stop();
         mStarted = false;
     }
 
     public void enableTouchInput(boolean enabled) {
-        if (DEBUG) Log.d(TAG, "enableTouchInput enabled:" + enabled);
+        Log.d(TAG, "enableTouchInput enabled:" + enabled);
         mEnableTouchInput = enabled;
         sendIntentSync(CastWebContentsIntentUtils.enableTouchInput(mSessionId, enabled));
     }
 
     public void setAllowPictureInPicture(boolean allowPictureInPicture) {
-        if (DEBUG) Log.d(TAG, "setAllowPictureInPicture: " + allowPictureInPicture);
+        Log.d(TAG, "setAllowPictureInPicture: " + allowPictureInPicture);
         sendIntentSync(
                 CastWebContentsIntentUtils.allowPictureInPicture(
                         mSessionId, allowPictureInPicture));
     }
 
     public void setMediaPlaying(boolean mediaPlaying) {
-        if (DEBUG) Log.d(TAG, "setMediaPlaying: " + mediaPlaying);
+        Log.d(TAG, "setMediaPlaying: " + mediaPlaying);
         mMediaPlaying = mediaPlaying;
         sendIntentSync(CastWebContentsIntentUtils.mediaPlaying(mSessionId, mMediaPlaying));
     }
 
     public static void onComponentClosed(String sessionId) {
-        if (DEBUG) Log.d(TAG, "onComponentClosed");
+        Log.d(TAG, "onComponentClosed");
         sendIntentSync(CastWebContentsIntentUtils.onActivityStopped(sessionId));
     }
 
     public static void onVisibilityChange(String sessionId, int visibilityType) {
-        if (DEBUG) Log.d(TAG, "onVisibilityChange");
+        Log.d(TAG, "onVisibilityChange");
         sendIntentSync(CastWebContentsIntentUtils.onVisibilityChange(sessionId, visibilityType));
     }
 

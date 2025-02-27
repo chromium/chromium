@@ -13,13 +13,14 @@ import org.chromium.chromecast.base.Observable.Scheduler;
  * A thin adapter layer that allows using Android Handlers with Observable methods like alarm() and
  * delay().
  *
- * Example:
+ * <p>Example:
  *
- *   Observable<Client> clients = ...;
- *   Subscription sub = clients.delay(HandlerScheduler.onCurrentThread(), 200).subscribe(client -> {
- *       // This code is only invoked 200 ms after |clients| is actually activated.
- *       ...
- *   });
+ * <pre>{@code
+ * Observable<Client> clients = ...;
+ * Subscription sub = clients.delay(HandlerScheduler.onCurrentThread(), 200).subscribe(client -> {
+ *   // This code is only invoked 200 ms after |clients| is actually activated. ...
+ * });
+ * }</pre>
  */
 public class HandlerScheduler {
     public static Scheduler fromHandler(Handler handler) {

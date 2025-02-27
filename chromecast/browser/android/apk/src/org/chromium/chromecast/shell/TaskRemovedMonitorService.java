@@ -15,16 +15,14 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
 /**
- * Service started and stopped by CastWebContentsActivity responsible for stopping the
- * cast session if the Activity task is removed by the OS.
+ * Service started and stopped by CastWebContentsActivity responsible for stopping the cast session
+ * if the Activity task is removed by the OS.
  */
 public class TaskRemovedMonitorService extends Service {
     private static final String TAG = "TaskRemovedMonitor";
 
-    @VisibleForTesting
-    static final String ROOT_SESSION_KEY = "rootSessionId";
-    @VisibleForTesting
-    static final String SESSION_KEY = "sessionId";
+    @VisibleForTesting static final String ROOT_SESSION_KEY = "rootSessionId";
+    @VisibleForTesting static final String SESSION_KEY = "sessionId";
 
     public String mRootSessionId = "";
     public String mSessionId = "";
@@ -47,8 +45,12 @@ public class TaskRemovedMonitorService extends Service {
     public int onStartCommand(Intent intent, int flag, int startId) {
         mRootSessionId = intent.getStringExtra(ROOT_SESSION_KEY);
         mSessionId = intent.getStringExtra(SESSION_KEY);
-        Log.d(TAG, "Started tracking CastWebContentsActivity: rootSessionId="
-                + mRootSessionId + ", sessionId=" + mSessionId);
+        Log.d(
+                TAG,
+                "Started tracking CastWebContentsActivity: rootSessionId="
+                        + mRootSessionId
+                        + ", sessionId="
+                        + mSessionId);
         return START_NOT_STICKY;
     }
 
@@ -59,15 +61,18 @@ public class TaskRemovedMonitorService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        if (!CastWebContentsActivity.class.getName().equals(
-                    rootIntent.getComponent().getClassName())) {
+        if (!CastWebContentsActivity.class
+                .getName()
+                .equals(rootIntent.getComponent().getClassName())) {
             // Ignore tasks being removed for any other application Activities.
             return;
         }
         if (!mSessionId.isEmpty()
                 && mRootSessionId.equals(CastWebContentsIntentUtils.getSessionId(rootIntent))) {
-            Log.d(TAG, "Detected CastWebContentsActivity task removed, stopping session: "
-                    + mSessionId);
+            Log.d(
+                    TAG,
+                    "Detected CastWebContentsActivity task removed, stopping session: "
+                            + mSessionId);
             CastWebContentsComponent.onComponentClosed(mSessionId);
             stopSelf();
         }

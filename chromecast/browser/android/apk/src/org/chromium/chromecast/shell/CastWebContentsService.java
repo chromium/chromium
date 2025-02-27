@@ -27,13 +27,12 @@ import java.util.function.Function;
 
 /**
  * Service for "displaying" a WebContents in CastShell.
- * <p>
- * Typically, this class is controlled by CastContentWindowAndroid, which will bind to this
+ *
+ * <p>Typically, this class is controlled by CastContentWindowAndroid, which will bind to this
  * service via CastWebContentsComponent.
  */
 public class CastWebContentsService extends Service {
     private static final String TAG = "CastWebService";
-    private static final boolean DEBUG = true;
     private static final int CAST_NOTIFICATION_ID = 100;
     private static final String NOTIFICATION_CHANNEL_ID =
             "org.chromium.chromecast.shell.CastWebContentsService.channel";
@@ -47,16 +46,18 @@ public class CastWebContentsService extends Service {
     {
         // React to web contents by presenting them in a headless view.
         mWebContentsState.subscribe(CastWebContentsScopes.withoutLayout(this));
-        mWebContentsState.subscribe(webContents -> {
-            Notification notification =
-                    new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                            .setContentTitle(webContents.getTitle())
-                            .setContentText("A Google Cast app is running in the background")
-                            .setSmallIcon(R.drawable.ic_settings_cast)
-                            .build();
-            startForeground(CAST_NOTIFICATION_ID, notification);
-            return () -> stopForeground(true /*removeNotification*/);
-        });
+        mWebContentsState.subscribe(
+                webContents -> {
+                    Notification notification =
+                            new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                                    .setContentTitle(webContents.getTitle())
+                                    .setContentText(
+                                            "A Google Cast app is running in the background")
+                                    .setSmallIcon(R.drawable.ic_settings_cast)
+                                    .build();
+                    startForeground(CAST_NOTIFICATION_ID, notification);
+                    return () -> stopForeground(true /*removeNotification*/);
+                });
         mWebContentsState
                 .map(this::getMediaSession)
                 .subscribe(Observer.onOpen(MediaSession::requestSystemAudioFocus));
@@ -64,25 +65,24 @@ public class CastWebContentsService extends Service {
         Observable<String> instanceIdState = mIntentState.map(Intent::getData).map(Uri::getPath);
         instanceIdState.subscribe(Observer.onClose(CastWebContentsComponent::onComponentClosed));
 
-        if (DEBUG) {
-            mWebContentsState.subscribe(x -> {
-                Log.d(TAG, "show web contents");
-                return () -> Log.d(TAG, "detach web contents");
-            });
-        }
+        mWebContentsState.subscribe(
+                x -> {
+                    Log.d(TAG, "show web contents");
+                    return () -> Log.d(TAG, "detach web contents");
+                });
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        if (DEBUG) Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         CastBrowserHelper.initializeBrowserAsync(getApplicationContext(), null);
         createNotificationChannel();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        if (DEBUG) Log.d(TAG, "onBind");
+        Log.d(TAG, "onBind");
         intent.setExtrasClassLoader(WebContents.class.getClassLoader());
         mIntentState.set(intent);
         return null;
@@ -90,7 +90,7 @@ public class CastWebContentsService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        if (DEBUG) Log.d(TAG, "onUnbind");
+        Log.d(TAG, "onUnbind");
         mIntentState.reset();
         return false;
     }
@@ -109,8 +109,11 @@ public class CastWebContentsService extends Service {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                    "Cast Audio Apps", NotificationManager.IMPORTANCE_NONE);
+            NotificationChannel channel =
+                    new NotificationChannel(
+                            NOTIFICATION_CHANNEL_ID,
+                            "Cast Audio Apps",
+                            NotificationManager.IMPORTANCE_NONE);
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
