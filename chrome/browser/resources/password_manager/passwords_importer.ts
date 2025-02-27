@@ -40,8 +40,7 @@ enum DialogState {
 }
 
 /**
- * Should be kept in sync with
- * |password_manager::metrics_util::PasswordsImportDesktopInteractions|.
+ * Should be kept in sync with PasswordsImportDesktopInteractions in enums.xml.
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  */
