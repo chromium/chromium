@@ -142,6 +142,11 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                 .build();
     }
 
+    /** Returns the edge-to-edge layout view. */
+    public @Nullable EdgeToEdgeBaseLayout getView() {
+        return mView;
+    }
+
     @EnsuresNonNull("mView")
     private void ensureInitialized() {
         if (mView != null) return;
