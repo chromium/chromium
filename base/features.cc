@@ -36,8 +36,8 @@ namespace base::features {
 
 // Alphabetical:
 
-// Activate base::FeatureParamWithCache internal cache.
-// TODO(https://crbug.com/340824113): Remove the feature flag below.
+// Controls caching within BASE_FEATURE_PARAM(). This is feature-controlled
+// so that ScopedFeatureList can disable it to turn off caching.
 BASE_FEATURE(kFeatureParamWithCache,
              "FeatureParamWithCache",
              FEATURE_ENABLED_BY_DEFAULT);
