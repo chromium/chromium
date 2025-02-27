@@ -234,12 +234,19 @@ public class SafetyHubPasswordsFetchServiceTest {
         }
 
         @Test
-        public void noPreferencesUpdated_whenCheckupFails() {
+        public void noPreferencesUpdated_whenCheckupFails_lastCheckRecently() {
             mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+            long twoHoursInMs = 120 * TimeUtils.MILLISECONDS_PER_MINUTE;
+            mockLastCheckTime(TimeUtils.currentTimeMillis() - twoHoursInMs);
             mPasswordCheckupClientHelper.setError(new Exception());
 
             new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
                     .runPasswordCheckup(mTaskFinishedCallback);
+
+            verify(mPrefService, never()).clearPref(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT));
+            verify(mPrefService, never()).clearPref(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT));
+            verify(mPrefService, never()).clearPref(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT));
 
             verify(mPrefService, never())
                     .setInteger(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT), anyInt());
@@ -247,6 +254,34 @@ public class SafetyHubPasswordsFetchServiceTest {
                     .setInteger(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT), anyInt());
             verify(mPrefService, never())
                     .setInteger(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT), anyInt());
+
+            verify(mPrefService, never())
+                    .setLong(eq(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED), anyLong());
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));
+        }
+
+        @Test
+        public void noPreferencesUpdated_whenCheckupFails_lastCheckLongAgo() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+
+            long twoHoursInMs = 2 * TimeUtils.MILLISECONDS_PER_DAY;
+            mockLastCheckTime(TimeUtils.currentTimeMillis() - twoHoursInMs);
+            mPasswordCheckupClientHelper.setError(new Exception());
+
+            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
+                    .runPasswordCheckup(mTaskFinishedCallback);
+
+            verify(mPrefService, times(1)).clearPref(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+            verify(mPrefService, times(1)).clearPref(Pref.LOCAL_WEAK_CREDENTIALS_COUNT);
+            verify(mPrefService, times(1)).clearPref(Pref.LOCAL_REUSED_CREDENTIALS_COUNT);
+
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT), anyInt());
+
             verify(mPrefService, never())
                     .setLong(eq(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED), anyLong());
             verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));

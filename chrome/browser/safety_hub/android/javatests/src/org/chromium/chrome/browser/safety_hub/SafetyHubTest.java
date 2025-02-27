@@ -60,6 +60,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -212,6 +213,7 @@ public final class SafetyHubTest {
         // state.
         clearAccountCompromisedPasswordsCount();
         clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
     }
 
@@ -908,10 +910,11 @@ public final class SafetyHubTest {
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
     public void testLocalPasswordModule_AllCountsUnavailable() {
-        addCredentialToProfileStore();
         setLocalCompromisedPasswordsCount(-1);
         setLocalWeakPasswordsCount(-1);
         setLocalReusedPasswordsCount(-1);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToProfileStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
@@ -929,6 +932,42 @@ public final class SafetyHubTest {
                 safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
         scrollToPreference(withText(safeBrowsingTitle));
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
+    public void testLocalPasswordModule_AllCountsUnavailable_NotWithinCoolDown() {
+        setLocalCompromisedPasswordsCount(1);
+        setLocalWeakPasswordsCount(1);
+        setLocalReusedPasswordsCount(1);
+        setLocalPasswordCheckTimestamp(0);
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that local passwords module which is in the unavailable state is expanded by
+        // default.
+        String unavailableTitle =
+                safetyHubFragment.getString(
+                        R.string.safety_hub_local_password_check_unavailable_title);
+        scrollToExpandedPreference(unavailableTitle);
+        verifyButtonsNextToTextVisibility(unavailableTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -971,6 +1010,7 @@ public final class SafetyHubTest {
         setLocalCompromisedPasswordsCount(compromisedPasswordsCount);
         setLocalWeakPasswordsCount(2);
         setLocalReusedPasswordsCount(1);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToProfileStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -995,6 +1035,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
 
         clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1010,6 +1051,7 @@ public final class SafetyHubTest {
         setLocalCompromisedPasswordsCount(0);
         setLocalWeakPasswordsCount(2);
         setLocalReusedPasswordsCount(1);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToProfileStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -1029,6 +1071,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1044,6 +1087,7 @@ public final class SafetyHubTest {
         setLocalCompromisedPasswordsCount(0);
         setLocalWeakPasswordsCount(2);
         setLocalReusedPasswordsCount(0);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToProfileStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -1063,6 +1107,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1078,6 +1123,7 @@ public final class SafetyHubTest {
         setLocalCompromisedPasswordsCount(0);
         setLocalWeakPasswordsCount(0);
         setLocalReusedPasswordsCount(0);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
         addCredentialToProfileStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -1098,6 +1144,7 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
 
         clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
     }
 
     @Test
@@ -1658,6 +1705,16 @@ public final class SafetyHubTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).setInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT, count);
+                });
+    }
+
+    private void setLocalPasswordCheckTimestamp(long timestampInMs) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile)
+                            .setLong(
+                                    Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED,
+                                    timestampInMs);
                 });
     }
 

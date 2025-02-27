@@ -103,10 +103,7 @@ public class SafetyHubPasswordsFetchService {
             return;
         }
 
-        long currentTimeInMs = TimeUtils.currentTimeMillis();
-        long timeSinceLastCheckupInMs =
-                currentTimeInMs - mPrefService.getLong(getLastTimeInMsCheckCompletedPreference());
-        if (timeSinceLastCheckupInMs <= CHECKUP_COOL_DOWN_PERIOD_IN_MS) {
+        if (getTimeSinceLastCheckupInMs() <= CHECKUP_COOL_DOWN_PERIOD_IN_MS) {
             onFinishedCallback.onResult(/* errorOccurred */ false);
             return;
         }
@@ -121,8 +118,13 @@ public class SafetyHubPasswordsFetchService {
                     fetchPasswordsCount(onFinishedCallback);
                 },
                 error -> {
-                    // TODO(crbug.com/388789824): Check if the prefs should be cleared on checkup
-                    // error.
+                    // If the last check up was performed a long time ago, then don't reuse the
+                    // counts.
+                    if (getTimeSinceLastCheckupInMs()
+                            > (SafetyHubFetchService.SAFETY_HUB_JOB_INTERVAL_IN_DAYS
+                                    * TimeUtils.MILLISECONDS_PER_DAY)) {
+                        clearPrefs();
+                    }
                     onFinishedCallback.onResult(/* errorOccurred */ true);
                 });
     }
@@ -136,6 +138,11 @@ public class SafetyHubPasswordsFetchService {
         mPrefService.clearPref(getBreachedPreference());
         mPrefService.clearPref(getWeakPreference());
         mPrefService.clearPref(getReusedPreference());
+    }
+
+    private long getTimeSinceLastCheckupInMs() {
+        return TimeUtils.currentTimeMillis()
+                - mPrefService.getLong(getLastTimeInMsCheckCompletedPreference());
     }
 
     private boolean canUseUpm() {
