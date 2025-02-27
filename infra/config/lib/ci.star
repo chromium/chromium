@@ -14,6 +14,7 @@ to set the default value. Can also be accessed through `ci.defaults`.
 """
 
 load("//project.star", "settings")
+load("./notifiers.star", "notifiers")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builder_config.star", "builder_config")
@@ -192,6 +193,13 @@ def ci_builder(
                 luci.console_view_entry(
                     builder = builder,
                     console_view = builders.gardener_rotation_name(rotation),
+                    category = overview_console_category,
+                    short_name = entry.short_name,
+                )
+            if tree_closing and notifiers.tree_closer_branch():
+                luci.console_view_entry(
+                    builder = builder,
+                    console_view = "Tree Closers",
                     category = overview_console_category,
                     short_name = entry.short_name,
                 )
