@@ -2070,10 +2070,8 @@ void BrowserCommandController::UpdateCommandAndActionEnabled(
     actions::ActionId action_id,
     bool enabled) {
   command_updater_.UpdateCommandEnabled(command_id, enabled);
-  if (features::IsToolbarPinningEnabled()) {
-    if (auto* const action = FindAction(action_id)) {
-      action->SetEnabled(enabled);
-    }
+  if (auto* const action = FindAction(action_id)) {
+    action->SetEnabled(enabled);
   }
 }
 

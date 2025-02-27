@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -9,10 +10,9 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/version_info/channel.h"
@@ -61,8 +61,7 @@ class ChromeLabsUiTest : public DialogBrowserTest {
   void SetUpOnMainThread() override {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
-    actions_model->UpdatePinnedState(kActionShowChromeLabs,
-                                     features::IsToolbarPinningEnabled());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs, true);
     views::test::WaitForAnimatingLayoutManager(
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar()
@@ -135,8 +134,7 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
   void SetUpOnMainThread() override {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
-    actions_model->UpdatePinnedState(kActionShowChromeLabs,
-                                     features::IsToolbarPinningEnabled());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs, true);
     views::test::WaitForAnimatingLayoutManager(
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar()

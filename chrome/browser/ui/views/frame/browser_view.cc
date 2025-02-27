@@ -169,7 +169,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -3322,8 +3322,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
 
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(kActionShowTranslate);
-  if (features::IsToolbarPinningEnabled() &&
-      views::Button::AsButton(anchor_view)) {
+  if (views::Button::AsButton(anchor_view)) {
     translate_icon = views::Button::AsButton(anchor_view);
   }
   TranslateBubbleController::GetOrCreate(web_contents)
@@ -3404,8 +3403,7 @@ views::View* BrowserView::GetTopContainer() {
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
-  if (features::IsToolbarPinningEnabled() &&
-      base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
+  if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
     if (auto* download_controller =
             browser_->GetFeatures().download_toolbar_ui_controller()) {
       return download_controller->bubble_controller();
@@ -4821,7 +4819,6 @@ void BrowserView::AddedToWidget() {
   }
 
   if (download::IsDownloadBubbleEnabled() &&
-      features::IsToolbarPinningEnabled() &&
       base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
     browser_->GetFeatures().download_toolbar_ui_controller()->Init();
   }

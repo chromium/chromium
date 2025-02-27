@@ -135,13 +135,8 @@ void CastToolbarButtonController::OnContextMenuHidden() {
 }
 
 void CastToolbarButtonController::UpdateIcon() {
-  // Non-ToolbarPinning path updates the icon via observers.
-  if (features::IsToolbarPinningEnabled()) {
-    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
-      browser->browser_window_features()
-          ->cast_browser_controller()
-          ->UpdateIcon();
-    }
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    browser->browser_window_features()->cast_browser_controller()->UpdateIcon();
   }
 }
 
@@ -190,14 +185,14 @@ CastToolbarButtonController::CastToolbarButtonController(
 }
 
 void CastToolbarButtonController::MaybeToggleIconVisibility() {
-  if (features::IsToolbarPinningEnabled() &&
-      base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     // Pin media router if it should be pinned based on enterprise policy.
     if (IsActionShownByPolicy(profile_)) {
       PinnedToolbarActionsModel* const actions_model =
           PinnedToolbarActionsModel::Get(profile_);
       actions_model->UpdatePinnedState(kActionRouteMedia, true);
     }
+
     for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
       auto* action_item = actions::ActionManager::Get().FindAction(
           kActionRouteMedia, browser->browser_actions()->root_action_item());

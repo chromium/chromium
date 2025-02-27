@@ -57,8 +57,7 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
   CastBrowserControllerTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kToolbarPinning, features::kPinnedCastButton}, {});
+    scoped_feature_list_.InitWithFeatures({features::kPinnedCastButton}, {});
     InProcessBrowserTest::SetUp();
   }
 

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller_delegate.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
@@ -52,17 +51,10 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   // If the active browser matches `profile_`, show the toolbar icon.
   // Otherwise, we will store this entry and wait to show on the next active
   // appropriate browser.
-  if (features::IsToolbarPinningEnabled()) {
-    auto* browser = chrome::FindLastActiveWithProfile(profile_);
-    if (browser && browser->IsActive() && CanShowOnBrowser(browser)) {
-      ShowToolbarButton(*new_entry, browser);
-      return;
-    }
-  } else {
-    if (GetActiveDelegate()) {
-      ShowToolbarButton(*new_entry);
-      return;
-    }
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
+  if (browser && browser->IsActive() && CanShowOnBrowser(browser)) {
+    ShowToolbarButton(*new_entry, browser);
+    return;
   }
 
   StorePendingEntry(new_entry);
@@ -101,15 +93,10 @@ void SendTabToSelfToolbarIconController::DismissEntries(
 
 void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
     Browser* browser) {
-  if (features::IsToolbarPinningEnabled()) {
-    if (!GetActiveDelegate() || browser->profile() != profile_.get()) {
-      return;
-    }
-  } else {
-    if (!GetActiveDelegate()) {
-      return;
-    }
+  if (!GetActiveDelegate() || browser->profile() != profile_.get()) {
+    return;
   }
+
   BrowserList::RemoveObserver(this);
 
   // Reset |pending_entry_| because it's used to determine if the
@@ -120,41 +107,26 @@ void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
     return;
   }
 
-  if (features::IsToolbarPinningEnabled()) {
-    if (CanShowOnBrowser(browser)) {
-      ShowToolbarButton(*entry, browser);
-      pending_entry_ = nullptr;
-    }
-  } else {
-    if (browser == chrome::FindBrowserWithProfile(profile_)) {
-      ShowToolbarButton(*entry);
-      pending_entry_ = nullptr;
-    }
+  if (CanShowOnBrowser(browser)) {
+    ShowToolbarButton(*entry, browser);
+    pending_entry_ = nullptr;
   }
 }
 
 void SendTabToSelfToolbarIconController::ShowToolbarButton(
     const SendTabToSelfEntry& entry,
     Browser* browser) {
-  if (features::IsToolbarPinningEnabled()) {
-    CHECK(browser);
-    auto* container = BrowserView::GetBrowserViewForBrowser(browser)
-                          ->toolbar()
-                          ->pinned_toolbar_actions_container();
-    CHECK(container);
-    container->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
-    auto* button = container->GetButtonFor(kActionSendTabToSelf);
-    CHECK(button);
-    browser->browser_window_features()
-        ->send_tab_to_self_toolbar_bubble_controller()
-        ->ShowBubble(entry, button);
-  } else {
-    auto* active_delegate = GetActiveDelegate();
-    if (!active_delegate) {
-      return;
-    }
-    active_delegate->Show(entry);
-  }
+  CHECK(browser);
+  auto* container = BrowserView::GetBrowserViewForBrowser(browser)
+                        ->toolbar()
+                        ->pinned_toolbar_actions_container();
+  CHECK(container);
+  container->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
+  auto* button = container->GetButtonFor(kActionSendTabToSelf);
+  CHECK(button);
+  browser->browser_window_features()
+      ->send_tab_to_self_toolbar_bubble_controller()
+      ->ShowBubble(entry, button);
 
   send_tab_to_self::RecordNotificationShown();
 }

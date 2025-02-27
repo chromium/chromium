@@ -276,8 +276,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       wallpaper_search_enabled &&
           base::FeatureList::IsEnabled(
               ntp_features::kCustomizeChromeWallpaperSearchButton));
-  source->AddBoolean("toolbarCustomizationEnabled",
-                     base::FeatureList::IsEnabled(features::kToolbarPinning));
+  // TODO(crbug.com/395921085): Remove this alongside the WebUI code.
+  source->AddBoolean("toolbarCustomizationEnabled", true);
   source->AddBoolean("imageErrorDetectionEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpBackgroundImageErrorDetection));

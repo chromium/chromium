@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,13 +46,11 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
 
   // TODO(b/353777476): Strip out pinned toolbar button code into a shared
   // controller for page action and pinned button.
-  if (features::IsToolbarPinningEnabled()) {
-    BrowserActions* browser_actions = browser->browser_actions();
-    actions::ActionManager::Get()
-        .FindAction(kActionShowPasswordsBubbleOrPage,
-                    browser_actions->root_action_item())
-        ->SetTooltipText(tooltip_and_accessible_name_text);
-  }
+  BrowserActions* browser_actions = browser->browser_actions();
+  actions::ActionManager::Get()
+      .FindAction(kActionShowPasswordsBubbleOrPage,
+                  browser_actions->root_action_item())
+      ->SetTooltipText(tooltip_and_accessible_name_text);
 }
 
 ManagePasswordsIconViews::~ManagePasswordsIconViews() = default;
@@ -73,24 +70,20 @@ void ManagePasswordsIconViews::SetState(password_manager::ui::State state) {
 
   // TODO(b/353777476): Strip out pinned toolbar button code into a shared
   // controller for page action and pinned button.
-  if (features::IsToolbarPinningEnabled()) {
-    BrowserActions* browser_actions = browser()->browser_actions();
-    actions::ActionManager::Get()
-        .FindAction(kActionShowPasswordsBubbleOrPage,
-                    browser_actions->root_action_item())
-        ->SetTooltipText(tooltip_and_accessible_name_text);
-  }
+  BrowserActions* browser_actions = browser()->browser_actions();
+  actions::ActionManager::Get()
+      .FindAction(kActionShowPasswordsBubbleOrPage,
+                  browser_actions->root_action_item())
+      ->SetTooltipText(tooltip_and_accessible_name_text);
 }
 
 void ManagePasswordsIconViews::UpdateUiForState() {
-  if (features::IsToolbarPinningEnabled()) {
-    BrowserActions* browser_actions = browser()->browser_actions();
-    actions::ActionManager::Get()
-        .FindAction(kActionShowPasswordsBubbleOrPage,
-                    browser_actions->root_action_item())
-        ->SetProperty(kActionItemUnderlineIndicatorKey,
-                      (state_ != password_manager::ui::INACTIVE_STATE));
-  }
+  BrowserActions* browser_actions = browser()->browser_actions();
+  actions::ActionManager::Get()
+      .FindAction(kActionShowPasswordsBubbleOrPage,
+                  browser_actions->root_action_item())
+      ->SetProperty(kActionItemUnderlineIndicatorKey,
+                    (state_ != password_manager::ui::INACTIVE_STATE));
 
   // Hides the page action icon if the associated toolbar icon is pinned.
   if (state_ == password_manager::ui::INACTIVE_STATE ||

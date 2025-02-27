@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -88,7 +87,7 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
       break;
   }
 
-  if (browser && base::FeatureList::IsEnabled(features::kToolbarPinning)) {
+  if (browser) {
     send_tab_to_self_action_item_ = actions::ActionManager::Get().FindAction(
         kActionSendTabToSelf, browser->browser_actions()->root_action_item());
     // The toolbar might not have this action button.

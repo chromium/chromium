@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -26,7 +25,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/view_class_properties.h"
 
 using SidePanelWebUIViewT_CustomizeChromeUI =
@@ -92,13 +90,7 @@ bool SidePanelControllerViews::CanShowOnURL(const GURL& url) const {
     return false;
   }
 
-  // If toolbar pinning is enabled, then we can always show the sidepanel.
-  if (features::IsToolbarPinningEnabled()) {
-    return true;
-  }
-
-  // Otherwise, the sidepanel can only be shown on the new tab page.
-  return NewTabPageUI::IsNewTabPageOrigin(url);
+  return true;
 }
 
 void SidePanelControllerViews::DidFinishNavigation(

@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -113,7 +112,6 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
       },
       bubble));
 
-  if (features::IsToolbarPinningEnabled()) {
     auto* passwords_action_item = actions::ActionManager::Get().FindAction(
         kActionShowPasswordsBubbleOrPage,
         browser->browser_actions()->root_action_item());
@@ -122,7 +120,6 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
         g_manage_passwords_bubble_->ShouldCloseOnDeactivate();
     passwords_action_item->SetIsShowingBubble(
         should_suppress_next_button_trigger);
-  }
 }
 
 // static
@@ -263,7 +260,7 @@ PasswordBubbleViewBase::PasswordBubbleViewBase(
 PasswordBubbleViewBase::~PasswordBubbleViewBase() {
   CHECK(this != g_manage_passwords_bubble_);
   // It is possible in tests for |browser_| not to exist.
-  if (features::IsToolbarPinningEnabled() && browser_) {
+  if (browser_) {
     auto* passwords_action_item = actions::ActionManager::Get().FindAction(
         kActionShowPasswordsBubbleOrPage,
         browser_->browser_actions()->root_action_item());

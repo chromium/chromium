@@ -9,10 +9,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -72,12 +70,10 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 
   flags_state_ = about_flags::GetCurrentFlagsState();
 
-  if (features::IsToolbarPinningEnabled()) {
-    BrowserView::GetBrowserViewForBrowser(browser_)
-        ->toolbar()
-        ->pinned_toolbar_actions_container()
-        ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
-  }
+  BrowserView::GetBrowserViewForBrowser(browser_)
+      ->toolbar()
+      ->pinned_toolbar_actions_container()
+      ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
 
   auto chrome_labs_bubble_view =
       std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton(), browser_);
@@ -95,12 +91,8 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
       std::move(chrome_labs_bubble_view));
   widget->Show();
 
-  // TODO(b/354207075): Figure out how to get the dot indicator to show on the
-  // pinned toolbar button.
-  // Hide dot indicator once bubble has been shown.
-  if (!features::IsToolbarPinningEnabled()) {
-    static_cast<ChromeLabsButton*>(GetChromeLabsButton())->HideDotIndicator();
-  }
+  // TODO(crbug.com/354207075): Hide the dot indicator here once the bubble has
+  // been shown. Wait for bug to be fixed before doing this.
 }
 
 void ChromeLabsCoordinator::Hide() {
@@ -161,16 +153,14 @@ void ChromeLabsCoordinator::ShowOrHide() {
 }
 
 views::Button* ChromeLabsCoordinator::GetChromeLabsButton() {
-  views::Button* button;
   ToolbarView* toolbar =
       BrowserView::GetBrowserViewForBrowser(browser_)->toolbar();
+  CHECK(toolbar);
 
-  if (features::IsToolbarPinningEnabled()) {
-    button = toolbar->pinned_toolbar_actions_container()->GetButtonFor(
-        kActionShowChromeLabs);
-  } else {
-    button = toolbar->chrome_labs_button();
-  }
+  // Null when the labs action is not visible in the container.
+  views::Button* button =
+      toolbar->pinned_toolbar_actions_container()->GetButtonFor(
+          kActionShowChromeLabs);
 
   return button;
 }

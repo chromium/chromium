@@ -2160,12 +2160,6 @@ extern const char kTintCompositedContentName[];
 extern const char kTintCompositedContentDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
-extern const char kToolbarPinningFlagId[];
-extern const char kToolbarPinningName[];
-extern const char kToolbarPinningDescription[];
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 extern const char kTopChromeToastsName[];
 extern const char kTopChromeToastsDescription[];
 

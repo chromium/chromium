@@ -47,8 +47,7 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
   }
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kToolbarPinning, features::kPinnableDownloadsButton}, {});
+    feature_list_.InitWithFeatures({features::kPinnableDownloadsButton}, {});
     DownloadTestBase::SetUp();
   }
 

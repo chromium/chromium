@@ -602,8 +602,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
                           tabs::CanShowTabSearchPositionSetting());
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
                           tabs::GetTabSearchTrailingTabstrip(profile));
-  html_source->AddBoolean("toolbarPinningEnabled",
-                          features::IsToolbarPinningEnabled());
+  // TODO(crbug.com/395921085): Remove this alongside the WebUI code.
+  html_source->AddBoolean("toolbarPinningEnabled", true);
 
 #if BUILDFLAG(IS_LINUX)
   bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()

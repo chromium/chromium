@@ -3695,14 +3695,6 @@ const char kTintCompositedContentDescription[] =
     "study overlay support.";
 
 #if !BUILDFLAG(IS_ANDROID)
-const char kToolbarPinningFlagId[] = "toolbar-pinning";
-const char kToolbarPinningName[] = "Toolbar pinning";
-const char kToolbarPinningDescription[] =
-    "Enables the ability to pin features to the toolbar via the Customize "
-    "Chrome side panel.";
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 const char kTopChromeToastsName[] = "Top Chrome Toasts";
 const char kTopChromeToastsDescription[] =
     "Enables the use of toasts to present confirmation of user actions.";

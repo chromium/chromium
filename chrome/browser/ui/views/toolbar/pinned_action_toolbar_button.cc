@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
@@ -271,12 +270,11 @@ PinnedActionToolbarButton::CreateMenuModel() {
       IDC_UPDATE_SIDE_PANEL_PIN_STATE,
       IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN,
       ui::ImageModel::FromVectorIcon(kKeepOffIcon, ui::kColorIcon, 16));
-  if (features::IsToolbarPinningEnabled()) {
-    model->AddSeparator(ui::NORMAL_SEPARATOR);
-    model->AddItemWithStringIdAndIcon(
-        IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR, IDS_SHOW_CUSTOMIZE_CHROME_TOOLBAR,
-        ui::ImageModel::FromVectorIcon(kSettingsMenuIcon, ui::kColorIcon, 16));
-  }
+  model->AddSeparator(ui::NORMAL_SEPARATOR);
+  model->AddItemWithStringIdAndIcon(
+      IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR, IDS_SHOW_CUSTOMIZE_CHROME_TOOLBAR,
+      ui::ImageModel::FromVectorIcon(kSettingsMenuIcon, ui::kColorIcon, 16));
+
   return model;
 }
 
@@ -369,14 +367,10 @@ void PinnedActionToolbarButton::UpdatePinnedStateForContextMenu() {
       base::StrCat({"Actions.PinnedToolbarButton.",
                     updated_pin_state ? "Pinned" : "Unpinned",
                     ".ByContextMenu.", metrics_name.value()}));
-  if (features::IsToolbarPinningEnabled()) {
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-        updated_pin_state ? IDS_TOOLBAR_BUTTON_PINNED
-                          : IDS_TOOLBAR_BUTTON_UNPINNED));
-  } else {
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-        updated_pin_state ? IDS_SIDE_PANEL_PINNED : IDS_SIDE_PANEL_UNPINNED));
-  }
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      updated_pin_state ? IDS_TOOLBAR_BUTTON_PINNED
+                        : IDS_TOOLBAR_BUTTON_UNPINNED));
+
   actions_model->UpdatePinnedState(action_id_, updated_pin_state);
 }
 

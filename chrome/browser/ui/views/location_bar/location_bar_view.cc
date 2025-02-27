@@ -1173,17 +1173,21 @@ bool LocationBarView::ShouldHidePageActionIcon(
   if (ShouldHidePageActionIcons()) {
     return true;
   }
-  if (features::IsToolbarPinningEnabled() && browser_) {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-    if (browser_view) {
-      auto* pinned_toolbar_actions_container =
-          browser_view->toolbar()->pinned_toolbar_actions_container();
-      return pinned_toolbar_actions_container &&
-             pinned_toolbar_actions_container->IsActionPinnedOrPoppedOut(
-                 icon_view->action_id().value());
-    }
+
+  if (!browser_) {
+    return false;
   }
-  return false;
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (!browser_view) {
+    return false;
+  }
+
+  PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
+      browser_view->toolbar()->pinned_toolbar_actions_container();
+  return pinned_toolbar_actions_container &&
+         pinned_toolbar_actions_container->IsActionPinnedOrPoppedOut(
+             icon_view->action_id().value());
 }
 
 // static

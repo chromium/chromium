@@ -657,11 +657,9 @@ void PopulateChromeWebUIFrameBinders(
         CustomizeChromeUI>(map);
   }
 
-  if (features::IsToolbarPinningEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory,
-        CustomizeChromeUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory,
+      CustomizeChromeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       read_anything::mojom::UntrustedPageHandlerFactory,

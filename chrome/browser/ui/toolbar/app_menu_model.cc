@@ -917,8 +917,7 @@ void ToolsMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
                                    kNameWindowIcon);
 
-  if (base::FeatureList::IsEnabled(features::kToolbarPinning) &&
-      CustomizeChromePageHandler::IsSupported(
+  if (CustomizeChromePageHandler::IsSupported(
           NtpCustomBackgroundServiceFactory::GetForProfile(browser->profile()),
           browser->profile())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,

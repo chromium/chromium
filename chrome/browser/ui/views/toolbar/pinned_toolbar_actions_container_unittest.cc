@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
@@ -39,7 +38,6 @@
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kToolbarPinning);
     InitializeActionIdStringMapping();
     TestWithBrowserView::SetUp();
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
@@ -179,9 +177,6 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     view->OnKeyReleased(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
                                      ui::EventTimeForNow()));
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   raw_ptr<PinnedToolbarActionsModel> model_;
