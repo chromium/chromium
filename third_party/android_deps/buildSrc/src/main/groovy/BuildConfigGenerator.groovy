@@ -428,7 +428,11 @@ No modifications.
                 return
             }
 
-            dependencyDirectories.add(depDir)
+            if (project.hasProperty('readmePrefix')) {
+                dependencyDirectories.add(project.readmePrefix + depDir)
+            } else {
+                dependencyDirectories.add(depDir)
+            }
 
             if (new File("${absoluteDepDir}/${dependency.fileName}").exists()) {
                 logger.quiet("${dependency.id} exists, skipping.")

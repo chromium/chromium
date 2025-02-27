@@ -12,6 +12,8 @@
 project.ext.versionCache = [:]
 {{version_overrides}}
 
+project.ext.readmePrefix = "committed/"
+
 apply plugin: ChromiumPlugin
 
 repositories {
