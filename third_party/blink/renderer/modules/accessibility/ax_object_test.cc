@@ -952,7 +952,7 @@ TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
 
   const AXObject* next = this_object->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ("is", next->GetNode()->textContent());
+  EXPECT_EQ("is", next->GetClosestNode()->textContent());
 
   next = next->NextOnLine();
   ASSERT_NE(nullptr, next);
@@ -960,7 +960,7 @@ TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
 
   AXObject* prev = next->PreviousOnLine();
   ASSERT_NE(nullptr, prev);
-  EXPECT_EQ("is", prev->GetNode()->textContent());
+  EXPECT_EQ("is", prev->GetClosestNode()->textContent());
 
   prev = prev->PreviousOnLine();
   ASSERT_NE(nullptr, prev);
@@ -992,6 +992,7 @@ TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
   // Now we go backwards.
 
   const AXObject* previous = next->PreviousOnLine();
+  ASSERT_NE(nullptr, previous);
   EXPECT_EQ("go ", previous->GetClosestNode()->textContent());
 }
 

@@ -3064,6 +3064,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-extensions-explicit-browser-signin",
+    "owners": ["kelvinjiang@chromium.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-external-display-hdr10",
     "owners": [ "sashamcintosh@chromium.org", "chromeos-gfx@google.com" ],
     "expiry_milestone": 140
@@ -4453,7 +4458,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 145
   },
   {
     "name": "fast-pair-devices-bluetooth-settings",
@@ -4477,7 +4482,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 145
   },
   {
     "name": "fast-pair-keyboards",
@@ -4485,7 +4490,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 145
   },
   {
     "name": "fast-pair-pwa-companion",

@@ -533,20 +533,20 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     public void rootIdToStableIdAndBackConversion() {
         // Test existing IDs.
-        assertEquals(TAB2_ROOT_ID, mTabGroupModelFilter.getRootIdFromStableId(TAB2_TAB_GROUP_ID));
-        assertEquals(TAB2_TAB_GROUP_ID, mTabGroupModelFilter.getStableIdFromRootId(TAB2_ROOT_ID));
+        assertEquals(TAB2_ROOT_ID, mTabGroupModelFilter.getRootIdFromTabGroupId(TAB2_TAB_GROUP_ID));
+        assertEquals(TAB2_TAB_GROUP_ID, mTabGroupModelFilter.getTabGroupIdFromRootId(TAB2_ROOT_ID));
 
-        assertEquals(null, mTabGroupModelFilter.getStableIdFromRootId(TAB1_ROOT_ID));
+        assertEquals(null, mTabGroupModelFilter.getTabGroupIdFromRootId(TAB1_ROOT_ID));
 
         // Test non-existing IDs.
         assertEquals(
                 Tab.INVALID_TAB_ID,
-                mTabGroupModelFilter.getRootIdFromStableId(new Token(93L, 42L)));
-        assertEquals(null, mTabGroupModelFilter.getStableIdFromRootId(1000));
+                mTabGroupModelFilter.getRootIdFromTabGroupId(new Token(93L, 42L)));
+        assertEquals(null, mTabGroupModelFilter.getTabGroupIdFromRootId(1000));
 
         // Test null/invalid inputs.
-        assertEquals(Tab.INVALID_TAB_ID, mTabGroupModelFilter.getRootIdFromStableId(null));
-        assertEquals(null, mTabGroupModelFilter.getStableIdFromRootId(Tab.INVALID_TAB_ID));
+        assertEquals(Tab.INVALID_TAB_ID, mTabGroupModelFilter.getRootIdFromTabGroupId(null));
+        assertEquals(null, mTabGroupModelFilter.getTabGroupIdFromRootId(Tab.INVALID_TAB_ID));
     }
 
     @Test

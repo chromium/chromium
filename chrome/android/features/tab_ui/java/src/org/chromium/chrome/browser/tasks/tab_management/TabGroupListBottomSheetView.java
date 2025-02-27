@@ -90,24 +90,23 @@ public class TabGroupListBottomSheetView extends LinearLayout implements BottomS
         return true;
     }
 
-    // TODO: Update strings.
     @Override
     public @NonNull String getSheetContentDescription(Context context) {
-        return context.getString(R.string.tab_group_share_notice_bottom_sheet_content_description);
+        return context.getString(R.string.tab_group_list_bottom_sheet_content_description);
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.tab_group_share_notice_bottom_sheet_full_height;
+        return R.string.tab_group_list_bottom_sheet_half_height;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.tab_group_share_notice_bottom_sheet_half_height;
+        return R.string.tab_group_list_bottom_sheet_full_height;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.tab_group_share_notice_bottom_sheet_closed;
+        return R.string.tab_group_list_bottom_sheet_closed;
     }
 }

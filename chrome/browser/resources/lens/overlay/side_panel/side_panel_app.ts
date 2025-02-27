@@ -130,7 +130,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       },
       showUploadProgress: {
         type: Number,
-        computed: `computeShowUploadProgress(uploadProgress, isLoadingResults)`,
+        computed:
+            `computeShowUploadProgress(uploadProgressPercentage)`,
         reflectToAttribute: true,
       },
     };

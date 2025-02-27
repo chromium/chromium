@@ -14,13 +14,54 @@ namespace glic {
 
 namespace {
 
-constexpr static int kAnimationDurationMs = 300;
+constexpr static int kResizeAnimationDurationMs = 300;
+constexpr static int kAttachedWidgetOpacityDurationMs = 150;
+constexpr static int kDetachedWidgetOpacityDurationMs = 100;
 constexpr static SkColor kDefaultBackgroundColor =
     SkColorSetARGB(255, 27, 28, 29);
 constexpr static int kCornerRadius = 12;
 constexpr static int kInitialDetachedYPosition = 48;
 
 }  // namespace
+
+class GlicWindowAnimator::GlicWindowOpacityAnimation
+    : public gfx::LinearAnimation {
+ public:
+  GlicWindowOpacityAnimation(GlicWindowAnimator* window_animator,
+                             GlicWindowController* window_controller,
+                             base::TimeDelta duration,
+                             float start_opacity,
+                             float target_opacity)
+      : gfx::LinearAnimation(duration, kDefaultFrameRate, window_animator),
+        window_animator_(window_animator),
+        window_controller_(window_controller),
+        start_opacity_(start_opacity),
+        target_opacity_(target_opacity) {}
+
+  GlicWindowOpacityAnimation(const GlicWindowOpacityAnimation&) = delete;
+  GlicWindowOpacityAnimation& operator=(const GlicWindowOpacityAnimation&) =
+      delete;
+  ~GlicWindowOpacityAnimation() override = default;
+
+  // gfx::LinearAnimation:
+  void AnimateToState(double state) override {
+    window_controller_->GetGlicWidget()->SetOpacity(
+        gfx::Tween::FloatValueBetween(GetCurrentValue(), start_opacity_,
+                                      target_opacity_));
+  }
+
+  // gfx::LinearAnimation:
+  void AnimationEnded(const Animation* animation) {
+    // Destroys `this`.
+    window_animator_->FadeComplete();
+  }
+
+ private:
+  raw_ptr<GlicWindowAnimator> window_animator_;
+  raw_ptr<GlicWindowController> window_controller_;
+  const float start_opacity_;
+  const float target_opacity_;
+};
 
 GlicWindowAnimator::GlicWindowAnimator(GlicWindowController* window_controller)
     : window_controller_(window_controller) {}
@@ -40,7 +81,10 @@ void GlicWindowAnimator::RunOpenAttachedAnimation(GlicButton* glic_button,
   target_bounds.set_height(target_size.height());
   SetRoundedRectBackground();
 
-  AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
+  // Fade in widget while resizing out.
+  AnimateOpacity(0.0f, 1.0f,
+                 base::Milliseconds(kAttachedWidgetOpacityDurationMs));
+  AnimateBounds(target_bounds, base::Milliseconds(kResizeAnimationDurationMs),
                 std::move(callback));
 }
 
@@ -50,7 +94,10 @@ void GlicWindowAnimator::RunOpenDetachedAnimation(base::OnceClosure callback) {
   target_bounds.set_y(target_bounds.y() + kInitialDetachedYPosition);
   SetRoundedRectBackground();
 
-  AnimateBounds(target_bounds, base::Milliseconds(kAnimationDurationMs),
+  // Fade in widget while animating down.
+  AnimateOpacity(0.0f, 1.0f,
+                 base::Milliseconds(kDetachedWidgetOpacityDurationMs));
+  AnimateBounds(target_bounds, base::Milliseconds(kResizeAnimationDurationMs),
                 std::move(callback));
 }
 
@@ -58,7 +105,19 @@ void GlicWindowAnimator::RunCloseAnimation(GlicButton* glic_button,
                                            base::OnceClosure callback) {
   // The widget is going away so it's fine to replace any existing animation.
   AnimateBounds(glic_button->GetBoundsWithInset(),
-                base::Milliseconds(kAnimationDurationMs), std::move(callback));
+                base::Milliseconds(kResizeAnimationDurationMs),
+                std::move(callback));
+}
+
+void GlicWindowAnimator::AnimateOpacity(float start_opacity,
+                                        float target_opacity,
+                                        base::TimeDelta duration) {
+  CHECK(window_controller_->GetGlicWidget());
+
+  window_controller_->GetGlicWidget()->SetOpacity(start_opacity);
+  opacity_animation_ = std::make_unique<GlicWindowOpacityAnimation>(
+      this, window_controller_, duration, start_opacity, target_opacity);
+  opacity_animation_->Start();
 }
 
 void GlicWindowAnimator::SetRoundedRectBackground() {
@@ -105,7 +164,6 @@ void GlicWindowAnimator::AnimatePosition(const gfx::Point& target_position,
                                          base::TimeDelta duration,
                                          base::OnceClosure callback) {
   // Maintain the size whether there's an ongoing animation or not.
-
   gfx::Rect new_bounds = GetCurrentTargetBounds();
   new_bounds.set_origin(target_position);
   AnimateBounds(new_bounds, duration, std::move(callback));
@@ -123,6 +181,11 @@ gfx::Rect GlicWindowAnimator::GetCurrentTargetBounds() {
 void GlicWindowAnimator::ResizeFinished() {
   // Destroy window_resize_animation_.
   window_resize_animation_.reset();
+}
+
+void GlicWindowAnimator::FadeComplete() {
+  // Destroy opacity_animation_.
+  opacity_animation_.reset();
 }
 
 }  // namespace glic

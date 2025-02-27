@@ -17893,6 +17893,8 @@ from previous Chrome versions.
   <int value="1438157693" label="BlockTelephonyDevicePhoneMute:disabled"/>
   <int value="1438182104" label="PasswordGenerationSoftNudge:disabled"/>
   <int value="1438417722" label="MessagesForAndroidReaderMode:enabled"/>
+  <int value="1438624853"
+      label="EnableExtensionsExplicitBrowserSignin:enabled"/>
   <int value="1438814782" label="AutofillPaymentsFieldSwapping:enabled"/>
   <int value="1440618113" label="EnableNetworkingInDiagnosticsApp:disabled"/>
   <int value="1440881073" label="DesktopPWAsAppIconShortcutsMenuUI:enabled"/>
@@ -17972,6 +17974,8 @@ from previous Chrome versions.
   <int value="1458583431" label="arc-use-auth-endpoint"/>
   <int value="1459529277" label="disable-text-input-focus-manager"/>
   <int value="1459803015" label="WebRtcEnableCaptureMultiChannelApm:enabled"/>
+  <int value="1460028797"
+      label="EnableExtensionsExplicitBrowserSignin:disabled"/>
   <int value="1460266536" label="PulseaudioLoopbackForScreenShare:disabled"/>
   <int value="1460747747" label="GdiTextPrinting:enabled"/>
   <int value="1460958818" label="NTPForeignSessionsSuggestions:enabled"/>

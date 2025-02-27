@@ -4239,26 +4239,34 @@ CreateOperatorNodeForMeanVarianceNormalization(
     base::span<const uint32_t> mean_variance_axes,
     base::span<const uint32_t> scale_bias_broadcast_axes,
     mojom::Operation::Tag op) {
-  const NodeOutput* input = GetNodeOutputForOperand(
-      id_to_node_output_map, normalization->input_operand_id);
+  auto& id_to_operand_map = graph_info->id_to_operand_map;
+
+  uint64_t input_id = normalization->input_operand_id;
+  const OperandPtr& input_operand = id_to_operand_map.at(input_id);
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, input_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
   size_t input_rank = input_tensor_desc.GetDimensions().size();
 
-  auto& id_to_operand_map = graph_info->id_to_operand_map;
   uint64_t output_id = normalization->output_operand_id;
   const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  OperandDataType data_type = output_operand->descriptor.data_type();
+  OperandDataType output_data_type = output_operand->descriptor.data_type();
 
   if constexpr (std::is_same_v<NormalizationPtr,
                                mojom::InstanceNormalizationPtr>) {
-    CHECK(context_properties.data_type_limits.instance_normalization_input.Has(
-        data_type));
+    CHECK(context_properties.data_type_limits.instance_normalization_input
+              .Supports(input_operand->descriptor));
+    CHECK(context_properties.data_type_limits.instance_normalization_input
+              .data_types.Has(output_data_type));
   } else /* `NormalizationPtr` is `mojom::LayerNormalizationPtr` */ {
-    CHECK(context_properties.data_type_limits.layer_normalization_input.Has(
-        data_type));
+    CHECK(
+        context_properties.data_type_limits.layer_normalization_input.Supports(
+            input_operand->descriptor));
+    CHECK(context_properties.data_type_limits.layer_normalization_input
+              .data_types.Has(output_data_type));
   }
 
-  const TensorDesc output_tensor_desc(GetTensorDataType(data_type),
+  const TensorDesc output_tensor_desc(GetTensorDataType(output_data_type),
                                       output_operand->descriptor.shape());
 
   const NodeOutput* scale = GetOptionalNodeOutputForOperand(
@@ -4277,7 +4285,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
     if (!scale) {
       uint64_t scale_operand_id = BuildConstantOperandForFloatValue(
           context_properties, graph_info, constant_operands, next_operand_id,
-          data_type, scale_bias_broadcast_axes.size(),
+          output_data_type, scale_bias_broadcast_axes.size(),
           /*default scale*/ 1.0);
       CreateConstantNode(adapter, scale_operand_id, constant_operands,
                          graph_builder, id_to_node_output_map,
@@ -4288,7 +4296,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
     if (!bias) {
       uint64_t bias_operand_id = BuildConstantOperandForFloatValue(
           context_properties, graph_info, constant_operands, next_operand_id,
-          data_type, scale_bias_broadcast_axes.size(),
+          output_data_type, scale_bias_broadcast_axes.size(),
           /*default bias*/ 0);
       CreateConstantNode(adapter, bias_operand_id, constant_operands,
                          graph_builder, id_to_node_output_map,

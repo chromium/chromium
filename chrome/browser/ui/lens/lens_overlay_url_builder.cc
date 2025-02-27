@@ -134,6 +134,15 @@ std::string CompressAndEncode(const std::string& serialized_proto) {
   return stickiness_signal_value;
 }
 
+std::string GetURLRefWithoutTextFragment(const GURL& url) {
+  std::string url_ref = url.ref();
+  auto fragment_start = url_ref.find_first_of(":~:");
+  if (fragment_start != std::string::npos) {
+    url_ref.resize(fragment_start);
+  }
+  return url_ref;
+}
+
 }  // namespace
 
 void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
@@ -440,6 +449,16 @@ bool IsLensTextSelectionType(
          lens_selection_type == lens::SELECT_TRANSLATED_TEXT ||
          lens_selection_type == lens::TRANSLATE_CHIP ||
          lens_selection_type == lens::SYMBOLIC_MATH_OBJECT;
+}
+
+bool URLsMatchWithoutTextFragment(const GURL& first_url,
+                                  const GURL& second_url) {
+  return first_url.scheme() == second_url.scheme() &&
+         first_url.host() == second_url.host() &&
+         first_url.path() == second_url.path() &&
+         first_url.query() == second_url.query() &&
+         GetURLRefWithoutTextFragment(first_url) ==
+             GetURLRefWithoutTextFragment(second_url);
 }
 
 }  // namespace lens

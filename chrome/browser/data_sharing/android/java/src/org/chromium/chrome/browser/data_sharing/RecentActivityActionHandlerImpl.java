@@ -63,7 +63,7 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(/* isIncognito= */ false);
-        int rootId = tabGroupModelFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
+        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(savedTabGroup.localId.tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
 
         TabGroupUtils.openUrlInGroup(

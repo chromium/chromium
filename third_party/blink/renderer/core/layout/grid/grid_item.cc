@@ -403,6 +403,24 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   }
 }
 
+LayoutUnit GridItemData::CalculateAvailableSize(
+    const GridLayoutTrackCollection& track_collection,
+    LayoutUnit* start_offset) const {
+  DCHECK(!is_subgridded_to_parent_grid);
+  DCHECK(!IsOutOfFlow());
+
+  const auto& [begin_set_index, end_set_index] =
+      SetIndices(track_collection.Direction());
+
+  if (start_offset) {
+    *start_offset = track_collection.GetSetOffset(begin_set_index);
+  }
+
+  const auto available_size =
+      track_collection.CalculateSetSpanSize(begin_set_index, end_set_index);
+  return available_size.MightBeSaturated() ? LayoutUnit() : available_size;
+}
+
 GridItems::GridItems(const GridItems& other)
     : first_subgridded_item_index_(other.first_subgridded_item_index_) {
   item_data_.ReserveInitialCapacity(other.item_data_.size());

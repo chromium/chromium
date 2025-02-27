@@ -223,6 +223,8 @@ public class RootUiCoordinator
 
     protected final ActivityTabProvider mActivityTabProvider;
     protected ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    protected final OneshotSupplierImpl<DesktopWindowStateManager>
+            mDesktopWindowStateManagerSupplier = new OneshotSupplierImpl<>();
 
     protected @Nullable FindToolbarManager mFindToolbarManager;
     private @Nullable FindToolbarObserver mFindToolbarObserver;
@@ -507,7 +509,8 @@ public class RootUiCoordinator
                         mActivityLifecycleDispatcher,
                         mActivityTabProvider,
                         mTopUiThemeColorProvider,
-                        edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
+                        edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper(),
+                        mDesktopWindowStateManagerSupplier);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
         mPageZoomCoordinator =

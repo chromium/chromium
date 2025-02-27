@@ -513,6 +513,12 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTriangular(
       const mojom::Triangular& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForPrelu(
+      const mojom::Prelu& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForPreluEmulate(const mojom::Prelu& operation,
+                              CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForWhere(
       const mojom::Where& operation,
       CoreML::Specification::MILSpec::Block& block);

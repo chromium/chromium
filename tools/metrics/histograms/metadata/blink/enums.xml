@@ -7862,6 +7862,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="301" label="Badging"/>
   <int value="302" label="Manifest"/>
   <int value="303" label="BeforeInstallPrompt"/>
+  <int value="304" label="AppShareTargets"/>
+  <int value="305" label="AppShortcuts"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

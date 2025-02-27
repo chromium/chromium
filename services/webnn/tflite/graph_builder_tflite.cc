@@ -552,8 +552,15 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // Polyfilled with ADD and MUL.
        /*hard_swish_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
-       /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*instance_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
+       /*instance_normalization_scale=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
+       // LayerNormalization is emulated by sub, mul, add and div(broadcated to
+       // input rank before executing div operator) ops that only support max
+       // rank up to 6.
+       /*layer_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
        /*leaky_relu_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
        // Linear is emulated by mul and add.
@@ -3956,13 +3963,13 @@ auto GraphBuilderTflite::SerializeIdentityOperation(
 auto GraphBuilderTflite::SerializeInstanceNormalization(
     const mojom::InstanceNormalization& instance_normalization)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.instance_normalization_input.Has(
-      GetOperand(instance_normalization.input_operand_id)
-          .descriptor.data_type()));
+  CHECK(
+      context_properties_.data_type_limits.instance_normalization_input
+          .Supports(
+              GetOperand(instance_normalization.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(instance_normalization.input_operand_id));
-  CHECK_EQ(input_tensor_info.dimensions.size(), 4u);
   const ::tflite::TensorType input_tensor_type = input_tensor_info.data_type;
   std::array<int32_t, 2> spatial_dimensions;
   uint32_t channel_axis;
@@ -3989,10 +3996,12 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
   // Reshape the 1-D tensor of the scale operand to the new shape if needed.
   std::optional<int32_t> reshape_scale_tensor_index;
   if (instance_normalization.scale_operand_id) {
+    CHECK(context_properties_.data_type_limits.instance_normalization_scale
+              .Supports(GetOperand(*instance_normalization.scale_operand_id)
+                            .descriptor));
     ASSIGN_OR_RETURN(
         const TensorInfo& scale_tensor_info,
         SerializeInputTensorInfo(*instance_normalization.scale_operand_id));
-    CHECK_EQ(scale_tensor_info.dimensions.size(), 1u);
     reshape_scale_tensor_index =
         SerializeTemporaryTensor(new_shape, input_tensor_type);
     operators_.emplace_back(SerializeReshapeOperation(
@@ -4002,10 +4011,12 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
   // Reshape the 1-D tensor of the bias operand to the new shape if needed.
   std::optional<int32_t> reshape_bias_tensor_index;
   if (instance_normalization.bias_operand_id) {
+    CHECK(context_properties_.data_type_limits.instance_normalization_scale
+              .Supports(GetOperand(*instance_normalization.bias_operand_id)
+                            .descriptor));
     ASSIGN_OR_RETURN(
         const TensorInfo& bias_tensor_info,
         SerializeInputTensorInfo(*instance_normalization.bias_operand_id));
-    CHECK_EQ(bias_tensor_info.dimensions.size(), 1u);
     reshape_bias_tensor_index =
         SerializeTemporaryTensor(new_shape, input_tensor_type);
     operators_.emplace_back(SerializeReshapeOperation(
@@ -4025,8 +4036,8 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
 auto GraphBuilderTflite::SerializeLayerNormalization(
     const mojom::LayerNormalization& layer_normalization)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.layer_normalization_input.Has(
-      GetOperand(layer_normalization.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.layer_normalization_input.Supports(
+      GetOperand(layer_normalization.input_operand_id).descriptor));
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(layer_normalization.input_operand_id));

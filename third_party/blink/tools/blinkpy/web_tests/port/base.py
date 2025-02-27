@@ -1446,7 +1446,8 @@ class Port(object):
             if wpt_dir:
                 for path in paths_from_root:
                     if self._filesystem.exists(
-                            self._filesystem.join(wpt_dir, path)):
+                            self._filesystem.join(self.web_tests_dir(),
+                                                  wpt_dir, path)):
                         path_by_wpt_dir[wpt_dir].add(path)
                     else:
                         # update directories only in case path is a url

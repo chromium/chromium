@@ -1435,13 +1435,22 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
   }
 }
 
-static bool NeedsClipPathClipOrMask(const LayoutObject& object) {
+static bool NeedsClipPathClipOrMask(
+    const LayoutObject& object,
+    bool fully_resolve_composited_state = false) {
+  // Ensure clip path status is populated even if the other checks fail.s
+  bool has_composite_clip_path_animation =
+      ClipPathClipper::HasCompositeClipPathAnimation(
+          object,
+          fully_resolve_composited_state
+              ? ClipPathClipper::CompositedStateResolutionType::kFullResolve
+              : ClipPathClipper::CompositedStateResolutionType::
+                    kInitialResolve);
   // We only apply clip-path if the LayoutObject has a layer or is an SVG
   // child. See NeedsEffect() for additional information on the former.
-  return !object.IsText() &&
-         (ClipPathClipper::HasCompositeClipPathAnimation(object) ||
-          (object.StyleRef().HasClipPath() &&
-           (object.HasLayer() || object.IsSVGChild())));
+  return !object.IsText() && (has_composite_clip_path_animation ||
+                              (object.StyleRef().HasClipPath() &&
+                               (object.HasLayer() || object.IsSVGChild())));
 }
 
 static bool NeedsEffectForViewTransition(const LayoutObject& object) {
@@ -2167,7 +2176,8 @@ static std::optional<FloatRoundedRect> PathToRRect(const Path& path) {
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
     DCHECK(!clip_path_bounding_box_.has_value());
-    if (NeedsClipPathClipOrMask(object_)) {
+    if (NeedsClipPathClipOrMask(object_,
+                                /*fully_resolve_composited_state=*/true)) {
       clip_path_bounding_box_ =
           ClipPathClipper::LocalClipPathBoundingBox(object_);
       if (clip_path_bounding_box_) {
@@ -3644,7 +3654,8 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       pre_paint_info_->fragmentainer_is_oof_containing_block &&
       IsA<LayoutBox>(object_) &&
       (To<LayoutBox>(object_).PhysicalFragmentCount() > 1);
-  ClipPathClipper::ResolveClipPathStatus(object_, is_in_fragment_container);
+  ClipPathClipper::FallbackClipPathAnimationIfNecessary(
+      object_, is_in_fragment_container);
 
   UpdatePaintingLayer();
   UpdateFragmentData();
@@ -3654,6 +3665,11 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
                                            GetFragmentData());
   builder.UpdateForSelf();
   properties_changed_.Merge(builder.PropertiesChanged());
+
+  // Clip path status should have been resolved when initializing the paint
+  // properties or when updating ClipPathClip, via a call to
+  // NeedsClipPathClipOrMask.
+  CHECK(ClipPathClipper::ClipPathStatusResolved(object_));
 
   if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
     object_.GetMutableForPainting()

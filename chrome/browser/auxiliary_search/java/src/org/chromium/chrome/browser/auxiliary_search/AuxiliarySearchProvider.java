@@ -89,6 +89,14 @@ public class AuxiliarySearchProvider {
         mAuxiliarySearchBridge.getNonSensitiveTabs(listTab, callback);
     }
 
+    /** Returns a list of non sensitive data from supported data types. */
+    public void getHistorySearchableDataProtoAsync(
+            Callback<List<AuxiliarySearchDataEntry>> callback) {
+        // We will get up to 100 tabs as default. This is controlled by feature
+        // AuxiliarySearchDonation.
+        mAuxiliarySearchBridge.getNonSensitiveHistoryData(callback);
+    }
+
     @VisibleForTesting
     static @Nullable AuxiliarySearchEntry createAuxiliarySearchEntry(
             int id, @NonNull String title, @NonNull String url, long timestamp) {

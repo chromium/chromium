@@ -75,8 +75,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes gru_cell_input,
                  SupportedTensors hard_sigmoid_input,
                  SupportedTensors hard_swish_input,
-                 SupportedDataTypes instance_normalization_input,
-                 SupportedDataTypes layer_normalization_input,
+                 SupportedTensors instance_normalization_input,
+                 SupportedTensors instance_normalization_scale,
+                 SupportedTensors layer_normalization_input,
                  SupportedTensors leaky_relu_input,
                  SupportedTensors linear_input,
                  SupportedDataTypes lstm_input,
@@ -192,8 +193,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes gru_cell_input;
   SupportedTensors hard_sigmoid_input;
   SupportedTensors hard_swish_input;
-  SupportedDataTypes instance_normalization_input;
-  SupportedDataTypes layer_normalization_input;
+  SupportedTensors instance_normalization_input;
+  SupportedTensors instance_normalization_scale;
+  SupportedTensors layer_normalization_input;
   SupportedTensors leaky_relu_input;
   SupportedTensors linear_input;
   SupportedDataTypes lstm_input;
@@ -303,6 +305,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&
          lhs.hard_swish_input == rhs.hard_swish_input &&
          lhs.instance_normalization_input == rhs.instance_normalization_input &&
+         lhs.instance_normalization_scale == rhs.instance_normalization_scale &&
          lhs.layer_normalization_input == rhs.layer_normalization_input &&
          lhs.leaky_relu_input == rhs.leaky_relu_input &&
          lhs.linear_input == rhs.linear_input &&

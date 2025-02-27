@@ -361,6 +361,19 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return mEdgeToEdgeLayoutCoordinator;
     }
 
+    /**
+     * Returns the base content view, which is the highest level view in the layout containing app
+     * content. If drawing edge-to-edge, this content view already handles padding for the window
+     * insets.
+     */
+    public ViewGroup getContentView() {
+        if (mEdgeToEdgeLayoutCoordinator != null
+                && mEdgeToEdgeLayoutCoordinator.getView() != null) {
+            return mEdgeToEdgeLayoutCoordinator.getView();
+        }
+        return findViewById(android.R.id.content);
+    }
+
     /** Returns whether this activity should draw its content edge-to-edge by default. */
     protected boolean shouldDrawEdgeToEdgeOnCreate() {
         return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();

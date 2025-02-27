@@ -2410,10 +2410,8 @@ TEST_F(ReadAnythingAppControllerTest, OnFontSizeReset_SetsFontSizeToDefault) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnLinksEnabledChanged_SetsEnabledToFalse) {
-  EXPECT_CALL(
-      page_handler_,
-      OnLinksEnabledChanged(!read_anything::kReadAnythingDefaultLinksEnabled))
-      .Times(1);
+  const bool links_enabled = model().links_enabled();
+  EXPECT_CALL(page_handler_, OnLinksEnabledChanged(!links_enabled)).Times(1);
   OnLinksEnabledToggled();
 }
 

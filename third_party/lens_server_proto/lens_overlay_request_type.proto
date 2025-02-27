@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// The type of the request the payload is sent in.
+enum RequestType {
+  // Unset Request type.
+  REQUEST_TYPE_DEFAULT = 0;
+  // Request is for PDF.
+  REQUEST_TYPE_PDF = 1;
+  // Request is for partial PDF upload.
+  REQUEST_TYPE_EARLY_PARTIAL_PDF = 3;
+  // Request is for webpage.
+  REQUEST_TYPE_WEBPAGE = 2;
+}

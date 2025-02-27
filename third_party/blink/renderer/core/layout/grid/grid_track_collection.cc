@@ -559,11 +559,11 @@ void GridLayoutTrackCollection::AdjustSetOffsets(wtf_size_t set_index,
     sets_geometry_[i].offset += delta;
 }
 
-LayoutUnit GridLayoutTrackCollection::ComputeSetSpanSize() const {
-  return ComputeSetSpanSize(0, GetSetCount());
+LayoutUnit GridLayoutTrackCollection::CalculateSetSpanSize() const {
+  return CalculateSetSpanSize(0, GetSetCount());
 }
 
-LayoutUnit GridLayoutTrackCollection::ComputeSetSpanSize(
+LayoutUnit GridLayoutTrackCollection::CalculateSetSpanSize(
     wtf_size_t begin_set_index,
     wtf_size_t end_set_index) const {
   DCHECK_LE(begin_set_index, end_set_index);

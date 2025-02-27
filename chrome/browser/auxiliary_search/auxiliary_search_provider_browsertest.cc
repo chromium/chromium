@@ -44,7 +44,8 @@ class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
     ASSERT_TRUE(content::NavigateToURL(
         web_contents(),
         embedded_test_server()->GetURL("/android/google.html")));
-    auxiliary_search_provider_ = std::make_unique<AuxiliarySearchProvider>();
+    auxiliary_search_provider_ =
+        std::make_unique<AuxiliarySearchProvider>(nullptr);
     PersistedTabDataAndroid::OnDeferredStartup();
     content::RunAllTasksUntilIdle();
   }

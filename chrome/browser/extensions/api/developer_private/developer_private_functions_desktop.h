@@ -354,17 +354,6 @@ class DeveloperPrivatePackDirectoryFunction
   std::string key_path_str_;
 };
 
-class DeveloperPrivateIsProfileManagedFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.isProfileManaged",
-                             DEVELOPERPRIVATE_ISPROFILEMANAGED)
-
- protected:
-  ~DeveloperPrivateIsProfileManagedFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-};
 
 class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
  public:
@@ -454,16 +443,6 @@ class DeveloperPrivateOpenDevToolsFunction
   ResponseAction Run() override;
 };
 
-class DeveloperPrivateDeleteExtensionErrorsFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.deleteExtensionErrors",
-                             DEVELOPERPRIVATE_DELETEEXTENSIONERRORS)
-
- protected:
-  ~DeveloperPrivateDeleteExtensionErrorsFunction() override;
-  ResponseAction Run() override;
-};
 
 class DeveloperPrivateRepairExtensionFunction
     : public DeveloperPrivateAPIFunction {
@@ -562,59 +541,8 @@ class DeveloperPrivateRemoveHostPermissionFunction
   void OnRuntimePermissionsRevoked();
 };
 
-class DeveloperPrivateGetUserSiteSettingsFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.getUserSiteSettings",
-                             DEVELOPERPRIVATE_GETUSERSITESETTINGS)
-  DeveloperPrivateGetUserSiteSettingsFunction();
 
-  DeveloperPrivateGetUserSiteSettingsFunction(
-      const DeveloperPrivateGetUserSiteSettingsFunction&) = delete;
-  DeveloperPrivateGetUserSiteSettingsFunction& operator=(
-      const DeveloperPrivateGetUserSiteSettingsFunction&) = delete;
 
- private:
-  ~DeveloperPrivateGetUserSiteSettingsFunction() override;
-
-  ResponseAction Run() override;
-};
-
-class DeveloperPrivateAddUserSpecifiedSitesFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.addUserSpecifiedSites",
-                             DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITES)
-  DeveloperPrivateAddUserSpecifiedSitesFunction();
-
-  DeveloperPrivateAddUserSpecifiedSitesFunction(
-      const DeveloperPrivateAddUserSpecifiedSitesFunction&) = delete;
-  DeveloperPrivateAddUserSpecifiedSitesFunction& operator=(
-      const DeveloperPrivateAddUserSpecifiedSitesFunction&) = delete;
-
- private:
-  ~DeveloperPrivateAddUserSpecifiedSitesFunction() override;
-
-  ResponseAction Run() override;
-};
-
-class DeveloperPrivateRemoveUserSpecifiedSitesFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeUserSpecifiedSites",
-                             DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITES)
-  DeveloperPrivateRemoveUserSpecifiedSitesFunction();
-
-  DeveloperPrivateRemoveUserSpecifiedSitesFunction(
-      const DeveloperPrivateRemoveUserSpecifiedSitesFunction&) = delete;
-  DeveloperPrivateRemoveUserSpecifiedSitesFunction& operator=(
-      const DeveloperPrivateRemoveUserSpecifiedSitesFunction&) = delete;
-
- private:
-  ~DeveloperPrivateRemoveUserSpecifiedSitesFunction() override;
-
-  ResponseAction Run() override;
-};
 
 class DeveloperPrivateGetUserAndExtensionSitesByEtldFunction
     : public DeveloperPrivateAPIFunction {
@@ -634,23 +562,6 @@ class DeveloperPrivateGetUserAndExtensionSitesByEtldFunction
   ResponseAction Run() override;
 };
 
-class DeveloperPrivateGetMatchingExtensionsForSiteFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.getMatchingExtensionsForSite",
-                             DEVELOPERPRIVATE_GETMATCHINGEXTENSIONSFORSITE)
-  DeveloperPrivateGetMatchingExtensionsForSiteFunction();
-
-  DeveloperPrivateGetMatchingExtensionsForSiteFunction(
-      const DeveloperPrivateGetMatchingExtensionsForSiteFunction&) = delete;
-  DeveloperPrivateGetMatchingExtensionsForSiteFunction& operator=(
-      const DeveloperPrivateGetMatchingExtensionsForSiteFunction&) = delete;
-
- private:
-  ~DeveloperPrivateGetMatchingExtensionsForSiteFunction() override;
-
-  ResponseAction Run() override;
-};
 
 class DeveloperPrivateUpdateSiteAccessFunction
     : public DeveloperPrivateAPIFunction {
@@ -708,28 +619,6 @@ class DeveloperPrivateRemoveMultipleExtensionsFunction
   // If true, immediately accept the blocked action dialog by running the
   // callback.
   std::optional<bool> accept_bubble_for_testing_;
-};
-
-class DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION(
-      "developerPrivate.dismissSafetyHubExtensionsMenuNotification",
-      DEVELOPERPRIVATE_DISMISSSAFETYHUBEXTENSIONSMENUNOTIFICATION)
-  DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction();
-
-  DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction(
-      const DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction&) =
-      delete;
-  DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction& operator=(
-      const DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction&) =
-      delete;
-
-  ResponseAction Run() override;
-
- private:
-  ~DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction()
-      override;
 };
 
 class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction

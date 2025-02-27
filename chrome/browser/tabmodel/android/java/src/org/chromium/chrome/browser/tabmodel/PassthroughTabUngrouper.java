@@ -95,7 +95,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
 
     static @Nullable List<Tab> getTabsToUngroup(
             @NonNull TabGroupModelFilter filter, @NonNull Token token) {
-        return getTabsToUngroup(filter, filter.getRootIdFromStableId(token));
+        return getTabsToUngroup(filter, filter.getRootIdFromTabGroupId(token));
     }
 
     static @Nullable List<Tab> getTabsToUngroup(@NonNull TabGroupModelFilter filter, int rootId) {

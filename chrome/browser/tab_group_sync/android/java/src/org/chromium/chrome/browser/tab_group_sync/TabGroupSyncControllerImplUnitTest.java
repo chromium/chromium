@@ -88,7 +88,7 @@ public class TabGroupSyncControllerImplUnitTest {
         // Prepare mock tab.
         Mockito.doReturn(TAB_ID_1).when(mTab1).getId();
         Mockito.doReturn(TAB_ID_1).when(mTab1).getRootId();
-        when(mTabGroupModelFilter.getStableIdFromRootId(TAB_ID_1)).thenReturn(TOKEN_1);
+        when(mTabGroupModelFilter.getTabGroupIdFromRootId(TAB_ID_1)).thenReturn(TOKEN_1);
         when(mTabCreator.createNewTab(any(), anyString(), anyInt(), any(), anyInt()))
                 .thenReturn(mTab1);
     }

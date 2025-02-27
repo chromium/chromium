@@ -524,10 +524,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(
-      "isPerformanceInterventionUiEnabled",
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceInterventionUI));
-  html_source->AddBoolean(
       "isBatterySaverModeManagedByOS",
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
 

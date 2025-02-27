@@ -178,6 +178,8 @@ void OnInstallPackResponse(
 }
 
 #else
+constexpr char kReadingModeName[] = "Reading mode";
+
 InstallationState GetInstallationStateFromStatusCode(
     const content::LanguageInstallStatus status_code) {
   switch (status_code) {
@@ -547,7 +549,7 @@ void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
                          weak_factory_.GetWeakPtr())));
 #else
   TtsController::GetInstance()->LanguageStatusRequest(
-      profile_, language, string_constants::kReadingModeName,
+      profile_, language, kReadingModeName,
       static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE));
 #endif
 }
@@ -563,7 +565,7 @@ void ReadAnythingUntrustedPageHandler::InstallVoicePack(
                          weak_factory_.GetWeakPtr())));
 #else
   TtsController::GetInstance()->InstallLanguageRequest(
-      profile_, language, string_constants::kReadingModeName,
+      profile_, language, kReadingModeName,
       static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE));
 #endif
 }
@@ -572,7 +574,7 @@ void ReadAnythingUntrustedPageHandler::UninstallVoice(
     const std::string& language) {
 #if !BUILDFLAG(IS_CHROMEOS)
   TtsController::GetInstance()->UninstallLanguageRequest(
-      profile_, language, string_constants::kReadingModeName,
+      profile_, language, kReadingModeName,
       static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE),
       /*uninstall_immediately=*/false);
 #endif
@@ -925,16 +927,16 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
   read_anything::mojom::Colors color =
       static_cast<read_anything::mojom::Colors>(
           prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo));
-  base::UmaHistogramEnumeration(string_constants::kColorHistogramName, color);
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.Color", color);
   read_anything::mojom::LineSpacing line_spacing =
       static_cast<read_anything::mojom::LineSpacing>(
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing));
-  base::UmaHistogramEnumeration(string_constants::kLineSpacingHistogramName,
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.LineSpacing",
                                 line_spacing);
   read_anything::mojom::LetterSpacing letter_spacing =
       static_cast<read_anything::mojom::LetterSpacing>(
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
-  base::UmaHistogramEnumeration(string_constants::kLetterSpacingHistogramName,
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.LetterSpacing",
                                 letter_spacing);
 }
 

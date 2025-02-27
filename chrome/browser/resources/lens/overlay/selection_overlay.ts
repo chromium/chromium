@@ -434,6 +434,18 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
             this.shimmerOnSegmentation = true;
           }
         });
+    if (this.simplifiedSelectionEnabled) {
+      this.eventTracker_.add(
+          document, 'post-selection-updated', (e: CustomEvent) => {
+            this.selectedRegionContextMenuBox = e.detail.centerRotatedBox;
+            this.selectedRegionContextMenuX =
+                this.selectedRegionContextMenuBox.box.x -
+                this.selectedRegionContextMenuBox.box.width / 2;
+            this.selectedRegionContextMenuY =
+                this.selectedRegionContextMenuBox.box.y +
+                this.selectedRegionContextMenuBox.box.height / 2;
+          });
+    }
     this.eventTracker_.add(document, 'unfocus-region', () => {
       this.shimmerOnSegmentation = false;
     });
@@ -735,6 +747,16 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.dispatchEvent(
         new CustomEvent('selection-started', {bubbles: true, composed: true}));
 
+    // If simplified selection is enabled, the context menu should have text
+    // reset whenever a new selection is started.
+    if (this.simplifiedSelectionEnabled) {
+      this.detectedTextStartIndex = -1;
+      this.detectedTextEndIndex = -1;
+      this.showDetectedTextContextMenuOptions = false;
+    }
+
+    this.getTextSelectionLayer().onSelectionStart();
+
     if (this.$.postSelectionRenderer.handleGestureStart(this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
     } else if (this.getTextSelectionLayer().handleGestureStart(
@@ -770,6 +792,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private handleGestureEnd() {
+    // Call onSelectionFinish before gesture is handled so the simplified text
+    // layer can reset the context menu.
+    this.getTextSelectionLayer().onSelectionFinish();
+
     // Allow proper feature to respond to the tap/drag event.
     switch (this.currentGesture.state) {
       case GestureState.DRAGGING:

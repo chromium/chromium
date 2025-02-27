@@ -276,15 +276,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '5e4252f4aea26437a72d0dceab5904c541867df3',
+  'src_internal_revision': '55e41e278a433e762579b9fa6daadd41f4977bb9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'd4f186ff4e8f4f5924eaffdf4012cf583eac775e',
+  'skia_revision': '0f2e106c9abc76898c53c0bae3c29310c3ff943d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '1a5aa82a559038c505fd9d2a5b5acf5f8dec0e67',
+  'v8_revision': '59066340f067c51ffd1004d2044b36d7fc0e00cd',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -312,7 +312,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling googletest
   # and whatever else without interference from each other.
-  'googletest_revision': 'a6ce08abf746c0aaa577520d6d1f6ea2abeeb61d',
+  'googletest_revision': '54501746a6cfd366b6e7bab3c902e0f8d5826521',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling lighttpd
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'eb97c4744c7da13e71e9bcf420fd0864bbc361ca',
+  'dawn_revision': 'dbb75ea5b43ed6f8f1343ab384452aa857dc7c3d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -500,7 +500,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       'be0bacb5427a393417db49182e2c18d58ee3c54e',
+  'libcxx_revision':       '7f8b68f91ca8b192375f5e71cd81fb3ed9650ef3',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:4a8016dc391553fa1644c0740cc04eaac844121e',
@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '25ee93b595b996f684c6e9bc9a6ea2f9874e7547',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'b69f9fde0aa393dc37a7bc696d7e399aed4010e1',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '8048ca5362c46c94d300d91fe4e59a00338cfff4',
+    '0677e9a1aea6ebe8028ffed753907ba3fddf844f',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1611,7 +1611,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'Qyc-0-YJCHgJqrfyh1tJUb-xWdR-BD7PmD7_vb4bb-QC',
+          'version': 'M503VHS-fCFf5L0Q9ETCP_B7UyE-GXhE7qUito02tbgC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -1947,7 +1947,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '53f5a2d9695409899be4d7f03f12bfad06ffd70f',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'e5159abea6bc8d185535c4439144b277f3163ca0',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2445,7 +2445,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '9cd1921b12dd0418efbe776778789190b93a2999',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'edbac7e09ff9a1eec49a1df4faf61246912fcf00',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -4486,7 +4486,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '96b8d20a8b3c413b463355e56bec6a99609348dc',
+        '31e210de63f0e9045441c08816f3c8aa7f70c4ef',
       'condition': 'checkout_src_internal',
   },
 

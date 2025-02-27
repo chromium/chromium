@@ -2072,6 +2072,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
              cancelled"/>
   <int value="49"
       label="Smart actions button was not shown because no text was detected"/>
+  <int value="50"
+      label="Smart actions button was not shown because UI access checks
+             resulted in &quot;do not show UI&quot; after text detection"/>
+  <int value="51"
+      label="Smart actions button was not shown because network connection
+             was offline after text detection"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->

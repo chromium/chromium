@@ -351,7 +351,7 @@ public class TabGroupListMediator {
             @Nullable
             SavedTabGroup syncGroup = syncId == null ? null : mTabGroupSyncService.getGroup(syncId);
             @Nullable Token token = extractLocalId(syncGroup);
-            int rootId = mFilter.getRootIdFromStableId(token);
+            int rootId = mFilter.getRootIdFromTabGroupId(token);
             int tabCount = mFilter.getRelatedTabCountForRootId(rootId);
             return TabGroupTitleUtils.getDisplayableTitle(mContext, mFilter, tabCount);
         } else {

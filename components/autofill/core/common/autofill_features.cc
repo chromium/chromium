@@ -852,14 +852,13 @@ BASE_FEATURE(kAutofillOverridePredictions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The override specification in string form.
-// See `OverrideFormat::kSpec` for details.
 const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
     &kAutofillOverridePredictions, "spec", ""};
 
-// The override specification in Base64-encoded JSON.
-// See `OverrideFormat::kJson` for details.
-const base::FeatureParam<std::string> kAutofillOverridePredictionsJson{
-    &kAutofillOverridePredictions, "json", ""};
+// The override specification using alternative_form_signature in string form.
+const base::FeatureParam<std::string>
+    kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification{
+        &kAutofillOverridePredictions, "alternative_signature_spec", ""};
 
 // Enables or Disables (mostly for hermetic testing) autofill server
 // communication. The URL of the autofill server can further be controlled via

@@ -69,7 +69,6 @@ void ContextualCueingService::ReportPageLoad() {
 
 void ContextualCueingService::CueingNudgeShown(const GURL& url) {
   recent_nudge_tracker_.CueingNudgeShown();
-  LogNudgeInteractionHistogram(NudgeInteraction::kShown);
 
   if (kMinPageCountBetweenNudges.Get()) {
     // Let the cue logic be performed the next page after quiet count pages.
@@ -87,7 +86,6 @@ void ContextualCueingService::CueingNudgeShown(const GURL& url) {
 }
 
 void ContextualCueingService::CueingNudgeDismissed() {
-  LogNudgeInteractionHistogram(NudgeInteraction::kDismissed);
 
   base::TimeDelta backoff_duration =
       kBackoffTime.Get() * pow(kBackoffMultiplierBase.Get(), dismiss_count_);
@@ -97,7 +95,6 @@ void ContextualCueingService::CueingNudgeDismissed() {
 }
 
 void ContextualCueingService::CueingNudgeClicked() {
-  LogNudgeInteractionHistogram(NudgeInteraction::kClicked);
 
   dismiss_count_ = 0;
 }
@@ -130,37 +127,42 @@ void ContextualCueingService::OnNudgeActivity(
     tabs::GlicNudgeActivity activity) {
   std::optional<base::TimeTicks> nudge_time =
       recent_nudge_tracker_.GetMostRecentNudgeTime();
+  NudgeInteraction interaction;
+  bool log_ukm = false;
   switch (activity) {
     case tabs::GlicNudgeActivity::kNudgeShown:
+      interaction = NudgeInteraction::kShown;
       CueingNudgeShown(url);
       break;
     case tabs::GlicNudgeActivity::kNudgeClicked:
       CueingNudgeClicked();
-      CHECK(nudge_time);
-      LogNudgeInteractionUKM(source_id, NudgeInteraction::kClicked,
-                             document_available_time, *nudge_time);
+      interaction = NudgeInteraction::kClicked;
+      log_ukm = true;
       break;
     case tabs::GlicNudgeActivity::kNudgeDismissed:
+      interaction = NudgeInteraction::kDismissed;
       CueingNudgeDismissed();
-      CHECK(nudge_time);
-      LogNudgeInteractionUKM(source_id, NudgeInteraction::kDismissed,
-                             document_available_time, *nudge_time);
+      log_ukm = true;
       break;
     case tabs::GlicNudgeActivity::kNudgeNotShownWebContents:
-      LogNudgeInteractionHistogram(NudgeInteraction::kNudgeNotShownWebContents);
+      interaction = NudgeInteraction::kNudgeNotShownWebContents;
       break;
     case tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
-      LogNudgeInteractionHistogram(NudgeInteraction::kIgnoredTabChange);
-      CHECK(nudge_time);
-      LogNudgeInteractionUKM(source_id, NudgeInteraction::kIgnoredTabChange,
-                             document_available_time, *nudge_time);
+      interaction = NudgeInteraction::kIgnoredTabChange;
+      log_ukm = true;
       break;
     case tabs::GlicNudgeActivity::kNudgeIgnoredNavigation:
-      LogNudgeInteractionHistogram(NudgeInteraction::kIgnoredNavigation);
-      CHECK(nudge_time);
-      LogNudgeInteractionUKM(source_id, NudgeInteraction::kIgnoredNavigation,
-                             document_available_time, *nudge_time);
+      interaction = NudgeInteraction::kIgnoredNavigation;
+      log_ukm = true;
       break;
+  }
+  LogNudgeInteractionHistogram(interaction);
+  // As this function is called multiple times per nudge only some of the
+  // activities result in a UKM call.
+  if (log_ukm) {
+    CHECK(nudge_time);
+    LogNudgeInteractionUKM(source_id, interaction, document_available_time,
+                           *nudge_time);
   }
 }
 

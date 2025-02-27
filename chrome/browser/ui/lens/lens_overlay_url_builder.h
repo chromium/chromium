@@ -104,6 +104,12 @@ GURL BuildTranslateLanguagesURL(std::string country, std::string language);
 bool IsLensTextSelectionType(
     lens::LensOverlaySelectionType lens_selection_type);
 
+// Returns whether `first_url` is equal to `second_url` when the text fragment
+// is stripped from the ref if it exists at all. This fragment is stripped from
+// both URLs.
+bool URLsMatchWithoutTextFragment(const GURL& first_url,
+                                  const GURL& second_url);
+
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_

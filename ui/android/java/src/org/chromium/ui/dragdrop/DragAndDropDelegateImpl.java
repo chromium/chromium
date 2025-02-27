@@ -107,6 +107,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
      * @param containerView The container view where the drag starts.
      * @param shadowImage The bitmap which represents the shadow image.
      * @param dropData The drop data presenting the drag target.
+     * @param context The context used to create the drag shadow.
      * @param cursorOffsetX The x offset of the cursor w.r.t. to top-left corner of the drag-image.
      * @param cursorOffsetY The y offset of the cursor w.r.t. to top-left corner of the drag-image.
      * @param dragObjRectWidth The width of the drag object.

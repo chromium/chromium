@@ -12,6 +12,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
+import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
@@ -58,6 +59,12 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        updatePreferences();
+    }
+
+    @Override
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
@@ -67,5 +74,14 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     @Override
     public boolean hasDivider() {
         return false;
+    }
+
+    // Private methods.
+
+    private void updatePreferences() {
+        final var context = getContext();
+        final var theme = NightModeUtils.getThemeSetting();
+        findPreference(PREF_UI_THEME)
+                .setSummary(NightModeUtils.getThemeSettingTitle(context, theme));
     }
 }

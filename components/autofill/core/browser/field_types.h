@@ -565,8 +565,8 @@ std::string_view FieldTypeToStringView(FieldType type);
 // Returns a string describing `type`.
 std::string FieldTypeToString(FieldType type);
 
-// Inverse FieldTypeToStringView(). Returns UNKNOWN_TYPE for unknown FieldType
-// string representations.
+// Inverse FieldTypeToStringView(). Checks that only valid FieldType string
+// representations are being passed.
 FieldType TypeNameToFieldType(std::string_view type_name);
 
 // Returns a string view describing `type`. The devtools UI uses this string to

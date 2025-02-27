@@ -414,6 +414,32 @@ WaylandToplevelWindow* WaylandToplevelWindow::AsWaylandToplevelWindow() {
   return this;
 }
 
+void WaylandToplevelWindow::UpdateActivationState() {
+  bool prev_is_active = is_active_;
+
+  // Determine active state from keyboard focus. If keyboard is unavailable,
+  // determine it from xdg-shell "activated" state as that's the only hint the
+  // compositor provides us on whether our window is considered active.
+  // TODO(crbug.com/369574355): utilize zwp_text_input_v3::{enter,leave}
+  // eventually
+  if (connection()->IsKeyboardAvailable()) {
+    auto* keyboard_focused_window =
+        connection()->window_manager()->GetCurrentKeyboardFocusedWindow();
+    is_active_ = keyboard_focused_window &&
+                 keyboard_focused_window->GetRootParentWindow() == this;
+  } else {
+    is_active_ = is_xdg_active_;
+  }
+
+  if (prev_is_active != is_active_) {
+    if (active_bubble()) {
+      ActivateBubble(is_active_ ? active_bubble() : nullptr);
+    } else {
+      delegate()->OnActivationChanged(is_active_);
+    }
+  }
+}
+
 void WaylandToplevelWindow::HandleToplevelConfigure(
     int32_t width_dip,
     int32_t height_dip,
@@ -449,8 +475,7 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   fullscreen_display_id_ = display::kInvalidDisplayId;
 
   // Update state before notifying delegate.
-  const bool did_active_change = is_active_ != window_states.is_activated;
-  is_active_ = window_states.is_activated;
+  is_xdg_active_ = window_states.is_activated;
   bool prev_suspended = is_suspended_;
   is_suspended_ = window_states.is_suspended;
 
@@ -507,13 +532,7 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
     SetRestoredBoundsInDIP(GetBoundsInDIP());
   }
 
-  if (did_active_change) {
-    if (active_bubble()) {
-      ActivateBubble(is_active_ ? active_bubble() : nullptr);
-    } else {
-      delegate()->OnActivationChanged(is_active_);
-    }
-  }
+  UpdateActivationState();
   if (prev_suspended != is_suspended_) {
     frame_manager()->OnWindowSuspensionChanged();
   }

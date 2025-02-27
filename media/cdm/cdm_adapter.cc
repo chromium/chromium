@@ -245,8 +245,8 @@ CdmAdapter::CdmAdapter(
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb),
-      scoped_crash_key_(&g_origin_crash_key,
-                        helper_->GetCdmOrigin().Serialize()),
+      cdm_origin_(helper_->GetCdmOrigin()),
+      scoped_crash_key_(&g_origin_crash_key, cdm_origin_.Serialize()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
   DVLOG(1) << __func__;
@@ -259,7 +259,7 @@ CdmAdapter::CdmAdapter(
   DCHECK(session_keys_change_cb_);
   DCHECK(session_expiration_update_cb_);
 
-  cdm_metrics_data_.cdm_origin = helper_->GetCdmOrigin();
+  cdm_metrics_data_.cdm_origin = cdm_origin_;
 
   helper_->SetFileReadCB(
       base::BindRepeating(&CdmAdapter::OnFileRead, weak_factory_.GetWeakPtr()));

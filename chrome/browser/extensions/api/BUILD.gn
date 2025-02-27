@@ -165,16 +165,13 @@ source_set("keyed_service_factories") {
 
   deps = [
     ":api_implementations",
+    "//chrome/browser/extensions",
     "//chrome/common:buildflags",
     "//components/safe_browsing:buildflags",
     "//extensions/buildflags",
     "//pdf:buildflags",
     "//printing/buildflags",
   ]
-
-  if (enable_extensions) {
-    deps += [ "//chrome/browser/extensions" ]
-  }
 
   if (is_chromeos) {
     deps += [

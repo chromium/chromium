@@ -599,6 +599,7 @@ Node::InsertionNotificationRequest HTMLDialogElement::InsertedInto(
   HTMLElement::InsertedInto(insertion_point);
 
   if (FastHasAttribute(html_names::kOpenAttr) &&
+      insertion_point.isConnected() &&
       !GetDocument().StatePreservingAtomicMoveInProgress()) {
     DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
     GetDocument().AllOpenDialogs().insert(this);
@@ -615,7 +616,8 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   InertSubtreesChanged(document, old_modal_dialog);
 
-  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+  if (GetDocument().StatePreservingAtomicMoveInProgress() ||
+      !insertion_point.isConnected()) {
     return;
   }
 

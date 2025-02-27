@@ -25,6 +25,28 @@ public class TabUiThemeUtil {
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
 
     /**
+     * Returns the tab strip background color based on the windowing mode and activity focus state.
+     * To get the default strip background color that is not affected by the activity focus state,
+     * use {@link #getTabStripBackgroundColor(Context, boolean)}.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param isInDesktopWindow Whether the app is in a desktop window.
+     * @param isActivityFocused Whether the activity containing the tab strip is focused.
+     * @return The {@link ColorInt} for the tab strip background.
+     */
+    public static @ColorInt int getTabStripBackgroundColor(
+            Context context,
+            boolean isIncognito,
+            boolean isInDesktopWindow,
+            boolean isActivityFocused) {
+        return isInDesktopWindow
+                ? getTabStripBackgroundColorForActivityState(
+                        context, isIncognito, isActivityFocused)
+                : getTabStripBackgroundColor(context, isIncognito);
+    }
+
+    /**
      * Returns the default color for the tab strip background, that does not take the activity focus
      * state into account.
      *
@@ -37,17 +59,7 @@ public class TabUiThemeUtil {
                 context, isIncognito, /* isActivityFocused= */ true);
     }
 
-    /**
-     * Returns the color for the tab strip background based on the activity state. To get the
-     * default strip background color that is not affected by the activity focus state, use {@link
-     * #getTabStripBackgroundColor(Context, boolean)}.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param isActivityFocused Whether the activity containing the tab strip is focused.
-     * @return The {@link ColorInt} for the tab strip background.
-     */
-    public static @ColorInt int getTabStripBackgroundColorForActivityState(
+    private static @ColorInt int getTabStripBackgroundColorForActivityState(
             Context context, boolean isIncognito, boolean isActivityFocused) {
         // Default spec for incognito, dark and light themes, used when not in desktop windowing
         // mode or when the activity is focused in desktop windowing mode.

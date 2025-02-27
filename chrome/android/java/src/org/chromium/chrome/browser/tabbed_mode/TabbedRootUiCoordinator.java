@@ -1350,6 +1350,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivityLifecycleDispatcher,
                         savedInstanceState,
                         edgeToEdgeStateProvider);
+        mDesktopWindowStateManagerSupplier.set(mAppHeaderCoordinator);
     }
 
     private void initCollaborationDelegatesOnProfile(Profile profile) {

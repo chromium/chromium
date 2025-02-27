@@ -639,26 +639,26 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLNormalizationSupportLimits* instance_normalization =
       MLNormalizationSupportLimits::Create();
-  instance_normalization->setInput(SupportedDataTypesToDataTypeLimits(
+  instance_normalization->setInput(SupportedTensorLimitsToTensorLimits(
       data_type_limits.instance_normalization_input));
-  instance_normalization->setScale(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.instance_normalization_input));
-  instance_normalization->setBias(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.instance_normalization_input));
+  instance_normalization->setScale(SupportedTensorLimitsToTensorLimits(
+      data_type_limits.instance_normalization_scale));
+  instance_normalization->setBias(SupportedTensorLimitsToTensorLimits(
+      data_type_limits.instance_normalization_scale));
   instance_normalization->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.instance_normalization_input));
+      data_type_limits.instance_normalization_input.data_types));
   op_support_limits->setInstanceNormalization(instance_normalization);
 
   MLNormalizationSupportLimits* layer_normalization =
       MLNormalizationSupportLimits::Create();
-  layer_normalization->setInput(SupportedDataTypesToDataTypeLimits(
+  layer_normalization->setInput(SupportedTensorLimitsToTensorLimits(
       data_type_limits.layer_normalization_input));
-  layer_normalization->setScale(SupportedDataTypesToDataTypeLimits(
+  layer_normalization->setScale(SupportedTensorLimitsToTensorLimits(
       data_type_limits.layer_normalization_input));
-  layer_normalization->setBias(SupportedDataTypesToDataTypeLimits(
+  layer_normalization->setBias(SupportedTensorLimitsToTensorLimits(
       data_type_limits.layer_normalization_input));
   layer_normalization->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.layer_normalization_input));
+      data_type_limits.layer_normalization_input.data_types));
   op_support_limits->setLayerNormalization(layer_normalization);
 
   MLSingleInputSupportLimits* leaky_relu = MLSingleInputSupportLimits::Create();

@@ -105,6 +105,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/base_window.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -2192,6 +2193,34 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WindowControlsOverlay) {
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   EXPECT_EQ(true,
             app_browser->app_controller()->AppUsesWindowControlsOverlay());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestShareTarget) {
+  base::HistogramTester histogram_tester;
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_with_share_targets.json");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.WebDXFeatures",
+      blink::mojom::WebDXFeature::kAppShareTargets, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestShortcut) {
+  base::HistogramTester histogram_tester;
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_with_shortcuts.json");
+  NavigateViaLinkClickToURLAndWait(browser(), test_url);
+
+  const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
+                                     blink::mojom::WebDXFeature::kAppShortcuts,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Borderless, Borderless) {

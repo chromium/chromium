@@ -101,8 +101,7 @@ public class LayerTitleCache {
         mBubbleOffset =
                 res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_bubble_offset);
         mBubbleBorderColor =
-                TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
-                        context, /* isIncognito= */ false, /* isActivityFocused= */ true);
+                TabUiThemeUtil.getTabStripBackgroundColor(context, /* isIncognito= */ false);
         mBubbleFillColor = TabUiThemeProvider.getTabBubbleFillColor(context);
         mNativeLayerTitleCache =
                 LayerTitleCacheJni.get()

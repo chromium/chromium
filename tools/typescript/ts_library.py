@@ -89,6 +89,7 @@ def main(argv):
   # inheritance chain.
   parent_tsconfig_file = tsconfig_base_file
   parent_tsconfig_counter = 0
+  has_skip_lib_check = False
   while parent_tsconfig_file != None:
     with io.open(parent_tsconfig_file, encoding='utf-8', mode='r') as f:
       parent_tsconfig = json.loads(f.read())
@@ -101,6 +102,13 @@ def main(argv):
           parent_tsconfig, parent_tsconfig_file_normalized, is_base_tsconfig)
       if not is_tsconfig_valid:
         raise AssertionError(error)
+
+      # Detect whether 'skipLibCheck' is explicitly specified in the inheritance
+      # chain, used further below to automatically populate 'skipLibCheck' where
+      # possible.
+      if not has_skip_lib_check:
+        has_skip_lib_check = 'compilerOptions' in parent_tsconfig and \
+            'skipLibCheck' in parent_tsconfig['compilerOptions']
 
       # Work-around for https://github.com/microsoft/TypeScript/issues/30024.
       # Need to append 'trusted-types' in cases where the default
@@ -177,11 +185,25 @@ def main(argv):
     # Source .ts files are always resolved as being relative to |root_dir|.
     tsconfig['files'].extend([os.path.join(root_dir, f) for f in args.in_files])
 
+  has_local_definitions = False
   if args.definitions is not None:
     for d in args.definitions:
       assert d.endswith(
           '.d.ts'), f'Invalid definition \'{d}\'. Should end with \'.d.ts\''
     tsconfig['files'].extend(args.definitions)
+
+    SHARED_DEFINITIONS_FOLDER = os.path.join(args.root_src_dir,
+                                             'tools/typescript/definitions')
+    local_definitions = list(
+        filter(lambda d: not d.startswith(SHARED_DEFINITIONS_FOLDER),
+               args.definitions))
+    has_local_definitions = len(local_definitions) > 0
+
+  # Set 'skipLibCheck' to true if not specified in any parent config and if no
+  # definitions outside of tools/typescript/definitions exist, to speed up the
+  # build.
+  if not has_skip_lib_check and not has_local_definitions:
+    tsconfig['compilerOptions']['skipLibCheck'] = True
 
   target_path = getTargetPath(args.gen_dir, args.root_gen_dir)
   is_ash_target = isInAshFolder(target_path)

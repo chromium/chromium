@@ -193,10 +193,10 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   void AdjustSetOffsets(wtf_size_t set_index, LayoutUnit delta);
 
   // Returns the total size of all sets in the collection.
-  LayoutUnit ComputeSetSpanSize() const;
+  LayoutUnit CalculateSetSpanSize() const;
   // Returns the total size of all sets with index in the range [begin, end).
-  LayoutUnit ComputeSetSpanSize(wtf_size_t begin_set_index,
-                                wtf_size_t end_set_index) const;
+  LayoutUnit CalculateSetSpanSize(wtf_size_t begin_set_index,
+                                  wtf_size_t end_set_index) const;
 
   // Creates a track collection containing every |Range| with index in the range
   // [begin, end], including their respective |SetGeometry| and baselines.

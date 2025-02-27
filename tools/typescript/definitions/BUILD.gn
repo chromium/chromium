@@ -1,0 +1,71 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+
+# This target is the only target that actually checks the correctness of the
+# definition '*.d.ts' files in this folder, by using `skipLibCheck: false`.
+# This allows other targets that use the definitions files to not have to check
+# the same files over and over again, which in turn improves the performance of
+# TypeScript compiler invocations.
+ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
+  composite = true
+  definitions = [
+    "//tools/typescript/definitions/accessibility_features.d.ts",
+    "//tools/typescript/definitions/accessibility_service_private.d.ts",
+    "//tools/typescript/definitions/activity_log_private.d.ts",
+    "//tools/typescript/definitions/autofill_private.d.ts",
+    "//tools/typescript/definitions/bluetooth.d.ts",
+    "//tools/typescript/definitions/bluetooth_private.d.ts",
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_downloads.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/chrome_test.d.ts",
+    "//tools/typescript/definitions/chrome_timeticks.d.ts",
+    "//tools/typescript/definitions/command_line_private.d.ts",
+    "//tools/typescript/definitions/content_settings.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/developer_private.d.ts",
+    "//tools/typescript/definitions/dom_automation_controller.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/feedback_private.d.ts",
+    "//tools/typescript/definitions/file_system.d.ts",
+    "//tools/typescript/definitions/i18n.d.ts",
+    "//tools/typescript/definitions/input_method_private.d.ts",
+    "//tools/typescript/definitions/language_settings_private.d.ts",
+    "//tools/typescript/definitions/management.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/metrics_private_individual_apis.d.ts",
+    "//tools/typescript/definitions/mime_handler_private.d.ts",
+    "//tools/typescript/definitions/networking_private.d.ts",
+    "//tools/typescript/definitions/notifications.d.ts",
+    "//tools/typescript/definitions/offscreen.d.ts",
+    "//tools/typescript/definitions/passwords_private.d.ts",
+    "//tools/typescript/definitions/pdf_viewer_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/resources_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/scripting.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+    "//tools/typescript/definitions/storage.d.ts",
+    "//tools/typescript/definitions/strings.d.ts",
+    "//tools/typescript/definitions/system_display.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/users_private.d.ts",
+    "//tools/typescript/definitions/wallpaper.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
+
+  if (is_chromeos) {
+    definitions += [
+      "//tools/typescript/definitions/chromeos_info_private.d.ts",
+      "//tools/typescript/definitions/quick_unlock_private.d.ts",
+    ]
+  }
+}

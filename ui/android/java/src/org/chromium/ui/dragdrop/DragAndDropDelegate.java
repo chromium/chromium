@@ -39,6 +39,7 @@ public interface DragAndDropDelegate {
     /**
      * Set the {@link DragAndDropBrowserDelegate} that will be used to facilitate browser related
      * tasks required for Drag and Drop.
+     *
      * @param delegate The {@link DragAndDropBrowserDelegate} that will be used by this class.
      */
     default void setDragAndDropBrowserDelegate(DragAndDropBrowserDelegate delegate) {}

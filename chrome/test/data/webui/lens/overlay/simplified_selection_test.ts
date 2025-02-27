@@ -58,6 +58,9 @@ suite('SimplifiedSelection', function() {
     textLayerElement = document.createElement('lens-simplified-text-layer');
     document.body.appendChild(textLayerElement);
     await waitAfterNextRender(textLayerElement);
+
+    textLayerElement.onSelectionStart();
+    textLayerElement.onSelectionFinish();
   });
 
   teardown(() => {
@@ -84,7 +87,43 @@ suite('SimplifiedSelection', function() {
     await flushTasks();
   }
 
-  test('HideContextMenuNoTextTimeoutOngoing', async () => {
+  test('OnSelectionStartFiresHideContextMenuEvent', async () => {
+    textLayerElement.onSelectionStart();
+
+    const hideSelectedRegionContextMenuEventPromise =
+        eventToPromise('hide-selected-region-context-menu', document.body);
+    await dispatchDetextTextInRegionEvent();
+    await hideSelectedRegionContextMenuEventPromise;
+  });
+
+  test('OnSelectionFinishedClearsText', async () => {
+    const receivedTextEventPromise =
+        eventToPromise('finished-receiving-text', document.body);
+    await addGenericWordsToPage(callbackRouterRemote, textLayerElement);
+    await receivedTextEventPromise;
+
+    // Simulate a new selection being created.
+    textLayerElement.onSelectionStart();
+    textLayerElement.onSelectionFinish();
+
+    // When the detect text in region event is received, the context menu should
+    // be shown without any detected text.
+    const showSelectedRegionContextMenuEventPromise =
+        eventToPromise('show-selected-region-context-menu', document.body);
+
+    // Call timeout to simulate no text being received.
+    callTextReceivedTimeout();
+    await dispatchDetextTextInRegionEvent();
+
+    const showSelectedRegionContextMenuEvent =
+        await showSelectedRegionContextMenuEventPromise;
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.selectionStartIndex, -1);
+    assertEquals(
+        showSelectedRegionContextMenuEvent.detail.selectionEndIndex, -1);
+  });
+
+  test('HideContextMenuTimeoutOngoingNoText', async () => {
     const hideSelectedRegionContextMenuEventPromise =
         eventToPromise('hide-selected-region-context-menu', document.body);
     await dispatchDetextTextInRegionEvent();

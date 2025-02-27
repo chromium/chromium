@@ -53,9 +53,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateChoosePathFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivatePackDirectoryFunction,
                    "developerPrivate.packDirectory",
                    DEVELOPERPRIVATE_PACKDIRECTORY);
-DECLARE_EMPTY_FUNC(DeveloperPrivateIsProfileManagedFunction,
-                   "developerPrivate.isProfileManaged",
-                   DEVELOPERPRIVATE_ISPROFILEMANAGED);
 DECLARE_EMPTY_FUNC(DeveloperPrivateLoadDirectoryFunction,
                    "developerPrivate.loadDirectory",
                    DEVELOPERPRIVATE_LOADUNPACKEDCROS);
@@ -65,9 +62,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateRequestFileSourceFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivateOpenDevToolsFunction,
                    "developerPrivate.openDevTools",
                    DEVELOPERPRIVATE_OPENDEVTOOLS);
-DECLARE_EMPTY_FUNC(DeveloperPrivateDeleteExtensionErrorsFunction,
-                   "developerPrivate.deleteExtensionErrors",
-                   DEVELOPERPRIVATE_DELETEEXTENSIONERRORS);
 DECLARE_EMPTY_FUNC(DeveloperPrivateRepairExtensionFunction,
                    "developerPrivate.repairExtension",
                    DEVELOPERPRIVATE_REPAIREXTENSION);
@@ -89,31 +83,15 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateAddHostPermissionFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivateRemoveHostPermissionFunction,
                    "developerPrivate.removeHostPermission",
                    DEVELOPERPRIVATE_REMOVEHOSTPERMISSION);
-DECLARE_EMPTY_FUNC(DeveloperPrivateGetUserSiteSettingsFunction,
-                   "developerPrivate.getUserSiteSettings",
-                   DEVELOPERPRIVATE_GETUSERSITESETTINGS);
-DECLARE_EMPTY_FUNC(DeveloperPrivateAddUserSpecifiedSitesFunction,
-                   "developerPrivate.addUserSpecifiedSites",
-                   DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITES);
-DECLARE_EMPTY_FUNC(DeveloperPrivateRemoveUserSpecifiedSitesFunction,
-                   "developerPrivate.removeUserSpecifiedSites",
-                   DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITES);
 DECLARE_EMPTY_FUNC(DeveloperPrivateGetUserAndExtensionSitesByEtldFunction,
                    "developerPrivate.getUserAndExtensionSitesByEtld",
                    DEVELOPERPRIVATE_GETUSERANDEXTENSIONSITESBYETLD);
-DECLARE_EMPTY_FUNC(DeveloperPrivateGetMatchingExtensionsForSiteFunction,
-                   "developerPrivate.getMatchingExtensionsForSite",
-                   DEVELOPERPRIVATE_GETMATCHINGEXTENSIONSFORSITE);
 DECLARE_EMPTY_FUNC(DeveloperPrivateUpdateSiteAccessFunction,
                    "developerPrivate.updateSiteAccess",
                    DEVELOPERPRIVATE_UPDATESITEACCESS);
 DECLARE_EMPTY_FUNC(DeveloperPrivateRemoveMultipleExtensionsFunction,
                    "developerPrivate.removeMultipleExtensions",
                    DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS);
-DECLARE_EMPTY_FUNC(
-    DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction,
-    "developerPrivate.dismissSafetyHubExtensionsMenuNotification",
-    DEVELOPERPRIVATE_DISMISSSAFETYHUBEXTENSIONSMENUNOTIFICATION);
 DECLARE_EMPTY_FUNC(
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction,
     "developerPrivate.dismissMv2DeprecationNoticeForExtension",

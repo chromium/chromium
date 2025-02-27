@@ -480,7 +480,7 @@ TEST(IDBKeyFromValue, Exceptions) {
   };
 
   for (const char* source : cases) {
-    DummyExceptionStateForTesting exception_state;
+    ExceptionState exception_state(scope.GetIsolate());
     auto key = CreateIDBKeyFromValue(scope.GetIsolate(),
                                      EvaluateScriptAsObject(scope, source),
                                      exception_state);

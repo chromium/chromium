@@ -217,10 +217,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
 
         mAppHeaderState = newState;
         if (mAppHeaderState.isInDesktopWindow()) {
-            int height = mAppHeaderState.getAppHeaderHeight();
-            int topPadding =
-                    Math.max(mTabStripReservedTopPadding, height - mTabStripHeightFromResource);
-            onTabStripSizeChanged(mAppHeaderState.getUnoccludedRectWidth(), topPadding);
+            onTabStripSizeChanged(mAppHeaderState.getUnoccludedRectWidth(), calculateTopPadding());
         } else {
             onTabStripSizeChanged(controlContainerView().getWidth(), 0);
         }
@@ -304,7 +301,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             newWidth = Math.min(newWidth, mAppHeaderState.getUnoccludedRectWidth());
         }
 
-        onTabStripSizeChanged(newWidth, mTopPadding);
+        onTabStripSizeChanged(newWidth, calculateTopPadding());
     }
 
     /**
@@ -316,6 +313,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @param topPadding The top padding to be added to the tab strip.
      */
     private void onTabStripSizeChanged(int width, int topPadding) {
+        // Avoid transitioning when strip width / control container height is invalid. This can
+        // happen when the control container is created hidden after theme changes.
+        if (width <= 0 || controlContainerView().getHeight() == 0) return;
+
         if (width == mTabStripWidth && topPadding == mTopPadding) return;
         mTabStripWidth = width;
         mTopPadding = topPadding;
@@ -386,6 +387,14 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         assert mTabStripTransitionDelegateSupplier.get() != null
                 : "Expected a non-null strip transition delegate.";
         return mTabStripTransitionDelegateSupplier.get().getStripVisibilityState();
+    }
+
+    private int calculateTopPadding() {
+        if (mAppHeaderState == null) return 0;
+        int height = mAppHeaderState.getAppHeaderHeight();
+        return height == 0
+                ? 0
+                : Math.max(mTabStripReservedTopPadding, height - mTabStripHeightFromResource);
     }
 
     // Testing methods.

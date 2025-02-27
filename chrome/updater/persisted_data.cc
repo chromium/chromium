@@ -97,9 +97,8 @@ void PersistedData::SetProductVersion(const std::string& id,
   // (Some applications read it from there.) This has the side effect of
   // creating the ClientState key, which is read to sense for application
   // uninstallation.
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValuePV,
-                 base::UTF8ToWide(pv.GetString()));
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), GetAppClientStateKey(id),
+                 kRegValuePV, base::UTF8ToWide(pv.GetString()));
 #endif
 }
 
@@ -174,7 +173,7 @@ std::string PersistedData::GetBrandCode(const std::string& id) {
   // brand code that is already in `prefs`.
   std::wstring registry_bc;
   if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope_),
-                        GetAppClientStateKey(base::UTF8ToWide(id)).c_str(),
+                        GetAppClientStateKey(id).c_str(),
                         Wow6432(KEY_QUERY_VALUE))
           .ReadValue(kRegValueBrandCode, &registry_bc) == ERROR_SUCCESS) {
     const std::string registry_brand_code = base::WideToUTF8(registry_bc);
@@ -192,9 +191,8 @@ std::string PersistedData::GetBrandCode(const std::string& id) {
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, record the brand code in ClientState, since
   // some applications read it from there.
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueBrandCode,
-                 base::UTF8ToWide(bc));
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), GetAppClientStateKey(id),
+                 kRegValueBrandCode, base::UTF8ToWide(bc));
 #endif
   return bc;
 }
@@ -212,9 +210,8 @@ void PersistedData::SetBrandCode(const std::string& id, const std::string& bc) {
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, record the brand code in ClientState, since
   // some applications read it from there.
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueBrandCode,
-                 base::UTF8ToWide(bc));
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), GetAppClientStateKey(id),
+                 kRegValueBrandCode, base::UTF8ToWide(bc));
 #endif
 }
 
@@ -259,9 +256,8 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
   // values. Else, this is the global pref store and reflecting the value in
   // registry is correct. Clients should transition to requesting the
   // registration info for their application via RPC.
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueAP,
-                 base::UTF8ToWide(ap));
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), GetAppClientStateKey(id),
+                 kRegValueAP, base::UTF8ToWide(ap));
 #endif
 }
 
@@ -295,9 +291,7 @@ std::string PersistedData::GetLang(const std::string& id) {
   // For backwards compatibility, if there is a lang in the registry Clients or
   // ClientState, that lang is considered authoritative, and overrides any lang
   // that is already in `prefs`.
-  const std::wstring id_w = base::UTF8ToWide(id);
-  for (const auto& subkey :
-       {GetAppClientsKey(id_w), GetAppClientStateKey(id_w)}) {
+  for (const auto& subkey : {GetAppClientsKey(id), GetAppClientStateKey(id)}) {
     std::wstring registry_lang_w;
     if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope_), subkey.c_str(),
                           Wow6432(KEY_QUERY_VALUE))
@@ -322,9 +316,8 @@ void PersistedData::SetLang(const std::string& id, const std::string& lang) {
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, record the lang in ClientState, since some
   // applications read it from there.
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueLang,
-                 base::UTF8ToWide(lang));
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), GetAppClientStateKey(id),
+                 kRegValueLang, base::UTF8ToWide(lang));
 #endif
 }
 
@@ -371,8 +364,7 @@ void PersistedData::SetCohort(const std::string& id,
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, we record the Cohort in ClientState as well.
   // (Some applications read it from there.)
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppCohortKey(base::UTF8ToWide(id)), L"",
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), GetAppCohortKey(id), L"",
                  base::UTF8ToWide(cohort));
 #endif
 }
@@ -390,9 +382,8 @@ void PersistedData::SetCohortName(const std::string& id,
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, we record the Cohort in ClientState as well.
   // (Some applications read it from there.)
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppCohortKey(base::UTF8ToWide(id)), kRegValueCohortName,
-                 base::UTF8ToWide(cohort_name));
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), GetAppCohortKey(id),
+                 kRegValueCohortName, base::UTF8ToWide(cohort_name));
 #endif
 }
 
@@ -527,10 +518,18 @@ bool PersistedData::RemoveApp(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_WIN)
-  // For backwards compatibility, the `ClientState` entry for the app is also
-  // removed.
-  base::win::RegKey(UpdaterScopeToHKeyRoot(scope_), L"", Wow6432(DELETE))
-      .DeleteKey(GetAppClientStateKey(base::UTF8ToWide(id)).c_str());
+  // For backwards compatibility, the `ClientState` and (for system installs)
+  // `ClientStateMedium` entries for the app are also removed.
+  for (const auto& subkey : [&] {
+         std::vector<std::wstring> subkeys = {GetAppClientStateKey(id)};
+         if (IsSystemInstall(scope_)) {
+           subkeys.push_back(GetAppClientStateMediumKey(id));
+         }
+         return subkeys;
+       }()) {
+    base::win::RegKey(UpdaterScopeToHKeyRoot(scope_), L"", Wow6432(DELETE))
+        .DeleteKey(subkey.c_str());
+  }
 #endif
 
   if (!pref_service_) {

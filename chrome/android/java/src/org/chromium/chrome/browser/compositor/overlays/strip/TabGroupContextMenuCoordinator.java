@@ -258,7 +258,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      * @param tabGroupId The tab group ID of the interacting tab group.
      */
     protected void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId) {
-        mGroupRootId = mTabGroupModelFilter.getRootIdFromStableId(tabGroupId);
+        mGroupRootId = mTabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,

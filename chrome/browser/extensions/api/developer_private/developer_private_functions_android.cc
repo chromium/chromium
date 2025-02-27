@@ -35,16 +35,12 @@ DEFINE_EMPTY_FUNC(DeveloperPrivateChoosePathFunction,
                   "developerPrivate.choosePath")
 DEFINE_EMPTY_FUNC(DeveloperPrivatePackDirectoryFunction,
                   "developerPrivate.packDirectory")
-DEFINE_EMPTY_FUNC(DeveloperPrivateIsProfileManagedFunction,
-                  "developerPrivate.isProfileManaged")
 DEFINE_EMPTY_FUNC(DeveloperPrivateLoadDirectoryFunction,
                   "developerPrivate.loadDirectory")
 DEFINE_EMPTY_FUNC(DeveloperPrivateRequestFileSourceFunction,
                   "developerPrivate.requestFileSource")
 DEFINE_EMPTY_FUNC(DeveloperPrivateOpenDevToolsFunction,
                   "developerPrivate.openDevTools")
-DEFINE_EMPTY_FUNC(DeveloperPrivateDeleteExtensionErrorsFunction,
-                  "developerPrivate.deleteExtensionErrors")
 DEFINE_EMPTY_FUNC(DeveloperPrivateRepairExtensionFunction,
                   "developerPrivate.repairExtension")
 DEFINE_EMPTY_FUNC(DeveloperPrivateShowOptionsFunction,
@@ -58,23 +54,12 @@ DEFINE_EMPTY_FUNC(DeveloperPrivateAddHostPermissionFunction,
                   "developerPrivate.addHostPermission")
 DEFINE_EMPTY_FUNC(DeveloperPrivateRemoveHostPermissionFunction,
                   "developerPrivate.removeHostPermission")
-DEFINE_EMPTY_FUNC(DeveloperPrivateGetUserSiteSettingsFunction,
-                  "developerPrivate.getUserSiteSettings")
-DEFINE_EMPTY_FUNC(DeveloperPrivateAddUserSpecifiedSitesFunction,
-                  "developerPrivate.addUserSpecifiedSites")
-DEFINE_EMPTY_FUNC(DeveloperPrivateRemoveUserSpecifiedSitesFunction,
-                  "developerPrivate.removeUserSpecifiedSites")
 DEFINE_EMPTY_FUNC(DeveloperPrivateGetUserAndExtensionSitesByEtldFunction,
                   "developerPrivate.getUserAndExtensionSitesByEtld")
-DEFINE_EMPTY_FUNC(DeveloperPrivateGetMatchingExtensionsForSiteFunction,
-                  "developerPrivate.getMatchingExtensionsForSite")
 DEFINE_EMPTY_FUNC(DeveloperPrivateUpdateSiteAccessFunction,
                   "developerPrivate.updateSiteAccess")
 DEFINE_EMPTY_FUNC(DeveloperPrivateRemoveMultipleExtensionsFunction,
                   "developerPrivate.removeMultipleExtensions")
-DEFINE_EMPTY_FUNC(
-    DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction,
-    "developerPrivate.dismissSafetyHubExtensionsMenuNotification")
 DEFINE_EMPTY_FUNC(
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction,
     "developerPrivate.dismissMv2DeprecationNoticeForExtension")

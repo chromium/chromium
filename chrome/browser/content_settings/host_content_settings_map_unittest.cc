@@ -46,7 +46,9 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -215,6 +217,23 @@ class TesterForType {
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   ContentSettingsType content_type_;
   const char* policy_default_setting_;
+};
+
+// For building HostContentSettingsMap without HostContentSettingsMapFactory.
+// Shuts down HostContentSettingsMap properly on destruction.
+class ScopedMapNoFactoryTester {
+ public:
+  scoped_refptr<HostContentSettingsMap> map;
+
+  explicit ScopedMapNoFactoryTester(TestingProfile& profile) {
+    map = new HostContentSettingsMap(profile.GetPrefs(),
+                                     /*is_off_the_record=*/false,
+                                     /*store_last_modified=*/false,
+                                     /*restore_session=*/false,
+                                     /*should_record_metrics=*/false);
+  }
+
+  ~ScopedMapNoFactoryTester() { map->ShutdownOnUIThread(); }
 };
 
 TEST_F(HostContentSettingsMapTest, DefaultValues) {
@@ -463,16 +482,13 @@ TEST_F(HostContentSettingsMapTest, Origins) {
                 host4, host4, ContentSettingsType::COOKIES));
 }
 
-// TODO(crbug.com/398891214): Make test pass on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Observer DISABLED_Observer
-#else
-#define MAYBE_Observer Observer
-#endif
-TEST_F(HostContentSettingsMapTest, MAYBE_Observer) {
+TEST_F(HostContentSettingsMapTest, Observer) {
   TestingProfile profile;
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(&profile);
+  // Use ScopedMapNoFactoryTester in order to enable the test to ignore
+  // UnusedSitePermissionsService and
+  // ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS.
+  ScopedMapNoFactoryTester map_tester(profile);
+  HostContentSettingsMap* host_content_settings_map = map_tester.map.get();
   MockSettingsObserver observer(host_content_settings_map);
 
   GURL host("http://example.com/");

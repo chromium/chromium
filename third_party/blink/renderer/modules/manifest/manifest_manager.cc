@@ -312,6 +312,16 @@ void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
                       WebFeature::kWebAppManifestScopeExtensions);
   }
 
+  if (!manifest.share_target.is_null()) {
+    UseCounter::CountWebDXFeature(GetSupplementable(),
+                                  WebDXFeature::kAppShareTargets);
+  }
+
+  if (!manifest.shortcuts.empty()) {
+    UseCounter::CountWebDXFeature(GetSupplementable(),
+                                  WebDXFeature::kAppShortcuts);
+  }
+
   for (const mojom::blink::DisplayMode& display_override :
        manifest.display_override) {
     if (display_override == mojom::blink::DisplayMode::kWindowControlsOverlay) {

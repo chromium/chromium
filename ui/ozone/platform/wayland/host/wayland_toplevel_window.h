@@ -48,6 +48,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Sets the window's origin.
   void SetOrigin(const gfx::Point& origin);
 
+  // Notify that this window's active state may change.
+  void UpdateActivationState();
+
   // WaylandWindow overrides:
   void UpdateWindowScale(bool update_bounds) override;
   WaylandToplevelWindow* AsWaylandToplevelWindow() override;
@@ -187,6 +190,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   WindowTiledEdges tiled_state_;
 
   bool is_active_ = false;
+  bool is_xdg_active_ = false;
   bool is_suspended_ = false;
 
   // Id of the chromium app passed through

@@ -84,7 +84,13 @@ class AXInlineTextBox final : public AXObject {
   void AddChildren() override {}
 
  private:
+  enum class Direction { kNext, kPrevious };
+  AXObject* NeighboringOnLine(const Direction direction) const;
+
+  // TODO(a11y): Remove default argument on virtual override.
+  // See https://google.github.io/styleguide/cppguide.html#Default_Arguments
   bool ComputeIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool IsPartOfAListItem() const;
 
   Member<AbstractInlineTextBox> inline_text_box_;
 };

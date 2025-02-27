@@ -545,6 +545,66 @@
       <message name="IDS_IOS_BANNER_PROMO_CLOSE_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the close button on the banner promo [iOS only]">
         Close banner promo
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_ADDRESS_BAR_POSITION_TITLE" desc="Title for the Address Bar Position Bling's Best Features Promo">
+          Address Bar Position
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_ENHANCED_SAFE_BROWSING_CAPTION" desc="Caption for the Enhanced Safe Browsing button on the Bling's Best Features Promo">
+          Protection against online threats
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_ENHANCED_SAFE_BROWSING_TITLE" desc="Title for the Enhanced Safe Browsing Bling's Best Features Promo">
+          Enhanced Safe Browsing
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_LENS_CAPTION" desc="Caption for the Lens button on the Bling's Best Features Promo">
+          Shop and translate with your camera
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_CAPTION" desc="Caption for the Locked Incognito tabs button on the Bling's Best Features Promo">
+          Keep your browsing private
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_TITLE" desc="Title for the Locked Incognito tabs Bling's Best Features Promo">
+          Locked Incognito tabs
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_SUBTITLE" desc="Subtitle for the Never Forget Passwords Bling's Best Features Promo">
+          Save and autofill your passwords to easily sign in to sites and apps
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_TITLE" desc="Title for the Never Forget Passwords Bling's Best Features Promo">
+          Never forget your passwords
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_CAPTION" desc="Caption for the Passwords in other apps button on the Bling's Best Features Promo">
+          Get saved passwords in other apps
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_CAPTION" desc="Caption for the Price Tracking button on the Bling's Best Features Promo">
+          Track price drops of products
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_SUBTITLE" desc="Subtitle for the Price Tracking Bling's Best Features Promo">
+          Track prices of products and get alerts when the price drops on any site
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_TITLE" desc="Title for the Price Tracking Bling's Best Features Promo">
+          Price tracking and insights
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_TITLE" desc="Title for the Share Passwords Bling's Best Features Promo">
+          Share passwords
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SKIP_BUTTON" desc="The label of the Skip button featured on the Bling's Best Features Promo">
+          Skip
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON" desc="The label of the Start browsing button featured on the Bling's Best Features Promo">
+          Start browsing
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SUBTITLE" desc="Subtitle for the Bling's Best Features Promo">
+          Explore features that can help you do more as you browse
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_CAPTION" desc="Caption for the Tab Groups button on the Bling's Best Features Promo">
+          Stay organized by creating tab groups
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_SUBTITLE" desc="Subtitle for the Tab Groups Bling's Best Features Promo">
+          Create tab groups to organize your open tabs
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_TITLE" desc="Title for the Tab Groups Bling's Best Features Promo">
+          Tab groups
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_TITLE" desc="Title for the Bling's Best Features Promo">
+          A safer, more powerful browser for you
+      </message>
       <message name="IDS_IOS_BLOCK_POPUPS" desc="Title for the view and option in Settings for blocking pop-ups. [Length: 15em] [iOS only]">
         Block pop-ups
       </message>

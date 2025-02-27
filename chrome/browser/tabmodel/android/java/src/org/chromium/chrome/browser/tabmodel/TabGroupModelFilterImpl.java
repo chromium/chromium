@@ -1380,7 +1380,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public int getGroupLastShownTabId(@Nullable Token tabGroupId) {
         if (tabGroupId == null) return Tab.INVALID_TAB_ID;
 
-        int rootId = getRootIdFromStableId(tabGroupId);
+        int rootId = getRootIdFromTabGroupId(tabGroupId);
         return getGroupLastShownTabId(rootId);
     }
 
@@ -1498,7 +1498,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public int getRootIdFromStableId(@Nullable Token stableId) {
+    public int getRootIdFromTabGroupId(@Nullable Token stableId) {
         if (stableId == null) return Tab.INVALID_TAB_ID;
         for (int i = 0; i < getTabModel().getCount(); i++) {
             Tab tab = getTabModel().getTabAt(i);
@@ -1508,7 +1508,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public @Nullable Token getStableIdFromRootId(int rootId) {
+    public @Nullable Token getTabGroupIdFromRootId(int rootId) {
         TabGroup tabGroup = mRootIdToGroupMap.get(rootId);
         if (tabGroup == null) return null;
 

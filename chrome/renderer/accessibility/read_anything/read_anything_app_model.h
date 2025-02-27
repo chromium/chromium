@@ -343,8 +343,8 @@ class ReadAnythingAppModel {
   // Theme information.
   std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
   float font_size_;
-  bool links_enabled_ = read_anything::kReadAnythingDefaultLinksEnabled;
-  bool images_enabled_ = read_anything::kReadAnythingDefaultImagesEnabled;
+  bool links_enabled_ = true;
+  bool images_enabled_ = false;
   int letter_spacing_ = (int)read_anything::mojom::LetterSpacing::kDefaultValue;
   int line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;

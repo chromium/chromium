@@ -599,14 +599,6 @@ TEST_F(ClipPathPaintDefinitionTest, WillChangeContents) {
 TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
   SetBodyInnerHTML(R"HTML(
     <style>
-        @keyframes transform {
-            0% {
-                transform: translate(10%, 10%);
-            }
-            100% {
-                transform: translate(20%, 20%);
-            }
-        }
         @keyframes clippath {
             0% {
                 clip-path: circle(50% at 50% 50%);
@@ -617,10 +609,7 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
                 transform: translate(20%, 20%);
             }
         }
-        .animation1 {
-            animation: transform 30s;
-        }
-        .animation2 {
+        .animation {
             animation: clippath 30s;
         }
         .oldsize {
@@ -631,7 +620,6 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
             width: 125px;
             height: 125px;
         }
-
         #target {
             transform: translate(1%, 1%);
         }
@@ -643,22 +631,10 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* element = GetElementById("target");
-
-  // TODO(crbug.com/396645699): Due to a separate issue animations on clip-path
-  // and transform will only be composited in certain situations when updates
-  // are forced. Here, we're starting a valid transform animation and replacing
-  // it with one with both properties. This primes the paint properties to be
-  // correct so that the clip path animation will be composited. This can also
-  // happen in other situations where there are multiple animations running.
-  // This code should be removed when the linked crbug is fixed.
-  element->setAttribute(html_names::kClassAttr,
-                        AtomicString("animation1 oldsize"));
-  UpdateAllLifecyclePhasesForTest();
-
   // Init animation with clip-path and a translate.
 
   element->setAttribute(html_names::kClassAttr,
-                        AtomicString("animation2 oldsize"));
+                        AtomicString("animation oldsize"));
 
   EnsureCCClipPathInvariantsHoldStyleAndLayout(
       /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
@@ -675,7 +651,7 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
       animation);
 
   element->setAttribute(html_names::kClassAttr,
-                        AtomicString("animation2 newsize"));
+                        AtomicString("animation newsize"));
 
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       /* needs_repaint= */ false, CompositedPaintStatus::kComposited, element,

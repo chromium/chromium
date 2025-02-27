@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
@@ -33,6 +34,7 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -217,7 +219,7 @@ public class DragAndDropLauncherActivityTest {
                 sourceActivity.getTabModelSelector().getTotalTabCount();
 
         // Simulate a tab drag/drop event to launch an intent in a new Chrome instance.
-        Intent intent = createTabDragDropIntent(draggedTab);
+        Intent intent = createTabDragDropIntent(draggedTab, sourceActivity);
         ChromeTabbedActivity newActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
@@ -290,10 +292,19 @@ public class DragAndDropLauncherActivityTest {
                                 mContext, linkUrl, windowId, UrlIntentSource.LINK));
     }
 
-    private Intent createTabDragDropIntent(Tab tab) throws ExecutionException {
+    private Intent createTabDragDropIntent(Tab tab, Activity sourceActivity)
+            throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        DragAndDropLauncherActivity.getTabIntent(
-                                mContext, tab, MultiWindowUtils.INVALID_INSTANCE_ID));
+                () -> {
+                    int sourceWindowId =
+                            TabWindowManagerSingleton.getInstance()
+                                    .getIndexForWindow(sourceActivity);
+
+                    return DragAndDropLauncherActivity.getTabIntent(
+                            mContext,
+                            tab,
+                            sourceWindowId,
+                            /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
+                });
     }
 }

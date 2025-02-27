@@ -228,10 +228,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         // it'll block the real tab strip in the compositor.
         if (mIsCompositorInitialized) return;
 
+        boolean isInDesktopWindow = appHeaderState != null && appHeaderState.isInDesktopWindow();
         Drawable backgroundColor =
                 new ColorDrawable(
-                        TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
-                                getContext(), mIncognito, !mIsAppInUnfocusedDesktopWindow));
+                        TabUiThemeUtil.getTabStripBackgroundColor(
+                                getContext(),
+                                mIncognito,
+                                isInDesktopWindow,
+                                !mIsAppInUnfocusedDesktopWindow));
         Drawable backgroundTabImage =
                 ResourcesCompat.getDrawable(
                         getContext().getResources(),

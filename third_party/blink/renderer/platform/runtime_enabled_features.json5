@@ -440,6 +440,10 @@
       status: "test",
     },
     {
+      name: "AriaNotifyV2",
+      status: "test",
+    },
+    {
       name: "AriaRowColIndexText",
       status: "stable",
     },
@@ -2918,6 +2922,9 @@
     {
       name: "MutationEvents",
       public: true,
+    },
+    {
+      name: "NavigateEventCanTransition",
     },
     {
       name: "NavigateEventCommitBehavior",

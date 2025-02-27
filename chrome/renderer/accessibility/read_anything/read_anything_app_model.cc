@@ -712,22 +712,32 @@ void ReadAnythingAppModel::EraseTreeForTesting(const ui::AXTreeID& tree_id) {
 
 void ReadAnythingAppModel::OnScroll(bool on_selection,
                                     bool from_reading_mode) const {
+  // Enum for logging how a scroll occurs.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ReadAnythingScrollEvent)
+  enum class ReadAnythingScrollEvent {
+    kSelectedSidePanel = 0,
+    kSelectedMainPanel = 1,
+    kScrolledSidePanel = 2,
+    kScrolledMainPanel = 3,
+    kMaxValue = kScrolledMainPanel,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingScrollEvent)
+  using enum ReadAnythingScrollEvent;
+
+  ReadAnythingScrollEvent event;
   if (on_selection) {
     // If the scroll event came from the side panel because of a selection, then
     // this means the main panel was selected, causing the side panel to scroll
     // & vice versa.
-    base::UmaHistogramEnumeration(
-        string_constants::kScrollEventHistogramName,
-        from_reading_mode
-            ? read_anything::ReadAnythingScrollEvent::kSelectedMainPanel
-            : read_anything::ReadAnythingScrollEvent::kSelectedSidePanel);
+    event = from_reading_mode ? kSelectedMainPanel : kSelectedSidePanel;
   } else {
-    base::UmaHistogramEnumeration(
-        string_constants::kScrollEventHistogramName,
-        from_reading_mode
-            ? read_anything::ReadAnythingScrollEvent::kScrolledSidePanel
-            : read_anything::ReadAnythingScrollEvent::kScrolledMainPanel);
+    event = from_reading_mode ? kScrolledSidePanel : kScrolledMainPanel;
   }
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.ScrollEvent",
+                                event);
 }
 
 void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {

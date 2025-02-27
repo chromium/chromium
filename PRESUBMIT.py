@@ -475,7 +475,7 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
         'ios/chrome/common',
         # App extensions have restricted dependencies and thus can't use the
         # wrappers.
-        '^ios/chrome/\w+_extension/',
+        r'^ios/chrome/\w+_extension/',
       ),
     ),
     BanRule(
@@ -2636,7 +2636,7 @@ def _CheckNoUNIT_TESTInSourceFiles(input_api, f):
     problems = []
 
     unit_test_macro = input_api.re.compile(
-        '^\s*#.*(?:ifn?def\s+UNIT_TEST|defined\s*\(?\s*UNIT_TEST\s*\)?)(?:$|\s+)')
+        r'^\s*#.*(?:ifn?def\s+UNIT_TEST|defined\s*\(?\s*UNIT_TEST\s*\)?)(?:$|\s+)')
     for line_num, line in f.ChangedContents():
         if unit_test_macro.match(line):
             problems.append('    %s:%d' % (f.LocalPath(), line_num))
@@ -2986,7 +2986,7 @@ def CheckNoBannedFunctions(input_api, output_api):
     # As of 05/2024, iOS fully migrated ConsentLevel::kSync to kSignin, and
     # Android is in the process of preventing new users from entering kSync.
     # So the warning is restricted to those platforms.
-    ios_pattern = input_api.re.compile('(^|[\W_])ios[\W_]')
+    ios_pattern = input_api.re.compile(r'(^|[\W_])ios[\W_]')
     file_filter = lambda f: (f.LocalPath().endswith(('.cc', '.mm', '.h')) and
                              ('android' in f.LocalPath() or
                              # Simply checking for an 'ios' substring would

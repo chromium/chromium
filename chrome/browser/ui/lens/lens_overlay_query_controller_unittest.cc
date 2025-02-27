@@ -40,6 +40,7 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/lens_server_proto/lens_overlay_document.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_request_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
@@ -2051,7 +2052,7 @@ TEST_F(LensOverlayQueryControllerTest,
   auto sent_request =
       query_controller.sent_partial_page_content_objects_request();
   ASSERT_EQ(1, sent_request.request_context().request_id().sequence_id());
-  ASSERT_EQ(lens::Payload::REQUEST_TYPE_EARLY_PARTIAL_PDF,
+  ASSERT_EQ(lens::RequestType::REQUEST_TYPE_EARLY_PARTIAL_PDF,
             sent_request.payload().request_type());
   ASSERT_EQ(2, sent_request.payload().partial_pdf_document().pages_size());
   ASSERT_EQ(
@@ -2081,7 +2082,7 @@ TEST_F(LensOverlayQueryControllerTest,
   // Check the request is correct.
   sent_request = query_controller.sent_partial_page_content_objects_request();
   ASSERT_EQ(3, sent_request.request_context().request_id().sequence_id());
-  ASSERT_EQ(lens::Payload::REQUEST_TYPE_EARLY_PARTIAL_PDF,
+  ASSERT_EQ(lens::RequestType::REQUEST_TYPE_EARLY_PARTIAL_PDF,
             sent_request.payload().request_type());
   ASSERT_EQ(1, sent_request.payload().partial_pdf_document().pages_size());
   ASSERT_EQ(
@@ -2655,7 +2656,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(page_content_request.payload().content_data().size(),
             kFakeContentBytes.size());
   ASSERT_EQ(page_content_request.payload().compression_type(),
-            lens::Payload::UNCOMPRESSED);
+            lens::CompressionType::UNCOMPRESSED);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -2718,7 +2719,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(page_content_request.payload().content_data().size(),
             expected_compressed_size);
   ASSERT_EQ(page_content_request.payload().compression_type(),
-            lens::Payload::ZSTD);
+            lens::CompressionType::ZSTD);
 }
 
 TEST_F(LensOverlayQueryControllerTest,

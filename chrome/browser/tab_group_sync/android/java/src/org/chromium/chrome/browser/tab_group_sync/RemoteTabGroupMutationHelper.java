@@ -392,7 +392,7 @@ public class RemoteTabGroupMutationHelper {
                 PostTask.postTask(
                         TaskTraits.UI_DEFAULT,
                         () -> {
-                            if (mTabGroupModelFilter.getRootIdFromStableId(
+                            if (mTabGroupModelFilter.getRootIdFromTabGroupId(
                                             localTabGroupId.tabGroupId)
                                     == TabList.INVALID_TAB_INDEX) {
                                 return;

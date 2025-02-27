@@ -91,6 +91,13 @@ struct CORE_EXPORT GridItemData {
       const GridPlacementData& placement_data,
       const ComputedStyle& grid_style);
 
+  // Returns the total size of the tracks spanned by this item in the given
+  // track collection. If `start_offset` is provided, it will be set to the
+  // offset of the first track spanned by this grid item.
+  LayoutUnit CalculateAvailableSize(
+      const GridLayoutTrackCollection& track_collection,
+      LayoutUnit* start_offset = nullptr) const;
+
   enum BaselineGroup BaselineGroup(
       GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? column_baseline_group

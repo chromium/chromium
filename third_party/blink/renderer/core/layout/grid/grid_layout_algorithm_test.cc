@@ -60,10 +60,8 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return TrackCollection(track_direction).ranges_;
   }
 
-  LayoutUnit BaseRowSizeForChild(const GridLayoutAlgorithm& algorithm,
-                                 wtf_size_t index) {
-    return algorithm.ComputeGridItemAvailableSize(GridItem(index),
-                                                  layout_data_.Rows());
+  LayoutUnit BaseRowSizeForChild(wtf_size_t index) {
+    return GridItem(index).CalculateAvailableSize(layout_data_.Rows());
   }
 
   void RunBuildGapGeometry(GridTrackSizingDirection track_direction,
@@ -193,11 +191,11 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmBaseSetSizes) {
 
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   BuildGridItemsAndTrackCollections(algorithm);
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 0), LayoutUnit(0));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 1), LayoutUnit(110));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 2), LayoutUnit(210));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 3), LayoutUnit(100));
-  EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), LayoutUnit(110));
+  EXPECT_EQ(BaseRowSizeForChild(0), LayoutUnit(0));
+  EXPECT_EQ(BaseRowSizeForChild(1), LayoutUnit(110));
+  EXPECT_EQ(BaseRowSizeForChild(2), LayoutUnit(210));
+  EXPECT_EQ(BaseRowSizeForChild(3), LayoutUnit(100));
+  EXPECT_EQ(BaseRowSizeForChild(4), LayoutUnit(110));
 }
 
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {

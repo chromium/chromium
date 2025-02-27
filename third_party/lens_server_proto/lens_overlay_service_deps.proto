@@ -17,6 +17,7 @@ import "lens_overlay_image_data.proto";
 import "lens_overlay_interaction_request_metadata.proto";
 import "lens_overlay_overlay_object.proto";
 import "lens_overlay_request_id.proto";
+import "lens_overlay_request_type.proto";
 import "lens_overlay_text.proto";
 
 // Request context for a Lens Overlay request.
@@ -80,20 +81,8 @@ message LensOverlayInteractionResponse {
   reserved 1, 2, 4;
 }
 
-// Next ID: 9
+// Next ID: 11
 message Payload {
-  // The type of the request the payload is sent in.
-  enum RequestType {
-    // Unset Request type.
-    REQUEST_TYPE_DEFAULT = 0;
-    // Request is for PDF.
-    REQUEST_TYPE_PDF = 1;
-    // Request is for partial PDF upload.
-    REQUEST_TYPE_EARLY_PARTIAL_PDF = 3;
-    // Request is for webpage.
-    REQUEST_TYPE_WEBPAGE = 2;
-  }
-
   // Optional. The type of the request.
   RequestType request_type = 6;
 
@@ -103,28 +92,97 @@ message Payload {
 
   // Data for non-image payloads. May be sent with or without an image in the
   // image_data field. If content_data is set, content_type must also be set.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
   bytes content_data = 3;
 
   // The media type/MIME type of the data represented i content_data, e.g.
   // "application/pdf". If content_type is set, content_data should also be set.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
   string content_type = 4;
 
   // The page url this request was made on.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
   string page_url = 5;
 
   // The partially parsed PDF document. Used to get early suggest signals. This
   // is only set for REQUEST_TYPE_EARLY_PARTIAL_PDF.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
   LensOverlayDocument partial_pdf_document = 7;
 
-  // Possible compression types for content_data.
-  enum CompressionType {
-    // Default value. File is not compressed.
-    UNCOMPRESSED = 0;
-    // ZSTD compression.
-    ZSTD = 1;
-  }
   // Compression format of content_data. Currently only used for PDF data.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
   CompressionType compression_type = 8;
 
+  // Optional. Options for reading stored chunks from state layer.
+  // TODO(crbug.com/399173540): Deprecate this field in favor of content.
+  StoredChunkOptions stored_chunk_options = 9;
+
+  // Non-image content to be sent to the Lens server.
+  Content content = 10;
+
   reserved 1;
+}
+
+// Specifies the options for the server to use when reading stored chunks from
+// state layer during a streamed request.
+// Next ID: 3
+message StoredChunkOptions {
+  // When set to true, Lens will retrieve payload chunks uploaded to state
+  // layer via the UploadChunk API and use those to construct
+  // content_data. If this is set, then content_type and total_stored_chunks
+  // must also be set.
+  bool read_stored_chunks = 1;
+
+  // The total number of chunks the payload was split into. This is used to
+  // facilitate the reconstruction of content_data.
+  int64 total_stored_chunks = 2;
+}
+
+// Possible compression types for content_data.
+enum CompressionType {
+  // Default value. File is not compressed.
+  UNCOMPRESSED = 0;
+  // ZSTD compression.
+  ZSTD = 1;
+}
+
+// Generic content message for all types of content that can be sent to Lens.
+// Next ID: 4
+message Content {
+  // Optional. Page url for the webpage.
+  string webpage_url = 1;
+  // Optional. Content items for the request.
+  repeated ContentData content_data = 2;
+  // The type of the request.
+  RequestType request_type = 3;
+}
+
+// Generic content data message for all types of content that can be sent to
+// Lens.
+// Next ID: 5
+message ContentData {
+  // The type of the content.
+  ContentType content_type = 1;
+  // The content data.
+  bytes data = 2;
+  // Optional. Compression format of content_data.
+  CompressionType compression_type = 3;
+  // Optional. Options for reading stored chunks from state layer.
+  StoredChunkOptions stored_chunk_options = 4;
+  // Possible types of the content.
+  // Next ID: 6
+  enum ContentType {
+    // Default value.
+    CONTENT_TYPE_UNSPECIFIED = 0;
+    // PDF content.
+    CONTENT_TYPE_PDF = 1;
+    // Inner text content.
+    CONTENT_TYPE_INNER_TEXT = 2;
+    // Inner HTML content.
+    CONTENT_TYPE_INNER_HTML = 3;
+    // Annotated page content.
+    CONTENT_TYPE_ANNOTATED_PAGE_CONTENT = 4;
+    // Early partial PDF content.
+    CONTENT_TYPE_EARLY_PARTIAL_PDF = 5;
+  }
 }

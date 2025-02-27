@@ -169,7 +169,17 @@ class DevToolsFrontend::AgentHostClient
       SendMessageAck(request_id, base::Value(std::move(preferences_)));
       return;
     } else if (*method == "getHostConfig") {
-      SendMessageAck(request_id, {});
+      base::Value::Dict response_dict;
+
+      // Chrome's DevToolsUIBindings sets feature flag values to this
+      // devToolsVeLogging dictionary, but they're not accessible from //ui.
+      // Just set the default values instead.
+      base::Value::Dict ve_logging_dict;
+      ve_logging_dict.Set("enabled", true);
+      ve_logging_dict.Set("testing", false);
+      response_dict.Set("devToolsVeLogging", std::move(ve_logging_dict));
+
+      SendMessageAck(request_id, base::Value(std::move(response_dict)));
       return;
     } else if (*method == "setPreference") {
       if (params.size() < 2)

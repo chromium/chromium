@@ -30,13 +30,9 @@ namespace {
 bool ShouldShowBnplOptionForIssuer(const BnplIssuer& bnpl_issuer,
                                    uint64_t extracted_amount_in_micros) {
   // For MVP, BNPL will only target US users and support USD.
-  if (bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros,
-                                   /*currency=*/"USD") &&
-      base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater)) {
-    return true;
-  }
-
-  return false;
+  return bnpl_issuer.IsEligibleAmount(extracted_amount_in_micros,
+                                      /*currency=*/"USD") &&
+         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
 }
 
 }  // namespace

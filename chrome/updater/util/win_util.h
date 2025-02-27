@@ -224,6 +224,11 @@ std::wstring GetAppClientStateKey(const std::string& app_id);
 std::wstring GetAppClientStateKey(const std::wstring& app_id);
 
 // Returns the registry path
+// `Software\{CompanyName}\Update\ClientStateMedium\{app_id}`.
+std::wstring GetAppClientStateMediumKey(const std::string& app_id);
+std::wstring GetAppClientStateMediumKey(const std::wstring& app_id);
+
+// Returns the registry path
 // `Software\{CompanyName}\Update\ClientState\{app_id}\cohort`.
 std::wstring GetAppCohortKey(const std::string& app_id);
 std::wstring GetAppCohortKey(const std::wstring& app_id);

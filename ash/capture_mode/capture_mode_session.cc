@@ -1538,19 +1538,29 @@ void CaptureModeSession::AddSmartActionsButton() {
   // via `image_search_token`.
   CHECK_EQ(active_behavior_->behavior_type(), BehaviorType::kDefault);
 
-  if (ScannerController::CanShowUiForShell() &&
-      !controller_->IsNetworkConnectionOffline()) {
+  if (!ScannerController::CanShowUiForShell()) {
     RecordScannerFeatureUserState(
-        ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
-    // TODO(crbug.com/375967525): Finalize and translate the smart actions
-    // button text.
-    AddActionButton(
-        base::BindRepeating(&CaptureModeSession::OnSmartActionsButtonPressed,
-                            weak_ptr_factory_.GetWeakPtr()),
-        u"More actions", /*icon=*/nullptr,
-        ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
-        ActionButtonViewID::kSmartActionsButton);
+        ScannerFeatureUserState::
+            kSmartActionsButtonNotShownDueToCanShowUiFalse);
+    return;
   }
+
+  if (controller_->IsNetworkConnectionOffline()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kSmartActionsButtonNotShownDueToOffline);
+    return;
+  }
+
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
+  // TODO(crbug.com/375967525): Finalize and translate the smart actions button
+  // text.
+  AddActionButton(
+      base::BindRepeating(&CaptureModeSession::OnSmartActionsButtonPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      u"More actions", /*icon=*/nullptr,
+      ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
+      ActionButtonViewID::kSmartActionsButton);
 }
 
 void CaptureModeSession::MaybeShowScannerDisclaimer(

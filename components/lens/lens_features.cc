@@ -351,6 +351,9 @@ constexpr base::FeatureParam<double> kUploadProgressBarShowHeuristic{
     &kLensOverlayContextualSearchbox, "upload-progress-bar-show-heuristic",
     0.1};
 
+constexpr base::FeatureParam<bool> kAutoFocusSearchbox{
+    &kLensOverlayContextualSearchbox, "auto-focus-searchbox", true};
+
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
     "https://translate-pa.googleapis.com/v1/supportedLanguages"};
@@ -836,6 +839,10 @@ bool ShouldShowUploadProgressBar() {
 
 double GetUploadProgressBarShowHeuristic() {
   return kUploadProgressBarShowHeuristic.Get();
+}
+
+bool ShouldAutoFocusSearchbox() {
+  return kAutoFocusSearchbox.Get();
 }
 
 bool IsSimplifiedSelectionEnabled() {

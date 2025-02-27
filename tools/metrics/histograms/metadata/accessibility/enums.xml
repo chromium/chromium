@@ -1832,7 +1832,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Main panel scrolled"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_constants.h:ReadAnythingScrollEvent) -->
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.cc:ReadAnythingScrollEvent) -->
 
 <!-- LINT.IfChange(ReadAnythingSettingsChange) -->
 

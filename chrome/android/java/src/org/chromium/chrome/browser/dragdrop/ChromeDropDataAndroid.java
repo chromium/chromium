@@ -12,6 +12,7 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
     public final Tab tab;
     public final boolean isTabInGroup;
     public final boolean allowTabDragToCreateInstance;
+    public final int windowId;
 
     /** Not generated from java */
     ChromeDropDataAndroid(Builder builder) {
@@ -19,6 +20,7 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
         tab = builder.mTab;
         isTabInGroup = builder.mIsTabInGroup;
         allowTabDragToCreateInstance = builder.mAllowTabDragToCreateInstance;
+        windowId = builder.mWindowId;
     }
 
     public boolean hasTab() {
@@ -43,6 +45,7 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
         private Tab mTab;
         private boolean mIsTabInGroup;
         private boolean mAllowTabDragToCreateInstance;
+        private int mWindowId;
 
         /**
          * @param tab to be set in clip data.
@@ -69,6 +72,15 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
          */
         public Builder withAllowDragToCreateInstance(boolean allowDragToCreateInstance) {
             mAllowTabDragToCreateInstance = allowDragToCreateInstance;
+            return this;
+        }
+
+        /**
+         * @param windowId The ID of the window where drag starts.
+         * @return {@link ChromeDropDataAndroid.Builder} instance.
+         */
+        public Builder withWindowId(int windowId) {
+            mWindowId = windowId;
             return this;
         }
 

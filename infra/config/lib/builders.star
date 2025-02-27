@@ -126,7 +126,7 @@ def _rotation(name):
     )
 
 def _gardener_rotation_name(rotation):
-    return rotation + " rotation"
+    return "{}.rotation".format(rotation)
 
 # Gardener rotations that a builder can be added to (only takes effect on trunk)
 # New rotations can be added, but won't automatically show up in SoM without

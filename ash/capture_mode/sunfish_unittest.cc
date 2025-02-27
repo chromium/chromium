@@ -366,6 +366,33 @@ TEST_F(SunfishEnabledScannerDisabledTest,
       1);
 }
 
+// Tests that the "smart actions button not shown due to CanShowUi returning
+// false" metric is emitted after OCR if Scanner is disabled.
+TEST_F(SunfishEnabledScannerDisabledTest,
+       SmartActionsButtonNotShownDueToCanShowUiFalseRecorded) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToCanShowUiFalse,
+      0);
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToCanShowUiFalse,
+      1);
+}
+
 class SunfishEnabledScannerEnabledTest : public SunfishTestBase {
  public:
   SunfishEnabledScannerEnabledTest() {
@@ -3746,6 +3773,38 @@ TEST_F(
       ActionButtonViewID::kSmartActionsButton));
 }
 
+// Tests that the "smart actions button not shown due to CanShowUi returning
+// false" metric is emitted when Scanner is enabled, but is disabled between
+// sending the OCR request and receiving a response.
+TEST_F(ScannerTest, SmartActionsButtonNotShownDueToCanShowUiFalseRecorded) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToCanShowUiFalse,
+      0);
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  OnTextDetectionComplete text_detection_complete = detect_text_future.Take();
+  // Disable Scanner by enterprise policy.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  std::move(text_detection_complete).Run("detected text");
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToCanShowUiFalse,
+      1);
+}
+
 // Tests that the smart actions button is shown in default capture mode if text
 // is detected in the selected region.
 TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
@@ -3874,6 +3933,32 @@ TEST_F(ScannerTest, SmartActionsButtonNotShownWhenOffline) {
   EXPECT_THAT(
       session_test_api.GetActionButtons(),
       ElementsAre(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
+}
+
+// Tests that the "smart actions button not shown due to device being offline"
+// metric is emitted when the network connection is offline.
+TEST_F(ScannerTest, SmartActionsButtonNotShownDueToOfflineRecorded) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToOffline, 0);
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  ON_CALL(*test_delegate, IsNetworkConnectionOffline)
+      .WillByDefault(Return(true));
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToOffline, 1);
 }
 
 // Tests that pressing the smart actions button shows an error when the network

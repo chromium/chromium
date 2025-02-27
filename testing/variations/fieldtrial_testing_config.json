@@ -4959,14 +4959,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Holdback",
+                    "name": "Enabled",
                     "enable_features": [
-                        "WelcomeTourHoldbackArm"
+                        "WelcomeTourV3"
                     ],
                     "disable_features": [
                         "WelcomeTourCounterfactualArm",
-                        "WelcomeTourV2",
-                        "WelcomeTourV3"
+                        "WelcomeTourHoldbackArm",
+                        "WelcomeTourV2"
                     ]
                 }
             ]

@@ -277,7 +277,7 @@ class TabModelRemover {
         }
 
         TabGroupModelFilter filter = getTabGroupModelFilter();
-        int rootId = filter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
+        int rootId = filter.getRootIdFromTabGroupId(savedTabGroup.localId.tabGroupId);
         if (rootId == Tab.INVALID_TAB_ID) {
             return new CollaborationInfo();
         }

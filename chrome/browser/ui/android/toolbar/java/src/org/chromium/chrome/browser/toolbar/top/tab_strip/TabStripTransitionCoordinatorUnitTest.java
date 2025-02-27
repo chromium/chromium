@@ -980,6 +980,32 @@ public class TabStripTransitionCoordinatorUnitTest {
         verifyFadeTransitionState(1f);
     }
 
+    @Test
+    public void transitionUpdatesTopPaddingOnAppThemeChange() {
+        // Simulate re-instantiation of the coordinator when the control container hasn't been
+        // measured yet, that happens on an app theme change.
+        doReturn(0).when(mSpyControlContainer).getHeight();
+        setUpTabStripTransitionCoordinator(
+                /* isInDesktopWindow= */ true, LARGE_DESKTOP_WINDOW_WIDTH);
+        Assert.assertEquals(
+                "Height transition to update top padding should not be requested when control"
+                        + " container has not been measured.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+
+        // Simulate a layout pass where the control container is measured, upon navigation back to
+        // the active tab from theme settings.
+        doReturn(TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT)
+                .when(mSpyControlContainer)
+                .getHeight();
+        simulateLayoutChange(LARGE_DESKTOP_WINDOW_WIDTH);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertEquals(
+                "Height transition should update the strip top padding.",
+                TEST_TAB_STRIP_HEIGHT + mReservedTopPadding,
+                mObserver.heightRequested);
+    }
+
     private void doTestDesktopWindowModeChanged(
             boolean enterDesktopWindow,
             boolean smallSourceWindow,

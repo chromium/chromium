@@ -814,4 +814,45 @@ TEST_F(LensOverlayUrlBuilderTest, ShouldOpenSearchURLInNewTab) {
   EXPECT_TRUE(lens::ShouldOpenSearchURLInNewTab(results_url_shopping_mode));
 }
 
+TEST_F(LensOverlayUrlBuilderTest, URLsMatchWithoutTextFragment) {
+  // Text fragments do not match.
+  EXPECT_TRUE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/path?q=text#ref"),
+      GURL("https://www.google.com/path?q=text#ref:~:text=apples")));
+  EXPECT_TRUE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/path?q=text#ref:~:text=oranges"),
+      GURL("https://www.google.com/path?q=text#ref")));
+  EXPECT_TRUE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/path?q=text#ref:~:text=oranges"),
+      GURL("https://www.google.com/path?q=text#ref:~:text=apples")));
+
+  // Refs without text fragments do not match.
+  EXPECT_FALSE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/path?q=text#section1"),
+      GURL("https://www.google.com/path?q=text#section2")));
+  EXPECT_FALSE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/path?q=text#section1:~:text=oranges"),
+      GURL("https://www.google.com/path?q=text#section2:~:text=apples")));
+
+  // Query param does not match.
+  EXPECT_FALSE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/path?q=text#ref"),
+      GURL("https://www.google.com/path?q=query#ref")));
+
+  // Path does not match.
+  EXPECT_FALSE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/search?q=text#ref"),
+      GURL("https://www.google.com/path?q=text#ref")));
+
+  // Host does not match.
+  EXPECT_FALSE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/path?q=text#ref"),
+      GURL("https://www.example.com/path?q=text#ref")));
+
+  // Scheme does not match.
+  EXPECT_FALSE(URLsMatchWithoutTextFragment(
+      GURL("https://www.google.com/path?q=text#ref"),
+      GURL("http://www.google.com/path?q=text#ref")));
+}
+
 }  // namespace lens
