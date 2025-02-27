@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 
 #include "base/memory/stack_allocated.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_client_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 
 namespace blink {

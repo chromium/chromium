@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_client_types.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/skia/include/core/SkRect.h"
 

@@ -40,9 +40,6 @@ class String;
 
 namespace blink {
 
-typedef uintptr_t DisplayItemClientId;
-static const DisplayItemClientId kInvalidDisplayItemClientId = 0u;
-
 using DynamicRangeLimit = ::cc::PaintFlags::DynamicRangeLimitMixture;
 
 enum AlphaDisposition {
@@ -120,12 +117,6 @@ enum class BlendMode : uint8_t {
 enum OpacityMode {
   kNonOpaque,
   kOpaque,
-};
-
-enum class RasterEffectOutset : uint8_t {
-  kNone,
-  kHalfPixel,
-  kWholePixel,
 };
 
 // Specifies whether the provider should rasterize paint commands on the CPU
