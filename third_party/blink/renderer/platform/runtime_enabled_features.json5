@@ -542,7 +542,7 @@
     },
     {
       name: "BackForwardCacheUpdateNotRestoredReasonsName",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Used to enable Blink side of features flags for Default Nav Transition.
