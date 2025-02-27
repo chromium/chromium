@@ -196,6 +196,8 @@ void GlicKeyedService::ResizePanel(const gfx::Size& size,
 void GlicKeyedService::ShowProfilePicker() {
   base::OnceCallback<void(Profile*)> callback = base::BindOnce(
       &GlicKeyedService::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
+  // If the panel is not closed it will be on top of the profile picker.
+  ClosePanel();
   ProfilePicker::Show(
       ProfilePicker::Params::ForGlicManager(std::move(callback)));
 }
