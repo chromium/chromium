@@ -10,6 +10,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "ephemeral_kiosk_browsertest.cc",
     "kiosk_accessibility_extension_browsertest.cc",
     "kiosk_browsertest.cc",
     "kiosk_chrome_app_browsertest.cc",
