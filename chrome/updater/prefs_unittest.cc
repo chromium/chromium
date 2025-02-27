@@ -79,16 +79,24 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
 #if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(base::win::RegKey(
                   UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
-                  GetAppClientStateKey(L"someappid").c_str(), Wow6432(KEY_READ))
+                  GetAppClientStateKey("someappid").c_str(), Wow6432(KEY_READ))
                   .Valid());
 #endif
   metadata->RemoveApp("someappid");
 #if BUILDFLAG(IS_WIN)
-  EXPECT_FALSE(
-      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
-                        GetAppClientStateKey(L"someappid").c_str(),
-                        Wow6432(KEY_READ))
-          .Valid());
+  for (const auto& subkey : [&] {
+         std::vector<std::wstring> subkeys = {
+             GetAppClientStateKey("someappid")};
+         if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+           subkeys.push_back(GetAppClientStateMediumKey("someappid"));
+         }
+         return subkeys;
+       }()) {
+    EXPECT_FALSE(
+        base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                          subkey.c_str(), Wow6432(KEY_READ))
+            .Valid());
+  }
 #endif
 }
 
