@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -252,5 +253,12 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testShareUrl() {
         mOnItemClickedCallback.onClick(R.id.share_tab, TAB_ID, COLLABORATION_ID);
         verify(mShareDelegate, times(1)).share(mTab1, false, TAB_STRIP_CONTEXT_MENU);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTab() {
+        mOnItemClickedCallback.onClick(R.id.close_tab, TAB_ID, COLLABORATION_ID);
+        verify(mTabRemover, times(1)).closeTabs(TabClosureParams.closeTab(mTab1).build(), true);
     }
 }
