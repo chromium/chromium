@@ -1085,7 +1085,7 @@ class MockOnDeviceVisionSession : public on_device_model::mojom::Session {
   MockOnDeviceVisionSession() = default;
   ~MockOnDeviceVisionSession() override = default;
 
-  // on_device_model::mojom::Session:
+  // on_device_model::mojom::Session
   MOCK_METHOD(
       void,
       AddContext,
@@ -1143,13 +1143,13 @@ class AILanguageModelVisionTest : public AILanguageModelTest {
     AITestUtils::AITestBase::SetUp();
   }
 
-  MockOnDeviceVisionSession& StartMockOnDeviceVisionSession(
+  on_device_model::mojom::Session& StartMockOnDeviceVisionSession(
       std::unique_ptr<MockOnDeviceVisionSession> mock_session) {
     mojo::Remote<on_device_model::mojom::Session> session;
     receivers_.Add(std::move(mock_session),
                    session.BindNewPipeAndPassReceiver());
     auto id = remotes_.Add(std::move(session));
-    return *static_cast<MockOnDeviceVisionSession*>(remotes_.Get(id));
+    return *remotes_.Get(id);
   }
 
  private:
@@ -1190,37 +1190,31 @@ TEST_P(AILanguageModelVisionTest, Basic) {
         EXPECT_CALL(*session, GetContextSizeInTokens(_, _)).Times(0);
         EXPECT_CALL(*session, AddContext(_)).Times(0);
         EXPECT_CALL(*session, ExecuteModel(_, _)).Times(0);
-        auto mock_session = std::make_unique<MockOnDeviceVisionSession>();
-        EXPECT_CALL(*mock_session, Append(_, _))
-            .WillOnce(
-                [&](on_device_model::mojom::AppendOptionsPtr options,
-                    mojo::PendingRemote<on_device_model::mojom::ContextClient>
-                        client) {
-                  auto pieces = options->input->pieces;
-                  EXPECT_EQ(pieces.size(), 4u);
-                  EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[0]));
-                  EXPECT_TRUE(std::holds_alternative<std::string>(pieces[1]));
-                  EXPECT_TRUE(std::holds_alternative<SkBitmap>(pieces[2]));
-                  EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[3]));
-                });
-        EXPECT_CALL(*mock_session, Generate(_, _))
-            .WillOnce([&](on_device_model::mojom::GenerateOptionsPtr options,
-                          mojo::PendingRemote<
-                              on_device_model::mojom::StreamingResponder>
-                              pending_responder) {
-              mojo::Remote<on_device_model::mojom::StreamingResponder>
-                  responder(std::move(pending_responder));
-              auto chunk = on_device_model::mojom::ResponseChunk::New();
-              chunk->text = "Lovely, thanks for sharing";
-              responder->OnResponse(std::move(chunk));
-              responder->OnComplete(
-                  on_device_model::mojom::ResponseSummary::New());
-            });
-        MockOnDeviceVisionSession& mock_session_reference =
-            StartMockOnDeviceVisionSession(std::move(mock_session));
         EXPECT_CALL(*session, GetSession())
-            .WillRepeatedly([&]() -> on_device_model::mojom::Session& {
-              return mock_session_reference;
+            .WillOnce([&]() -> on_device_model::mojom::Session& {
+              auto mock_session = std::make_unique<MockOnDeviceVisionSession>();
+              EXPECT_CALL(*mock_session, Execute(_, _))
+                  .WillOnce([&](on_device_model::mojom::InputOptionsPtr input,
+                                mojo::PendingRemote<
+                                    on_device_model::mojom::StreamingResponder>
+                                    pending_responder) {
+                    mojo::Remote<on_device_model::mojom::StreamingResponder>
+                        responder(std::move(pending_responder));
+                    auto pieces = input->input->pieces;
+                    EXPECT_EQ(pieces.size(), 4u);
+                    EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[0]));
+                    EXPECT_TRUE(std::holds_alternative<std::string>(pieces[1]));
+                    EXPECT_TRUE(std::holds_alternative<SkBitmap>(pieces[2]));
+                    EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[3]));
+                    auto chunk = on_device_model::mojom::ResponseChunk::New();
+                    chunk->text = "Lovely, thanks for sharing";
+                    responder->OnResponse(std::move(chunk));
+                    responder->OnComplete(
+                        on_device_model::mojom::ResponseSummary::New());
+                  });
+              on_device_model::mojom::Session& result =
+                  StartMockOnDeviceVisionSession(std::move(mock_session));
+              return result;
             });
         return session;
       });
