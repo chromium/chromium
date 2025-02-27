@@ -224,10 +224,11 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
         /*config_value=*/"1"));
   }
 
-  std::vector<const char*> provider_options_keys;
-  std::vector<const char*> provider_options_values;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtUseOpenvino)) {
+    std::vector<const char*> provider_options_keys;
+    std::vector<const char*> provider_options_values;
+    std::string gpu_precision;
     switch (device_type) {
       case mojom::CreateContextOptions::Device::kCpu: {
         provider_options_keys.push_back(kOVDeviceType);
@@ -241,7 +242,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
         // "GPU" will use FP16 inference precision by default.
         if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                 switches::kWebNNOrtOVGpuPrecision)) {
-          std::string gpu_precision =
+          gpu_precision =
               base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                   switches::kWebNNOrtOVGpuPrecision);
           provider_options_keys.push_back(kOVPrecision);
