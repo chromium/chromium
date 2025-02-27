@@ -77,12 +77,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateSetShortcutHandlingSuspendedFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivateUpdateExtensionCommandFunction,
                    "developerPrivate.updateExtensionCommand",
                    DEVELOPERPRIVATE_UPDATEEXTENSIONCOMMAND);
-DECLARE_EMPTY_FUNC(DeveloperPrivateAddHostPermissionFunction,
-                   "developerPrivate.addHostPermission",
-                   DEVELOPERPRIVATE_ADDHOSTPERMISSION);
-DECLARE_EMPTY_FUNC(DeveloperPrivateRemoveHostPermissionFunction,
-                   "developerPrivate.removeHostPermission",
-                   DEVELOPERPRIVATE_REMOVEHOSTPERMISSION);
 DECLARE_EMPTY_FUNC(DeveloperPrivateGetUserAndExtensionSitesByEtldFunction,
                    "developerPrivate.getUserAndExtensionSitesByEtld",
                    DEVELOPERPRIVATE_GETUSERANDEXTENSIONSITESBYETLD);
