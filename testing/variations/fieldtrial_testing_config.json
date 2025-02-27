@@ -16411,6 +16411,23 @@
             ]
         }
     ],
+    "PassageEmbeddingsPerformance": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "PassageEmbedder"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordFormClientsideClassifier": [
         {
             "platforms": [
