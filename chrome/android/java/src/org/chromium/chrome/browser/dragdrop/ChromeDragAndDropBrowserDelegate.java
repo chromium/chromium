@@ -120,7 +120,9 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
         if (chromeDropDataAndroid.hasTab() && chromeDropDataAndroid.allowTabDragToCreateInstance) {
-            ClipData clipData = buildClipDataForTabTearing(chromeDropDataAndroid.tab);
+            ClipData clipData =
+                    buildClipDataForTabTearing(
+                            chromeDropDataAndroid.tab, chromeDropDataAndroid.windowId);
             if (clipData != null) return clipData;
         }
         String text =
@@ -130,10 +132,13 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         return new ClipData(null, mSupportedMimeTypes, new Item(text));
     }
 
-    private @Nullable ClipData buildClipDataForTabTearing(Tab tab) {
+    private @Nullable ClipData buildClipDataForTabTearing(Tab tab, int sourceWindowId) {
         Intent intent =
                 DragAndDropLauncherActivity.getTabIntent(
-                        tab.getContext(), tab, MultiWindowUtils.INVALID_INSTANCE_ID);
+                        tab.getContext(),
+                        tab,
+                        sourceWindowId,
+                        /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
         if (intent != null) {
             ActivityOptions opts = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setCreatorActivityOptionsBackgroundActivityStartMode(opts);

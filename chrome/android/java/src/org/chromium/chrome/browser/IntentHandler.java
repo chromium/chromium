@@ -251,6 +251,10 @@ public class IntentHandler {
     /** The id of a dragged tab that attempts to launch the intent. */
     public static final String EXTRA_DRAGGED_TAB_ID = "org.chromium.chrome.browser.dragdrop.tab_id";
 
+    /** The id of the window where the tab or tab group drag starts. */
+    public static final String EXTRA_DRAGDROP_TAB_WINDOW_ID =
+            "com.android.chrome.dragdrop_tab_window_id";
+
     /** A boolean to indicate whether the intent should launch the history page in Chrome. */
     public static final String EXTRA_OPEN_HISTORY = "org.chromium.chrome.browser.open_history";
 

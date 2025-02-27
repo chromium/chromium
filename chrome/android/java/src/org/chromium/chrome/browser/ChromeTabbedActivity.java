@@ -2209,7 +2209,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         if (mMultiInstanceManager == null) return false;
 
         // |draggedTabId| is retrieved from the activity the tab is being dragged from.
-        Tab tab = TabWindowManagerSingleton.getInstance().getTabById(draggedTabId);
+        int windowId =
+                IntentUtils.safeGetIntExtra(
+                        intent,
+                        IntentHandler.EXTRA_DRAGDROP_TAB_WINDOW_ID,
+                        MultiWindowUtils.INVALID_INSTANCE_ID);
+        Tab tab = TabWindowManagerSingleton.getInstance().getTabById(draggedTabId, windowId);
         if (tab == null) {
             RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, false);
             return false;

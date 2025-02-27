@@ -36,6 +36,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -200,6 +201,7 @@ public class TabDragSource implements View.OnDragListener {
         TabGroupModelFilter tabGroupModelFilter =
                 mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
         boolean isTabInGroup = tabGroupModelFilter.isTabInTabGroup(tabBeingDragged);
+        int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(getActivity());
 
         // Build shared state with all info.
         ChromeDropDataAndroid dropData =
@@ -207,6 +209,7 @@ public class TabDragSource implements View.OnDragListener {
                         .withTab(tabBeingDragged)
                         .withTabInGroup(isTabInGroup)
                         .withAllowDragToCreateInstance(allowDragToCreateInstance)
+                        .withWindowId(windowId)
                         .build();
         updateShadowView(tabBeingDragged, dragSourceView, (int) (tabWidthDp / mPxToDp));
         DragShadowBuilder builder =

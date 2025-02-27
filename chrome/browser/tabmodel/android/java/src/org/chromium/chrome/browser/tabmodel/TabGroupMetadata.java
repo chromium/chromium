@@ -23,7 +23,7 @@ import java.util.Objects;
 public class TabGroupMetadata {
     private static final String KEY_ROOT_ID = "rootId";
     private static final String KEY_SELECTED_TAB_ID = "selectedTabId";
-    private static final String KEY_SOURCE_WINDOW_INDEX = "sourceWindowIndex";
+    private static final String KEY_SOURCE_WINDOW_ID = "sourceWindowId";
     private static final String KEY_TAB_GROUP_ID = "tabGroupId";
     private static final String KEY_TAB_IDS = "tabIds";
     private static final String KEY_TAB_URLS = "tabUrls";
@@ -34,7 +34,7 @@ public class TabGroupMetadata {
 
     public final int rootId;
     public final int selectedTabId;
-    public final int sourceWindowIndex;
+    public final int sourceWindowId;
     public final Token tabGroupId;
     public final ArrayList<Integer> tabIds;
     public final ArrayList<String> tabUrls;
@@ -48,8 +48,7 @@ public class TabGroupMetadata {
      *
      * @param rootId The root ID of the group.
      * @param selectedTabId The selected tab ID of the group.
-     * @param sourceWindowIndex The index of the window that holds the tab group before
-     *     re-parenting.
+     * @param sourceWindowId The ID of the window that holds the tab group before re-parenting.
      * @param tabGroupId The stable ID for the tab group.
      * @param tabIds The list of tab IDs belonging to the group.
      * @param tabUrls The list of tab URLs belonging to the group.
@@ -61,7 +60,7 @@ public class TabGroupMetadata {
     public TabGroupMetadata(
             int rootId,
             int selectedTabId,
-            int sourceWindowIndex,
+            int sourceWindowId,
             Token tabGroupId,
             ArrayList<Integer> tabIds,
             ArrayList<String> tabUrls,
@@ -71,7 +70,7 @@ public class TabGroupMetadata {
             boolean isIncognito) {
         this.rootId = rootId;
         this.selectedTabId = selectedTabId;
-        this.sourceWindowIndex = sourceWindowIndex;
+        this.sourceWindowId = sourceWindowId;
         this.tabGroupId = tabGroupId;
         this.tabIds = tabIds;
         this.tabUrls = tabUrls;
@@ -90,7 +89,7 @@ public class TabGroupMetadata {
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_ROOT_ID, rootId);
         bundle.putInt(KEY_SELECTED_TAB_ID, selectedTabId);
-        bundle.putInt(KEY_SOURCE_WINDOW_INDEX, sourceWindowIndex);
+        bundle.putInt(KEY_SOURCE_WINDOW_ID, sourceWindowId);
         bundle.putBundle(KEY_TAB_GROUP_ID, tabGroupId.toBundle());
         bundle.putIntegerArrayList(KEY_TAB_IDS, tabIds);
         bundle.putStringArrayList(KEY_TAB_URLS, tabUrls);
@@ -118,7 +117,7 @@ public class TabGroupMetadata {
                 || bundle.getString(KEY_TAB_GROUP_TITLE) == null
                 || !bundle.containsKey(KEY_ROOT_ID)
                 || !bundle.containsKey(KEY_SELECTED_TAB_ID)
-                || !bundle.containsKey(KEY_SOURCE_WINDOW_INDEX)
+                || !bundle.containsKey(KEY_SOURCE_WINDOW_ID)
                 || !bundle.containsKey(KEY_TAB_GROUP_COLOR)
                 || !bundle.containsKey(KEY_TAB_GROUP_COLLAPSED)
                 || !bundle.containsKey(KEY_IS_INCOGNITO)) return null;
@@ -127,7 +126,7 @@ public class TabGroupMetadata {
                 new TabGroupMetadata(
                         bundle.getInt(KEY_ROOT_ID),
                         bundle.getInt(KEY_SELECTED_TAB_ID),
-                        bundle.getInt(KEY_SOURCE_WINDOW_INDEX),
+                        bundle.getInt(KEY_SOURCE_WINDOW_ID),
                         tabGroupIdFromBundle,
                         bundle.getIntegerArrayList(KEY_TAB_IDS),
                         bundle.getStringArrayList(KEY_TAB_URLS),
@@ -145,7 +144,7 @@ public class TabGroupMetadata {
         TabGroupMetadata that = (TabGroupMetadata) other;
         return rootId == that.rootId
                 && selectedTabId == that.selectedTabId
-                && sourceWindowIndex == that.sourceWindowIndex
+                && sourceWindowId == that.sourceWindowId
                 && tabGroupColor == that.tabGroupColor
                 && tabGroupCollapsed == that.tabGroupCollapsed
                 && isIncognito == that.isIncognito
@@ -160,7 +159,7 @@ public class TabGroupMetadata {
         return Objects.hash(
                 this.rootId,
                 this.selectedTabId,
-                this.sourceWindowIndex,
+                this.sourceWindowId,
                 this.tabGroupId,
                 this.tabIds,
                 this.tabUrls,
@@ -176,8 +175,8 @@ public class TabGroupMetadata {
                 + rootId
                 + "selectedTabId="
                 + selectedTabId
-                + "sourceWindowIndex="
-                + sourceWindowIndex
+                + "sourceWindowId="
+                + sourceWindowId
                 + ", tabGroupId="
                 + tabGroupId
                 + ", tabIds="

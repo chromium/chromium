@@ -38,6 +38,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -247,13 +248,15 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         var tab = MockTab.createAndInitialize(1, mProfile);
         var dropData = createTabDropData(1, true);
+        int sourceWindowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(mActivity);
         var item =
                 withItem
                         ? new Item(
                                 DragAndDropLauncherActivity.getTabIntent(
                                         mApplicationContext,
                                         tab,
-                                        MultiWindowUtils.INVALID_INSTANCE_ID))
+                                        sourceWindowId,
+                                        /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID))
                         : null;
         ChromeDragAndDropBrowserDelegate.setClipDataItemWithPendingIntentForTesting(item);
 

@@ -117,19 +117,27 @@ public interface TabWindowManager {
     TabModel getTabModelForTab(Tab tab);
 
     /**
+     * Use {@link #getTabById(int, int)} preferably and when possible for a more efficient lookup.
+     *
      * @param tabId The ID of the tab in question.
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
      */
-    // @TODO(crbug.com/398262317) Pass a window index param to only search in the given window.
     Tab getTabById(int tabId);
 
     /**
-     * @param windowIndex The index of the window that holds the tab group.
+     * @param tabId The ID of the tab in question.
+     * @param windowId The ID of the window that holds the tab.
+     * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
+     */
+    Tab getTabById(int tabId, int windowId);
+
+    /**
+     * @param windowId The ID of the window that holds the tab group.
      * @param rootId The root ID of the tab group.
      * @param isIncognito Whether the grouped tabs are incognito tabs.
      * @return A list of tabs associated with the root ID, or {@code null} if no tabs are found.
      */
-    List<Tab> getGroupedTabsByWindow(int windowIndex, int rootId, boolean isIncognito);
+    List<Tab> getGroupedTabsByWindow(int windowId, int rootId, boolean isIncognito);
 
     /**
      * Finds the {@link TabModelSelector} bound to an Activity instance of a given index.
