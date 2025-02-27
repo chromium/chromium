@@ -33,7 +33,8 @@ class SessionServiceMock : public SessionService {
               (override));
   MOCK_METHOD(std::optional<SessionService::DeferralParams>,
               ShouldDefer,
-              (URLRequest * request),
+              (URLRequest * request,
+               const FirstPartySetMetadata& first_party_set_metadata),
               (override));
   MOCK_METHOD(void,
               DeferRequestForRefresh,

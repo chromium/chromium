@@ -71,7 +71,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const NetLogWithSource& net_log,
       const std::optional<url::Origin>& original_request_initiator) override;
 
-  std::optional<DeferralParams> ShouldDefer(URLRequest* request) override;
+  std::optional<DeferralParams> ShouldDefer(
+      URLRequest* request,
+      const FirstPartySetMetadata& first_party_set_metadata) override;
 
   void DeferRequestForRefresh(
       URLRequest* request,
@@ -177,14 +179,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       SchemefulSite site,
       Session::Id session_id,
       base::expected<SessionParams, SessionError> params_or_error);
-
-  // If a request comes in before initialization, we deferred it until
-  // initialization completes. This function either resumes such
-  // requests or defers them further.
-  void ResumePreInitializationRequest(
-      URLRequest* request,
-      RefreshCompleteCallback restart_callback,
-      RefreshCompleteCallback continue_callback);
 
   // Callback after unwrapping a session key
   void OnSessionKeyRestored(URLRequest* request,

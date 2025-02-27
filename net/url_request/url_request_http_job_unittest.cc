@@ -1545,10 +1545,11 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
   {
     InSequence s;
-    EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Invoke([](Unused) {
-      return device_bound_sessions::SessionService::DeferralParams(
-          device_bound_sessions::Session::Id("test"));
-    }));
+    EXPECT_CALL(GetMockService(), ShouldDefer)
+        .WillOnce(Invoke([](Unused, Unused) {
+          return device_bound_sessions::SessionService::DeferralParams(
+              device_bound_sessions::Session::Id("test"));
+        }));
     EXPECT_CALL(GetMockService(), DeferRequestForRefresh)
         .WillOnce(base::test::RunOnceClosure<3>());
   }
@@ -1578,9 +1579,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
-  EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Invoke([](Unused) {
-    return std::nullopt;
-  }));
+  EXPECT_CALL(GetMockService(), ShouldDefer)
+      .WillOnce(Invoke([](Unused, Unused) { return std::nullopt; }));
   request_->Start();
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());

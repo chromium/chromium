@@ -952,7 +952,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
       request_->context()->device_bound_session_service();
   if (service) {
     std::optional<device_bound_sessions::SessionService::DeferralParams>
-        deferral = service->ShouldDefer(request_);
+        deferral = service->ShouldDefer(request_, first_party_set_metadata_);
     // If the request needs to be deferred while waiting for refresh, do not
     // start the transaction at this time. This may also kick off a refresh.
     if (deferral) {

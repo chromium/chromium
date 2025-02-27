@@ -152,14 +152,15 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
 }
 
 std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
-    URLRequest* request) {
+    URLRequest* request,
+    const FirstPartySetMetadata& first_party_set_metadata) {
   if (pending_initialization_) {
     return DeferralParams();
   }
   SchemefulSite site(request->url());
   auto range = GetSessionsForSite(site);
   for (auto it = range.first; it != range.second; ++it) {
-    if (it->second->ShouldDeferRequest(request)) {
+    if (it->second->ShouldDeferRequest(request, first_party_set_metadata)) {
       NotifySessionAccess(request->device_bound_session_access_callback(),
                           SessionAccess::AccessType::kUpdate, site,
                           *it->second);
@@ -182,12 +183,9 @@ void SessionServiceImpl::DeferRequestForRefresh(
   if (deferral.is_pending_initialization) {
     CHECK(pending_initialization_);
     requests_before_initialization_++;
-    queued_operations_.push_back(base::BindOnce(
-        &SessionServiceImpl::ResumePreInitializationRequest,
-        // `base::Unretained` is safe because the callback is stored in
-        // `queued_operations_`, which is owned by `this`.
-        base::Unretained(this), request, std::move(restart_callback),
-        std::move(continue_callback)));
+    // Due to the need to recompute `first_party_set_metadata`, we always
+    // restart the request after initialization completes.
+    queued_operations_.push_back(std::move(restart_callback));
     return;
   }
 
@@ -528,23 +526,6 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
 
   return params_or_error.has_value() ? SessionError::ErrorType::kSuccess
                                      : params_or_error.error().type;
-}
-
-void SessionServiceImpl::ResumePreInitializationRequest(
-    URLRequest* request,
-    RefreshCompleteCallback restart_callback,
-    RefreshCompleteCallback continue_callback) {
-  CHECK(!pending_initialization_);
-
-  std::optional<DeferralParams> deferral = ShouldDefer(request);
-  if (!deferral) {
-    std::move(continue_callback).Run();
-    return;
-  }
-
-  CHECK(!deferral->is_pending_initialization);
-  DeferRequestForRefresh(request, *deferral, std::move(restart_callback),
-                         std::move(continue_callback));
 }
 
 void SessionServiceImpl::OnSessionKeyRestored(
