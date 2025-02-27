@@ -215,9 +215,9 @@ versionCache['androidx.viewpager:viewpager'] = '1.1.0'
 versionCache['androidx.webkit:webkit'] = '1.13.0-SNAPSHOT'
 versionCache['androidx.window.extensions:extensions'] = '1.5.0-SNAPSHOT'
 versionCache['androidx.window.sidecar:sidecar'] = '1.0.0-SNAPSHOT'
-versionCache['androidx.window:window'] = '1.4.0-SNAPSHOT'
-versionCache['androidx.window:window-core'] = '1.4.0-SNAPSHOT'
-versionCache['androidx.window:window-core-android'] = '1.4.0-SNAPSHOT'
+versionCache['androidx.window:window'] = '1.5.0-SNAPSHOT'
+versionCache['androidx.window:window-core'] = '1.5.0-SNAPSHOT'
+versionCache['androidx.window:window-core-android'] = '1.5.0-SNAPSHOT'
 versionCache['androidx.xr.arcore:arcore'] = '1.0.0-alpha02'
 versionCache['androidx.xr.runtime:runtime'] = '1.0.0-alpha02'
 versionCache['androidx.xr.runtime:runtime-openxr'] = '1.0.0-alpha02'
@@ -286,7 +286,7 @@ apply plugin: ChromiumPlugin
 repositories {
     google()
     maven {
-        url 'https://androidx.dev/snapshots/builds/13128015/artifacts/repository'
+        url 'https://androidx.dev/snapshots/builds/13134976/artifacts/repository'
     }
     mavenCentral()
 }

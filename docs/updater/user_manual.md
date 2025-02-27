@@ -156,7 +156,7 @@ Windows tagged metainstallers support a number of dynamic install parameters:
 
 `needsadmin` is one of the install parameters that can be specified for
 first installs via the
-[metainstaller tag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+[metainstaller tag](https://crsrc.org/c/chrome/updater/tools/tag_main.cc).
 `needsadmin` is used to indicate whether the application needs admin rights to
 install.
 

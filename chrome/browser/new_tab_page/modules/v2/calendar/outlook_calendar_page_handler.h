@@ -34,7 +34,8 @@ enum class OutlookCalendarRequestResult {
   // Error retrieving all the expected event data from the response.
   kContentError = 3,
   kThrottlingError = 4,
-  kMaxValue = kThrottlingError,
+  kAuthError = 5,
+  kMaxValue = kAuthError,
 };
 
 class OutlookCalendarPageHandler

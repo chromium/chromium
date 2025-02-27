@@ -97,7 +97,6 @@ class RemotingAsh;
 class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
-class SuggestionServiceAsh;
 class VpnServiceAsh;
 class WebKioskServiceAsh;
 class VirtualKeyboardAsh;
@@ -267,8 +266,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindStructuredMetricsService(
       ::mojo::PendingReceiver<::crosapi::mojom::StructuredMetricsService>
           receiver) override;
-  void BindSuggestionService(
-      mojo::PendingReceiver<mojom::SuggestionService> receiver) override;
   void BindTelemetryDiagnosticRoutinesService(
       mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver)
       override;
@@ -414,10 +411,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return structured_metrics_service_ash_.get();
   }
 
-  SuggestionServiceAsh* suggestion_service_ash() {
-    return suggestion_service_ash_.get();
-  }
-
   WebKioskServiceAsh* web_kiosk_service_ash() {
     return web_kiosk_service_ash_.get();
   }
@@ -506,7 +499,6 @@ class CrosapiAsh : public mojom::Crosapi {
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
-  std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;

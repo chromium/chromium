@@ -428,15 +428,12 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
 
     if (popover.popover) {
       bool event_target_was_nested_popover = false;
-      if (RuntimeEnabledFeatures::PopoverButtonNestingBehaviorEnabled()) {
-        if (auto* target_node = event.target()->ToNode()) {
-          bool button_is_ancestor_of_popover =
-              IsShadowIncludingAncestorOf(*popover.popover);
-          event_target_was_nested_popover =
-              button_is_ancestor_of_popover &&
-              popover.popover->IsShadowIncludingInclusiveAncestorOf(
-                  *target_node);
-        }
+      if (auto* target_node = event.target()->ToNode()) {
+        bool button_is_ancestor_of_popover =
+            IsShadowIncludingAncestorOf(*popover.popover);
+        event_target_was_nested_popover =
+            button_is_ancestor_of_popover &&
+            popover.popover->IsShadowIncludingInclusiveAncestorOf(*target_node);
       }
 
       if (!event_target_was_nested_popover) {

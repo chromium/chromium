@@ -213,8 +213,8 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       GURL page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-      base::span<const uint8_t> underlying_content_bytes,
-      lens::MimeType underlying_content_type,
+      base::span<const lens::PageContent> underlying_page_contents,
+      lens::MimeType primary_content_type,
       float ui_scale_factor,
       base::TimeTicks invocation_time) override;
 

@@ -40,6 +40,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace blink {
 
@@ -124,10 +125,7 @@ std::unique_ptr<ImageDataBuffer> ImageDataBuffer::Create(
 
 base::span<const uint8_t> ImageDataBuffer::PixelData() const {
   DCHECK(is_valid_);
-  // SAFETY: The creator of the SkPixmap ensures that pixmap_.addr() points to
-  // at least pixmap_.computeByteSize() bytes.
-  return UNSAFE_BUFFERS({static_cast<const unsigned char*>(pixmap_.addr()),
-                         pixmap_.computeByteSize()});
+  return gfx::SkPixmapToSpan(pixmap_);
 }
 
 bool ImageDataBuffer::EncodeImage(const ImageEncodingMimeType mime_type,

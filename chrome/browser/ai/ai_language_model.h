@@ -15,6 +15,7 @@
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_utils.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -97,7 +98,7 @@ class AILanguageModel : public AIContextBoundObject,
 
     // Combines the initial prompts and all current items into a request.
     // The type of request produced is a PromptApiRequest.
-    PromptApiRequest MakeRequest();
+    optimization_guide::MultimodalMessage MakeRequest();
 
     // Returns true if the system prompt is set or there is at least one context
     // item.
@@ -175,18 +176,17 @@ class AILanguageModel : public AIContextBoundObject,
 
  private:
   void PromptGetInputSizeCompletion(mojo::RemoteSetElementId responder_id,
-                                    PromptApiRequest request,
+                                    Context::ContextItem current_item,
                                     uint32_t number_of_tokens);
   void ModelExecutionCallback(
-      const PromptApiRequest& input,
+      const Context::ContextItem& current_item,
       mojo::RemoteSetElementId responder_id,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
 
-  void InitializeContextWithInitialPrompts(
-      optimization_guide::proto::PromptApiRequest request,
-      CreateLanguageModelCallback callback,
-      uint32_t size);
+  void InitializeContextWithInitialPrompts(Context::ContextItem initial_prompts,
+                                           CreateLanguageModelCallback callback,
+                                           uint32_t size);
 
   // Returns the copy of `expected_input_languages_` for the
   // `AILanguageModelInstanceInfo` or cloning.

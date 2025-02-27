@@ -1429,7 +1429,7 @@
     Personalize your camera backgrounds for video calls and more
   </message>
   <message name="IDS_AI_INTRO_SLIDE_READ_TITLE" desc="The title of the read info slide">
-    Summarize content, simplify complex language, or ask questions
+    Summarize content or ask questions
   </message>
   <message name="IDS_AI_INTRO_SLIDE_READ_TEXT" desc="The text of the read info slide">
     Right-click to use Help me read

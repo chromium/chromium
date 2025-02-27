@@ -238,6 +238,7 @@ void AddResourcePaths(content::WebUIDataSource* html_source) {
       {"glic_banner_top_right.svg", IDR_GLIC_PROFILE_BANNER_TOP_RIGHT},
       {"glic_banner_bottom_left.svg", IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT},
       {"glic_logo.svg", IDR_GLIC_PROFILE_LOGO},
+      {"glic_profile_branding.css", IDR_GLIC_PROFILE_BRANDING_CSS},
 #endif  // BUILDFLAG(ENABLE_GLIC)
       {"product_logo.svg", IDR_PRODUCT_LOGO_SVG},
   };

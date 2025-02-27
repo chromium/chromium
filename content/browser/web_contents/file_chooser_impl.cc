@@ -210,7 +210,6 @@ void FileChooserImpl::FileSelected(
   listener_impl_ = nullptr;
   if (!render_frame_host()) {
     std::move(callback_).Run(nullptr);
-    weak_factory_.InvalidateWeakPtrs();
     return;
   }
   storage::FileSystemContext* file_system_context = nullptr;
@@ -237,14 +236,11 @@ void FileChooserImpl::FileSelected(
     }
   }
   std::move(callback_).Run(FileChooserResult::New(std::move(files), base_dir));
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 void FileChooserImpl::FileSelectionCanceled() {
   listener_impl_ = nullptr;
   std::move(callback_).Run(nullptr);
-
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 RenderFrameHostImpl* FileChooserImpl::render_frame_host() {

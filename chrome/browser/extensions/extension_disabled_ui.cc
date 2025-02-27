@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_util.h"
@@ -207,9 +208,16 @@ void ExtensionDisabledGlobalError::BubbleViewAcceptButtonPressed(
   // Delay extension reenabling so this bubble closes properly.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ExtensionService::GrantPermissionsAndEnableExtension,
-                     service_->AsExtensionServiceWeakPtr(),
-                     base::RetainedRef(extension_)));
+      base::BindOnce(
+          // Adapt scoped_refptr<> as it can't be bound to const&.
+          [](base::WeakPtr<ExtensionRegistrar> registrar,
+             scoped_refptr<const Extension> extension) {
+            if (registrar && extension) {
+              registrar->GrantPermissionsAndEnableExtension(*extension);
+            }
+          },
+          ExtensionRegistrar::Get(service_->profile())->GetWeakPtr(),
+          base::RetainedRef(extension_)));
 }
 
 void ExtensionDisabledGlobalError::BubbleViewCancelButtonPressed(

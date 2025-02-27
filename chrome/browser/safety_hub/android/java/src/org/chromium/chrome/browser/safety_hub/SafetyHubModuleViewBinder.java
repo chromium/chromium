@@ -31,6 +31,8 @@ public class SafetyHubModuleViewBinder {
                     model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER));
         } else if (SafetyHubModuleProperties.ICON == propertyKey) {
             preference.setIcon(model.get(SafetyHubModuleProperties.ICON));
+        } else if (SafetyHubModuleProperties.HAS_PROGRESS_BAR == propertyKey) {
+            preference.setHasProgressBar(model.get(SafetyHubModuleProperties.HAS_PROGRESS_BAR));
         } else if (SafetyHubModuleProperties.ORDER == propertyKey) {
             preference.setOrder(model.get(SafetyHubModuleProperties.ORDER));
         } else if (SafetyHubModuleProperties.IS_VISIBLE == propertyKey) {

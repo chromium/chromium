@@ -78,6 +78,10 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   // This should be checked before called any other public methods.
   bool CanUse() { return opts_.ShouldUse(); }
 
+  // Creates a new OnDeviceContext that builds off the current context. All
+  // settings of the cloned object will match this one.
+  std::unique_ptr<OnDeviceContext> Clone();
+
  private:
   void AddContext();
 

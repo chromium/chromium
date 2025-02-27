@@ -3157,11 +3157,16 @@ TEST_F(
 #endif
 }
 
-// iOS should always provide a valid expiration date when attempting to
-// upload a Saved Card due to the Messages SaveCard modal.
+// Tests that on iOS, DetectedValues for missing cardholder name and
+// expiry date are defaulted as true when
+// `kAutofillDisableDefaultSaveCardFixFlowDetection` is not enabled.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_AlwaysRequestCardholderNameAndExpirationDateOnIOS) {
 #if BUILDFLAG(IS_IOS)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillDisableDefaultSaveCardFixFlowDetection);
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();

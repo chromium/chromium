@@ -4,11 +4,12 @@
 
 package org.chromium.content.browser.accessibility.api_wrapper;
 
-import androidx.annotation.Nullable;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Accessibility API wrapper library allows early prototyping against Android frameworks
@@ -17,6 +18,7 @@ import org.chromium.base.ServiceLoaderUtil;
  * <p>This is a thin wrapper class to allow calling into the internal clank implementation. Methods
  * should exactly match the AccessibilityApiWrapperDelegate.
  */
+@NullMarked
 public class AccessibilityApiWrapper {
 
     private static final String TAG = "A11yApiWrapper";
@@ -25,8 +27,7 @@ public class AccessibilityApiWrapper {
             "accessibility API wrapper library is not available";
 
     /** An example test API demonstrating the usage of the accessibility API wrapper library. */
-    @Nullable
-    public static CharSequence getMyTestStringApi(AccessibilityNodeInfoCompat node) {
+    public static @Nullable CharSequence getMyTestStringApi(AccessibilityNodeInfoCompat node) {
         AccessibilityApiWrapperDelegate impl =
                 ServiceLoaderUtil.maybeCreate(AccessibilityApiWrapperDelegate.class);
         if (impl != null) {

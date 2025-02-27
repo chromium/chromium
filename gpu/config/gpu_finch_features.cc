@@ -162,13 +162,6 @@ BASE_FEATURE(kDefaultEnableGpuRasterization,
 #endif
 );
 
-#if !BUILDFLAG(IS_ANDROID)
-// Enables the use of out of process rasterization for canvas.
-BASE_FEATURE(kCanvasOopRasterization,
-             "CanvasOopRasterization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
 BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
              "EnableMSAAOnNewIntelGPUs",
@@ -729,14 +722,6 @@ bool EnablePurgeGpuImageDecodeCache() {
 }
 bool EnablePruneOldTransferCacheEntries() {
   return base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
-}
-
-bool IsCanvasOopRasterizationEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else
-  return base::FeatureList::IsEnabled(kCanvasOopRasterization);
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

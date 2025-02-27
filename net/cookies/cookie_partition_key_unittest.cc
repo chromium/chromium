@@ -4,11 +4,13 @@
 
 #include "net/cookies/cookie_partition_key.h"
 
+#include <optional>
 #include <string>
 #include <tuple>
 
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_switches.h"
 #include "net/cookies/site_for_cookies.h"
@@ -258,6 +260,13 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
        CookiePartitionKey::FromURLForTesting(kCookieSite.GetURL(), kCrossSite,
                                              kNonce),
        SiteForCookies::FromUrl(GURL::EmptyGURL()), SchemefulSite(kTopLevelSite),
+       /*main_frame_navigation=*/false},
+      {"WithNetworkIsolationPartition",
+       NetworkIsolationKey(
+           kTopLevelSite, kCookieSite, /*nonce=*/std::nullopt,
+           NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+       std::nullopt, SiteForCookies::FromUrl(GURL::EmptyGURL()),
+       SchemefulSite(kTopLevelSite),
        /*main_frame_navigation=*/false},
       {"WithCrossSiteAncestorSameSite",
        NetworkIsolationKey(kTopLevelSite, kTopLevelSite),

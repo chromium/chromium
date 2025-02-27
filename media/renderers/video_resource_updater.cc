@@ -79,10 +79,8 @@ gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
                                : gfx::ProtectedVideoType::kSoftwareProtected;
 }
 
-VideoFrameResourceType ExternalResourceTypeForHardware(
-    const VideoFrame& frame,
-    GLuint target,
-    bool use_stream_video_draw_quad) {
+VideoFrameResourceType ExternalResourceTypeForHardware(const VideoFrame& frame,
+                                                       GLuint target) {
   bool si_prefers_external_sampler =
       frame.shared_image()->format().PrefersExternalSampler();
   if (si_prefers_external_sampler) {
@@ -98,14 +96,17 @@ VideoFrameResourceType ExternalResourceTypeForHardware(
     case PIXEL_FORMAT_BGRA:
       switch (target) {
         case GL_TEXTURE_EXTERNAL_OES:
-          // `use_stream_video_draw_quad` is set on Android and `dcomp_surface`
-          // is used on Windows.
+#if BUILDFLAG(IS_ANDROID)
+          return VideoFrameResourceType::STREAM_TEXTURE;
+#elif BUILDFLAG(IS_WIN)
           // TODO(sunnyps): It's odd to reuse the Android path on Windows. There
           // could be other unknown assumptions in other parts of the rendering
           // stack about stream video quads. Investigate alternative solutions.
-          if (use_stream_video_draw_quad || frame.metadata().dcomp_surface)
+          if (frame.metadata().dcomp_surface) {
             return VideoFrameResourceType::STREAM_TEXTURE;
+          }
           [[fallthrough]];
+#endif
         case GL_TEXTURE_2D:
         case GL_TEXTURE_RECTANGLE_ARB:
           return (format == PIXEL_FORMAT_XRGB)
@@ -586,13 +587,11 @@ VideoResourceUpdater::VideoResourceUpdater(
     viz::RasterContextProvider* context_provider,
     viz::ClientResourceProvider* resource_provider,
     scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
-    bool use_stream_video_draw_quad,
     bool use_gpu_memory_buffer_resources,
     int max_resource_size)
     : context_provider_(context_provider),
       shared_image_interface_(std::move(shared_image_interface)),
       resource_provider_(resource_provider),
-      use_stream_video_draw_quad_(use_stream_video_draw_quad),
       use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
       max_resource_size_(max_resource_size),
       tracing_id_(g_next_video_resource_updater_id.GetNext()) {
@@ -895,8 +894,8 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
     target = GL_TEXTURE_2D;
   }
 
-  external_resource.type = ExternalResourceTypeForHardware(
-      *video_frame, target, use_stream_video_draw_quad_);
+  external_resource.type =
+      ExternalResourceTypeForHardware(*video_frame, target);
   external_resource.bits_per_channel = video_frame->BitDepth();
 
   if (external_resource.type == VideoFrameResourceType::NONE) {

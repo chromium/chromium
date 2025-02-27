@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/bind_post_task.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -72,6 +74,13 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateAndBindContextProvider(
   return context_provider;
 }
 
+void GpuChannelHostAddObserver(scoped_refptr<gpu::GpuChannelHost> host,
+                               gpu::GpuChannelLostObserver* observer) {
+  if (host) {
+    host->AddObserver(observer);
+  }
+}
+
 }  // namespace
 
 namespace video_effects {
@@ -80,6 +89,11 @@ VizGpuChannelHostProvider::VizGpuChannelHostProvider(
     std::unique_ptr<viz::Gpu> viz_gpu)
     : viz_gpu_(std::move(viz_gpu)) {
   CHECK(viz_gpu_);
+
+  task_gpu_channel_lost_on_provider_thread_ =
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&VizGpuChannelHostProvider::HandleContextLost,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 scoped_refptr<viz::ContextProviderCommandBuffer>
@@ -88,10 +102,14 @@ VizGpuChannelHostProvider::GetWebGpuContextProvider() {
     CHECK(!webgpu_context_provider_);
     return nullptr;
   }
-  return webgpu_context_provider_
-             ? webgpu_context_provider_
-             : webgpu_context_provider_ = CreateAndBindContextProvider(
-                   GetGpuChannelHost(), gpu::CONTEXT_TYPE_WEBGPU);
+
+  if (!webgpu_context_provider_) {
+    webgpu_context_provider_ = CreateAndBindContextProvider(
+        GetGpuChannelHost(), gpu::CONTEXT_TYPE_WEBGPU);
+    webgpu_context_provider_->AddObserver(this);
+  }
+
+  return webgpu_context_provider_;
 }
 
 scoped_refptr<viz::RasterContextProvider>
@@ -100,11 +118,14 @@ VizGpuChannelHostProvider::GetRasterInterfaceContextProvider() {
     CHECK(!raster_interface_context_provider_);
     return nullptr;
   }
-  return raster_interface_context_provider_
-             ? raster_interface_context_provider_
-             : raster_interface_context_provider_ =
-                   CreateAndBindContextProvider(GetGpuChannelHost(),
-                                                gpu::CONTEXT_TYPE_OPENGLES2);
+
+  if (!raster_interface_context_provider_) {
+    raster_interface_context_provider_ = CreateAndBindContextProvider(
+        GetGpuChannelHost(), gpu::CONTEXT_TYPE_OPENGLES2);
+    raster_interface_context_provider_->AddObserver(this);
+  }
+
+  return raster_interface_context_provider_;
 }
 
 scoped_refptr<gpu::ClientSharedImageInterface>
@@ -143,7 +164,9 @@ void VizGpuChannelHostProvider::RemoveObserver(Observer& observer) {
   observers_.RemoveObserver(&observer);
 }
 
-VizGpuChannelHostProvider::~VizGpuChannelHostProvider() = default;
+VizGpuChannelHostProvider::~VizGpuChannelHostProvider() {
+  Reset();
+}
 
 scoped_refptr<gpu::GpuChannelHost>
 VizGpuChannelHostProvider::GetGpuChannelHost() {
@@ -152,15 +175,20 @@ VizGpuChannelHostProvider::GetGpuChannelHost() {
   }
   if (!gpu_channel_host_) {
     gpu_channel_host_ = viz_gpu_->GetGpuChannel();
+    GpuChannelHostAddObserver(gpu_channel_host_, this);
   }
   if (!gpu_channel_host_ || gpu_channel_host_->IsLost()) {
     gpu_channel_host_ = viz_gpu_->EstablishGpuChannelSync();
+    GpuChannelHostAddObserver(gpu_channel_host_, this);
   }
   return gpu_channel_host_;
 }
 
 void VizGpuChannelHostProvider::OnGpuChannelLost() {
-  HandleContextLost();
+  // OnGpuChannelLost() is called on the IOThread. so it has to be
+  // forwarded to the thread where the provider is created.
+  CHECK(task_gpu_channel_lost_on_provider_thread_);
+  task_gpu_channel_lost_on_provider_thread_.Run();
 }
 
 void VizGpuChannelHostProvider::OnContextLost() {

@@ -23,8 +23,8 @@ class CORE_EXPORT MasonryLayoutAlgorithm
  public:
   explicit MasonryLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout();
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  const LayoutResult* Layout();
 
  private:
   friend class MasonryLayoutAlgorithmTest;
@@ -48,6 +48,14 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       const GridItemData& masonry_item,
       const LogicalSize& containing_size,
       LayoutResultCacheSlot result_cache_slot) const;
+
+  // If `containing_rect` is provided, it will store the available size for the
+  // item and its offset within the container. These values will be used to
+  // adjust the item's final position using its alignment properties.
+  ConstraintSpace CreateConstraintSpaceForLayout(
+      const GridItemData& masonry_item,
+      const GridSizingTrackCollection& track_collection,
+      LogicalRect* containing_rect = nullptr) const;
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& masonry_item) const;

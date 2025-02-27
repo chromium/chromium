@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -58,6 +59,11 @@ class PrivacyGuideUtils {
 
     static @CookieControlsMode int getCookieControlsMode(Profile profile) {
         return UserPrefs.get(profile).getInteger(PrefNames.COOKIE_CONTROLS_MODE);
+    }
+
+    static boolean trackingProtectionUiEnabled(Profile profile) {
+        return UserPrefs.get(profile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
     }
 
     static boolean canUpdateHistorySyncValue(Profile profile) {

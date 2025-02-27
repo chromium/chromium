@@ -78,8 +78,8 @@ BASE_FEATURE(kAutofillAddressUserDeclinedSuggestionSurvey,
 // Feature flag controlling the deduplication of GAS addresses. When disabled
 // GAS addresses will never be deleted as part of the deduplication flow.
 // TODO(crbug.com/357074792): Remove when launched.
-BASE_FEATURE(kAutofillDeduplicateAccountAdresses,
-             "AutofillDeduplicateAccountAdresses",
+BASE_FEATURE(kAutofillDeduplicateAccountAddresses,
+             "AutofillDeduplicateAccountAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for Autofill filling.
@@ -855,12 +855,6 @@ BASE_FEATURE(kAutofillOverridePredictions,
 // See `OverrideFormat::kSpec` for details.
 const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
     &kAutofillOverridePredictions, "spec", ""};
-
-// The override specification using alternative_form_signature in string form.
-// See `OverrideFormat::kSpec` for details.
-const base::FeatureParam<std::string>
-    kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification{
-        &kAutofillOverridePredictions, "alternative_signature_spec", ""};
 
 // The override specification in Base64-encoded JSON.
 // See `OverrideFormat::kJson` for details.

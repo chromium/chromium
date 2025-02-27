@@ -93,6 +93,7 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
               GetOnDeviceFeatureMetadata,
               (),
               (const override));
+  MOCK_METHOD(std::unique_ptr<Session>, Clone, (), (override));
 };
 
 }  // namespace optimization_guide

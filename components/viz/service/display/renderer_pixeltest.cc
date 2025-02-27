@@ -1916,20 +1916,19 @@ class IntersectingMultiplanarVideoQuadPixelTest : public VizPixelTestWithParam {
  public:
   void SetUp() override {
     VizPixelTestWithParam::SetUp();
-    constexpr bool kUseStreamVideoDrawQuad = false;
     constexpr bool kUseGpuMemoryBufferResources = false;
     constexpr int kMaxResourceSize = 10000;
 
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
         this->child_context_provider_.get(),
         this->child_resource_provider_.get(),
-        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kMaxResourceSize);
+        /*shared_image_interface=*/nullptr, kUseGpuMemoryBufferResources,
+        kMaxResourceSize);
     video_resource_updater2_ = std::make_unique<media::VideoResourceUpdater>(
         this->child_context_provider_.get(),
         this->child_resource_provider_.get(),
-        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kMaxResourceSize);
+        /*shared_image_interface=*/nullptr, kUseGpuMemoryBufferResources,
+        kMaxResourceSize);
   }
 
   void TearDown() override {
@@ -2395,13 +2394,12 @@ class VideoRendererPixelTestBase : public VizPixelTest {
 
   void SetUp() override {
     VizPixelTest::SetUp();
-    constexpr bool kUseStreamVideoDrawQuad = false;
     constexpr bool kUseGpuMemoryBufferResources = false;
     constexpr int kMaxResourceSize = 10000;
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
         child_context_provider_.get(), child_resource_provider_.get(),
-        /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kMaxResourceSize);
+        /*shared_image_interface=*/nullptr, kUseGpuMemoryBufferResources,
+        kMaxResourceSize);
   }
 
   void TearDown() override {

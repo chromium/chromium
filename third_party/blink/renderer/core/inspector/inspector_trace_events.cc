@@ -110,6 +110,13 @@ String ToHexString(const void* p) {
   return String::Format("0x%" PRIx64,
                         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(p)));
 }
+uint64_t InspectorTraceEvents::GetNextSampleTraceId() {
+  uint64_t sample_trace_id = base::trace_event::GetNextGlobalTraceId();
+  // Bit mask the 64-bit sample trace id to 53 bits to allow it to be
+  // used in JavaScript trace clients (e.g. DevTools).
+  uint64_t mask = ((1ULL << 53) - 1);
+  return sample_trace_id & mask;
+}
 
 void SetCallStack(v8::Isolate* isolate, perfetto::TracedDictionary& dict) {
   static const unsigned char* trace_category_enabled = nullptr;
@@ -124,11 +131,7 @@ void SetCallStack(v8::Isolate* isolate, perfetto::TracedDictionary& dict) {
   // So we collect the top frame with  CaptureSourceLocation() to
   // get the binding call site info.
   auto source_location = CaptureSourceLocation();
-  uint64_t sample_trace_id = base::trace_event::GetNextGlobalTraceId();
-  // Bit mask the 64-bit sample trace id to 53 bits to allow it to be
-  // used in JavaScript trace clients (e.g. DevTools).
-  uint64_t mask = ((1ULL << 53) - 1);
-  sample_trace_id = sample_trace_id & mask;
+  uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
   dict.Add("sampleTraceId", sample_trace_id);
   if (source_location->HasStackTrace())
     dict.Add("stackTrace", source_location);
@@ -1512,6 +1515,8 @@ void inspector_function_call_event::Data(
   dict.Add("url", location->Url());
   dict.Add("lineNumber", location->LineNumber());
   dict.Add("columnNumber", location->ColumnNumber());
+  uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
+  dict.Add("sampleTraceId", sample_trace_id);
 }
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,

@@ -382,8 +382,5 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
             BrowserControlsOffsetTagDefinitions offsetTagDefinitions) {}
 
     @Override
-    public void disconnectFileSelectListenerIfAny() {}
-
-    @Override
     public void setSupportsForwardTransitionAnimation(boolean supports) {}
 }

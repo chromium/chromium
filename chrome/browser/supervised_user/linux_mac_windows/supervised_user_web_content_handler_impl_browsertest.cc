@@ -41,6 +41,7 @@
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -105,13 +106,13 @@ class SupervisedUserWebContentHandlerImplTest
     // Makes the parent access dialog navigate to the url that contains the PACP
     // result. This causes the dialog to close and destruct.
     auto* dialog_contents = handler->GetObserverContentsForTesting();
+    CHECK(dialog_contents);
     content::NavigationController& controller =
         dialog_contents->GetController();
     content::NavigationController::LoadURLParams params(
         pacp_origin_url_with_result);
     params.transition_type = ui::PAGE_TRANSITION_LINK;
     controller.LoadURLWithParams(params);
-
     return dialog_contents;
   }
 
@@ -184,16 +185,19 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
   // The request handler `HandleRedirection` mocks the re-direction to the
   // `pacp_end_url` reached by PACP, in order to complete the approval flow.
   GURL pacp_end_url = GURL(supervised_user::kFamilyManagementUrl);
-  content::TestNavigationObserver observer(pacp_end_url);
+  auto observer =
+      std::make_unique<content::TestNavigationObserver>(pacp_end_url);
 
   content::WebContents* dialog_contents =
       MockParentApprovalDialogNavigationToUrlWithResult(
           handler.get(), supervised_user::CreatePacpApprovalResult());
+  CHECK(dialog_contents);
 
   // Ensure the parent access dialog reached the `pacp_end_url`, before checking
   // the local approval metrics.
-  observer.WatchWebContents(dialog_contents);
-  observer.WaitForNavigationFinished();
+  observer->WatchWebContents(dialog_contents);
+  observer->WaitForNavigationFinished();
+  observer.reset();
 
   histogram_tester.ExpectBucketCount(
       supervised_user::kLocalWebApprovalResultHistogramName,
@@ -238,16 +242,19 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
   // The request handler `HandleRedirection` mocks the re-direction to the
   // `pacp_end_url` reached by PACP, in order to complete the approval flow.
   GURL pacp_end_url = GURL(supervised_user::kFamilyManagementUrl);
-  content::TestNavigationObserver observer(pacp_end_url);
+  auto observer =
+      std::make_unique<content::TestNavigationObserver>(pacp_end_url);
 
   content::WebContents* dialog_contents =
       MockParentApprovalDialogNavigationToUrlWithResult(
           handler.get(), base::Base64Encode("invalid_response"));
+  CHECK(dialog_contents);
 
   // Ensure the parent access dialog reached the `pacp_end_url`, before checking
   // the local approval metrics.
-  observer.WatchWebContents(dialog_contents);
-  observer.WaitForNavigationFinished();
+  observer->WatchWebContents(dialog_contents);
+  observer->WaitForNavigationFinished();
+  observer.reset();
 
   histogram_tester.ExpectBucketCount(
       supervised_user::kLocalWebApprovalResultHistogramName,
@@ -262,9 +269,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
   histogram_tester.ExpectTotalCount(
       supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
 
-  // Check that the dialog has been destructed (after it was closed).
+  // Check that the dialog content was replaced with the error message content.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return handler->GetWeakParentAccessViewForTesting() == nullptr;
+    return handler->GetWeakParentAccessViewForTesting()
+                   ->GetErrorViewForTesting() != nullptr &&
+           handler->GetWeakParentAccessViewForTesting()
+                   ->GetWebViewForTesting() == nullptr;
   }));
 }
 
@@ -382,9 +392,13 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
     return handler->GetWeakParentAccessViewForTesting() != nullptr;
   }));
 
-  // Check that the dialog is destructed due to the timeout.
+  // Check that the PACP dialog content is replaced by the error message
+  // content.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return handler->GetWeakParentAccessViewForTesting() == nullptr;
+    return handler->GetWeakParentAccessViewForTesting()
+                   ->GetErrorViewForTesting() != nullptr &&
+           handler->GetWeakParentAccessViewForTesting()
+                   ->GetWebViewForTesting() == nullptr;
   }));
 
   histogram_tester.ExpectBucketCount(

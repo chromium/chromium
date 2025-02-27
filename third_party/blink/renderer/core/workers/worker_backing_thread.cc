@@ -59,11 +59,19 @@ bool& BatterySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
   return battery_saver_mode_enabled;
 }
 
+bool& MemorySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, memory_saver_mode_enabled, ());
+  return memory_saver_mode_enabled;
+}
+
 void AddWorkerIsolate(v8::Isolate* isolate) {
   base::AutoLock locker(IsolatesLock());
   isolate->SetPriority(IsolateCurrentPriority());
   if (BatterySaverModeEnabled()) {
     isolate->SetBatterySaverMode(true);
+  }
+  if (MemorySaverModeEnabled()) {
+    isolate->SetMemorySaverMode(true);
   }
   Isolates().insert(isolate);
 }
@@ -110,6 +118,8 @@ void SetBatterySaverModeForAllIsolates(bool battery_saver_mode_enabled) {
   WorkerBackingThread::SetBatterySaverModeForWorkerThreadIsolates(
       battery_saver_mode_enabled);
 }
+
+void SetMemorySaverModeForWorkerThreadIsolates(bool memory_saver_mode_enabled);
 
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
     : backing_thread_(blink::NonMainThread::CreateThread(
@@ -201,6 +211,17 @@ void WorkerBackingThread::SetBatterySaverModeForWorkerThreadIsolates(
     isolate->SetBatterySaverMode(battery_saver_mode_enabled);
   }
   BatterySaverModeEnabled() = battery_saver_mode_enabled;
+}
+
+// static
+void WorkerBackingThread::SetMemorySaverModeForWorkerThreadIsolates(
+    bool memory_saver_mode_enabled) {
+  base::AutoLock locker(IsolatesLock());
+
+  for (v8::Isolate* isolate : Isolates()) {
+    isolate->SetMemorySaverMode(memory_saver_mode_enabled);
+  }
+  MemorySaverModeEnabled() = memory_saver_mode_enabled;
 }
 
 }  // namespace blink

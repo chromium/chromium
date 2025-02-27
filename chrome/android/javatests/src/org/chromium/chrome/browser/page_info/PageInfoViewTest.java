@@ -1368,7 +1368,7 @@ public class PageInfoViewTest {
     /** Tests clearing cookies on the cookies page of the PageInfo UI. */
     @Test
     @MediumTest
-    public void testClearCookiesOnSubpage() throws Exception {
+    public void clearCookiesOnSubpage() throws Exception {
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
         expectHasCookies(false);
@@ -1390,7 +1390,7 @@ public class PageInfoViewTest {
     /** Tests clearing cookies on the cookies page of the PageInfo UI with User Bypass enabled. */
     @Test
     @MediumTest
-    public void testClearCookiesOnSubpageUserBypass() throws Exception {
+    public void clearCookiesOnSubpageUserBypass() throws Exception {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
@@ -1407,8 +1407,11 @@ public class PageInfoViewTest {
         onView(withText(containsString("Third-party cookies"))).perform(click());
         // Clear cookies in page info.
         onView(withText(containsString("stored data"))).perform(click());
-        onViewWaiting(allOf(withText("Delete"), isDisplayed()));
-        onView(withText("Delete")).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(R.string.page_info_cookies_clear_confirmation_button),
+                        isDisplayed()));
+        onView(withText(R.string.page_info_cookies_clear_confirmation_button)).perform(click());
         // Wait until the UI navigates back and check cookies are deleted.
         onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
         expectHasCookies(false);
@@ -1417,7 +1420,7 @@ public class PageInfoViewTest {
     /** Tests clearing cookies on the Tracking Protection page of the PageInfo UI. */
     @Test
     @MediumTest
-    public void testClearCookiesOnSubpageTrackingProtection() throws Exception {
+    public void clearCookiesOnSubpageTrackingProtection() throws Exception {
         enableTrackingProtection();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
@@ -1435,8 +1438,57 @@ public class PageInfoViewTest {
         onView(withText(containsString("Third-party cookies"))).perform(click());
         // Clear cookies in page info.
         onView(withText(containsString("stored data"))).perform(click());
-        onViewWaiting(allOf(withText("Delete"), isDisplayed()));
-        onView(withText("Delete")).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(R.string.page_info_cookies_clear_confirmation_button),
+                        isDisplayed()));
+        onView(withText(R.string.page_info_cookies_clear_confirmation_button)).perform(click());
+        // Wait until the UI navigates back and check cookies are deleted.
+        onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
+        expectHasCookies(false);
+    }
+
+    /** Tests clearing cookies on the Tracking Protection Launch page of the PageInfo UI. */
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.ACT_USER_BYPASS_UX,
+        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
+        ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
+    })
+    @MediumTest
+    public void clearCookiesOnSubpageTrackingProtectionLaunch() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.IP_PROTECTION_ENABLED, true);
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, true);
+                });
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        sActivityTestRule.loadUrlInNewTab(
+                /* url= */ mTestServerRule.getServer().getURL(sSiteDataHtml),
+                /* incognito= */ true);
+        // Create cookies.
+        expectHasCookies(false);
+        createCookies();
+        expectHasCookies(true);
+        // Go to cookies subpage.
+        openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+        enableTrackingProtectionFixedExpiration(false, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        // Check that cookies usage is displayed.
+        onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        // Clear cookies in page info.
+        onView(withText(containsString("stored data"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(R.string.page_info_cookies_clear_confirmation_button),
+                        isDisplayed()));
+        onView(withText(R.string.page_info_cookies_clear_confirmation_button)).perform(click());
         // Wait until the UI navigates back and check cookies are deleted.
         onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
         expectHasCookies(false);

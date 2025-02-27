@@ -242,7 +242,10 @@ MultimodalMessage::MultimodalMessage(MultimodalMessage&&) = default;
 MultimodalMessage& MultimodalMessage::operator=(MultimodalMessage&&) = default;
 
 MultimodalMessage MultimodalMessage::Clone() {
-  MultimodalMessage result(*message_);
+  MultimodalMessage result;
+  if (message_) {
+    result = MultimodalMessage(*message_);
+  }
   result.overlay_ = overlay_;
   return result;
 }

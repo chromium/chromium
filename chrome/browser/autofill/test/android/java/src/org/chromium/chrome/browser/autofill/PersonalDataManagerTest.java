@@ -1246,54 +1246,6 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void
-            testGetCustomImageForAutofillSuggestionIfAvailable_recordImageFetchingResult_success()
-                    throws TimeoutException {
-        GURL cardArtUrl = new GURL("http://google.com/test.png");
-        AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
-
-        HistogramWatcher expectedHistogram =
-                HistogramWatcher.newSingleRecordWatcher("Autofill.ImageFetcher.Result", true);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
-                            .getCustomImageForAutofillSuggestionIfAvailable(
-                                    cardArtUrl, cardIconSpecs);
-                    expectedHistogram.assertExpected();
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    public void
-            testGetCustomImageForAutofillSuggestionIfAvailable_recordImageFetchingResult_failure()
-                    throws TimeoutException {
-        GURL cardArtUrl = new GURL("http://google.com/test.png");
-        AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
-
-        HistogramWatcher expectedHistogram =
-                HistogramWatcher.newSingleRecordWatcher("Autofill.ImageFetcher.Result", false);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
-                            .setImageFetcherForTesting(new TestImageFetcher(null));
-                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
-                            .getCustomImageForAutofillSuggestionIfAvailable(
-                                    cardArtUrl, cardIconSpecs);
-                    expectedHistogram.assertExpected();
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
     public void testAddIban() throws TimeoutException {
         Iban iban =
                 new Iban.Builder()

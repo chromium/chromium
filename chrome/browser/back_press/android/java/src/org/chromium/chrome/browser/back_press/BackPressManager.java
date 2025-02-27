@@ -22,18 +22,18 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A central manager class to handle the back gesture. Every component/feature which is going to
  * intercept the back press event must implement the {@link BackPressHandler} and be registered in a
  * proper order. In order to register a Handler:
- *   1. Implement {@link BackPressHandler}.
- *   2. Add a new {@link Type} which implies the order of intercepting.
- *   3. Add a new value in {@link #sMetricsMap} which stands for the histograms.
- *   4. Call {@link #addHandler(BackPressHandler, int)} to register the implementer of
- *      {@link BackPressHandler} with the new defined {@link Type}.
+ *
+ * <ol>
+ *   <li>Implement {@link BackPressHandler}.
+ *   <li>Add a new {@link Type} which implies the order of intercepting.
+ *   <li>Add a new value in {@link #sMetricsMap} which stands for the histograms.
+ *   <li>Call {@link #addHandler(BackPressHandler, int)} to register the implementer of {@link
+ *       BackPressHandler} with the new defined {@link Type}.
+ * </ol>
  */
 public class BackPressManager implements Destroyable {
     private static final SparseIntArray sMetricsMap;
@@ -335,7 +335,7 @@ public class BackPressManager implements Destroyable {
     }
 
     private void handleBackPress() {
-        var failed = new ArrayList<String>();
+        boolean failed = false;
         for (int i = 0; i < mHandlers.length; i++) {
             BackPressHandler handler = mHandlers[i];
             if (handler == null) continue;
@@ -344,22 +344,16 @@ public class BackPressManager implements Destroyable {
                 int res = handler.handleBackPress();
                 mLastCalledHandlerType = i;
                 if (res == BackPressResult.FAILURE) {
-                    failed.add(i + "");
+                    failed = true;
                     recordFailure(i);
                 } else if (res != BackPressResult.IGNORED) {
                     record(i);
-                    assertListOfFailedHandlers(failed, i);
                     return;
                 }
             }
         }
         if (mFallbackOnBackPressed != null) mFallbackOnBackPressed.run();
-        // The fallback is valid when the flag is enabled because we are triggering a failure when
-        // swiping semantically backward when canGoBack == false.
-        if (!ChromeFeatureList.sRightEdgeGoesForwardGestureNav.isEnabled()) {
-            assertListOfFailedHandlers(failed, -1);
-        }
-        assert !failed.isEmpty() : "Callback is enabled but no handler consumed back gesture.";
+        assert !failed : "Callback is enabled but no handler consumed back gesture.";
     }
 
     @Override
@@ -379,14 +373,6 @@ public class BackPressManager implements Destroyable {
             return true;
         }
         return false;
-    }
-
-    private void assertListOfFailedHandlers(List<String> failed, int succeed) {
-        if (failed.isEmpty()) return;
-        var msg = String.join(", ", failed);
-        assert false
-                : String.format(
-                        "%s didn't correctly handle back press; handled by %s.", msg, succeed);
     }
 
     public BackPressHandler[] getHandlersForTesting() {

@@ -148,8 +148,10 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
   // Note that this comparison is _not_ the same as an origin-based comparison.
   // In particular, invalid SchemeHostPort objects match each other (and
   // themselves). Opaque origins, on the other hand, would not.
-  bool operator==(const SchemeHostPort& other) const;
-  std::strong_ordering operator<=>(const SchemeHostPort& other) const;
+  friend bool operator==(const SchemeHostPort& left,
+                         const SchemeHostPort& right) = default;
+  friend auto operator<=>(const SchemeHostPort& left,
+                          const SchemeHostPort& right) = default;
 
   // Whether to discard host and port information for a specific scheme.
   //

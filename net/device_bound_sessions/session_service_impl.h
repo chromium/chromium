@@ -71,12 +71,13 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const NetLogWithSource& net_log,
       const std::optional<url::Origin>& original_request_initiator) override;
 
-  std::optional<Session::Id> GetAnySessionRequiringDeferral(
-      URLRequest* request) override;
+  std::optional<DeferralParams> ShouldDefer(
+      URLRequest* request,
+      const FirstPartySetMetadata& first_party_set_metadata) override;
 
   void DeferRequestForRefresh(
       URLRequest* request,
-      Session::Id session_id,
+      DeferralParams deferral,
       RefreshCompleteCallback restart_callback,
       RefreshCompleteCallback continue_callback) override;
 
@@ -179,10 +180,24 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       Session::Id session_id,
       base::expected<SessionParams, SessionError> params_or_error);
 
+  // Callback after unwrapping a session key
+  void OnSessionKeyRestored(URLRequest* request,
+                            const SchemefulSite& site,
+                            const Session::Id& session_id,
+                            Session::KeyIdOrError key_id_or_error);
+
+  // Helper function for starting a refresh
+  void RefreshSessionInternal(URLRequest* request,
+                              const SchemefulSite& site,
+                              Session* session,
+                              unexportable_keys::UnexportableKeyId key_id);
+
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;
   // Functions to call once initialization completes.
   std::vector<base::OnceClosure> queued_operations_;
+  // Number of requests deferred due to pending initialization.
+  size_t requests_before_initialization_ = 0;
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;

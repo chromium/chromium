@@ -1,11 +1,12 @@
-# Copyright 2023 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("../customizations.gni")
+import("customizations.gni")
+import("overrides.gni")
 
-template("define_all_androidx_targets") {
-  not_needed([ "invoker", "target_name" ])
+define_override_androidx_targets("unused") {
+}
+
 # === Generated Code Start ===
 # === Generated Code End ===
-}

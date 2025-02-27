@@ -170,6 +170,7 @@ bool Printer::RequiresDriverlessUsb() const {
           "epson et-5180 series",    // b/319373509
           "epson et-8550 series",    // b/301387697
           "epson wf-110 series",     // b/287159028
+          "hp deskjet 2600 series",  // b/399480007
           "hp deskjet 4100 series",  // b/279387801
       });
   return kDriverlessUsbMakeModels.contains(base::ToLowerASCII(make_and_model_));

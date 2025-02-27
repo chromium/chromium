@@ -28,6 +28,10 @@ class CollaborationControllerDelegate {
       kGenericError = 1,
       // Show the link invalid error dialog.
       kInvalidUrl = 2,
+      // Show the error when Entreprise has disabled sign in.
+      kSigninDisabledByPolicy = 3,
+      // Show the error when Entreprise disabled sync.
+      kSyncDisabledByPolicy = 4,
     };
 
     explicit ErrorInfo(Type type) : type(type) { GetStringForErrorType(); }
@@ -40,6 +44,18 @@ class CollaborationControllerDelegate {
    private:
     void GetStringForErrorType() {
       switch (type) {
+        case Type::kSyncDisabledByPolicy:
+          error_header = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_HEADER);
+          error_body = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_BODY);
+          break;
+        case Type::kSigninDisabledByPolicy:
+          error_header = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_HEADER);
+          error_body = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_BODY);
+          break;
         case Type::kInvalidUrl:
           error_header =
               l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_HEADER);

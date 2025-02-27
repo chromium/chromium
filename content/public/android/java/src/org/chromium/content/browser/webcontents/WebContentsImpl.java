@@ -1246,12 +1246,6 @@ public class WebContentsImpl
                 .updateOffsetTagDefinitions(mNativeWebContentsAndroid, offsetTagDefinitions);
     }
 
-    @Override
-    public void disconnectFileSelectListenerIfAny() {
-        if (mNativeWebContentsAndroid == 0) return;
-        WebContentsImplJni.get().disconnectFileSelectListenerIfAny(mNativeWebContentsAndroid);
-    }
-
     private void checkNotDestroyed() {
         if (mNativeWebContentsAndroid != 0) return;
         throw new IllegalStateException(
@@ -1480,8 +1474,6 @@ public class WebContentsImpl
         void updateOffsetTagDefinitions(
                 long nativeWebContentsAndroid,
                 BrowserControlsOffsetTagDefinitions offsetTagDefinitions);
-
-        void disconnectFileSelectListenerIfAny(long nativeWebContentsAndroid);
 
         void captureContentAsBitmapForTesting(
                 long nativeWebContentsAndroid, Callback<Bitmap> callback);

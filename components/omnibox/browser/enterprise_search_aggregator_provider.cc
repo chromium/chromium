@@ -292,8 +292,15 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
       continue;
     }
 
-    // Some matches are supplied with an associated image URL.
-    auto image_url = GetMatchImageUrl(result);
+    // Some matches are supplied with an associated icon or image URL.
+    std::string image_url;
+    std::string icon_url;
+    if (suggestion_type == SuggestionType::PEOPLE) {
+      image_url = ptr_to_string(result.FindStringByDottedPath(
+        "document.derivedStructData.displayPhoto.url"));
+    } else if (suggestion_type == SuggestionType::CONTENT) {
+      icon_url = ptr_to_string(result.FindStringByDottedPath("iconUri"));
+    }
 
     auto description = GetMatchDescription(result, suggestion_type);
     // Nav matches must have a description.
@@ -309,7 +316,8 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
     AutocompleteMatch match = CreateMatch(
         suggestion_type, is_navigation, 1000 - int(matches_.size()), url,
-        image_url, base::UTF8ToUTF16(description), base::UTF8ToUTF16(contents));
+        image_url, icon_url, base::UTF8ToUTF16(description),
+        base::UTF8ToUTF16(contents));
     matches_.push_back(match);
   }
 }
@@ -333,12 +341,6 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
 
   return url_ref.ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(base::UTF8ToUTF16(query)), {}, nullptr);
-}
-
-std::string EnterpriseSearchAggregatorProvider::GetMatchImageUrl(
-    const base::Value::Dict& result) const {
-  return ptr_to_string(result.FindStringByDottedPath(
-      "document.derivedStructData.displayPhoto.url"));
 }
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
@@ -372,6 +374,7 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
     int relevance,
     const std::string& url,
     const std::string& image_url,
+    const std::string& icon_url,
     const std::u16string& description,
     const std::u16string& contents) {
   auto type = is_navigation ? AutocompleteMatchType::NAVSUGGEST
@@ -383,6 +386,10 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
 
   if (!image_url.empty()) {
     match.image_url = GURL(image_url);
+  }
+
+  if (!icon_url.empty()) {
+    match.icon_url = GURL(icon_url);
   }
 
   match.enterprise_search_aggregator_type = suggestion_type;

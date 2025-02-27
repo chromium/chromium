@@ -1175,6 +1175,11 @@ interface CloseWatcher : EventTarget
     method requestClose
     setter oncancel
     setter onclose
+interface CommandEvent : Event
+    attribute @@toStringTag
+    getter command
+    getter source
+    method constructor
 interface Comment : CharacterData
     attribute @@toStringTag
     method constructor
@@ -1685,6 +1690,7 @@ interface Document : Node
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -1904,6 +1910,7 @@ interface Document : Node
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -3227,6 +3234,8 @@ interface HTMLBodyElement : HTMLElement
     setter vLink
 interface HTMLButtonElement : HTMLElement
     attribute @@toStringTag
+    getter command
+    getter commandForElement
     getter disabled
     getter form
     getter formAction
@@ -3247,6 +3256,8 @@ interface HTMLButtonElement : HTMLElement
     method constructor
     method reportValidity
     method setCustomValidity
+    setter command
+    setter commandForElement
     setter disabled
     setter formAction
     setter formEnctype
@@ -3364,6 +3375,7 @@ interface HTMLElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -3499,6 +3511,7 @@ interface HTMLElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -5232,6 +5245,7 @@ interface MathMLElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -5343,6 +5357,7 @@ interface MathMLElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -7184,6 +7199,7 @@ interface SVGElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -7297,6 +7313,7 @@ interface SVGElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -10982,6 +10999,7 @@ namespace console
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -11198,6 +11216,7 @@ namespace console
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu

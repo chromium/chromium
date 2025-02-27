@@ -268,6 +268,9 @@ TEST_F(ChromeAppIconTest, IconRelease) {
   // Reset before service is stopped.
   test_icon1.Reset();
 
+  // Clear dangling pointers before profile is destroyed.
+  Shutdown();
+
   // Reset after service is stopped.
   profile_.reset();
   test_icon2.Reset();

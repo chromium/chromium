@@ -2439,7 +2439,6 @@ void LayerTreeHostImpl::OnDraw(const gfx::Transform& transform,
 
 void LayerTreeHostImpl::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
-  // See ViewTransitionOverflowRectFromSurface
   // We cache the computed content rect for each view-transition capture
   // surface. This rect is then used to map the generated render pass or texture
   // to the target coordinate space.

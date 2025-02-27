@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -43,6 +44,22 @@ NSString* GetExpectedSavePasswordsItemTitle() {
   return l10n_util::GetNSString(IOSPasskeysM2Enabled()
                                     ? IDS_IOS_OFFER_TO_SAVE_PASSWORDS_PASSKEYS
                                     : IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+}
+
+// Helper method that returns the expected title for the passwords in other apps
+// table view item.
+NSString* GetExpectedPasswordsInOtherAppsItemTitle() {
+  if (!IOSPasskeysM2Enabled()) {
+    return l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18);
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS);
+  }
 }
 
 }  // namespace
@@ -120,11 +137,12 @@ TEST_F(PasswordSettingsViewControllerTest,
         static_cast<TableViewMultiDetailTextItem*>(
             GetTableViewItem(/*section=*/1, /*item=*/0));
     EXPECT_NSEQ(passwords_in_other_apps_item.text,
-                l10n_util::GetNSString(
-                    IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS));
+                GetExpectedPasswordsInOtherAppsItemTitle());
     if (@available(iOS 18, *)) {
-      EXPECT_NSEQ(passwords_in_other_apps_item.leadingDetailText,
-                  @"Leading detail text");
+      EXPECT_NSEQ(
+          passwords_in_other_apps_item.leadingDetailText,
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION));
       EXPECT_FALSE(passwords_in_other_apps_item.trailingDetailText);
       EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
                 UITableViewCellAccessoryNone);
@@ -147,10 +165,9 @@ TEST_F(PasswordSettingsViewControllerTest,
     TableViewMultiDetailTextItem* passwords_in_other_apps_item =
         static_cast<TableViewMultiDetailTextItem*>(
             GetTableViewItem(/*section=*/1, /*item=*/0));
+    EXPECT_NSEQ(passwords_in_other_apps_item.text,
+                GetExpectedPasswordsInOtherAppsItemTitle());
     EXPECT_FALSE(passwords_in_other_apps_item.leadingDetailText);
-    EXPECT_NSEQ(
-        passwords_in_other_apps_item.text,
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS));
     EXPECT_NSEQ(passwords_in_other_apps_item.trailingDetailText,
                 l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
     EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
@@ -159,20 +176,52 @@ TEST_F(PasswordSettingsViewControllerTest,
 }
 
 TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
-  [controller() setPasswordsInOtherAppsEnabled:YES];
+  {
+    // Enable the Passkeys M2 feature and re-create the controller so that the
+    // enabled flag is picked up.
+    base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
+    CreateController();
 
-  TableViewMultiDetailTextItem* passwords_in_other_apps_item =
-      static_cast<TableViewMultiDetailTextItem*>(
-          GetTableViewItem(/*section=*/1, /*item=*/0));
-  EXPECT_NSEQ(passwords_in_other_apps_item.text,
-              l10n_util::GetNSString(
-                  IOSPasskeysM2Enabled()
-                      ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS
-                      : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS));
-  EXPECT_NSEQ(passwords_in_other_apps_item.trailingDetailText,
-              l10n_util::GetNSString(IDS_IOS_SETTING_ON));
-  EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
-            UITableViewCellAccessoryDisclosureIndicator);
+    [controller() setPasswordsInOtherAppsEnabled:YES];
+
+    TableViewMultiDetailTextItem* passwords_in_other_apps_item =
+        static_cast<TableViewMultiDetailTextItem*>(
+            GetTableViewItem(/*section=*/1, /*item=*/0));
+    EXPECT_NSEQ(passwords_in_other_apps_item.text,
+                GetExpectedPasswordsInOtherAppsItemTitle());
+    EXPECT_NSEQ(passwords_in_other_apps_item.trailingDetailText,
+                l10n_util::GetNSString(IDS_IOS_SETTING_ON));
+    EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
+              UITableViewCellAccessoryDisclosureIndicator);
+    if (@available(iOS 18, *)) {
+      EXPECT_NSEQ(
+          passwords_in_other_apps_item.leadingDetailText,
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION));
+    } else {
+      EXPECT_FALSE(passwords_in_other_apps_item.leadingDetailText);
+    }
+  }
+  {
+    // Disable the Passkeys M2 feature and re-create the controller so that the
+    // disabled flag is picked up.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kIOSPasskeysM2);
+    CreateController();
+
+    [controller() setPasswordsInOtherAppsEnabled:YES];
+
+    TableViewMultiDetailTextItem* passwords_in_other_apps_item =
+        static_cast<TableViewMultiDetailTextItem*>(
+            GetTableViewItem(/*section=*/1, /*item=*/0));
+    EXPECT_NSEQ(passwords_in_other_apps_item.text,
+                GetExpectedPasswordsInOtherAppsItemTitle());
+    EXPECT_NSEQ(passwords_in_other_apps_item.trailingDetailText,
+                l10n_util::GetNSString(IDS_IOS_SETTING_ON));
+    EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
+              UITableViewCellAccessoryDisclosureIndicator);
+    EXPECT_FALSE(passwords_in_other_apps_item.leadingDetailText);
+  }
 }
 
 TEST_F(PasswordSettingsViewControllerTest,

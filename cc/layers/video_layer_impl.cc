@@ -107,7 +107,6 @@ bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
         layer_tree_impl()->context_provider(),
         layer_tree_impl()->resource_provider(),
         layer_tree_impl()->layer_tree_frame_sink()->shared_image_interface(),
-        settings.use_stream_video_draw_quad,
         settings.use_gpu_memory_buffer_resources,
         layer_tree_impl()->max_texture_size());
   }

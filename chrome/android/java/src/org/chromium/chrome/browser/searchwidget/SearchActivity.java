@@ -273,7 +273,6 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     protected void triggerLayoutInflation() {
         enableHardwareAcceleration();
-        mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
         boolean isIncognito = SearchActivityUtils.getIntentIncognitoStatus(getIntent());
         mSearchBoxDataProvider.initialize(this, isIncognito);
 
@@ -284,6 +283,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         var contentView = createContentView();
         setContentView(contentView);
+        mSnackbarManager = new SnackbarManager(this, getContentView(), null);
 
         // Build the search box.
         mSearchBox = contentView.findViewById(R.id.search_location_bar);

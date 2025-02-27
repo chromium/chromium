@@ -27,9 +27,11 @@ public class CastApplication extends Application {
         ContextUtils.initApplicationContext(this);
         ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
         LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
-        LibraryLoader.getInstance().setLibraryProcessType(isBrowserProcess()
-                        ? LibraryProcessType.PROCESS_BROWSER
-                        : LibraryProcessType.PROCESS_CHILD);
+        LibraryLoader.getInstance()
+                .setLibraryProcessType(
+                        isBrowserProcess()
+                                ? LibraryProcessType.PROCESS_BROWSER
+                                : LibraryProcessType.PROCESS_CHILD);
     }
 
     @Override

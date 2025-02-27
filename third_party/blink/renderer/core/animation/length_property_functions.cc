@@ -102,6 +102,7 @@ bool LengthPropertyFunctions::GetPixelsForKeyword(const CSSProperty& property,
     case CSSPropertyID::kBorderRightWidth:
     case CSSPropertyID::kBorderTopWidth:
     case CSSPropertyID::kColumnRuleWidth:
+    case CSSPropertyID::kRowRuleWidth:
     case CSSPropertyID::kOutlineWidth:
       if (value_id == CSSValueID::kThin) {
         result = 1;
@@ -157,7 +158,10 @@ bool LengthPropertyFunctions::GetInitialLength(
           Length::Fixed(ComputedStyleInitialValues::InitialColumnRuleWidth()
                             .GetLegacyValue());
       return true;
-
+    case CSSPropertyID::kRowRuleWidth:
+      result = Length::Fixed(
+          ComputedStyleInitialValues::InitialRowRuleWidth().GetLegacyValue());
+      return true;
     default:
       return GetLength(property, initial_style, result);
   }
@@ -359,7 +363,15 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       }
       break;
     case CSSPropertyID::kColumnRuleWidth:
+      // TODO(crbug.com/357648037): Investigate whether we'll need a new way of
+      // handling multiple lengths.
       result = Length::Fixed(style.ColumnRuleWidth().GetLegacyValue());
+      success = true;
+      break;
+    case CSSPropertyID::kRowRuleWidth:
+      // TODO(crbug.com/357648037): Investigate whether we'll need a new way of
+      // handling multiple lengths.
+      result = Length::Fixed(style.RowRuleWidth().GetLegacyValue());
       success = true;
       break;
     case CSSPropertyID::kWebkitTransformOriginZ:
@@ -570,6 +582,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
     case CSSPropertyID::kColumnGap:
     case CSSPropertyID::kRowGap:
     case CSSPropertyID::kColumnRuleWidth:
+    case CSSPropertyID::kRowRuleWidth:
     case CSSPropertyID::kColumnWidth:
     case CSSPropertyID::kWebkitTransformOriginZ:
     case CSSPropertyID::kWordSpacing:

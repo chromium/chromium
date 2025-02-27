@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
 /** An empty base implementation of the {@link BottomSheetObserver} interface. */
@@ -21,7 +22,7 @@ public class EmptyBottomSheetObserver implements BottomSheetObserver {
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
 
     @Override
-    public void onSheetStateChanged(int newState, int reason) {}
+    public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {}
 
     @Override
     public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}

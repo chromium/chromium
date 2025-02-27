@@ -114,7 +114,7 @@ class MultiContentsViewUiTest : public InteractiveBrowserTest {
                            .width();
                    return check.Run(start_width, end_width);
                  }),
-        WaitForState(kMultiContentsViewLayoutObserver, true), );
+        WaitForState(kMultiContentsViewLayoutObserver, true));
     AddDescriptionPrefix(result, "CheckResizeKey()");
     return result;
   }
@@ -176,5 +176,5 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, MAYBE_ResizesViaKeyboard) {
       CheckResizeKey(ui::VKEY_LEFT, base::BindRepeating([](double start_width,
                                                            double end_width) {
                        return start_width > end_width;
-                     })), );
+                     })));
 }

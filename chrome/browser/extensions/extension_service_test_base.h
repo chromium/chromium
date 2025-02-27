@@ -49,6 +49,7 @@ class TestingPrefServiceSyncable;
 
 namespace extensions {
 
+class ExtensionRegistrar;
 class ExtensionRegistry;
 class ExtensionService;
 
@@ -123,6 +124,9 @@ class ExtensionServiceTestBase : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
+  // Nulls out pointers to avoid dangling. May be called multiple times.
+  void Shutdown();
+
   // Initialize an ExtensionService according to the given |params|.
   virtual void InitializeExtensionService(ExtensionServiceInitParams params);
 
@@ -167,6 +171,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
   sync_preferences::TestingPrefServiceSyncable* testing_pref_service();
   ExtensionService* service() { return service_; }
+  ExtensionRegistrar* registrar() { return registrar_; }
   ExtensionRegistry* registry() { return registry_; }
   const base::FilePath& extensions_install_dir() const {
     return extensions_install_dir_;
@@ -248,6 +253,9 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // The associated ExtensionRegistry, for convenience.
   raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> registry_;
+
+  // The associated ExtensionRegistrar, for convenience.
+  raw_ptr<ExtensionRegistrar> registrar_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

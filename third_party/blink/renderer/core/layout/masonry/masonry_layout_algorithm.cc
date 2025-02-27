@@ -16,6 +16,11 @@ MasonryLayoutAlgorithm::MasonryLayoutAlgorithm(
   DCHECK(params.space.IsNewFormattingContext());
 }
 
+MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
+    const MinMaxSizesFloatInput&) {
+  return {MinMaxSizes(), /*depends_on_block_constraints=*/false};
+}
+
 const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   for (auto child = Node().FirstChild(); child; child = child.NextSibling()) {
     To<BlockNode>(child).Layout(CreateConstraintSpaceForMeasure(
@@ -25,11 +30,6 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   // TODO(ethavar): Compute the actual block size.
   container_builder_.SetFragmentsTotalBlockSize(LayoutUnit());
   return container_builder_.ToBoxFragment();
-}
-
-MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
-  return {MinMaxSizes(), /*depends_on_block_constraints=*/false};
 }
 
 GridItems* MasonryLayoutAlgorithm::VirtualMasonryItems(
@@ -154,15 +154,38 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpace(
   return builder.ToConstraintSpace();
 }
 
+ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
+    const GridItemData& masonry_item,
+    const GridSizingTrackCollection& track_collection,
+    LogicalRect* containing_rect) const {
+  const bool is_for_columns = track_collection.Direction() == kForColumns;
+
+  auto containing_size = ChildAvailableSize();
+  auto& grid_axis_size =
+      is_for_columns ? containing_size.inline_size : containing_size.block_size;
+
+  LayoutUnit start_offset;
+  grid_axis_size =
+      masonry_item.CalculateAvailableSize(track_collection, &start_offset);
+
+  if (containing_rect) {
+    is_for_columns ? containing_rect->offset.inline_offset = start_offset
+                   : containing_rect->offset.block_offset = start_offset;
+    containing_rect->size = containing_size;
+  }
+
+  return CreateConstraintSpace(masonry_item, containing_size,
+                               LayoutResultCacheSlot::kLayout);
+}
+
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const GridItemData& masonry_item) const {
   auto containing_size = ChildAvailableSize();
 
-  if (Style().MasonryTrackSizingDirection() == kForColumns) {
-    containing_size.inline_size = kIndefiniteSize;
-  } else {
-    containing_size.block_size = kIndefiniteSize;
-  }
+  (Style().MasonryTrackSizingDirection() == kForColumns)
+      ? containing_size.inline_size = kIndefiniteSize
+      : containing_size.block_size = kIndefiniteSize;
+
   return CreateConstraintSpace(masonry_item, containing_size,
                                LayoutResultCacheSlot::kMeasure);
 }

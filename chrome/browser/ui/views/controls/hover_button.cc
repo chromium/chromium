@@ -79,8 +79,9 @@ class IconWrapper : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
-    const int icon_height = icon_->GetPreferredSize(available_size).height();
-    return gfx::Size(icon_height + icon_label_spacing_, icon_height);
+    const gfx::Size icon_size = icon_->GetPreferredSize(available_size);
+    return gfx::Size(icon_size.width() + icon_label_spacing_,
+                     icon_size.height());
   }
 
   views::View* icon() { return icon_; }
@@ -145,7 +146,8 @@ HoverButton::HoverButton(PressedCallback callback,
                          std::unique_ptr<views::View> secondary_view,
                          bool add_vertical_label_spacing,
                          const std::u16string& footer,
-                         int icon_label_spacing)
+                         int icon_label_spacing,
+                         bool multiline_subtitle)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -188,6 +190,7 @@ HoverButton::HoverButton(PressedCallback callback,
   if (!subtitle.empty()) {
     std::unique_ptr<views::Label> subtitle_label =
         CreateSecondaryLabel(subtitle);
+    subtitle_label->SetMultiLine(multiline_subtitle);
     subtitle_ = label_wrapper->AddChildView(std::move(subtitle_label));
   }
   if (!footer.empty()) {

@@ -28,6 +28,7 @@
 #include <limits>
 
 #include "base/auto_reset.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"

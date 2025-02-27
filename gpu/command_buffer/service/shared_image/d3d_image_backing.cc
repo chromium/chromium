@@ -145,7 +145,11 @@ class D3DImageBacking::PersistentGraphiteDawnAccess {
 
   // Must be called once after construction. Since constructor cannot return
   // error, this provides a way to initialize the access and return a result.
-  bool BeginAccess(bool is_cleared);
+  bool BeginAccess(bool is_cleared,
+                   scoped_refptr<gfx::D3DSharedFence> wait_fence = nullptr);
+
+  bool WaitForDCompBeforeWrite(
+      scoped_refptr<gfx::D3DSharedFence> dcomp_texture_available_fence);
 
   const wgpu::Device& device() const { return device_; }
   const wgpu::Texture& texture() const { return texture_; }
@@ -184,11 +188,21 @@ D3DImageBacking::PersistentGraphiteDawnAccess::PersistentGraphiteDawnAccess(
       texture_memory_(std::move(texture_memory)) {}
 
 bool D3DImageBacking::PersistentGraphiteDawnAccess::BeginAccess(
-    bool is_cleared) {
-  // Call Dawn's BeginAccess without any fence. Note this is only safe if we
-  // don't intend to use the texture across devices.
+    bool is_cleared,
+    scoped_refptr<gfx::D3DSharedFence> wait_fence) {
   wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
   desc.initialized = is_cleared;
+
+  wgpu::SharedFence shared_fence;
+  uint64_t signaled_value = 0;
+  if (wait_fence) {
+    shared_fence = CreateDawnSharedFence(device_, wait_fence);
+    signaled_value = wait_fence->GetFenceValue();
+
+    desc.fenceCount = 1;
+    desc.fences = &shared_fence;
+    desc.signaledValues = &signaled_value;
+  }
 
   if (texture_memory_.BeginAccess(texture_, &desc) == wgpu::Status::Success) {
     return true;
@@ -224,6 +238,32 @@ bool D3DImageBacking::PersistentGraphiteDawnAccess::FlushCommandsIfNeeded() {
   context_state_->SubmitIfNecessary({}, /*need_graphite_submit=*/true);
 
   return true;
+}
+
+bool D3DImageBacking::PersistentGraphiteDawnAccess::WaitForDCompBeforeWrite(
+    scoped_refptr<gfx::D3DSharedFence> dcomp_texture_available_fence) {
+  if (!dcomp_texture_available_fence) {
+    return true;
+  }
+
+  // Temporarily end Dawn's access.
+  wgpu::SharedTextureMemoryEndAccessState end_state = {};
+  texture_memory_.EndAccess(texture_, &end_state);
+
+  // Restart BeginAccess to pass the fence to Dawn.
+  // When Dawn's submit() is called after this point, it will wait for the fence
+  // before sending Dawn's related commands to the driver. Note that if there
+  // had been a wait fence being sent priorly and we hadn't submitted, that wait
+  // would have been lost. However such situation shouldn't exist. Because we
+  // only got here because of an exclusive write access, there shouldn't be any
+  // concurrent dcomp texture access in the middle between the prior write
+  // access and current write access.
+
+  // Sanity check that EndAccess() didn't forward prior fences because we din't
+  // submit. There should be only one fence exported (owned by Dawn).
+  CHECK_LE(end_state.fenceCount, 1u);
+  return BeginAccess(end_state.initialized,
+                     std::move(dcomp_texture_available_fence));
 }
 
 bool D3DImageBacking::PersistentGraphiteDawnAccess::SetCleared(
@@ -720,8 +760,6 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
       // devices, open Dawn's access indefinitely so that we can defer submits.
       // TODO(40239870): We don't support deferred submits if multithread
       // support is enabled yet.
-      // TODO(354942507): Investigate whether we can enable persistent graphite
-      // access for dcomp texture.
       if (is_graphite_device && !is_thread_safe() &&
           !use_cross_device_synchronization() &&
           context_state->IsGraphiteDawnD3D11()) {
@@ -954,6 +992,16 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   // is already open.
   if (persistent_graphite_dawn_access_ &&
       persistent_graphite_dawn_access_->IsGraphiteDevice(device)) {
+    if (dcomp_texture_ && write_access) {
+      // For dcomp, we only need to wait for dcomp read fence before we write.
+      // We don't need to signal any fence after that so it's still safe to use
+      // persistent dawn's access.
+      if (!persistent_graphite_dawn_access_->WaitForDCompBeforeWrite(
+              std::move(dcomp_texture_available_fence_))) {
+        persistent_graphite_dawn_access_.reset();
+        return nullptr;
+      }
+    }
     BeginAccessCommon(write_access);
     return persistent_graphite_dawn_access_->texture();
   }

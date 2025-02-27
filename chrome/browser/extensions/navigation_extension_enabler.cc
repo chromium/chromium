@@ -100,11 +100,10 @@ void NavigationExtensionEnabler::OnInstallPromptDone(
   CHECK(extension);
 
   if (payload.result == ExtensionInstallPrompt::Result::ACCEPTED) {
-    ExtensionService* extension_service =
-        ExtensionSystem::Get(web_contents()->GetBrowserContext())
-            ->extension_service();
+    ExtensionRegistrar* extension_registrar =
+        ExtensionRegistrar::Get(web_contents()->GetBrowserContext());
     // Grant permissions, re-enable the extension, and then reload the tab.
-    extension_service->GrantPermissionsAndEnableExtension(extension);
+    extension_registrar->GrantPermissionsAndEnableExtension(*extension);
     web_contents()->GetController().Reload(content::ReloadType::NORMAL, true);
   }
 

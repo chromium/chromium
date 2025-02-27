@@ -1651,7 +1651,7 @@
             ]
         }
     ],
-    "AutofillDeduplicateAccountAdresses": [
+    "AutofillDeduplicateAccountAddresses": [
         {
             "platforms": [
                 "android",
@@ -1665,7 +1665,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillDeduplicateAccountAdresses"
+                        "AutofillDeduplicateAccountAddresses"
                     ]
                 }
             ]
@@ -5063,6 +5063,24 @@
                     ],
                     "disable_features": [
                         "NtpWallpaperSearchButtonAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeWebStoreNavigationThrottle": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeWebStoreNavigationThrottle"
                     ]
                 }
             ]
@@ -9949,22 +9967,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "Floss"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FluentScrollbar": [
-        {
-            "platforms": [
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FluentScrollbar"
                     ]
                 }
             ]
@@ -16409,6 +16411,23 @@
             ]
         }
     ],
+    "PassageEmbeddingsPerformance": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "PassageEmbedder"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordFormClientsideClassifier": [
         {
             "platforms": [
@@ -21602,25 +21621,6 @@
             ]
         }
     ],
-    "SecureTimeCertificateVerificationAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "FetchBehavior": "background-and-on-demand"
-                    },
-                    "enable_features": [
-                        "CertVerificationNetworkTime",
-                        "NetworkTimeServiceQuerying"
-                    ]
-                }
-            ]
-        }
-    ],
     "SecurityPageHats": [
         {
             "platforms": [
@@ -21952,27 +21952,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ServiceWorkerDebugCorsExemptHeaderList"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ServiceWorkerSrcdocSupport": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceWorkerSrcdocSupport"
                     ]
                 }
             ]

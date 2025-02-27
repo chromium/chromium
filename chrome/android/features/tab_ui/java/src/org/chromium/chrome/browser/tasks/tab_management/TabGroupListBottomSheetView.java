@@ -20,7 +20,10 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/** A view for the Tab Group List Bottom Sheet. Allows the user to add tabs to a tab group. */
+/**
+ * A view for the Shared Tab Group Notice Bottom Sheet. Inform the user that changes made to a
+ * shared tab group will be visible to everyone in the group.
+ */
 @NullMarked
 public class TabGroupListBottomSheetView extends LinearLayout implements BottomSheetContent {
     private final RecyclerView mRecyclerView;

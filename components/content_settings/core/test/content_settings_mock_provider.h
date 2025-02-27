@@ -26,7 +26,7 @@ class MockProvider : public ObservableProvider {
 
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito,
+      bool off_the_record,
       const PartitionKey& partition_key =
           PartitionKey::WipGetDefault()) const override;
   std::unique_ptr<Rule> GetRule(

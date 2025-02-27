@@ -381,10 +381,10 @@ class BuildManager:
       with cls._lock:
         if build.cwd is None:
           build.cwd = cwd
-          build.ensure_logfile()
         else:
           assert pathlib.Path(cwd).samefile(
               build.cwd), f'{repr(cwd)} != {repr(build.cwd)}'
+        build.ensure_logfile()
 
   @classmethod
   def get_build(cls, build_id):

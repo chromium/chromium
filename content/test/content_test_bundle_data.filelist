@@ -5066,6 +5066,8 @@ data/accessibility/html/simple_spans.html
 data/accessibility/html/slot-display-contents-expected-auralinux.txt
 data/accessibility/html/slot-display-contents-expected-blink.txt
 data/accessibility/html/slot-display-contents.html
+data/accessibility/html/small-alt-expected-blink.txt
+data/accessibility/html/small-alt.html
 data/accessibility/html/small-expected-android-assist-data.txt
 data/accessibility/html/small-expected-android-external.txt
 data/accessibility/html/small-expected-android.txt

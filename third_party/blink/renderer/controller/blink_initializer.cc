@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 #include "third_party/blink/renderer/controller/dev_tools_frontend_impl.h"
 #include "third_party/blink/renderer/controller/javascript_call_stack_generator.h"
+#include "third_party/blink/renderer/controller/memory_saver_controller.h"
 #include "third_party/blink/renderer/controller/performance_manager/renderer_resource_coordinator_impl.h"
 #include "third_party/blink/renderer/controller/performance_manager/v8_detailed_memory_reporter_impl.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -299,6 +300,8 @@ void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
     UserLevelMemoryPressureSignalGenerator::Initialize(platform,
                                                        main_thread_task_runner);
   }
+
+  MemorySaverController::Initialize();
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \

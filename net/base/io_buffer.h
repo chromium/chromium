@@ -15,7 +15,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/free_deleter.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 
@@ -89,21 +89,21 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   // take an IOBuffer also take a size indicated the number of IOBuffer bytes to
   // use from the start of bytes(). That number must be no more than the size()
   // of the passed in IOBuffer.
-  int size() const { return size_; }
-
-  char* data() { return data_; }
-  const char* data() const { return data_; }
-
-  uint8_t* bytes() { return reinterpret_cast<uint8_t*>(data()); }
-  const uint8_t* bytes() const {
-    return reinterpret_cast<const uint8_t*>(data());
+  int size() const {
+    // SetSpan() ensures this fits in an int.
+    return static_cast<int>(span_.size());
   }
 
-  base::span<uint8_t> span() {
-    return UNSAFE_TODO(base::span(bytes(), static_cast<size_t>(size_)));
-  }
+  char* data() { return reinterpret_cast<char*>(bytes()); }
+  const char* data() const { return reinterpret_cast<const char*>(bytes()); }
+
+  uint8_t* bytes() { return span_.data(); }
+  const uint8_t* bytes() const { return span_.data(); }
+
+  base::span<uint8_t> span() { return span_; }
   base::span<const uint8_t> span() const {
-    return UNSAFE_TODO(base::span(bytes(), static_cast<size_t>(size_)));
+    // Converts a const base::span<uint8_t> to a base::span<const uint8_t>.
+    return base::as_byte_span(span_);
   }
 
  protected:
@@ -112,16 +112,12 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   static void AssertValidBufferSize(size_t size);
 
   IOBuffer();
-  explicit IOBuffer(base::span<char> data);
-  explicit IOBuffer(base::span<uint8_t> data);
+  explicit IOBuffer(base::span<char> span);
+  explicit IOBuffer(base::span<uint8_t> span);
 
   virtual ~IOBuffer();
 
-  // Sets `data_` and `size_` based on span. CHECKs `size_` isn't too big to fit
-  // in an int.
-  //
-  // TODO(https://crbug.com/396621713): Replace `data_` and `size_` with a
-  // private `raw_span`, with this function being the only way to modify it.
+  // Sets `span_` to `span`. CHECKs if its size is too big to fit in an int.
   void SetSpan(base::span<uint8_t> span);
 
   // Like SetSpan(base::span<uint8_t>()), but without a size check. Particularly
@@ -129,8 +125,8 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   // reference checks.
   void ClearSpan();
 
-  raw_ptr<char, AllowPtrArithmetic> data_ = nullptr;
-  int size_ = 0;
+ private:
+  base::raw_span<uint8_t> span_;
 };
 
 // Class which owns its buffer and manages its destruction.

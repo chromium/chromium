@@ -121,11 +121,14 @@ class AttributeInstance final {
   void SetInfoWithVerificationStatus(FieldType type,
                                      const std::u16string& value,
                                      const VerificationStatus status);
+
   // Same as `SetInfoWithVerificationStatus`, but for structured types this
   // function does nothing but modify the information in `type`, while the other
-  // function might perform additional steps (e.g., name formatting).
-  void SetRawInfoWithVerificationStatus(base::PassKey<EntityTable> pass_key,
-                                        FieldType type,
+  // function might perform additional steps (e.g., name formatting). This
+  // function should not be used except by database logic and settings page
+  // logic.
+  // TODO(crbug.com/389625753): Investigate merging SetInfo* and SetRawInfo*.
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status);
   // Returns the set of `FieldType`s for which the setter/getter functions above

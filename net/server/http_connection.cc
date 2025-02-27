@@ -126,7 +126,6 @@ bool HttpConnection::QueuedWriteIOBuffer::Append(const std::string& data) {
 
   // If new data is the first pending data, updates data_.
   if (pending_data_.size() == 1) {
-    data_ = const_cast<char*>(pending_data_.front()->data());
     SetSpan(base::as_writable_bytes(base::span(*pending_data_.front())));
   }
   return true;

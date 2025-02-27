@@ -27,6 +27,7 @@ source_set("unit_tests") {
     "//components/ip_protection/common:masked_domain_list_manager_unittest",
     "//components/ip_protection/common:masked_domain_list_unittest",
     "//components/ip_protection/common:mock_blind_sign_auth",
+    "//components/ip_protection/common:probabilistic_reveal_token_registry_unittest",
     "//components/ip_protection/common:url_matcher_with_bypass_unittest",
 
     # Select UMA as the implementation of `ip_protection::Telemetry()`.

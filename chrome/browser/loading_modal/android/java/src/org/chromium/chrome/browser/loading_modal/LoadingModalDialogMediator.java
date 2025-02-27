@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.loading_modal;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Handler;
 import android.os.SystemClock;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -19,8 +23,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Mediator class responsible for handling button clicks and controlling the dialog state.
  *
- * Prevents UI flickering by following the hiding/showing policy defined in Material Design.
+ * <p>Prevents UI flickering by following the hiding/showing policy defined in Material Design.
  */
+@NullMarked
 class LoadingModalDialogMediator
         implements ModalDialogProperties.Controller, ModalDialogManagerObserver {
     private static final long SHOW_DELAY_TIME_MS = 500L;
@@ -34,8 +39,8 @@ class LoadingModalDialogMediator
     private final ObserverList<LoadingModalDialogCoordinator.Observer> mObservers =
             new ObserverList<>();
 
-    private ModalDialogManager mDialogManager;
-    private PropertyModel mModel;
+    private @Nullable ModalDialogManager mDialogManager;
+    private @Nullable PropertyModel mModel;
 
     private long mShownAtMs;
 
@@ -54,6 +59,7 @@ class LoadingModalDialogMediator
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+        assumeNonNull(mDialogManager);
         mDialogManager.removeObserver(this);
         mHandler.removeCallbacksAndMessages(null);
         mState = getFinalStateByDismissalCause(dismissalCause);
@@ -193,6 +199,8 @@ class LoadingModalDialogMediator
     /** Immediately shows the dialog. */
     private void showDialogImmediately() {
         assert mState == LoadingModalDialogCoordinator.State.PENDING;
+        assumeNonNull(mDialogManager);
+        assumeNonNull(mModel);
         mDialogManager.addObserver(this);
         mDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
     }
@@ -201,9 +209,11 @@ class LoadingModalDialogMediator
      * Immediately dismisses the dialog with {@link DialogDismissalCause}.
      *
      * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialog is
-     *                       dismissed.
+     *     dismissed.
      */
     private void dismissDialogWithCause(@DialogDismissalCause int dismissalCause) {
+        assumeNonNull(mDialogManager);
+        assumeNonNull(mModel);
         assert isImmediatelyDismissable();
         mDialogManager.dismissDialog(mModel, dismissalCause);
     }

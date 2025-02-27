@@ -1570,7 +1570,7 @@ template("define_all_androidx_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     androidx_android_aar_prebuilt("androidx_window_window_java") {
-      aar_path = "cipd/libs/androidx_window_window/window-1.4.0-SNAPSHOT.aar"
+      aar_path = "cipd/libs/androidx_window_window/window-1.5.0-SNAPSHOT.aar"
       info_path = "cipd/libs/androidx_window_window/androidx_window_window.info"
       enable_bytecode_checks = false
       deps = [
@@ -3378,7 +3378,7 @@ template("define_all_androidx_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     androidx_android_aar_prebuilt("androidx_window_window_core_android_java") {
-      aar_path = "cipd/libs/androidx_window_window_core_android/window-core-android-1.4.0-SNAPSHOT.aar"
+      aar_path = "cipd/libs/androidx_window_window_core_android/window-core-android-1.5.0-SNAPSHOT.aar"
       info_path = "cipd/libs/androidx_window_window_core_android/androidx_window_window_core_android.info"
       enable_bytecode_checks = false
 

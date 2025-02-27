@@ -222,8 +222,7 @@
     "args": ["--enable-threaded-compositing",
              "--enable-blink-features=OffMainThreadCSSPaint",
              "--enable-gpu-rasterization",
-             "--enable-accelerated-2d-canvas",
-             "--disable-features=CanvasOopRasterization"],
+             "--enable-accelerated-2d-canvas"],
     "owners": ["ikilpatrick@chromium.org"],
     "expires": "Jul 1, 2025"
   },
@@ -1146,18 +1145,6 @@
   },
 
   {
-    "prefix": "oopr-canvas2d",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "fast/canvas",
-               "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html",
-               "external/wpt/webmessaging/postMessage_cross_domain_image_transfer_2d.sub.htm" ],
-    "args": [ "--enable-features=CanvasOopRasterization",
-              "--enable-accelerated-2d-canvas",
-              "--enable-gpu-rasterization"],
-    "owners": ["fserb@chromium.org", "vasilyt@chromium.org"],
-    "expires": "Jul 1, 2025"
-  },
-  {
     "prefix": "disable-frequency-capping-for-overlay-popup",
     "owners": ["yaoxia@chromium.org", "dtapuska@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
@@ -1914,14 +1901,6 @@
       "--disable-features=DeprecateUnload"
     ],
     "expires": "Apr 1, 2024"
-  },
-  {
-    "prefix": "longtask-from-loaf",
-    "owners": ["nrosenthal@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/longtask-timing"],
-    "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
-    "expires": "Feb 1, 2025"
   },
   {
     "prefix": "text-size-adjust",

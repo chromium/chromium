@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/command_buffer/service/shared_image/wrapped_graphite_texture_holder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
@@ -20,6 +21,7 @@
 namespace gpu {
 
 namespace {
+using GraphiteTextureHolder = SkiaImageRepresentation::GraphiteTextureHolder;
 
 bool SupportsMultiplanarRendering(SharedContextState* context_state) {
   auto* dawn_context_provider = context_state->dawn_context_provider();
@@ -97,11 +99,11 @@ SkiaGraphiteDawnImageRepresentation::~SkiaGraphiteDawnImageRepresentation() {
   }
 }
 
-std::vector<skgpu::graphite::BackendTexture>
+std::vector<scoped_refptr<GraphiteTextureHolder>>
 SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
     wgpu::Texture texture,
     bool readonly) {
-  std::vector<skgpu::graphite::BackendTexture> backend_textures;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> backend_textures;
   const bool supports_multiplanar_rendering =
       SupportsMultiplanarRendering(context_state_.get());
   const bool supports_multiplanar_copy =
@@ -124,12 +126,13 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
           /*mipmapped=*/false,
           /*scanout_dcomp_surface=*/false, supports_multiplanar_rendering,
           supports_multiplanar_copy);
-      backend_textures.emplace_back(skgpu::graphite::BackendTextures::MakeDawn(
-          plane_size, plane_info, texture.Get()));
+      backend_textures.emplace_back(base::MakeRefCounted<GraphiteTextureHolder>(
+          skgpu::graphite::BackendTextures::MakeDawn(plane_size, plane_info,
+                                                     texture.Get())));
     }
   } else {
-    backend_textures = {
-        skgpu::graphite::BackendTextures::MakeDawn(texture.Get())};
+    backend_textures = {base::MakeRefCounted<GraphiteTextureHolder>(
+        skgpu::graphite::BackendTextures::MakeDawn(texture.Get()))};
   }
 
   return backend_textures;
@@ -148,7 +151,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     return {};
   }
 
-  std::vector<skgpu::graphite::BackendTexture> backend_textures =
+  std::vector<scoped_refptr<GraphiteTextureHolder>> backend_textures =
       CreateBackendTextures(dawn_scoped_access_->texture(), /*readonly=*/false);
 
   std::vector<sk_sp<SkSurface>> surfaces;
@@ -161,7 +164,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     }
 
     auto surface = SkSurfaces::WrapBackendTexture(
-        recorder_, backend_textures[plane], sk_color_type,
+        recorder_, backend_textures[plane]->texture(), sk_color_type,
         backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
         &surface_props, /*textureReleaseProc=*/nullptr,
         /*releaseContext=*/nullptr, WrappedTextureDebugLabel(plane));
@@ -177,7 +180,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
   return surfaces;
 }
 
-std::vector<skgpu::graphite::BackendTexture>
+std::vector<scoped_refptr<GraphiteTextureHolder>>
 SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
@@ -200,7 +203,7 @@ void SkiaGraphiteDawnImageRepresentation::EndWriteAccess() {
   mode_ = RepresentationAccessMode::kNone;
 }
 
-std::vector<skgpu::graphite::BackendTexture>
+std::vector<scoped_refptr<GraphiteTextureHolder>>
 SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);

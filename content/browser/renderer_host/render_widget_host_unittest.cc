@@ -667,6 +667,7 @@ class RenderWidgetHostTest : public testing::Test {
         TestRenderWidgetHost::CreateStubFrameWidgetRemote());
 
     host_->RendererWidgetCreated(/*for_frame_widget=*/true);
+    host_->input_router()->MakeActive();
   }
 
   void TearDown() override {

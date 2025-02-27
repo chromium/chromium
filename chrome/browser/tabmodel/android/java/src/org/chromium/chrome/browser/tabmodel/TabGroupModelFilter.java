@@ -59,14 +59,36 @@ public interface TabGroupModelFilter extends TabList {
      *
      * @param tabRootId The tab root id that is used to find the related group.
      * @return The number of related tabs.
+     * @deprecated Use {@link #getTabCountForGroup(Token)}. This method returns 1 in the event the
+     *     group was not found or a tab is not in a group which is confusing. Any existing usages of
+     *     this method will be migrated and any reliance on this method returning 1 if the group
+     *     doesn't exist will be fixed as part of the migration.
      */
+    @Deprecated
     int getRelatedTabCountForRootId(int tabRootId);
 
     /**
-     * @param rootId The root identifier of the tab group.
-     * @return Whether the given rootId has any tab group associated with it.
+     * Returns the number of tabs in the tab group with {@code tabGroupId} or 0 if the tab group
+     * does not exist.
      */
+    int getTabCountForGroup(@Nullable Token tabGroupId);
+
+    /**
+     * @param rootId The root identifier of the tab group.
+     * @return Whether the given rootId is tracked in the {@link TabGroupModelFilter}.
+     * @deprecated Use {@link #tabGroupExists(Token)}. This method is confusing; it checked if any
+     *     {@link TabGroup} existed for the {@code rootId}. This is not the same as the tab group
+     *     being a valid group since {@link TabGroup} objects exist for all tabs and only some of
+     *     the tabs are valid tab groups. When migrating off this method make sure the new behavior
+     *     is still applicable. The old implementation effectively leaked implementation details
+     *     which shouldn't be relevant to any caller, but in the event it was relevant a workaround
+     *     might be required.
+     */
+    @Deprecated
     boolean tabGroupExistsForRootId(int rootId);
+
+    /** Returns whether a tab group exists with {@code tabGroupId}. */
+    boolean tabGroupExists(@Nullable Token tabGroupId);
 
     /**
      * Given a tab group's stable ID, finds out the root ID, or {@link Tab.INVALID_TAB_ID} if the

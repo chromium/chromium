@@ -127,7 +127,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidBcivBottomControls,
     &features::kAndroidBcivZeroBrowserFrames,
     &features::kAndroidBrowserControlsInViz,
-    &features::kAndroidDisconnectFileChooserOnTabDeactivateKillSwitch,
     &features::kGenericSensorExtraClasses,
     &features::kBackForwardCache,
     &features::kBoardingPassDetector,
@@ -243,7 +242,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
-    &kChromeSharePageInfo,
     &kChromeSurveyNextAndroid,
     &kClankStartupLatencyInjection,
     &kClankWhatsNew,
@@ -740,10 +738,6 @@ BASE_FEATURE(kDontAutoHideBrowserControls,
 BASE_FEATURE(kCacheDeprecatedSystemLocationSetting,
              "CacheDeprecatedSystemLocationSetting",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeSharePageInfo,
-             "ChromeSharePageInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeSurveyNextAndroid,
              "ChromeSurveyNextAndroid",

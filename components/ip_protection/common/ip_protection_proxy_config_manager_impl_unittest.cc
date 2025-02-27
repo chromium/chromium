@@ -121,6 +121,10 @@ class MockIpProtectionCore : public IpProtectionCore {
   }
   void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) override {}
+  bool ShouldRequestIncludeProbabilisticRevealToken(
+      const GURL& request_url) override {
+    return false;
+  }
 };
 
 class IpProtectionProxyConfigManagerImplTest : public testing::Test {

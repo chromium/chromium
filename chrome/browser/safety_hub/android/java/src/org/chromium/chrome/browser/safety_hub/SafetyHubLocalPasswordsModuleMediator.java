@@ -54,8 +54,11 @@ public class SafetyHubLocalPasswordsModuleMediator
 
         mLocalPasswordsDataSource.setObserver(this);
         mLocalPasswordsDataSource.setUp();
-        // TODO(crbug.com/388788969): Show the loading indicator if the checkup is ran.
-        mLocalPasswordsDataSource.maybeTriggerPasswordCheckup();
+
+        if (mLocalPasswordsDataSource.maybeTriggerPasswordCheckup()) {
+            mModuleHelper =
+                    new SafetyHubLocalPasswordsCheckingModuleHelper(mPreference.getContext());
+        }
     }
 
     @Override
@@ -68,7 +71,11 @@ public class SafetyHubLocalPasswordsModuleMediator
 
     @Override
     public void updateModule() {
-        mLocalPasswordsDataSource.updateState();
+        if (isLoading()) {
+            updatePreference();
+        } else {
+            mLocalPasswordsDataSource.updateState();
+        }
     }
 
     private SafetyHubModuleHelper getModuleHelper(@ModuleType int moduleType) {
@@ -103,7 +110,10 @@ public class SafetyHubLocalPasswordsModuleMediator
 
     private void updateModule(@ModuleType int moduleType) {
         mModuleHelper = getModuleHelper(moduleType);
+        updatePreference();
+    }
 
+    private void updatePreference() {
         mModel.set(SafetyHubModuleProperties.TITLE, mModuleHelper.getTitle());
         mModel.set(SafetyHubModuleProperties.SUMMARY, mModuleHelper.getSummary());
         mModel.set(
@@ -125,6 +135,7 @@ public class SafetyHubLocalPasswordsModuleMediator
 
         mModel.set(SafetyHubModuleProperties.ORDER, getOrder());
         mModel.set(SafetyHubModuleProperties.ICON, getIcon(mPreference.getContext()));
+        mModel.set(SafetyHubModuleProperties.HAS_PROGRESS_BAR, isLoading());
     }
 
     @Override

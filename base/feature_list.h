@@ -100,9 +100,6 @@ enum FeatureState {
 // `T` is a parameter type, one of bool, int, size_t, double, std::string, and
 // base::TimeDelta. Enum types are not supported for now.
 //
-// For now, ScopedFeatureList doesn't work to change the value dynamically when
-// the cache is used with this macro.
-//
 // It should *not* be defined in header files; do not use this macro in header
 // files.
 #define BASE_FEATURE_PARAM(T, feature_object_name, feature, name,       \

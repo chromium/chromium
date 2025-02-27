@@ -78,8 +78,10 @@ class CreditCardSaveManager {
     // Phone number was found on any address (not currently used).
     PHONE_NUMBER = 1 << 11,
     // Set if cardholder name was explicitly requested in the offer-to-save
-    // dialog.  In general, this should happen when name is conflicting/missing
-    // and the user does not have a Google Payments account.
+    // dialog. In general, this should happen when name is conflicting/missing
+    // and the user does not have a Google Payments account. On iOS, this is set
+    // when cardholder name is conflicting/missing even when the user already
+    // has a Google Payments account.
     USER_PROVIDED_NAME = 1 << 12,
     // Set if expiration date was explicitly requested in the offer-to-save
     // dialog. In general, this should happen when expiration date month or year

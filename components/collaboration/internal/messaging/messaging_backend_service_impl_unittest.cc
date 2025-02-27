@@ -1180,6 +1180,10 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
   tab_groups::SavedTabGroupTab tab3(GURL("https://www.example3.com/"), u"Tab 3",
                                     tab_group.saved_guid(), std::nullopt);
 
+  // Create a fourth tab to check for unknown user.
+  tab_groups::SavedTabGroupTab tab4(GURL("https://www.example4.com/"), u"Tab 4",
+                                    tab_group.saved_guid(), std::nullopt);
+
   collaboration_pb::Message message1 = CreateStoredMessage(
       collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
       DirtyType::kDotAndChip, now - base::Minutes(5));
@@ -1211,6 +1215,17 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
   message3.mutable_tab_data()->set_last_url(tab3.url().spec());
   AddMessage(message3);
 
+  collaboration_pb::Message message4 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_REMOVED,
+      DirtyType::kNone, now - base::Days(25));
+  message4.set_triggering_user_gaia_id("gaia_3");
+  message4.mutable_tab_data()->set_sync_tab_id(
+      tab4.saved_tab_guid().AsLowercaseString());
+  message4.mutable_tab_data()->set_sync_tab_group_id(
+      tab4.saved_group_guid().AsLowercaseString());
+  message4.mutable_tab_data()->set_last_url(tab4.url().spec());
+  AddMessage(message4);
+
   // Add support for looking up GAIA IDs.
   EXPECT_CALL(*mock_data_sharing_service_,
               GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
@@ -1224,6 +1239,10 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
       .WillRepeatedly(
           Return(CreatePartialMember(GaiaId("gaia_2"), "gaia2@gmail.com",
                                      "Display Name 1", "Given Name 2")));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_3"))))
+      .WillRepeatedly(Return(std::nullopt));
 
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
@@ -1231,7 +1250,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
   ActivityLogQueryParams params;
   params.collaboration_id = collaboration_group_id;
   std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
-  ASSERT_EQ(3u, activity_log.size());
+  ASSERT_EQ(4u, activity_log.size());
 
   // Verify tab 1.
   EXPECT_EQ(CollaborationEvent::TAB_ADDED, activity_log[0].collaboration_event);
@@ -1264,6 +1283,16 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
   EXPECT_EQ(u"20d ago", activity_log[2].time_delta_text);
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[2].activity_metadata.triggering_user->email);
+
+  // Verify tab 4.
+  EXPECT_EQ(CollaborationEvent::TAB_REMOVED,
+            activity_log[3].collaboration_event);
+  EXPECT_EQ(tab4.url().spec(),
+            *activity_log[3].activity_metadata.tab_metadata->last_known_url);
+  EXPECT_EQ(u"example4.com", activity_log[3].description_text);
+  EXPECT_EQ(u"Unknown user removed a tab", activity_log[3].title_text);
+  EXPECT_EQ(u"25d ago", activity_log[3].time_delta_text);
+  EXPECT_EQ(std::nullopt, activity_log[3].activity_metadata.triggering_user);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestGetMessagesNoMessages) {

@@ -961,10 +961,6 @@ void WebContentsAndroid::UpdateOffsetTagDefinitions(
   offset_tag_mediator_->SetOffsetTagDefinitions(tag_definitions);
 }
 
-void WebContentsAndroid::DisconnectFileSelectListenerIfAny(JNIEnv* env) {
-  web_contents_->DisconnectFileSelectListenerIfAny();
-}
-
 WebContentsAndroid::BrowserControlsOffsetTagMediator::
     BrowserControlsOffsetTagMediator(WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents) {}

@@ -24,8 +24,6 @@ public class CastWebContentsIntentUtils {
     static final String ACTION_DATA_SCHEME = "cast";
     static final String ACTION_DATA_AUTHORITY = "webcontents";
 
-    private static final boolean DEBUG = true;
-
     /**
      * Action type of intent from Android to cast app to notify the stop event of
      * CastWebContentsActivity.
@@ -138,7 +136,7 @@ public class CastWebContentsIntentUtils {
     }
 
     private static Intent onVisibilityChange(Uri uri, @VisibilityType int visibilityType) {
-        if (DEBUG) Log.d(TAG, "onVisibilityChange with uri:" + uri + " type:" + visibilityType);
+        Log.d(TAG, "onVisibilityChange with uri:" + uri + " type:" + visibilityType);
 
         Intent intent = new Intent(ACTION_ON_VISIBILITY_CHANGE, uri);
         intent.putExtra(INTENT_EXTRA_VISIBILITY_TYPE, visibilityType);
@@ -147,7 +145,7 @@ public class CastWebContentsIntentUtils {
 
     public static Intent requestMediaPlayingStatus(String instanceId) {
         Uri uri = getInstanceUri(instanceId);
-        if (DEBUG) Log.d(TAG, "requestMediaPlayingStatus with uri: " + uri);
+        Log.d(TAG, "requestMediaPlayingStatus with uri: " + uri);
         return new Intent(ACTION_REQUEST_MEDIA_PLAYING_STATUS, uri);
     }
 
@@ -195,19 +193,6 @@ public class CastWebContentsIntentUtils {
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP
                         | Intent.FLAG_ACTIVITY_NO_ANIMATION
                         | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
-        return intent;
-    }
-
-    // CastWebContentsComponent.Receiver -> CastWebContentsService
-    public static Intent requestStartCastService(WebContents webContents, String instanceId) {
-        WebContentsRegistry.addWebContents(instanceId, webContents);
-        Intent intent =
-                new Intent(
-                        Intent.ACTION_VIEW,
-                        getInstanceUri(instanceId),
-                        ContextUtils.getApplicationContext(),
-                        CastWebContentsService.class);
-        intent.putExtra(INTENT_EXTRA_SESSION_ID, instanceId);
         return intent;
     }
 

@@ -82,6 +82,8 @@ class IsolatedWebAppPolicyManager
 
   void CleanupOrphanedBundles(base::OnceClosure finished_closure);
 
+  void OnPolicyChanged();
+
   // IwaKeyDistributionInfoProvider::Observer:
   void OnComponentUpdateSuccess(const base::Version& version,
                                 bool is_preloaded) override;

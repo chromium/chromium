@@ -89,7 +89,6 @@ class CollaborationMessagingTabData;
 
 namespace tabs {
 
-class DisconnectFileChooserOnBackgroundController;
 class TabInterface;
 class TabDialogManager;
 
@@ -270,8 +269,6 @@ class TabFeatures {
   std::unique_ptr<passage_embeddings::EmbedderTabObserver>
       embedder_tab_observer_;
 
-  std::unique_ptr<DisconnectFileChooserOnBackgroundController>
-      disconnect_file_chooser_on_background_controller_;
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
 #endif

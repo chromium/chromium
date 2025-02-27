@@ -183,6 +183,59 @@ if (current_toolchain == host_toolchain) {
   # separate build targets for two reasons:
   # 1. To avoid naming collisions between files in the same source set.
   # 2. Because Chromium doesn't need a lot of the languages.
+
+  # Note we have to separate the 3 Java directories (java/, java/full/ and
+  # java/lite/) into 3 different GN targets because they contain .cc files with
+  # identical names (e.g. message.cc), and source_set() doesn't support multiple
+  # .cc files with the same basename. We use a single target for the headers as
+  # these directories tend to cross-#include each other which makes things
+  # challenging for GN header dependency checks.
+  source_set("protoc_java_all_headers") {
+    sources = protoc_java_all_headers
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    public_deps = [ ":protobuf_full" ]
+  }
+  source_set("protoc_java") {
+    sources = protoc_java_sources
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    public_deps = [
+      ":protobuf_full",
+      ":protoc_java_all_headers",
+    ]
+  }
+  source_set("protoc_java_full") {
+    sources = protoc_java_full_sources
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    public_deps = [
+      ":protobuf_full",
+      ":protoc_java_all_headers",
+    ]
+  }
+  source_set("protoc_java_lite") {
+    sources = protoc_java_lite_sources
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    public_deps = [
+      ":protobuf_full",
+      ":protoc_java_all_headers",
+    ]
+  }
+
   source_set("protoc_cpp") {
     sources = protoc_cpp_sources + protoc_cpp_headers
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -216,9 +269,17 @@ if (current_toolchain == host_toolchain) {
     public_deps = [ ":protobuf_full" ]
     deps = [
       ":protoc_cpp",
+      ":protoc_java",
+      ":protoc_java_all_headers",
+      ":protoc_java_full",
+      ":protoc_java_lite",
       ":protoc_python",
     ]
     allow_circular_includes_from = [
+      ":protoc_java",
+      ":protoc_java_all_headers",
+      ":protoc_java_full",
+      ":protoc_java_lite",
       ":protoc_cpp",
       ":protoc_python",
     ]
@@ -233,6 +294,9 @@ if (current_toolchain == host_toolchain) {
 
     deps = [
       ":protoc_cpp",
+      ":protoc_java",
+      ":protoc_java_full",
+      ":protoc_java_lite",
       ":protoc_lib",
       ":protoc_python",
     ]

@@ -99,6 +99,10 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/paint_preview/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("passage_embeddings_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/passage_embeddings/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("password_manager_test_bundle_data") {
     testonly = true
     filelist_name = "data/password_manager/unit_tests_bundle_data.filelist"

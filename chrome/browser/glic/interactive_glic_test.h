@@ -265,6 +265,33 @@ class InteractiveGlicTestT : public T {
     return steps;
   }
 
+  auto CheckControllerHasWidget(bool expect_widget) {
+    return Api::CheckResult(
+        [this]() { return window_controller().GetGlicWidget() != nullptr; },
+        expect_widget, "CheckControllerHasWidget");
+  }
+
+  auto CheckControllerShowing(bool expect_showing) {
+    return Api::CheckResult(
+        [this]() { return window_controller().IsShowing(); }, expect_showing,
+        "CheckControllerShowing");
+  }
+
+  auto CheckControllerWidgetMode(GlicWindowMode mode) {
+    return Api::CheckResult(
+        [this]() {
+          return window_controller().IsAttached() ? GlicWindowMode::kAttached
+                                                  : GlicWindowMode::kDetached;
+        },
+        mode, "CheckControllerWidgetMode");
+  }
+
+  auto CheckIfAttachedToBrowser(Browser* new_browser) {
+    return Api::CheckResult(
+        [this] { return window_controller().attached_browser(); }, new_browser,
+        "attached to the other browser");
+  }
+
  protected:
   GlicKeyedService* glic_service() {
     return GlicKeyedServiceFactory::GetGlicKeyedService(

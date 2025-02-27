@@ -78,11 +78,12 @@ export const canNotRemoveAnythingFromHostTypes:
 
 // Ensure ClosedEnums are not modified, and ExtensibleEnums are only extended.
 // TODO: This only checks enum keys. Not sure how to check values.
-type EnumOnlyExtended<O, N> =
-    Exclude<keyof O, keyof N> extends never ? never : 'Error: enum changed';
+type EnumOnlyExtended<O, N> = Exclude<keyof O, keyof N> extends never ?
+    never :
+    ['Error: enum changed', O];
 type EnumIsEquivalent<O, N> = Exclude<keyof N, keyof O> extends never ?
     EnumOnlyExtended<O, N>:
-    'Error: enum changed';
+    ['Error: enum changed', O];
 
 type ClosedEnumsDoNotChange = AllValues<{
   [K in keyof current.ClosedEnums & keyof old.ClosedEnums]:

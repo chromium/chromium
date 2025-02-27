@@ -27,6 +27,10 @@ namespace content {
 class FeatureObserverClient;
 }
 
+namespace memory {
+class EnterpriseMemoryLimitPrefObserver;
+}  // namespace memory
+
 namespace performance_manager {
 class Graph;
 class PageLiveStateDecoratorHelper;
@@ -79,6 +83,7 @@ class ChromeBrowserMainExtraPartsPerformanceManager
 
   // ChromeBrowserMainExtraParts overrides.
   void PostCreateThreads() override;
+  void PostBrowserStart() override;
   void PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
 
@@ -133,6 +138,15 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   std::unique_ptr<performance_manager::user_tuning::PerformanceDetectionManager>
       performance_detection_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Tracks changes to the MemoryLimitMbEnabled enterprise policy, and
+  // starts/stops the EnterpriseMemoryLimitEvaluator accordingly.
+  //
+  // Only supported on some platforms, see
+  // EnterpriseMemoryLimitPrefObserver::PlatformIsSupported for the list of
+  // supported platforms.
+  std::unique_ptr<memory::EnterpriseMemoryLimitPrefObserver>
+      memory_limit_pref_observer_;
 };
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_

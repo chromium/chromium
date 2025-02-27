@@ -443,6 +443,7 @@ void OutlookCalendarPageHandler::OnJsonReceived(
                              base::Time::Now() + base::Seconds(wait_time));
     } else if (response_info->headers->response_code() ==
                net::HTTP_UNAUTHORIZED) {
+      request_result = OutlookCalendarRequestResult::kAuthError;
       microsoft_auth_service_->SetAuthStateError();
     }
   }

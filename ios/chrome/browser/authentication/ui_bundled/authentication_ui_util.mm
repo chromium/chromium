@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -176,21 +177,26 @@ BOOL ShouldShowManagedConfirmationForHostedDomain(
     return NO;
   }
 
-  // With multi-profiles, the user must be reminded of who is managing the new
-  // profile.
-  if (HasMachineLevelPolicies() &&
-      !AreSeparateProfilesForManagedAccountsEnabled()) {
-    // Don't show the dialog if the browser has already machine level policies
-    // as the user already knows that their browser is managed.
-    return NO;
-  }
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    if (HasMachineLevelPolicies()) {
+      // Don't show the dialog if the browser has already machine level policies
+      // as the user already knows that their browser is managed.
+      return NO;
+    }
 
-  signin::GaiaIdHash gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id));
-  const base::Value* already_seen = syncer::GetAccountKeyedPrefValue(
-      prefs, prefs::kSigninHasAcceptedManagementDialog, gaia_id_hash);
+    signin::GaiaIdHash gaia_id_hash =
+        signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id));
+    const base::Value* already_seen = syncer::GetAccountKeyedPrefValue(
+        prefs, prefs::kSigninHasAcceptedManagementDialog, gaia_id_hash);
 
-  if (already_seen && already_seen->GetIfBool().value_or(false)) {
+    if (already_seen && already_seen->GetIfBool().value_or(false)) {
+      return NO;
+    }
+  } else if (GetApplicationContext()
+                 ->GetAccountProfileMapper()
+                 ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id))) {
+    // If the corresponding profile is fully initialized, the user has
+    // already seen the confirmation screen.
     return NO;
   }
 

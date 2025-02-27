@@ -1,13 +1,13 @@
-diff --git a/src/google/protobuf/compiler/main.cc b/src/google/protobuf/compiler/main.cc
-index babede8faa8c4..c165de980a7cb 100644
---- a/src/google/protobuf/compiler/main.cc
-+++ b/src/google/protobuf/compiler/main.cc
-@@ -8,15 +8,8 @@
+diff --git a/third_party/protobuf/src/google/protobuf/compiler/main.cc b/third_party/protobuf/src/google/protobuf/compiler/main.cc
+index babede8faa8c4..02085bb887478 100644
+--- a/third_party/protobuf/src/google/protobuf/compiler/main.cc
++++ b/third_party/protobuf/src/google/protobuf/compiler/main.cc
+@@ -8,15 +8,9 @@
  #include "absl/log/initialize.h"
  #include "google/protobuf/compiler/command_line_interface.h"
  #include "google/protobuf/compiler/cpp/generator.h"
 -#include "google/protobuf/compiler/csharp/csharp_generator.h"
--#include "google/protobuf/compiler/java/generator.h"
+ #include "google/protobuf/compiler/java/generator.h"
 -#include "google/protobuf/compiler/kotlin/generator.h"
 -#include "google/protobuf/compiler/objectivec/generator.h"
 -#include "google/protobuf/compiler/php/php_generator.h"
@@ -18,29 +18,19 @@ index babede8faa8c4..c165de980a7cb 100644
  
  #ifdef DISABLE_PROTOC_CONFIG
  #include "google/protobuf/compiler/allowlists/allowlist.h"
-@@ -53,21 +46,6 @@ int ProtobufMain(int argc, char* argv[]) {
-   cpp_generator.set_runtime_include_base(GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE);
+@@ -62,11 +56,6 @@ int ProtobufMain(int argc, char* argv[]) {
+   java_generator.set_opensource_runtime(true);
  #endif
  
--  // Proto2 Java
--  java::JavaGenerator java_generator;
--  cli.RegisterGenerator("--java_out", "--java_opt", &java_generator,
--                        "Generate Java source file.");
--
--#ifdef GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE
--  java_generator.set_opensource_runtime(true);
--#endif
--
 -  // Proto2 Kotlin
 -  kotlin::KotlinGenerator kt_generator;
 -  cli.RegisterGenerator("--kotlin_out", "--kotlin_opt", &kt_generator,
 -                        "Generate Kotlin file.");
 -
--
+ 
    // Proto2 Python
    python::Generator py_generator;
-   cli.RegisterGenerator("--python_out", "--python_opt", &py_generator,
-@@ -82,30 +60,6 @@ int ProtobufMain(int argc, char* argv[]) {
+@@ -82,30 +71,6 @@ int ProtobufMain(int argc, char* argv[]) {
    cli.RegisterGenerator("--pyi_out", &pyi_generator,
                          "Generate python pyi stub.");
  

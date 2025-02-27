@@ -12,14 +12,23 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -166,9 +175,6 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
 }
 
 void ParentAccessView::OnWidgetClosing(views::Widget* widget) {
-  // The cancellation_metrics_callback_ is an once callback,
-  // so the metrics about a cancelled parent approval flow are recorded only
-  // once per dialog.
   if (!dialog_result_reset_callback_.is_null()) {
     std::move(dialog_result_reset_callback_).Run();
   }
@@ -182,6 +188,51 @@ void ParentAccessView::CloseView() {
   if (widget) {
     widget->Close();
   }
+}
+
+void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
+  if (!dialog_result_reset_callback_.is_null()) {
+    std::move(dialog_result_reset_callback_).Run();
+  }
+
+  views::Widget* widget = GetWidget();
+  CHECK(widget);
+  // Note: We cannot remove the existing "X" close button,
+  // but we add buttons to dismiss the dialog.
+  widget->widget_delegate()->AsDialogDelegate()->SetButtons(
+      static_cast<int>(ui::mojom::DialogButton::kOk));
+
+  // Remove the web view that displays the PACP widget content, and replace it
+  // with a view that displays the error message.
+  CHECK(web_view_);
+  // Assume ownership of the removed view but do not destruct yet,
+  // as there may be still content observers for it, which can lead to a
+  // crash.
+  removed_view_holder_ = RemoveChildViewT(web_view_.get());
+  web_view_ = nullptr;
+  content_loader_timeout_observer_.reset();
+  CHECK(content_loader_timeout_observer_ == nullptr);
+
+  auto error_view = std::make_unique<views::View>();
+  error_view->SetProperty(views::kElementIdentifierKey,
+                          kLocalWebParentApprovalDialogErrorId);
+
+  auto layout = std::make_unique<views::BoxLayout>();
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
+  layout->set_main_axis_alignment(views::LayoutAlignment::kCenter);
+  layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
+  error_view->SetLayoutManager(std::move(layout));
+
+  error_view->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
+          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon))));
+  // TODO(crbug.com/394842701): Provide new appropriate strings.
+  error_view->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(
+      l10n_util::GetStringUTF16(IDS_PARENT_WEBSITE_LOCAL_WEB_APPROVAL_ERROR)));
+
+  error_view_ = AddChildView(std::move(error_view));
+  widget->Show();
 }
 
 content::WebContents* ParentAccessView::GetWebViewContents() {

@@ -14,6 +14,10 @@
 #include "ui/events/event.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class MouseEvent;
+}  // namespace ui
+
 namespace page_actions {
 
 class PageActionController;
@@ -57,6 +61,8 @@ class PageActionView : public IconLabelBubbleView,
   bool ShouldUpdateInkDropOnClickCanceled() const override;
   void NotifyClick(const ui::Event& event) override;
   gfx::Size GetMinimumSize() const override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnClickCanceled(const ui::Event& event) override;
 
   actions::ActionId GetActionId() const;
 
@@ -91,6 +97,12 @@ class PageActionView : public IconLabelBubbleView,
 
   // Indicates that the current page action is showing as a suggestion chip.
   bool showing_suggestion_chip_ = false;
+
+  // Used to track whether the mouse was pressed when associated ephemeral UI
+  // (eg. a bubble that closes on focus loss) was showing, to avoid
+  // re-triggering the action if so. This is necessary because the bubble will
+  // have closed by the time the view invokes the action on button click.
+  bool skip_action_invocation_ = false;
 };
 
 }  // namespace page_actions

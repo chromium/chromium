@@ -173,9 +173,10 @@ export function createTranslationMap(): TranslationMap {
       [StaticMessageKey.ACTIVITY_LOGS]: loadTimeData.getString('activityLog'),
       [StaticMessageKey.YOUR_GROUP_IS_FULL_DESCRIPTION]:
           loadTimeData.getString('ownerCannotShare'),
-      [StaticMessageKey.CLOSE_FLOW_HEADER]: 'deleteLastDialogHeader',
-      [StaticMessageKey.KEEP_GROUP]: 'keepGroup',
-      [StaticMessageKey.DELETE_GROUP]: 'deleteGroup',
+      [StaticMessageKey.CLOSE_FLOW_HEADER]:
+          loadTimeData.getString('deleteLastDialogHeader'),
+      [StaticMessageKey.KEEP_GROUP]: loadTimeData.getString('keepGroup'),
+      [StaticMessageKey.DELETE_GROUP]: loadTimeData.getString('deleteGroup'),
     },
     dynamic: {
       /** Invite flow */

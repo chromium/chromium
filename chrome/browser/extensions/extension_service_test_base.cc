@@ -298,6 +298,7 @@ void ExtensionServiceTestBase::InitializeExtensionService(
   CreateExtensionService(is_first_run, autoupdate_enabled, extensions_enabled,
                          enable_install_limiter);
   registry_ = ExtensionRegistry::Get(profile());
+  registrar_ = ExtensionRegistrar::Get(profile());
 }
 
 bool ExtensionServiceTestBase::ShouldAllowMV2Extensions() {
@@ -429,6 +430,7 @@ void ExtensionServiceTestBase::SetUp() {
 }
 
 void ExtensionServiceTestBase::TearDown() {
+  Shutdown();
   if (profile_) {
     content::StoragePartitionConfig default_storage_partition_config =
         content::StoragePartitionConfig::CreateDefault(profile());
@@ -442,6 +444,11 @@ void ExtensionServiceTestBase::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS)
   kiosk_chrome_app_manager_.reset();
 #endif
+}
+
+void ExtensionServiceTestBase::Shutdown() {
+  registry_ = nullptr;
+  registrar_ = nullptr;
 }
 
 void ExtensionServiceTestBase::SetUpTestSuite() {

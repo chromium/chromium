@@ -106,13 +106,6 @@ public class StartupHelper {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
             if (savedTabGroup != null) continue;
 
-            // Skip if the group is ineligible for syncing, e.g. hasn't been accessed in recent
-            // times.
-            if (!TabGroupSyncUtils.isTabGroupEligibleForSyncing(tabGroupId, mTabGroupModelFilter)) {
-                LogUtils.log(TAG, "Skipping the tab group as it is too old");
-                return;
-            }
-
             mRemoteTabGroupMutationHelper.createRemoteTabGroup(tabGroupId);
         }
     }

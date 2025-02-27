@@ -673,14 +673,6 @@ void TabGroupSyncServiceImpl::OnCollaborationRemoved(
     if (group.collaboration_id().has_value() &&
         group.collaboration_id().value() == collaboration_id) {
       model_->SetGroupHidden(group.saved_guid());
-
-      // Clean up the originating saved tab group.
-      if (group.originating_tab_group_guid().has_value()) {
-        const SavedTabGroup* originating_group =
-            model_->Get(group.originating_tab_group_guid().value());
-        CHECK(!originating_group || !originating_group->local_group_id());
-        RemoveGroup(group.originating_tab_group_guid().value());
-      }
     }
   }
 }

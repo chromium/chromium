@@ -50,13 +50,19 @@ inline constexpr char kEmojiSuggestionEnterpriseAllowed[] =
 // A boolean pref of whether MagicBoost is enabled.
 inline constexpr char kMagicBoostEnabled[] = "settings.magic_boost_enabled";
 
+// An integer pref used by an admin policy to control the settings of Help Me
+// Write (HMW). See the policy at HelpMeWriteSettings.yaml.
+inline constexpr char kHmwManagedSettings[] = "settings.managed.help_me_write";
+
 // A boolean pref of whether orca is enabled.
 inline constexpr char kOrcaEnabled[] = "assistive_input.orca_enabled";
 
+// TODO: b:399305602 - Remove this deprecated pref.
 // A boolean pref indicating the status of the orca feedback.
 inline constexpr char kOrcaFeedbackEnabled[] =
     "assistive_input.orca_feedback_enabled";
 
+// TODO: b:399305602 - Remove this deprecated pref.
 // A boolean pref used by an admin policy to enable/disable Orca. See the
 // policy at OrcaEnabled.yaml.
 inline constexpr char kManagedOrcaEnabled[] =

@@ -2341,14 +2341,22 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
         /*finishedProc=*/nullptr, /*finishedContext=*/nullptr);
   } else {
     CHECK(graphite_context());
+    auto graphite_texture_ref =
+        dest_scoped_access->graphite_texture_holder(/*plane_index=*/0);
+    auto* graphite_texture_ptr = graphite_texture_ref.release();
+    using graphite_texture_ptr_type = decltype(graphite_texture_ptr);
+    auto release_proc = [](void* context, skgpu::CallbackResult) {
+      static_cast<graphite_texture_ptr_type>(context)->Release();
+    };
     written = graphite_recorder()->updateBackendTexture(
-        dest_scoped_access->graphite_texture(/*plane_index=*/0), &pixmap,
-        /*numLevels=*/1);
+        graphite_texture_ptr->texture(), &pixmap,
+        /*numLevels=*/1, release_proc, graphite_texture_ptr);
   }
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
-                                           /*need_graphite_submit=*/true);
+  shared_context_state_->SubmitIfNecessary(
+      std::move(end_semaphores),
+      dest_scoped_access->NeedGraphiteContextSubmit());
 
   return written;
 }

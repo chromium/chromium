@@ -87,25 +87,18 @@ FakeOnDeviceSession::FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
 
-void FakeOnDeviceSession::AddContext(
-    mojom::InputOptionsPtr input,
-    mojo::PendingRemote<mojom::ContextClient> client) {
-  NOTREACHED();
-}
-
 void FakeOnDeviceSession::Append(
     mojom::AppendOptionsPtr options,
     mojo::PendingRemote<mojom::ContextClient> client) {
+  mojo::Remote<mojom::ContextClient> remote;
+  if (client) {
+    // Bind now to catch disconnects.
+    remote.Bind(std::move(client));
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FakeOnDeviceSession::AppendImpl,
                                 weak_factory_.GetWeakPtr(), std::move(options),
-                                std::move(client)));
-}
-
-void FakeOnDeviceSession::Execute(
-    mojom::InputOptionsPtr input,
-    mojo::PendingRemote<mojom::StreamingResponder> response) {
-  NOTREACHED();
+                                std::move(remote)));
 }
 
 void FakeOnDeviceSession::Generate(
@@ -190,7 +183,11 @@ void FakeOnDeviceSession::GenerateImpl(
 
 void FakeOnDeviceSession::AppendImpl(
     mojom::AppendOptionsPtr options,
-    mojo::PendingRemote<mojom::ContextClient> client) {
+    mojo::Remote<mojom::ContextClient> client) {
+  // If the client was bound but is now disconnected, cancel the request.
+  if (client && !client.is_connected()) {
+    return;
+  }
   uint32_t input_tokens =
       static_cast<uint32_t>(OnDeviceInputToString(*options->input).size());
   uint32_t max_tokens =
@@ -199,8 +196,7 @@ void FakeOnDeviceSession::AppendImpl(
   uint32_t tokens_processed = std::min(input_tokens - token_offset, max_tokens);
   context_.emplace_back(std::move(options));
   if (client) {
-    mojo::Remote<mojom::ContextClient> remote(std::move(client));
-    remote->OnComplete(tokens_processed);
+    client->OnComplete(tokens_processed);
   }
 }
 

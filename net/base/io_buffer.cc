@@ -26,25 +26,22 @@ void IOBuffer::AssertValidBufferSize(size_t size) {
 
 IOBuffer::IOBuffer() = default;
 
-IOBuffer::IOBuffer(base::span<char> data)
-    : data_(data.data()), size_(data.size()) {
-  AssertValidBufferSize(size_);
-}
+IOBuffer::IOBuffer(base::span<char> span)
+    : IOBuffer(base::as_writable_bytes(span)) {}
 
-IOBuffer::IOBuffer(base::span<uint8_t> data)
-    : IOBuffer(base::as_writable_chars(data)) {}
+IOBuffer::IOBuffer(base::span<uint8_t> span) : span_(span) {
+  AssertValidBufferSize(span_.size());
+}
 
 IOBuffer::~IOBuffer() = default;
 
 void IOBuffer::SetSpan(base::span<uint8_t> span) {
   AssertValidBufferSize(span.size());
-  data_ = base::as_writable_chars(span).data();
-  size_ = span.size();
+  span_ = span;
 }
 
 void IOBuffer::ClearSpan() {
-  data_ = nullptr;
-  size_ = 0;
+  span_ = base::span<uint8_t>();
 }
 
 IOBufferWithSize::IOBufferWithSize() = default;
@@ -105,7 +102,7 @@ void DrainableIOBuffer::SetOffset(int bytes) {
   CHECK_GE(bytes, 0);
   // Length from the start of `base_` to the end of the buffer passed in to the
   // constructor isn't stored anywhere, so need to calculate it.
-  int length = size_ + used_;
+  int length = size() + used_;
   CHECK_LE(bytes, length);
   used_ = bytes;
   SetSpan(base_->span().subspan(base::checked_cast<size_t>(used_),
@@ -149,7 +146,7 @@ void GrowableIOBuffer::set_offset(int offset) {
 
 void GrowableIOBuffer::DidConsume(int bytes) {
   CHECK_LE(0, bytes);
-  CHECK_LE(bytes, size_);
+  CHECK_LE(bytes, size());
   set_offset(offset_ + bytes);
 }
 

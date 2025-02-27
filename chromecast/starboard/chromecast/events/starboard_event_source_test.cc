@@ -92,6 +92,8 @@ using ::testing::_;
 
 constexpr float kXPosClick = 1;
 constexpr float kYPosClick = 2;
+constexpr float kXPosMove = 3;
+constexpr float kYPosMove = 4;
 
 void DispatchSbEvent(const SbEvent* event) {
   // The |source_| should be subscribed to this and receive the event.
@@ -106,6 +108,19 @@ void EmulateKey(SbKey key, bool press) {
   // Normally invalid for keys other than mouse presses, but okay for test.
   input_data.position.x = kXPosClick;
   input_data.position.y = kYPosClick;
+
+  SbEvent event;
+  event.type = kSbEventTypeInput;
+  event.data = &input_data;
+
+  DispatchSbEvent(&event);
+}
+
+void EmulateMove() {
+  SbInputData input_data;
+  input_data.type = kSbInputEventTypeMove;
+  input_data.position.x = kXPosMove;
+  input_data.position.y = kYPosMove;
 
   SbEvent event;
   event.type = kSbEventTypeInput;
@@ -160,6 +175,40 @@ TEST_F(StarboardEventSourceTest, UnsupportedClickIsNotPropagated) {
   EXPECT_EQ(last_ui_event_, nullptr);
 
   EmulateKey(kSbKeyMouse2, /*press=*/false);
+  EXPECT_EQ(last_ui_event_, nullptr);
+}
+
+TEST_F(StarboardEventSourceTest, Move) {
+  EmulateMove();
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsMouseEvent());
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseMoved);
+  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location().x(), kXPosMove);
+  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location().y(), kYPosMove);
+}
+
+TEST_F(StarboardEventSourceTest, SupportedClick) {
+  EmulateKey(kSbKeyMouse1, true);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsMouseEvent());
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMousePressed);
+  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location().x(), kXPosClick);
+  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location().y(), kYPosClick);
+  EXPECT_TRUE(last_ui_event_->AsMouseEvent()->IsOnlyLeftMouseButton());
+
+  EmulateKey(kSbKeyMouse1, false);
+  EXPECT_TRUE(last_ui_event_->IsMouseEvent());
+  EXPECT_EQ(ui::EventType::kMouseReleased, last_ui_event_->type());
+  EXPECT_EQ(kXPosClick, last_ui_event_->AsLocatedEvent()->location().x());
+  EXPECT_EQ(kYPosClick, last_ui_event_->AsLocatedEvent()->location().y());
+  EXPECT_TRUE(last_ui_event_->AsMouseEvent()->IsOnlyLeftMouseButton());
+}
+
+TEST_F(StarboardEventSourceTest, UnsupportedClick) {
+  EmulateKey(kSbKeyMouse2, true);
+  EXPECT_EQ(last_ui_event_, nullptr);
+
+  EmulateKey(kSbKeyMouse2, false);
   EXPECT_EQ(last_ui_event_, nullptr);
 }
 

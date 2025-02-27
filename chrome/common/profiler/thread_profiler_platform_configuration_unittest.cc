@@ -80,7 +80,11 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::DEV));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::BETA));
 #if BUILDFLAG(IS_ANDROID)
+#if defined(ARCH_CPU_ARM64)
+  EXPECT_TRUE(config()->IsSupported(version_info::Channel::STABLE));
+#else   // defined(ARCH_CPU_ARM64)
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
+#endif  // defined(ARCH_CPU_ARM64)
 #else   // BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::STABLE));
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -100,6 +104,13 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
             config()->GetEnableRates(version_info::Channel::DEV));
   EXPECT_EQ((RelativePopulations{0.0, 0.0, 100.0}),
             config()->GetEnableRates(version_info::Channel::BETA));
+#if defined(ARCH_CPU_ARM64)
+  EXPECT_EQ((RelativePopulations{100.0 - 0.0001, 0.0, 0.0001}),
+            config()->GetEnableRates(version_info::Channel::STABLE));
+#else
+  EXPECT_EQ((RelativePopulations{100.0, 0.0, 0.0}),
+            config()->GetEnableRates(version_info::Channel::STABLE));
+#endif
   // Note: death tests aren't supported on Android. Otherwise this test would
   // check that the other inputs result in CHECKs.
 #else

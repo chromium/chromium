@@ -29,6 +29,8 @@ class XRWebGLTextureArraySwapChain final : public XRWebGLSwapChain {
 
   void SetLayer(XRCompositionLayer* layer) override;
 
+  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+
   void Trace(Visitor* visitor) const override;
 
  private:

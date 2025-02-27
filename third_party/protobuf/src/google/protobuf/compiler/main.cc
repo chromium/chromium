@@ -8,6 +8,7 @@
 #include "absl/log/initialize.h"
 #include "google/protobuf/compiler/command_line_interface.h"
 #include "google/protobuf/compiler/cpp/generator.h"
+#include "google/protobuf/compiler/java/generator.h"
 #include "google/protobuf/compiler/python/generator.h"
 #include "google/protobuf/compiler/python/pyi_generator.h"
 
@@ -45,6 +46,16 @@ int ProtobufMain(int argc, char* argv[]) {
   cpp_generator.set_opensource_runtime(true);
   cpp_generator.set_runtime_include_base(GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE);
 #endif
+
+  // Proto2 Java
+  java::JavaGenerator java_generator;
+  cli.RegisterGenerator("--java_out", "--java_opt", &java_generator,
+                        "Generate Java source file.");
+
+#ifdef GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE
+  java_generator.set_opensource_runtime(true);
+#endif
+
 
   // Proto2 Python
   python::Generator py_generator;

@@ -115,6 +115,7 @@ enum class SettingSource {
   kSupervised,
   kInstalledWebApp,
   kTpcdGrant,
+  kOsJavascriptOptimizer,
   kTest,
 };
 
@@ -153,6 +154,8 @@ constexpr SettingSource GetSettingSourceFromProviderType(
       return SettingSource::kExtension;
     case ProviderType::kInstalledWebappProvider:
       return SettingSource::kInstalledWebApp;
+    case ProviderType::kJavascriptOptimizerAndroidProvider:
+      return SettingSource::kOsJavascriptOptimizer;
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kOneTimePermissionProvider:
     case ProviderType::kPrefProvider:

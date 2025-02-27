@@ -15,7 +15,8 @@ import org.chromium.chromecast.base.Scope;
 /**
  * Registers a BroadcastReceiver in the constructor, and unregisters it in the close() method.
  *
- * This can be used to react to Observables to properly control the lifetimes of BroadcastReceivers.
+ * <p>This can be used to react to Observables to properly control the lifetimes of
+ * BroadcastReceivers.
  */
 public class BroadcastReceiverScope implements Scope {
     private final Context mContext;
@@ -28,12 +29,13 @@ public class BroadcastReceiverScope implements Scope {
     public BroadcastReceiverScope(
             Context context, IntentFilter filter, IntentReceivedCallback callback) {
         mContext = context;
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                callback.onReceive(intent);
-            }
-        };
+        mReceiver =
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        callback.onReceive(intent);
+                    }
+                };
         mContext.registerReceiver(mReceiver, filter);
     }
 
@@ -42,9 +44,7 @@ public class BroadcastReceiverScope implements Scope {
         mContext.unregisterReceiver(mReceiver);
     }
 
-    /**
-     * Functional interface to handle received Intents.
-     */
+    /** Functional interface to handle received Intents. */
     public interface IntentReceivedCallback {
         public void onReceive(Intent intent);
     }

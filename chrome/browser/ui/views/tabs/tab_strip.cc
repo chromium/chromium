@@ -1282,6 +1282,14 @@ void TabStrip::OnGroupMoved(const tab_groups::TabGroupId& group) {
 }
 
 void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
+  for (int tab_view_model_index = 0;
+       tab_view_model_index < tab_container_->GetTabCount();
+       tab_view_model_index++) {
+    Tab* tab = tab_at(tab_view_model_index);
+    if (tab->group() == group) {
+      tab->SetGroup(std::nullopt);
+    }
+  }
   tab_container_->OnGroupClosed(group);
 }
 

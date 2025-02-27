@@ -1375,6 +1375,20 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "v8_backtrace",
+    args = {
+        "v8_enable_backtrace": True,
+    },
+)
+
+gn_args.config(
+    name = "v8_debug",
+    args = {
+        "v8_enable_debug_code": True,
+    },
+)
+
+gn_args.config(
     name = "v8_heap",
     args = {
         "v8_enable_verify_heap": True,
@@ -1400,6 +1414,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "v8_sandbox_testing",
+    args = {
+        "v8_enable_memory_corruption_api": True,
+    },
+)
+
+gn_args.config(
     name = "v8_simulate_arm",
     args = {
         "v8_target_cpu": "arm",
@@ -1420,9 +1441,9 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "v8_sandbox_testing",
+    name = "v8_static",
     args = {
-        "v8_enable_memory_corruption_api": True,
+        "v8_static_library": True,
     },
 )
 

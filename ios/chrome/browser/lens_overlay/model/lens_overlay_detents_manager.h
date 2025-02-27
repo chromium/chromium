@@ -4,19 +4,22 @@
 
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_DETENTS_MANAGER_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_DETENTS_MANAGER_H_
+
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 
 @protocol LensOverlayDetentsChangeObserver;
 
-// Manages the detents for a given bottom sheet.
+// Manages the detents for a given bottom sheet, adapting to different detent
+// sizes.
 @interface LensOverlayDetentsManager : NSObject
 
 // The estimated detent medium detent height, with respect to the current
 // presentation strategy.
 @property(nonatomic, readonly) CGFloat estimatedMediumDetentHeight;
 
+// The object notified of bottom sheet detent changes.
 @property(nonatomic, weak) id<LensOverlayDetentsChangeObserver> observer;
 
 // Current sheet dimension.
@@ -27,18 +30,24 @@
     SheetDetentPresentationStategy presentationStrategy;
 
 // Creates a new detents manager scoped to the sheet instance.
+// Starts by default in 'selection' mode.
 - (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet
                              window:(UIWindow*)window;
 
+// Creates a new detents manager scoped to the sheet instance, starting
+// initially in the given presentation strategy.
 - (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet
                              window:(UIWindow*)window
                presentationStrategy:
-                   (SheetDetentPresentationStategy)presentationStrategy;
+                   (SheetDetentPresentationStategy)presentationStrategy
+    NS_DESIGNATED_INITIALIZER;
 
-// Adjust the detents of the given sheet based on the sheet state.
+- (instancetype)init NS_UNAVAILABLE;
+
+// Adjusts the detents of the given sheet based on the sheet state.
 - (void)adjustDetentsForState:(SheetDetentState)state;
 
-// Maximize the bottom sheet to the large detent.
+// Maximizes the bottom sheet to the large detent.
 - (void)requestMaximizeBottomSheet;
 
 // Minimize the bottom sheet to the medium detent.

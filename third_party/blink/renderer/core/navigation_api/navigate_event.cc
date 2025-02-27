@@ -317,6 +317,17 @@ void NavigateEvent::CommitNow() {
   auto* state_object = dispatch_params_->destination_item
                            ? dispatch_params_->destination_item->StateObject()
                            : dispatch_params_->state_object.get();
+  auto fire_popstate =
+      dispatch_params_->event_type == NavigateEventType::kFragment &&
+              (!DomWindow()->navigation()->ongoing_api_method_tracker_ ||
+               IsBackForwardOrRestore(dispatch_params_->frame_load_type))
+          ? FirePopstate::kYes
+          : FirePopstate::kNo;
+  if (!RuntimeEnabledFeatures::NavigateEventPopstateLimitationsEnabled() &&
+      fire_popstate == FirePopstate::kNo &&
+      dispatch_params_->event_type != NavigateEventType::kHistoryApi) {
+    fire_popstate = FirePopstate::kYes;
+  }
 
   // In the spec, the URL and history update steps are not called for reloads.
   // In our implementation, we call the corresponding function anyway, but
@@ -325,10 +336,7 @@ void NavigateEvent::CommitNow() {
   DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
       dispatch_params_->url, dispatch_params_->destination_item,
       mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
-      state_object, dispatch_params_->frame_load_type,
-      dispatch_params_->event_type == NavigateEventType::kHistoryApi
-          ? FirePopstate::kNo
-          : FirePopstate::kYes,
+      state_object, dispatch_params_->frame_load_type, fire_popstate,
       dispatch_params_->should_skip_screenshot,
       dispatch_params_->is_browser_initiated,
       dispatch_params_->is_synchronously_committed_same_document,

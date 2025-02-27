@@ -1097,6 +1097,7 @@ component("platform") {
     "graphics/paint/display_item_cache_skipper.h",
     "graphics/paint/display_item_client.cc",
     "graphics/paint/display_item_client.h",
+    "graphics/paint/display_item_client_types.h",
     "graphics/paint/display_item_list.cc",
     "graphics/paint/display_item_list.h",
     "graphics/paint/display_item_raster_invalidator.cc",

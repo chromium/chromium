@@ -72,7 +72,6 @@ mojom("mojom") {
     "remoting.mojom",
     "resource_manager.mojom",
     "screen_ai_downloader.mojom",
-    "suggestion_service.mojom",
     "synced_session_client.mojom",
     "telemetry_diagnostic_routine_service.mojom",
     "telemetry_event_service.mojom",

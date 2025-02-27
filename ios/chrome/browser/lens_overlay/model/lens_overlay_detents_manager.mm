@@ -15,8 +15,11 @@ NSString* const kTranslateModeMediumDetentIdentifier =
 NSString* const kCustomPeakSheetDetentIdentifier =
     @"kCustomPeakSheetDetentIdentifier";
 
+// The detent height in points for the 'peak' state of the bottom sheet.
 const CGFloat kPeakDetentHeight = 100;
 
+// The percentage of the screen that will be covered by the bottom sheet in
+// translate mode.
 const CGFloat kTranslateSheetHeightRatio = 0.33;
 }  // namespace
 
@@ -33,8 +36,13 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 @end
 
 @implementation LensOverlayDetentsManager {
+  // The presentation controller that manages the appearance and behavior of
+  // the gottom sheet.
   __weak UISheetPresentationController* _sheet;
+
+  // The latest bottom sheet dimension that was reported.
   SheetDimensionState _latestReportedDimension;
+
   // The base window of the presentation.
   __weak UIWindow* _window;
 }

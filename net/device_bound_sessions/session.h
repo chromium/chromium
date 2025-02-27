@@ -21,6 +21,7 @@
 
 namespace net {
 class URLRequest;
+class FirstPartySetMetadata;
 }
 
 namespace net::device_bound_sessions {
@@ -59,8 +60,9 @@ class NET_EXPORT Session {
 
   const KeyIdOrError& unexportable_key_id() const { return key_id_or_error_; }
 
-  // this bool could also be an enum for UMA, eventually devtools, etc.
-  bool ShouldDeferRequest(URLRequest* request) const;
+  bool ShouldDeferRequest(
+      URLRequest* request,
+      const FirstPartySetMetadata& first_party_set_metadata) const;
 
   const Id& id() const { return id_; }
 

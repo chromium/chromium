@@ -967,6 +967,16 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   message_elements_size +=
       TaggedStringLength(constexpr_strlen("enableDebugReporting")) + 1;
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeEnableSampleDebugReportOnCookieSetting)) {
+    // TODO(crbug.com/391877228): Set its value based on cookie settings.
+    bool for_debugging_only_sampling = false;
+    message_obj[cbor::Value("enableSampledDebugReporting")] =
+        cbor::Value(for_debugging_only_sampling);
+    message_elements_size +=
+        TaggedStringLength(constexpr_strlen("enableSampledDebugReporting")) + 1;
+  }
+
   std::string debug_key =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProtectedAudiencesConsentedDebugToken);

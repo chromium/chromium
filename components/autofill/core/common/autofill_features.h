@@ -34,7 +34,7 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressUserDeclinedSuggestionSurvey);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillDetectFieldVisibility);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillDeduplicateAccountAdresses);
+BASE_DECLARE_FEATURE(kAutofillDeduplicateAccountAddresses);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDisambiguateContradictingFieldTypes);
 COMPONENT_EXPORT(AUTOFILL)
@@ -327,9 +327,6 @@ COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillOverridePredictions);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<std::string>
     kAutofillOverridePredictionsSpecification;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<std::string>
-    kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<std::string> kAutofillOverridePredictionsJson;
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillServerCommunication);

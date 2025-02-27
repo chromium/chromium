@@ -106,6 +106,7 @@ ts_library("build_ts") {
     "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
+  tsconfig_base = "tsconfig_base.json"
   composite = true
   in_files = [
     "lit.ts",

@@ -28,6 +28,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_enterprise_policy_enums.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
@@ -261,7 +262,8 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
   // either one scenario: (1) The feature is not driven by any policy. (2) The
   // feature is driven by a policy, and we allow the policy to take effect by
   // the feature flag value.
-  return !profile->GetPrefs()->IsManagedPreference(prefs::kOrcaEnabled) ||
+  return !profile->GetPrefs()->IsManagedPreference(
+             prefs::kHmwManagedSettings) ||
          base::FeatureList::IsEnabled(features::kOrcaForManagedUsers);
 }
 
@@ -309,13 +311,10 @@ bool EditorSwitch::IsFeedbackEnabled() const {
     return false;
   }
 
-  // If unmanaged, allow Feedback.
-  if (!profile_->GetPrefs()->IsManagedPreference(prefs::kOrcaFeedbackEnabled)) {
-    return true;
-  }
-
   // If managed, check the enablement value.
-  return profile_->GetPrefs()->GetBoolean(prefs::kOrcaFeedbackEnabled);
+  return profile_->GetPrefs()->GetInteger(prefs::kHmwManagedSettings) ==
+         base::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
+                                 kAllowedWithModelImprovement);
 }
 
 bool EditorSwitch::CanShowNoticeBanner() const {

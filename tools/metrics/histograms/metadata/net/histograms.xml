@@ -1084,6 +1084,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.RequestsDeferredForInitialization"
+    units="requests" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the number of network requests deferred while we waited to load
+    Device Bound Sessions
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) persisted to
+    disk. It is logged once at startup, when sessions are loaded.
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.SessionStoreLoadDuration" units="ms"
     expires_after="2026-02-18">
   <owner>drubery@chromium.org</owner>

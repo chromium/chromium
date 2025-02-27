@@ -273,6 +273,7 @@ Object: {
 			frame: string
 			functionName: string
 			lineNumber: number
+			sampleTraceId: number
 			scriptId: string
 			url: string
 		}

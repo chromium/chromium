@@ -6514,6 +6514,7 @@ test("unit_tests") {
     "//chrome/browser/ui/autofill/payments:unit_tests",
     "//chrome/browser/ui/blocked_content:unit_tests",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/cookie_controls:unit_tests",
     "//chrome/browser/ui/file_system_access:unit_tests",
     "//chrome/browser/ui/find_bar:unit_tests",
     "//chrome/browser/ui/hats",
@@ -6614,6 +6615,7 @@ test("unit_tests") {
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
     "//components/ip_protection/common:masked_domain_list_manager",
+    "//components/ip_protection/common:probabilistic_reveal_token_registry",
     "//components/language/core/browser",
     "//components/language_detection/core",
     "//components/lens",
@@ -7341,7 +7343,6 @@ test("unit_tests") {
       "../browser/readaloud/android/synthetic_trial_unittest.cc",
       "../browser/search/contextual_search_policy_handler_android_unittest.cc",
       "../browser/segmentation_platform/client_util/tab_data_collection_util_unittest.cc",
-      "../browser/share/page_info_sharing_bridge_unittest.cc",
       "../browser/sharing/click_to_call/click_to_call_message_handler_android_unittest.cc",
       "../browser/sharing/optimization_guide/optimization_guide_message_handler_unittest.cc",
       "../browser/sharing/sms/sms_fetch_request_handler_unittest.cc",
@@ -8119,7 +8120,6 @@ test("unit_tests") {
       "//chrome/browser/ui/commerce:unit_tests",
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/content_settings:unit_tests",
-      "//chrome/browser/ui/cookie_controls:unit_tests",
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/download:unit_tests",
       "//chrome/browser/ui/exclusive_access",
@@ -9494,6 +9494,7 @@ test("unit_tests") {
 
   if (enterprise_cloud_content_analysis) {
     sources += [
+      "../browser/enterprise/connectors/analysis/clipboard_analysis_request_unittest.cc",
       "../browser/enterprise/connectors/analysis/content_analysis_delegate_unittest.cc",
       "../browser/enterprise/connectors/analysis/content_analysis_downloads_delegate_unittest.cc",
       "../browser/enterprise/connectors/analysis/files_request_handler_unittest.cc",

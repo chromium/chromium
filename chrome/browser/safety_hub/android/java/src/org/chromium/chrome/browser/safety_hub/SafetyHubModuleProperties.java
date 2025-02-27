@@ -16,6 +16,8 @@ public class SafetyHubModuleProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_EXPANDED =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey HAS_PROGRESS_BAR =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<Drawable> ICON =
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
@@ -37,6 +39,7 @@ public class SafetyHubModuleProperties {
             new PropertyKey[] {
                 IS_VISIBLE,
                 IS_EXPANDED,
+                HAS_PROGRESS_BAR,
                 ICON,
                 TITLE,
                 SUMMARY,

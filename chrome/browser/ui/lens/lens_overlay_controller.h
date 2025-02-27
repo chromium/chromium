@@ -105,14 +105,17 @@ class Profile;
 
 extern void* kLensOverlayPreselectionWidgetIdentifier;
 
-// Callback type alias for page content bytes retrieved. `content_type` is the
-// mime type of the bytes. `pdf_page_count` is the number of pages in the
-// document being retrieved, not necessarily the number of pages in `bytes`. For
-// example, if the document is a PDF, `pdf_page_count` is the number of pages in
-// the PDF, while `bytes` could be empty because the PDF is too large.
+// Callback type alias for page content bytes retrieved. Multiple pieces and
+// types of content may be retrieved and returned in `page_contents`.
+// `primary_content_type` is the main type used in the request flow and used to
+// determine request params and whether updated requests need to be sent.
+// `pdf_page_count` is the number of pages in the document being retrieved, not
+// necessarily the number of pages in `bytes`. For example, if the document is a
+// PDF, `pdf_page_count` is the number of pages in the PDF, while `bytes` could
+// be empty because the PDF is too large.
 using PageContentRetrievedCallback =
-    base::OnceCallback<void(std::vector<uint8_t> bytes,
-                            lens::MimeType content_type,
+    base::OnceCallback<void(std::vector<lens::PageContent> page_contents,
+                            lens::MimeType primary_content_type,
                             std::optional<uint32_t> pdf_page_count)>;
 
 // Manages all state associated with the lens overlay.
@@ -623,13 +626,14 @@ class LensOverlayController : public LensSearchboxClient,
     // The page title, if it is allowed to be shared.
     std::optional<std::string> page_title_;
 
-    // The bytes of the content the user is viewing, if the bytes are able to be
-    // retrieved.
-    std::vector<uint8_t> page_content_bytes_;
+    // The data of the content the user is viewing. There can be multiple
+    // content types for a single page, so we store them all in this struct.
+    std::vector<lens::PageContent> page_contents_;
 
-    // The mime type of page_content_bytes_. kNone if page_content_bytes_is
-    // empty.
-    lens::MimeType page_content_type_ = lens::MimeType::kUnknown;
+    // The primary type of the data stored in page_contents_. This is the value
+    // used to determine request params and what content to look at when
+    // determining if the page_contents_ needs to be present.
+    lens::MimeType primary_content_type_ = lens::MimeType::kUnknown;
 
     // The page count of the PDF document if page_content_type_ is kPdf.
     std::optional<uint32_t> pdf_page_count_;
@@ -720,9 +724,9 @@ class LensOverlayController : public LensSearchboxClient,
   // records the page count for PDF.
   void StorePageContentAndContinueInitialization(
       std::unique_ptr<OverlayInitializationData> initialization_data,
-      std::vector<uint8_t> bytes,
-      lens::MimeType content_type,
-      std::optional<uint32_t> pdf_page_count);
+      std::vector<lens::PageContent> page_contents,
+      lens::MimeType primary_content_type,
+      std::optional<uint32_t> page_count);
 
   // Tries to fetch the underlying page content bytes to use for
   // contextualization. If page content can not be retrieved, the callback will
@@ -776,8 +780,8 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Updates the query flow with the new page content bytes. A request will only
   // be sent if the bytes are different from the previous bytes sent.
-  void UpdatePageContextualization(std::vector<uint8_t> bytes,
-                                   lens::MimeType content_type,
+  void UpdatePageContextualization(std::vector<lens::PageContent> page_contents,
+                                   lens::MimeType primary_content_type,
                                    std::optional<uint32_t> pdf_page_count);
 
   // Updates state of the ghost loader. |suppress_ghost_loader| is true when

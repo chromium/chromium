@@ -465,7 +465,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       base::SysInfo::IsLowEndDevice() && !IsSmallScreen(screen_size) &&
       !platform->IsSynchronousCompositingEnabledForAndroidWebView();
 
-  settings.use_stream_video_draw_quad = true;
   settings.using_synchronous_renderer_compositor = use_synchronous_compositor;
   if (use_synchronous_compositor) {
     // Root frame in Android WebView uses system scrollbars, so make ours
@@ -537,10 +536,14 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     //  - If we are not running in a WebView, where 4444 isn't supported.
     //  - If we are not using vulkan, since some GPU drivers don't support
     //    using RGBA4444 as color buffer.
+    //  - If we are not using Skia's Graphite-Dawn backend, since dawn does not
+    //  support RGBA_4444 formats.
     // TODO(penghuang): query supported formats from GPU process.
     if (!cmd.HasSwitch(switches::kDisableRGBA4444Textures) &&
         base::SysInfo::AmountOfPhysicalMemoryMB() <= 512 &&
-        !::features::IsUsingVulkan()) {
+        !::features::IsUsingVulkan() &&
+        !::features::IsSkiaGraphiteEnabled(
+            base::CommandLine::ForCurrentProcess())) {
       settings.use_rgba_4444 = true;
 
       // If we are going to unpremultiply and dither these tiles, we need to

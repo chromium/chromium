@@ -361,6 +361,7 @@ void SharedImageInterfaceProxy::DestroySharedImage(const SyncToken& sync_token,
                   mailbox)),
           std::move(info.destruction_sync_tokens), /*release_count=*/0);
 
+      host_->DelayedEnsureFlush(last_flush_id_);
       mailbox_infos_.erase(it);
     } else if (!dependencies.empty()) {
       constexpr size_t kMaxSyncTokens = 4;

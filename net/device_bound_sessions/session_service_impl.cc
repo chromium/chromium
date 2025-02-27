@@ -63,7 +63,8 @@ SessionServiceImpl::SessionServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     const URLRequestContext* request_context,
     SessionStore* store)
-    : key_service_(key_service),
+    : pending_initialization_(!!store),
+      key_service_(key_service),
       context_(request_context),
       session_store_(store) {
   CHECK(context_);
@@ -75,7 +76,6 @@ void SessionServiceImpl::LoadSessionsAsync() {
   if (!session_store_) {
     return;
   }
-  pending_initialization_ = true;
   session_store_->LoadSessions(base::BindOnce(
       &SessionServiceImpl::OnLoadSessionsComplete, weak_factory_.GetWeakPtr()));
 }
@@ -117,6 +117,10 @@ void SessionServiceImpl::OnLoadSessionsComplete(
   for (base::OnceClosure& closure : queued_operations) {
     std::move(closure).Run();
   }
+
+  base::UmaHistogramCounts1000(
+      "Net.DeviceBoundSessions.RequestsDeferredForInitialization",
+      requests_before_initialization_);
 }
 
 void SessionServiceImpl::OnRegistrationComplete(
@@ -147,16 +151,20 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
   return unpartitioned_sessions_.equal_range(site);
 }
 
-std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
-    URLRequest* request) {
+std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
+    URLRequest* request,
+    const FirstPartySetMetadata& first_party_set_metadata) {
+  if (pending_initialization_) {
+    return DeferralParams();
+  }
   SchemefulSite site(request->url());
   auto range = GetSessionsForSite(site);
   for (auto it = range.first; it != range.second; ++it) {
-    if (it->second->ShouldDeferRequest(request)) {
+    if (it->second->ShouldDeferRequest(request, first_party_set_metadata)) {
       NotifySessionAccess(request->device_bound_session_access_callback(),
                           SessionAccess::AccessType::kUpdate, site,
                           *it->second);
-      return it->second->id();
+      return DeferralParams(it->second->id());
     }
   }
 
@@ -165,12 +173,23 @@ std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
 
 void SessionServiceImpl::DeferRequestForRefresh(
     URLRequest* request,
-    Session::Id session_id,
+    DeferralParams deferral,
     RefreshCompleteCallback restart_callback,
     RefreshCompleteCallback continue_callback) {
   CHECK(restart_callback);
   CHECK(continue_callback);
   CHECK(request);
+
+  if (deferral.is_pending_initialization) {
+    CHECK(pending_initialization_);
+    requests_before_initialization_++;
+    // Due to the need to recompute `first_party_set_metadata`, we always
+    // restart the request after initialization completes.
+    queued_operations_.push_back(std::move(restart_callback));
+    return;
+  }
+
+  Session::Id session_id = *deferral.session_id;
   bool needs_refresh = false;
   // For the first deferring request, create a new vector and add the request.
   auto [it, inserted] = deferred_requests_.try_emplace(session_id);
@@ -192,30 +211,27 @@ void SessionServiceImpl::DeferRequestForRefresh(
   // Notify the request that it has been deferred for refreshed cookies.
   NotifySessionAccess(request->device_bound_session_access_callback(),
                       SessionAccess::AccessType::kUpdate, site, *session);
-  if (needs_refresh) {
-    const Session::KeyIdOrError& key_id = session->unexportable_key_id();
-    if (!key_id.has_value()) {
+  if (!needs_refresh) {
+    return;
+  }
+
+  const Session::KeyIdOrError& key_id = session->unexportable_key_id();
+  if (!key_id.has_value()) {
+    if (key_id.error() == unexportable_keys::ServiceError::kKeyNotReady) {
+      // Unwrap key and then try to refresh
+      session_store_->RestoreSessionBindingKey(
+          site, session_id,
+          base::BindOnce(&SessionServiceImpl::OnSessionKeyRestored,
+                         weak_factory_.GetWeakPtr(), request, site,
+                         session_id));
+    } else {
       UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
-      return;
     }
 
-    // Trigger refreshing the session.
-    net::NetLogSource net_log_source_for_refresh = net::NetLogSource(
-        net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
-    request->net_log().AddEventReferencingSource(
-        net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
-
-    auto callback =
-        base::BindOnce(&SessionServiceImpl::OnRefreshRequestCompletion,
-                       weak_factory_.GetWeakPtr(),
-                       request->device_bound_session_access_callback(),
-                       std::move(site), session_id);
-    RegistrationFetcher::StartFetchWithExistingKey(
-        RegistrationRequestParam::CreateForRefresh(*session),
-        key_service_.get(), context_.get(), request->isolation_info(),
-        net_log_source_for_refresh, request->initiator(), std::move(callback),
-        *key_id);
+    return;
   }
+
+  RefreshSessionInternal(request, site, session, *key_id);
 }
 
 void SessionServiceImpl::OnRefreshRequestCompletion(
@@ -510,6 +526,47 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
 
   return params_or_error.has_value() ? SessionError::ErrorType::kSuccess
                                      : params_or_error.error().type;
+}
+
+void SessionServiceImpl::OnSessionKeyRestored(
+    URLRequest* request,
+    const SchemefulSite& site,
+    const Session::Id& session_id,
+    Session::KeyIdOrError key_id_or_error) {
+  if (!key_id_or_error.has_value()) {
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+    return;
+  }
+
+  auto* session = GetSession(site, session_id);
+  if (!session) {
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+    return;
+  }
+
+  session->set_unexportable_key_id(key_id_or_error);
+
+  RefreshSessionInternal(request, site, session, *key_id_or_error);
+}
+
+void SessionServiceImpl::RefreshSessionInternal(
+    URLRequest* request,
+    const SchemefulSite& site,
+    Session* session,
+    unexportable_keys::UnexportableKeyId key_id) {
+  net::NetLogSource net_log_source_for_refresh = net::NetLogSource(
+      net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
+  request->net_log().AddEventReferencingSource(
+      net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
+
+  auto callback = base::BindOnce(
+      &SessionServiceImpl::OnRefreshRequestCompletion,
+      weak_factory_.GetWeakPtr(),
+      request->device_bound_session_access_callback(), site, session->id());
+  RegistrationFetcher::StartFetchWithExistingKey(
+      RegistrationRequestParam::CreateForRefresh(*session), key_service_.get(),
+      context_.get(), request->isolation_info(), net_log_source_for_refresh,
+      request->initiator(), std::move(callback), key_id);
 }
 
 }  // namespace net::device_bound_sessions

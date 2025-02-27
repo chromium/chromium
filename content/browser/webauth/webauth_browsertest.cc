@@ -40,6 +40,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/authenticator_impl.h"
+#include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -63,6 +64,8 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -175,6 +178,11 @@ constexpr char kRpIdNoEntryMessage[] =
     "of, nor equal to the current domain. Subsequently, fetching the "
     ".well-known/webauthn resource of the claimed RP ID was "
     "successful, but no listed origin matched the caller.";
+
+constexpr char kRpIdFetchFailedMessage[] =
+    "SecurityError: The relying party ID is not a registrable domain suffix "
+    "of, nor equal to the current domain. Subsequently, an attempt to fetch "
+    "the .well-known/webauthn resource of the claimed RP ID failed.";
 
 constexpr char kMaxLargeBlobMessage[] =
     "NotSupportedError: The 'largeBlob' extension's 'write' parameter exceeds "
@@ -1562,6 +1570,39 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   }
 }
 
+// Regression test for crbug.com/399383355.
+IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
+                       GetClientCapabilitiesCrossOriginIframe) {
+  // Set up a fake bluetooth adapter that reports being present.
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
+      bluetooth_global_values =
+          device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
+  bluetooth_global_values->SetLESupported(true);
+  scoped_refptr<::testing::NiceMock<device::MockBluetoothAdapter>>
+      mock_adapter = base::MakeRefCounted<
+          ::testing::NiceMock<device::MockBluetoothAdapter>>();
+  device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
+  EXPECT_CALL(*mock_adapter, IsPresent())
+      .WillRepeatedly(::testing::Return(true));
+
+  // Create a page with a cross-origin iframe.
+  static constexpr char kOuterHost[] = "acme.com";
+  static constexpr char kInnerHost[] = "notacme.com";
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            GetHttpsURL(kOuterHost, "/page_with_iframe.html")));
+  ASSERT_TRUE(NavigateIframeToURL(shell()->web_contents(), "test_iframe",
+                                  GetHttpsURL(kInnerHost, "/title2.html")));
+
+  // Obtain the client capabilities in the iframe.
+  static constexpr char kScript[] =
+      "PublicKeyCredential.getClientCapabilities().then(caps => "
+      "  caps.hybridTransport"
+      ");";
+  RenderFrameHost* const iframe = ChildFrameAt(shell()->web_contents(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_TRUE(EvalJs(iframe, kScript).ExtractBool());
+}
+
 // Tests that a credentials.create() call triggered by the main frame will
 // successfully complete even if a subframe navigation takes place while the
 // request is waiting for user consent.
@@ -1810,6 +1851,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Create) {
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response(
       "application/json", GetHttpsURL("www.acme.com", "/").spec());
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters))
                            .ExtractString();
@@ -1817,11 +1860,30 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Create) {
   EXPECT_EQ(kOkMessage, result);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateFetchFailed) {
+  CreateParameters parameters;
+  parameters.rp_id = "foo.com";
+  // Set up the system URL loader factory to respond to requests, but do not
+  // force its use. This will result in the browser context-specific URL
+  // loader factory being used, which will fail to handle the request.
+  test_client()->set_webauthn_origins_response(
+      "application/json", GetHttpsURL("www.acme.com", "/").spec());
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      false;
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              BuildCreateCallWithParameters(parameters))
+                           .ExtractString();
+
+  EXPECT_EQ(kRpIdFetchFailedMessage, result);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadContentType) {
   CreateParameters parameters;
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response(
       "text/plain", GetHttpsURL("www.acme.com", "/").spec());
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters))
                            .ExtractString();
@@ -1834,6 +1896,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadOrigin) {
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response("application/json",
                                                "https://nottherightdomain.com");
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters))
                            .ExtractString();
@@ -1847,6 +1911,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Timeout) {
   parameters.rp_id = "foo.com";
   parameters.timeout = kShortTimeout;
   test_client()->sinkhole_webauthn_origins_requests();
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters))
                            .ExtractString();
@@ -1867,6 +1933,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response(
       "application/json", GetHttpsURL("www.acme.com", "/").spec());
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
   std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildGetCallWithParameters(parameters))
                            .ExtractString();

@@ -59,6 +59,7 @@ class PageActionModelInterface {
   virtual const ui::ImageModel& GetImage() const = 0;
   virtual const std::u16string& GetText() const = 0;
   virtual const std::u16string& GetTooltipText() const = 0;
+  virtual bool GetActionItemIsShowingBubble() const = 0;
 };
 
 // PageActionModel represents the page action's state, scoped to a single tab.
@@ -104,6 +105,7 @@ class PageActionModel : public PageActionModelInterface {
   const ui::ImageModel& GetImage() const override;
   const std::u16string& GetText() const override;
   const std::u16string& GetTooltipText() const override;
+  bool GetActionItemIsShowingBubble() const override;
 
  private:
   // Notifies observers of a model change.
@@ -126,15 +128,17 @@ class PageActionModel : public PageActionModelInterface {
   // Properties taken from ActionItem.
   bool action_item_enabled_ = false;
   bool action_item_visible_ = false;
+  bool action_item_is_showing_bubble_ = false;
   std::u16string text_;
-  // When set, it will always take precedence over `text_`.
-  std::optional<std::u16string> override_text_;
   std::u16string tooltip_;
   // When set, it will always take precedence over `tooltip_`.
   std::optional<std::u16string> override_tooltip_;
   ui::ImageModel action_item_image_;
   // When set, it will always take precedence over `action_item_image_`.
   std::optional<ui::ImageModel> override_image_;
+
+  // When set, it will always take precedence over `text_`.
+  std::optional<std::u16string> override_text_;
 
   // Flag used to disallow reentrant behaviour.
   bool is_notifying_observers_ = false;

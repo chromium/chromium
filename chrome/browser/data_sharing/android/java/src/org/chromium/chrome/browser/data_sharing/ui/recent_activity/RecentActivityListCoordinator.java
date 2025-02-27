@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -51,10 +52,12 @@ public class RecentActivityListCoordinator {
         /**
          * Given a {@link GroupMember}, fetches their avatar from the data sharing backend.
          *
-         * @param member The associated {@link GroupMember}.
+         * @param member The associated {@link GroupMember}. If null, returns a default fallback
+         *     avatar.
          * @param avatarDrawableCallback The callback to be invoked when avatar is ready.
          */
-        void getAvatarBitmap(GroupMember member, Callback<Drawable> avatarDrawableCallback);
+        void getAvatarBitmap(
+                @Nullable GroupMember member, Callback<Drawable> avatarDrawableCallback);
     }
 
     private final BottomSheetController mBottomSheetController;

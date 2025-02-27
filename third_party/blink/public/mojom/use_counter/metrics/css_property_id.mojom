@@ -902,6 +902,7 @@ enum CSSSampleId {
     kScrollMarkerContain = 843,
     kRowRuleStyle = 844,
     kGapRulePaintOrder = 845,
+    kRowRuleWidth = 846,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

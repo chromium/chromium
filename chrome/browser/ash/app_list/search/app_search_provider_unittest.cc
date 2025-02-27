@@ -345,7 +345,6 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
   }
 
   void TearDown() override {
-    profile_.reset();
     AppSearchProviderTest::TearDown();
 
     // |profile_| is initialized in AppListTestBase::SetUp but not destroyed in

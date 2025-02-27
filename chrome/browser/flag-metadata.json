@@ -556,6 +556,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "autofill-disable-default-save-card-fix-flow-detection",
+    "owners": [ "kavitasoni@google.com", "chrome-payments-eng@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "autofill-disable-local-card-migration",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 140
@@ -6866,14 +6871,6 @@
       "olesiamarukhno@google.com"
     ],
     "expiry_milestone": 112
-  },
-  {
-    "name": "page-info-sharing",
-    "owners":[
-      "salg@google.com",
-      "ssid@chromium.org"
-    ],
-    "expiry_milestone": 135
   },
   {
     "name": "page-visibility-page-content-annotations",

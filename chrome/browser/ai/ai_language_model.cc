@@ -51,6 +51,7 @@ BASE_FEATURE(kAILanguageModelForceStreamingFullResponse,
 }  // namespace features
 namespace {
 
+using optimization_guide::MultimodalMessage;
 using optimization_guide::MultimodalMessageReadView;
 using optimization_guide::proto::PromptApiMetadata;
 using optimization_guide::proto::PromptApiPrompt;
@@ -68,11 +69,43 @@ PromptApiRole ConvertRole(blink::mojom::AILanguageModelInitialPromptRole role) {
   }
 }
 
+// Construct a PromptApiPrompt containing text.
 PromptApiPrompt MakePrompt(PromptApiRole role, const std::string& content) {
   PromptApiPrompt prompt;
   prompt.set_role(role);
   prompt.set_content(content);
   return prompt;
+}
+
+// Construct an empty multimodal PromptApiRequest message.
+MultimodalMessage EmptyMessage() {
+  return MultimodalMessage((PromptApiRequest()));
+}
+
+// Fill the 'view'ed Repeated<PromptApiPrompt> field with the prompts of 'item'.
+void AddPrompts(optimization_guide::RepeatedMultimodalMessageEditView view,
+                const AILanguageModel::Context::ContextItem item) {
+  for (auto prompt : item.prompts) {
+    view.Add(prompt);
+  }
+}
+
+// Construct an multimodal PromptApiRequest with initial prompts from 'item'.
+MultimodalMessage MakeInitialPrompt(
+    const AILanguageModel::Context::ContextItem& item) {
+  MultimodalMessage request = EmptyMessage();
+  AddPrompts(request.edit().MutableRepeatedField(
+                 PromptApiRequest::kInitialPromptsFieldNumber),
+             item);
+  return request;
+}
+
+// Add the prompts from 'item' to the current_prompts field of 'request'.
+void AddCurrentRequest(MultimodalMessage& request,
+                       const AILanguageModel::Context::ContextItem& item) {
+  AddPrompts(request.edit().MutableRepeatedField(
+                 PromptApiRequest::kCurrentPromptsFieldNumber),
+             item);
 }
 
 }  // namespace
@@ -131,11 +164,12 @@ AILanguageModel::Context::AddContextItem(ContextItem context_item) {
   return result;
 }
 
-PromptApiRequest AILanguageModel::Context::MakeRequest() {
-  PromptApiRequest request;
-  request.mutable_initial_prompts()->MergeFrom(initial_prompts_.prompts);
+MultimodalMessage AILanguageModel::Context::MakeRequest() {
+  MultimodalMessage request = MakeInitialPrompt(initial_prompts_);
+  auto history_field = request.edit().MutableRepeatedField(
+      PromptApiRequest::kPromptHistoryFieldNumber);
   for (auto& context_item : context_items_) {
-    request.mutable_prompt_history()->MergeFrom((context_item.prompts));
+    AddPrompts(history_field, context_item);
   }
   return request;
 }
@@ -196,24 +230,25 @@ void AILanguageModel::SetInitialPrompts(
     const std::optional<std::string> system_prompt,
     std::vector<blink::mojom::AILanguageModelInitialPromptPtr> initial_prompts,
     CreateLanguageModelCallback callback) {
-  PromptApiRequest request;
+  Context::ContextItem item;
   if (system_prompt) {
-    *request.add_initial_prompts() =
+    *item.prompts.Add() =
         MakePrompt(PromptApiRole::PROMPT_API_ROLE_SYSTEM, *system_prompt);
   }
   for (const auto& prompt : initial_prompts) {
-    *request.add_initial_prompts() =
+    *item.prompts.Add() =
         MakePrompt(ConvertRole(prompt->role), prompt->content);
   }
+  MultimodalMessage request = MakeInitialPrompt(item);
   session_->GetContextSizeInTokens(
-      MultimodalMessageReadView(request),
+      request.read(),
       base::BindOnce(&AILanguageModel::InitializeContextWithInitialPrompts,
-                     weak_ptr_factory_.GetWeakPtr(), request,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(item),
                      std::move(callback)));
 }
 
 void AILanguageModel::InitializeContextWithInitialPrompts(
-    optimization_guide::proto::PromptApiRequest initial_request,
+    Context::ContextItem initial_prompts,
     CreateLanguageModelCallback callback,
     uint32_t size) {
   // If the on device model service fails to get the size, it will be 0.
@@ -238,15 +273,13 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
     return;
   }
 
-  auto initial_prompts = Context::ContextItem();
   initial_prompts.tokens = size;
-  initial_prompts.prompts.Swap(initial_request.mutable_initial_prompts());
   context_ = std::make_unique<Context>(max_token, std::move(initial_prompts));
   std::move(callback).Run(TakePendingRemote(), GetLanguageModelInstanceInfo());
 }
 
 void AILanguageModel::ModelExecutionCallback(
-    const PromptApiRequest& input,
+    const Context::ContextItem& item,
     mojo::RemoteSetElementId responder_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   blink::mojom::ModelStreamingResponder* responder =
@@ -298,12 +331,11 @@ void AILanguageModel::ModelExecutionCallback(
     // TODO(crbug.com/351935691): make sure the error is explicitly returned
     // and handled accordingly.
     if (token_count) {
-      auto item = Context::ContextItem();
-      item.tokens = token_count;
-      item.prompts.CopyFrom(input.current_prompts());
-      item.prompts.Add(MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT,
+      Context::ContextItem copy = item;
+      copy.tokens = token_count;
+      copy.prompts.Add(MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT,
                                   current_response_));
-      if (context_->AddContextItem(std::move(item)) ==
+      if (context_->AddContextItem(std::move(copy)) ==
           Context::SpaceReservationResult::kSpaceMadeAvailable) {
         responder->OnContextOverflow();
       }
@@ -315,7 +347,7 @@ void AILanguageModel::ModelExecutionCallback(
 
 void AILanguageModel::PromptGetInputSizeCompletion(
     mojo::RemoteSetElementId responder_id,
-    PromptApiRequest request,
+    Context::ContextItem current_item,
     uint32_t number_of_tokens) {
   if (!session_) {
     // If the session is destroyed before this callback is invoked, we should
@@ -341,15 +373,16 @@ void AILanguageModel::PromptGetInputSizeCompletion(
   if (result == Context::SpaceReservationResult::kSpaceMadeAvailable) {
     responder->OnContextOverflow();
   }
+  current_item.tokens = number_of_tokens;
 
-  if (context_->HasContextItem()) {
-    session_->AddContext(context_->MakeRequest());
-  }
-
+  MultimodalMessage request = context_->MakeRequest();
+  AddCurrentRequest(request, current_item);
+  session_->SetInput(std::move(request));
   session_->ExecuteModel(
-      request, base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
-                                   weak_ptr_factory_.GetWeakPtr(), request,
-                                   responder_id));
+      PromptApiRequest(),
+      base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(current_item), responder_id));
 }
 
 AILanguageModel::MultimodalResponder::MultimodalResponder(
@@ -425,14 +458,18 @@ void AILanguageModel::Prompt(
   current_response_ = "";
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
-  PromptApiRequest request;
-  *request.add_current_prompts() =
+
+  Context::ContextItem item;
+  *item.prompts.Add() =
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input_text);
 
+  MultimodalMessage request = EmptyMessage();
+  AddCurrentRequest(request, item);
   session_->GetExecutionInputSizeInTokens(
-      MultimodalMessageReadView(request),
+      request.read(),
       base::BindOnce(&AILanguageModel::PromptGetInputSizeCompletion,
-                     weak_ptr_factory_.GetWeakPtr(), responder_id, request));
+                     weak_ptr_factory_.GetWeakPtr(), responder_id,
+                     std::move(item)));
 }
 
 AIUtils::LanguageCodes AILanguageModel::GetExpectedInputLanguagesCopy() {

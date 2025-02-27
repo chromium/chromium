@@ -50,6 +50,8 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
       const gpu::SyncToken& buffer_sync_token);
   void DoneWithSharedBuffer();
 
+  GLuint GetCurrentColorBufferTextureId();
+
   // Prepare for destruction by breaking reference loops. This must be called to
   // avoid memory leaks, drawing buffer and color buffers are refcounted and
   // store references to each other.

@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
@@ -128,34 +129,6 @@ void OnPathsExpanded(
 }
 
 }  // namespace
-
-StringAnalysisRequest::StringAnalysisRequest(
-    CloudOrLocalAnalysisSettings settings,
-    std::string text,
-    BinaryUploadService::ContentAnalysisCallback callback)
-    : Request(std::move(callback), std::move(settings)) {
-  DCHECK_GT(text.size(), 0u);
-  data_.size = text.size();
-
-  // Only remember strings less than the maximum allowed.
-  if (text.size() < BinaryUploadService::kMaxUploadSizeBytes) {
-    data_.contents = std::move(text);
-    result_ = BinaryUploadService::Result::SUCCESS;
-  }
-  safe_browsing::IncrementCrashKey(
-      safe_browsing::ScanningCrashKey::PENDING_TEXT_UPLOADS);
-  safe_browsing::IncrementCrashKey(
-      safe_browsing::ScanningCrashKey::TOTAL_TEXT_UPLOADS);
-}
-
-StringAnalysisRequest::~StringAnalysisRequest() {
-  safe_browsing::DecrementCrashKey(
-      safe_browsing::ScanningCrashKey::PENDING_TEXT_UPLOADS);
-}
-
-void StringAnalysisRequest::GetRequestData(DataCallback callback) {
-  std::move(callback).Run(result_, data_);
-}
 
 ContentAnalysisDelegate::Data::Data() = default;
 ContentAnalysisDelegate::Data::Data(Data&& other) = default;
@@ -821,7 +794,7 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
   }
 
   if (!text_request_complete_) {
-    auto request = std::make_unique<StringAnalysisRequest>(
+    auto request = std::make_unique<ClipboardAnalysisRequest>(
         data_.settings.cloud_or_local_settings, std::move(full_text),
         base::BindOnce(&ContentAnalysisDelegate::StringRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -863,7 +836,7 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
   }
 
   if (!image_request_complete_) {
-    auto request = std::make_unique<StringAnalysisRequest>(
+    auto request = std::make_unique<ClipboardAnalysisRequest>(
         data_.settings.cloud_or_local_settings, data_.image,
         base::BindOnce(&ContentAnalysisDelegate::ImageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));

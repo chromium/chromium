@@ -22,11 +22,11 @@ public class CastContentWindowAndroid
         implements CastWebContentsComponent.OnComponentClosedHandler,
                 CastWebContentsComponent.SurfaceEventHandler {
     private static final String TAG = "CastContentWindow";
-    private static final boolean DEBUG = true;
 
     // Note: CastContentWindowAndroid may outlive the native object. The native
     // ref should be checked that it is not zero before it is used.
     private long mNativeCastContentWindowAndroid;
+    private final String mSessionId;
     private CastWebContentsComponent mComponent;
 
     private boolean mScreenAccess;
@@ -57,12 +57,12 @@ public class CastContentWindowAndroid
             boolean keepScreenOn,
             String sessionId) {
         mNativeCastContentWindowAndroid = nativeCastContentWindowAndroid;
+        mSessionId = sessionId;
         Log.i(
                 TAG,
-                "Creating new CastContentWindowAndroid(No. "
-                        + sInstanceId++
-                        + ") Seesion ID: "
-                        + sessionId);
+                "Cast content window created: instanceId=%d, sessionId=%s",
+                sInstanceId++,
+                mSessionId);
         mComponent =
                 new CastWebContentsComponent(
                         sessionId, this, this, enableTouchInput, turnOnScreen, keepScreenOn);
@@ -72,7 +72,12 @@ public class CastContentWindowAndroid
     @CalledByNative
     private void createWindowForWebContents(
             WebContents webContents, String appId, boolean shouldRequestAudioFocus) {
-        if (DEBUG) Log.d(TAG, "createWindowForWebContents");
+        Log.d(
+                TAG,
+                "Creating window for WebContents: sessionId=%s, appId=%s, audioFocus=%b",
+                mSessionId,
+                appId,
+                shouldRequestAudioFocus);
         mStartParams =
                 new CastWebContentsComponent.StartParams(
                         webContents, appId, shouldRequestAudioFocus);
@@ -81,15 +86,13 @@ public class CastContentWindowAndroid
 
     private void maybeStartComponent() {
         if (mStartParams == null || !mScreenAccess) return;
-
-        Log.d(TAG, "mComponent.start()");
-        mComponent.start(mStartParams, !mScreenAccess /* isHeadless */);
+        mComponent.start(mStartParams);
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void grantScreenAccess() {
-        if (DEBUG) Log.d(TAG, "grantScreenAccess");
+        Log.d(TAG, "Granting screen access: sessionId=" + mSessionId);
         mScreenAccess = true;
         maybeStartComponent();
     }
@@ -97,7 +100,7 @@ public class CastContentWindowAndroid
     @SuppressWarnings("unused")
     @CalledByNative
     private void revokeScreenAccess() {
-        if (DEBUG) Log.d(TAG, "revokeScreenAccess");
+        Log.d(TAG, "Revoking screen access: sessionId=" + mSessionId);
         mComponent.stop();
         mScreenAccess = false;
     }
@@ -105,7 +108,6 @@ public class CastContentWindowAndroid
     @SuppressWarnings("unused")
     @CalledByNative
     private void enableTouchInput(boolean enabled) {
-        if (DEBUG) Log.d(TAG, "enableTouchInput");
         mComponent.enableTouchInput(enabled);
     }
 
@@ -132,13 +134,13 @@ public class CastContentWindowAndroid
         // TODO(derekjchow): Add a unittest to check this behaviour. Also consider using
         // Instrumentation.startActivitySync to guarentee onCreate is run.
 
-        if (DEBUG) Log.d(TAG, "onNativeDestroyed");
+        Log.d(TAG, "Native window destroyed: sessionId=" + mSessionId);
         mComponent.stop();
     }
 
     @Override
     public void onComponentClosed() {
-        if (DEBUG) Log.d(TAG, "onComponentClosed");
+        Log.d(TAG, "Component closed: sessionId=" + mSessionId);
         if (mNativeCastContentWindowAndroid != 0) {
             CastContentWindowAndroidJni.get()
                     .onActivityStopped(
@@ -148,7 +150,7 @@ public class CastContentWindowAndroid
 
     @Override
     public void onVisibilityChange(int visibilityType) {
-        if (DEBUG) Log.d(TAG, "onVisibilityChange type=" + visibilityType);
+        Log.d(TAG, "Visiblity changed: sessionId=%s, visibility=%d", mSessionId, visibilityType);
         if (mNativeCastContentWindowAndroid != 0) {
             CastContentWindowAndroidJni.get()
                     .onVisibilityChange(

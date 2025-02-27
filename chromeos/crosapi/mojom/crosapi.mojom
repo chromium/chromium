@@ -66,7 +66,6 @@ import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
-import "chromeos/crosapi/mojom/suggestion_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
@@ -457,10 +456,7 @@ interface Crosapi {
   BindStructuredMetricsService@52(
       pending_receiver<StructuredMetricsService> receiver);
 
-  // Binds the suggestion service.
-  [MinVersion=134]
-  BindSuggestionService@136(pending_receiver<SuggestionService> receiver);
-
+  // BindSuggestionService@136 was removed.
   // BindTrustedVaultBackend@121 was removed.
   // BindTrustedVaultBackendService@145 was removed.
 

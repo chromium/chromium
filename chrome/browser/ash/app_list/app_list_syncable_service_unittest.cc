@@ -208,7 +208,10 @@ class AppListSyncableServiceTest : public test::AppListSyncableServiceTestBase {
         std::make_unique<AppListModelUpdater::TestApi>(GetModelUpdater());
   }
 
-  void TearDown() override { app_list_syncable_service_.reset(); }
+  void TearDown() override {
+    app_list_syncable_service_.reset();
+    AppListSyncableServiceTestBase::TearDown();
+  }
 
   AppListModelUpdater::TestApi* model_updater_test_api() {
     return model_updater_test_api_.get();

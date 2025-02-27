@@ -1,0 +1,7 @@
+rootWebArea name='Robert Downey Jr.'
+++genericContainer ignored
+++++genericContainer
+++++++image name='Bob' imageAnnotationStatus=ineligibleForAnnotation
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++image name='Robert' imageAnnotationStatus=ineligibleForAnnotation

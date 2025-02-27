@@ -104,19 +104,19 @@ std::string_view GetCanCreateTranslatorResultString(
     CanCreateTranslatorResult result) {
   switch (result) {
     case CanCreateTranslatorResult::kReadily:
-      return "readily";
+      return "available";
     case CanCreateTranslatorResult::kAfterDownloadLibraryNotReady:
     case CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady:
     case CanCreateTranslatorResult::
         kAfterDownloadLibraryAndLanguagePackNotReady:
-      return "after-download";
+      return "downloadable";
     case CanCreateTranslatorResult::kNoNotSupportedLanguage:
     case CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
     case CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation:
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
-      return "no";
+      return "unavailable";
   }
 }
 
@@ -161,7 +161,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
         language::prefs::kSelectedLanguages, value);
   }
 
-  // Tests the behavior of canTranslate().
+  // Tests the behavior of availability().
   void TestCanTranslateResult(const std::string_view sourceLang,
                               const std::string_view targetLang,
                               CanCreateTranslatorResult expected_result) {
@@ -182,7 +182,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
                                      ->GetLastCommittedOrigin(),
                                  remote.BindNewPipeAndPassReceiver());
     base::RunLoop run_loop;
-    remote->CanCreateTranslator(
+    remote->TranslationAvailable(
         TranslatorLanguageCode::New(std::string(sourceLang)),
         TranslatorLanguageCode::New(std::string(targetLang)),
         base::BindLambdaForTesting([&](CanCreateTranslatorResult result) {
@@ -194,10 +194,11 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
     // Need to navigate to an empty page to reset the state of the
     // TranslationManagerImpl.
     NavigateToEmptyPage();
-    // Calls CanCreateTranslator() via JS API (translation.canTranslate()) to
+    // Calls TranslationAvailable() via JS API (ai.translator.availability()) to
     // verify the result string.
-    TestCanTranslate(browser(), sourceLang, targetLang,
-                     GetCanCreateTranslatorResultString(expected_result));
+    TestTranslationAvailable(
+        browser(), sourceLang, targetLang,
+        GetCanCreateTranslatorResultString(expected_result));
   }
 
   // Evaluates the given script and returns the result string. If the script
@@ -250,7 +251,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests the behavior of createTranslator() when the library is installed before
+// Tests the behavior of create() when the library is installed before
 // the language pack.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorInstallLibraryAndThenLanguagePack) {
@@ -271,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   // Create a translator.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._testPromise = translation.createTranslator({
+      window._testPromise = ai.translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -290,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   // Install the mock TranslateKit component.
   mock_component_manager.InstallMockTranslateKitComponent();
 
-  // The promise of createTranslator() should not be resolved yet.
+  // The promise of create() should not be resolved yet.
   EXPECT_FALSE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       "window._testPromiseResolved")
                    .ExtractBool());
@@ -307,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
             "en to ja: hello");
 }
 
-// Tests the behavior of createTranslator() when the language pack is installed
+// Tests the behavior of create() when the language pack is installed
 // before the library.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorInstallLanguagePackAndThenLibrary) {
@@ -328,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   // Create a translator.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._testPromise = translation.createTranslator({
+      window._testPromise = ai.translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -348,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   // Install the mock language pack.
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
 
-  // The promise of createTranslator() should not be resolved yet.
+  // The promise of create() should not be resolved yet.
   EXPECT_FALSE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       "window._testPromiseResolved")
                    .ExtractBool());
@@ -361,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
             "en to ja: hello");
 }
 
-// Tests the behavior of multiple createTranslator() calls with different
+// Tests the behavior of multiple create() calls with different
 // source/target languages.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorInstallMultipleLanguagePacks) {
@@ -389,12 +390,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         run_loop_for_register_en_es_language_pack.Quit();
       }));
 
-  // Create createTranslator() multiple times.
+  // Create create() multiple times.
   //   1. En => Ja.
   //   2. En => Es.
   //   3. En => Ja.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._testEnJaPromise1 = translation.createTranslator({
+      window._testEnJaPromise1 = ai.translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -403,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         window._testEnJaPromise1Resolved = true;
       });
 
-      window._testEnEsPromise = translation.createTranslator({
+      window._testEnEsPromise = ai.translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'es',
         });
@@ -412,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         window._testEnEsPromiseResolved = true;
       });
 
-      window._testEnJaPromise2 = translation.createTranslator({
+      window._testEnJaPromise2 = ai.translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -474,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       "en to es: hello");
 }
 
-// Tests the behavior of createTranslator() when the number of pending tasks
+// Tests the behavior of create() when the number of pending tasks
 // exceeds the limit.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        ExceedMaxPendingTaskCount) {
@@ -496,13 +497,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         run_loop_for_register_language_pack.Quit();
       }));
 
-  // Call createTranslator() kMaxPendingTaskCount times.
+  // Call create() kMaxPendingTaskCount times.
   EXPECT_EQ(EvalJsCatchingError(base::StringPrintf(R"(
       window._testPromises = [];
       window._testPromisesResolved = false;
       const kMaxPendingTaskCount = %zd;
       for (let i = 0; i < kMaxPendingTaskCount; ++i) {
-        const promise = translation.createTranslator({
+        const promise = ai.translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -530,9 +531,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   auto console_observer =
       CreateConsoleObserver("Too many Translator API requests are queued.");
 
-  // Calling createTranslator() one more time fails.
+  // Calling create() one more time fails.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      await translation.createTranslator({
+      await ai.translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -615,13 +616,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslationFailure) {
   // mock_translate_kit_lib.cc.
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-      const translator = await translation.createTranslator({
+      const translator = await ai.translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
       return await translator.translate('SIMULATE_ERROR');
   )"),
-            "NotReadableError: Unable to translate the given text.");
+            "UnknownError: Other generic failures occurred.");
 }
 
 // Tests the behavior of the crash of calling translate().
@@ -637,18 +638,18 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CrashWhileTranslating) {
   // a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._translator = await translation.createTranslator({
+      window._translator = await ai.translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
       return await window._translator.translate('CAUSE_CRASH');
   )"),
-            "NotReadableError: Unable to translate the given text.");
+            "UnknownError: Other generic failures occurred.");
 
   // After the crash, the translator is not usable.
   EXPECT_EQ(EvalJsCatchingError(
                 "return await window._translator.translate('hello');"),
-            "NotReadableError: Unable to translate the given text.");
+            "UnknownError: Other generic failures occurred.");
 
   // But a new translator can be created and used.
   TestSimpleTranslationWorks(browser(), "en", "ja");
@@ -675,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 #endif  // BUILDFLAG(IS_WIN)
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await translation.createTranslator({
+            const translator = await ai.translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });
@@ -703,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       CreateConsoleObserver("The translation library is not compatible.");
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await translation.createTranslator({
+            const translator = await ai.translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });
@@ -731,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       CreateConsoleObserver("Failed to initialize the translation library.");
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await translation.createTranslator({
+            const translator = await ai.translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });
@@ -756,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       "The translation library failed to create a translator.");
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await translation.createTranslator({
+            const translator = await ai.translator.create({
               sourceLanguage: 'ja',
               targetLanguage: 'en',
             });
@@ -806,8 +807,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
   TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
 }
 
-// Tests the behavior of the crash of calling createTranslator() and
-// canTranslate().
+// Tests the behavior of the crash of calling create() and availability().
 class OnDeviceTranslationCrashingLangBrowserTest
     : public OnDeviceTranslationBrowserTest {
  public:
@@ -834,7 +834,7 @@ class OnDeviceTranslationCrashingLangBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests the behavior of the crash of calling createTranslator().
+// Tests the behavior of the crash of calling create().
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
                        CrashWhileCallingCreateTranslator) {
   MockComponentManager mock_component_manager(GetTempDir());
@@ -848,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   // causes a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await translation.createTranslator({
+            const translator = await ai.translator.create({
               sourceLanguage: 'cause_crash',
               targetLanguage: 'ja',
             });
@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   WaitForConsoleObserver(*console_observer);
 }
 
-// Tests the behavior of the crash of calling canTranslate().
+// Tests the behavior of the crash of calling availability().
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
                        CrashWhileCallingCanTranslate) {
   MockComponentManager mock_component_manager(GetTempDir());
@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
-  // Tries to call canTranslate() for the fake language code `cause_crash`. This
+  // Tries to call availability() for the fake language code `cause_crash`. This
   // causes a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
   TestCanTranslateResult("cause_crash", "ja",
@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, NoExistFileHandling) {
   NavigateToEmptyPage();
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-      const translator = await translation.createTranslator({
+      const translator = await ai.translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -895,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, NoExistFileHandling) {
             "is_directory: false");
 }
 
-// Tests the behavior of createTranslator() when the accept language check
+// Tests the behavior of create() when the accept language check
 // fails.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorAcceptLanguagesCheckFailed) {
@@ -943,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   EXPECT_EQ(EvalJsCatchingError(R"(
       window._testIframe = document.createElement('iframe');
       document.body.appendChild(window._testIframe);
-      window._testIframe.contentWindow.translation.createTranslator({
+      window._testIframe.contentWindow.ai.translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -969,56 +969,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
-// Tests the behavior of destroy().
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslatorDestroy) {
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
-  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
-      {LanguagePackKey::kEn_Ja});
-
-  NavigateToEmptyPage();
-
-  // Test that Translator API works.
-  EXPECT_EQ(EvalJsCatchingError(R"(
-      window._translator = await translation.createTranslator({
-        sourceLanguage: 'en',
-        targetLanguage: 'ja',
-      });
-      return await window._translator.translate('hello');
-    )"),
-            "en to ja: hello");
-  // Test that after destroy() is called, the translator is not usable.
-  EXPECT_EQ(EvalJsCatchingError(R"(
-      window._translator.destroy();
-      return await window._translator.translate('hello');
-    )"),
-            "InvalidStateError: Failed to execute 'translate' on "
-            "'LanguageTranslator': The translator has been destoried.");
-}
-
-// Tests the behavior of destroy() while translating.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       TranslatorDestroyWhileTranslating) {
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
-  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
-      {LanguagePackKey::kEn_Ja});
-
-  NavigateToEmptyPage();
-
-  // Test that Translator API works.
-  EXPECT_EQ(EvalJsCatchingError(R"(
-      const translator = await translation.createTranslator({
-        sourceLanguage: 'en',
-        targetLanguage: 'ja',
-      });
-      const promise = translator.translate('hello');
-      translator.destroy();
-      await promise;
-    )"),
-            "AbortError: The translator has been destoried.");
-}
-
 // Tests that the service is terminated when the idle timeout is reached.
 IN_PROC_BROWSER_TEST_F(
     OnDeviceTranslationBrowserTest,
@@ -1040,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Test that Translator API works.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._translator = await translation.createTranslator({
+      window._translator = await ai.translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -1095,7 +1045,7 @@ IN_PROC_BROWSER_TEST_F(
       window._iframe = document.createElement('iframe');
       document.body.appendChild(window._iframe);
       const translator =
-          await window._iframe.contentWindow.translation.createTranslator({
+          await window._iframe.contentWindow.ai.translator.create({
             sourceLanguage: 'en',
             targetLanguage: 'ja',
           });
@@ -1126,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(service_controller->IsServiceRunning());
 }
 
-// Test the behavior of canTranslate() when the language pack is ready.
+// Test the behavior of availability() when the language pack is ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CanTranslateReadily) {
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
@@ -1136,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CanTranslateReadily) {
   TestCanTranslateResult("en", "ja", CanCreateTranslatorResult::kReadily);
 }
 
-// Test the behavior of canTranslate() when the language pack is not ready.
+// Test the behavior of availability() when the language pack is not ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateAfterDownloadLanguagePackNotReady) {
   MockComponentManager mock_component_manager(GetTempDir());
@@ -1148,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady);
 }
 
-// Test the behavior of canTranslate() when both the library and the language
+// Test the behavior of availability() when both the library and the language
 // pack are not ready.
 IN_PROC_BROWSER_TEST_F(
     OnDeviceTranslationBrowserTest,
@@ -1161,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(
       CanCreateTranslatorResult::kAfterDownloadLibraryAndLanguagePackNotReady);
 }
 
-// Test the behavior of canTranslate() when the language pack is ready, but the
+// Test the behavior of availability() when the language pack is ready, but the
 // library is not ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateAfterDownloadLibraryNotReady) {
@@ -1173,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       "en", "ja", CanCreateTranslatorResult::kAfterDownloadLibraryNotReady);
 }
 
-// Test the behavior of canTranslate() when the language is not supported.
+// Test the behavior of availability() when the language is not supported.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateNoNotSupportedLanguage) {
   // This test case uses English as the source language and an unsupported
@@ -1188,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                          CanCreateTranslatorResult::kNoNotSupportedLanguage);
 }
 
-// Test the behavior of canTranslate() when the language pack is not ready, and
+// Test the behavior of availability() when the language pack is not ready, and
 // the language pack count will exceed the limitation.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateNoExceedsLanguagePackCountLimitation) {
@@ -1218,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation);
 }
 
-// Test the behavior of canTranslate() when the language pack is not ready, and
+// Test the behavior of availability() when the language pack is not ready, and
 // the language pack count exceed the limitation after downloading two language
 // packs.
 IN_PROC_BROWSER_TEST_F(
@@ -1240,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   // The language pack count is 2, which is less than the limitation. But if we
   // download the required language packs, the language pack count will exceed
-  // the limitation. So canTranslate() returns `no`.
+  // the limitation. So availability() returns `no`.
   TestCanTranslateResult(
       "hi", "fr",
       CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation);
@@ -1252,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(
       CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation);
 }
 
-// Test the behavior of canTranslate() when PassAcceptLanguagesCheck() checks
+// Test the behavior of availability() when PassAcceptLanguagesCheck() checks
 // fails.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateNoAcceptLanguagesCheckFailed) {
@@ -1350,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   NavigateToEmptyPage();
   // Note: languagePairAvailable() returns "readily". This is different from
-  // canTranslate() which returns "after-download" in this case. See
+  // availability() which returns "after-download" in this case. See
   // CanTranslateAfterDownloadLibraryNotReady.
   TestLanguagePairAvailable(browser(), "en", "ja", "readily");
 }
@@ -1412,7 +1362,7 @@ IN_PROC_BROWSER_TEST_F(
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   // The language pack count is 2, which is less than the limitation. But if we
   // download the required language packs, the language pack count will exceed
-  // the limitation. So canTranslate() returns `no`.
+  // the limitation. So availability() returns `no`.
   TestLanguagePairAvailable(browser(), "hi", "fr", "no");
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kAr_En);
   // The language pack count is 3, which is equal to the limitation. So no more
@@ -1491,7 +1441,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, UseBothLegacyAndNewAPI) {
 
   // Test that Translator legacy API works.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      const translator = await translation.createTranslator({
+      const translator = await ai.translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -1510,7 +1460,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, UseBothLegacyAndNewAPI) {
             "en to ja: hello");
 }
 
-// Test the behavior of canTranslate() and
+// Test the behavior of availability() and
 // AITranslatorCapabilities.languagePairAvailable() when
 // PassAcceptLanguagesCheck() checks is skipped.
 class OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest
@@ -1528,7 +1478,7 @@ class OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test the behavior of canTranslate() when PassAcceptLanguagesCheck() checks
+// Test the behavior of availability() when PassAcceptLanguagesCheck() checks
 // is skipped.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest,
                        CanTranslateAcceptLanguagesCheckSkipped) {
@@ -1618,7 +1568,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
     const std::string_view translateTestScript = R"(
       (async () => {
         try {
-          window._translator = await translation.createTranslator({
+          window._translator = await ai.translator.create({
             sourceLanguage: 'en',
             targetLanguage: 'ja',
           });
@@ -1645,12 +1595,12 @@ class OnDeviceTranslationCrossOriginBrowserTest
                                "for the given source and target language.");
   }
 
-  // Checks the result of canTranslate() in the iframe.
+  // Checks the result of availability() in the iframe.
   std::string TryCanTranslateInIframe(size_t index, Browser* target_browser) {
     const std::string_view translateTestScript = R"(
       (async () => {
         try {
-          return await translation.canTranslate({
+          return await ai.translator.availability({
             sourceLanguage: 'en',
             targetLanguage: 'ja',
           });
@@ -1756,7 +1706,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
     AddIframe(i, browser());
     CheckTranslateInIframe(i, /*expect_success=*/true, browser());
-    EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "readily");
+    EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
   }
 
   // When the service count exceeds the limit, the translator cannot be created.
@@ -1765,13 +1715,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
       "The translation service count exceeded the limitation.");
   CheckTranslateInIframe(i, /*expect_success=*/false, browser());
   WaitForConsoleObserver(*console_observer);
-  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "no");
+  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "unavailable");
 
   // When the service count is back to under the limit, the translator can be
   // created again.
   RemoveIframeAndWaitForServiceDeletion(0, browser());
   CheckTranslateInIframe(i, /*expect_success=*/true, browser());
-  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "readily");
+  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
 }
 
 // Tests the behavior of the Translation API in a cross origin iframe using the
@@ -1869,7 +1819,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 
 // Tests the behavior of the Translation API in a cross origin iframe using
 // the command line. We need this test because the implementation of
-// canTranslate() is different when the command line is used.
+// availability() is different when the command line is used.
 class OnDeviceTranslationCrossOriginWithCommandLineBrowserTest
     : public OnDeviceTranslationCrossOriginBrowserTest {
  public:
@@ -1900,19 +1850,19 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginWithCommandLineBrowserTest,
   for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
     AddIframe(i, browser());
     CheckTranslateInIframe(i, /*expect_success=*/true, browser());
-    EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "readily");
+    EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
   }
 
   // When the service count exceeds the limit, the translator cannot be created.
   AddIframe(i, browser());
   CheckTranslateInIframe(i, /*expect_success=*/false, browser());
-  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "no");
+  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "unavailable");
 
   // When the service count is back to under the limit, the translator can be
   // created again.
   RemoveIframeAndWaitForServiceDeletion(0, browser());
   CheckTranslateInIframe(i, /*expect_success=*/true, browser());
-  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "readily");
+  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
 }
 
 // Tests the behavior of the Origin Trial token for the Translation API.
@@ -1965,25 +1915,29 @@ class OnDeviceTranslationOriginTrialBrowserTest : public InProcessBrowserTest {
         .ExtractBool();
   }
 
-  // Tests that `window.translation.canTranslate` and
-  // `window.translation.canTranslate` don't exist.
+  // Tests that `window.ai.translator.availability` and
+  // `window.ai.translator.availability` don't exist.
   void ExpectAPIDisabled() {
-    if (!IsDefinedJs("window.translation")) {
-      // `window.translate` is not there, we're done.
+    if (!IsDefinedJs("window.ai")) {
+      // `window.ai` is not there, we're done.
+      return;
+    }
+    if (!IsDefinedJs("window.ai.translator")) {
+      // `window.ai.translator` is not there, we're done.
       return;
     }
 
     // We expect to find the detection API but no translate API.
-    EXPECT_FALSE(IsDefinedJs("window.translation.canTranslate"));
-    EXPECT_FALSE(IsDefinedJs("window.translation.createTranslator"));
+    EXPECT_FALSE(IsDefinedJs("window.ai.translator.availability"));
+    EXPECT_FALSE(IsDefinedJs("window.ai.translator.create"));
   }
 
-  // Tests that `window.translation.canTranslate` and
-  // `window.translation.canTranslate` both exist.
+  // Tests that `window.ai.translator.availability` and
+  // `window.ai.translator.availability` both exist.
   void ExpectAPIEnabled() {
-    EXPECT_TRUE(IsDefinedJs("window.translation"));
-    EXPECT_TRUE(IsDefinedJs("window.translation.canTranslate"));
-    EXPECT_TRUE(IsDefinedJs("window.translation.createTranslator"));
+    EXPECT_TRUE(IsDefinedJs("window.ai.translator"));
+    EXPECT_TRUE(IsDefinedJs("window.ai.translator.availability"));
+    EXPECT_TRUE(IsDefinedJs("window.ai.translator.create"));
   }
 
  private:
@@ -2138,7 +2092,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
-// Tests the behavior of canTranslate() when the required language package
+// Tests the behavior of availability() when the required language package
 // is provided by the command line flag.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
                        CanTranslateReadily) {
@@ -2151,7 +2105,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
   TestCanTranslateResult("en", "ja", CanCreateTranslatorResult::kReadily);
 }
 
-// Tests the behavior of canTranslate() when the required language package
+// Tests the behavior of availability() when the required language package
 // is not provided by the command line flag.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
                        CanTranslateNoNotSupportedLanguage) {
@@ -2169,7 +2123,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
                          CanCreateTranslatorResult::kNoNotSupportedLanguage);
 }
 
-// Tests the behavior of canTranslate() when the required language package
+// Tests the behavior of availability() when the required language package
 // is provided by the command line flag, but the library is not ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
                        CanTranslateAfterDownloadLibraryNotReady) {

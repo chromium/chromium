@@ -166,27 +166,24 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
 
 bool IsResourceWebAccessibleImpl(
     const Extension& extension,
+    const GURL& target_url,
     const std::optional<url::Origin>& initiator_origin,
-    const GURL& upstream_url,
-    const GURL& target_url) {
-  std::string relative_path = target_url.path();
-
-  // Set the initiator_url.
-  GURL initiator_url;
-  if (initiator_origin) {
-    if (initiator_origin->opaque()) {
-      initiator_url =
-          initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL();
-    } else {
-      initiator_url = initiator_origin->GetURL();
-    }
-  }
-
+    const GURL& upstream_url) {
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(&extension);
   if (!info) {
     return false;
   }
 
+  // Set the initiator_url.
+  GURL initiator_url;
+  if (initiator_origin) {
+    initiator_url =
+        initiator_origin->opaque()
+            ? initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
+            : initiator_url = initiator_origin->GetURL();
+  }
+
+  std::string relative_path = target_url.path();
   bool using_dynamic_url_extension_feature = base::FeatureList::IsEnabled(
       extensions_features::kExtensionDynamicURLRedirection);
 
@@ -260,9 +257,10 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const url::Origin* initiator_origin) {
   CHECK(extension);
   return IsResourceWebAccessibleImpl(
-      *extension, base::OptionalFromPtr(initiator_origin),
-      /*upstream_url=*/GURL(),
-      /*target_url=*/extension->GetResourceURL(relative_path));
+      *extension,
+      /*target_url=*/extension->GetResourceURL(relative_path),
+      base::OptionalFromPtr(initiator_origin),
+      /*upstream_url=*/GURL());
 }
 
 // static
@@ -274,8 +272,8 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
   CHECK(extension);
   CHECK(target_url.SchemeIs(kExtensionScheme));
 
-  return IsResourceWebAccessibleImpl(*extension, initiator_origin, upstream_url,
-                                     target_url);
+  return IsResourceWebAccessibleImpl(*extension, target_url, initiator_origin,
+                                     upstream_url);
 }
 
 // static

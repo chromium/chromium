@@ -257,9 +257,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
 
   bool use_cross_device_synchronization() const {
-    // Cross device sync is needed if we have DXGI shared handle or dcomp
-    // texture.
-    return dxgi_shared_handle_state_ != nullptr || dcomp_texture_ != nullptr;
+    // Cross device sync is needed if we have DXGI shared handle.
+    return dxgi_shared_handle_state_ != nullptr;
   }
 
   bool use_cross_device_fence_synchronization() const {

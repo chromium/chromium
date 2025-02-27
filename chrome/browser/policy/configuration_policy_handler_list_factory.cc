@@ -1805,6 +1805,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHelpMeReadSettings,
     ash::prefs::kHmrManagedSettings,
     base::Value::Type::INTEGER},
+  { key::kHelpMeWriteSettings,
+    ash::prefs::kHmwManagedSettings,
+    base::Value::Type::INTEGER},
   { key::kAllowExcludeDisplayInMirrorMode,
     prefs::kAllowExcludeDisplayInMirrorMode,
     base::Value::Type::BOOLEAN},
@@ -3119,7 +3122,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kSystemTerminalSshAllowed,
       crostini::prefs::kTerminalSshAllowedByPolicy));
   handlers->AddHandler(std::make_unique<OsColorModePolicyHandler>());
-  handlers->AddHandler(std::make_unique<HelpMeWritePolicyHandler>());
   handlers->AddHandler(
       std::make_unique<bruschetta::BruschettaPolicyHandler>(chrome_schema));
   handlers->AddHandler(
@@ -3326,6 +3328,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                        ash::prefs::kGenAIVcBackgroundSettings);
   gen_ai_default_policies.emplace_back(key::kHelpMeReadSettings,
                                        ash::prefs::kHmrManagedSettings);
+  gen_ai_default_policies.emplace_back(key::kHelpMeWriteSettings,
+                                       ash::prefs::kHmwManagedSettings);
   gen_ai_default_policies.emplace_back(key::kGenAIPhotoEditingSettings,
                                        ash::prefs::kGenAIPhotoEditingSettings);
   gen_ai_default_policies.emplace_back(key::kGenAISmartGroupingSettings,

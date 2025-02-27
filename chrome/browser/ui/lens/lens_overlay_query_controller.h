@@ -47,6 +47,18 @@ class VariationsClient;
 
 namespace lens {
 
+// Data struct representing content data to be sent to the Lens server.
+struct PageContent {
+  PageContent();
+  PageContent(std::vector<uint8_t> bytes, lens::MimeType content_type);
+  PageContent(const PageContent& other);
+  ~PageContent();
+
+ public:
+  std::vector<uint8_t> bytes_;
+  lens::MimeType content_type_;
+};
+
 // Callback type alias for the lens overlay full image response.
 using LensOverlayFullImageResponseCallback =
     base::RepeatingCallback<void(std::vector<lens::mojom::OverlayObjectPtr>,
@@ -97,8 +109,8 @@ class LensOverlayQueryController {
       GURL page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-      base::span<const uint8_t> underlying_content_bytes,
-      lens::MimeType underlying_content_type,
+      base::span<const PageContent> underlying_page_contents,
+      lens::MimeType primary_content_type,
       float ui_scale_factor,
       base::TimeTicks invocation_time);
 
@@ -123,9 +135,12 @@ class LensOverlayQueryController {
   virtual void ResetPageContentData();
 
   // Sends a request to the server to update the page content.
+  // The first content data is the most important and will be used for
+  // generating request types. `primary_content_type` is used for generating the
+  // request type and vit param.
   virtual void SendPageContentUpdateRequest(
-      base::span<const uint8_t> new_content_bytes,
-      lens::MimeType new_content_type,
+      base::span<const lens::PageContent> underlying_page_contents,
+      lens::MimeType primary_content_type,
       GURL new_page_url);
 
   // Sends a request to the server with a portion of the page content.
@@ -722,14 +737,14 @@ class LensOverlayQueryController {
 
   const raw_ptr<Profile> profile_;
 
-  // The bytes of the content the user is viewing. Owned by
-  // LensOverlayController. Will be empty if no bytes to the underlying page
+  // The data of the content the user is viewing. Owned by
+  // LensOverlayController. Will be empty if no data to the underlying page
   // could be provided.
-  base::raw_span<const uint8_t> underlying_content_bytes_;
+  base::raw_span<const PageContent> underlying_page_contents_;
 
-  // The mime type of underlying_content_bytes. Will be kNone if
-  // underlying_content_bytes_ is empty.
-  lens::MimeType underlying_content_type_;
+  // The primary content type the underlying_page_contents_ is associated with.
+  // This MimeType is used for generating the request type and vit param.
+  lens::MimeType primary_content_type_;
 
   // A span of text that represents a part of the content held in underlying
   // content bytes.

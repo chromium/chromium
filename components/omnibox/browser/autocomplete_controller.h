@@ -372,6 +372,9 @@ class AutocompleteController : public AutocompleteProviderListener,
       GetMatchIconForFeaturedEnterpriseSearchAggregatorUsesDoesNotUseFavicon);
   FRIEND_TEST_ALL_PREFIXES(
       OmniboxEditModelPopupTest,
+      GetMatchIconForFeaturedEnterpriseSearchAggregatorContentSuggestion);
+  FRIEND_TEST_ALL_PREFIXES(
+      OmniboxEditModelPopupTest,
       GetPopupRichSuggestionBitmapForMatchWithoutAssociatedKeyword);
   FRIEND_TEST_ALL_PREFIXES(
       OmniboxEditModelPopupTest,

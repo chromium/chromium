@@ -616,8 +616,6 @@ public interface WebContents extends Parcelable {
      */
     void updateOffsetTagDefinitions(BrowserControlsOffsetTagDefinitions offsetTagDefinitions);
 
-    void disconnectFileSelectListenerIfAny();
-
     void captureContentAsBitmapForTesting(Callback<Bitmap> callback);
 
     void setSupportsForwardTransitionAnimation(boolean supports);

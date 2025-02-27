@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -116,6 +117,11 @@ void TurnSyncOnHelperDelegateImpl::
     ShouldEnterpriseConfirmationPromptForNewProfile(
         Profile* profile,
         base::OnceCallback<void(bool)> callback) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnterpriseUpdatedProfileCreationScreen)) {
+    std::move(callback).Run(/*prompt_for_new_profile=*/true);
+    return;
+  }
   ui::CheckShouldPromptForNewProfile(profile, std::move(callback));
 }
 

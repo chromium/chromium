@@ -211,6 +211,7 @@
     "linux-code-coverage": "ci/linux-code-coverage/gn-args.json",
     "linux-fuzz-coverage": "ci/linux-fuzz-coverage/gn-args.json",
     "linux-js-code-coverage": "ci/linux-js-code-coverage/gn-args.json",
+    "linux-x64-fuzzilli-coverage": "ci/linux-x64-fuzzilli-coverage/gn-args.json",
     "mac-code-coverage": "ci/mac-code-coverage/gn-args.json",
     "win10-code-coverage": "ci/win10-code-coverage/gn-args.json"
   },

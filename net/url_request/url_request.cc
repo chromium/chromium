@@ -507,21 +507,12 @@ void URLRequest::set_isolation_info(const IsolationInfo& isolation_info,
   bool is_main_frame_navigation = isolation_info.IsMainFrameRequest() ||
                                   force_main_frame_for_same_site_cookies();
 
-  if (isolation_info.GetNetworkIsolationPartition() ==
-      NetworkIsolationPartition::kGeneral) {
-    cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
-        isolation_info.network_isolation_key(),
-        isolation_info.site_for_cookies(),
-        net::SchemefulSite(redirect_info_new_url.has_value()
-                               ? redirect_info_new_url.value()
-                               : url_chain_.back()),
-        is_main_frame_navigation);
-  } else {
-    // Support for creating a CookiePartitionKey from IsolationInfos with
-    // special NetworkIsolationPartition is not implemented. The original use
-    // cases for special NetworkIsolationPartitions disallow cookies.
-    cookie_partition_key_ = std::nullopt;
-  }
+  cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
+      isolation_info.network_isolation_key(), isolation_info.site_for_cookies(),
+      net::SchemefulSite(redirect_info_new_url.has_value()
+                             ? redirect_info_new_url.value()
+                             : url_chain_.back()),
+      is_main_frame_navigation);
 }
 
 void URLRequest::set_isolation_info_from_network_anonymization_key(

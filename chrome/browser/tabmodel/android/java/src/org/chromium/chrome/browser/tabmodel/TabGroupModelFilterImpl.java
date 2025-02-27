@@ -709,6 +709,17 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
+    public int getTabCountForGroup(@Nullable Token tabGroupId) {
+        if (tabGroupId == null) return 0;
+
+        @Nullable Integer rootId = mGroupIdToRootIdMap.get(tabGroupId);
+        if (rootId == null) return 0;
+
+        @Nullable TabGroup tabGroup = mRootIdToGroupMap.get(rootId);
+        return tabGroup == null ? 0 : tabGroup.size();
+    }
+
+    @Override
     public boolean isTabInTabGroup(Tab tab) {
         int rootId = tab.getRootId();
         TabGroup group = mRootIdToGroupMap.get(rootId);
@@ -1424,6 +1435,16 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public boolean tabGroupExistsForRootId(int rootId) {
         TabGroup group = mRootIdToGroupMap.get(rootId);
         return group != null;
+    }
+
+    @Override
+    public boolean tabGroupExists(@Nullable Token tabGroupId) {
+        boolean foundKey = mGroupIdToRootIdMap.containsKey(tabGroupId);
+        // Guards are in place to ensure this doesn't happen, assert if it does.
+        assert !(foundKey && tabGroupId == null)
+                : "null key should not exist in mGroupIdToRootIdMap.";
+
+        return foundKey;
     }
 
     @Override

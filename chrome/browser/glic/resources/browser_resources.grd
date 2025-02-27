@@ -24,6 +24,7 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PROFILE_LOGO" file="glic_profile_logo.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT" file="glic_profile_banner_bottom_left.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT" file="glic_profile_banner_top_right.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_PROFILE_BRANDING_CSS" file="glic_profile_branding.css" type="BINDATA" compress="brotli" />
     </includes>
 
     <!-- NOTE: file is currently marked as untranslatable in
@@ -96,9 +97,16 @@ found in the LICENSE file.
           Exit
         </message>
       </if>
-      <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings.">
-        Settings...
-      </message>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings (on Windows and Linux).">
+          Settings
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings (on Mac only).">
+          Settings...
+        </message>
+      </if>
       <message name="IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE" translateable="false" desc="Help bubble above the toggle for turning off the glic os widget.">
         Disable glic here
       </message>

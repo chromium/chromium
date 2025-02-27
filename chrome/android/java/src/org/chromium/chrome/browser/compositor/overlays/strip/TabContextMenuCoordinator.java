@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
@@ -140,6 +141,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 shareDelegate.share(tab, /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
                 recordUserAction("ShareTab");
             } else if (menuId == R.id.close_tab) {
+                tabModelSupplier
+                        .get()
+                        .getTabRemover()
+                        .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ true);
                 recordUserAction("CloseTab");
             }
         };

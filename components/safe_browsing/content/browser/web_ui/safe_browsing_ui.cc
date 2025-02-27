@@ -39,16 +39,16 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "content/public/browser/global_routing_id.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
 #include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
@@ -847,6 +847,8 @@ base::Value::Dict SerializeClientReportingMetadata(
     device_dict.Set("os_version", client_metadata.device().os_version());
     device_dict.Set("os_platform", client_metadata.device().os_platform());
     device_dict.Set("name", client_metadata.device().name());
+    device_dict.Set("device_fqdn", client_metadata.device().device_fqdn());
+    device_dict.Set("network_name", client_metadata.device().network_name());
     client_metadata_dict.Set("device", std::move(device_dict));
   }
   if (client_metadata.has_profile()) {
@@ -2217,6 +2219,8 @@ std::string SerializeContentAnalysisRequest(
       device_metadata.Set("os_version", device.os_version());
       device_metadata.Set("os_platform", device.os_platform());
       device_metadata.Set("name", device.name());
+      device_metadata.Set("device_fqdn", device.device_fqdn());
+      device_metadata.Set("network_name", device.network_name());
       metadata.Set("device", std::move(device_metadata));
     }
 

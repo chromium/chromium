@@ -51,6 +51,8 @@
 namespace gpu {
 
 namespace {
+using GraphiteTextureHolder = SkiaImageRepresentation::GraphiteTextureHolder;
+
 struct ScopedIOSurfaceLock {
   ScopedIOSurfaceLock(IOSurfaceRef iosurface, IOSurfaceLockOptions options)
       : io_surface_(iosurface) {
@@ -167,17 +169,18 @@ base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
   return mtl_texture;
 }
 
-std::vector<skgpu::graphite::BackendTexture> CreateGraphiteMetalTextures(
+std::vector<scoped_refptr<GraphiteTextureHolder>> CreateGraphiteMetalTextures(
     std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures,
     const viz::SharedImageFormat format,
     const gfx::Size& size) {
   int num_planes = format.NumberOfPlanes();
-  std::vector<skgpu::graphite::BackendTexture> graphite_textures;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> graphite_textures;
   graphite_textures.reserve(num_planes);
   for (int plane = 0; plane < num_planes; plane++) {
     SkISize sk_size = gfx::SizeToSkISize(format.GetPlaneSize(plane, size));
-    graphite_textures.emplace_back(skgpu::graphite::BackendTextures::MakeMetal(
-        sk_size, mtl_textures[plane].get()));
+    graphite_textures.emplace_back(base::MakeRefCounted<GraphiteTextureHolder>(
+        skgpu::graphite::BackendTextures::MakeMetal(
+            sk_size, mtl_textures[plane].get())));
   }
   return graphite_textures;
 }
@@ -541,9 +544,9 @@ class IOSurfaceImageBacking::SkiaGraphiteRepresentation final
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect) override;
-  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginWriteAccess() override;
   void EndWriteAccess() override;
-  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override;
+  std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() override;
   void EndReadAccess() override;
 
   IOSurfaceImageBacking* backing_impl() const {
@@ -589,7 +592,7 @@ IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess(
   return write_surfaces_;
 }
 
-std::vector<skgpu::graphite::BackendTexture>
+std::vector<scoped_refptr<GraphiteTextureHolder>>
 IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess() {
   if (!backing_impl()->BeginAccess(/*readonly=*/false)) {
     return {};
@@ -607,7 +610,7 @@ void IOSurfaceImageBacking::SkiaGraphiteRepresentation::EndWriteAccess() {
   backing_impl()->EndAccess(/*readonly=*/false);
 }
 
-std::vector<skgpu::graphite::BackendTexture>
+std::vector<scoped_refptr<GraphiteTextureHolder>>
 IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginReadAccess() {
   if (!backing_impl()->BeginAccess(/*readonly=*/true)) {
     return {};

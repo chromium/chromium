@@ -836,16 +836,6 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     image = unaccelerated_image.get();
   }
 
-  // TODO(crbug.com/1426666): If disable OOP-R, using webgpu mailbox to upload
-  // cpu-backed resource which has unpremultiply alpha type causes issues
-  // due to alpha type has been dropped. Disable that
-  // upload path if the image is not texture backed, OOP-R is disabled and image
-  // alpha type is unpremultiplied.
-  if (!features::IsCanvasOopRasterizationEnabled() &&
-      !image->IsTextureBacked() && !image->IsPremultiplied()) {
-    use_webgpu_mailbox_texture = false;
-  }
-
   bool noop = copy_size.width == 0 || copy_size.height == 0 ||
               copy_size.depthOrArrayLayers == 0;
 

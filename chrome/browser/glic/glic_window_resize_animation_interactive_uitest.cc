@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
@@ -78,19 +77,9 @@ class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
     }
   }
 
-  GlicKeyedService* glic_service() {
-    return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-        browser()->GetProfile());
-  }
-
-  GlicWindowController& window_controller() {
-    return glic_service()->window_controller();
-  }
-
   base::TimeTicks animation_creation_time() { return animation_creation_time_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   const base::TimeTicks animation_creation_time_ = base::TimeTicks::Now();
 };
 }  // namespace

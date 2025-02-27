@@ -184,6 +184,8 @@ std::string GetProviderNameForHistograms(
       return "CustomExtensionProvider";
     case ProviderType::kInstalledWebappProvider:
       return "InstalledWebappProvider";
+    case ProviderType::kJavascriptOptimizerAndroidProvider:
+      return "JavascriptOptimizerAndroidProvider";
     case ProviderType::kNotificationAndroidProvider:
       return "NotificationAndroidProvider";
     case ProviderType::kOneTimePermissionProvider:

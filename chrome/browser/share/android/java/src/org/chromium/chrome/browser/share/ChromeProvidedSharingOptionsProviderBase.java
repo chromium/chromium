@@ -265,7 +265,6 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
      * classes before the provider can function
      */
     protected void initializeFirstPartyOptionsInOrder() {
-        maybeAddPageInfoFirstPartyOption();
         maybeAddCopyFirstPartyOption();
 
         // TODO(386833405): Decide on priority for this option.
@@ -280,13 +279,6 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         }
         maybeAddSendTabToSelfFirstPartyOption();
         maybeAddQrCodeFirstPartyOption();
-    }
-
-    private void maybeAddPageInfoFirstPartyOption() {
-        FirstPartyOption pageInfoOption = createPageInfoFirstPartyOption();
-        if (pageInfoOption != null) {
-            mOrderedFirstPartyOptions.add(pageInfoOption);
-        }
     }
 
     private void maybeAddCollaborateFirstPartyOption() {
@@ -479,11 +471,6 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
      * Create a {@link FirstPartyOption} used to do long screenshot. Return null if not supported.
      */
     protected abstract @Nullable FirstPartyOption createLongScreenshotsFirstPartyOption();
-
-    /**
-     * Create a {@link FirstPartyOption} used for page info sharing. Return null if not supported.
-     */
-    protected abstract @Nullable FirstPartyOption createPageInfoFirstPartyOption();
 
     /**
      * Create a {@link FirstPartyOption} used for sharing as collaboration. Return null if not

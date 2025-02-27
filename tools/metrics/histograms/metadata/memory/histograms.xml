@@ -2202,6 +2202,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.SelfCompact2.Renderer.SelfCompactionTime" units="ms"
+    expires_after="2025-10-06">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    How long self-compaction took. Recorded after self-compaction has finished.
+  </summary>
+</histogram>
+
 <histogram name="Memory.SelfCompact2.Renderer.TimeSinceLastCancel" units="ms"
     expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
@@ -2376,6 +2385,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Total.PrivateSwapFootprint" units="MB"
+    expires_after="2025-06-22">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    An amount of private memory of all processes placed in swap (VmSwap).
+    Available on Android only.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Total.RendererBlinkGC" units="MB"
     expires_after="2025-09-15">
   <owner>fdoray@chromium.org</owner>
@@ -2456,6 +2477,18 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Total.RendererPrivateSwapFootprint" units="MB"
+    expires_after="2025-06-22">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    An amount of private memory of all renderer processes placed in swap
+    (VmSwap). Available on Android only.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes.
   </summary>
 </histogram>
 

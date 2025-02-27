@@ -1093,7 +1093,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     bitfields_.SetMayHaveAnchorQuery(true);
   }
-  void MarkMayHaveAnchorQuery();
+  virtual void MarkMayHaveAnchorQuery();
 
   void SetHasBrokenSpine() {
     NOT_DESTROYED();

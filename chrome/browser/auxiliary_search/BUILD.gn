@@ -99,12 +99,12 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTaskUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridgeUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchConfigManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactoryUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImplUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonorUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProviderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediatorUnitTest.java",

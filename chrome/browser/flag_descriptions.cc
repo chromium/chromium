@@ -34,12 +34,6 @@ const char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 const char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";
 
-const char kCanvasOopRasterizationName[] =
-    "Out-of-process 2D canvas rasterization.";
-const char kCanvasOopRasterizationDescription[] =
-    "The rasterization of 2d canvas contents is performed in the GPU process. "
-    "Requires that out-of-process rasterization be enabled.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kCapturedSurfaceControlName[] = "Captured Surface Control";
 const char kCapturedSurfaceControlDescription[] =
@@ -1163,14 +1157,6 @@ const char kViewTransitionOnNavigationIframeDescription[] =
     "Controls the availability of the viewTransition API on document "
     "navigations in a subframe. Must be used with "
     "view-transition-on-navigation";
-
-const char kViewTransitionOverflowRectFromSurfaceName[] =
-    "CSS view transitions: compute visual overflow from surfaces";
-const char kViewTransitionOverflowRectFromSurfaceDescription[] =
-    "Changes the underlying mechanism to compute the view transition live "
-    "element geometry. "
-    "This shouldn't have web-observable effects, but exposing as a flag for "
-    "easy triage.";
 
 const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
 const char kEnableAutoDisableAccessibilityDescription[] =
@@ -4249,10 +4235,6 @@ const char kAndroidOpenPdfInlineBackportDescription[] =
 const char kAndroidPdfAssistContentName[] = "Provide assist content for PDF";
 const char kAndroidPdfAssistContentDescription[] =
     "Provide assist content for PDF on Android.";
-
-const char kChromePageInfoSharingName[] = "Page Info Sharing";
-const char kChromePageInfoSharingDescription[] =
-    "Enable Page Info Sharing on Android.";
 
 const char kAndroidTabDeclutterName[] = "Android Tab Declutter";
 const char kAndroidTabDeclutterDescription[] =

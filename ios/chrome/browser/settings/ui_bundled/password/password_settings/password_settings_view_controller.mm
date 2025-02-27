@@ -88,6 +88,22 @@ NSString* GetSavePasswordsItemTitle() {
                                     : IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
 }
 
+// Helper method that returns the string to use as title for the
+// `passwordsInOtherAppsItem`.
+NSString* GetPasswordsInOtherAppsItemTitle() {
+  if (!IOSPasskeysM2Enabled()) {
+    return l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+  }
+
+  if (@available(iOS 18.0, *)) {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_IOS18);
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS);
+  }
+}
+
 // Helper method that returns whether the `passwordsInOtherAppsItem` should be
 // tappable depending on its accessory type.
 BOOL IsPasswordsInOtherAppsItemTappable(
@@ -550,10 +566,13 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 
   _passwordsInOtherAppsItem = [[TableViewMultiDetailTextItem alloc]
       initWithType:ItemTypePasswordsInOtherApps];
-  _passwordsInOtherAppsItem.text = l10n_util::GetNSString(
-      IOSPasskeysM2Enabled() ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS
-                             : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
-  if (!IOSPasskeysM2Enabled()) {
+  _passwordsInOtherAppsItem.text = GetPasswordsInOtherAppsItemTitle();
+  if (IOSPasskeysM2Enabled()) {
+    if (@available(iOS 18.0, *)) {
+      _passwordsInOtherAppsItem.leadingDetailText = l10n_util::GetNSString(
+          IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION);
+    }
+  } else {
     _passwordsInOtherAppsItem.accessoryType =
         UITableViewCellAccessoryDisclosureIndicator;
     _passwordsInOtherAppsItem.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -1040,7 +1059,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   }
 
   if (shouldPasswordsInOtherAppsItemBeTappable) {
-    self.passwordsInOtherAppsItem.leadingDetailText = nil;
     self.passwordsInOtherAppsItem.trailingDetailText =
         _passwordsInOtherAppsEnabled.value()
             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
@@ -1050,9 +1068,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
     self.passwordsInOtherAppsItem.accessibilityTraits |=
         UIAccessibilityTraitButton;
   } else {
-    // TODO(crbug.com/394580626): Replace placeholder string once strings are
-    // ready.
-    self.passwordsInOtherAppsItem.leadingDetailText = @"Leading detail text";
     self.passwordsInOtherAppsItem.trailingDetailText = nil;
     self.passwordsInOtherAppsItem.accessoryType = UITableViewCellAccessoryNone;
     self.passwordsInOtherAppsItem.accessibilityTraits &=

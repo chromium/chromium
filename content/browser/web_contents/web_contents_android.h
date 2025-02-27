@@ -218,8 +218,6 @@ class CONTENT_EXPORT WebContentsAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& joffset_tag_definitions);
 
-  void DisconnectFileSelectListenerIfAny(JNIEnv* env);
-
   RenderWidgetHostViewAndroid* GetRenderWidgetHostViewAndroid();
 
   class DestructionObserver : public base::CheckedObserver {

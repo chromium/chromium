@@ -7464,6 +7464,7 @@ Called by update_use_counter_css.py.-->
   <int value="843" label="scroll-marker-contain"/>
   <int value="844" label="row-rule-style"/>
   <int value="845" label="gap-rule-paint-order"/>
+  <int value="846" label="row-rule-width"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

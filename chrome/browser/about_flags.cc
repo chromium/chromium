@@ -5669,12 +5669,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kViewTransitionOnNavigationIframeDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kViewTransitionOnNavigationForIframes)},
-    {"view-transition-overflow-rect-from-surface",
-     flag_descriptions::kViewTransitionOverflowRectFromSurfaceName,
-     flag_descriptions::kViewTransitionOverflowRectFromSurfaceDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kViewTransitionOverflowRectFromSurface)},
 #if BUILDFLAG(IS_WIN)
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,
@@ -9103,10 +9097,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // ENABLE_EXTENSIONS
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"canvas-oop-rasterization", flag_descriptions::kCanvasOopRasterizationName,
-     flag_descriptions::kCanvasOopRasterizationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCanvasOopRasterization)},
-
     {"captured-surface-control", flag_descriptions::kCapturedSurfaceControlName,
      flag_descriptions::kCapturedSurfaceControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kCapturedSurfaceControl)},
@@ -10463,12 +10453,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPdfAssistContentName,
      flag_descriptions::kAndroidPdfAssistContentDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidPdfAssistContent)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"page-info-sharing", flag_descriptions::kChromePageInfoSharingName,
-     flag_descriptions::kChromePageInfoSharingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kChromeSharePageInfo)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

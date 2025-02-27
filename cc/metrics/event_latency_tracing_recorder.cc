@@ -381,11 +381,6 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
               // (because swap-end is actually the time the post swap end
               // callback is run, which can happen after presentation). In this
               // case we truncate the breakdown to presentation.
-              DCHECK(
-                  breakdown == CompositorFrameReporter::VizBreakdown::
-                                   kSwapStartToSwapEnd ||
-                  breakdown ==
-                      CompositorFrameReporter::VizBreakdown::kLatchToSwapEnd);
               breakdown_name = GetVizBreakdownToPresentationName(breakdown);
             } else {
               breakdown_name =

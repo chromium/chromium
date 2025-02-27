@@ -126,6 +126,7 @@
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -2204,7 +2205,7 @@ TEST_F(ExtensionServiceTest, GrantedAPIAndHostPermissions) {
   ASSERT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
 
   // Now grant and re-enable the extension, making sure the prefs are updated.
-  service()->GrantPermissionsAndEnableExtension(extension);
+  registrar()->GrantPermissionsAndEnableExtension(*extension);
 
   ASSERT_FALSE(prefs->IsExtensionDisabled(extension_id));
   ASSERT_TRUE(service()->IsExtensionEnabled(extension_id));
@@ -2244,7 +2245,7 @@ TEST_F(ExtensionServiceTest, GrantedAPIAndHostPermissions) {
   ASSERT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
 
   // Now grant and re-enable the extension, making sure the prefs are updated.
-  service()->GrantPermissionsAndEnableExtension(extension);
+  registrar()->GrantPermissionsAndEnableExtension(*extension);
 
   ASSERT_TRUE(service()->IsExtensionEnabled(extension_id));
   ASSERT_FALSE(prefs->DidExtensionEscalatePermissions(extension_id));
@@ -8222,7 +8223,7 @@ TEST_F(ExtensionServiceTest, ReloadAndReEnableExtension) {
   // While the extension is reloading, try to re-enable it. This is the flow
   // that could happen if, e.g., the user hit the enable toggle in the
   // chrome://extensions page while it was reloading.
-  service()->GrantPermissionsAndEnableExtension(extension.get());
+  registrar()->GrantPermissionsAndEnableExtension(*extension.get());
   EXPECT_FALSE(registry()->enabled_extensions().Contains(kExtensionId));
 
   // Wait for the reload to complete. This previously crashed (see

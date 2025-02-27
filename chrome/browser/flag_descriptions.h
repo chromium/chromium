@@ -570,9 +570,6 @@ extern const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[];
 extern const char kCanvasHibernationName[];
 extern const char kCanvasHibernationDescription[];
 
-extern const char kCanvasOopRasterizationName[];
-extern const char kCanvasOopRasterizationDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
@@ -678,9 +675,6 @@ extern const char kViewTransitionOnNavigationDescription[];
 
 extern const char kViewTransitionOnNavigationIframeName[];
 extern const char kViewTransitionOnNavigationIframeDescription[];
-
-extern const char kViewTransitionOverflowRectFromSurfaceName[];
-extern const char kViewTransitionOverflowRectFromSurfaceDescription[];
 
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
@@ -2504,9 +2498,6 @@ extern const char kAndroidOpenPdfInlineBackportDescription[];
 
 extern const char kAndroidPdfAssistContentName[];
 extern const char kAndroidPdfAssistContentDescription[];
-
-extern const char kChromePageInfoSharingName[];
-extern const char kChromePageInfoSharingDescription[];
 
 extern const char kAndroidTabDeclutterName[];
 extern const char kAndroidTabDeclutterDescription[];

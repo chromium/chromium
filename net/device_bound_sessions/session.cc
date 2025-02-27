@@ -207,7 +207,9 @@ proto::Session Session::ToProto() const {
   return session_proto;
 }
 
-bool Session::ShouldDeferRequest(URLRequest* request) const {
+bool Session::ShouldDeferRequest(
+    URLRequest* request,
+    const net::FirstPartySetMetadata& first_party_set_metadata) const {
   if (!IncludesUrl(request->url())) {
     // Request is not in scope for this session.
     return false;
@@ -268,8 +270,8 @@ bool Session::ShouldDeferRequest(URLRequest* request) const {
   // The main logic. This checks every CookieCraving against every (real)
   // CanonicalCookie.
   for (const CookieCraving& cookie_craving : cookie_cravings_) {
-    if (!cookie_craving.IncludeForRequestURL(request->url(), options, params)
-             .status.IsInclude()) {
+    if (!cookie_craving.ShouldIncludeForRequest(
+            request, first_party_set_metadata, options, params)) {
       continue;
     }
 

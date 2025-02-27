@@ -875,9 +875,17 @@ class UnitTest(unittest.TestCase):
         ('base_unittests\n'),
     }
     mbw = self.check(
-        ['run', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'],
+        [
+            'run',
+            '-c',
+            'debug_remoteexec',
+            '//out/Default',
+            'base_unittests',
+            '--force',
+        ],
         files=files,
-        ret=0)
+        ret=0,
+    )
     # pylint: disable=line-too-long
     self.assertEqual(
         mbw.files['/fake_src/out/Default/base_unittests.isolate'],
@@ -921,35 +929,61 @@ class UnitTest(unittest.TestCase):
 
     mbw.ToSrcRelPath = to_src_rel_path_stub
 
-    self.check([
-        'run', '-s', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
-    ],
-               mbw=mbw,
-               ret=0)
+    self.check(
+        [
+            'run',
+            '-s',
+            '-c',
+            'debug_remoteexec',
+            '//out/Default',
+            'base_unittests',
+            '--force',
+        ],
+        mbw=mbw,
+        ret=0,
+    )
 
     # Specify a custom dimension via '-d'.
     mbw = self.fake_mbw(files=files)
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     mbw.ToSrcRelPath = to_src_rel_path_stub
-    self.check([
-        'run', '-s', '-c', 'debug_remoteexec', '-d', 'os', 'Win7',
-        '//out/Default', 'base_unittests'
-    ],
-               mbw=mbw,
-               ret=0)
+    self.check(
+        [
+            'run',
+            '-s',
+            '-c',
+            'debug_remoteexec',
+            '-d',
+            'os',
+            'Win7',
+            '//out/Default',
+            'base_unittests',
+            '--force',
+        ],
+        mbw=mbw,
+        ret=0,
+    )
 
     # Use the internal swarming server via '--internal'.
     mbw = self.fake_mbw(files=files)
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     mbw.ToSrcRelPath = to_src_rel_path_stub
-    self.check([
-        'run', '-s', '--internal', '-c', 'debug_remoteexec', '//out/Default',
-        'base_unittests'
-    ],
-               mbw=mbw,
-               ret=0)
+    self.check(
+        [
+            'run',
+            '-s',
+            '--internal',
+            '-c',
+            'debug_remoteexec',
+            '//out/Default',
+            'base_unittests',
+            '--force',
+        ],
+        mbw=mbw,
+        ret=0,
+    )
 
   def test_run_swarmed_task_failure(self):
     files = {
@@ -982,21 +1016,39 @@ class UnitTest(unittest.TestCase):
 
     mbw.ToSrcRelPath = to_src_rel_path_stub
 
-    self.check([
-        'run', '-s', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
-    ],
-               mbw=mbw,
-               ret=1)
+    self.check(
+        [
+            'run',
+            '-s',
+            '-c',
+            'debug_remoteexec',
+            '//out/Default',
+            'base_unittests',
+            '--force',
+        ],
+        mbw=mbw,
+        ret=1,
+    )
     mbw = self.fake_mbw(files=files)
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     mbw.ToSrcRelPath = to_src_rel_path_stub
-    self.check([
-        'run', '-s', '-c', 'debug_remoteexec', '-d', 'os', 'Win7',
-        '//out/Default', 'base_unittests'
-    ],
-               mbw=mbw,
-               ret=1)
+    self.check(
+        [
+            'run',
+            '-s',
+            '-c',
+            'debug_remoteexec',
+            '-d',
+            'os',
+            'Win7',
+            '//out/Default',
+            'base_unittests',
+            '--force',
+        ],
+        mbw=mbw,
+        ret=1,
+    )
 
   def test_lookup(self):
     self.check(['lookup', '-c', 'debug_remoteexec'],
@@ -1229,7 +1281,9 @@ class UnitTest(unittest.TestCase):
     }
 
     mbw = self.fake_mbw(files)
-    self.check(['run', '//out/Default', 'base_unittests'], mbw=mbw, ret=0)
+    self.check(['run', '//out/Default', 'base_unittests', '--force'],
+               mbw=mbw,
+               ret=0)
     self.assertIn(['autoninja', '-C', 'out/Default', 'base_unittests'],
                   mbw.calls)
 
@@ -1246,7 +1300,9 @@ class UnitTest(unittest.TestCase):
     }
 
     mbw = self.fake_mbw(files, True)
-    self.check(['run', '//out/Default', 'base_unittests'], mbw=mbw, ret=0)
+    self.check(['run', '//out/Default', 'base_unittests', '--force'],
+               mbw=mbw,
+               ret=0)
     self.assertIn(['autoninja.bat', '-C', 'out\\Default', 'base_unittests'],
                   mbw.calls)
 

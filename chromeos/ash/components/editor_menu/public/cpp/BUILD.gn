@@ -14,6 +14,7 @@ component("cpp") {
     "editor_consent_status.h",
     "editor_context.cc",
     "editor_context.h",
+    "editor_enterprise_policy_enums.h",
     "editor_helpers.cc",
     "editor_helpers.h",
     "editor_mode.h",

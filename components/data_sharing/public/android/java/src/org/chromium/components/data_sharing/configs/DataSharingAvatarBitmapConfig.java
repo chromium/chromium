@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import org.chromium.components.data_sharing.GroupMember;
 
@@ -88,9 +89,9 @@ public final class DataSharingAvatarBitmapConfig {
         /**
          * Sets the group member whose avatar should be fetched.
          *
-         * @param groupMember The group member object.
+         * @param groupMember The group member object. If null, returns a default fallback avatar.
          */
-        public Builder setGroupMember(GroupMember groupMember) {
+        public Builder setGroupMember(@Nullable GroupMember groupMember) {
             this.mGroupMember = groupMember;
             return this;
         }

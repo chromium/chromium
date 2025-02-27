@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator;
@@ -38,7 +39,8 @@ public class DataSharingAvatarProvider implements RecentActivityListCoordinator.
     }
 
     @Override
-    public void getAvatarBitmap(GroupMember member, Callback<Drawable> avatarDrawableCallback) {
+    public void getAvatarBitmap(
+            @Nullable GroupMember member, Callback<Drawable> avatarDrawableCallback) {
         @ColorInt int fallbackColor = SemanticColorUtils.getDefaultIconColorAccent1(mContext);
         DataSharingAvatarCallback dataSharingAvatarCallback =
                 bitmap -> {

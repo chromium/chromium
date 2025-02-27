@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -84,16 +85,17 @@ void SupervisedUserWebContentHandlerImpl::CreateObserverFromContents(
           contents,
           /*url_approval_result_callback=*/
           base::BindOnce(&SupervisedUserWebContentHandlerImpl::
-                             CompleteUrlApprovalAndCloseDialog,
+                             CompleteUrlApprovalAndCloseOrUpdateDialog,
                          weak_ptr_factory_.GetWeakPtr(), target_url,
                          start_time));
 }
 
-void SupervisedUserWebContentHandlerImpl::CompleteUrlApprovalAndCloseDialog(
-    const GURL& target_url,
-    base::TimeTicks start_time,
-    supervised_user::LocalApprovalResult result,
-    std::optional<supervised_user::LocalWebApprovalErrorType> error_type) {
+void SupervisedUserWebContentHandlerImpl::
+    CompleteUrlApprovalAndCloseOrUpdateDialog(
+        const GURL& target_url,
+        base::TimeTicks start_time,
+        supervised_user::LocalApprovalResult result,
+        std::optional<supervised_user::LocalWebApprovalErrorType> error_type) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   supervised_user::SupervisedUserSettingsService* settings_service =
@@ -102,8 +104,18 @@ void SupervisedUserWebContentHandlerImpl::CompleteUrlApprovalAndCloseDialog(
 
   supervised_user::WebContentHandler::OnLocalApprovalRequestCompleted(
       *settings_service, target_url, start_time, result, error_type);
-
-  CloseDialog();
+  switch (result) {
+    case supervised_user::LocalApprovalResult::kError:
+      DisplayErrorMessageInDialog();
+      break;
+    case supervised_user::LocalApprovalResult::kApproved:
+    case supervised_user::LocalApprovalResult::kCanceled:
+    case supervised_user::LocalApprovalResult::kDeclined:
+      CloseDialog();
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void SupervisedUserWebContentHandlerImpl::CloseDialog() {
@@ -111,6 +123,14 @@ void SupervisedUserWebContentHandlerImpl::CloseDialog() {
   // accelerator.
   if (weak_parent_access_view_) {
     weak_parent_access_view_->CloseView();
+  }
+}
+
+void SupervisedUserWebContentHandlerImpl::DisplayErrorMessageInDialog() {
+  // The `weak_parent_access_view_` might have been invalidated through an
+  // accelerator.
+  if (weak_parent_access_view_) {
+    weak_parent_access_view_->DisplayErrorMessage(web_contents_.get());
   }
 }
 

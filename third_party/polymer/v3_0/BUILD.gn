@@ -167,6 +167,7 @@ ts_library("library") {
     ]
   }
 
+  tsconfig_base = "tsconfig_base.json"
   composite = true
   definitions = [
     "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",

@@ -149,7 +149,10 @@ class NET_EXPORT SchemefulSite {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  std::strong_ordering operator<=>(const SchemefulSite& other) const = default;
+  friend bool operator==(const SchemefulSite& left,
+                         const SchemefulSite& right) = default;
+  friend auto operator<=>(const SchemefulSite& left,
+                          const SchemefulSite& right) = default;
 
  private:
   // IPC serialization code needs to access internal origin.

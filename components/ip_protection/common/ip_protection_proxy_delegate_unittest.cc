@@ -144,6 +144,11 @@ class MockIpProtectionCore : public IpProtectionCore {
   void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) override {}
 
+  bool ShouldRequestIncludeProbabilisticRevealToken(
+      const GURL& request_url) override {
+    return false;
+  }
+
   void SetIpProtectionEnabled(bool value) { is_ip_protection_enabled_ = value; }
 
   // Set the proxy list returned from `ProxyList()`.

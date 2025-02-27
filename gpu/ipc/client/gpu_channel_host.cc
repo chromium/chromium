@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
@@ -164,6 +165,26 @@ bool GpuChannelHost::IsConnected() {
   return static_cast<bool>(gpu_channel_);
 }
 #endif
+
+void GpuChannelHost::DelayedEnsureFlush(uint32_t deferred_message_id) {
+  AutoLock lock(deferred_message_lock_);
+  if (delayed_flush_deferred_message_id_) {
+    delayed_flush_deferred_message_id_ = deferred_message_id;
+  } else {
+    delayed_flush_deferred_message_id_ = deferred_message_id;
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](GpuChannelHost* host) {
+              AutoLock lock(host->deferred_message_lock_);
+              host->InternalFlush(
+                  host->delayed_flush_deferred_message_id_.value());
+              host->delayed_flush_deferred_message_id_ = std::nullopt;
+            },
+            base::RetainedRef(this)),
+        kDelayForEnsuringFlush);
+  }
+}
 
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {
   AutoLock lock(deferred_message_lock_);

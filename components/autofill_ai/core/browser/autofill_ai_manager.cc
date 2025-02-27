@@ -37,6 +37,9 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
+#include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
+#include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -53,9 +56,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
 #include "components/autofill_ai/core/browser/autofill_ai_utils.h"
 #include "components/autofill_ai/core/browser/autofill_ai_value_filter.h"
-#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_attribute.h"
-#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_host.h"
-#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_update_strike_database.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -69,6 +69,7 @@ namespace {
 
 using autofill::AttributeInstance;
 using autofill::AttributeType;
+using autofill::AutofillAiSaveStrikeDatabaseByHost;
 using autofill::DenseSet;
 using autofill::EntityInstance;
 using autofill::EntityType;
@@ -239,12 +240,13 @@ AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
     : client_(CHECK_DEREF(client)) {
   if (strike_database) {
     save_strike_db_by_attribute_ =
-        std::make_unique<AutofillAiSaveStrikeDatabaseByAttribute>(
+        std::make_unique<autofill::AutofillAiSaveStrikeDatabaseByAttribute>(
             strike_database);
     save_strike_db_by_host_ =
         std::make_unique<AutofillAiSaveStrikeDatabaseByHost>(strike_database);
     update_strike_db_ =
-        std::make_unique<AutofillAiUpdateStrikeDatabase>(strike_database);
+        std::make_unique<autofill::AutofillAiUpdateStrikeDatabase>(
+            strike_database);
   }
 }
 

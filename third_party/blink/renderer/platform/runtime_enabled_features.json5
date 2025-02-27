@@ -542,7 +542,7 @@
     },
     {
       name: "BackForwardCacheUpdateNotRestoredReasonsName",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Used to enable Blink side of features flags for Default Nav Transition.
@@ -1818,7 +1818,7 @@
       // Event Timings should not get interactionId assigned if the next paint
       // was affected by autoscroll, i.e. from text selection.
       name: "EventTimingSelectionAutoScrollNoInteractionId",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ExperimentalContentSecurityPolicyFeatures",
@@ -2353,9 +2353,10 @@
     // Adds support for the `command` and `commandfor` attributes, as specified
     // in the open-ui "Invokers" explainer.
     // https://open-ui.org/components/invokers.explainer/
+    // This feature was shipped in M135 and can be removed in M137.
     {
       name: "HTMLCommandAttributes",
-      status: "experimental",
+      status: "stable",
     },
     {
       // TODO(crbug.com/376516550): Enables dialog light dismiss functionality.
@@ -2931,6 +2932,10 @@
       status: "experimental",
     },
     {
+      name: "NavigateEventPopstateLimitations",
+      status: "stable",
+    },
+    {
       name: "NavigateEventSourceElement",
       status: "stable",
     },
@@ -3370,13 +3375,6 @@
     // See https://crbug.com/353538500
     {
       name: "PointerEventTargetsInEventLists",
-      status: "stable",
-    },
-    // TODO(crbug.com/379241451): This controls the behavior when a popover is
-    // nested inside an invoker button. This was shipped in M133, and this flag
-    // can be removed in M135.
-    {
-      name: "PopoverButtonNestingBehavior",
       status: "stable",
     },
     {
@@ -4733,11 +4731,6 @@
     {
       name: "ViewTransitionOnNavigationForIframes",
       status: "stable",
-    },
-    {
-      name: "ViewTransitionOverflowRectFromSurface",
-      status: "stable",
-      implied_by: ["ViewTransitionLayeredCapture"],
     },
     {
       name: "VisibilityCollapseColumn",

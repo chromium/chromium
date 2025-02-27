@@ -95,6 +95,7 @@ public class TabGroupModelFilterImplUnitTest {
     private static final int TAB4_ID = 14;
     private static final int TAB5_ID = 15;
     private static final int TAB6_ID = 16;
+    private static final int NON_EXISTANT_TAB_ID = 999;
     private static final int TAB1_ROOT_ID = TAB1_ID;
     private static final int TAB2_ROOT_ID = TAB2_ID;
     private static final int TAB3_ROOT_ID = TAB2_ID;
@@ -107,6 +108,7 @@ public class TabGroupModelFilterImplUnitTest {
     private static final Token TAB4_TAB_GROUP_ID = null;
     private static final Token TAB5_TAB_GROUP_ID = new Token(5L, 2L);
     private static final Token TAB6_TAB_GROUP_ID = TAB5_TAB_GROUP_ID;
+    private static final Token NON_EXISTANT_TAB_GROUP_ID = new Token(999L, 56L);
     private static final int TAB1_PARENT_TAB_ID = Tab.INVALID_TAB_ID;
     private static final int TAB2_PARENT_TAB_ID = Tab.INVALID_TAB_ID;
     private static final int TAB3_PARENT_TAB_ID = TAB2_ID;
@@ -2013,6 +2015,17 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void testGetRelatedTabCountForRootId() {
+        // This behavior makes no sense as it is an invalid ID.
+        assertEquals(
+                "Should have 1 related tab.",
+                1,
+                mTabGroupModelFilter.getRelatedTabCountForRootId(Tab.INVALID_TAB_ID));
+        // This behavior makes no sense as the tab does not exist.
+        assertEquals(
+                "Should have 1 related tab.",
+                1,
+                mTabGroupModelFilter.getRelatedTabCountForRootId(NON_EXISTANT_TAB_ID));
+
         assertEquals(
                 "Should have 1 related tab.",
                 1,
@@ -2037,6 +2050,23 @@ public class TabGroupModelFilterImplUnitTest {
                 "Should have 2 related tabs.",
                 2,
                 mTabGroupModelFilter.getRelatedTabCountForRootId(TAB6_ROOT_ID));
+    }
+
+    @Test
+    public void testGetTabCountForGroup() {
+        assertEquals(
+                "Should have 0 grouped tabs.",
+                0,
+                mTabGroupModelFilter.getTabCountForGroup(NON_EXISTANT_TAB_GROUP_ID));
+        // TAB1_TAB_GROUP_ID == null.
+        assertEquals(
+                "Should have 0 grouped tab.",
+                0,
+                mTabGroupModelFilter.getTabCountForGroup(TAB1_TAB_GROUP_ID));
+        assertEquals(
+                "Should have 2 related tabs.",
+                2,
+                mTabGroupModelFilter.getTabCountForGroup(TAB2_TAB_GROUP_ID));
     }
 
     @Test
@@ -2280,10 +2310,16 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testRelatedTabsExistForRootId() {
+    public void testTabGroupExistsForRootId() {
         assertThat(mTab1.getRootId(), equalTo(TAB1_ROOT_ID));
         assertThat(mTab3.getRootId(), equalTo(TAB2_ROOT_ID));
         assertThat(mTab6.getRootId(), equalTo(TAB5_ROOT_ID));
+
+        assertFalse(mTabGroupModelFilter.tabGroupExistsForRootId(Tab.INVALID_TAB_ID));
+        // This is somewhat unexpected behavior as the tab group for tab 1 isn't valid.
+        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab1.getRootId()));
+        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab3.getRootId()));
+        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab5.getRootId()));
 
         mTabGroupModelFilter.removeTab(mTab1);
         mTabGroupModelFilter.removeTab(mTab3);
@@ -2292,6 +2328,26 @@ public class TabGroupModelFilterImplUnitTest {
         assertFalse(mTabGroupModelFilter.tabGroupExistsForRootId(mTab1.getRootId()));
         assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab3.getRootId()));
         assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab5.getRootId()));
+    }
+
+    @Test
+    public void testTabGroupExists() {
+        assertThat(mTab1.getTabGroupId(), equalTo(TAB1_TAB_GROUP_ID));
+        assertThat(mTab3.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
+        assertThat(mTab6.getTabGroupId(), equalTo(TAB5_TAB_GROUP_ID));
+
+        assertFalse(mTabGroupModelFilter.tabGroupExists(null));
+        assertFalse(mTabGroupModelFilter.tabGroupExists(TAB1_TAB_GROUP_ID));
+        assertTrue(mTabGroupModelFilter.tabGroupExists(mTab3.getTabGroupId()));
+        assertTrue(mTabGroupModelFilter.tabGroupExists(mTab5.getTabGroupId()));
+
+        mTabGroupModelFilter.removeTab(mTab1);
+        mTabGroupModelFilter.removeTab(mTab3);
+        mTabGroupModelFilter.removeTab(mTab5);
+
+        assertFalse(mTabGroupModelFilter.tabGroupExists(mTab1.getTabGroupId()));
+        assertTrue(mTabGroupModelFilter.tabGroupExists(mTab3.getTabGroupId()));
+        assertTrue(mTabGroupModelFilter.tabGroupExists(mTab5.getTabGroupId()));
     }
 
     @Test

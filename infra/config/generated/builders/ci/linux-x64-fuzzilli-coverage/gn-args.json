@@ -1,0 +1,14 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "target_cpu": "x64",
+    "target_os": "linux",
+    "use_clang_coverage": true,
+    "use_remoteexec": true,
+    "use_siso": true,
+    "v8_enable_backtrace": true,
+    "v8_enable_debug_code": true,
+    "v8_enable_verify_heap": true,
+    "v8_static_library": true
+  }
+}

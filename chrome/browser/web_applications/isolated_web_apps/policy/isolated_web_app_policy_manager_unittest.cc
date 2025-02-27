@@ -136,13 +136,11 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app1 =
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(test::GetDefaultEd25519KeyPair());
-    app1->TrustSigningKey();
     app1->FakeInstallPageState(profile());
 
     std::unique_ptr<ScopedBundledIsolatedWebApp> app2 =
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle();
-    app2->TrustSigningKey();
     app2->FakeInstallPageState(profile());
 
     lazy_app1_id_ = app1->web_bundle_id();
@@ -302,7 +300,6 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
           .BuildBundle(test::GetDefaultEd25519KeyPair());
 
   bundle->FakeInstallPageState(profile());
-  bundle->TrustSigningKey();
   const IsolatedWebAppUrlInfo url_info = bundle->InstallChecked(profile());
   {
     const WebApp* web_app =
@@ -692,8 +689,6 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair());
 
-  bundle->FakeInstallPageState(profile());
-  bundle->TrustSigningKey();
   const IsolatedWebAppUrlInfo url_info = bundle->InstallChecked(profile());
   // User-install the app.
   {
@@ -1321,6 +1316,9 @@ class IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest
   using Priority = component_updater::OnDemandUpdater::Priority;
   using ComponentRegistration = component_updater::ComponentRegistration;
 
+  static constexpr std::string_view kIwaKeyDistributionComponentId =
+      "iebhnlpddlcpcfpfalldikcoeakpeoah";
+
   IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest()
       : IsolatedWebAppTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
@@ -1407,7 +1405,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
        ComponentUpdateQueuedButNoUpdate) {
   EXPECT_CALL(component_updater(),
               RegisterComponent(Field(&ComponentRegistration::app_id,
-                                      Eq("iebhnlpddlcpcfpfalldikcoeakpeoah"))))
+                                      Eq(kIwaKeyDistributionComponentId))))
       .Times(1)
       .WillOnce(DoAll(
           [&](const ComponentRegistration& component) {
@@ -1421,7 +1419,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
       .WillOnce(ReturnRef(on_demand_updater()));
 
   EXPECT_CALL(on_demand_updater(),
-              OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah",
+              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId),
                              Priority::BACKGROUND, _))
       .Times(1);
 
@@ -1430,7 +1428,6 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
   {
     auto bundle = IsolatedWebAppBuilder(ManifestBuilder())
                       .BuildBundle(test::GetDefaultEd25519KeyPair());
-    bundle->TrustSigningKey();
     bundle->FakeInstallPageState(profile());
     test_update_server().AddBundle(std::move(bundle));
   }
@@ -1459,7 +1456,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
   scoped_refptr<update_client::CrxInstaller> installer;
   EXPECT_CALL(component_updater(),
               RegisterComponent(Field(&ComponentRegistration::app_id,
-                                      Eq("iebhnlpddlcpcfpfalldikcoeakpeoah"))))
+                                      Eq(kIwaKeyDistributionComponentId))))
       .Times(1)
       .WillOnce(DoAll(
           [&](const ComponentRegistration& component) {
@@ -1474,7 +1471,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
       .WillOnce(ReturnRef(on_demand_updater()));
 
   EXPECT_CALL(on_demand_updater(),
-              OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah",
+              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId),
                              Priority::BACKGROUND, _))
       .Times(1)
       .WillOnce(WithoutArgs([&] {
@@ -1488,7 +1485,6 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
   {
     auto bundle = IsolatedWebAppBuilder(ManifestBuilder())
                       .BuildBundle(test::GetDefaultEd25519KeyPair());
-    bundle->TrustSigningKey();
     bundle->FakeInstallPageState(profile());
     test_update_server().AddBundle(std::move(bundle));
   }
@@ -1516,7 +1512,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
 
   EXPECT_CALL(component_updater(),
               RegisterComponent(Field(&ComponentRegistration::app_id,
-                                      Eq("iebhnlpddlcpcfpfalldikcoeakpeoah"))))
+                                      Eq(kIwaKeyDistributionComponentId))))
       .Times(1)
       .WillOnce(DoAll(
           [&](const ComponentRegistration& component) {
@@ -1528,7 +1524,7 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
 
   EXPECT_CALL(component_updater(), GetOnDemandUpdater).Times(0);
   EXPECT_CALL(on_demand_updater(),
-              OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah", _, _))
+              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId), _, _))
       .Times(0);
 
   ASSERT_OK_AND_ASSIGN(
@@ -1541,7 +1537,6 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
   {
     auto bundle = IsolatedWebAppBuilder(ManifestBuilder())
                       .BuildBundle(test::GetDefaultEd25519KeyPair());
-    bundle->TrustSigningKey();
     bundle->FakeInstallPageState(profile());
     test_update_server().AddBundle(std::move(bundle));
   }
@@ -1558,13 +1553,13 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
        ComponentUpdateNotQueuedWhenPolicyEmpty) {
   EXPECT_CALL(component_updater(),
               RegisterComponent(Field(&ComponentRegistration::app_id,
-                                      Eq("iebhnlpddlcpcfpfalldikcoeakpeoah"))))
+                                      Eq(kIwaKeyDistributionComponentId))))
       .Times(1)
       .WillOnce(Return(true));
 
   EXPECT_CALL(component_updater(), GetOnDemandUpdater).Times(0);
   EXPECT_CALL(on_demand_updater(),
-              OnDemandUpdate("iebhnlpddlcpcfpfalldikcoeakpeoah", _, _))
+              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId), _, _))
       .Times(0);
 
   component_updater::RegisterIwaKeyDistributionComponent(&component_updater());
@@ -1572,6 +1567,66 @@ TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
 
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(0u, provider().registrar_unsafe().GetAppIds().size());
+}
+
+TEST_F(IsolatedWebAppPolicyManagerOnDemandComponentUpdateTest,
+       ComponentUpdateTriggeredWhenEmptyPolicyChangesToNonEmpty) {
+  scoped_refptr<update_client::CrxInstaller> installer;
+  EXPECT_CALL(component_updater(),
+              RegisterComponent(Field(&ComponentRegistration::app_id,
+                                      Eq(kIwaKeyDistributionComponentId))))
+      .Times(1)
+      .WillOnce(DoAll(
+          [&](const ComponentRegistration& component) {
+            installer = component.installer;
+            InstallComponentAsync(installer, base::Version("0.0.1"),
+                                  /*is_preloaded=*/true);
+          },
+          Return(true)));
+
+  // The on-demand update must not be triggered during the initial policy
+  // processing.
+  EXPECT_CALL(component_updater(), GetOnDemandUpdater).Times(0);
+
+  ASSERT_OK_AND_ASSIGN(
+      test::IwaComponentMetadata component_metadata,
+      test::RegisterIwaKeyDistributionComponentAndWaitForLoad());
+  ASSERT_TRUE(component_metadata.is_preloaded);
+
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  testing::Mock::VerifyAndClearExpectations(&component_updater());
+
+  // The on-demand update will now be triggered once the policy changes.
+  EXPECT_CALL(component_updater(), GetOnDemandUpdater)
+      .Times(1)
+      .WillOnce(ReturnRef(on_demand_updater()));
+
+  EXPECT_CALL(on_demand_updater(),
+              OnDemandUpdate(Eq(kIwaKeyDistributionComponentId),
+                             Priority::BACKGROUND, _))
+      .Times(1)
+      .WillOnce(WithoutArgs([&] {
+        ASSERT_TRUE(installer);
+        InstallComponentAsync(installer, base::Version("1.0.0"),
+                              /*is_preloaded=*/false);
+      }));
+
+  {
+    auto bundle = IsolatedWebAppBuilder(ManifestBuilder())
+                      .BuildBundle(test::GetDefaultEd25519KeyPair());
+    bundle->FakeInstallPageState(profile());
+    test_update_server().AddBundle(std::move(bundle));
+  }
+  SetUpForceInstallPolicyForOneApp();
+
+  // Wait for the policy reprocessing triggered by the component installation.
+  WebAppTestInstallObserver(profile()).BeginListeningAndWait(
+      {url_info().app_id()});
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_EQ(1u, provider().registrar_unsafe().GetAppIds().size());
 }
 
 }  // namespace web_app

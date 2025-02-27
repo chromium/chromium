@@ -26,6 +26,8 @@ mv /tmp/grpc/src /tmp/grpc/include /tmp/grpc/third_party \
 find third_party/grpc/source \
   -type f ! \( -name '*.h' -o -name '*.c' -o -name '*.cc' -o -name '*.hpp' \
   -o -name '*.inc' \) -delete
+# Keep the top-level LICENSE because it's used by README.chromium.
+mv /tmp/grpc/LICENSE third_party/grpc/source/
 # Fuzzing files.
 mkdir -p third_party/grpc/source/test/core/json
 mv /tmp/grpc/test/core/json/corpus/ \

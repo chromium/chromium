@@ -53,8 +53,8 @@ GURL GetRequestUrl(const std::string& path) {
 
 }  // namespace
 
-MultipleRequestPaymentsNetworkInterface::
-    MultipleRequestPaymentsNetworkInterface(
+MultipleRequestPaymentsNetworkInterfaceBase::
+    MultipleRequestPaymentsNetworkInterfaceBase(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         signin::IdentityManager* identity_manager,
         AccountInfoGetter* account_info_getter,
@@ -64,10 +64,10 @@ MultipleRequestPaymentsNetworkInterface::
       account_info_getter_(account_info_getter),
       is_off_the_record_(is_off_the_record) {}
 
-MultipleRequestPaymentsNetworkInterface::
-    ~MultipleRequestPaymentsNetworkInterface() = default;
+MultipleRequestPaymentsNetworkInterfaceBase::
+    ~MultipleRequestPaymentsNetworkInterfaceBase() = default;
 
-void MultipleRequestPaymentsNetworkInterface::CancelRequest() {
+void MultipleRequestPaymentsNetworkInterfaceBase::CancelRequest() {
   request_.reset();
   resource_request_.reset();
   simple_url_loader_.reset();
@@ -76,18 +76,18 @@ void MultipleRequestPaymentsNetworkInterface::CancelRequest() {
   has_retried_authorization_ = false;
 }
 
-void MultipleRequestPaymentsNetworkInterface::
+void MultipleRequestPaymentsNetworkInterfaceBase::
     set_url_loader_factory_for_testing(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = std::move(url_loader_factory);
 }
 
-void MultipleRequestPaymentsNetworkInterface::set_access_token_for_testing(
+void MultipleRequestPaymentsNetworkInterfaceBase::set_access_token_for_testing(
     std::string access_token) {
   access_token_ = access_token;
 }
 
-void MultipleRequestPaymentsNetworkInterface::IssueRequest(
+void MultipleRequestPaymentsNetworkInterfaceBase::IssueRequest(
     std::unique_ptr<PaymentsRequest> request) {
   request_ = std::move(request);
   has_retried_authorization_ = false;
@@ -101,7 +101,7 @@ void MultipleRequestPaymentsNetworkInterface::IssueRequest(
   }
 }
 
-void MultipleRequestPaymentsNetworkInterface::InitializeResourceRequest() {
+void MultipleRequestPaymentsNetworkInterfaceBase::InitializeResourceRequest() {
   resource_request_ = std::make_unique<network::ResourceRequest>();
   resource_request_->url = GetRequestUrl(request_->GetRequestUrlPath());
   resource_request_->load_flags = net::LOAD_DISABLE_CACHE;
@@ -118,7 +118,7 @@ void MultipleRequestPaymentsNetworkInterface::InitializeResourceRequest() {
       variations::SignedIn::kYes, resource_request_.get());
 }
 
-void MultipleRequestPaymentsNetworkInterface::OnSimpleLoaderComplete(
+void MultipleRequestPaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
@@ -137,9 +137,8 @@ void MultipleRequestPaymentsNetworkInterface::OnSimpleLoaderComplete(
   OnSimpleLoaderCompleteInternal(response_code, data);
 }
 
-void MultipleRequestPaymentsNetworkInterface::OnSimpleLoaderCompleteInternal(
-    int response_code,
-    const std::string& data) {
+void MultipleRequestPaymentsNetworkInterfaceBase::
+    OnSimpleLoaderCompleteInternal(int response_code, const std::string& data) {
   VLOG(2) << "Got data: " << data;
 
   PaymentsRpcResult result = PaymentsRpcResult::kSuccess;
@@ -253,7 +252,7 @@ void MultipleRequestPaymentsNetworkInterface::OnSimpleLoaderCompleteInternal(
   request_->RespondToDelegate(result);
 }
 
-void MultipleRequestPaymentsNetworkInterface::AccessTokenFetchFinished(
+void MultipleRequestPaymentsNetworkInterfaceBase::AccessTokenFetchFinished(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   DCHECK(token_fetcher_);
@@ -270,7 +269,7 @@ void MultipleRequestPaymentsNetworkInterface::AccessTokenFetchFinished(
   }
 }
 
-void MultipleRequestPaymentsNetworkInterface::AccessTokenError(
+void MultipleRequestPaymentsNetworkInterfaceBase::AccessTokenError(
     const GoogleServiceAuthError& error) {
   VLOG(1) << "Unhandled OAuth2 error: " << error.ToString();
   if (simple_url_loader_) {
@@ -281,7 +280,7 @@ void MultipleRequestPaymentsNetworkInterface::AccessTokenError(
   }
 }
 
-void MultipleRequestPaymentsNetworkInterface::StartTokenFetch(
+void MultipleRequestPaymentsNetworkInterfaceBase::StartTokenFetch(
     bool invalidate_old) {
   // We're still waiting for the last request to come back.
   if (!invalidate_old && token_fetcher_) {
@@ -302,13 +301,14 @@ void MultipleRequestPaymentsNetworkInterface::StartTokenFetch(
   access_token_.clear();
   token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_id, kTokenFetchId, payments_scopes,
-      base::BindOnce(
-          &MultipleRequestPaymentsNetworkInterface::AccessTokenFetchFinished,
-          base::Unretained(this)),
+      base::BindOnce(&MultipleRequestPaymentsNetworkInterfaceBase::
+                         AccessTokenFetchFinished,
+                     base::Unretained(this)),
       signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
-void MultipleRequestPaymentsNetworkInterface::SetOAuth2TokenAndStartRequest() {
+void MultipleRequestPaymentsNetworkInterfaceBase::
+    SetOAuth2TokenAndStartRequest() {
   // Set OAuth2 token:
   DCHECK(resource_request_);
   resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
@@ -389,7 +389,7 @@ void MultipleRequestPaymentsNetworkInterface::SetOAuth2TokenAndStartRequest() {
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(
-          &MultipleRequestPaymentsNetworkInterface::OnSimpleLoaderComplete,
+          &MultipleRequestPaymentsNetworkInterfaceBase::OnSimpleLoaderComplete,
           base::Unretained(this)));
 }
 

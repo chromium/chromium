@@ -150,7 +150,11 @@ class CallbackPromiseAdapterInternal {
         : Base<S, T>(resolver) {}
     void OnError(typename T::WebType e) override {
       auto* resolver = this->Resolver();
-      ScriptState::Scope scope(resolver->GetScriptState());
+      auto* script_state = resolver->GetScriptState();
+      if (!script_state->ContextIsValid()) {
+        return;
+      }
+      ScriptState::Scope scope(script_state);
       resolver->template Reject<typename T::IDLType>(
           T::Take(resolver, std::move(e)));
     }
