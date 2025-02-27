@@ -969,6 +969,33 @@ TEST_F(AddressDataManagerTest,
             newer_use_data);
 }
 
+// Tests that when an update of one of the profiles makes it a duplicate of the
+// other, already existing profile. Both of them are preserved if
+// `kAutofillDeduplicateAccountAddresses` is enabled.
+TEST_F(AddressDataManagerTest, CreateDuplicateWithAnUpdate_BothProfilesExists) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+  AutofillProfile profile1(test::GetFullProfile());
+  AutofillProfile profile2(test::GetFullProfile2());
+
+  AddProfileToAddressDataManager(profile1);
+  AddProfileToAddressDataManager(profile2);
+
+  ASSERT_EQ(address_data_manager().GetProfiles().size(), 2U);
+
+  // Now make an update to `profile2` that makes it a duplicate of `profile1`.
+  AutofillProfile updated_profile2 = profile1;
+  updated_profile2.set_guid(profile2.guid());
+
+  address_data_manager().UpdateProfile(updated_profile2);
+  WaitForOnAddressDataChanged();
+
+  // Verify that both profiles are preserved.
+  EXPECT_THAT(
+      address_data_manager().GetProfiles(),
+      UnorderedElementsAre(Pointee(profile1), Pointee(updated_profile2)));
+}
+
 TEST_F(AddressDataManagerTest, RecordUseOf) {
   AdvanceClock(kArbitraryTime - base::Time::Now());
   AutofillProfile profile = test::GetFullProfile();

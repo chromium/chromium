@@ -78,8 +78,8 @@ BASE_FEATURE(kAutofillAddressUserDeclinedSuggestionSurvey,
 // Feature flag controlling the deduplication of GAS addresses. When disabled
 // GAS addresses will never be deleted as part of the deduplication flow.
 // TODO(crbug.com/357074792): Remove when launched.
-BASE_FEATURE(kAutofillDeduplicateAccountAdresses,
-             "AutofillDeduplicateAccountAdresses",
+BASE_FEATURE(kAutofillDeduplicateAccountAddresses,
+             "AutofillDeduplicateAccountAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for Autofill filling.

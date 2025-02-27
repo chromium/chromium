@@ -239,9 +239,9 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
     return;
   }
 
-  // If the profile is empty, remove it unconditionally.
-  if (profile.IsEmpty(app_locale_)) {
-    RemoveProfile(profile.guid());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillDeduplicateAccountAddresses)) {
+    UpdateProfileInDB(profile);
     return;
   }
 

@@ -1651,7 +1651,7 @@
             ]
         }
     ],
-    "AutofillDeduplicateAccountAdresses": [
+    "AutofillDeduplicateAccountAddresses": [
         {
             "platforms": [
                 "android",
@@ -1665,7 +1665,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillDeduplicateAccountAdresses"
+                        "AutofillDeduplicateAccountAddresses"
                     ]
                 }
             ]
