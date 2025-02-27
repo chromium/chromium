@@ -554,6 +554,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="2885950158625301909">Daha fazla bilgi</translation>
 <translation id="2891209721153296020">"Seçimi kaldır"</translation>
 <translation id="2894949423239620203">Kullanılan kablo, performansı etkileyebilir</translation>
+<translation id="2902312830803030883">Diğer işlemler</translation>
 <translation id="2914580577416829331">Yakalanan ekranlar</translation>
 <translation id="2924416280450782352">Öğeler gösterilemiyor. Bu paneli yeniden açmayı deneyin.</translation>
 <translation id="292506373491190801">Şu anda devam eden etkinlikten</translation>
@@ -1909,7 +1910,6 @@ Yeni yüklenmiş</translation>
 <translation id="735745346212279324">VPN bağlantısı kesildi</translation>
 <translation id="7360036564632145207">Çevre birimleri için veri erişimi koruma ayarınızı değiştirmek performansı optimize edebilir</translation>
 <translation id="736045644501761622">Duvar kağıdı ve stil ayarlayın</translation>
-<translation id="7368041336688136012">"Okumama Yardım Et" ile "Yazmama Yardım Et" özelliklerini kullanmak ve yapay zeka ile resim oluşturmak için en az 18 yaşında olmanız gerekir.</translation>
 <translation id="7371404428569700291">Pencereyi kaydet</translation>
 <translation id="7372069265635026568">Toplam <ph name="TOTAL_MEMORY" /> bellekten <ph name="AVAILABLE_MEMORY" /> kullanılabilir</translation>
 <translation id="737315737514430195">Mikrofonun sesinin açılması, izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>

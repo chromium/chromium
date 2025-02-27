@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">ድመቶች</translation>
 <translation id="5907649332524363701">የቁልፍ ቀለም</translation>
 <translation id="5908813850962688338">ይህን ዝማኔ መጫን ጥቂት ደቂቃዎችን ይወስዳል። ዝማኔው በሚወርድበት ጊዜ መሣሪያዎ እንደተሰካ እና እንደበራ ያቆዩት። በዚህ ሂደት ውስጥ መሣሪያዎ ራሱን ብዙ ጊዜ ዳግም ሊያስነሳ እና ጥቁር ማያ ገጽ ሊያሳይ ይችላል። መጫኑን ለማጠናቀቅ መሣሪያዎን እንደገና እንዲያስጀምሩት ይጠየቃሉ።</translation>
+<translation id="5915794087373112615">መምህርዎ በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ ማያ ገፅዎን ይመለከታሉ</translation>
 <translation id="5916084858004523819">የተከለከሉ</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{የእርስዎ ፋይል በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}one{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}other{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" />ን ምረጥ</translation>
 <translation id="7618774594543487847">ገለልተኛ</translation>
 <translation id="7620771111601174153">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">የመጨረሻ ዳግም ማስጀመሪያ ጊዜ</translation>
 <translation id="7633068090678117093">የዳራ ምስል</translation>
 <translation id="763873111564339966">ኢንዲጎ</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">ቤዥ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> በ<ph name="CHARACTERS_BACKGROUND" />ዳራ ላይ</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />፤ <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ኦዲዮ መቅዳት ለመጀመር ማይክሮፎን ያገናኙ</translation>
 <translation id="8067126283828232460">ኤፒኤን ተገናኝቷል።</translation>
 <translation id="8067208048261192356">ቡናማ</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" />ን ሰርዝ</translation>

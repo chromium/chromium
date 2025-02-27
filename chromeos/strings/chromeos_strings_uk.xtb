@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">коти</translation>
 <translation id="5907649332524363701">колір клавіш</translation>
 <translation id="5908813850962688338">Встановлення оновлення триватиме кілька хвилин. Протягом цього часу не відключайте пристрій від джерела живлення й не вимикайте його. Пристрій може перезапуститися кілька разів і показувати чорний екран. Щоб завершити встановлення, потрібно буде перезапустити пристрій.</translation>
+<translation id="5915794087373112615">Викладач побачить ваш екран через <ph name="NUM_SECONDS" /> с</translation>
 <translation id="5916084858004523819">Заборонено</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8054112564438735763">бежевого</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> кольору на <ph name="CHARACTERS_BACKGROUND" /> фоні</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Щоб записувати звук, підключіть мікрофон</translation>
 <translation id="8067126283828232460">APN підключено.</translation>
 <translation id="8067208048261192356">коричневого</translation>
 <translation id="8067224607978179455">Видалити (<ph name="ACTION_NAME" />)</translation>

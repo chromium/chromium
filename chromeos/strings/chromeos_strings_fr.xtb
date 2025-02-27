@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">chats</translation>
 <translation id="5907649332524363701">couleur touche</translation>
 <translation id="5908813850962688338">L'installation de cette mise à jour prendra quelques minutes. Pendant son téléchargement, laissez votre appareil branché et allumé. Il se peut qu'il redémarre plusieurs fois et affiche un écran noir pendant ce processus. Vous serez invité à redémarrer l'appareil pour terminer l'installation.</translation>
+<translation id="5915794087373112615">Votre enseignant verra votre écran dans <ph name="NUM_SECONDS" /> secondes</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été scanné et enregistré dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été scanné et enregistré dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été scannés et enregistrés dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7618216277886673749">Sélectionner <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">En savoir plus sur le centre d'aide</translation>
+<translation id="7623327321610992184">Pod OnTask</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
 <translation id="7633068090678117093">Image de fond</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1524,6 +1526,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> sur un fond <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Connectez un micro pour commencer à enregistrer l'audio</translation>
 <translation id="8067126283828232460">APN connecté.</translation>
 <translation id="8067208048261192356">marron</translation>
 <translation id="8067224607978179455">Supprimer <ph name="ACTION_NAME" /></translation>

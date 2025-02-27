@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">Адхіліць выбар</translation>
 <translation id="3140825265190223781">Захаваныя паролі і ключы доступу</translation>
 <translation id="3143515551205905069">Скасаваць сінхранізацыю</translation>
+<translation id="3144126448740580210">ГАТОВА</translation>
 <translation id="314837624430314508">Будзьце ў курсе апошніх навін, адсочвайце цэны і не толькі.</translation>
 <translation id="3157387275655328056">Дадаць у спіс чытання</translation>
 <translation id="315778507796115851">Гісторыя</translation>
@@ -1228,7 +1229,6 @@
 <translation id="6295751040240588413">Несапраўдны псеўданім карткі</translation>
 <translation id="629730747756840877">Уліковы запіс</translation>
 <translation id="6301104306974789820">Атрымліваць апавяшчэнні аб змяненні цаны</translation>
-<translation id="6310451064941005489">Налады пароляў</translation>
 <translation id="6316141353357700666">Выберыце патрэбны пароль са спіса.</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
@@ -1405,6 +1405,7 @@
 <translation id="6979737339423435258">За ўвесь час</translation>
 <translation id="6983306615164277634">Каб змяніць палажэнне адраснага радка, націсніце яго і ўтрымлівайце.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998251471716094661">Адсочвайце цэны на тавары і атрымлівайце абвесткі пры зніжэнні цаны на любым сайце</translation>
 <translation id="7004032350256606903">Палітыка вашай арганізацыі патрабуе, каб вы праглядалі старонкі ў рэжыме інкогніта.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Зрабіць браўзер стандартным у раздзеле "Налады"…</translation>
@@ -1583,6 +1584,7 @@
 <translation id="7812377703891978671">Атрымаць доступ да ўсёй гісторыі прагляду сайтаў можна, выбраўшы пункт "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Спампоўкі</translation>
 <translation id="7815852444315004084">Схаваць гэтым разам</translation>
+<translation id="7825973332242257878">Групы ўкладак</translation>
 <translation id="7831876841288640403">Выберыце зручнае месца для адраснага радка.</translation>
 <translation id="7839994177130598711">Цяпер удзельнікі вашай сямейнай групы могуць уваходзіць на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> з вашым імем карыстальніка і паролем, якія захоўваюцца ў Менеджары пароляў Google.</translation>
 <translation id="7840771868269352570">Выбраныя элементы будуць выдалены.</translation>

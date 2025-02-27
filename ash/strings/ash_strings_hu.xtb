@@ -554,6 +554,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="2885950158625301909">További információ</translation>
 <translation id="2891209721153296020">„Kijelölés megszüntetése“</translation>
 <translation id="2894949423239620203">A kábel befolyásolhatja a teljesítményt</translation>
+<translation id="2902312830803030883">További műveletek</translation>
 <translation id="2914580577416829331">Képernyőfelvételek</translation>
 <translation id="2924416280450782352">Nem sikerült megjeleníteni az elemeket. Próbálja meg újra megnyitni ezt a panelt.</translation>
 <translation id="292506373491190801">A folyamatban lévő eseményből</translation>
@@ -1910,7 +1911,6 @@ Frissen telepítve</translation>
 <translation id="735745346212279324">A VPN nincs csatlakoztatva</translation>
 <translation id="7360036564632145207">A perifériás adathozzáférési védelemre vonatkozó beállítás módosítása optimalizálhatja a teljesítményt.</translation>
 <translation id="736045644501761622">Háttérkép és stílus beállítása</translation>
-<translation id="7368041336688136012">A Segítség az olvasáshoz és Segítség az íráshoz funkciók használatához, valamint képek AI segítségével való generálásához legalább 18 évesnek kell lennie.</translation>
 <translation id="7371404428569700291">Felvétel készítése az ablakról</translation>
 <translation id="7372069265635026568"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> memória áll rendelkezésre</translation>
 <translation id="737315737514430195">Ezzel engedélyezi a mikrofonhoz való hozzáférést a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>

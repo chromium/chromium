@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">mace</translation>
 <translation id="5907649332524363701">ngjyra e tastit</translation>
 <translation id="5908813850962688338">Instalimi i këtij përditësimi do të zgjasë disa minuta. Mbaje pajisjen tënde në prizë dhe të ndezur kur shkarkohet përditësimi. Pajisja jote mund të rindizet vetë disa herë dhe të shfaqë një ekran të zi gjatë këtij procesi. Do të të kërkohet që të rinisësh pajisjen për të përfunduar instalimin.</translation>
+<translation id="5915794087373112615">Mësuesi yt do të shikojë ekranin tënd pas <ph name="NUM_SECONDS" /> sekondash</translation>
 <translation id="5916084858004523819">E ndaluar</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skedari yt është skanuar dhe është ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skedarët e tu janë skanuar dhe janë ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7618216277886673749">Zgjidh: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutrale</translation>
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
+<translation id="7623327321610992184">Moduli OnTask</translation>
 <translation id="763165478673169849">Koha e rivendosjes së fundit</translation>
 <translation id="7633068090678117093">Imazhi i sfondit</translation>
 <translation id="763873111564339966">llullaqi</translation>
@@ -1524,6 +1526,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8054112564438735763">bezhë</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> me ngjyrë <ph name="CHARACTERS_COLOR" /> në sfond me ngjyrë <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Lidh një mikrofon për të filluar të regjistrosh audion</translation>
 <translation id="8067126283828232460">APN-ja është lidhur.</translation>
 <translation id="8067208048261192356">kafe</translation>
 <translation id="8067224607978179455">Fshi <ph name="ACTION_NAME" /></translation>

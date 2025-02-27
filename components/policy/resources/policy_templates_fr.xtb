@@ -3995,6 +3995,7 @@ Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentifi
 <translation id="3979738908158213640">URL autorisées à procéder à l'attestation de l'identité de l'appareil lors de l'authentification SAML</translation>
 <translation id="3982322576186033243">Ne pas autoriser les hachages non sécurisés lors de handshakes TLS</translation>
 <translation id="3982465141749620677">Inviter à s'authentifier de nouveau dans un onglet</translation>
+<translation id="3982624306233556415">Liste de blocage des fournisseurs d'identité qui ne peuvent pas utiliser l'extension SSO d'entreprise pour le navigateur</translation>
 <translation id="3982849521386211220">Vous permet de configurer la liste des points de terminaison de l'API Reporting[1] où les rapports d'entreprise peuvent être envoyés.
 
 [1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
@@ -6949,6 +6950,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="6123052603197028610">Ne pas autoriser l'envoi de requêtes aux serveurs Google visant à récupérer les horodatages</translation>
 <translation id="6128539430475678271">Bloquer l'API Controlled Frame sur ces sites</translation>
 <translation id="6130360423841559818">Contrôler le nouveau comportement de la boîte de dialogue d'annulation générée par l'événement beforeunload</translation>
+<translation id="6131672297549089047">Tous les fournisseurs d'identité</translation>
 <translation id="6131803221304830537">Désactiver l'intégrité du code du moteur de rendu</translation>
 <translation id="6132506775968708399">Bloquer les cookies tiers</translation>
 <translation id="6133088669883929098">Autoriser tous les sites à utiliser la génération de clé</translation>
@@ -8517,6 +8519,7 @@ Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés e
 <translation id="7136237405361383549">Utilise le moteur de rendu par défaut en fonction de la configuration du test pratique.</translation>
 <translation id="7138762292550697459">Contrôle le délai d'expiration minimum de la fonction JavaScript setTimeout().</translation>
 <translation id="7138792262152376158">Suit les calendriers d'abandon standards pour l'API PrefixedVideoFullscreen</translation>
+<translation id="7140760943584613237">Fournisseur d'identité cloud Microsoft®</translation>
 <translation id="714219487865269980">Activer la mise en surbrillance des éléments sélectionnés au clavier</translation>
 <translation id="7144022711746703451">
       Cette règle a été retirée de la version M80, car elle n'est plus nécessaire depuis que WebDriver est compatible avec toutes les règles existantes.

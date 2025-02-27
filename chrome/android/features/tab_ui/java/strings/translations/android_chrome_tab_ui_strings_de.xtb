@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.
 
 Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren alle Mitglieder sofort den Zugriff darauf und sie wird von allen Geräten gelöscht.</translation>
+<translation id="1326654401173629446">Tabgruppe „<ph name="TAB_GROUP_NAME" />“ nicht mehr verfügbar</translation>
 <translation id="1329584516321524826">Gerade aktualisiert</translation>
 <translation id="1340839264183302272">Gruppe verlassen</translation>
 <translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
@@ -23,6 +24,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> Tabs zu Gruppe hinzugefügt</translation>
 <translation id="1657719826150349398">Tab nach unten verschieben</translation>
+<translation id="1697284962337958118">Hinzufügen zu</translation>
 <translation id="1713541401465507417">Alle Tabs und Gruppen schließen</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzugefügt</translation>

@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 டிகிரி</translation>
 <translation id="1594030484168838125">தேர்வுசெய்</translation>
 <translation id="1599199147673445968">புதிய கார்டா? <ph name="BEGIN_LINK" />கார்டு விவரங்களை உள்ளிடுக<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">ஜிப்</translation>
 <translation id="1604192142734009334">அழகு மற்றும் உடற்பயிற்சி</translation>
 <translation id="160851722280695521">Chromeமில் டைனோசர் கேமை விளையாடலாம்</translation>
 <translation id="161042844686301425">சியான்</translation>
@@ -772,6 +773,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, காலாவதித் தேதி - <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">அமைப்பை உங்கள் நிர்வாகி கட்டுப்படுத்துகிறார்</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> இணைய விரும்புகிறது</translation>
+<translation id="2344529975040861103">உங்கள் கணக்கு Google Payயுடன் இணைக்கப்பட்டுள்ளதால் இந்தக் கார்டுத் தகவலை நீங்கள் தானாக நிரப்பலாம்</translation>
 <translation id="2346319942568447007">நீங்கள் நகலெடுத்தப் படம்</translation>
 <translation id="2348509731468399833">விலைக் கண்காணிப்பு நிறுத்தப்பட்டது.</translation>
 <translation id="2349957959687031096">மறைநிலைப் பக்கத்தைத் திறப்பதற்கான பட்டன். தனிப்பட்ட முறையில் உலாவுவதற்குப் புதிய மறைநிலைப் பக்கத்தைத் திறக்க இதை இயக்குங்கள்</translation>
@@ -2257,7 +2259,6 @@
 <translation id="5001526427543320409">மூன்றாம் தரப்புக் குக்கீகள்</translation>
 <translation id="5002932099480077015">இயக்கப்பட்டால், விரைவாகப் படிவத்தை நிரப்ப உங்கள் கார்டின் நகலை இச்சாதனத்தில் Chrome சேமித்து வைக்கும்.</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
-<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" மற்றும் "<ph name="GROUP_TITLE_2" />" பக்கக் குழுக்கள் கிடைக்கவில்லை</translation>
 <translation id="5011561501798487822">கண்டறியப்பட்ட மொழி</translation>
 <translation id="5015510746216210676">சாதனப் பெயர்:</translation>
 <translation id="5017554619425969104">நீங்கள் நகலெடுத்த உரை</translation>
@@ -4573,6 +4574,7 @@
 <translation id="9139318394846604261">ஷாப்பிங்</translation>
 <translation id="9140198744651252040">கடவுச்சொற்களைத் தானாக நிரப்புவதற்குக் கைரேகையைப் பயன்படுத்த Chrome பிரவுசர் விரும்புகிறது</translation>
 <translation id="9141013498910525015">முகவரிகளை நிர்வகி</translation>
+<translation id="9143898823728499852">உங்கள் <ph name="CARD_ISSUER_NAME" /> கணக்கு Google Payயுடன் இணைக்கப்பட்டுள்ளதால் இந்தக் கார்டுத் தகவலை நீங்கள் தானாக நிரப்பலாம்</translation>
 <translation id="9144951720726881238">காலாவதியாகும் தேதி:</translation>
 <translation id="9145910032514306808">எழுதுவதற்கு உதவிபெற, மீண்டும் <ph name="BEGIN_LINK" />உள்நுழைந்து<ph name="END_LINK" />
     இந்தப் பக்கத்திற்கு மீண்டும் வரவும்</translation>

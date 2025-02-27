@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">kočky</translation>
 <translation id="5907649332524363701">barva klíče</translation>
 <translation id="5908813850962688338">Instalace této aktualizace zabere několik minut. Během stahování aktualizace nechte zařízení připojené ke zdroji napájení a zapnuté. Zařízení se během procesu může několikrát restartovat a může se na něm zobrazit černá obrazovka. K dokončení instalace bude zařízení na výzvu potřeba restartovat.</translation>
+<translation id="5915794087373112615">Za <ph name="NUM_SECONDS" /> s vaši obrazovku uvidí učitel</translation>
 <translation id="5916084858004523819">Zakázáno</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Soubor byl úspěšně naskenován a uložen do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7618216277886673749">Vybrat jazyk <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutrální</translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
+<translation id="7623327321610992184">Pod OnTask</translation>
 <translation id="763165478673169849">Čas posledního resetování</translation>
 <translation id="7633068090678117093">Obrázek na pozadí</translation>
 <translation id="763873111564339966">indigová</translation>
@@ -1524,6 +1526,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8054112564438735763">béžová</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> v barvě <ph name="CHARACTERS_COLOR" /> na pozadí v barvě <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Pokud chcete nahrát zvuk, připojte mikrofon</translation>
 <translation id="8067126283828232460">APN je připojen.</translation>
 <translation id="8067208048261192356">hnědá</translation>
 <translation id="8067224607978179455">Smazat akci <ph name="ACTION_NAME" /></translation>

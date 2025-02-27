@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 μοίρες</translation>
 <translation id="1594030484168838125">Επιλογή</translation>
 <translation id="1599199147673445968">Νέα κάρτα; <ph name="BEGIN_LINK" />Εισαγωγή στοιχείων κάρτας<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Ταχυδρομικός κώδικας</translation>
 <translation id="1604192142734009334">Ομορφιά και φυσική κατάσταση</translation>
 <translation id="160851722280695521">Παίξτε το παιχνίδι Dino Run στο Chrome</translation>
 <translation id="161042844686301425">Κυανό</translation>
@@ -772,6 +773,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, λήγει στις <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Η ρύθμιση ελέγχεται από τον διαχειριστή σας</translation>
 <translation id="2340263603246777781">Ο ιστότοπος <ph name="ORIGIN" /> επιθυμεί σύζευξη</translation>
+<translation id="2344529975040861103">Μπορείτε να συμπληρώσετε αυτόματα αυτή την κάρτα, επειδή ο λογαριασμός σας είναι συνδεδεμένος με το Google Pay</translation>
 <translation id="2346319942568447007">Εικόνα που αντιγράψατε</translation>
 <translation id="2348509731468399833">Η παρακολούθηση τιμής σταμάτησε.</translation>
 <translation id="2349957959687031096">Κουμπί Άνοιγμα καρτέλας ανώνυμης περιήγησης, ενεργοποιήστε το προκειμένου να ανοίξετε μια νέα καρτέλα ανώνυμης περιήγησης για να περιηγηθείτε ιδιωτικά</translation>
@@ -2262,7 +2264,6 @@
 <translation id="5001526427543320409">Cookie τρίτου μέρους</translation>
 <translation id="5002932099480077015">Εάν ενεργοποιηθεί, το Chrome θα αποθηκεύσει ένα αντίγραφο της κάρτας σας σε αυτήν τη συσκευή για ταχύτερη συμπλήρωση φορμών.</translation>
 <translation id="5007392906805964215">Έλεγχος</translation>
-<translation id="500790844453430087">Οι ομάδες καρτελών <ph name="GROUP_TITLE_1" /> και <ph name="GROUP_TITLE_2" /> δεν είναι πλέον διαθέσιμες</translation>
 <translation id="5011561501798487822">Εντοπίστηκε γλώσσα</translation>
 <translation id="5015510746216210676">Όνομα συσκευής:</translation>
 <translation id="5017554619425969104">Κείμενο που αντιγράψατε</translation>
@@ -4580,6 +4581,7 @@
 <translation id="9139318394846604261">Αγορές</translation>
 <translation id="9140198744651252040">Το πρόγραμμα περιήγησης Chrome θα ήθελε να χρησιμοποιεί το δακτυλικό αποτύπωμα για την αυτόματη συμπλήρωση κωδικών πρόσβασης</translation>
 <translation id="9141013498910525015">Διαχείριση διευθύνσεων</translation>
+<translation id="9143898823728499852">Μπορείτε να συμπληρώσετε αυτόματα αυτή την κάρτα, επειδή ο λογαριασμός σας στο <ph name="CARD_ISSUER_NAME" /> είναι συνδεδεμένος με το Google Pay</translation>
 <translation id="9144951720726881238">Ημερομηνία λήξης:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Συνδεθείτε<ph name="END_LINK" />
     ξανά και έπειτα επιστρέψτε σε αυτή την καρτέλα για να λάβετε βοήθεια σχετικά με το γράψιμο</translation>

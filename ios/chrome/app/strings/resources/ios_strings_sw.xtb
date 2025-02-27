@@ -511,6 +511,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3138611310073113613">Futa uteuzi ulioufanya</translation>
 <translation id="3140825265190223781">Manenosiri na funguo za siri zilizohifadhiwa</translation>
 <translation id="3143515551205905069">Ghairi usawazishaji</translation>
+<translation id="3144126448740580210">IMEKAMILIKA</translation>
 <translation id="314837624430314508">Endelea kupokea habari za hivi punde, masasisho ya ufuatiliaji wa bei na mengineyo.</translation>
 <translation id="3157387275655328056">Ongeza kwenye Orodha ya Kusoma</translation>
 <translation id="315778507796115851">Historia</translation>
@@ -1228,7 +1229,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6295751040240588413">Jina wakilishi kwenye kadi si sahihi</translation>
 <translation id="629730747756840877">Akaunti</translation>
 <translation id="6301104306974789820">Pata arifa za ufuatiliaji bei</translation>
-<translation id="6310451064941005489">Chaguo za nenosiri</translation>
 <translation id="6316141353357700666">Chagua nenosiri unalotaka kutumia kutoka kwenye orodha inayoonekana.</translation>
 <translation id="6321526113093607004">Ongeza kwenye Alamisho</translation>
 <translation id="6337234675334993532">Usimbaji fiche</translation>
@@ -1405,6 +1405,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6979737339423435258">Wakati wote</translation>
 <translation id="6983306615164277634">Unaweza pia kugusa na kushikilia sehemu ya anwani ili ubadilishe nafasi.</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998251471716094661">Fuatilia bei za bidhaa na upate arifa bei inaposhuka kwenye tovuti yoyote</translation>
 <translation id="7004032350256606903">Shirika lako linahitaji uvinjari kwa faragha.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Ifanye iwe chaguomsingi katika Mipangilio…</translation>
@@ -1583,6 +1584,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7812377703891978671">Unaweza kufikia historia yako yote ya kuvinjari kwa kuchagua <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Vipakuliwa</translation>
 <translation id="7815852444315004084">Ficha Kwa Sasa</translation>
+<translation id="7825973332242257878">Vikundi vya vichupo</translation>
 <translation id="7831876841288640403">Chagua nafasi ya sehemu ya anwani yako ambayo inakufaa zaidi.</translation>
 <translation id="7839994177130598711">Sasa wanafamilia wako wanaweza kutumia jina la mtumiaji na nenosiri lako wanapotumia Kidhibiti cha Manenosiri cha Google kuingia katika akaunti kwenye <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Vipengele ambavyo umechagua vitaondolewa.</translation>

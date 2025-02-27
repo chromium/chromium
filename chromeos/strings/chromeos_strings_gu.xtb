@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">બિલાડીઓ</translation>
 <translation id="5907649332524363701">કીનો રંગ</translation>
 <translation id="5908813850962688338">આ અપડેટ ઇન્સ્ટૉલ કરવામાં થોડો સમય લાગશે. જ્યારે અપડેટ ડાઉનલોડ કરવામાં આવતી હોય, ત્યારે તમારું ડિવાઇસ પ્લગ ઇન કરેલું અને ચાલુ કરેલું રાખો. આ પ્રક્રિયા દરમિયાન, તમારું ડિવાઇસ તેની જાતે ઘણી વખત રીબૂટ થાય અને કાળી સ્ક્રીન બતાવે એમ બની શકે છે. ઇન્સ્ટૉલ કરવાની પ્રક્રિયા પૂર્ણ કરવા માટે તમને તમારું ડિવાઇસ ફરી શરૂ કરવાનું કહેવામાં આવશે.</translation>
+<translation id="5915794087373112615">તમારા શિક્ષક <ph name="NUM_SECONDS" /> સેકન્ડમાં તમારી સ્ક્રીન જોશે</translation>
 <translation id="5916084858004523819">નિષિદ્ધ</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{તમારી ફાઇલ સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}one{તમારી ફાઇલ સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}other{તમારી ફાઇલો સફળતાપૂર્વક સ્કૅન કરવામાં આવી અને <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />માં સાચવવામાં આવી.}}</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8054112564438735763">બૅઇજ</translation>
 <translation id="8062968459344882447">કોઈ <ph name="CHARACTERS_BACKGROUND" /> બૅકગ્રાઉન્ડ પર <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ઑડિયો રેકોર્ડિંગ શરૂ કરવા માટે માઇક કનેક્ટ કરો</translation>
 <translation id="8067126283828232460">APN કનેક્ટેડ છે.</translation>
 <translation id="8067208048261192356">કથ્થઈ</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ડિલીટ કરો</translation>

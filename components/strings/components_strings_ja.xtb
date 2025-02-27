@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270°</translation>
 <translation id="1594030484168838125">選択</translation>
 <translation id="1599199147673445968">カード情報を更新する場合は、<ph name="BEGIN_LINK" />こちらで入力してください<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">美容、フィットネス</translation>
 <translation id="160851722280695521">Chrome で Dino Run ゲームをプレイします</translation>
 <translation id="161042844686301425">シアン</translation>
@@ -1945,6 +1946,7 @@
 <translation id="4378154925671717803">電話</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive へのファイルのアップロードを一時停止しました</translation>
+<translation id="4389931020843542579">タブグループを読み込んでいます</translation>
 <translation id="4390472908992056574">ブリム</translation>
 <translation id="4395550503472021297">このポリシーは、次のポリシーのデフォルトの動作を制御します: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">ポップアップが開き、銀行のウェブサイトで確認を行います</translation>
@@ -2262,7 +2264,6 @@
 <translation id="5001526427543320409">サードパーティ Cookie</translation>
 <translation id="5002932099480077015">有効にすると、Chrome ではこのデバイスにカードのコピーが保存されます。これにより、フォームにすばやく入力できるようになります。</translation>
 <translation id="5007392906805964215">内容を確認</translation>
-<translation id="500790844453430087">「<ph name="GROUP_TITLE_1" />」と「<ph name="GROUP_TITLE_2" />」のタブグループはご利用いただけなくなりました</translation>
 <translation id="5011561501798487822">検出された言語</translation>
 <translation id="5015510746216210676">マシン名:</translation>
 <translation id="5017554619425969104">コピーしたテキスト</translation>

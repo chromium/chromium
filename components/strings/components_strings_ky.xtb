@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 градус</translation>
 <translation id="1594030484168838125">Тандоо</translation>
 <translation id="1599199147673445968">Жаңы картабы? <ph name="BEGIN_LINK" />Картанын чоо-жайын киргизиңиз<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Сулуулук жана фитнес</translation>
 <translation id="160851722280695521">Dino Run оюнун Chrome'до ойноо</translation>
 <translation id="161042844686301425">Көгүлтүр</translation>
@@ -772,6 +773,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
 <translation id="2337852623177822836">Жөндөөнү администраторуңуз башкарат</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> жупташканы жатат</translation>
+<translation id="2344529975040861103">Аккаунтуңуз Google Pay'ге байланышкандыктан, бул картаны автотолтура аласыз</translation>
 <translation id="2346319942568447007">Сиз көчүргөн сүрөт</translation>
 <translation id="2348509731468399833">Бааларга көз салуу токтотулду.</translation>
 <translation id="2349957959687031096">"Жашыруун өтмөктү ачуу" баскычы. Жаңы жашыруун өтмөктү ачып, купуя түрдө карап чыгуу үчүн иштетиңиз</translation>
@@ -2260,7 +2262,6 @@
 <translation id="5001526427543320409">Үчүнчү тараптын cookie файлдары</translation>
 <translation id="5002932099480077015">Эгер иштетилсе, форманы тезирээк толтуруу үчүн карточкаңыздын көчүрмөсүн Chrome ушул түзмөккө сактап коёт.</translation>
 <translation id="5007392906805964215">Карап көрүү</translation>
-<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" жана "<ph name="GROUP_TITLE_2" />" өтмөк топтору мындан ары жеткиликсиз</translation>
 <translation id="5011561501798487822">Аныкталган тил</translation>
 <translation id="5015510746216210676">Компьютердин аталышы:</translation>
 <translation id="5017554619425969104">Сиз көчүргөн текст</translation>
@@ -4575,6 +4576,7 @@
 <translation id="9139318394846604261">Соода кылуу</translation>
 <translation id="9140198744651252040">Chrome серепчиси сырсөздөрдүн автоматтык түрдө киргизилгенин манжа изи менен ырастаганы жатат</translation>
 <translation id="9141013498910525015">Даректерди башкаруу</translation>
+<translation id="9143898823728499852"><ph name="CARD_ISSUER_NAME" /> аккаунтуңуз Google Pay'ге байланышкандыктан, бул картаны автотолтура аласыз</translation>
 <translation id="9144951720726881238">Мөөнөтү аяктай турган күн:</translation>
 <translation id="9145910032514306808">Кайра <ph name="BEGIN_LINK" />кирип<ph name="END_LINK" />,
     жазуу боюнча жардам алуу үчүн бул өтмөккө кайтыңыз</translation>

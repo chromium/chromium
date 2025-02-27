@@ -52,7 +52,6 @@
 <translation id="1682634494516646069">Chrome에서 다음 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="1689338313606606627">Chrome은 이 탭을 비활성화하여 탐색 환경을 개선하고 빠른 속도를 유지할 수 있습니다.</translation>
 <translation id="1698376642261615901">Chrome은 웹페이지와 애플리케이션을 빠르게 실행하는 웹 브라우저입니다. 또한 빠르고 안정적이며 사용하기 쉽습니다. Chrome에 기본적으로 제공되는 악성코드 및 피싱 방지 기능으로 웹을 더 안전하게 탐색하세요.</translation>
 <translation id="1713301662689114961">{0,plural, =1{1시간 후 Chrome이 다시 시작됩니다}other{#시간 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="1722488837206509557">이렇게 하면 사용 가능한 기기 중에서 선택하고 해당 기기에 콘텐츠를 표시할 수 있습니다.</translation>
@@ -272,7 +271,6 @@
 <translation id="4501471624619070934">이 국가에서는 액세스가 제한되므로 설치할 수 없습니다.</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4571503333518166079">Chrome 알림 설정으로 이동</translation>
-<translation id="4575717501879784448">Chrome은 이러한 탭을 비활성화하여 탐색 환경을 개선하고 리소스를 확보할 수 있습니다.</translation>
 <translation id="459622048091363950">Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
 <translation id="4600710005438004015">Chrome을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>
 <translation id="4624065194742029982">Chrome 시크릿 모드</translation>
@@ -282,6 +280,7 @@
 <translation id="4720851490453439956">Google 업데이터 내부 서비스</translation>
 <translation id="4724676981607797757">지원되지 않는 프로토콜 오류로 인해 설치할 수 없습니다.</translation>
 <translation id="4728575227883772061">확인되지 않은 오류로 설치에 실패했습니다. Chrome이 실행 중인 경우 종료한 후 다시 실행하세요.</translation>
+<translation id="4737281654364167024">계속하려면 <ph name="EMAIL" /> 계정으로 Chrome에 로그인하세요. 이렇게 하면 조직의 정책을 준수할 수 있습니다.</translation>
 <translation id="4741235124132242877">고정되었습니다. 툴바에서 Google 렌즈를 다시 사용해 보세요.</translation>
 <translation id="4747730611090640388">Chrome에서 내 관심분야를 예측할 수 있습니다.  나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chrome에 요청할 수 있습니다.</translation>
 <translation id="475321580758063259">Google 계정(<ph name="ACCOUNT_EMAIL" />)의 Chrome 데이터를 계속 사용하려면 Chrome을 업데이트하세요</translation>
@@ -305,14 +304,12 @@
 <translation id="4970761609246024540">Chrome 프로필에 오신 것을 환영합니다</translation>
 <translation id="4970880042055371251">ChromeOS 버전</translation>
 <translation id="4990567037958725628">Chrome Canary</translation>
-<translation id="4997044641749333913">Chrome은 이러한 탭을 비활성화하여 탐색 환경을 개선하고 빠른 속도를 유지할 수 있습니다.</translation>
 <translation id="5003967926796347400">'Google 비밀번호 관리자'를 클릭합니다</translation>
 <translation id="5114340746415930644"><ph name="USER_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="5120334927898581447">다른 Google 서비스에 로그인할 때 Chrome에 로그인</translation>
 <translation id="5126049312684316860">Chrome은 사용자가 방문할 가능성이 높은 페이지를 미리 로드하여 사용자가 방문할 때 페이지가 더 빠르게 로드됩니다.</translation>
 <translation id="5132929315877954718">Chrome에 사용할 유용한 애플리케이션, 게임, 확장 프로그램 및 테마를 찾아보세요.</translation>
 <translation id="5139423532931106058">Chrome 프로필 맞춤설정</translation>
-<translation id="5161361450770099246">Chrome은 이 탭을 비활성화하여 탐색 환경을 개선하고 리소스를 확보할 수 있습니다.</translation>
 <translation id="5163087008893166964">Chrome에 오신 것을 환영합니다. 새 브라우저 창이 열렸습니다</translation>
 <translation id="5166439563123238795">Chrome에서 손 추적 기능을 사용하려면 권한이 필요합니다.</translation>
 <translation id="5170938038195470297">최신 버전의 Chrome에서 가져온 사용자 프로필이기 때문에 사용할 수 없습니다.
@@ -591,6 +588,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8781673607513845160">카메라를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="878572486461146056">설치 오류: 네트워크 관리자가 설치를 방지하는 그룹 정책을 적용했습니다: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">파일이 <ph name="USER_EMAIL" /> 등의 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chrome에서 이 다운로드를 차단했습니다</translation>
+<translation id="8798550110818026746">조직에서 북마크, 방문 기록, 비밀번호와 같은 인터넷 사용 기록을 보고 관리할 수 있습니다. 다른 Chrome 프로필의 인터넷 사용 기록은 확인할 수 없습니다.</translation>
 <translation id="8801657293260363985">V8은 사이트 속도를 개선하는 데 사용되는 Chrome의 JavaScript 및 WebAssembly 엔진입니다.</translation>
 <translation id="8821043148920470810">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 7을 사용 중입니다.</translation>
 <translation id="8823341990149967727">Chrome이 이전 버전임</translation>

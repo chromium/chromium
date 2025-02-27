@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Düzgün dəyər daxil edin. Ən uyğun düzgün dəyərlər: <ph name="VALID_VALUE_LOW" /> və <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detallar</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' bir hissəsi '<ph name="INVALIDCHARACTER" />' simvolunu içərməməlidir.</translation>
+<translation id="4703271465972936359">Audio treklər</translation>
 <translation id="4718048029184481307">Şəkildə şəkil rejimində oxudulur</translation>
 <translation id="4812940957355064477">Rəqəm daxil edin.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> seçilib</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Yayım</translation>
 <translation id="5630795885300617244">10 saniyəni keçmək üçün solda və ya sağda iki dəfə klikləyin</translation>
 <translation id="57838592816432529">Səssiz</translation>
+<translation id="5868587040512539609">Video treklər</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5888666972993069672">İndi <ph name="DEVICE_FRIENDLY_NAME" /> cihazına yayımlanır</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Dəqiq çap</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
 <translation id="6643016212128521049">Silin</translation>
+<translation id="6661136971638885481">Trek #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Digər...</translation>
 <translation id="6709093583001123835">Dəyər <ph name="VALUE" /> olmalıdır.</translation>
 <translation id="6709570249143506788">Oxutma keyfiyyəti pisdir</translation>

@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">ఎంపికను విస్మరించండి</translation>
 <translation id="3140825265190223781">సేవ్ చేసిన పాస్‌వర్డ్‌లు, పాస్-కీలు</translation>
 <translation id="3143515551205905069">సింక్‌ను రద్దు చేయండి</translation>
+<translation id="3144126448740580210">పూర్తయింది</translation>
 <translation id="314837624430314508">తాజా వార్తలు, ధరల ట్రాకింగ్ అప్‌డేట్‌లు, మరిన్నింటిని తెలుసుకోండి.</translation>
 <translation id="3157387275655328056">పఠన లిస్ట్‌కు జోడించండి</translation>
 <translation id="315778507796115851">హిస్టరీ</translation>
@@ -1228,7 +1229,6 @@
 <translation id="6295751040240588413">కార్డ్ మారుపేరు చెల్లదు</translation>
 <translation id="629730747756840877">ఖాతా</translation>
 <translation id="6301104306974789820">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను పొందండి</translation>
-<translation id="6310451064941005489">పాస్‌వర్డ్ ఆప్షన్‌లు</translation>
 <translation id="6316141353357700666">కనిపించే లిస్ట్ నుండి మీరు ఉపయోగించాలనుకునే పాస్‌వర్డ్‌ను ఎంచుకోండి.</translation>
 <translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించండి</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>
@@ -1405,6 +1405,7 @@
 <translation id="6979737339423435258">మొత్తం సమయం</translation>
 <translation id="6983306615164277634">అడ్రస్ బార్ స్థానాన్ని మార్చడానికి దాన్ని నొక్కి, పట్టుకోవచ్చు.</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998251471716094661">ప్రోడక్ట్‌లకు సంబంధించిన ధరలను ట్రాక్ చేయండి, ఏదైనా సైట్‌లో ధర తగ్గినప్పుడు అలర్ట్‌లను పొందండి</translation>
 <translation id="7004032350256606903">మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">సెట్టింగ్‌లకు వెళ్లి దానిని 'ఆటోమేటిక్ సెట్టింగ్'గా సెట్ చేయండి…</translation>
@@ -1583,6 +1584,7 @@
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />‌ను ఎంచుకోవడం ద్వారా మీ మొత్తం బ్రౌజింగ్ హిస్టరీని మీరు యాక్సెస్ చేయవచ్చు.</translation>
 <translation id="78146569776629510">డౌన్‌లోడ్‌లు</translation>
 <translation id="7815852444315004084">ప్రస్తుతానికి దాచండి</translation>
+<translation id="7825973332242257878">ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="7831876841288640403">మీకు కావాల్సిన ప్రదేశంలో, అడ్రస్ బార్ స్థానాన్ని ఎంచుకోండి.</translation>
 <translation id="7839994177130598711">మీ ఫ్యామిలీ మెంబర్‌లు, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="7840771868269352570">మీరు ఎంచుకున్న అంశాలు తీసివేయబడతాయి.</translation>

@@ -145,7 +145,6 @@
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>
 <translation id="2977506796191543575">Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin</translation>
 <translation id="2981563588585023386">Ota-onangiz belgilagan sozlamalar asosida internetni xavfsiz kezishingiz uchun Chromiumga kiring</translation>
-<translation id="2987208172821108655">Sahifalarni kezishni yaxshilash va resurslar sarfini yengillatish uchun Chromium bu varaqlarni nofaol qilishi mumkin.</translation>
 <translation id="3013473503895162900">Chromiumda yangi varaqda ochish: <ph name="URL" /></translation>
 <translation id="3032706164202344641">Chromium parollaringizni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="3032787606318309379">Chromium‘ga o‘rnatilmoqda...</translation>
@@ -254,7 +253,6 @@
 <translation id="4531137820806573936">Chromium atrofingiz xaritasini yaratish va qoʻllaringiz holatini kuzatishga ruxsat olmoqchi</translation>
 <translation id="4534145890176164066">Chromium shakllarni yaxshiroq tushunadi va ularni tezroq toʻldirishi mumkin</translation>
 <translation id="4536805923587466102">Siz allaqachon boshqa Chromium profilidan (<ph name="USER_EMAIL_ADDRESS" />) kirgansiz</translation>
-<translation id="4545268686623374213">Sahifalarni kezishni yaxshilash va tezlatish uchun Chromium bu varaqni nofaol qilishi mumkin.</translation>
 <translation id="4548534452171747496">Chromium kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi. <ph name="BEGIN_LINK" />Sahifalarni oldindan yuklash haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Siz <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirtingiz. Barcha xatcho‘plar, brauzer tarixi va boshqa sozlamalaringiz endi bu hisobdan foydalanadigan barcha qurilmalaringizda mavjud.</translation>
 <translation id="4570813286784708942">Chromium bu yuklamani blokladi, chunki Saytlarni xavfsiz kezish funksiyasini faolsizlantirgansiz, shuning uchun bu fayl tekshirilmaydi</translation>
@@ -335,7 +333,6 @@
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish</translation>
 <translation id="5924017743176219022">Internetga ulanmoqda…</translation>
-<translation id="5929318705173562984">Sahifalarni kezishni yaxshilash va resurslar sarfini yengillatish uchun Chromium bu varaqni nofaol qilishi mumkin.</translation>
 <translation id="5941711191222866238">Yig‘ish</translation>
 <translation id="5972142260211327093">Chromium sizni tasodifiy faol sinovga joylaganida siz ochgan sahifalar tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chromium har oyda qiziqishlaringizni avtomatik oʻchiradi. Qiziqishlar ularni olib tashlamaguningizga qadar yangilanadi.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}other{Chromium # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}}</translation>
@@ -377,7 +374,6 @@
 <translation id="6327105987658262776">Hech qanday yangilanish mavjud emas.</translation>
 <translation id="6333502561965082103">Chromium boshqa amalni bajarmoqda. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="6334986366598267305">Endi Google hisobida Chromium bilan ishlash yanada qulay bo‘ladi, jumladan umumiy kompyuterlarda ham.</translation>
-<translation id="633626832589656416">Sahifalarni kezishni yaxshilash va tezlatish uchun Chromium bu varaqlarni nofaol qilishi mumkin.</translation>
 <translation id="6347933965114150440">Chromium tezkor tugmasi</translation>
 <translation id="6366160072964553914">Chromium bu yuklamani blokladi, chunki bunday fayl odatda yuklab olinmaydi va xavfli boʻlishi mumkin</translation>
 <translation id="6373523479360886564">Siz haqiqatdan ham Chromium brauzerini o‘chirib tashlamoqchimisiz?</translation>

@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 डिग्री</translation>
 <translation id="1594030484168838125">चुनें</translation>
 <translation id="1599199147673445968">नया कार्ड है? <ph name="BEGIN_LINK" />कार्ड की जानकारी डालें<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip फ़ाइल बनाएं</translation>
 <translation id="1604192142734009334">ब्यूटी और फ़िटनेस</translation>
 <translation id="160851722280695521">Chrome में Dino Run गेम चलाएं</translation>
 <translation id="161042844686301425">स्यान</translation>
@@ -773,6 +774,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
 <translation id="2337852623177822836">वह सेटिंग जिसे आपका व्यवस्थापक नियंत्रित करता है</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> युग्मित करना चाहता है</translation>
+<translation id="2344529975040861103">आपका खाता, Google Pay से लिंक है. इसलिए, कार्ड की जानकारी को भरने के लिए, ऑटोमैटिक भरने की सुविधा का इस्तेमाल किया जा सकता है</translation>
 <translation id="2346319942568447007">आपकी कॉपी की हुई इमेज</translation>
 <translation id="2348509731468399833">कीमत ट्रैक करने की सुविधा बंद हो गई है.</translation>
 <translation id="2349957959687031096">'गुप्त टैब खोलें' बटन, एक नया गुप्त टैब खोलकर निजी तौर पर ब्राउज़ करने के लिए इसे चालू करें</translation>
@@ -2261,7 +2263,6 @@
 <translation id="5001526427543320409">तीसरे पक्ष की कुकी</translation>
 <translation id="5002932099480077015">अगर सक्षम किया हुआ हो, तो Chrome फ़ॉर्म को तेज़ी से भरने के लिए इस डिवाइस पर आपके कार्ड की एक प्रति संग्रहित करेगा.</translation>
 <translation id="5007392906805964215">समीक्षा करें</translation>
-<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" और "<ph name="GROUP_TITLE_2" />" "टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="5011561501798487822">पहचानी गई भाषा</translation>
 <translation id="5015510746216210676">मशीन का नाम:</translation>
 <translation id="5017554619425969104">आपका कॉपी किया हुआ टेक्स्ट</translation>
@@ -4578,6 +4579,7 @@
 <translation id="9139318394846604261">खरीदारी</translation>
 <translation id="9140198744651252040">Chrome ब्राउज़र, पासवर्ड ऑटोमैटिक भरने के लिए फ़िंगरप्रिंट का इस्तेमाल करना चाहता है</translation>
 <translation id="9141013498910525015">पते मैनेज करें</translation>
+<translation id="9143898823728499852">आपका <ph name="CARD_ISSUER_NAME" /> खाता, Google Pay से लिंक है. इसलिए, कार्ड की जानकारी को भरने के लिए, ऑटोमैटिक तरीके से भरने की सुविधा का इस्तेमाल किया जा सकता है</translation>
 <translation id="9144951720726881238">खत्म होने की तारीख:</translation>
 <translation id="9145910032514306808">फिर से <ph name="BEGIN_LINK" />साइन इन<ph name="END_LINK" /> 
     करें. इसके बाद, लिखने में मदद पाने के लिए इस टैब पर वापस आएं</translation>

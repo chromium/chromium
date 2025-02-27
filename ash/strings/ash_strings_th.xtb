@@ -554,6 +554,7 @@
 <translation id="2885950158625301909">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="2891209721153296020">"ยกเลิกการเลือก"</translation>
 <translation id="2894949423239620203">สายสัญญาณอาจส่งผลต่อประสิทธิภาพ</translation>
+<translation id="2902312830803030883">การทำงานเพิ่มเติม</translation>
 <translation id="2914580577416829331">การจับภาพหน้าจอ</translation>
 <translation id="2924416280450782352">แสดงรายการไม่ได้ ลองเปิดแผงนี้อีกครั้ง</translation>
 <translation id="292506373491190801">จากกิจกรรมที่กำลังจัดอยู่</translation>
@@ -1904,7 +1905,6 @@
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>
 <translation id="7360036564632145207">การเปลี่ยนการตั้งค่าการป้องกันการเข้าถึงข้อมูลของอุปกรณ์ต่อพ่วงช่วยเพิ่มประสิทธิภาพได้</translation>
 <translation id="736045644501761622">ตั้งค่าวอลเปเปอร์และสไตล์</translation>
-<translation id="7368041336688136012">คุณต้องมีอายุไม่ต่ำกว่า 18 ปีจึงจะใช้ฟีเจอร์ช่วยฉันอ่าน ช่วยฉันเขียน และสร้างรูปภาพด้วย AI ได้</translation>
 <translation id="7371404428569700291">หน้าต่างการบันทึก</translation>
 <translation id="7372069265635026568">เหลือหน่วยความจำ <ph name="AVAILABLE_MEMORY" /> จากทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">การตั้งค่านี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟนได้</translation>
@@ -2354,6 +2354,7 @@
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
 <translation id="8847100217801213944">แสดงอุณหภูมิในหน่วยฟาเรนไฮต์</translation>
 <translation id="8849001918648564819">ซ่อน</translation>
+<translation id="8855792845239861369">ไม่รองรับภาษานี้</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8858369206579825206">การควบคุมความเป็นส่วนตัว</translation>
 <translation id="8860366331836346216">เพิ่ม eSIM</translation>

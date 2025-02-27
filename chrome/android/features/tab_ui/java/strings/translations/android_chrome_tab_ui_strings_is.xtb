@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Haltu flipahópnum ef þú vilt bæta flipum við síðar eða eyddu honum ef þú hefur ekki þörf fyrir hann lengur.
 
 Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahópnum „<ph name="TITLE_OF_GROUP" />“ og honum verður eytt úr öllum tækjum.</translation>
+<translation id="1326654401173629446">Flipahópurinn „<ph name="TAB_GROUP_NAME" />“ er ekki lengur tiltækur</translation>
 <translation id="1329584516321524826">Uppfært rétt í þessu</translation>
 <translation id="1340839264183302272">Yfirgefa hóp</translation>
 <translation id="1419023007528516122">Þetta mun eyða hópnum úr tækinu þínu varanlega</translation>
@@ -23,6 +24,7 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="161042844686301425">Blár (cyan)</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> flipar flokkaðir</translation>
 <translation id="1657719826150349398">Færa flipa niður</translation>
+<translation id="1697284962337958118">Bæta við</translation>
 <translation id="1713541401465507417">Loka öllum flipum og hópum</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Nánar<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> flipi flokkaður</translation>

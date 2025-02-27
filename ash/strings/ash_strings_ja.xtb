@@ -554,6 +554,7 @@
 <translation id="2885950158625301909">詳細</translation>
 <translation id="2891209721153296020">「選択解除」</translation>
 <translation id="2894949423239620203">ケーブルがパフォーマンスに影響している可能性があります</translation>
+<translation id="2902312830803030883">その他の操作</translation>
 <translation id="2914580577416829331">画面キャプチャ</translation>
 <translation id="2924416280450782352">アイテムを表示できません。このパネルをもう一度開いてみてください。</translation>
 <translation id="292506373491190801">進行中の予定から</translation>
@@ -1909,7 +1910,6 @@
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7360036564632145207">周辺機器の設定でデータアクセスの保護を変更すると、パフォーマンスを最適化できます。</translation>
 <translation id="736045644501761622">壁紙とスタイルを設定</translation>
-<translation id="7368041336688136012">AI による文書読解サポート、文書作成サポート、画像作成を使用できるのは 18 歳以上の方に限られます。</translation>
 <translation id="7371404428569700291">ウィンドウを録画</translation>
 <translation id="7372069265635026568">合計メモリ <ph name="TOTAL_MEMORY" /> 中 <ph name="AVAILABLE_MEMORY" /> を使用できます</translation>
 <translation id="737315737514430195">マイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>

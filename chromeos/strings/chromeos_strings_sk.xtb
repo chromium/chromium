@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">mačky</translation>
 <translation id="5907649332524363701">farba klávesov</translation>
 <translation id="5908813850962688338">Inštalácia tejto aktualizácie bude trvať niekoľko minút. Počas sťahovania aktualizácie nechajte zariadenie pripojené a zapnuté. Zariadenie sa môže počas tohto procesu niekoľkokrát reštartovať a stmaviť obrazovku. Pred dokončením inštalácie sa zobrazí výzva na reštart zariadenia.</translation>
+<translation id="5915794087373112615">Učiteľ si bude môcť pozrieť vašu obrazovku o <ph name="NUM_SECONDS" /> s</translation>
 <translation id="5916084858004523819">Zakázané</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Súbor bol úspešne naskenovaný a uložený do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7618216277886673749">Vyberte jazyk <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutrálny</translation>
 <translation id="7620771111601174153">Ďalšie informácie v centre pomoci</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Čas posledného resetovania</translation>
 <translation id="7633068090678117093">Obrázok na pozadí</translation>
 <translation id="763873111564339966">indigové</translation>
@@ -1524,6 +1526,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8054112564438735763">béžové</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> na <ph name="CHARACTERS_BACKGROUND" /> pozadí</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Ak chcete začať nahrávať zvuk, pripojte mikrofón</translation>
 <translation id="8067126283828232460">Názov prístupového bodu je pripojený.</translation>
 <translation id="8067208048261192356">hnedé</translation>
 <translation id="8067224607978179455">Odstrániť <ph name="ACTION_NAME" /></translation>

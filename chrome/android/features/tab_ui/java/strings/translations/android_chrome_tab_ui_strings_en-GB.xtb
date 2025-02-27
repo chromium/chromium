@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Keep this group to add tabs later or delete it if you no longer need it.
 
 If you delete it, everyone will immediately lose access to the '<ph name="TITLE_OF_GROUP" />' tab group and it will be deleted from all devices.</translation>
+<translation id="1326654401173629446">The '<ph name="TAB_GROUP_NAME" />' tab group is no longer available</translation>
 <translation id="1329584516321524826">Updated just now</translation>
 <translation id="1340839264183302272">Leave group</translation>
 <translation id="1419023007528516122">This will permanently delete the group from your device</translation>
@@ -23,6 +24,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tabs grouped</translation>
 <translation id="1657719826150349398">Move tab down</translation>
+<translation id="1697284962337958118">Add to</translation>
 <translation id="1713541401465507417">Close all tabs and groups</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab grouped</translation>

@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">පූසෝ</translation>
 <translation id="5907649332524363701">ප්‍රධාන වර්ණය</translation>
 <translation id="5908813850962688338">මෙම යාවත්කාලීනය ස්ථාපනය කිරීමට මිනිත්තු කිහිපයක් ගත වනු ඇත. යාවත්කාලීනය බාගත කරන අතරතුර ඔබේ උපාංගය පේනුගත කර තබා ගන්න. මෙම ක්‍රියාවලිය අතරතුර ඔබේ උපාංගය කිහිප වතාවක් නැවත පණ ගැන්වී කළු තිරයක් පෙන්විය හැක. පිහිටුවීම සම්පූර්ණ කිරීම සඳහා ඔබේ උපාංගය නැවත ආරම්භ කිරීමට ඔබෙන් විමසනු ඇත.</translation>
+<translation id="5915794087373112615">ඔබේ ගුරුවරයා තත්පර <ph name="NUM_SECONDS" />කින් ඔබේ තිරය බලනු ඇත</translation>
 <translation id="5916084858004523819">තහනම්</translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ඔබගේ ගොනුව සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}one{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}other{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> තෝරන්න</translation>
 <translation id="7618774594543487847">උදාසීන</translation>
 <translation id="7620771111601174153">උදවු මධ්‍යස්ථානය තුළ තව දැන ගන්න</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">අවසන් යළි සැකසීමේ වේලාව</translation>
 <translation id="7633068090678117093">පසුබිම් රූපය</translation>
 <translation id="763873111564339966">ඉන්ඩිගෝ</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">බේජ්</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> පසුබිමක් මත <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ශ්‍රව්‍ය පටිගත කිරීම ආරම්භ කිරීමට මයික්‍රෆෝනයක් සම්බන්ධ කරන්න</translation>
 <translation id="8067126283828232460">APN සම්බන්ධ වී ඇත.</translation>
 <translation id="8067208048261192356">දුඹුරු</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> මකන්න</translation>

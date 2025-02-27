@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270 градусів</translation>
 <translation id="1594030484168838125">Вибрати</translation>
 <translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
+<translation id="1601786938618212857">Створити ZIP-архів</translation>
 <translation id="1604192142734009334">Краса й фітнес</translation>
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
@@ -772,6 +773,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, діє до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Налаштуванням керує ваш адміністратор</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> хоче підключитися до пристрою</translation>
+<translation id="2344529975040861103">Ви можете автоматично заповнювати дані цієї картки, оскільки ваш обліковий запис зв’язано з Google Pay</translation>
 <translation id="2346319942568447007">Скопійоване зображення</translation>
 <translation id="2348509731468399833">Ціна більше не відстежується.</translation>
 <translation id="2349957959687031096">Кнопка "Відкрити анонімну вкладку"; активуйте, щоб відкрити нову анонімну вкладку</translation>
@@ -2261,7 +2263,6 @@
 <translation id="5001526427543320409">Сторонні файли cookie</translation>
 <translation id="5002932099480077015">Коли цю функцію ввімкнено, Chrome зберігає копію даних вашої картки на пристрої, щоб ви могли швидше заповнювати форми.</translation>
 <translation id="5007392906805964215">Переглянути</translation>
-<translation id="500790844453430087">Групи вкладок "<ph name="GROUP_TITLE_1" />" і "<ph name="GROUP_TITLE_2" />" більше не доступні</translation>
 <translation id="5011561501798487822">Визначена мова</translation>
 <translation id="5015510746216210676">Назва пристрою:</translation>
 <translation id="5017554619425969104">Скопійований текст</translation>
@@ -4578,6 +4579,7 @@
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9140198744651252040">Використовувати відбиток пальця для автозаповнення паролів у вебпереглядачі Chrome</translation>
 <translation id="9141013498910525015">Керувати адресами</translation>
+<translation id="9143898823728499852">Ви можете автоматично заповнювати дані цієї картки, оскільки ваш обліковий запис <ph name="CARD_ISSUER_NAME" /> зв’язано з Google Pay</translation>
 <translation id="9144951720726881238">Діє до:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Увійдіть<ph name="END_LINK" /> 
     знову, а потім поверніться на цю вкладку, щоб отримати допомогу з написанням тексту</translation>

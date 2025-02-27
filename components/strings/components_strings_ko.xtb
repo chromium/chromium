@@ -356,6 +356,7 @@
 <translation id="1593359183944365958">270도</translation>
 <translation id="1594030484168838125">선택</translation>
 <translation id="1599199147673445968">새 카드인가요? <ph name="BEGIN_LINK" />카드 세부정보 입력<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">우편번호</translation>
 <translation id="1604192142734009334">미용 및 건강</translation>
 <translation id="160851722280695521">Chrome 공룡 달리기 게임 플레이</translation>
 <translation id="161042844686301425">청록색</translation>
@@ -1945,6 +1946,7 @@
 <translation id="4378154925671717803">전화</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive에 대한 파일 업로드가 일시중지됨</translation>
+<translation id="4389931020843542579">탭 그룹 로드 중</translation>
 <translation id="4390472908992056574">브림</translation>
 <translation id="4395550503472021297">이 정책은 <ph name="POLICIES" /> 정책의 기본 동작을 제어합니다.</translation>
 <translation id="4397978002248035985">은행 웹사이트에서 인증하라는 팝업이 열립니다.</translation>
@@ -2262,7 +2264,6 @@
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5002932099480077015">선택하면 Chrome에서 양식을 더 빠르게 작성할 수 있도록 이 기기에 카드 사본을 저장합니다.</translation>
 <translation id="5007392906805964215">검토</translation>
-<translation id="500790844453430087">"<ph name="GROUP_TITLE_1" />" 및 "<ph name="GROUP_TITLE_2" />" 탭 그룹을 더 이상 사용할 수 없음</translation>
 <translation id="5011561501798487822">감지된 언어</translation>
 <translation id="5015510746216210676">컴퓨터 이름:</translation>
 <translation id="5017554619425969104">복사한 텍스트</translation>

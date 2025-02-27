@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">बिरालोहरू</translation>
 <translation id="5907649332524363701">कीको रङ</translation>
 <translation id="5908813850962688338">यो अपडेट इन्स्टल गर्न केही मिनेट लाग्ने छ। यो अपडेट डाउनलोड गर्दै गर्दा आफ्नो डिभाइस अन राखेर चार्ज गरिराख्नुहोस्। तपाईंको डिभाइस धेरै पटक स्वतः रिबुट हुन सक्छ र यो प्रक्रियाका क्रममा स्क्रिन कालो हुन सक्छ। इन्स्टल गर्ने प्रक्रिया पूरा गर्न तपाईंलाई आफ्नो डिभाइस रिस्टार्ट गर्न लगाइने छ।</translation>
+<translation id="5915794087373112615">तपाईंका शिक्षकले <ph name="NUM_SECONDS" /> सेकेन्डमा तपाईंको स्क्रिन हेर्नु हुने छ</translation>
 <translation id="5916084858004523819">प्रतिबन्धित</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{तपाईंको फाइल स्क्यान गर्ने काम पूरा भएको छ र उक्त फाइल <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएको छ।}other{तपाईंका फाइलहरू स्क्यान गर्ने काम पूरा भएको छ र ती फाइलहरू <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएका छन्।}}</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8054112564438735763">बेइज</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> ब्याकग्राउन्डमा भएका <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">अडियो रेकर्ड गर्न थाल्न माइक जोड्नुहोस्</translation>
 <translation id="8067126283828232460">APN कनेक्ट गरिएको छ।</translation>
 <translation id="8067208048261192356">खैरो</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> मेट्नुहोस्</translation>

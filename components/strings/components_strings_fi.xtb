@@ -356,6 +356,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1593359183944365958">270 astetta</translation>
 <translation id="1594030484168838125">Valitse</translation>
 <translation id="1599199147673445968">Uusi kortti? <ph name="BEGIN_LINK" />Lisää kortin tiedot<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">ZIP</translation>
 <translation id="1604192142734009334">Kauneus ja kuntoilu</translation>
 <translation id="160851722280695521">Pelaa Dino Run ‑peliä Chromessa</translation>
 <translation id="161042844686301425">Turkoosi</translation>
@@ -772,6 +773,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, vanhenee <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Järjestelmänvalvojan hallinnoima asetus</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> haluaa muodostaa laiteparin</translation>
+<translation id="2344529975040861103">Voit täyttää kortin automaattisesti, koska tilisi on linkitetty Google Payhin</translation>
 <translation id="2346319942568447007">Kopioimasi kuva</translation>
 <translation id="2348509731468399833">Hintaseuranta lopetettu.</translation>
 <translation id="2349957959687031096">Avaa incognito-välilehti ‑painike, aktivoi avataksesi uuden incognito-välilehden, niin voit selata yksityisesti</translation>
@@ -2262,7 +2264,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5001526427543320409">Kolmannen osapuolen evästeet</translation>
 <translation id="5002932099480077015">Kun tämä vaihtoehto on käytössä, Chrome nopeuttaa lomakkeiden täyttämistä tallentamalla kortin tiedot tälle laittelle.</translation>
 <translation id="5007392906805964215">Tarkista</translation>
-<translation id="500790844453430087">Välilehtiryhmät "<ph name="GROUP_TITLE_1" />" ja "<ph name="GROUP_TITLE_2" />" eivät ole enää saatavilla</translation>
 <translation id="5011561501798487822">Havaittu kieli</translation>
 <translation id="5015510746216210676">Laitteen nimi:</translation>
 <translation id="5017554619425969104">Kopioimasi teksti</translation>
@@ -4579,6 +4580,7 @@ Lisätietoja:
 <translation id="9139318394846604261">Ostokset</translation>
 <translation id="9140198744651252040">Chrome-selain haluaa käyttää sormenjälkeä salasanojen automaattiseen täyttöön</translation>
 <translation id="9141013498910525015">Ylläpidä osoitteita</translation>
+<translation id="9143898823728499852">Voit täyttää kortin automaattisesti, koska <ph name="CARD_ISSUER_NAME" />-tilisi on linkitetty Google Payhin</translation>
 <translation id="9144951720726881238">Vanhenemispäivämäärä:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Kirjaudu uudelleen sisään<ph name="END_LINK" />
     ja palaa sitten tälle välilehdelle, niin saat apua kirjoittamiseen</translation>

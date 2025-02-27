@@ -554,6 +554,7 @@
 <translation id="2885950158625301909">了解详情</translation>
 <translation id="2891209721153296020">“取消选择”</translation>
 <translation id="2894949423239620203">数据线可能会影响性能</translation>
+<translation id="2902312830803030883">更多操作</translation>
 <translation id="2914580577416829331">屏幕截图</translation>
 <translation id="2924416280450782352">无法显示内容。请尝试重新打开此面板。</translation>
 <translation id="292506373491190801">来自正在进行中的活动</translation>
@@ -1907,7 +1908,6 @@
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
 <translation id="736045644501761622">设置壁纸与样式</translation>
-<translation id="7368041336688136012">您必须年满 18 周岁，才能使用“帮我读”“帮我写”和借助 AI 创作图片功能。</translation>
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7372069265635026568">可用内存为 <ph name="AVAILABLE_MEMORY" />，总共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">如果您取消麦克风静音，即意味着允许所有具有麦克风使用权限的应用和网站使用麦克风</translation>

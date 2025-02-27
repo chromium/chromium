@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Zadejte platnou hodnotu. Dvě nejbližší hodnoty jsou <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4664250907885839816">Část za znakem <ph name="ATSIGN" /> nesmí obsahovat znak <ph name="INVALIDCHARACTER" />.</translation>
+<translation id="4703271465972936359">Zvukové stopy</translation>
 <translation id="4718048029184481307">Video se přehrává v režimu obrazu v obraze</translation>
 <translation id="4812940957355064477">Zadejte prosím číslo.</translation>
 <translation id="4975562563186953947">Vybráno: <ph name="SELECTED_COUNT" /></translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Odeslat</translation>
 <translation id="5630795885300617244">Dvojitým klepnutím na šipku vlevo nebo vpravo přeskočíte o 10 s</translation>
 <translation id="57838592816432529">Ztlumit</translation>
+<translation id="5868587040512539609">Stopy videa</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5888666972993069672">Odesílání do zařízení <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">Resetovat</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Naformátovat</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="6643016212128521049">Vymazat</translation>
+<translation id="6661136971638885481">Stopa č. <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Další...</translation>
 <translation id="6709093583001123835">Hodnota musí být <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Špatná kvalita přehrávání</translation>

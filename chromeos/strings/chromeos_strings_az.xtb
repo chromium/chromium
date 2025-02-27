@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">pişiklər</translation>
 <translation id="5907649332524363701">açar rəngi</translation>
 <translation id="5908813850962688338">Bu güncəllənmənin quraşdırılması bir neçə dəqiqə çəkəcək. Güncəllənmə endirilən zaman cihazı qoşulu və yanılı saxlayın. Bu proses zamanı cihaz bir neçə dəfə yenidən yüklənə və qara ekran göstərə bilər. Quraşdırmanı tamamlamaq üçün cihazı yenidən başlatmağınız istəniləcək.</translation>
+<translation id="5915794087373112615">Müəllim <ph name="NUM_SECONDS" /> saniyə sonra ekranınıza baxacaq</translation>
 <translation id="5916084858004523819">Qadağan olunub</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faylınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}other{Fayllarınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}}</translation>
@@ -1433,6 +1434,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> seçin</translation>
 <translation id="7618774594543487847">Neytral</translation>
 <translation id="7620771111601174153">Yardım Mərkəzində ətraflı məlumat əldə edin</translation>
+<translation id="7623327321610992184">OnTask bölməsi</translation>
 <translation id="763165478673169849">Son Sıfırlama Vaxtı</translation>
 <translation id="7633068090678117093">Arxa fon şəkli</translation>
 <translation id="763873111564339966">indiqo</translation>
@@ -1524,6 +1526,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8054112564438735763">bej</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> arxa fonunda <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Audio qeydə almağa başlamaq üçün mikrofon qoşun</translation>
 <translation id="8067126283828232460">APN qoşulub.</translation>
 <translation id="8067208048261192356">qəhvəyi</translation>
 <translation id="8067224607978179455">Silin: <ph name="ACTION_NAME" /></translation>

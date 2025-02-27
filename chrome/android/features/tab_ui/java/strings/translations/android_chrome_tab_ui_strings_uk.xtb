@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Збережіть цю групу, щоб додавати вкладки пізніше, або видаліть, якщо вона вам більше не потрібна.
 
 Якщо видалити групу вкладок "<ph name="TITLE_OF_GROUP" />", усі користувачі відразу втратять доступ до неї, і її буде видалено з усіх пристроїв.</translation>
+<translation id="1326654401173629446">Група вкладок "<ph name="TAB_GROUP_NAME" />" більше не доступна</translation>
 <translation id="1329584516321524826">Щойно оновлено</translation>
 <translation id="1340839264183302272">Вийти з групи</translation>
 <translation id="1419023007528516122">Групу буде назавжди видалено з вашого пристрою</translation>
@@ -23,6 +24,7 @@
 <translation id="161042844686301425">Бірюзовий</translation>
 <translation id="1645759014353344461">Згруповано стільки вкладок: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Перемістити вкладку вниз</translation>
+<translation id="1697284962337958118">Додати в</translation>
 <translation id="1713541401465507417">Закрити всі вкладки й групи</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Докладніше<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Згруповано <ph name="TABS_COUNT_ONE" /> вкладку</translation>

@@ -4006,6 +4006,7 @@ Nota: Si el ajuste implica que ni el host ni el cliente admitan métodos de aute
 <translation id="3979738908158213640">Direcciones URL a las que se otorgará acceso para realizar la atestación del dispositivo durante la autenticación de SAML</translation>
 <translation id="3982322576186033243">No permitir hashes no seguros en handshakes de TLS</translation>
 <translation id="3982465141749620677">Solicitar reautenticación en una pestaña</translation>
+<translation id="3982624306233556415">Lista de proveedores de identidades bloqueados que no pueden usar Extensible Enterprise SSO en el navegador</translation>
 <translation id="3982849521386211220">Permite configurar la lista de endpoints de la API Reporting[1] a los que se pueden enviar informes de empresa.
 
 [1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
@@ -6974,6 +6975,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
 <translation id="6128539430475678271">Bloquear la API Controlled Frame en estos sitios</translation>
 <translation id="6130360423841559818">Controlar el nuevo comportamiento del cuadro de diálogo de cancelación producido por el evento beforeunload</translation>
+<translation id="6131672297549089047">Todos los proveedores de identidades</translation>
 <translation id="6131803221304830537">Inhabilitar la integridad del código del renderizador</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
@@ -8558,6 +8560,7 @@ Si se inhabilita esta política, nunca se recordarán las contraseñas y se elim
 <translation id="7136237405361383549">Usar el renderizador predeterminado según la configuración de la prueba de campo</translation>
 <translation id="7138762292550697459">Controla el tiempo de espera mínimo de la función de JavaScript setTimeout().</translation>
 <translation id="7138792262152376158">Sigue los plazos de discontinuación habituales de la API PrefixedVideoFullscreen</translation>
+<translation id="7140760943584613237">Proveedor de identidades en la nube de Microsoft®</translation>
 <translation id="714219487865269980">Habilitar el resaltado del foco del teclado</translation>
 <translation id="7144022711746703451">
       Esta política se eliminó en M80. No es necesaria porque ahora

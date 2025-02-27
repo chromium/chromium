@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.
 
 Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<ph name="TITLE_OF_GROUP" />" i se suprimirà de tots els dispositius.</translation>
+<translation id="1326654401173629446">El grup <ph name="TAB_GROUP_NAME" /> ja no està disponible</translation>
 <translation id="1329584516321524826">S'acaba d'actualitzar</translation>
 <translation id="1340839264183302272">Surt del grup</translation>
 <translation id="1419023007528516122">Amb aquesta acció, el grup se suprimirà permanentment del dispositiu</translation>
@@ -23,6 +24,7 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="161042844686301425">Cian</translation>
 <translation id="1645759014353344461">S'han agrupat <ph name="TABS_COUNT_MANY" /> pestanyes</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
+<translation id="1697284962337958118">Afegeix a</translation>
 <translation id="1713541401465507417">Tanca totes les pestanyes i tots els grups</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Més informació<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">S'ha agrupat <ph name="TABS_COUNT_ONE" /> pestanya</translation>

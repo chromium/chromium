@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">kissat</translation>
 <translation id="5907649332524363701">avaimen väri</translation>
 <translation id="5908813850962688338">Päivityksen asentamisessa kuluu muutama minuutti. Pidä laite kytkettynä virtalähteeseen ja päällä, kun päivitystä ladataan. Laite saattaa käynnistyä uudelleen useita kertoja ja näyttää mustan näytön prosessin aikana. Sinua pyydetään käynnistämään laite uudelleen asennuksen viimeistelemiseksi.</translation>
+<translation id="5915794087373112615">Opettaja katsoo näyttöäsi <ph name="NUM_SECONDS" /> sekunnin kuluttua</translation>
 <translation id="5916084858004523819">Kielletty</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tiedostosi skannaus onnistui. Se on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tiedostojesi skannaus onnistui. Ne on tallennettu tänne: <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7618216277886673749">Valitse <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutraali</translation>
 <translation id="7620771111601174153">Lue lisää ohjekeskuksesta</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Edellinen nollausaika</translation>
 <translation id="7633068090678117093">Taustakuva</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1524,6 +1526,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_BACKGROUND" /> taustalla</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Yhdistä mikrofoni, jotta voit aloittaa äänen tallennuksen</translation>
 <translation id="8067126283828232460">APN on yhdistetty.</translation>
 <translation id="8067208048261192356">ruskea</translation>
 <translation id="8067224607978179455">Poista <ph name="ACTION_NAME" /></translation>

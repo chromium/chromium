@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">Katzen</translation>
 <translation id="5907649332524363701">Tastenfarbe</translation>
 <translation id="5908813850962688338">Die Installation dieses Updates dauert einige Minuten. Schließ dein Gerät an das Stromnetz an und lass es eingeschaltet, während das Update heruntergeladen wird. Möglicherweise wird dein Gerät mehrmals neu gestartet; bei diesem Vorgang wird der Bildschirm ausgeschaltet. Du wirst anschließend aufgefordert, dein Gerät neu zu starten, um die Installation abzuschließen.</translation>
+<translation id="5915794087373112615">Deine Lehrkraft kann deinen Bildschirm in <ph name="NUM_SECONDS" /> Sekunden sehen</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Deine Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Deine Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
@@ -1525,6 +1526,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8054112564438735763">beigen</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> auf einem <ph name="CHARACTERS_BACKGROUND" /> Hintergrund</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Verbinde ein Mikrofon, um Audioinhalte aufzunehmen</translation>
 <translation id="8067126283828232460">APN ist verbunden.</translation>
 <translation id="8067208048261192356">braunen</translation>
 <translation id="8067224607978179455">„<ph name="ACTION_NAME" />“ löschen</translation>

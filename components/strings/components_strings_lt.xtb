@@ -356,6 +356,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1593359183944365958">270 laipsnių</translation>
 <translation id="1594030484168838125">Pasirinkti</translation>
 <translation id="1599199147673445968">Nauja kortelė? <ph name="BEGIN_LINK" />Įveskite išsamią kortelės informaciją<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">ZIP archyvas</translation>
 <translation id="1604192142734009334">Grožis ir kūno rengyba</translation>
 <translation id="160851722280695521">Žaisti žaidimą „Dino Run“ naršyklėje „Chrome“</translation>
 <translation id="161042844686301425">Žydra</translation>
@@ -659,6 +660,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2145193671493396738">Ekonomikos naujienos</translation>
 <translation id="214556005048008348">Atšaukti mokėjimą</translation>
 <translation id="2147117373852943630">Muzikos instrumentai</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> nori naudoti savo išsaugotą informaciją apie jus</translation>
 <translation id="2148613324460538318">Pridėti kortelę</translation>
 <translation id="2148716181193084225">Šiandien</translation>
 <translation id="2149968176347646218">Ryšys nėra saugus</translation>
@@ -1946,6 +1948,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4378154925671717803">Telefonas</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Failo įkėlimas į „Microsoft OneDrive“ pristabdytas</translation>
+<translation id="4389931020843542579">Įkeliama skirtukų grupė</translation>
 <translation id="4390472908992056574">Kraštas</translation>
 <translation id="4395550503472021297">Ši politika valdo numatytąją toliau nurodytų politikos nuostatų elgeseną: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Banko svetainėje atidaromas iššokantysis langas, kuriame reikia patvirtinti</translation>
@@ -2263,7 +2266,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5001526427543320409">Trečiųjų šalių slapukai</translation>
 <translation id="5002932099480077015">Jei šis nustatymas įgalintas, „Chrome“ saugos kortelės kopiją šiame įrenginyje, kad būtų galima greičiau užpildyti formas.</translation>
 <translation id="5007392906805964215">Peržiūrėti</translation>
-<translation id="500790844453430087">Skirtukų grupės „<ph name="GROUP_TITLE_1" />“ ir „<ph name="GROUP_TITLE_2" />“ nebepasiekiamos</translation>
 <translation id="5011561501798487822">Aptikta kalba</translation>
 <translation id="5015510746216210676">Įrenginio pavadinimas:</translation>
 <translation id="5017554619425969104">Nukopijuotas tekstas</translation>

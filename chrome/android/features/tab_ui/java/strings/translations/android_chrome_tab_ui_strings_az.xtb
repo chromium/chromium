@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya ehtiyacınız yoxdursa, silin.
 
 Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək.</translation>
+<translation id="1326654401173629446">"<ph name="TAB_GROUP_NAME" />" tab qrupu artıq əlçatan deyil</translation>
 <translation id="1329584516321524826">İndicə yenilənib</translation>
 <translation id="1340839264183302272">Qrupdan çıxın</translation>
 <translation id="1419023007528516122">Bununla qrup cihazdan həmişəlik silinəcək</translation>
@@ -23,6 +24,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="161042844686301425">Firuzəyi</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab qruplaşdırıldı</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
+<translation id="1697284962337958118">Buraya əlavə edin:</translation>
 <translation id="1713541401465507417">Bütün tab və qrupları bağlayın</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Ətraflı məlumat<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab qruplaşdırıldı</translation>

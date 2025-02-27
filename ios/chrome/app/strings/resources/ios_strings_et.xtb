@@ -511,6 +511,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3138611310073113613">Loobu valikust</translation>
 <translation id="3140825265190223781">Salvestatud paroolid ja pääsuvõtmed</translation>
 <translation id="3143515551205905069">Tühista sünkroonimine</translation>
+<translation id="3144126448740580210">VALMIS</translation>
 <translation id="314837624430314508">Püsige kursis värskete uudiste, hinnajälgimise, värskenduste ja muuga.</translation>
 <translation id="3157387275655328056">Lisa lugemisloendisse</translation>
 <translation id="315778507796115851">Ajalugu</translation>
@@ -1228,7 +1229,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6295751040240588413">Kaardi sobimatu hüüdnimi</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Hankige hinna jälgimise teavitusi</translation>
-<translation id="6310451064941005489">Paroolide valikud</translation>
 <translation id="6316141353357700666">Valige kuvatavast loendist parool, mida soovite kasutada.</translation>
 <translation id="6321526113093607004">Lisa järjehoidjatesse</translation>
 <translation id="6337234675334993532">Krüpteerimine</translation>
@@ -1405,6 +1405,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6979737339423435258">Algusest</translation>
 <translation id="6983306615164277634">Aadressiriba asukoha muutmiseks võite seda ka pikalt puudutada.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998251471716094661">Jälgige toodete hindu ja saage märguandeid, kui hind mõnel saidil langeb</translation>
 <translation id="7004032350256606903">Teie organisatsioon nõuab, et sirviksite privaatselt.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Muuda seadetes vaikevalikuks …</translation>
@@ -1583,6 +1584,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7812377703891978671">Kogu oma sirvimisajalugu näete, kui teete valiku <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Allalaadimised</translation>
 <translation id="7815852444315004084">Peida praeguseks</translation>
+<translation id="7825973332242257878">Vahelehegrupid</translation>
 <translation id="7831876841288640403">Valige aadressiriba jaoks endale sobiv asukoht.</translation>
 <translation id="7839994177130598711">Teie pereliikmed saavad nüüd kasutada teie kasutajanime ja parooli, kui nad kasutavad saidile <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> sisselogimiseks Google'i paroolihaldurit.</translation>
 <translation id="7840771868269352570">Teie valitud üksused eemaldatakse.</translation>

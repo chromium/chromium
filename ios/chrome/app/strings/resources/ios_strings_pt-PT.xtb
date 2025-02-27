@@ -511,6 +511,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3138611310073113613">Rejeitar seleção</translation>
 <translation id="3140825265190223781">Palavras-passe e chaves de acesso guardadas</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
+<translation id="3144126448740580210">CONCLUÍDO</translation>
 <translation id="314837624430314508">Mantenha-se a par das mais recentes notícias, atualizações de acompanhamento de preço e muito mais.</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="315778507796115851">Histórico</translation>
@@ -1228,7 +1229,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6295751040240588413">Alcunha do cartão inválida</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6301104306974789820">Receba notificações de acompanhamento de preço</translation>
-<translation id="6310451064941005489">Opções de palavras-passe</translation>
 <translation id="6316141353357700666">Escolha a palavra-passe que quer usar na lista que é apresentada.</translation>
 <translation id="6321526113093607004">Adicionar aos Marcadores</translation>
 <translation id="6337234675334993532">Encriptação</translation>
@@ -1405,6 +1405,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6983306615164277634">Também pode tocar sem soltar na barra de endereço para alterar a posição.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998251471716094661">Acompanhe os preços dos produtos e receba alertas quando o preço descer em qualquer site</translation>
 <translation id="7004032350256606903">A sua entidade requer que navegue em privado.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Predefinir nas Definições…</translation>
@@ -1583,6 +1584,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7812377703891978671">Pode aceder a todo o seu histórico de navegação selecionando o botão <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Transferências</translation>
 <translation id="7815852444315004084">Ocultar para já</translation>
+<translation id="7825973332242257878">Grupos de separadores</translation>
 <translation id="7831876841288640403">Escolha a posição da barra de endereço que funciona melhor para si.</translation>
 <translation id="7839994177130598711">Os membros da família já podem usar o seu nome de utilizador e palavra-passe quando usarem o Gestor de Palavras-passe da Google para iniciarem sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>

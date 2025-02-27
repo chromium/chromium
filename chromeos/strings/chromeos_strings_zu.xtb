@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">amakati</translation>
 <translation id="5907649332524363701">umbala wokhiye</translation>
 <translation id="5908813850962688338">Ukufaka lesi sibuyekezo kuzothatha imizuzu embalwa. Gcina idivayisi yakho ixhunyiwe futhi ivuliwe uma isibuyekezo sidawunilodwa. Idivayisi yakho ingaziqalisa kabusha izikhathi ezimbalwa futhi ibonise isikrini esimnyama phakathi nale nqubo. Uzocelwa ukuthi uqale kabusha idivayisi yakho ukuze uqedele ukufaka.</translation>
+<translation id="5915794087373112615">Uthisha wakho uzobheka isikrini sakho emizuzwaneni engu-<ph name="NUM_SECONDS" /></translation>
 <translation id="5916084858004523819">Kuvinjelwe</translation>
 <translation id="5916664084637901428">Vuliwe</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Ifayela lakho liskenwe ngempumelelo futhi lilondolozwe ku-<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Amafayela wakho askenwe ngempumelelo futhi alondolozwe ku-<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Amafayela wakho askenwe ngempumelelo futhi alondolozwe ku-<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="7618216277886673749">Khetha isi-<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Maphakathi nendawo</translation>
 <translation id="7620771111601174153">Funda kabanzi Esikhungweni sosizo</translation>
+<translation id="7623327321610992184">I-OnTask Pod</translation>
 <translation id="763165478673169849">Isikhathi Sokusetha Kabusha Sokugcina</translation>
 <translation id="7633068090678117093">Umfanekiso ongemuva</translation>
 <translation id="763873111564339966">oku-indigo</translation>
@@ -1524,6 +1526,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8054112564438735763">okumhloshana</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_BACKGROUND" /> ingemuva</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Xhuma imakhrofoni ukuze uqale ukurekhoda umsindo</translation>
 <translation id="8067126283828232460">I-APN ixhunyiwe.</translation>
 <translation id="8067208048261192356">okunsundu</translation>
 <translation id="8067224607978179455">Sula i-<ph name="ACTION_NAME" /></translation>

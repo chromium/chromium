@@ -118,6 +118,7 @@
 <translation id="2583187216237139145">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chromium 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium 계속 사용</translation>
 <translation id="259935314519650377">다운로드한 설치 프로그램을 캐시할 수 없습니다. 오류(<ph name="UNPACK_CACHING_ERROR_CODE" />)가 발생했습니다.</translation>
+<translation id="2629740064077610681">조직에서 북마크, 방문 기록, 비밀번호와 같은 인터넷 사용 기록을 보고 관리할 수 있습니다. 다른 Chromium 프로필의 인터넷 사용 기록은 확인할 수 없습니다</translation>
 <translation id="2635452620547538388"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chromium 데이터를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="264613044588233783">Chromium이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동함(권장)</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
@@ -147,7 +148,6 @@
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
 <translation id="2977506796191543575">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="2981563588585023386">부모님의 선택을 통해 온라인에서 더 안전하게 보호받으려면 Chromium에 로그인하세요</translation>
-<translation id="2987208172821108655">Chromium은 이러한 탭을 비활성화하여 탐색 환경을 개선하고 리소스를 확보할 수 있습니다.</translation>
 <translation id="3013473503895162900">Chromium의 새 탭에서 <ph name="URL" /> 주소가 열립니다.</translation>
 <translation id="3032706164202344641">Chromium에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3032787606318309379">Chromium에 추가하는 중...</translation>
@@ -258,7 +258,6 @@
 <translation id="4531137820806573936">Chromium에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
 <translation id="4534145890176164066">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다.</translation>
 <translation id="4536805923587466102">이미 다른 Chromium 프로필에 <ph name="USER_EMAIL_ADDRESS" /> 계정으로 로그인되어 있습니다</translation>
-<translation id="4545268686623374213">Chromium은 이 탭을 비활성화하여 탐색 환경을 개선하고 빠른 속도를 유지할 수 있습니다.</translation>
 <translation id="4548534452171747496">Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다. <ph name="BEGIN_LINK" />페이지 미리 로드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4570813286784708942">사용자가 세이프 브라우징을 사용 중지했으며 파일을 확인할 수 없기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
@@ -339,7 +338,6 @@
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 네트워크 로그인</translation>
 <translation id="5924017743176219022">인터넷에 연결 중...</translation>
-<translation id="5929318705173562984">Chromium은 이 탭을 비활성화하여 탐색 환경을 개선하고 리소스를 확보할 수 있습니다.</translation>
 <translation id="5941711191222866238">최소화</translation>
 <translation id="5972142260211327093">Chromium에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chromium에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침됩니다.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}}</translation>
@@ -381,11 +379,11 @@
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6333502561965082103">Chromium에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6334986366598267305">이제 Google 계정으로 공유 컴퓨터에서 Chromium을 손쉽게 사용할 수 있습니다.</translation>
-<translation id="633626832589656416">Chromium은 이러한 탭을 비활성화하여 탐색 환경을 개선하고 빠른 속도를 유지할 수 있습니다.</translation>
 <translation id="6347933965114150440">Chromium 바로가기</translation>
 <translation id="6366160072964553914">일반적으로 다운로드하지 않는 파일이며 위험할 가능성이 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="6373523479360886564">Chromium을 제거하시겠습니까?</translation>
 <translation id="6375219077595103062">비밀번호 관리자로 연결되는 바로가기를 추가하세요</translation>
+<translation id="6390800440335263989">계속하려면 <ph name="EMAIL" /> 계정으로 Chromium에 로그인하세요. 이렇게 하면 조직의 정책을 준수할 수 있습니다.</translation>
 <translation id="6400112897226594999">컴퓨터 화면에 표시된 Chromium 로고입니다.</translation>
 <translation id="6403826409255603130">Chromium은 빠른 속도로 웹페이지와 애플리케이션을 실행하는 웹 브라우저입니다. 빠르고 안정적이며 사용하기에 편리합니다. Chromium에 내장된 멀웨어 및 악성 코드 방지 기능을 사용하여 더욱 안전하게 웹을 검색하세요.</translation>
 <translation id="6436260184216827876">이미지 검색을 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>

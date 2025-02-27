@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">Отфрли го изборот</translation>
 <translation id="3140825265190223781">Зачувани лозинки и криптографски клучеви</translation>
 <translation id="3143515551205905069">Откажи ја синхронизацијата</translation>
+<translation id="3144126448740580210">ГОТОВО</translation>
 <translation id="314837624430314508">Бидете во тек со најновите вести, следењето цени, известувања и друго.</translation>
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="315778507796115851">Историја</translation>
@@ -1228,7 +1229,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6295751040240588413">Неважечки прекар за картичката</translation>
 <translation id="629730747756840877">Сметка</translation>
 <translation id="6301104306974789820">Добивајте известувања за следењето на цената</translation>
-<translation id="6310451064941005489">Опции за лозинки</translation>
 <translation id="6316141353357700666">Изберете ја лозинката што сакате да ја користите од списокот што ќе се појави.</translation>
 <translation id="6321526113093607004">Додај во „Обележувачи“</translation>
 <translation id="6337234675334993532">Шифрирање</translation>
@@ -1353,6 +1353,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6722623263381062480">Примени картички</translation>
 <translation id="6723740634201835758">Во вашата сметка на Google</translation>
 <translation id="672735642903863329">Добијте ги обележувачите, лозинките и друго на сите ваши уреди.</translation>
+<translation id="6729493062119577923">Активност на споделената групи картички</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6746338529702829275">Прегледајте ги податоците на вашата сметка</translation>
 <translation id="6755200887046212842">Управувајте со сметки</translation>
@@ -1404,6 +1405,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6979737339423435258">Целосната историја</translation>
 <translation id="6983306615164277634">Може и да ја допрете и задржите лентата за адреси за да ја промените позицијата.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998251471716094661">Следете ги цените на производите и добивајте известувања кога ќе се намали цената на кој било сајт</translation>
 <translation id="7004032350256606903">Вашата организација бара да прелистувате „Инкогнито“.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Поставете како стандарден прелистувач во поставките…</translation>
@@ -1582,6 +1584,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7812377703891978671">Може да пристапите до сета ваша историја на прелистувањето со избирање <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Преземања</translation>
 <translation id="7815852444315004084">Скриј засега</translation>
+<translation id="7825973332242257878">Групи картички</translation>
 <translation id="7831876841288640403">Изберете ја позицијата на вашата лента за адреса што најдобро функционира за вас.</translation>
 <translation id="7839994177130598711">Членовите на вашето семејство сега може да ги користат вашите корисничко име и лозинка при користење Google Password Manager за најавување на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Ставките ќе се отстранат.</translation>

@@ -554,6 +554,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2885950158625301909">Lue lisää</translation>
 <translation id="2891209721153296020">"Poista valinta"</translation>
 <translation id="2894949423239620203">Johto voi vaikuttaa suorituskykyyn</translation>
+<translation id="2902312830803030883">Lisää toimintoja</translation>
 <translation id="2914580577416829331">Kuvakaappaukset</translation>
 <translation id="2924416280450782352">Kohteita ei voi näyttää. Yritä avata paneeli uudelleen.</translation>
 <translation id="292506373491190801">Käynnissä olevasta tapahtumasta</translation>
@@ -1909,7 +1910,6 @@ Uusi asennus</translation>
 <translation id="735745346212279324">VPN-yhteys katkaistu</translation>
 <translation id="7360036564632145207">Datan käyttösuoja-asetuksen muuttaminen voi optimoida lisälaitteiden toimintaa</translation>
 <translation id="736045644501761622">Aseta taustakuva ja tyyli</translation>
-<translation id="7368041336688136012">Sinun on oltava vähintään 18-vuotias, jotta voit käyttää Auta minua lukemaan-, Auta minua kirjoittamaan -toimintoja ja luomaan kuvia tekoälyllä.</translation>
 <translation id="7371404428569700291">Tallenna ikkuna</translation>
 <translation id="7372069265635026568">Muistia käytettävissä <ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Sallii mikrofonin käytön kaikille sovelluksille ja verkkosivustoille, joilla on mikrofonilupa</translation>

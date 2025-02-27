@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">মেকুৰী</translation>
 <translation id="5907649332524363701">কীৰ ৰং</translation>
 <translation id="5908813850962688338">এই আপডে’টটো ইনষ্টল হওঁতে কেইমিনিটমান সময় লাগিব। আপডে’টটো ডাউনল’ড হৈ থকাৰ সময়ত আপোনাৰ ডিভাইচটো প্লাগ ইন কৰি আৰু পাৱাৰ অন কৰি ৰাখক। আপোনাৰ ডিভাইচটো নিজে নিজে বহুবাৰ ৰিবুট হ’ব পাৰে আৰু এই প্ৰক্ৰিয়াটো চলি থকাৰ সময়ত তাত এখন ক’লা স্ক্ৰীন ওলাব পাৰে। ইনষ্টল কৰাটো সম্পূৰ্ণ কৰিবলৈ আপোনাক নিজৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰিবলৈ প্ৰ’ম্পট্‌ কৰা হ’ব।</translation>
+<translation id="5915794087373112615">আপোনাৰ শিক্ষকে <ph name="NUM_SECONDS" /> ছেকেণ্ডত আপোনাৰ স্ক্ৰীনখন চাব</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপোনাৰ ফাইলটো সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}one{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}other{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}}</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8054112564438735763">মুগা-চানেকীয়া</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> এখন <ph name="CHARACTERS_BACKGROUND" /> পৃষ্ঠভূমিত</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">অডিঅ’ ৰেকৰ্ড কৰা আৰম্ভ কৰিবলৈ এটা মাইক সংযোগ কৰক</translation>
 <translation id="8067126283828232460">এপিএন সংযোগ কৰা হৈছে।</translation>
 <translation id="8067208048261192356">মুগা</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> মচক</translation>

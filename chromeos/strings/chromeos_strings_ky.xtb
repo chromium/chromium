@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">мышыктар</translation>
 <translation id="5907649332524363701">баскычтын түсү</translation>
 <translation id="5908813850962688338">Жаңыртуу бир нече мүнөткө созулат. Жаңыртылып жатканда түзмөк кубатталып жана күйүп турушу керек. Түзмөк бир нече жолу өчүп-күйүп, экраны кара болушу мүмкүн. Орнотууну аягына чыгаруу үчүн аны өчүрүп күйгүзүү суралат.</translation>
+<translation id="5915794087373112615">Мугалим бул экранды <ph name="NUM_SECONDS" /> секунддан кийин көрөт</translation>
 <translation id="5916084858004523819">Тыюу салынат</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}other{Файлдар ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> тандоо</translation>
 <translation id="7618774594543487847">Нейтралдуу</translation>
 <translation id="7620771111601174153">Жардам борборуна өтүп, кененирээк маалымат алыңыз</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Акыркы жолу баштапкы абалга келтирилген убакыт</translation>
 <translation id="7633068090678117093">Фондогу сүрөт</translation>
 <translation id="763873111564339966">индиго</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">саргыч боз</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> фондогу <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Аудиону жаздырып баштоо үчүн микрофонду туташтырыңыз</translation>
 <translation id="8067126283828232460">APN туташтырылды.</translation>
 <translation id="8067208048261192356">күрөң</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> өчүрүү</translation>

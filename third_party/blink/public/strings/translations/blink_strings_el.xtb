@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Καταχωρίστε μια έγκυρη τιμή. Οι δύο πιο κοντινές έγκυρες τιμές είναι <ph name="VALID_VALUE_LOW" /> και <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
 <translation id="4664250907885839816">Το τμήμα της διεύθυνσης μετά το σύμβολο "<ph name="ATSIGN" />" δεν πρέπει να περιέχει το σύμβολο "<ph name="INVALIDCHARACTER" />".</translation>
+<translation id="4703271465972936359">Κομμάτια ήχου</translation>
 <translation id="4718048029184481307">Αναπαραγωγή σε λειτουργία picture-in-picture</translation>
 <translation id="4812940957355064477">Εισαγάγετε έναν αριθμό.</translation>
 <translation id="4975562563186953947">Επιλέχτηκαν <ph name="SELECTED_COUNT" /></translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Μετάδοση</translation>
 <translation id="5630795885300617244">Πατήστε δύο φορές αριστερά ή δεξιά, για να παραβλέψετε 10 δευτ.</translation>
 <translation id="57838592816432529">Σίγαση</translation>
+<translation id="5868587040512539609">Κομμάτια βίντεο</translation>
 <translation id="588258955323874662">Πλήρης οθόνη</translation>
 <translation id="5888666972993069672">Μετάδοση τώρα στη συσκευή <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Όμορφη εκτύπωση</translation>
 <translation id="6550675742724504774">Επιλογές</translation>
 <translation id="6643016212128521049">Διαγραφή</translation>
+<translation id="6661136971638885481">Κομμάτι #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Άλλο...</translation>
 <translation id="6709093583001123835">Η τιμή πρέπει να είναι <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Κακή ποιότητα αναπαραγωγής</translation>

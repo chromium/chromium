@@ -511,6 +511,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3138611310073113613">Släng valet</translation>
 <translation id="3140825265190223781">Sparade lösenord och nycklar</translation>
 <translation id="3143515551205905069">Avbryt synkronisering</translation>
+<translation id="3144126448740580210">KLART</translation>
 <translation id="314837624430314508">Håll koll på de senaste nyheterna, uppdateringarna för prisbevakningar med mera.</translation>
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="315778507796115851">Historik</translation>
@@ -1228,7 +1229,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6295751040240588413">Ogiltigt kortnamn</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6301104306974789820">Få aviseringar om prisbevakning</translation>
-<translation id="6310451064941005489">Lösenordsalternativ</translation>
 <translation id="6316141353357700666">Välj det lösenord du vill använda i listan som visas.</translation>
 <translation id="6321526113093607004">Lägg till i bokmärken</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -1353,6 +1353,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6722623263381062480">Mottagna flikar</translation>
 <translation id="6723740634201835758">I Google-kontot</translation>
 <translation id="672735642903863329">Använd samma bokmärken, lösenord med mera på alla enheter.</translation>
+<translation id="6729493062119577923">Aktivitet i den delade flikgruppen</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6755200887046212842">Hantera konton</translation>
@@ -1404,6 +1405,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6979737339423435258">Sedan start</translation>
 <translation id="6983306615164277634">Du kan också trycka länge på adressfältet om du vill ändra placeringen.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998251471716094661">Bevaka priser på produkter och få aviseringar när priset sänks på en webbplats</translation>
 <translation id="7004032350256606903">Organisationen kräver att du surfar privat.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Använd som standard i Inställningar …</translation>
@@ -1582,6 +1584,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7812377703891978671">Du kommer åt all webbhistorik genom att välja <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Nedladdningar</translation>
 <translation id="7815852444315004084">Dölj för tillfället</translation>
+<translation id="7825973332242257878">Flikgrupper</translation>
 <translation id="7831876841288640403">Välj den position för adressfältet som passar dig bäst.</translation>
 <translation id="7839994177130598711">Dina familjemedlemmar kan nu använda ditt användarnamn och lösenord när de loggar in på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> med Google Lösenordshantering.</translation>
 <translation id="7840771868269352570">De markerade objekten tas bort.</translation>

@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Säilytä tämä ryhmä, niin voit lisätä siihen välilehtiä myöhemmin, tai poista se, jos et enää tarvitse sitä.
 
 Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name="TITLE_OF_GROUP" />", ja se poistetaan kaikilta laitteilta.</translation>
+<translation id="1326654401173629446"><ph name="TAB_GROUP_NAME" />-ryhmä ei ole enää käytettävissä</translation>
 <translation id="1329584516321524826">Päivitetty juuri nyt</translation>
 <translation id="1340839264183302272">Poistu ryhmästä</translation>
 <translation id="1419023007528516122">Ryhmä poistetaan laitteelta pysyvästi</translation>
@@ -23,6 +24,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="161042844686301425">Turkoosi</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> välilehteä lisätty ryhmään</translation>
 <translation id="1657719826150349398">Siirrä välilehti alaspäin</translation>
+<translation id="1697284962337958118">Lisää…</translation>
 <translation id="1713541401465507417">Kaikkien välilehtien ja ryhmien sulkeminen</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Lue lisää<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> välilehti lisätty ryhmään</translation>

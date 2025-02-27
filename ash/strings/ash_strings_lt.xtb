@@ -554,6 +554,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="2885950158625301909">Sužinokite daugiau</translation>
 <translation id="2891209721153296020">„Atšaukti pasirinkimą“</translation>
 <translation id="2894949423239620203">Laidas gali turėti įtakos našumui</translation>
+<translation id="2902312830803030883">Daugiau veiksmų</translation>
 <translation id="2914580577416829331">Užfiksuoti ekrano vaizdai</translation>
 <translation id="2924416280450782352">Nepavyko parodyti elementų. Pabandykite iš naujo atidaryti šį skydelį.</translation>
 <translation id="292506373491190801">Iš dabar vykstančio įvykio</translation>
@@ -1909,7 +1910,6 @@ Naujas įdiegimas</translation>
 <translation id="735745346212279324">VPN atjungtas</translation>
 <translation id="7360036564632145207">Našumą gali pavykti optimizuoti pakeičiant duomenų prieigos apsaugos išoriniams įrenginiams nustatymą</translation>
 <translation id="736045644501761622">Nustatyti ekrano foną ir stilių</translation>
-<translation id="7368041336688136012">Kad galėtumėte naudoti funkcijas „Pagalba skaitant“, „Pagalba rašant“ ir kurti vaizdus naudodami DI, turite būti bent aštuoniolikos metų.</translation>
 <translation id="7371404428569700291">Įrašymo langas</translation>
 <translation id="7372069265635026568">Laisvos atminties: <ph name="AVAILABLE_MEMORY" /> iš <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Tai leis pasiekti mikrofoną visoms programoms ir svetainėms, turinčioms mikrofono leidimą</translation>
@@ -2359,6 +2359,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8847100217801213944">Rodyti temperatūrą Farenheito laipsniais</translation>
 <translation id="8849001918648564819">Paslėpta</translation>
+<translation id="8855792845239861369">Ši kalba nepalaikoma</translation>
 <translation id="8855885154700222542">Viso ekrano klavišas</translation>
 <translation id="8858369206579825206">Privatumo valdikliai</translation>
 <translation id="8860366331836346216">Pridėti „eSIM“ kortelę</translation>

@@ -1429,6 +1429,7 @@
 <translation id="1981434377190976112">すべてのウェブサイト上にある自分の全データの読み取り</translation>
 <translation id="1982851102516626421">ログアウトしています</translation>
 <translation id="1984417487208496350">保護なし（非推奨）</translation>
+<translation id="1984683754853869253">学校用のプロフィールを新しく作成しますか？</translation>
 <translation id="198507684520034826">ヘルプ</translation>
 <translation id="1986836014090708999">位置情報の詳細設定</translation>
 <translation id="1987317783729300807">アカウント</translation>
@@ -1781,6 +1782,7 @@
 <translation id="2234876718134438132">同期と Google サービス</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
 <translation id="2238379619048995541">周波数状態データ</translation>
+<translation id="2240582393605484605">このデバイスにのみ保存されているデータは、既存のプロフィールに残ります</translation>
 <translation id="2241053333139545397">多数のウェブサイト上にある自分のデータの読み取りと変更</translation>
 <translation id="2241634353105152135">一回限り</translation>
 <translation id="2242687258748107519">ファイル情報</translation>
@@ -2386,6 +2388,7 @@
 <translation id="264897126871533291">第一色弱</translation>
 <translation id="2649045351178520408">Base64 エンコード ASCII 形式の証明書チェーン</translation>
 <translation id="2650114513545328141">オン • 普段使う表現で閲覧履歴やアクセスしたサイトを検索できます。閲覧履歴に関する質問を行って回答を取得することもできます。</translation>
+<translation id="2651259505411913186">はい、自分のデータを学校用とは別に保持します</translation>
 <translation id="265156376773362237">標準プリロード</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。}}</translation>
 <translation id="2652129567809778422">パスワードを選択</translation>
@@ -2500,6 +2503,7 @@
 　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
+<translation id="2730550884708194161">仕事用プロフィールについて</translation>
 <translation id="2730596696987224099">自分で設定</translation>
 <translation id="2730647855013151888">すべての個人情報を含める</translation>
 <translation id="2730901670247399077">絵文字候補</translation>
@@ -2647,6 +2651,7 @@
 <translation id="2819167288942847344">アプリが誤動作しないように、スマートフォンやタブレットのウィンドウ、サイズ変更可能なウィンドウにプリセットのサイズを使用します</translation>
 <translation id="2819519502129272135">ファイルの同期がオフになっています</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
+<translation id="282230978681804245">あなたのプロフィールは組織によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="2822551631199737692">カメラを使用中</translation>
 <translation id="2822634587701817431">拡大または縮小</translation>
 <translation id="2822910719211888134">Linux のバックアップ中にエラーが発生しました</translation>
@@ -3303,6 +3308,7 @@
 <translation id="3319863571062685443">住所を保存しました</translation>
 <translation id="3320271870899888245">OneDrive に接続できません。もう一度お試しください。</translation>
 <translation id="3320630259304269485">セーフ ブラウジング（危険なサイトからの保護機能）などのセキュリティ設定</translation>
+<translation id="3320909810101200102">ID を選択するには、QR コードをスキャンしてください</translation>
 <translation id="3320957378743864387">文章作成サポートを表示しないサイト</translation>
 <translation id="3321460131042519426">ワードラップを有効にする</translation>
 <translation id="3321494112580110651">お使いのプリンタが表示されない場合</translation>
@@ -5364,6 +5370,7 @@
 <translation id="4779855924282373274"><ph name="URL" /> • 1 件の重複</translation>
 <translation id="4780321648949301421">ページを別名で保存...</translation>
 <translation id="4780558987886269159">仕事向け</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。</translation>
 <translation id="4785719467058219317">このウェブサイトに登録されていないセキュリティ キーを使用しています</translation>
 <translation id="4785914069240823137">切り抜きをキャンセル</translation>
 <translation id="4787471921443575924">ユーザー名 <ph name="USER_EMAIL" /> のパスキーを編集</translation>
@@ -6198,6 +6205,7 @@
 <translation id="5389794555912875905">安全でないサイトにアクセスする前に警告を表示する（推奨）</translation>
 <translation id="5389943529251318913">マウスの速度を遅くする</translation>
 <translation id="5390112241331447203">送信された system_logs.txt ファイルをフィードバック レポートに含める。</translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。このサイトを信頼できる場合のみ続行してください。危険なサイトでは、ユーザーを騙して戸籍上の姓名や ID 番号などを開示させる可能性があります。</translation>
 <translation id="5390677308841849479">暗い赤とオレンジ</translation>
 <translation id="5392192690789334093">通知の送信を許可するサイト</translation>
 <translation id="5393330235977997602">PIN のオプション</translation>
@@ -7548,6 +7556,7 @@
 <translation id="6377268785556383139">「<ph name="SEARCH_TEXT" />」に対する 1 件の検索結果</translation>
 <translation id="6378392501584240055">Wi-Fi ネットワークを開く</translation>
 <translation id="6379228010899751161">アカウント「<ph name="ACCOUNT_EMAIL" />」のパスワードを常に使用できるようにするには、本人確認を行ってください</translation>
+<translation id="6379827283296619736">いいえ、このプロフィールで作業を続行します</translation>
 <translation id="6380143666419481200">同意して続行</translation>
 <translation id="6383382161803538830">このページではリーディング モードを利用できません</translation>
 <translation id="638418309848716977">対応リンク</translation>
@@ -7566,6 +7575,7 @@
 <translation id="6393156038355142111">安全なパスワードを自動生成</translation>
 <translation id="6393550101331051049">安全でないコンテンツの表示を許可するサイト</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />システム情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標データ<ph name="END_LINK2" />を送信する</translation>
+<translation id="6397586889873084061">はい、自分のデータを学校用とは別に保持します（推奨）</translation>
 <translation id="6398715114293939307">Google Play ストアを削除</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="639880411171387127">Google レンズの選択内容です。Google レンズの選択内容を削除するには、Enter キーまたは Backspace キーを押します</translation>
@@ -8223,6 +8233,7 @@
 <translation id="68541483639528434">他のタブをすべて閉じる</translation>
 <translation id="6855892664589459354">Crostini のバックアップと復元</translation>
 <translation id="6856348640027512653">バーチャル リアリティのデバイスやデータの使用を許可しないサイト</translation>
+<translation id="6856607887871564638">仕事用プロフィールを設定すると、パスワードなどをアカウントに保存して使用できます</translation>
 <translation id="6856623341093082836">タッチスクリーンをを設定し、精度を調整します</translation>
 <translation id="6857145580237920905">Powerwash を実行する前に eSIM プロファイルを削除してください</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -8388,6 +8399,7 @@
 <translation id="6979044105893951891">管理対象のゲスト セッションの開始と終了</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6979440798594660689">ミュート（デフォルト）</translation>
+<translation id="6979557074007409812">はい、自分のデータを仕事用とは別に保持します</translation>
 <translation id="6979737339423435258">全期間</translation>
 <translation id="6980402667292348590">Insert</translation>
 <translation id="6981553172137913845">シークレット モードを使うには、その他アイコンのメニューからシークレット ウィンドウを開きます</translation>
@@ -8763,6 +8775,7 @@
 <translation id="7261217796641151584">グループを共有</translation>
 <translation id="7261612856573623172">システムのテキスト読み上げの音声</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
+<translation id="7262919421769447042">あなたのプロフィールは <ph name="PROFILE_MANAGER" /> によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="7264695323040866038">サポートされているウェブリンクを開く際に、常に <ph name="APP" /> アプリを使用しますか？</translation>
 <translation id="7267044199012331848">仮想マシンをインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">指を何度か離して、あらゆる角度から指紋を登録します</translation>
@@ -8929,6 +8942,7 @@
 <translation id="7384804382450832142">Microsoft OneDrive に接続</translation>
 <translation id="7385490373498027129">この <ph name="DEVICE_TYPE" /> にあるすべてのユーザーのファイルとローカルデータをすべて完全に削除します。</translation>
 <translation id="7385854874724088939">印刷中に問題が発生しました。プリンタを確認してからもう一度お試しください。</translation>
+<translation id="7385870590821097913">別のデバイスに表示される手順に沿って操作してください</translation>
 <translation id="7387107590792462040">インストール中のため、しばらくお待ちください</translation>
 <translation id="7387273928653486359">許容範囲内</translation>
 <translation id="7387951778417998929">既定と異なる検索エンジンを使用するには、アドレスバーに検索エンジンのショートカットを入力して、設定したキーボード ショートカットを押します。ここで既定の検索エンジンを変更することもできます。</translation>
@@ -9376,6 +9390,7 @@
 <translation id="769824636077131955">このドキュメントはセキュリティ チェックには大きすぎます。印刷できるドキュメントは 50 MB までです。</translation>
 <translation id="7698507637739331665">一部のアイテムはブロックされています</translation>
 <translation id="7700516433658473670">プリンタとスキャナ</translation>
+<translation id="7700873336634517379">いいえ、このプロフィールを学校用にも使用します</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7701869757853594372">USER の操作</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> へのキャストを停止する</translation>
@@ -9601,6 +9616,7 @@
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
 <translation id="7855258394151767387">W キーを使用してマウスボタンを押す</translation>
 <translation id="7855678561139483478">タブを新しいウィンドウに移動</translation>
+<translation id="7856798637819639676">Android デバイスの ID を安全に使用してください</translation>
 <translation id="7857004848504343806">ご使用のパソコンにはセキュア モジュールが組み込まれています。これは ChromeOS Flex の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=sm）をご覧ください。</translation>
 <translation id="7857093393627376423">テキスト候補</translation>
 <translation id="7858120906780498731">ChromeOS に接続されている入力デバイス</translation>
@@ -9654,6 +9670,7 @@
 <translation id="789722939441020330">サイトに複数のファイルの自動ダウンロードを許可しない</translation>
 <translation id="7897900149154324287">今後、リムーバブル デバイスを取り外す場合はまずファイル アプリで取り外しアイコンをクリックしてください。アイコンをクリックしないで取り外した場合、データを失うことがあります。</translation>
 <translation id="7898725031477653577">常に翻訳する</translation>
+<translation id="7900950034255258543">デバイスを安全に使用できるようにするため、組織ではオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認することができます。</translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
 <translation id="7903429136755645827">クリックすると、ゲーム操作キーをカスタマイズできます</translation>
 <translation id="7903481341948453971">パスワードの入力時に画面ロックを使用する</translation>
@@ -10927,6 +10944,7 @@
 <translation id="8776294611668764629">このファイルはセキュリティ チェックを受けるには大きすぎるため、組織でブロックされました。開けるファイルは 50 MB までです。</translation>
 <translation id="8777509665768981163">タブレットのボタンを追加または指定する</translation>
 <translation id="8777628254805677039">ルート パスワード</translation>
+<translation id="8779720597365936419">はい、自分のデータを仕事用とは別に保持します（推奨）</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">各サイトはそのサイトでの閲覧アクティビティの参照のみに Cookie を使用できます。</translation>
 <translation id="8780123805589053431">Google から画像の説明を取得</translation>
@@ -11077,6 +11095,7 @@
 <translation id="8881020143150461183">もう一度お試しください。技術的なサポートについては、<ph name="CARRIER_NAME" /> にお問い合わせください。</translation>
 <translation id="888256071122006425">マウスとタッチパッドの設定</translation>
 <translation id="8883478023074930307">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
+<translation id="8884264823507872907">仕事用のプロフィールを新しく作成しますか？</translation>
 <translation id="8884570509232205463">デバイスは <ph name="UNLOCK_TIME" /> にロックされるようになりました。</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して ChromeOS の品質向上にご協力ください</translation>
 <translation id="8886745493279779790">アクティブでないタブを確認</translation>
@@ -11198,6 +11217,7 @@
 <translation id="897525204902889653">検疫サービス</translation>
 <translation id="8975396729541388937">配信登録は、このメールのリンクをクリックして、いつでも解除できます。</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」と他 1 個のタブ}other{「<ph name="TAB_TITLE" />」と他 # 個のタブ}}</translation>
+<translation id="8977523125954274918">学校用プロフィールを設定すると、パスワードなどをアカウントに保存して使用できます</translation>
 <translation id="8977811652087512276">パスワードが間違っているか、ファイルが壊れています</translation>
 <translation id="8978154919215542464">オン - すべて同期</translation>
 <translation id="8978670037548431647">テザリング機能を更新</translation>
@@ -11311,6 +11331,7 @@
 <translation id="9040473193163777637">ChromeVox を有効にしますか？ChromeVox は ChromeOS 用の組み込みのスクリーン リーダーです。有効にする場合は、両方の音量キーを 5 秒間長押ししてください。</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> のパスワードを更新しますか？</translation>
 <translation id="9041692268811217999">パソコンのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
+<translation id="9041881059840744611">学校用プロフィールについて</translation>
 <translation id="904224458472510106">この操作は元に戻せません</translation>
 <translation id="9042827002460091668">インターネット接続を確認してもう一度お試しください</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
@@ -11484,6 +11505,7 @@
       <ph name="LIST_ITEM" />Wi-Fi に接続しなおす
       <ph name="LIST_ITEM" />Chrome Connectivity Diagnostics を実行する
     <ph name="END_LIST" /></translation>
+<translation id="9161172953291434881">このサイトを信頼してデータの使用を許可しますか？</translation>
 <translation id="9165856803582999927"><ph name="APP_NAME" /> で使用するパスキーを作成して保存するデバイスのカメラで、この QR コードをスキャンしてください</translation>
 <translation id="916607977885256133">ピクチャー イン ピクチャー</translation>
 <translation id="9166253503936244008"><ph name="APP_NAME" /> で使用するパスキーを持つデバイスで、この QR コードをスキャンしてください</translation>

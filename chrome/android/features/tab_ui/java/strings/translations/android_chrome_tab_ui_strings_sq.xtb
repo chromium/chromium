@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.
 
 Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i skedave "<ph name="TITLE_OF_GROUP" />" dhe ai do të fshihet nga të gjitha pajisjet.</translation>
+<translation id="1326654401173629446">Grupi i skedave "<ph name="TAB_GROUP_NAME" />" nuk ofrohet më</translation>
 <translation id="1329584516321524826">U përditësua pikërisht tani</translation>
 <translation id="1340839264183302272">Largohu nga grupi</translation>
 <translation id="1419023007528516122">Kjo do të fshijë përgjithmonë grupin nga pajisja jote</translation>
@@ -23,6 +24,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="161042844686301425">E bruztë</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> skeda të grupuara</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
+<translation id="1697284962337958118">Shto në</translation>
 <translation id="1713541401465507417">Mbyll të gjitha skedat dhe grupet</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> skedë e grupuar</translation>

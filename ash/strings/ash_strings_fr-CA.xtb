@@ -554,6 +554,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2885950158625301909">En savoir plus</translation>
 <translation id="2891209721153296020">« Désélectionner »</translation>
 <translation id="2894949423239620203">Le câble peut avoir une incidence sur la performance</translation>
+<translation id="2902312830803030883">Autres actions</translation>
 <translation id="2914580577416829331">Captures d'écran</translation>
 <translation id="2924416280450782352">Impossible d'afficher les éléments. Essayez de rouvrir ce panneau.</translation>
 <translation id="292506373491190801">De l'événement qui se passe actuellement</translation>
@@ -1908,7 +1909,6 @@ Nouvelle installation</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
 <translation id="7360036564632145207">Modifier les paramètres de protection d'accès aux données des périphériques peut optimiser les performances</translation>
 <translation id="736045644501761622">Définir le fond d'écran et le style</translation>
-<translation id="7368041336688136012">Vous devez avoir au moins 18 ans pour utiliser Aide à la lecture, Aide à la rédaction et créer des images à l'aide de l'IA.</translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7372069265635026568">Mémoire : <ph name="AVAILABLE_MEMORY" /> disponible sur <ph name="TOTAL_MEMORY" /> au total</translation>
 <translation id="737315737514430195">Ceci permet à toutes les applications et à tous les sites Web ayant l'autorisation du microphone d'accéder au microphone</translation>

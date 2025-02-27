@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">ବିଲେଇ</translation>
 <translation id="5907649332524363701">କୀ'ର ରଙ୍ଗ</translation>
 <translation id="5908813850962688338">ଏହି ଅପଡେଟ ଇନଷ୍ଟଲ କରିବାକୁ କିଛି ସମୟ ଲାଗିବ। ଅପଡେଟ ଡାଉନଲୋଡ ହେଉଥିବା ସମୟରେ ଆପଣଙ୍କ ଡିଭାଇସକୁ ପ୍ଲଗ ଇନ କରି ପାୱାର ଚାଲୁ ରଖନ୍ତୁ। ଏହି ପ୍ରକ୍ରିୟା ସମୟରେ ଆପଣଙ୍କ ଡିଭାଇସ ଅନେକ ଥର ରିବୁଟ ହୋଇପାରେ ଏବଂ ଏକ କଳା ସ୍କ୍ରିନ ଦେଖାଇପାରେ। ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡିଭାଇସକୁ ରିଷ୍ଟାର୍ଟ କରିବାକୁ ପ୍ରମ୍ପ୍ଟ କରିବାକୁ କୁହାଯିବ।</translation>
+<translation id="5915794087373112615">ଆପଣଙ୍କ ଶିକ୍ଷକ <ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଭ୍ୟୁ କରିବେ</translation>
 <translation id="5916084858004523819">ନିଷିଦ୍ଧ</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ଆପଣଙ୍କ ଫାଇଲକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}other{ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}}</translation>
@@ -1525,6 +1526,7 @@
 <translation id="8054112564438735763">ବେଜ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> ପୃଷ୍ଠପଟରେ <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ଅଡିଓ ରେକର୍ଡ କରିବା ଆରମ୍ଭ କରିବାକୁ ଏକ ମାଇକ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8067126283828232460">APNକୁ କନେକ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="8067208048261192356">ମାଟିଆ</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" />କୁ ଡିଲିଟ କରନ୍ତୁ</translation>

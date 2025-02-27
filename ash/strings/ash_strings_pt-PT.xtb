@@ -554,6 +554,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2885950158625301909">Saber mais</translation>
 <translation id="2891209721153296020">"Desmarcar"</translation>
 <translation id="2894949423239620203">O cabo pode afetar o desempenho</translation>
+<translation id="2902312830803030883">Mais ações</translation>
 <translation id="2914580577416829331">Capturas de ecrã</translation>
 <translation id="2924416280450782352">Não é possível mostrar os itens. Experimente reabrir este painel.</translation>
 <translation id="292506373491190801">Do evento a decorrer agora</translation>
@@ -1909,7 +1910,6 @@ Nova instalação</translation>
 <translation id="735745346212279324">VPN desligado</translation>
 <translation id="7360036564632145207">A alteração da proteção do acesso aos dados para a definição dos periféricos pode otimizar o desempenho.</translation>
 <translation id="736045644501761622">Definir imagem de fundo e estilo</translation>
-<translation id="7368041336688136012">Tem de ter, pelo menos, 18 anos para usar as funcionalidades Ajuda-me a ler, Ajuda-me a escrever e criar imagens com IA.</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de memória disponível de <ph name="TOTAL_MEMORY" /> no total</translation>
 <translation id="737315737514430195">Isto permite o acesso ao microfone para todas as apps e Websites com a autorização do microfone</translation>

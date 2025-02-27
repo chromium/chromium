@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Rete domestica, roaming non attivo</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Colore dello sfondo</translation>
+<translation id="1329478709358066995">Trascrizione:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Adatta ad area di scansione</translation>
 <translation id="1343442362630695901">lago salato</translation>
@@ -1032,6 +1033,7 @@
 <translation id="590746845088109442">gatti</translation>
 <translation id="5907649332524363701">colore tasti</translation>
 <translation id="5908813850962688338">L'installazione di questo aggiornamento richiederà alcuni minuti. Tieni il dispositivo collegato alla corrente e acceso durante il download dell'aggiornamento. Il dispositivo potrebbe riavviarsi più volte e mostrare una schermata nera durante questa procedura. Per completare l'installazione, ti verrà chiesto di riavviare il dispositivo.</translation>
+<translation id="5915794087373112615">L'insegnante visualizzerà il tuo schermo tra <ph name="NUM_SECONDS" /> secondi</translation>
 <translation id="5916084858004523819">Non consentito</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Il file è stato scansionato correttamente e salvato in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1273,6 +1275,7 @@
 <translation id="6930597342185648547">Informazioni sullo sfondo</translation>
 <translation id="6939667434404433010">Cerca nome registrazione</translation>
 <translation id="6939766318048400022">Bar</translation>
+<translation id="6942253772720771875">Condividi il tuo feedback o descrivi il problema</translation>
 <translation id="6943893908656559156">Identità remota (facoltativa)</translation>
 <translation id="6953137545147683679">oro</translation>
 <translation id="6957231940976260713">Nome servizio</translation>
@@ -1525,6 +1528,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> di colore <ph name="CHARACTERS_COLOR" /> su uno sfondo <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Collega un microfono per iniziare a registrare l'audio</translation>
 <translation id="8067126283828232460">APN connesso.</translation>
 <translation id="8067208048261192356">marrone</translation>
 <translation id="8067224607978179455">Elimina <ph name="ACTION_NAME" /></translation>
@@ -1596,6 +1600,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8395584934117017006">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito dall'azienda</translation>
 <translation id="8398927464629426868">L'attuale velocità di carica o scaricamento del dispositivo</translation>
 <translation id="8403988360557588704">Un disegno di <ph name="ART_FEATURE" /> in stile <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Riepilogo generato:</translation>
 <translation id="8410244574650205435">Rilevato automaticamente</translation>
 <translation id="8420955526972171689">Esegui test e risolvi problemi relativi all'hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1640,6 +1645,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8626489604350149811">Altre azioni per <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Viola chiaro</translation>
 <translation id="8647595191512746911">Trascrizione audio</translation>
+<translation id="8648578954147795914">Nomi generati:</translation>
 <translation id="8650852232143958317">Porta con te i file di Gmail e Google Drive</translation>
 <translation id="8651481478098336970">azzera volume</translation>
 <translation id="8655295600908251630">Canale</translation>
@@ -1782,6 +1788,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="9218016617214286986">Mostra APN noti</translation>
 <translation id="932327136139879170">Home page</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Assicurati che il microfono sia collegato o prova a riavviare Chromebook</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="950520315903467048">Tasto mancante per <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Confronta le voci dell'intera registrazione in modo che la trascrizione riporti correttamente ciò che ha detto ogni persona e quando</translation>

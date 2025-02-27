@@ -554,6 +554,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2885950158625301909">Learn more</translation>
 <translation id="2891209721153296020">'Unselect'</translation>
 <translation id="2894949423239620203">Cable may impact performance</translation>
+<translation id="2902312830803030883">More actions</translation>
 <translation id="2914580577416829331">Screen captures</translation>
 <translation id="2924416280450782352">Can't show items. Try reopening this panel.</translation>
 <translation id="292506373491190801">From event happening now</translation>
@@ -1909,7 +1910,6 @@ New install</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
 <translation id="7360036564632145207">Changing your data access protection for peripherals setting can optimise performance</translation>
 <translation id="736045644501761622">Set wallpaper and style</translation>
-<translation id="7368041336688136012">You must be at least 18 years old to use Help me read, Help me write and create images with AI.</translation>
 <translation id="7371404428569700291">Record window</translation>
 <translation id="7372069265635026568">Memory <ph name="AVAILABLE_MEMORY" /> available out of <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="737315737514430195">This allows microphone access for all apps and websites with the microphone permission</translation>

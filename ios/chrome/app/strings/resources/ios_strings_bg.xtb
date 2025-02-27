@@ -511,6 +511,7 @@
 <translation id="3138611310073113613">Отхвърляне на избора</translation>
 <translation id="3140825265190223781">Запазени пароли и ключове за достъп</translation>
 <translation id="3143515551205905069">Анулиране на синхронизирането</translation>
+<translation id="3144126448740580210">ГОТОВО</translation>
 <translation id="314837624430314508">Получавайте последните новини, актуализации за проследяване на цени и др.</translation>
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="315778507796115851">История</translation>
@@ -1228,7 +1229,6 @@
 <translation id="6295751040240588413">Псевдонимът на картата е невалиден</translation>
 <translation id="629730747756840877">Профил</translation>
 <translation id="6301104306974789820">Получаване на известия за проследяване на цените</translation>
-<translation id="6310451064941005489">Опции за паролите</translation>
 <translation id="6316141353357700666">Изберете паролата, която искате да използвате, от показания списък.</translation>
 <translation id="6321526113093607004">Добавяне към отметките</translation>
 <translation id="6337234675334993532">Шифроване</translation>
@@ -1405,6 +1405,7 @@
 <translation id="6979737339423435258">За цялото време</translation>
 <translation id="6983306615164277634">Можете също да докоснете и задържите адресната лента, за да промените позицията.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998251471716094661">Проследявайте цените на продукти и получавайте сигнали при понижение на цената в даден сайт</translation>
 <translation id="7004032350256606903">Организацията ви изисква да сърфирате частно.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Задаване като браузър по подразбиране в настройките…</translation>
@@ -1583,6 +1584,7 @@
 <translation id="7812377703891978671">Имате достъп до цялата си история на сърфиране, като изберете „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="78146569776629510">Изтегляния</translation>
 <translation id="7815852444315004084">Скриване засега</translation>
+<translation id="7825973332242257878">Групи раздели</translation>
 <translation id="7831876841288640403">Изберете най-подходящата за вас позиция на адресната лента.</translation>
 <translation id="7839994177130598711">Членовете на семейството ви вече могат да използват потребителското име и паролата ви, когато ползват Google Мениджър на пароли за вход в(ъв) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Избраните елементи ще бъдат премахнати.</translation>

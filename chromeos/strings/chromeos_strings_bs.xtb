@@ -1032,7 +1032,7 @@
 <translation id="590746845088109442">Mačke</translation>
 <translation id="5907649332524363701">boja tipki</translation>
 <translation id="5908813850962688338">Instaliranje ažuriranja će potrajati nekoliko minuta. Neka uređaj bude priključen i uključen dok se ažuriranje preuzima. Uređaj se može sam ponovo pokrenuti nekoliko puta i prikazati crni ekran tokom ovog postupka. Zatražit ćemo da ponovo pokrenete uređaj da završite instaliranje.</translation>
-<translation id="5915794087373112615">Nastavnik će pregledati vaš zaslon za <ph name="NUM_SECONDS" /> s</translation>
+<translation id="5915794087373112615">Nastavnik će vidjeti ekran za <ph name="NUM_SECONDS" /> s</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaš fajl je uspješno skeniran i sačuvan u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1434,7 +1434,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7618216277886673749">Odabir jezika <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
-<translation id="7623327321610992184">OnTask Pod</translation>
+<translation id="7623327321610992184">Vidžet OnTask</translation>
 <translation id="763165478673169849">Vrijeme posljednjeg poništavanja</translation>
 <translation id="7633068090678117093">Slika pozadine</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1526,7 +1526,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8054112564438735763">bež</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> boje na pozadini <ph name="CHARACTERS_BACKGROUND" /> boje</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
-<translation id="8065371548313750052">Povežite mikrofon da biste pokrenuli snimanje zvuka</translation>
+<translation id="8065371548313750052">Povežite mikrofon da počnete snimati zvuk</translation>
 <translation id="8067126283828232460">APN je povezan.</translation>
 <translation id="8067208048261192356">smeđe</translation>
 <translation id="8067224607978179455">Brisanje dugmeta <ph name="ACTION_NAME" /></translation>

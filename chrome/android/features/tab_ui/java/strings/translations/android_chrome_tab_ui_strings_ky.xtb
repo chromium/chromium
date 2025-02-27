@@ -12,6 +12,7 @@
 <translation id="1293272072740285747">Кийинчерээк өтмөктөрдү кошуу үчүн бул топту калтырып, эгер кереги жок болуп калса, өчүрүңүз.
 
 Эгер аны өчүрсөңүз, бардык колдонуучулар "<ph name="TITLE_OF_GROUP" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүнөн дароо ажырап, ал бардык түзмөктөрдөн өчүрүлөт.</translation>
+<translation id="1326654401173629446">"<ph name="TAB_GROUP_NAME" />" өтмөктөр тобу мындан ары жеткиликсиз</translation>
 <translation id="1329584516321524826">Жаңы эле жаңырды</translation>
 <translation id="1340839264183302272">Топтон чыгуу</translation>
 <translation id="1419023007528516122">Бул топ ушуну менен бул түзмөктөн биротоло өчүрүлөт</translation>
@@ -23,6 +24,7 @@
 <translation id="161042844686301425">Көгүлтүр</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> өтмөк топтолду</translation>
 <translation id="1657719826150349398">Өтмөктү төмөн жылдыруу</translation>
+<translation id="1697284962337958118">Төмөнкүгө кошуу:</translation>
 <translation id="1713541401465507417">Бардык өтмөктөрдү жана топторду жабуу</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Кеңири маалымат<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> өтмөк топтолду</translation>

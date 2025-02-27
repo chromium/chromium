@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">cathod</translation>
 <translation id="5907649332524363701">lliw bysell</translation>
 <translation id="5908813850962688338">Bydd gosod y diweddariad hwn yn cymryd ychydig funudau. Cadwch eich dyfais wedi'i phlygio i mewn a'i phweru pan fydd y diweddariad yn cael ei lawrlwytho. Mae'n bosib y bydd eich dyfais yn ailgychwyn ei hun sawl gwaith ac yn dangos sgrin ddu yn ystod y broses hon. Byddwch yn cael eich annog i ailgychwyn eich dyfais i gwblhau'r gosodiad.</translation>
+<translation id="5915794087373112615">Bydd eich athro yn gweld eich sgrîn mewn <ph name="NUM_SECONDS" /> eiliad</translation>
 <translation id="5916084858004523819">Gwaharddedig</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Mae eich ffeil wedi'i sganio a'i chadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7618216277886673749">Dewis <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Niwtral</translation>
 <translation id="7620771111601174153">Dysgu rhagor yn y Ganolfan Gymorth</translation>
+<translation id="7623327321610992184">Pod OnTask</translation>
 <translation id="763165478673169849">Amser Ailosod Diwethaf</translation>
 <translation id="7633068090678117093">Llun cefndir</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1524,6 +1526,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8054112564438735763">gwlanen</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> ar gefndir <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Cysylltwch feic i ddechrau recordio sain</translation>
 <translation id="8067126283828232460">Mae APN wedi'i gysylltu.</translation>
 <translation id="8067208048261192356">brown</translation>
 <translation id="8067224607978179455">Dileu <ph name="ACTION_NAME" /></translation>

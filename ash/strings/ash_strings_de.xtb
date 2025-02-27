@@ -554,6 +554,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="2885950158625301909">Weitere Informationen</translation>
 <translation id="2891209721153296020">„Auswahl aufheben“</translation>
 <translation id="2894949423239620203">Kabel beeinträchtigt eventuell die Leistung</translation>
+<translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2914580577416829331">Screenshots</translation>
 <translation id="2924416280450782352">Die Elemente können nicht angezeigt werden. Versuche, dieses Steuerfeld noch einmal zu öffnen.</translation>
 <translation id="292506373491190801">Von einem aktuellen Termin</translation>
@@ -1909,7 +1910,6 @@ Neuinstallation</translation>
 <translation id="735745346212279324">VPN-Verbindung getrennt</translation>
 <translation id="7360036564632145207">Möglicherweise kannst du die Leistung optimieren, indem du die Einstellungen für den Schutz vor Datenzugriff durch Peripheriegeräte änderst</translation>
 <translation id="736045644501761622">Hintergrund und Stil festlegen</translation>
-<translation id="7368041336688136012">Du musst mindestens 18 Jahre alt sein, um die Funktionen „Erstelle einen Überblick für mich“ und „Formuliere für mich“ nutzen und mithilfe von KI Bilder erstellen zu können.</translation>
 <translation id="7371404428569700291">Fenster aufzeichnen</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> von insgesamt <ph name="TOTAL_MEMORY" /> Arbeitsspeicher verfügbar</translation>
 <translation id="737315737514430195">Dies erlaubt den Mikrofonzugriff für alle Apps und Websites mit der Mikrofonberechtigung</translation>

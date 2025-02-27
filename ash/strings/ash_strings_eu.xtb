@@ -554,6 +554,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="2885950158625301909">Lortu informazio gehiago</translation>
 <translation id="2891209721153296020">"Desautatu"</translation>
 <translation id="2894949423239620203">Baliteke kableak errendimenduan eragina izatea</translation>
+<translation id="2902312830803030883">Ekintza gehiago</translation>
 <translation id="2914580577416829331">Pantaila-argazkiak</translation>
 <translation id="2924416280450782352">Ezin da erakutsi elementurik. Ireki berriro panel hau.</translation>
 <translation id="292506373491190801">Orain abian den gertaera batetik</translation>
@@ -1910,7 +1911,6 @@ Berriki instalatu da</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>
 <translation id="7360036564632145207">Gailu periferikoen datuetarako sarbidea babesteko ezarpenak aldatzen badituzu, errendimendua optimizatuko duzu</translation>
 <translation id="736045644501761622">Ezarri horma-papera eta estiloa</translation>
-<translation id="7368041336688136012">Gutxienez 18 urte izan behar dituzu Irakurtzeko laguntza eta Idazteko laguntza erabiltzeko, eta AAren bidez irudiak sortzeko.</translation>
 <translation id="7371404428569700291">Grabatu leihoa</translation>
 <translation id="7372069265635026568"><ph name="TOTAL_MEMORY" />-tik <ph name="AVAILABLE_MEMORY" /> daude erabilgarri</translation>
 <translation id="737315737514430195">Mikrofonoa erabiltzeko baimena aktibatzen du halakorik baduten aplikazio eta webgune guztietan</translation>

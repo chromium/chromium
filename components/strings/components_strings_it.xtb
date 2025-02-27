@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Carica la pagina più tardi</translation>
 <translation id="1010225406377140704">Contatta l'utente che ha inviato l'invito per chiedergli di inviarti un nuovo link</translation>
 <translation id="1011206368273183593">Preparazione file</translation>
+<translation id="1012264210825687872">Dopo aver esaminato l'ordine, devi accedere o creare un account <ph name="BNPL_ISSUER_NAME" />. Questo account verrà collegato automaticamente a Google Pay.</translation>
 <translation id="1014509239502131234">Annullamento del risultato in corso…</translation>
 <translation id="1015730422737071372">Fornisci ulteriori dettagli</translation>
 <translation id="1019413721762100891">Off</translation>
@@ -356,6 +357,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1593359183944365958">270 gradi</translation>
 <translation id="1594030484168838125">Scegli</translation>
 <translation id="1599199147673445968">Nuova carta? <ph name="BEGIN_LINK" />Inserisci i dati della carta<ph name="END_LINK" /></translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Bellezza e fitness</translation>
 <translation id="160851722280695521">Gioca a Dino in Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
@@ -690,6 +692,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2187317261103489799">Rileva (predefinita)</translation>
 <translation id="2188375229972301266">Perforatura multipla in basso</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
+<translation id="2198071643181968308">Scopri di più su <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Pulsante Non mi piace, premi Invio per aprire un modulo per inviare un feedback dettagliato sul motivo per cui non ti piace questo suggerimento</translation>
 <translation id="2202627062836089804">parte posteriore della carta</translation>
 <translation id="2204482073374652408">Aggiornamento completato.</translation>
@@ -2259,7 +2262,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5001526427543320409">Cookie di terze parti</translation>
 <translation id="5002932099480077015">Se questa opzione viene attivata, Chrome memorizza una copia della carta sul dispositivo per velocizzare la compilazione dei moduli.</translation>
 <translation id="5007392906805964215">Visualizza</translation>
-<translation id="500790844453430087">I gruppi di schede "<ph name="GROUP_TITLE_1" />" e "<ph name="GROUP_TITLE_2" />" non sono più disponibili</translation>
 <translation id="5011561501798487822">Lingua rilevata</translation>
 <translation id="5015510746216210676">Nome macchina:</translation>
 <translation id="5017554619425969104">Testo copiato</translation>
@@ -2312,6 +2314,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome deve accedere <ph name="PERMISSION" /> del dispositivo</translation>
 <translation id="510644072453496781">Cartone (fine)</translation>
+<translation id="5106648964679263509">Carta virtuale per <ph name="BNPL_ISSUER_NAME" /> compilata</translation>
 <translation id="5108881358339761672">Il sito non è sicuro</translation>
 <translation id="5109892411553231226">Gestisci metodi di pagamento</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2507,6 +2510,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
             <ph name="LIST_ITEM" />Informazioni inserite nei moduli
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Ordine inverso a faccia in su</translation>
+<translation id="5445340838622821110">Quando paghi a rate, viene inserito un numero di carta virtuale temporaneo. Questo numero è valido solo per questo acquisto. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Consenti a <ph name="SITE" /> di utilizzare le informazioni salvate su di te</translation>
 <translation id="5452270690849572955">Impossibile trovare la pagina <ph name="HOST_NAME" /></translation>
 <translation id="5452923259299906094">Paga con e-wallet e Pix</translation>
@@ -3325,6 +3329,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6917795328362592458">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, il Gestore delle password consiglia di controllare le password salvate.</translation>
 <translation id="6917873303492266709">Per partecipare e collaborare a gruppi di schede, nonché condividerli, apri le impostazioni e attiva Consenti l'accesso a Chrome</translation>
 <translation id="6921197121276419421">Installazione delle app web consentita</translation>
+<translation id="69238565902785824">Se mantieni collegato il tuo account, puoi pagare più velocemente con <ph name="BNPL_ISSUER_NAME" />, ma puoi scollegarlo dalla pagina <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Scegli se visualizzare i vantaggi della carta al momento del pagamento (si applicano i termini della banca)</translation>
 <translation id="6925267999184670015">B+ (America del Nord)</translation>
 <translation id="6926216138694948720">Body art</translation>
@@ -3390,6 +3395,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="701757816833614688">Formazione in arti visive e design</translation>
 <translation id="702275896380648118">Questo sito stabilisce i tuoi interessi per poi suggerire annunci ad altri siti. Questo sito riceve anche gli argomenti degli annunci da Chrome per mostrarti annunci più pertinenti.</translation>
 <translation id="7023162328967545559">Avviso dell'amministratore</translation>
+<translation id="7023765275461720661">Collegare l'account e pagare con <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7030164307377592766">modificare le impostazioni per la compilazione dei metodi di pagamento</translation>
 <translation id="7031646650991750659">Le app Google Play che hai installato</translation>
@@ -3612,6 +3618,7 @@ Ulteriori dettagli:
 <translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7416351320495623771">Gestisci password…</translation>
 <translation id="7416898721136759658">Prestiti, borse di studio e aiuti finanziari</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programmazione</translation>
 <translation id="7419091773564635591">Computer ed elettronica</translation>
 <translation id="7419106976560586862">Percorso profilo</translation>
@@ -3658,6 +3665,7 @@ Ulteriori dettagli:
 <translation id="7485085230273446323">Imprese e industria</translation>
 <translation id="7485870689360869515">Nessun dato trovato.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> controllerà la tua idoneità (questo non influirà sulla tua affidabilità creditizia). In caso di approvazione, <ph name="BNPL_ISSUER_NAME" /> ti fornirà dei piani di pagamento tra cui scegliere per completare l'acquisto.</translation>
 <translation id="7489392576326061356">Shampoo e balsami</translation>
 <translation id="7495528107193238112">Questi contenuti sono bloccati. Contatta il proprietario del sito per risolvere il problema.</translation>
 <translation id="749865518782565832">Lavori idraulici</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1009406586654360474">Hap "Menaxherin e fjalëkalimeve të Google" dhe shko te cilësimet. Zgjidh "Importo" dhe shto skedarin CSV që përmban fjalëkalimet e tua të eksportuara.</translation>
+<translation id="1010283278930414892">Nuk ka fjalëkalime të ruajtura në këtë pajisje</translation>
 <translation id="1011749477052068769">Zhvendose këtu</translation>
 <translation id="1014147525163127655">Nuk ka asnjë çelës kalimi për <ph name="ORIGIN" /> në këtë pajisje</translation>
 <translation id="1016498331642356377">Kërko me shpejtësi me zërin tënd. Për ta modifikuar këtë shkurtore, preke dhe mbaje të prekur.</translation>
@@ -142,6 +143,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1568636008098739136">Dëgjoje këtë faqe. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
 <translation id="1571041387761170095">Nuk ka fjalëkalime të dobëta ose të ripërdorura</translation>
 <translation id="1571304935088121812">Kopjo emrin e përdoruesit</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar në këtë pajisje}other{# fjalëkalime të komprometuara në këtë pajisje}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> artikuj të sugjeruar në listën e mëposhtme.</translation>
 <translation id="1598163867407640634">Përdor <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Kur është aktivizuar, të dhënat përdoren dhe ruhen në "Llogarinë tënde të Google". Kur është çaktivizuar, të dhënat ruhen vetëm në këtë pajisje.</translation>
@@ -163,6 +165,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1724977129262658800">Shkyçe për të modifikuar fjalëkalimin tënd</translation>
 <translation id="1726477445370128854">Mund të shfletosh dhe të kërkosh më shpejt kur Chrome ngarkon paraprakisht faqet që mendon se mund të vizitosh</translation>
 <translation id="1728803206919861584">Të ruhet çelësi i kalimit jashtë modalitetit "Të fshehtë"?</translation>
+<translation id="1732514748744806741">Nëse fjalëkalimet e tua janë komprometuar, do të të njoftojmë</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sajt ka dërguar së fundi shumë njoftime}other{# sajte kanë dërguar së fundi shumë njoftime}}</translation>
 <translation id="1749561566933687563">Sinkronizo faqeshënuesit e tu</translation>
 <translation id="1750238553597293878">Vazhdo të përdorësh fjalëkalimet në "Llogarinë tënde të Google"</translation>
@@ -1336,6 +1339,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7022756207310403729">Hape në shfletues</translation>
 <translation id="7025769836128625875">Kjo është një veçori eksperimentale nga IA-ja dhe nuk do të jetë gjithmonë e saktë. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
+<translation id="7053256416619638731">Forco fjalëkalimet e tua në këtë pajisje</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7054588988317389591">Të merren përshkrimet e imazheve?</translation>
 <translation id="7057969023583258980">Hap historikun e plotë të Chrome</translation>
@@ -1586,6 +1590,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8110024788458304985">Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të Chrome</translation>
 <translation id="8110087112193408731">Dëshiron të shfaqësh aktivitetin tënd të Chrome te "Mirëqenia dixhitale"?</translation>
 <translation id="8118117428362942925">Nëse ke nevojë për ndihmë, pyet prindin tënd (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Nuk ka fjalëkalime të komprometuara në këtë pajisje</translation>
 <translation id="8122623268651408616">Po renditen sipas më të rinjve</translation>
 <translation id="8127542551745560481">Modifiko faqen bazë</translation>
 <translation id="8130309322784422030">Informacionet e tua të ruajtura të identifikimit mund të jenë të papërditësuara</translation>

@@ -114,6 +114,7 @@
 <translation id="1445276840641906250">Усі ваші вкладки в одному вебпереглядачі</translation>
 <translation id="1450170672351507823">Стандартний захист увімкнено. Щоб посилити свою безпеку, активуйте покращений захист.</translation>
 <translation id="1455660774629812862">Не приховувати</translation>
+<translation id="1456545332132818232">Відгуки про товар <ph name="PRODUCT_NAME" />, <ph name="STARS" /> з <ph name="MAX_STARS" /> зірочок, на сайті <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Заощаджуйте час на введенні тексту</translation>
 <translation id="1466035273550360103">Немає відкритих вкладок</translation>
 <translation id="1469381646033328562">Обліковим записом керує один із твоїх батьків.
@@ -292,6 +293,7 @@
 <translation id="2199562093267256223">Групу буде видалено з усіх пристроїв, на яких ви ввійшли в обліковий запис <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Немає облік. записів</translation>
 <translation id="2214453882118345682">Здійснюйте покупки, перекладайте тексти й визначайте об’єкти навколо за допомогою камери.</translation>
+<translation id="2215819824168709130">Сховати картку "Відстежувати ціну"</translation>
 <translation id="2220529011494928058">Повідомити про проблему</translation>
 <translation id="2220887224562128152">Якщо запланувати видалення файлу, його не можна буде відновити.</translation>
 <translation id="2223461067862937305">Створити QR-код</translation>
@@ -458,6 +460,7 @@
 <translation id="2893168226686371498">Веб-переглядач за умовчанням</translation>
 <translation id="2894757982205307093">Нова вкладка в групі</translation>
 <translation id="2902312830803030883">Додаткові дії</translation>
+<translation id="2904788871580817212">Зниження ціни на відкритій вкладці з <ph name="PREVIOUS_PRICE" /> до <ph name="PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
 <translation id="2905479111267140204">У вас є повторно використані паролі (<ph name="NUMBER_OF_PASSWORDS" />), які можуть загрожувати вашій безпеці.</translation>
 <translation id="29153882450867370">Сховати опцію "Відстежувати ціну"</translation>
 <translation id="291754862089661335">Розмістіть QR-код або штрих-код у цій рамці</translation>
@@ -508,6 +511,7 @@
 <translation id="3138611310073113613">Скасувати вибір</translation>
 <translation id="3140825265190223781">Збережені паролі й ключі доступу</translation>
 <translation id="3143515551205905069">Скасувати синхронізацію</translation>
+<translation id="3144126448740580210">ГОТОВО</translation>
 <translation id="314837624430314508">Будьте в курсі останніх новин, оновлень відстежуваних цін тощо.</translation>
 <translation id="3157387275655328056">Додати в список читання</translation>
 <translation id="315778507796115851">Історія</translation>
@@ -642,6 +646,7 @@
 <translation id="3831560640878483188">Закрити попередження?</translation>
 <translation id="3832419617903252251">Пароль збережено лише на цьому пристрої</translation>
 <translation id="3838691874161539578">Перевірте збережені паролі, щоб посилити захист і подбати про свою безпеку в Інтернеті</translation>
+<translation id="3838985624086228724">Зниження ціни на відстежуваний товар із <ph name="PREVIOUS_PRICE" /> до <ph name="PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851938967634752633">Паролі для веб-сайтів <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і ще кількох облікових записів (<ph name="NUMBER_OF_ACCOUNTS" />) буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="3858860766373142691">Назва</translation>
@@ -760,6 +765,7 @@
 <translation id="4322394346347055525">Закрити інші вкладки</translation>
 <translation id="4324735664183300693">Увімкнути сповіщення</translation>
 <translation id="4326912346867677256">Щоб безпечно ввійти в обліковий запис, натисніть "Використати пароль".</translation>
+<translation id="4327017157997423717">Відстежувати ціну на товар <ph name="PRODUCT_NAME" /> (<ph name="PRICE" />) на сайті <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Мій диск</translation>
 <translation id="4331177082088332784">Ви можете змінити цей параметр у BEGIN_LINK налаштуваннях контенту END_LINK</translation>
 <translation id="4334428914252001502">1 непрочитана стаття.</translation>
@@ -943,6 +949,7 @@
 <translation id="5127538504377457572">Остання активність: <ph name="DAYS" /> дн. тому</translation>
 <translation id="5128788795241319992">Огляд нового меню</translation>
 <translation id="5132942445612118989">Синхронізуйте свої паролі, історію тощо на всіх пристроях</translation>
+<translation id="5141363746588976328">Сховати картку "Зниження цін на вкладках"</translation>
 <translation id="5145331760738811130">Закрити перемикач вкладок</translation>
 <translation id="5157638238828697074">Сталася помилка. Не вдалося відкрити додаток.</translation>
 <translation id="5163417375525818870">PDF-файли</translation>
@@ -994,6 +1001,7 @@
 <translation id="5352128922772839949">Зберегти файл</translation>
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="537853552771686272">Керуйте темами й сайтами, які вас цікавлять</translation>
+<translation id="5394975111793637642">Сховати картку "Вибрані відгуки про товари"</translation>
 <translation id="5395707839134961196">Сховати відомості про пошукову систему</translation>
 <translation id="5414763847370083940">Ви отримаєте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
 <translation id="5415289094036440596">Ключами доступу не можна ділитися</translation>
@@ -1221,7 +1229,6 @@
 <translation id="6295751040240588413">Недійсний псевдонім картки</translation>
 <translation id="629730747756840877">Обліковий запис</translation>
 <translation id="6301104306974789820">Отримувати сповіщення про змінення ціни</translation>
-<translation id="6310451064941005489">Параметри паролів</translation>
 <translation id="6316141353357700666">Виберіть потрібний пароль зі списку.</translation>
 <translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6337234675334993532">Шифрування</translation>
@@ -1235,6 +1242,7 @@
 <translation id="634878792104344809">Синхронізуйте паролі, історію й інші дані між усіма своїми пристроями</translation>
 <translation id="6351147166808964033">Відкрити перемикач вкладок</translation>
 <translation id="63519665078626091">Щоб скористатися додатком Web Inspector, підключіться до Safari на комп’ютері за допомогою кабелю й відкрийте пристрій iPad через меню "Розробка". Ви можете ввімкнути меню "Розробка" в розділі "Експертні" в налаштуваннях Safari на комп’ютері.</translation>
+<translation id="6355820183143562453">Сховати картку "Відстеження цін"</translation>
 <translation id="6355820205320395730">Ненадійні паролі можна легко вгадати, тому переконайтеся, що ваші є безпечними. <ph name="BEGIN_LINK" />Перегляньте інші поради щодо безпеки.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Підписатися на сайт <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Виберіть пошукову систему зі списку.</translation>
@@ -1345,6 +1353,7 @@
 <translation id="6722623263381062480">Отримані вкладки</translation>
 <translation id="6723740634201835758">В обліковому записі Google</translation>
 <translation id="672735642903863329">Отримайте доступ до закладок, паролів і інших даних на всіх пристроях.</translation>
+<translation id="6729493062119577923">Дії в спільній групі вкладок</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6746338529702829275">Перегляньте дані свого облікового запису</translation>
 <translation id="6755200887046212842">Керувати обліковими записами</translation>
@@ -1396,6 +1405,7 @@
 <translation id="6979737339423435258">Увесь час</translation>
 <translation id="6983306615164277634">Щоб змінити положення адресного рядка, натисніть його й утримуйте.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998251471716094661">Відстежуйте ціни на товари й отримуйте сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="7004032350256606903">Адміністратор вашої організації вимагає, щоб ви переглядали веб-сторінки конфіденційно.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Вибрати за умовчанням у налаштуваннях…</translation>
@@ -1533,6 +1543,7 @@
 <translation id="7638584964844754484">Неправильна парольна фраза</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Зламані паролі}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
 <translation id="7640669552036055091">Вкладки з пристрою Android</translation>
+<translation id="7642277834834046856">Зниження цін на вкладках</translation>
 <translation id="7646263789464975852">Меню → Налаштування → Перевірка безпеки</translation>
 <translation id="7646772052135772216">Синхронізація паролів не працює</translation>
 <translation id="764827086632467055">Натисніть "Веб-переглядач за умовчанням"</translation>
@@ -1573,6 +1584,7 @@
 <translation id="7812377703891978671">Щоб відкрити всю історію веб-перегляду, натисніть кнопку "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Завантаження</translation>
 <translation id="7815852444315004084">Сховати</translation>
+<translation id="7825973332242257878">Групи вкладок</translation>
 <translation id="7831876841288640403">Розташуйте адресний рядок там, де вам зручно.</translation>
 <translation id="7839994177130598711">Тепер учасники сімейної групи зможуть використовувати ваші ім’я користувача й пароль, коли входитимуть на сайті <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> за допомогою Google Менеджера паролів.</translation>
 <translation id="7840771868269352570">Вибраний елемент буде видалено.</translation>
