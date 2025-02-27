@@ -1044,6 +1044,18 @@
       <message name="IDS_CREATE_NEW_GROUP_ROW_TITLE" desc="Description text for an option in a bottom sheet to create a new tab group.">
         New tab group
       </message>
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The content description for the bottom sheet containing a list of tab groups.">
+        Select tab group
+      </message>
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_HALF_HEIGHT" desc="The content description for the bottom sheet containing a list of tab groups, when opened at half height.">
+        Tab group list, opened at half height
+      </message>
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_FULL_HEIGHT" desc="The content description for the bottom sheet containing a list of tab groups, when opened at full height.">
+        Tab group list, opened at full height
+      </message>
+      <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_CLOSED" desc="The accessibility announcement made when the bottom sheet containing a list of tab groups is closed.">
+        Tab group list closed
+      </message>
     </messages>
   </release>
 </grit>
