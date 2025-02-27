@@ -1661,7 +1661,14 @@ BASE_FEATURE(kLibaomUseChromeThreads,
 BASE_FEATURE(kD3D12VideoDecoder,
              "D3D12VideoDecoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+
+// Controls whether to enable D3D12 video encode accelerator.
+// Owner: zhibo1.wang@intel.com
+// Expiry: When enabled by default.
+BASE_FEATURE(kD3D12VideoEncodeAccelerator,
+             "D3D12VideoEncodeAccelerator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 // Allow MF-accelerated video encoding.
