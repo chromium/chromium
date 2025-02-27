@@ -115,6 +115,38 @@ class TestDocumentTargetApp extends CrLitElement {
 
 customElements.define('test-document-target-app', TestDocumentTargetApp);
 
+class TestListPaddingApp extends CrLitElement {
+  static get is() {
+    return 'test-list-padding-app';
+  }
+
+  static override get properties() {
+    return {
+      chunkSize: {type: Number},
+      listItems: {type: Array},
+    };
+  }
+
+  chunkSize: number = 0;
+  listItems: Array<{name: string}> = [];
+
+  override render() {
+    return html`
+    <cr-lazy-list
+        style="padding: 16px;" item-size="${SAMPLE_ITEM_HEIGHT}"
+        chunk-size="${this.chunkSize}"
+        .items="${this.listItems}" .scrollTarget="${this}"
+        .template=${(item: {name: string}, idx: number) => html`
+            <test-item name="${item.name}"
+                id="item-${idx}">
+            </test-item>
+          `}>
+    </lazy-list>`;
+  }
+}
+
+customElements.define('test-list-padding-app', TestListPaddingApp);
+
 suite('CrLazyListTest', () => {
   let lazyList: CrLazyListElement;
   let testApp: TestApp;
@@ -448,5 +480,43 @@ suite('CrLazyListTest', () => {
     const newButton = newItems[0]!.shadowRoot.querySelector('button');
     const active = getDeepActiveElement();
     assertEquals(active, newButton);
+  });
+
+  function setUpListPaddingApp(chunkSize: number = 0): TestListPaddingApp {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const testListPaddingApp =
+        document.createElement('test-list-padding-app') as TestListPaddingApp;
+    testListPaddingApp.style.display = 'block';
+    testListPaddingApp.style.overflowY = 'auto';
+    testListPaddingApp.style.overflowX = 'hidden';
+    testListPaddingApp.style.height = `${SAMPLE_AVAIL_HEIGHT}px`;
+    testListPaddingApp.style.maxHeight = `${SAMPLE_AVAIL_HEIGHT}px`;
+    testListPaddingApp.chunkSize = chunkSize;
+    document.body.appendChild(testListPaddingApp);
+    return testListPaddingApp;
+  }
+
+  test('List padding does not change item estimates', async () => {
+    const testListPaddingApp = setUpListPaddingApp();
+    testListPaddingApp.listItems = getTestItems(12);
+
+    lazyList = testListPaddingApp.shadowRoot.querySelector('cr-lazy-list')!;
+    assertTrue(!!lazyList);
+    await eventToPromise('viewport-filled', lazyList);
+    await microtasksFinished();
+    // Should render 6 items, because exactly 6 fit in the viewport.
+    assertEquals(6, queryItems().length);
+  });
+
+  test('List padding does not change item estimates', async () => {
+    const testListPaddingApp = setUpListPaddingApp(3);
+    testListPaddingApp.listItems = getTestItems(12);
+
+    lazyList = testListPaddingApp.shadowRoot.querySelector('cr-lazy-list')!;
+    assertTrue(!!lazyList);
+    await eventToPromise('viewport-filled', lazyList);
+    await microtasksFinished();
+    // Should render 6 items, because exactly 6 fit in the viewport.
+    assertEquals(6, queryItems().length);
   });
 });

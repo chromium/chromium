@@ -365,11 +365,18 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     assert(this.items.length > 0);
     const domItems = this.domItems();
     assert(domItems.length > 0);
+    const firstDomItem = domItems.at(0) as HTMLElement;
     const lastDomItem = domItems.at(-1) as HTMLElement;
     let totalHeight = lastDomItem.offsetTop + lastDomItem.offsetHeight;
     if (this.chunkSize > 0) {
       // Add the parent's offsetTop. The offsetParent will be the chunk div.
-      totalHeight += (lastDomItem.offsetParent as HTMLElement).offsetTop;
+      // Subtract the offsetTop of the first chunk div to avoid counting any
+      // padding.
+      totalHeight += (lastDomItem.offsetParent as HTMLElement).offsetTop -
+          (firstDomItem.offsetParent as HTMLElement).offsetTop;
+    } else {
+      // Subtract the offsetTop of the first item to avoid counting any padding.
+      totalHeight -= firstDomItem.offsetTop;
     }
     return totalHeight / domItems.length;
   }
