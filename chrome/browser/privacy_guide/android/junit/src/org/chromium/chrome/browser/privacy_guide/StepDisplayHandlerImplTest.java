@@ -47,6 +47,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
  * compressed if @ParameterizedTest from JUnit5 can be used.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class StepDisplayHandlerImplTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -92,38 +93,38 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
-    public void testDisplaySBStepWhenSBEnhanced() {
+    public void showsSafeBrowsingWhenSafeBrowsingEnhanced() {
         setSBState(SafeBrowsingState.ENHANCED_PROTECTION);
         assertTrue(mStepDisplayHandler.shouldDisplaySafeBrowsing());
     }
 
     @Test
-    public void testDisplaySBWhenSBStandard() {
+    public void showsSafeBrowsingWhenSafeBrowsingStandard() {
         setSBState(SafeBrowsingState.STANDARD_PROTECTION);
         assertTrue(mStepDisplayHandler.shouldDisplaySafeBrowsing());
     }
 
     @Test
-    public void testDontDisplaySBWhenSBUnsafe() {
+    public void hidesSafeBrowsingWhenSafeBrowsingUnsafe() {
         setSBState(SafeBrowsingState.NO_SAFE_BROWSING);
         assertFalse(mStepDisplayHandler.shouldDisplaySafeBrowsing());
     }
 
     @Test
-    public void testDontDisplayHistorySyncWhenNotSignedIn() {
+    public void hidesHistorySyncWhenNotSignedIn() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
         assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test
-    public void testDontDisplayHistorySyncWhenSyncDisabledByEnterprisePolicy() {
+    public void hidesHistorySyncWhenSyncDisabledByEnterprisePolicy() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(true);
         assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test
-    public void testDontDisplayHistorySyncWhenHistoryAndTabsSyncIsManagedByPolicy() {
+    public void hidesHistorySyncWhenHistoryAndTabsSyncIsManagedByPolicy() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(true);
@@ -132,7 +133,7 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
-    public void testDisplayHistorySyncWhenOnlyHistorySyncIsManagedByPolicy() {
+    public void showsHistorySyncWhenOnlyHistorySyncIsManagedByPolicy() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(true);
@@ -143,7 +144,7 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
-    public void testDontDisplayHistorySyncWhenHistoryAndTabsSyncIsManagedByCustodian() {
+    public void hidesHistorySyncWhenHistoryAndTabsSyncIsManagedByCustodian() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(false);
@@ -154,7 +155,7 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
-    public void testDisplayHistorySyncWhenOnlyHistorySyncIsManagedByCustodian() {
+    public void showsHistorySyncWhenOnlyHistorySyncIsManagedByCustodian() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(false);
@@ -165,46 +166,53 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
+    public void hidesCookiesWhenTrackingProtection3pcdEnabled() {
+        setCookieState(CookieControlsMode.BLOCK_THIRD_PARTY, true);
+        assertFalse(mStepDisplayHandler.shouldDisplayCookies());
+    }
+
+    @Test
     @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void testDontDisplayCookiesWhenCookiesAllAllowed() {
+    public void hidesCookiesWhenThirdPartyCookiesAllowed() {
         setCookieState(CookieControlsMode.OFF, true);
         assertFalse(mStepDisplayHandler.shouldDisplayCookies());
     }
 
     @Test
-    public void testDisplayCookiesWhenCookiesThirdPartyBlocked() {
+    public void showsCookiesWhenThirdPartyCookiesBlocked() {
         setCookieState(CookieControlsMode.BLOCK_THIRD_PARTY, true);
         assertTrue(mStepDisplayHandler.shouldDisplayCookies());
     }
 
     @Test
-    public void testDisplayCookiesWhenCookiesIncognitoBlocked() {
+    public void showsCookiesWhenThirdPartyCookiesBlockedInIncognito() {
         setCookieState(CookieControlsMode.INCOGNITO_ONLY, true);
         assertTrue(mStepDisplayHandler.shouldDisplayCookies());
     }
 
     @Test
-    public void testDontDisplayCookiesWhenCookiesAllBlocked() {
+    public void hidesCookiesWhenFirstPartyCookiesBlocked() {
         setCookieState(CookieControlsMode.BLOCK_THIRD_PARTY, false);
         assertFalse(mStepDisplayHandler.shouldDisplayCookies());
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void testShowDisplayCookiesWhenAlwaysBlock3pcsIncognitoEnabled() {
+    public void showsCookiesWhenThirdPartyCookiesAllowed() {
         setCookieState(CookieControlsMode.OFF, true);
         assertTrue(mStepDisplayHandler.shouldDisplayCookies());
     }
 
     @Test
-    public void testDisplayAdTopicsWhenShouldShowAdTopicsIsOn() {
+    public void showsAdTopicsWhenShouldShowAdTopicsIsOn() {
         when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
                 .thenReturn(true);
         assertTrue(mStepDisplayHandler.shouldDisplayAdTopics());
     }
 
     @Test
-    public void testDontDisplayAdTopicsWhenShouldShowAdTopicsIsOff() {
+    public void hidesAdTopicsWhenShouldShowAdTopicsIsOff() {
         when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
                 .thenReturn(false);
         assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
