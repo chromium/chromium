@@ -141,6 +141,10 @@ BASE_DECLARE_FEATURE(kEnhancedFieldsForSecOps);
 // Enables Enhanced Safe Browsing promos for iOS.
 BASE_DECLARE_FEATURE(kEnhancedSafeBrowsingPromo);
 
+// Adds support for enterprise deep scans initiated through the file system
+// access API.
+BASE_DECLARE_FEATURE(kEnterpriseFileSystemAccessDeepScan);
+
 // Enables showing an updated Password Reuse UI for enterprise users.
 BASE_DECLARE_FEATURE(kEnterprisePasswordReuseUiRefresh);
 
