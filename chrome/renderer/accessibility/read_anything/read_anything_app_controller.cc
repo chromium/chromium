@@ -730,7 +730,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
       model_.GetTreeFromId(model_.active_tree_id())->root()->GetLanguage();
   if (!language.empty()) {
     base::UmaHistogramSparse(
-        string_constants::kLanguageHistogramName,
+        "Accessibility.ReadAnything.Language",
         base::HashMetricName(language::ExtractBaseLanguage(language)));
   }
 
@@ -1045,12 +1045,9 @@ double ReadAnythingAppController::SpeechRate() const {
 }
 
 std::string ReadAnythingAppController::GetStoredVoice() const {
-  std::string lang = model_.base_language_code();
-  if (read_aloud_model_.voices().contains(lang)) {
-    return *read_aloud_model_.voices().FindString(lang);
-  }
-
-  return string_constants::kReadAnythingPlaceholderVoiceName;
+  const std::string* const voice =
+      read_aloud_model_.voices().FindString(model_.base_language_code());
+  return voice ? *voice : std::string();
 }
 
 std::vector<std::string> ReadAnythingAppController::GetLanguagesEnabledInPref()

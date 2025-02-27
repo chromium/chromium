@@ -15,20 +15,6 @@ const char kReadAnythingPlaceholderFontName[] = "Poppins";
 // invalid.
 const char kReadAnythingDefaultFont[] = "sans-serif";
 
-// Used as an initial value in prefs. This is not shown to the user.
-const char kReadAnythingPlaceholderVoiceName[] = "";
-
-const char kLetterSpacingHistogramName[] =
-    "Accessibility.ReadAnything.LetterSpacing";
-const char kLineSpacingHistogramName[] =
-    "Accessibility.ReadAnything.LineSpacing";
-const char kColorHistogramName[] = "Accessibility.ReadAnything.Color";
-const char kFontNameHistogramName[] = "Accessibility.ReadAnything.FontName";
-const char kFontScaleHistogramName[] = "Accessibility.ReadAnything.FontScale";
-const char kScrollEventHistogramName[] =
-    "Accessibility.ReadAnything.ScrollEvent";
 const char kEmptyStateHistogramName[] = "Accessibility.ReadAnything.EmptyState";
-const char kLanguageHistogramName[] = "Accessibility.ReadAnything.Language";
 
-const char kReadingModeName[] = "Reading mode";
 }  // namespace string_constants
