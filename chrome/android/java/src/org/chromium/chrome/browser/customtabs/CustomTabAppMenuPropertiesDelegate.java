@@ -225,12 +225,13 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                             || currentTab.isNativePage();
             boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
             boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
-            // TODO(crbug.com/380936306): Hide open in Chrome for blob url. Revisit once we
-            // understand when the URL can be blob. Flag guard to make it safe to merge.
+            // TODO(crbug.com/384992232): Hide open in Chrome for blob and data url until such view
+            //  intent can be handled.
             if ((ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
                             || ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT))
-                    && url.getScheme().equals(UrlConstants.BLOB_SCHEME)) {
+                    && (url.getScheme().equals(UrlConstants.BLOB_SCHEME)
+                            || url.getScheme().equals(UrlConstants.DATA_SCHEME))) {
                 openInChromeItemVisible = false;
             }
             if (isNativePage || isFileScheme || isContentScheme || url.isEmpty()) {
