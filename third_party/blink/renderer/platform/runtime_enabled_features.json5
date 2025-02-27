@@ -2931,6 +2931,10 @@
       status: "experimental",
     },
     {
+      name: "NavigateEventPopstateLimitations",
+      status: "stable",
+    },
+    {
       name: "NavigateEventSourceElement",
       status: "stable",
     },
