@@ -1020,13 +1020,9 @@ virtual/permission-element/external/wpt/html/semantics/permission-element/displa
 virtual/permission-element/external/wpt/html/semantics/permission-element/large-min-size-reftest.tentative.html
 virtual/permission-element/external/wpt/html/semantics/permission-element/unbounded-width-with-border-reftest.tentative.html
 virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html?include=from-treat-as-public
-virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
-virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html
 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html
-virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/popovers/popover-minimum-role.html
-virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/popovers/popover-open-overflow-display.tentative.html
 virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus.html
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
