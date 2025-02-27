@@ -3523,6 +3523,17 @@ Called by update_extension_permission.py.-->
 
 <!-- LINT.ThenChange(/extensions/browser/api/web_request/web_request_api.h:ProxyDecision) -->
 
+<!-- LINT.IfChange(WebRequestProxyDecisionDetailsForExtension) -->
+
+<enum name="WebRequest.ProxyDecisionDetailsForExtension">
+  <int value="0" label="kOnlyForWebRequest"/>
+  <int value="1" label="kOnlyForDeclarativeRequest"/>
+  <int value="2" label="kOnlyForWebView"/>
+  <int value="3" label="kForMixedReasons"/>
+</enum>
+
+<!-- LINT.ThenChange(/extensions/browser/api/web_request/web_request_api.cc:ProxyDecisionDetailsForExtension) -->
+
 <enum name="WebRequest.RequestHeader">
   <int value="0" label="kNone"/>
   <int value="1" label="kOther"/>

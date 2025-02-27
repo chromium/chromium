@@ -91,6 +91,24 @@ namespace web_request = api::web_request;
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProxyDecisionDetailsForExtension)
+enum class ProxyDecisionDetailsForExtension {
+  // Proxy will be used only for WebRequest* permissions.
+  kOnlyForWebRequest = 0,
+  // Proxy will be used only for Declarative{Web|Net}Request* permissions.
+  kOnlyForDeclarativeRequest = 1,
+  // Proxy will be used only for WebView permissions.
+  kOnlyForWebView = 2,
+  // Proxy will be used only for multiple kinds of permissions.
+  kForMixedReasons = 3,
+
+  kMaxValue = kForMixedReasons,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:WebRequestProxyDecisionDetailsForExtension)
+
 // Converts an HttpHeaders dictionary to a |name|, |value| pair. Returns
 // true if successful.
 bool FromHeaderDictionary(const base::Value::Dict& header_value,
@@ -425,6 +443,30 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
   base::UmaHistogramExactLinear(
       "Extensions.WebRequest.WebViewDependentExtensionCount",
       web_view_extension_count_, kMaxCount);
+
+  if (decision == ProxyDecision::kWillProxyForExtension &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest)) {
+    // Check if kWillProxyForExtension is decided only for one type of
+    // permissions, or mixed reasons.
+    ProxyDecisionDetailsForExtension details =
+        ProxyDecisionDetailsForExtension::kForMixedReasons;
+    if (web_request_extension_count_ == 0 &&
+        declarative_request_extension_count_ == 0) {
+      CHECK_NE(web_view_extension_count_, 0);
+      details = ProxyDecisionDetailsForExtension::kOnlyForWebView;
+    } else if (web_view_extension_count_ == 0 &&
+               declarative_request_extension_count_ == 0) {
+      CHECK_NE(web_request_extension_count_, 0);
+      details = ProxyDecisionDetailsForExtension::kOnlyForWebRequest;
+    } else if (web_request_extension_count_ == 0 &&
+               web_view_extension_count_ == 0) {
+      CHECK_NE(declarative_request_extension_count_, 0);
+      details = ProxyDecisionDetailsForExtension::kOnlyForDeclarativeRequest;
+    }
+    base::UmaHistogramEnumeration(
+        "Extensions.WebRequest.ProxyDecisionDetailsForExtension", details);
+  }
   return decision != ProxyDecision::kWillNotProxy;
 }
 

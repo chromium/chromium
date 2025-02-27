@@ -5270,6 +5270,18 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.WebRequest.ProxyDecisionDetailsForExtension"
+    enum="WebRequest.ProxyDecisionDetailsForExtension"
+    expires_after="2025-05-18">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the reason of kWillProxyForExtension in the ProxyDecision2. This is
+    recorded if and only if the reason is kWillProxyForExtension when a
+    URLLoaderFactory is created for renderers.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.WebRequest.RequestHeaderAdded"
     enum="WebRequest.RequestHeader" expires_after="never">
 <!-- expires-never: For monitoring Web Request API usage. -->
