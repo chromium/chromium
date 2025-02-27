@@ -1392,6 +1392,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 
   uint32_t private_footprint_total_kb = 0;
 #if BUILDFLAG(IS_ANDROID)
+  uint32_t private_swap_footprint_total_kb = 0;
+  uint32_t renderer_private_swap_footprint_total_kb = 0;
   uint32_t private_footprint_excluding_waived_total_kb = 0;
   uint32_t renderer_private_footprint_excluding_waived_total_kb = 0;
   uint32_t private_footprint_visible_or_higher_total_kb = 0;
@@ -1416,6 +1418,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
     uint32_t process_pmf_kb = pmd.os_dump().private_footprint_kb;
     private_footprint_total_kb += process_pmf_kb;
 #if BUILDFLAG(IS_ANDROID)
+    uint32_t process_swap_kb = pmd.os_dump().private_footprint_swap_kb;
+    private_swap_footprint_total_kb += process_swap_kb;
     bool is_waived_renderer = false;
     bool is_less_than_visible_renderer = false;
     auto renderer_binding_state_android =
@@ -1449,6 +1453,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
       case memory_instrumentation::mojom::ProcessType::RENDERER: {
         renderer_private_footprint_total_kb += process_pmf_kb;
 #if BUILDFLAG(IS_ANDROID)
+        renderer_private_swap_footprint_total_kb += process_swap_kb;
         renderer_private_footprint_excluding_waived_total_kb +=
             is_waived_renderer ? 0 : process_pmf_kb;
         renderer_private_footprint_visible_or_higher_total_kb +=
@@ -1601,6 +1606,13 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         "UMA.Pseudo.Memory.Total.PrivateMemoryFootprint",
         metrics::GetPseudoMetricsSample(
             static_cast<double>(private_footprint_total_kb) / kKiB));
+#if BUILDFLAG(IS_ANDROID)
+    UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateSwapFootprint",
+                                  private_swap_footprint_total_kb / kKiB);
+    UMA_HISTOGRAM_MEMORY_LARGE_MB(
+        "Memory.Total.RendererPrivateSwapFootprint",
+        renderer_private_swap_footprint_total_kb / kKiB);
+#endif  // BUILDFLAG(IS_ANDROID)
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererPrivateMemoryFootprint",
                                   renderer_private_footprint_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererMalloc",
