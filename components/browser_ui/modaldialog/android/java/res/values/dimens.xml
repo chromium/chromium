@@ -22,4 +22,5 @@ found in the LICENSE file.
     <dimen name="modal_dialog_max_width_major">@dimen/abc_dialog_min_width_major</dimen>
     <dimen name="modal_dialog_max_width_minor">@dimen/abc_dialog_min_width_minor</dimen>
     <dimen name="modal_dialog_button_group_padding">18dp</dimen>
+    <dimen name="modal_dialog_spinner_size">24dp</dimen>
 </resources>

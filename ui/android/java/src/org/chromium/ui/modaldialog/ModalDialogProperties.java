@@ -293,6 +293,7 @@ public class ModalDialogProperties {
      * awaiting a pending result. Only one of the positive or negative buttons should have the
      * loading state applied with the spinner active.
      */
+    @Deprecated
     public static final WritableBooleanPropertyKey POSITIVE_BUTTON_LOADING =
             new WritableBooleanPropertyKey();
 
@@ -301,6 +302,7 @@ public class ModalDialogProperties {
      * awaiting a pending result. Only one of the positive or negative buttons should have the
      * loading state applied with the spinner active.
      */
+    @Deprecated
     public static final WritableBooleanPropertyKey NEGATIVE_BUTTON_LOADING =
             new WritableBooleanPropertyKey();
 
