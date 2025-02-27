@@ -50,8 +50,8 @@ export class PrivacySandboxDialogLearnMoreElement extends PolymerElement {
 
   private scrollIntoCollapseElement_(element: HTMLElement) {
     const computedStyle = window.getComputedStyle(element);
-    const duration = parseFloat(
-        computedStyle.getPropertyValue('--iron-collapse-transition-duration'));
+    const duration =
+        parseFloat(computedStyle.getPropertyValue('--collapse-duration'));
     // Wait for collapse section transition to complete 70%.
     setTimeout(() => {
       // ...and scroll the content area up to make the section content
