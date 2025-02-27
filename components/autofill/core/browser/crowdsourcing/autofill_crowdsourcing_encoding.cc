@@ -632,24 +632,20 @@ GetSuggestionsMapFromResponse(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::test::kAutofillOverridePredictions)) {
-    auto maybe_insert_overrides =
-        [&fields_suggestions](const base::FeatureParam<std::string>& param,
-                              OverrideFormat format) {
-          if (std::string param_value = param.Get(); !param_value.empty()) {
-            InsertParsedOverrides(
-                ParseServerPredictionOverrides(param_value, format),
-                fields_suggestions);
-          }
-        };
-    maybe_insert_overrides(
-        features::test::kAutofillOverridePredictionsSpecification,
-        OverrideFormat::kSpec);
-    maybe_insert_overrides(
-        features::test::
-            kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification,
-        OverrideFormat::kSpec);
-    maybe_insert_overrides(features::test::kAutofillOverridePredictionsJson,
-                           OverrideFormat::kJson);
+    if (std::string param =
+            features::test::kAutofillOverridePredictionsSpecification.Get();
+        !param.empty()) {
+      InsertParsedOverrides(
+          ParseServerPredictionOverrides(param, OverrideFormat::kSpec),
+          fields_suggestions);
+    }
+    if (std::string param =
+            features::test::kAutofillOverridePredictionsJson.Get();
+        !param.empty()) {
+      InsertParsedOverrides(
+          ParseServerPredictionOverrides(param, OverrideFormat::kJson),
+          fields_suggestions);
+    }
   }
 #endif
   return fields_suggestions;

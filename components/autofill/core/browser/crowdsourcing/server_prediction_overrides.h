@@ -24,9 +24,9 @@ using ServerPredictionOverrides = base::flat_map<
 
 enum class OverrideFormat {
   // Overrides are strings of the format:
-  // override1-override2-override3-...
+  //   override1-override2-override3-...
   // where each override has the following structure:
-  // formsignature_fieldsignature_typeprediction1_typeprediction2_...
+  //   formsignature_fieldsignature_typeprediction1_typeprediction2_...
   //
   // Here formsignature is the decimal representation of a `FormSignature`,
   // fieldsignature is a decimal representation of a `FieldSignature` and
@@ -99,14 +99,14 @@ enum class OverrideFormat {
   //   10011880710453506489 has its type specification manually overridden to 3.
   //   The second field and all other fields that follow will have whatever type
   //   the server (or the local heuristics) prescribe.
-  // Example 6: Overriding formsignatures and alternativeformsignatures at the
-  // same time:
-  // --enable-features=AutofillOverridePredictions:spec/
-  //     10011880710453506489_1654523497_3/alternative_signature_spec/
-  //     10488510731126445485_4130863203_100
-  // Will override field 1654523497 in the form with formsignature
-  // 10011880710453506489 to 3 and field 4130863203 in the form with
-  // alternativeformsignature 10488510731126445485 to 100.
+  //
+  // Example 6: Overriding form signatures and alternative form signatures
+  // Specification:
+  //     10011880710453506489_1654523497_3-10488510731126445485_4130863203_100
+  // Effect:
+  //   Will override field 1654523497 in the form with form signature
+  //   10011880710453506489 to 3 and field 4130863203 in the form with
+  //   alternative form signature 10488510731126445485 to 100.
   kSpec,
   // Overrides are given in a JSON format.
   //
