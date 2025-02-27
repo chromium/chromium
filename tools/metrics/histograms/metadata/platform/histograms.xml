@@ -2074,6 +2074,70 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.SafetyService.ClassifySafetyLatency.{Ruleset}"
+    units="ms" expires_after="2025-11-19">
+  <owner>chensa@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Round-trip latency (milliseconds) for safety filtering using ruleset
+    {Ruleset}. Measures the time from request initiation to final safety verdict
+    from Hades. Includes platform-chrome-arcvm mojo communication,
+    ArcSafetyService (mojo-proxy) to Hades, and Hades inference. This is
+    recorded when SafetyServiceManager gets classify safety request, but only
+    for successful round trips with explicit pass/blocked verdicts.
+  </summary>
+  <token key="Ruleset">
+    <variant name="Coral"/>
+    <variant name="Generic"/>
+    <variant name="Mantis"/>
+    <variant name="MantisGeneratedRegion"/>
+    <variant name="MantisGeneratedRegionOutpainting"/>
+    <variant name="MantisInputImage"/>
+    <variant name="MantisOutputImage"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.SafetyService.ClassifySafetyResult.{Ruleset}"
+    enum="SafetyServiceVerdict" expires_after="2025-11-19">
+  <owner>chensa@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The safety verdict for ruleset {Ruleset}. This is recorded when
+    SafetyServiceManager gets classify safety request.
+  </summary>
+  <token key="Ruleset">
+    <variant name="Coral"/>
+    <variant name="Generic"/>
+    <variant name="Mantis"/>
+    <variant name="MantisGeneratedRegion"/>
+    <variant name="MantisGeneratedRegionOutpainting"/>
+    <variant name="MantisInputImage"/>
+    <variant name="MantisOutputImage"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.SafetyService.Error.GetCloudSafetySession"
+    enum="SafetyServiceGetCloudSessionResult" expires_after="2025-11-19">
+  <owner>chensa@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Whether is succeed or failed to get an cloud session from CrosSafetyService
+    (in chrome). Captured during SafetyServiceManager initialization, prior to
+    safety classification requests.
+  </summary>
+</histogram>
+
+<histogram name="Platform.SafetyService.Error.GetOnDeviceSafetySession"
+    enum="SafetyServiceGetOnDeviceSessionResult" expires_after="2025-11-19">
+  <owner>chensa@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Whether is succeed or failed to get an on-device session from
+    CrosSafetyService (in chrome). Captured during SafetyServiceManager
+    initialization, prior to safety classification requests.
+  </summary>
+</histogram>
+
 <histogram name="Platform.SATA.AvailableReservedSpace" units="%"
     expires_after="2025-07-16">
   <owner>asavery@chromium.org</owner>

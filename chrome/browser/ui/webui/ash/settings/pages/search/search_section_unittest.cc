@@ -18,16 +18,23 @@
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
+#include "chrome/browser/ash/lobster/mock_lobster_system_state_provider.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/components/magic_boost/test/fake_magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/test_web_ui_data_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,14 +67,14 @@ class SearchSectionTest : public ChromeAshTestBase {
   ash::settings::SearchTagRegistry* search_tag_registry() {
     return &search_tag_registry_;
   }
-  std::unique_ptr<SearchSection> search_section_;
 
  protected:
-  void SetUp() override { ChromeAshTestBase::SetUp(); }
   void TearDown() override {
     search_section_.reset();
     ChromeAshTestBase::TearDown();
   }
+
+  std::unique_ptr<SearchSection> search_section_;
 
  private:
   std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
@@ -169,6 +176,81 @@ TEST_F(SearchSectionTest,
             search_tag_registry()->GetTagMetadata(quick_answers_result_id))
       << "Quick Answers tag should not be found as the current feature type is "
          "set to kHmr";
+}
+
+class SearchSectionTestWithLobsterEnabled : public SearchSectionTest {
+ public:
+  void SetUp() override {
+    SearchSectionTest::SetUp();
+    feature_list_.InitWithFeatures(
+        /*enable_features=*/{ash::features::kLobster,
+                             ash::features::kFeatureManagementLobster},
+        /*disable_features=*/{});
+    AnnotateAccount();
+
+    html_source_ = content::TestWebUIDataSource::Create("test-search-section");
+    search_section_ =
+        std::make_unique<SearchSection>(profile(), search_tag_registry());
+  }
+
+  void TearDown() override {
+    magic_boost_state_.RemoveObserver(search_section_.get());
+    SearchSectionTest::TearDown();
+  }
+
+  content::TestWebUIDataSource* html_source() { return html_source_.get(); }
+
+  void SetUpSystemProviderForLobsterService(
+      const ash::LobsterSystemState& system_state) {
+    std::unique_ptr<MockLobsterSystemStateProvider> mock_system_state_provider =
+        std::make_unique<MockLobsterSystemStateProvider>();
+    ON_CALL(*mock_system_state_provider, GetSystemState)
+        .WillByDefault(testing::Return(system_state));
+    LobsterServiceProvider::GetForProfile(profile())
+        ->set_lobster_system_state_provider_for_testing(
+            std::move(mock_system_state_provider));
+  }
+
+ private:
+  void AnnotateAccount() {
+    auto* user = fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user->GetAccountId());
+    ash::AnnotatedAccountId::Set(profile(), user->GetAccountId());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  std::unique_ptr<content::TestWebUIDataSource> html_source_;
+  chromeos::test::FakeMagicBoostState magic_boost_state_;
+};
+
+TEST_F(SearchSectionTestWithLobsterEnabled,
+       DoesNotIncludeLobsterSettingsIfLobsterIsHardBlocked) {
+  SetUpSystemProviderForLobsterService(ash::LobsterSystemState(
+      ash::LobsterStatus::kBlocked, /*failed_checks=*/{
+          ash::LobsterSystemCheck::kInvalidAccountCapabilities}));
+
+  search_section_->AddLoadTimeData(html_source()->GetWebUIDataSource());
+
+  EXPECT_FALSE(html_source()
+                   ->GetLocalizedStrings()
+                   ->FindBool("isLobsterSettingsToggleVisible")
+                   .value());
+}
+
+TEST_F(SearchSectionTestWithLobsterEnabled,
+       IncludeLobsterSettingsIfLobsterIsSoftBlocked) {
+  SetUpSystemProviderForLobsterService(ash::LobsterSystemState(
+      ash::LobsterStatus::kBlocked,
+      /*failed_checks=*/{ash::LobsterSystemCheck::kSettingsOff}));
+
+  search_section_->AddLoadTimeData(html_source()->GetWebUIDataSource());
+
+  EXPECT_TRUE(html_source()
+                  ->GetLocalizedStrings()
+                  ->FindBool("isLobsterSettingsToggleVisible")
+                  .value());
 }
 
 class SearchSectionTestWithScannerEnabled : public ChromeAshTestBase {

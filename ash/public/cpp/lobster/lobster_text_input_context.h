@@ -19,6 +19,7 @@ struct ASH_PUBLIC_EXPORT LobsterTextInputContext {
   LobsterTextInputContext(ui::TextInputType text_input_type,
                           const gfx::Rect& caret_bounds,
                           bool can_insert_image);
+  LobsterTextInputContext();
   ~LobsterTextInputContext();
 };
 

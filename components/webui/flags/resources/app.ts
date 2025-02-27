@@ -406,7 +406,14 @@ export class FlagsAppElement extends CrLitElement {
       return;
     }
 
-    const experiment = this.shadowRoot.querySelector(window.location.hash);
+    let experiment = null;
+    try {
+      experiment = this.shadowRoot.querySelector(window.location.hash);
+    } catch {
+      // Remove invalid hash from the URL.
+      window.history.replaceState(null, '', window.location.origin);
+      return;
+    }
     if (!experiment || experiment.classList.contains('referenced')) {
       return;
     }

@@ -115,20 +115,21 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
   // `install_url` is a required field for all other signatures.
   CHECK(install_url.has_value());
 
-  if (!ValidateInstallUrlMaybeThrow(install_url.value(), script_state)) {
-    // TODO(crbug.com/398887844): Standardize error handling on blink side.
-    return ScriptPromise<WebInstallResult>();
+  if (!IsInstallUrlValid(install_url.value())) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), kInvalidInstallUrlErrorDetails));
+    return promise;
   }
   mojom::blink::InstallOptionsPtr options = mojom::blink::InstallOptions::New();
   options->install_url = KURL(install_url.value());
 
   // `navigator.install(install_url, manifest_id)` was called.
   if (manifest_id) {
-    KURL resolved_id = ValidateAndResolveManifestIdMaybeThrow(
-        manifest_id.value(), script_state);
+    KURL resolved_id = ValidateAndResolveManifestId(manifest_id.value());
     if (!resolved_id.IsValid()) {
-      // TODO(crbug.com/398887844): Standardize error handling on blink side.
-      return ScriptPromise<WebInstallResult>();
+      resolver->Reject(V8ThrowException::CreateTypeError(
+          script_state->GetIsolate(), kInvalidManifestIdErrorDetails));
+      return promise;
     }
     options->manifest_id = resolved_id;
   }
@@ -213,37 +214,23 @@ bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
   return true;
 }
 
-bool NavigatorWebInstall::ValidateInstallUrlMaybeThrow(
-    const String& install_url,
-    ScriptState* script_state) {
+bool NavigatorWebInstall::IsInstallUrlValid(const String& install_url) {
   // This covers edge cases such as the empty string, undefined, null, other
   // JavaScript types (eg. Number, Boolean), and general invalid strings
   // (strings that are not valid URLs).
-  if (install_url.empty() || !KURL(install_url).IsValid()) {
-    auto error = V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), kInvalidInstallUrlErrorDetails);
-    V8ThrowException::ThrowException(script_state->GetIsolate(), error);
-
-    return false;
-  }
-
-  return true;
+  return !install_url.empty() && KURL(install_url).IsValid();
 }
 
-KURL NavigatorWebInstall::ValidateAndResolveManifestIdMaybeThrow(
-    const String& manifest_id,
-    ScriptState* script_state) {
+KURL NavigatorWebInstall::ValidateAndResolveManifestId(
+    const String& manifest_id) {
   // TODO(crbug.com/397043069): Verify manifest id resolution on blink side.
   // Ensure that edge cases are handled correctly as well.
-  auto error = V8ThrowException::CreateTypeError(
-      script_state->GetIsolate(), kInvalidManifestIdErrorDetails);
 
   // Manifest id validation is different than install url, since
   // `manifest_id` alone doesn't have to be a valid URL, so we can only check
   // for empty, undefined, and null arguments to the API at this point.
   if (manifest_id.empty() || manifest_id == "null" ||
       manifest_id == "undefined") {
-    V8ThrowException::ThrowException(script_state->GetIsolate(), error);
     return KURL();
   }
 
@@ -257,12 +244,7 @@ KURL NavigatorWebInstall::ValidateAndResolveManifestIdMaybeThrow(
   KURL origin = KURL(SecurityOrigin::Create(document_url)->ToString());
 
   resolved = KURL(origin, manifest_id);
-  if (!resolved.IsValid()) {
-    V8ThrowException::ThrowException(script_state->GetIsolate(), error);
-    return KURL();
-  }
-
-  return resolved;
+  return resolved.IsValid() ? resolved : KURL();
 }
 
 }  // namespace blink

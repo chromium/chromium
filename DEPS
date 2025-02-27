@@ -276,7 +276,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '55e41e278a433e762579b9fa6daadd41f4977bb9',
+  'src_internal_revision': '081fa4d1f13e8002d4c40f597deedeaf1dcfc2bc',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -284,7 +284,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '59066340f067c51ffd1004d2044b36d7fc0e00cd',
+  'v8_revision': '4b6b84633b5e0d8cd8dd65243a698198e2ed1ccd',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '8e114c5563652f34c14d15c936896635cd97d1d2',
+  'devtools_frontend_revision': '7900968f79215af5abd90b58fa8974bae4f0112a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '0677e9a1aea6ebe8028ffed753907ba3fddf844f',
+    'b808ba42b561f3ca32f458aa0315e6b52fa355f0',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1841,7 +1841,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/chromium/content_analysis_sdk.git' + '@' + '9a408736204513e0e95dd2ab3c08de0d95963efc',
 
   'src/third_party/dav1d/libdav1d':
-    Var('chromium_git') + '/external/github.com/videolan/dav1d.git' + '@' + '42b2b24fb8819f1ed3643aa9cf2a62f03868e3aa',
+    Var('chromium_git') + '/external/github.com/videolan/dav1d.git' + '@' + '7d4b789f55389dad1820d6caf6a650038dad06e2',
 
   'src/third_party/dawn':
     Var('dawn_git') + '/dawn.git' + '@' +  Var('dawn_revision'),
@@ -2807,7 +2807,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'ce91fc1d085136f9c7ddca684d1764689d49b337',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '7ef658b5f016f7a1824328915d0118da4784a3ee',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
@@ -4552,7 +4552,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '2c626dd3d8843ae86fb0d0a72326550594757ccd',
+        'e727a7e37060019cdabbeb15dded5155434734c7',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

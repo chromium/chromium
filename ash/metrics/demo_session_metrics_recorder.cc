@@ -42,6 +42,9 @@ DemoSessionMetricsRecorder* g_demo_session_metrics_recorder = nullptr;
 // How often to sample.
 constexpr auto kSamplePeriod = base::Seconds(1);
 
+// Minimum app usage time.
+constexpr base::TimeDelta kMinimumAppUsageTime = base::Seconds(1);
+
 // Redefining chromeos::preinstalled_web_apps::kHelpAppId as ash can't depend on
 // chrome.
 constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
@@ -53,6 +56,25 @@ constexpr char kSetupDemoAccountRequestResult[] =
     "DemoMode.SignedIn.Request.SetupResult";
 constexpr char kCleanupDemoAccountRequestResult[] =
     "DemoMode.SignedIn.Request.CleanupResult";
+constexpr char kAppUsageTimeHistogramPrefix[] = "DemoMode.AppUsageTime.";
+
+struct AppHistogramSuffix {
+  const DemoModeApp app_type;
+  const std::string name;
+};
+
+// Apps in Demo mode have the highest launched count. Note that
+// `DemoModeApp::kOtherChromeApp` includes the demo mode SWA. Not recording this
+// one until we exclude it from `DemoModeApp::kOtherChromeApp`.
+const AppHistogramSuffix kAppsHistogramSuffix[] = {
+    {DemoModeApp::kGooglePhotos, "GooglePhoto"},
+    {DemoModeApp::kStardewValley, "StardewValley"},
+    {DemoModeApp::kMinecraft, "Minecraft"},
+    {DemoModeApp::kPlayStore, "PlayStore"},
+    {DemoModeApp::kOtherArcApp, "OtherArcApp"},
+    {DemoModeApp::kBrowser, "Browser"},
+    {DemoModeApp::kYoutubePwa, "YouTubePwa"},
+};
 
 // How many periods to wait for user activity before discarding samples.
 // This timeout is low because demo sessions tend to be very short. If we
@@ -142,6 +164,15 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
   }
 
   return DemoModeApp::kOtherChromeApp;
+}
+
+const std::string GetAppHistogramSuffix(DemoModeApp app_type) {
+  const AppHistogramSuffix* suffix = std::ranges::find(
+      kAppsHistogramSuffix, app_type, &AppHistogramSuffix::app_type);
+  if (suffix == std::end(kAppsHistogramSuffix)) {
+    return std::string();
+  }
+  return suffix->name;
 }
 
 // Maps an ARC++ package name to a DemoModeApp value for metrics.
@@ -359,6 +390,9 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
 
 // Observes changes in a window's ArcPackageName property for the purpose of
 // logging of unique launches of ARC apps.
+// TODO(crbug.com/393457908): Remove this.
+// `UniqueAppsLaunchedArcPackageNameObserver` is a singleton and cannot observe
+// multiple arc package launch at the same time.
 class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
     : public aura::WindowObserver {
  public:
@@ -464,8 +498,8 @@ DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
 }
 
 DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
-  // TODO(mlcui): Investigate whether the metrics emitted here are gracefully
-  // handled during session / device shutdown.
+  // TODO(crbug.com/393457908): Fix under reported metric record during
+  // shutdown.
 
   // Report any remaining stored samples on exit. (If the user went idle, there
   // won't be any.)
@@ -485,6 +519,7 @@ DemoSessionMetricsRecorder::~DemoSessionMetricsRecorder() {
   g_demo_session_metrics_recorder = nullptr;
 }
 
+// TODO(crbug.com/393457908): This metric is under reported.
 void DemoSessionMetricsRecorder::RecordAppLaunch(const std::string& id,
                                                  chromeos::AppType app_type) {
   if (!ShouldRecordAppLaunch(id)) {
@@ -623,6 +658,40 @@ void DemoSessionMetricsRecorder::ReportDemoAccountSetupResult(
 void DemoSessionMetricsRecorder::ReportDemoAccountCleanupResult(
     DemoAccountRequestResultCode result_code) {
   base::UmaHistogramEnumeration(kCleanupDemoAccountRequestResult, result_code);
+}
+void DemoSessionMetricsRecorder::OnAppCreation(
+    const std::string& app_id_or_package,
+    const bool is_arc_app) {
+  const DemoModeApp app = is_arc_app ? GetAppFromPackageName(app_id_or_package)
+                                     : GetAppFromAppId(app_id_or_package);
+  if (GetAppHistogramSuffix(app).empty()) {
+    return;
+  }
+  apps_start_time_[app] = base::TimeTicks::Now();
+}
+
+void DemoSessionMetricsRecorder::OnAppDestruction(
+    const std::string& app_id_or_package,
+    const bool is_arc_app) {
+  const DemoModeApp app = is_arc_app ? GetAppFromPackageName(app_id_or_package)
+                                     : GetAppFromAppId(app_id_or_package);
+  if (!apps_start_time_.contains(app)) {
+    return;
+  }
+
+  const auto duration = base::TimeTicks::Now() - apps_start_time_[app];
+  apps_start_time_.erase(app);
+
+  // Some Arc app gets quickly created and destructed after `OnAppDestruction`
+  // get called. Ignore reporting if the duration is too short.
+  if (duration < kMinimumAppUsageTime) {
+    return;
+  }
+
+  const std::string histogram_suffix = GetAppHistogramSuffix(app);
+  ReportHistogramLongSecondsTimes100(
+      base::StrCat({kAppUsageTimeHistogramPrefix, histogram_suffix}).c_str(),
+      duration);
 }
 
 void DemoSessionMetricsRecorder::StartRecording() {

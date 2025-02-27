@@ -376,8 +376,9 @@ void AILanguageModel::MultimodalResponder::OnResponse(
 
 void AILanguageModel::MultimodalResponder::OnComplete(
     on_device_model::mojom::ResponseSummaryPtr summary) {
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
   responder_->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
-      summary->input_token_count + summary->output_token_count));
+      /*fake_input_token_count=*/999 + summary->output_token_count));
 }
 
 void AILanguageModel::Prompt(
@@ -396,15 +397,21 @@ void AILanguageModel::Prompt(
   // This lacks history integration, token counting, overflow handling, etc.
   if (base::FeatureList::IsEnabled(
           blink::features::kAIPromptAPIMultimodalInput)) {
-    auto options = on_device_model::mojom::InputOptions::New();
-    options->input = std::move(input);
-    options->top_k = 3;
-    options->temperature = 1;
+    auto append_options = on_device_model::mojom::AppendOptions::New();
+    append_options->input = std::move(input);
+    append_options->max_tokens = context_->max_tokens();
+    session_->GetSession().Append(std::move(append_options), {});
     auto responder =
         std::make_unique<MultimodalResponder>(std::move(pending_responder));
     auto remote = responder->BindRemote();
     multimodal_responders_.push_back(std::move(responder));
-    session_->GetSession().Execute(std::move(options), std::move(remote));
+    auto generate_options = on_device_model::mojom::GenerateOptions::New();
+    const optimization_guide::SamplingParams sampling_param =
+        session_->GetSamplingParams();
+    generate_options->top_k = sampling_param.top_k;
+    generate_options->temperature = sampling_param.temperature;
+    session_->GetSession().Generate(std::move(generate_options),
+                                    std::move(remote));
     return;
   }
 

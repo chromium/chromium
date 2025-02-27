@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_
 #define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
@@ -69,7 +70,12 @@ class LobsterService : public KeyedService, public LobsterEventSink {
   // Relevant input events
   void OnFocus(int context_id) override;
 
+  bool CanShowFeatureSettingsToggle();
+
   bool OverrideLobsterImageProviderForTesting();
+
+  void set_lobster_system_state_provider_for_testing(
+      std::unique_ptr<LobsterSystemStateProvider> provider);
 
  private:
   // Not owned by this class
@@ -84,7 +90,7 @@ class LobsterService : public KeyedService, public LobsterEventSink {
   std::unique_ptr<LobsterImageFetcher> image_fetcher_;
   std::unique_ptr<LobsterCandidateResizer> resizer_;
 
-  LobsterSystemStateProvider system_state_provider_;
+  std::unique_ptr<LobsterSystemStateProvider> system_state_provider_;
 
   ash::LobsterBubbleCoordinator bubble_coordinator_;
 

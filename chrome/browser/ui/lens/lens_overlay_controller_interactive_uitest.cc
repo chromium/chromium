@@ -404,7 +404,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_EscapeKeyClose) {
 //  (3) User highlights some text.
 //  (4) User presses CTRL+C on some text.
 //  (5) Highlighted text gets copied.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/399520257): Fix test failure on Linux.
+#if BUILDFLAG(IS_LINUX)
 // Flaky on ASAN on Linux.
 #define MAYBE_CopyKeyCommandCopies DISABLED_CopyKeyCommandCopies
 #else

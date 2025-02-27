@@ -5,6 +5,7 @@
 #ifndef ASH_METRICS_DEMO_SESSION_METRICS_RECORDER_H_
 #define ASH_METRICS_DEMO_SESSION_METRICS_RECORDER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -159,6 +160,14 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   // Records the result of demo account cleanup request.
   void ReportDemoAccountCleanupResult(DemoAccountRequestResultCode result_code);
 
+  // Called by DemoModeWindowCloser::OnInstanceUpdate:
+  // Passing `app_id_or_package` instead of `aura::Window` here because app
+  // information set in window property might now be ready on app creation.
+  void OnAppCreation(const std::string& app_id_or_package,
+                     const bool is_arc_app);
+  void OnAppDestruction(const std::string& app_id_or_package,
+                        const bool is_arc_app);
+
  private:
   // Starts the timer for periodic sampling.
   void StartRecording();
@@ -231,6 +240,9 @@ class ASH_EXPORT DemoSessionMetricsRecorder
 
   std::unique_ptr<ActiveAppArcPackageNameObserver>
       active_app_arc_package_name_observer_;
+
+  // Tracks the app start time for app defined in `kAppsHistogramSuffix`.
+  std::map<DemoModeApp, base::TimeTicks> apps_start_time_;
 };
 
 }  // namespace ash

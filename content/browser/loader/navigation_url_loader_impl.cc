@@ -1502,6 +1502,10 @@ void NavigationURLLoaderImpl::ParseHeaders(
 
   // If the network service is running in process, skip unnecessary thread hops.
   if (IsInProcessNetworkService() && !head->parsed_headers) {
+    base::ScopedUmaHistogramTimer in_process(
+        "Navigation.URLLoader.ParseHeaders.InProcessTime",
+        base::ScopedUmaHistogramTimer::ScopedHistogramTiming::
+            kMicrosecondTimes);
     head->parsed_headers =
         network::PopulateParsedHeaders(head->headers.get(), url);
   }
@@ -1519,13 +1523,18 @@ void NavigationURLLoaderImpl::ParseHeaders(
     // In debug mode, force reparsing the headers and check that they match.
     auto check = [](base::OnceClosure continuation,
                     network::mojom::URLResponseHead* head, GURL url,
+                    base::TimeTicks call_time,
                     network::mojom::ParsedHeadersPtr parsed_headers) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Navigation.URLLoader.ParseHeaders.RoundTripTimeForVerify",
+          base::TimeTicks::Now() - call_time);
       CheckParsedHeadersEquals(parsed_headers, head->parsed_headers, url);
       std::move(continuation).Run();
     };
     GetNetworkService()->ParseHeaders(
         url, head->headers,
-        base::BindOnce(check, std::move(continuation), head, url));
+        base::BindOnce(check, std::move(continuation), head, url,
+                       base::TimeTicks::Now()));
 #else   // NDEBUG
     std::move(continuation).Run();
 #endif  // NDEBUG
@@ -1534,14 +1543,19 @@ void NavigationURLLoaderImpl::ParseHeaders(
 
   auto assign = [](base::OnceClosure continuation,
                    network::mojom::URLResponseHead* head,
+                   base::TimeTicks call_time,
                    network::mojom::ParsedHeadersPtr parsed_headers) {
+    base::UmaHistogramMicrosecondsTimes(
+        "Navigation.URLLoader.ParseHeaders.RoundTripTimeForNonNetworkResponse",
+        base::TimeTicks::Now() - call_time);
     head->parsed_headers = std::move(parsed_headers);
     std::move(continuation).Run();
   };
 
   GetNetworkService()->ParseHeaders(
       url, head->headers,
-      base::BindOnce(assign, std::move(continuation), head));
+      base::BindOnce(assign, std::move(continuation), head,
+                     base::TimeTicks::Now()));
 }
 
 // TODO(crbug.com/40552600): pass `navigation_ui_data` along with the

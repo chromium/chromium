@@ -674,6 +674,16 @@ void TabGroupSyncServiceImpl::OnCollaborationRemoved(
         group.collaboration_id().value() == collaboration_id) {
       model_->SetGroupHidden(group.saved_guid());
 
+      // Inform the UI as if the tab group has been removed.
+      // TODO(crbug.com/399410173): Remove the group locally.
+      for (auto& observer : observers_) {
+        if (group.local_group_id().has_value()) {
+          observer.OnTabGroupRemoved(group.local_group_id().value(),
+                                     TriggerSource::REMOTE);
+        }
+        observer.OnTabGroupRemoved(group.saved_guid(), TriggerSource::REMOTE);
+      }
+
       // Clean up the originating saved tab group.
       if (group.originating_tab_group_guid().has_value()) {
         const SavedTabGroup* originating_group =

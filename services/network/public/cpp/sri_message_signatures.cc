@@ -52,31 +52,42 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
   }
 
   std::string name = component.item.GetString();
+  auto result = mojom::SRIMessageSignatureComponent::New();
+  result->name = name;
+
+  // The "unencoded-digest" component requires a single `sf` parameter with
+  // a `true` boolean value.
   if (name == "unencoded-digest") {
-    // The "unencoded-digest" component requires a single `sf` parameter with
-    // a `true` boolean value.
     if (!ItemHasSingleBooleanParam(component, "sf")) {
       errors.push_back(
           mojom::SRIMessageSignatureError::
               kSignatureInputHeaderInvalidHeaderComponentParameter);
       return std::nullopt;
     }
-    auto result = mojom::SRIMessageSignatureComponent::New();
-    result->name = name;
     result->params.insert(
         {Parameters::kStrictStructuredFieldSerialization, ""});
     return result;
   } else if (base::Contains(kDerivedComponents, name)) {
-    // Derived components require a single `req` parameter with a `true` boolean
-    // value.
+    // The `@status` derived component must not have any parameters (as it's
+    // pulled from the response, not the request).
+    if (name == "@status") {
+      if (!component.params.empty()) {
+        errors.push_back(
+            mojom::SRIMessageSignatureError::
+                kSignatureInputHeaderInvalidDerivedComponentParameter);
+        return std::nullopt;
+      }
+      return result;
+    }
+
+    // All other derived components we've implemented require a single `req`
+    // parameter with a `true` boolean value.
     if (!ItemHasSingleBooleanParam(component, "req")) {
       errors.push_back(
           mojom::SRIMessageSignatureError::
               kSignatureInputHeaderInvalidDerivedComponentParameter);
       return std::nullopt;
     }
-    auto result = mojom::SRIMessageSignatureComponent::New();
-    result->name = name;
     result->params.insert({Parameters::kRequest, ""});
     return result;
   } else {

@@ -91,7 +91,9 @@ bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
 
 bool IsLobsterSettingsToggleVisible(Profile* profile) {
   return ash::features::IsLobsterEnabled() &&
-         LobsterServiceProvider::GetForProfile(profile) != nullptr;
+         LobsterServiceProvider::GetForProfile(profile) != nullptr &&
+         LobsterServiceProvider::GetForProfile(profile)
+             ->CanShowFeatureSettingsToggle();
 }
 
 bool IsScannerSettingsToggleVisible() {

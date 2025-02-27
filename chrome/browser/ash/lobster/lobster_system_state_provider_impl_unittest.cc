@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
+#include "chrome/browser/ash/lobster/lobster_system_state_provider_impl.h"
 
 #include <memory>
 #include <string>
@@ -85,9 +85,9 @@ class InputMethodManagerFake
   scoped_refptr<ash::input_method::InputMethodManager::State> state_;
 };
 
-class LobsterSystemStateProviderBaseTest : public testing::Test {
+class LobsterSystemStateProviderImplBaseTest : public testing::Test {
  public:
-  LobsterSystemStateProviderBaseTest()
+  LobsterSystemStateProviderImplBaseTest()
       : system_state_provider_(&pref_,
                                identity_test_environment_.identity_manager()),
         metrics_enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
@@ -110,7 +110,7 @@ class LobsterSystemStateProviderBaseTest : public testing::Test {
         variations_service_.get());
   }
 
-  ~LobsterSystemStateProviderBaseTest() override {
+  ~LobsterSystemStateProviderImplBaseTest() override {
     TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
     variations_service_.reset();
     InputMethodManagerFake::Shutdown();
@@ -191,14 +191,14 @@ class LobsterSystemStateProviderBaseTest : public testing::Test {
   TestingPrefServiceSimple local_state_pref_;
   TestingPrefServiceSimple pref_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  LobsterSystemStateProvider system_state_provider_;
+  LobsterSystemStateProviderImpl system_state_provider_;
   std::unique_ptr<variations::TestVariationsService> variations_service_;
   metrics::TestEnabledStateProvider metrics_enabled_state_provider_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
 };
 
-class LobsterSystemStateProviderGeolocationTest
-    : public LobsterSystemStateProviderBaseTest,
+class LobsterSystemStateProviderImplGeolocationTest
+    : public LobsterSystemStateProviderImplBaseTest,
       public ::testing::WithParamInterface<std::tuple<
           /*country_code=*/std::string,
           /*expected_lobster_status=*/ash::LobsterStatus>> {
@@ -216,19 +216,20 @@ class LobsterSystemStateProviderGeolocationTest
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    LobsterSystemStateProviderGeolocationTest,
+    LobsterSystemStateProviderImplGeolocationTest,
     testing::Values(
         std::make_tuple(/*country_code=*/"au", ash::LobsterStatus::kEnabled),
         std::make_tuple(/*country_code=*/"us", ash::LobsterStatus::kEnabled),
         std::make_tuple(/*country_code=*/"hk", ash::LobsterStatus::kBlocked)));
 
-TEST_P(LobsterSystemStateProviderGeolocationTest, ChecksTheSystemStateStatus) {
+TEST_P(LobsterSystemStateProviderImplGeolocationTest,
+       ChecksTheSystemStateStatus) {
   EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,
             std::get<1>(GetParam()));
 }
 
-class LobsterSystemStateProviderAccountCapabilityTest
-    : public LobsterSystemStateProviderBaseTest,
+class LobsterSystemStateProviderImplAccountCapabilityTest
+    : public LobsterSystemStateProviderImplBaseTest,
       public ::testing::WithParamInterface<std::tuple<
           /*satisfied=*/bool,
           /*expected_lobster_status=*/ash::LobsterStatus>> {
@@ -246,19 +247,19 @@ class LobsterSystemStateProviderAccountCapabilityTest
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    LobsterSystemStateProviderAccountCapabilityTest,
+    LobsterSystemStateProviderImplAccountCapabilityTest,
     testing::Values(
         std::make_tuple(/*satisfied=*/true, ash::LobsterStatus::kEnabled),
         std::make_tuple(/*satisfied=*/false, ash::LobsterStatus::kBlocked)));
 
-TEST_P(LobsterSystemStateProviderAccountCapabilityTest,
+TEST_P(LobsterSystemStateProviderImplAccountCapabilityTest,
        ChecksTheSystemStateStatus) {
   EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,
             std::get<1>(GetParam()));
 }
 
-class LobsterSystemStateProviderTextInputFieldTest
-    : public LobsterSystemStateProviderBaseTest,
+class LobsterSystemStateProviderImplTextInputFieldTest
+    : public LobsterSystemStateProviderImplBaseTest,
       public ::testing::WithParamInterface<std::tuple<
           /*input_field_type=*/ui::TextInputType,
           /*expected_lobster_status=*/ash::LobsterStatus>> {
@@ -276,7 +277,7 @@ class LobsterSystemStateProviderTextInputFieldTest
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    LobsterSystemStateProviderTextInputFieldTest,
+    LobsterSystemStateProviderImplTextInputFieldTest,
     testing::Values(
         std::make_tuple(ui::TEXT_INPUT_TYPE_NONE, ash::LobsterStatus::kBlocked),
         std::make_tuple(ui::TEXT_INPUT_TYPE_TEXT, ash::LobsterStatus::kEnabled),
@@ -309,7 +310,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(ui::TEXT_INPUT_TYPE_NULL,
                         ash::LobsterStatus::kBlocked)));
 
-TEST_P(LobsterSystemStateProviderTextInputFieldTest,
+TEST_P(LobsterSystemStateProviderImplTextInputFieldTest,
        ChecksTheSystemStateStatus) {
   EXPECT_EQ(GetSystemState(ash::LobsterTextInputContext(
                                /*text_input_type=*/std::get<0>(GetParam()),
@@ -319,8 +320,8 @@ TEST_P(LobsterSystemStateProviderTextInputFieldTest,
             std::get<1>(GetParam()));
 }
 
-class LobsterSystemStateProviderNetworkStatusTest
-    : public LobsterSystemStateProviderBaseTest,
+class LobsterSystemStateProviderImplNetworkStatusTest
+    : public LobsterSystemStateProviderImplBaseTest,
       public ::testing::WithParamInterface<std::tuple<
           /*is_online=*/bool,
           /*expected_lobster_status=*/ash::LobsterStatus>> {
@@ -338,19 +339,19 @@ class LobsterSystemStateProviderNetworkStatusTest
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    LobsterSystemStateProviderNetworkStatusTest,
+    LobsterSystemStateProviderImplNetworkStatusTest,
     testing::Values(
         std::make_tuple(/*is_online=*/true, ash::LobsterStatus::kEnabled),
         std::make_tuple(/*is_online=*/false, ash::LobsterStatus::kBlocked)));
 
-TEST_P(LobsterSystemStateProviderNetworkStatusTest,
+TEST_P(LobsterSystemStateProviderImplNetworkStatusTest,
        ChecksTheSystemStateStatus) {
   EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,
             std::get<1>(GetParam()));
 }
 
-class LobsterSystemStateProviderImeTest
-    : public LobsterSystemStateProviderBaseTest,
+class LobsterSystemStateProviderImplImeTest
+    : public LobsterSystemStateProviderImplBaseTest,
       public ::testing::WithParamInterface<std::tuple<
           /*ime=*/std::string,
           /*expected_lobster_status=*/ash::LobsterStatus>> {
@@ -368,7 +369,7 @@ class LobsterSystemStateProviderImeTest
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    LobsterSystemStateProviderImeTest,
+    LobsterSystemStateProviderImplImeTest,
     testing::Values(
         std::make_tuple(/*ime=*/"xkb:ca:eng:eng", ash::LobsterStatus::kEnabled),
         std::make_tuple(/*ime=*/"xkb:gb::eng", ash::LobsterStatus::kEnabled),
@@ -399,7 +400,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(/*ime=*/"xkb:de::ger", ash::LobsterStatus::kBlocked),
         std::make_tuple(/*ime=*/"xkb:ru::rus", ash::LobsterStatus::kBlocked)));
 
-TEST_P(LobsterSystemStateProviderImeTest, ChecksTheSystemStateStatus) {
+TEST_P(LobsterSystemStateProviderImplImeTest, ChecksTheSystemStateStatus) {
   EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,
             std::get<1>(GetParam()));
 }

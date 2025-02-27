@@ -5440,6 +5440,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NetworkService.ParsedHeaders.IPCHandleTime"
+    units="microseconds" expires_after="2025-09-25">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the elapsed time for pupulating parsed headers in the network
+    service's ParseHeaders() IPC call.
+
+    Note: The metrics is reported from all clients. Some of clients may not have
+    high resolution timer that can send metrics with microseconds precision.
+  </summary>
+</histogram>
+
 <histogram
     name="NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.TotalHeadersSize"
     units="bytes" expires_after="2025-08-01">

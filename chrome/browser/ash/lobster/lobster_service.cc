@@ -22,6 +22,8 @@
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_memory.h"
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
+#include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
+#include "chrome/browser/ash/lobster/lobster_system_state_provider_impl.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -54,8 +56,9 @@ LobsterService::LobsterService(
               image_provider_.get(),
               &candidate_id_generator_))),
       resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
-      system_state_provider_(profile->GetPrefs(),
-                             IdentityManagerFactory::GetForProfile(profile)),
+      system_state_provider_(std::make_unique<LobsterSystemStateProviderImpl>(
+          profile->GetPrefs(),
+          IdentityManagerFactory::GetForProfile(profile))),
       announcer_(
           std::make_unique<LobsterLiveRegionAnnouncer>(kAnnouncementViewName)) {
   if (profile != nullptr) {
@@ -91,7 +94,7 @@ ash::LobsterSession* LobsterService::active_session() {
 }
 
 LobsterSystemStateProvider* LobsterService::system_state_provider() {
-  return &system_state_provider_;
+  return system_state_provider_.get();
 }
 
 void LobsterService::RequestCandidates(
@@ -171,8 +174,30 @@ void LobsterService::AnnounceLater(const std::u16string& message) {
       kAnnouncementDelay);
 }
 
+bool LobsterService::CanShowFeatureSettingsToggle() {
+  // An empty text input context should not affect the visibility of the feature
+  // settings toggle.
+  ash::LobsterSystemState::SystemChecks system_checks =
+      system_state_provider()
+          ->GetSystemState(ash::LobsterTextInputContext())
+          .failed_checks;
+
+  return (!system_checks.Has(
+              ash::LobsterSystemCheck::kInvalidAccountCapabilities) &&
+          !system_checks.Has(ash::LobsterSystemCheck::kInvalidRegion) &&
+          !system_checks.Has(ash::LobsterSystemCheck::kInvalidAccountType) &&
+          !system_checks.Has(ash::LobsterSystemCheck::kInvalidFeatureFlags) &&
+          !system_checks.Has(ash::LobsterSystemCheck::kUnsupportedHardware) &&
+          !system_checks.Has(ash::LobsterSystemCheck::kUnsupportedInKioskMode));
+}
+
 bool LobsterService::OverrideLobsterImageProviderForTesting() {
   image_fetcher_->SetProvider(std::make_unique<LobsterImageProviderFromMemory>(
       &candidate_id_generator_));
   return true;
+}
+
+void LobsterService::set_lobster_system_state_provider_for_testing(
+    std::unique_ptr<LobsterSystemStateProvider> provider) {
+  system_state_provider_ = std::move(provider);
 }

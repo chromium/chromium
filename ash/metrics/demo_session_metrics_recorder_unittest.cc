@@ -35,6 +35,10 @@ namespace {
 
 constexpr char kUserEmail[] = "crosdemoandapbp@gmail.com";
 
+constexpr char kGooglePhotosPkg[] = "com.google.Photos";
+constexpr char kAppUsageGooglePhotoHistogramName[] =
+    "DemoMode.AppUsageTime.GooglePhoto";
+
 // Tests app usage recorded by DemoSessionMetricsRecorder.
 // Mocks out the timer to control the sampling cycle. Tests will create and
 // activate different window types to test that samples are attributed to the
@@ -175,6 +179,16 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
     generator.GestureTapAt(gfx::Point(0, 0));
   }
 
+  void MockOnAppCreation(const std::string& app_id_or_package,
+                         const bool is_arc_app) {
+    metrics_recorder_->OnAppCreation(app_id_or_package, is_arc_app);
+  }
+
+  void MockOnAppDestruction(const std::string& app_id_or_package,
+                            const bool is_arc_app) {
+    metrics_recorder_->OnAppDestruction(app_id_or_package, is_arc_app);
+  }
+
  protected:
   // Captures histograms.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -230,8 +244,7 @@ TEST_F(DemoSessionMetricsRecorderTest, AppTypes) {
       CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   std::unique_ptr<aura::Window> hosted_app_browser_window =
       CreateHostedAppBrowserWindow(extension_misc::kYoutubeAppId);
-  std::unique_ptr<aura::Window> arc_window =
-      CreateArcWindow("com.google.Photos");
+  std::unique_ptr<aura::Window> arc_window = CreateArcWindow(kGooglePhotosPkg);
 
   wm::ActivateWindow(browser_window.get());
   FireTimer();
@@ -288,8 +301,7 @@ TEST_F(DemoSessionMetricsRecorderTest, ActiveAppAfterDelayedArcPackageName) {
   FireTimer();
 
   // Set the package name after window creation/activation.
-  arc_window->SetProperty(kArcPackageNameKey,
-                          new std::string("com.google.Photos"));
+  arc_window->SetProperty(kArcPackageNameKey, kGooglePhotosPkg);
 
   // Trigger sample reporting by sending user activity.
   SendUserActivity();
@@ -301,8 +313,7 @@ TEST_F(DemoSessionMetricsRecorderTest, ActiveAppAfterDelayedArcPackageName) {
   // Set the package name again.  The count shouldn't change because
   // after getting the package name once, we stop observing the
   // window.
-  arc_window->SetProperty(kArcPackageNameKey,
-                          new std::string("com.google.Photos"));
+  arc_window->SetProperty(kArcPackageNameKey, kGooglePhotosPkg);
   // Trigger sample reporting by sending user activity.
   SendUserActivity();
 
@@ -376,7 +387,7 @@ TEST_F(DemoSessionMetricsRecorderTest, DiscardAfterInactivity) {
   std::unique_ptr<aura::Window> chrome_app_window =
       CreateChromeAppWindow(extension_misc::kCalculatorAppId);
   std::unique_ptr<aura::Window> arc_window =
-      CreateChromeAppWindow("com.google.Photos");
+      CreateChromeAppWindow(kGooglePhotosPkg);
 
   wm::ActivateWindow(chrome_app_window.get());
   for (int i = 0; i < 5; i++)
@@ -446,8 +457,7 @@ TEST_F(DemoSessionMetricsRecorderTest, ActivateWindowWhenIdle) {
 TEST_F(DemoSessionMetricsRecorderTest, RepeatedUserActivity) {
   std::unique_ptr<aura::Window> chrome_app_window =
       CreateChromeAppWindow(extension_misc::kCalculatorAppId);
-  std::unique_ptr<aura::Window> arc_window =
-      CreateArcWindow("com.google.Photos");
+  std::unique_ptr<aura::Window> arc_window = CreateArcWindow(kGooglePhotosPkg);
 
   wm::ActivateWindow(chrome_app_window.get());
 
@@ -479,8 +489,7 @@ TEST_F(DemoSessionMetricsRecorderTest, RepeatedUserActivity) {
 TEST_F(DemoSessionMetricsRecorderTest, RecordOnExit) {
   std::unique_ptr<aura::Window> chrome_app_window =
       CreateChromeAppWindow(extension_misc::kGoogleKeepAppId);
-  std::unique_ptr<aura::Window> arc_window =
-      CreateArcWindow("com.google.Photos");
+  std::unique_ptr<aura::Window> arc_window = CreateArcWindow(kGooglePhotosPkg);
 
   wm::ActivateWindow(chrome_app_window.get());
   for (int i = 0; i < 2; i++)
@@ -555,7 +564,7 @@ TEST_F(DemoSessionMetricsRecorderTest, UniqueAppsLaunchedOnDeletion) {
   wm::ActivateWindow(chrome_browser_window.get());
 
   std::unique_ptr<aura::Window> arc_window_1 =
-      CreateArcWindow("com.google.Photos");
+      CreateArcWindow(kGooglePhotosPkg);
   wm::ActivateWindow(arc_window_1.get());
   wm::DeactivateWindow(arc_window_1.get());
   wm::ActivateWindow(arc_window_1.get());
@@ -596,13 +605,11 @@ TEST_F(DemoSessionMetricsRecorderTest,
   wm::ActivateWindow(arc_window_1.get());
 
   // Set the package name after window creation/activation.
-  arc_window_1->SetProperty(kArcPackageNameKey,
-                            new std::string("com.google.Photos"));
+  arc_window_1->SetProperty(kArcPackageNameKey, kGooglePhotosPkg);
 
   // Set the package name again. This shouldn't cause a double-recording
   // of the stat.
-  arc_window_1->SetProperty(kArcPackageNameKey,
-                            new std::string("com.google.Photos"));
+  arc_window_1->SetProperty(kArcPackageNameKey, kGooglePhotosPkg);
 
   // Delete the window.
   arc_window_1.reset();
@@ -660,7 +667,7 @@ TEST_F(DemoSessionMetricsRecorderTest, AppLaunched) {
 
   // ARC Apps
   std::unique_ptr<aura::Window> arc_window_1 =
-      CreateArcWindow("com.google.Photos");
+      CreateArcWindow(kGooglePhotosPkg);
   wm::ActivateWindow(arc_window_1.get());
   wm::DeactivateWindow(arc_window_1.get());
   wm::ActivateWindow(arc_window_1.get());
@@ -900,6 +907,21 @@ TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsSignedInSession) {
                    "DemoMode.ExitFromSystemTrayPowerButton"));
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "DemoMode.SignedIn.ExitFromSystemTrayPowerButton"));
+}
+
+TEST_F(DemoSessionMetricsRecorderTest, AppUsageTime) {
+  const auto expected_usage_time = base::Seconds(5);
+  MockOnAppCreation(kGooglePhotosPkg, /*is_arc_app*/ true);
+  task_environment()->FastForwardBy(expected_usage_time);
+  MockOnAppDestruction(kGooglePhotosPkg, /*is_arc_app*/ true);
+
+  MockOnAppCreation(kGooglePhotosPkg, /*is_arc_app*/ true);
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  MockOnAppDestruction(kGooglePhotosPkg, /*is_arc_app*/ false);
+
+  // Verify usage less than 1s is not recorded:
+  histogram_tester_->ExpectUniqueSample(kAppUsageGooglePhotoHistogramName,
+                                        /*bucket=*/5, 1);
 }
 
 }  // namespace

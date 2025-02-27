@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "base/test/task_environment.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/lobster/mock/mock_snapper_provider.h"
+#include "chrome/browser/ash/lobster/mock_lobster_system_state_provider.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -22,6 +24,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 namespace {
 
 class LobsterServiceTest : public ChromeAshTestBase {
@@ -51,6 +54,8 @@ class LobsterServiceTest : public ChromeAshTestBase {
 
   TestingProfile* profile() { return testing_profile_; }
 
+  LobsterService* lobster_service() { return lobster_service_.get(); }
+
   void ToggleLobsterSettings(bool value) {
     profile()->GetPrefs()->SetBoolean(ash::prefs::kLobsterEnabled, value);
   }
@@ -60,7 +65,7 @@ class LobsterServiceTest : public ChromeAshTestBase {
         profile()->GetPrefs()->GetInteger(ash::prefs::kOrcaConsentStatus));
   }
 
- protected:
+ private:
   raw_ptr<TestingProfile> testing_profile_ = nullptr;
   TestingProfileManager profile_manager_;
   std::unique_ptr<LobsterService> lobster_service_;
@@ -100,6 +105,39 @@ TEST_F(LobsterServiceTest,
   ToggleLobsterSettings(true);
   EXPECT_EQ(GetLobsterConsentStatus(),
             chromeos::editor_menu::EditorConsentStatus::kApproved);
+}
+
+TEST_F(LobsterServiceTest, CanNotShowLobsterFeatureSettingsToggle) {
+  std::unique_ptr<MockLobsterSystemStateProvider> mock_system_state_provider =
+      std::make_unique<MockLobsterSystemStateProvider>();
+
+  ON_CALL(*mock_system_state_provider, GetSystemState)
+      .WillByDefault(testing::Return(ash::LobsterSystemState(
+          ash::LobsterStatus::kBlocked, /*failed_checks=*/{
+              ash::LobsterSystemCheck::kInvalidAccountCapabilities,
+              ash::LobsterSystemCheck::kInvalidRegion})));
+
+  lobster_service()->set_lobster_system_state_provider_for_testing(
+      std::move(mock_system_state_provider));
+
+  EXPECT_FALSE(lobster_service()->CanShowFeatureSettingsToggle());
+}
+
+TEST_F(LobsterServiceTest, CanShowLobsterFeatureSettingsToggle) {
+  std::unique_ptr<MockLobsterSystemStateProvider> mock_system_state_provider =
+      std::make_unique<MockLobsterSystemStateProvider>();
+
+  ON_CALL(*mock_system_state_provider, GetSystemState)
+      .WillByDefault(testing::Return(ash::LobsterSystemState(
+          ash::LobsterStatus::kBlocked,
+          /*failed_checks=*/{ash::LobsterSystemCheck::kInvalidInputField,
+                             ash::LobsterSystemCheck::kInvalidInputMethod,
+                             ash::LobsterSystemCheck::kNoInternetConnection})));
+
+  lobster_service()->set_lobster_system_state_provider_for_testing(
+      std::move(mock_system_state_provider));
+
+  EXPECT_TRUE(lobster_service()->CanShowFeatureSettingsToggle());
 }
 
 }  // namespace
