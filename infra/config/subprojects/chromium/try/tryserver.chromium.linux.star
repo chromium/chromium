@@ -70,6 +70,9 @@ try_.builder(
                 "chrome",
             ],
         },
+        # Catches a couple of CLs per week that are either actionable or
+        # worthy of discussion.
+        "size_threshold_mib": 300,
     },
     # TODO: crbug.com/40190002 - make this required once confirming there are
     # no false rejections.
