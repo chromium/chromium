@@ -11,8 +11,6 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
 #include "components/heap_profiling/in_process/browser_process_snapshot_controller.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
@@ -66,12 +64,6 @@ void ChromeBrowserMainExtraPartsMemory::PostCreateThreads() {
 void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
   // The MemoryPressureMonitor might not be available in some tests.
   if (base::MemoryPressureMonitor::Get()) {
-    if (memory::EnterpriseMemoryLimitPrefObserver::PlatformIsSupported()) {
-      memory_limit_pref_observer_ =
-          std::make_unique<memory::EnterpriseMemoryLimitPrefObserver>(
-              g_browser_process->local_state());
-    }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::SysInfo::IsRunningOnChromeOS()) {
       cros_evaluator_ =
@@ -85,11 +77,6 @@ void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
 }
 
 void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {
-  // |memory_limit_pref_observer_| must be destroyed before its |pref_service_|
-  // is destroyed, as the observer's PrefChangeRegistrar's destructor uses the
-  // pref_service.
-  memory_limit_pref_observer_.reset();
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_evaluator_.reset();
 #endif

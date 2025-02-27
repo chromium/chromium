@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
@@ -15,6 +16,7 @@
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
 #include "chrome/browser/performance_manager/decorators/helpers/page_live_state_decorator_helper.h"
 #include "chrome/browser/performance_manager/execution_context_priority/side_panel_loading_voter.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
@@ -44,6 +46,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/page_resource_monitor.h"
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -348,6 +351,17 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
   }
 }
 
+void ChromeBrowserMainExtraPartsPerformanceManager::PostBrowserStart() {
+  // The MemoryPressureMonitor might not be available in some tests.
+  if (base::MemoryPressureMonitor::Get()) {
+    if (memory::EnterpriseMemoryLimitPrefObserver::PlatformIsSupported()) {
+      memory_limit_pref_observer_ =
+          std::make_unique<memory::EnterpriseMemoryLimitPrefObserver>(
+              g_browser_process->local_state());
+    }
+  }
+}
+
 void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
   // This object requires the host frame sink manager to exist, which is
@@ -365,6 +379,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
 }
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
+  // |memory_limit_pref_observer_| must be destroyed before its |pref_service_|
+  // is destroyed, as the observer's PrefChangeRegistrar's destructor uses the
+  // pref_service.
+  memory_limit_pref_observer_.reset();
+
   g_browser_process->profile_manager()->RemoveObserver(this);
   profile_observations_.RemoveAllObservations();
 
