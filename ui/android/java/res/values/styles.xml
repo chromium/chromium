@@ -56,7 +56,13 @@ found in the LICENSE file.
         <item name="borderWidth">@dimen/button_outlined_border_width</item>
         <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
     </style>
-
+    <style name="FilledTonalButton" parent="TextButton" tools:ignore="UnusedResources">
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Filled</item>
+        <item name="buttonTextColor">?attr/globalFilledTonalButtonTextColor</item>
+        <item name="buttonColor">?attr/globalFilledTonalButtonBgColor</item>
+    </style>
     <!-- Used by Chrome and Content -->
     <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif</item>

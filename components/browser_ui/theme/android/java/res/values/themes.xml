@@ -51,6 +51,8 @@ found in the LICENSE file.
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
         <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="globalFilledTonalButtonBgColor">?attr/colorPrimaryContainer</item>
+        <item name="globalFilledTonalButtonTextColor">@color/default_text_color_on_accent1_container_list</item>
         <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
         <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list</item>
         <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
@@ -164,6 +166,8 @@ found in the LICENSE file.
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
         <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="globalFilledTonalButtonBgColor">?attr/colorPrimaryContainer</item>
+        <item name="globalFilledTonalButtonTextColor">@color/default_text_color_on_accent1_container_list</item>
         <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
         <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list</item>
         <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
@@ -236,6 +240,8 @@ found in the LICENSE file.
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
         <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="globalFilledTonalButtonBgColor">?attr/colorPrimaryContainer</item>
+        <item name="globalFilledTonalButtonTextColor">@color/default_text_color_on_accent1_container_list</item>
         <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
         <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list</item>
         <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>

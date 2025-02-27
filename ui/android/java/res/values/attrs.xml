@@ -36,6 +36,8 @@ found in the LICENSE file.
          contexts, e.g. WebView, so the code dealing with them should handle their absence. -->
     <attr name="globalFilledButtonBgColor" format="color"/>
     <attr name="globalFilledButtonTextColor" format="reference"/>
+    <attr name="globalFilledTonalButtonBgColor" format="color"/>
+    <attr name="globalFilledTonalButtonTextColor" format="reference"/>
     <attr name="globalTextButtonTextColor" format="reference"/>
     <attr name="globalTextButtonRippleColor" format="color"/>
     <attr name="globalOutlinedButtonBorderColor" format="color"/>
