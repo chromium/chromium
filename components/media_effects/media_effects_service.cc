@@ -73,6 +73,13 @@ void MediaEffectsService::BindVideoEffectsProcessor(
   auto* video_effects_service = video_effects::GetVideoEffectsService();
   CHECK(video_effects_service);
 
+  // The `video_effects_service` is reset if it is idle for more than 5 seconds.
+  // Re-send the model in case that has happened.
+  if (latest_segmentation_model_file_.IsValid()) {
+    video_effects_service->SetBackgroundSegmentationModel(
+        latest_segmentation_model_file_.Duplicate());
+  }
+
   mojo::PendingRemote<viz::mojom::Gpu> gpu_remote;
   mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver =
       gpu_remote.InitWithNewPipeAndPassReceiver();
