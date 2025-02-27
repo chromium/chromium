@@ -174,6 +174,25 @@ GetOnInstallTaskCompletedCallbackForTesting() {
   return *kCallback;
 }
 
+bool IsOnDemandComponentUpdateFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate);
+}
+
+// If there are potential IWAs to be processed, will run `callback` after we've
+// attempted to fetch the latest component data. Otherwise runs it immediately.
+void OnComponentDataReady(PrefService* prefs, base::OnceClosure callback) {
+  if (!IsOnDemandComponentUpdateFeatureEnabled() ||
+      prefs->GetList(prefs::kIsolatedWebAppInstallForceList).empty()) {
+    // We don't need the latest component data.
+    std::move(callback).Run();
+    return;
+  }
+
+  IwaKeyDistributionInfoProvider::GetInstance()
+      ->OnMaybeDownloadedComponentDataReady()
+      .Post(FROM_HERE, std::move(callback));
+}
+
 }  // namespace
 
 BASE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate,
@@ -226,17 +245,9 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
       debug_log);
   process_logs_.AppendCompletedStep(std::move(debug_log));
 
-  if (base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate) &&
-      !profile_->GetPrefs()
-           ->GetList(prefs::kIsolatedWebAppInstallForceList)
-           .empty()) {
-    IwaKeyDistributionInfoProvider::GetInstance()
-        ->OnMaybeDownloadedComponentDataReady()
-        .Post(FROM_HERE, base::BindOnce(&IsolatedWebAppPolicyManager::StartImpl,
-                                        weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    StartImpl();
-  }
+  OnComponentDataReady(profile_->GetPrefs(),
+                       base::BindOnce(&IsolatedWebAppPolicyManager::StartImpl,
+                                      weak_ptr_factory_.GetWeakPtr()));
 
   std::move(on_started_callback).Run();
 }
@@ -315,8 +326,8 @@ void IsolatedWebAppPolicyManager::ConfigureObserversOnSessionStart() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kIsolatedWebAppInstallForceList,
-      base::BindRepeating(&IsolatedWebAppPolicyManager::ProcessPolicy,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&IsolatedWebAppPolicyManager::OnPolicyChanged,
+                          base::Unretained(this)));
 }
 
 void IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart() {
@@ -611,6 +622,13 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
           base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
                          CleanupOrphanedIsolatedWebAppsCommandError>>(
           std::move(finished_closure)));
+}
+
+void IsolatedWebAppPolicyManager::OnPolicyChanged() {
+  OnComponentDataReady(
+      profile_->GetPrefs(),
+      base::BindOnce(&IsolatedWebAppPolicyManager::ProcessPolicy,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
