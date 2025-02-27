@@ -175,8 +175,9 @@ FormStructure::FormStructure(
     FormSignature form_signature,
     const std::vector<FieldSignature>& field_signatures)
     : form_signature_(form_signature) {
-  for (const auto& signature : field_signatures)
+  for (const auto& signature : field_signatures) {
     fields_.push_back(AutofillField::CreateForPasswordManagerUpload(signature));
+  }
   DetermineFieldRanks();
 }
 
@@ -355,8 +356,9 @@ bool FormStructure::IsAutofillable() const {
   size_t min_required_fields =
       std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
                 kMinRequiredFieldsForUpload});
-  if (autofill_count() < min_required_fields)
+  if (autofill_count() < min_required_fields) {
     return false;
+  }
 
   return ShouldBeParsed();
 }
@@ -393,8 +395,9 @@ bool FormStructure::IsCompleteCreditCardForm(
 void FormStructure::UpdateAutofillCount() {
   autofill_count_ = 0;
   for (const auto& field : *this) {
-    if (field && field->IsFieldFillable())
+    if (field && field->IsFieldFillable()) {
       ++autofill_count_;
+    }
   }
 }
 
@@ -533,8 +536,9 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
       if (entry.second->GetFieldSignature() == field_signature) {
         // If there are multiple matches, do not retrieve the field and stop
         // the process.
-        if (match)
+        if (match) {
           return nullptr;
+        }
         match = entry.second;
       }
     }
@@ -553,8 +557,9 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     }
 
     // Skip fields that we could not find.
-    if (!cached_field)
+    if (!cached_field) {
       continue;
+    }
 
     // TODO: crbug.com/40227496 - Simplify the `switch` statement once
     // kAutofillFixValueSemantics is launched.
@@ -673,7 +678,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
       // information to store in an address profile or credit card. As
       // rationalization is an important component of determining the final
       // field type, the output should be preserved.
-      field->SetTypeTo(cached_field->Type());
+      field->SetTypeTo(cached_field->Type(), cached_field->PredictionSource());
     }
     field->set_field_log_events(cached_field->field_log_events());
   }
@@ -806,8 +811,9 @@ void FormStructure::AssignBestFieldTypes(
       });
   for (const auto& field : fields_) {
     auto iter = field_type_map.find(field->global_id());
-    if (iter == field_type_map.end())
+    if (iter == field_type_map.end()) {
       continue;
+    }
 
     const FieldCandidates& candidates = iter->second;
     field->set_heuristic_type(heuristic_source, candidates.BestHeuristicType());

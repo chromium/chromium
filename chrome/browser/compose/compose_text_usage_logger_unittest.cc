@@ -301,7 +301,8 @@ TEST_F(ComposeTextUsageLoggerTest, SensitiveFieldEntry) {
   FormData form_data = CreateForm();
   auto form_structure = std::make_unique<autofill::FormStructure>(form_data);
   form_structure->field(0)->SetTypeTo(
-      autofill::AutofillType(autofill::FieldType::CREDIT_CARD_NAME_FIRST));
+      autofill::AutofillType(autofill::FieldType::CREDIT_CARD_NAME_FIRST),
+      autofill::AutofillPredictionSource::kHeuristics);
   autofill_manager()->AddSeenFormStructure(std::move(form_structure));
 
   SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
@@ -325,7 +326,8 @@ TEST_F(ComposeTextUsageLoggerTest, NonSensitiveAutofillFieldType) {
   FormData form_data = CreateForm();
   auto form_structure = std::make_unique<autofill::FormStructure>(form_data);
   form_structure->field(0)->SetTypeTo(
-      autofill::AutofillType(autofill::FieldType::ADDRESS_HOME_ADDRESS));
+      autofill::AutofillType(autofill::FieldType::ADDRESS_HOME_ADDRESS),
+      autofill::AutofillPredictionSource::kHeuristics);
   autofill_manager()->AddSeenFormStructure(std::move(form_structure));
 
   SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),

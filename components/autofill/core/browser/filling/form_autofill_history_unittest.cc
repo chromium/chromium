@@ -37,7 +37,8 @@ class FormAutofillHistoryTest : public testing::Test {
     field.set_is_autofilled(is_autofilled);
     filled_fields_.push_back(field);
     AutofillField autofill_field(field);
-    autofill_field.SetTypeTo(AutofillType(field_type));
+    autofill_field.SetTypeTo(AutofillType(field_type),
+                             AutofillPredictionSource::kHeuristics);
     autofill_field.set_autofill_source_profile_guid(kGuid);
     autofill_field.set_autofilled_type(std::nullopt);
     autofill_field.set_filling_product(FillingProduct::kNone);

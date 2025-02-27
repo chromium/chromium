@@ -279,7 +279,8 @@ void ApplyRuleIfApplicable(
       buffer << ", changing field " << found_fields[action.target] << " from "
              << FieldTypeToStringView(field.Type().GetStorableType()) << " to "
              << FieldTypeToStringView(action.set_overall_type);
-      field.SetTypeTo(AutofillType(action.set_overall_type));
+      field.SetTypeTo(AutofillType(action.set_overall_type),
+                      AutofillPredictionSource::kRationalization);
     }
     LOG_AF(log_manager) << LoggingScope::kRationalization
                         << LogMessage::kRationalization << rule.rule_name
