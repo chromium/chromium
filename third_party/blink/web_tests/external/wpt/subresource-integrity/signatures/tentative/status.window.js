@@ -13,7 +13,7 @@
 // Content-Type: application/json
 // Unencoded-Digest: sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:
 // Content-Length: 18
-// Signature-Input: signature=("unencoded-digest";sf "@status";req); \
+// Signature-Input: signature=("unencoded-digest";sf "@status"); \
 //                  keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";       \
 //                  tag="sri"
 // Signature: signature=:oVQ+s/OqXLAVdfvgZ3HaPiyzkpNXZSit9l6e1FB/gOOL3t8FOrIRDV \
@@ -29,37 +29,37 @@ const kRequestsWithValidSignature = [
   //
   // ```
   // "unencoded-digest";sf: sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:
-  // "@status";req: 200
-  // "@signature-params": ("unencoded-digest";sf "@status";req);keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"
+  // "@status": 200
+  // "@signature-params": ("unencoded-digest";sf "@status");keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"
   // ```
   {
     status: 200,
     body: "window.hello = `world`;",
     digest: "sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:",
-    signature: `signature=:Vw9VZmxpD0KRRvN41F8hwlKorgjxM66uwbeeysDuiGop98COyaMzbTKciW0dxnTeqsa1wJ5gyDj8oewCejZ2BA==:`,
-    signatureInput: `signature=("unencoded-digest";sf "@status";req);keyid="${kValidKeys['rfc']}";tag="sri"`
+    signature: `signature=:BRhRykdW61eK1iEf+ZU+Skf1ErVh8DhogWlPISe3iR7ITX4eryLZwaTAzjsoijRo79gGWnvC8ZIPJoZkByNeBw==:`,
+    signatureInput: `signature=("unencoded-digest";sf "@status");keyid="${kValidKeys['rfc']}";tag="sri"`
   },
   {
     status: 201,
     body: "window.hello = `world`;",
     digest: "sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:",
-    signature: `signature=:VDt2alAwuEQQwwfqv6ctMe68vkaXUndIs2GbQl45ExtNbuEAPq9r2tbx1ALE0FJYi5Mf2TfTmiDAoBln72cVAA==:`,
-    signatureInput: `signature=("unencoded-digest";sf "@status";req);keyid="${kValidKeys['rfc']}";tag="sri"`
+    signature: `signature=:kc+2CFqbwZ2SP47sGCfiP1u/Q0E+1nZlVlSM3VALQz0JNCVcmUKpt4T0t+bXOYdJuTyK89FjJx/rxzDmgCO8BQ==:`,
+    signatureInput: `signature=("unencoded-digest";sf "@status");keyid="${kValidKeys['rfc']}";tag="sri"`
   },
 
   // `@path` then `unencoded-digest`, with the following signature base:
   //
   // ```
-  // "@status";req: 200
+  // "@status": 200
   // "unencoded-digest";sf: sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:
-  // "@signature-params": ("@path";req "unencoded-digest";sf);keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"
+  // "@signature-params": ("@status" "unencoded-digest";sf);keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"
   // ```
   {
     status: 200,
     body: "window.hello = `world`;",
     digest: "sha-256=:PZJ+9CdAAIacg7wfUe4t/RkDQJVKM0mCZ2K7qiRhHFc=:",
-    signature: `signature=:mg2THnnv81aFAWuq2trSOcPNys3eeJ/8ypGdToA7IHOzEqm4lz16cBHyJyq2iCCI++ohF4HzOVgEoAFgTdf8Aw==:`,
-    signatureInput: `signature=("@status";req "unencoded-digest";sf);keyid="${kValidKeys['rfc']}";tag="sri"`
+    signature: `signature=:lHSkRZowLG6kbE9rG4dbe4VW59VGZaJtB/xFErBZKATtWRBTcF4T+Ye0A9yFiI65vgYL+ifVo6U3aZUu7pIUAw==:`,
+    signatureInput: `signature=("@status" "unencoded-digest";sf);keyid="${kValidKeys['rfc']}";tag="sri"`
   }
 ];
 
