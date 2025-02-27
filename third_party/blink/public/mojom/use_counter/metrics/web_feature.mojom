@@ -4716,6 +4716,7 @@ enum WebFeature {
   kCrossPartitionSameOriginBlobURLFetch = 5330,
   kWebAppManifestUpdate = 5331,
   kCSSEnvironmentVariable_PreferredTextScale = 5332,
+  kButtonTypeAttrInvalidWithCommandOrCommandfor = 5333,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
