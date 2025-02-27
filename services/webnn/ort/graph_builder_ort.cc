@@ -93,6 +93,7 @@ constexpr char kOpTypeMaxPool2d[] = "MaxPool";
 constexpr char kOpTypeLpPool2d[] = "LpPool";
 
 constexpr char kOpTypePRelu[] = "PRelu";
+constexpr char kOpTypeQuantizeLinear[] = "QuantizeLinear";
 
 // Reduction operations
 constexpr char kOpTypeReduceL1[] = "ReduceL1";
@@ -1139,26 +1140,27 @@ GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
   return base::ok();
 }
 
+template <typename DequantizeOrQuantizeLinear>
+  requires(
+      std::is_same_v<DequantizeOrQuantizeLinear, mojom::DequantizeLinear> ||
+      std::is_same_v<DequantizeOrQuantizeLinear, mojom::QuantizeLinear>)
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilderOrt::AddDequantizeLinearOperation(
-    const mojom::DequantizeLinear& dequantize_linear) {
-  const std::string node_name =
-      GenerateNextOperationName(dequantize_linear.label);
-  std::string input_name =
-      GetOperandNameById(dequantize_linear.input_operand_id);
-  std::string scale_name =
-      GetOperandNameById(dequantize_linear.scale_operand_id);
+GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
+    std::string_view op_type,
+    const DequantizeOrQuantizeLinear& operation) {
+  const std::string node_name = GenerateNextOperationName(operation.label);
+  std::string input_name = GetOperandNameById(operation.input_operand_id);
+  std::string scale_name = GetOperandNameById(operation.scale_operand_id);
   std::string zero_point_name =
-      GetOperandNameById(dequantize_linear.zero_point_operand_id);
-  std::string output_name =
-      GetOperandNameById(dequantize_linear.output_operand_id);
+      GetOperandNameById(operation.zero_point_operand_id);
+  std::string output_name = GetOperandNameById(operation.output_operand_id);
 
   const OperandDescriptor& input_descriptor =
-      GetOperand(dequantize_linear.input_operand_id).descriptor;
+      GetOperand(operation.input_operand_id).descriptor;
   std::vector<uint32_t> input_shape = input_descriptor.shape();
 
   const OperandDescriptor& scale_descriptor =
-      GetOperand(dequantize_linear.scale_operand_id).descriptor;
+      GetOperand(operation.scale_operand_id).descriptor;
   // ZeroPoint has the same shape as the scale.
   std::vector<uint32_t> scale_shape = scale_descriptor.shape();
 
@@ -1225,7 +1227,8 @@ GraphBuilderOrt::AddDequantizeLinearOperation(
     // Currently, OpenVINO only supports axis == 0 when scale.size == 2.
     // https://github.com/openvinotoolkit/openvino/blob/master/src/frontends/onnx/frontend/src/op/dequantize_linear.cpp#L228.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebNNOrtUseOpenvino)) {
+            switches::kWebNNOrtUseOpenvino) &&
+        std::is_same_v<DequantizeOrQuantizeLinear, mojom::DequantizeLinear>) {
       if (scale_shape.size() != 2) {
         // https://github.com/openvinotoolkit/openvino/blob/master/src/frontends/onnx/frontend/src/op/dequantize_linear.cpp#L220
         return NewNotSupportedError(
@@ -1245,7 +1248,7 @@ GraphBuilderOrt::AddDequantizeLinearOperation(
     // https://github.com/webmachinelearning/webnn/pull/805#discussion_r1919498405
     return NewNotSupportedError(
         "Currently, ONNX only supports per-tensor, per-axis and block-wise "
-        "dequantizeLinear");
+        "dequantizeLinear and quantizeLinear");
   }
 
   const std::string transposed_output_name =
@@ -1272,8 +1275,8 @@ GraphBuilderOrt::AddDequantizeLinearOperation(
             .Release());
   }
 
-  model_builder_.AddNode(kOpTypeDequantizeLinear, node_name, input_names,
-                         output_names, attributes);
+  model_builder_.AddNode(op_type, node_name, input_names, output_names,
+                         attributes);
 
   if (need_transpose) {
     AppendTranspose(transposed_output_name, output_name, {1, 0});
@@ -2419,8 +2422,8 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kDequantizeLinear: {
-        RETURN_IF_ERROR(
-            AddDequantizeLinearOperation(*operation->get_dequantize_linear()));
+        RETURN_IF_ERROR(AddDequantizeOrQuantizeLinearOperation(
+            kOpTypeDequantizeLinear, *operation->get_dequantize_linear()));
         break;
       }
       case mojom::Operation::Tag::kElu: {
@@ -2491,6 +2494,11 @@ GraphBuilderOrt::BuildModel() {
       }
       case mojom::Operation::Tag::kPrelu: {
         AddPreluOperation(*operation->get_prelu());
+        break;
+      }
+      case mojom::Operation::Tag::kQuantizeLinear: {
+        RETURN_IF_ERROR(AddDequantizeOrQuantizeLinearOperation(
+            kOpTypeQuantizeLinear, *operation->get_quantize_linear()));
         break;
       }
       case mojom::Operation::Tag::kReduce: {
@@ -2569,7 +2577,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
-      case mojom::Operation::Tag::kQuantizeLinear:
         return NewNotSupportedError("op is not supported.");
     }
   }

@@ -63,6 +63,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       OperandDataType::kInt4, OperandDataType::kUint4, OperandDataType::kUint8,
       OperandDataType::kInt8, OperandDataType::kInt32};
 
+  static constexpr SupportedDataTypes kQuantizeLinearInputSupportedDataTypes{
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt32};
+
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
@@ -173,8 +177,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
        /*prelu_input=*/
        {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
-       /*quantize_linear_input=*/{},
-       /*quantize_linear_zero_point=*/{},
+       /*quantize_linear_input=*/
+       {kQuantizeLinearInputSupportedDataTypes, kMaxRank},
+       /*quantize_linear_zero_point=*/
+       {DataTypeConstraint::kInts4ToInts8, kMaxRank},
        /*reduce_l1_input=*/
        {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        /*reduce_l2_input=*/

@@ -200,9 +200,14 @@ class GraphBuilderOrt {
   void AddEluOperation(const mojom::Elu& elu);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddExpandOperation(
       const mojom::Expand& expand);
+  template <typename DequantizeOrQuantizeLinear>
+    requires(
+        std::is_same_v<DequantizeOrQuantizeLinear, mojom::DequantizeLinear> ||
+        std::is_same_v<DequantizeOrQuantizeLinear, mojom::QuantizeLinear>)
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-  AddDequantizeLinearOperation(
-      const mojom::DequantizeLinear& dequantize_linear);
+  AddDequantizeOrQuantizeLinearOperation(
+      std::string_view op_type,
+      const DequantizeOrQuantizeLinear& operation_ptr);
   void AddGatherOperation(const mojom::Gather& gather);
   void AddGatherElementsOperation(const mojom::GatherElements& gather_elements);
   void AddGatherNDOperation(const mojom::GatherND& gather_nd);
