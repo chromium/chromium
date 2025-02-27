@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/android/resource_mapper.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"

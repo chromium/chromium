@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 
 class ProfileIOS;

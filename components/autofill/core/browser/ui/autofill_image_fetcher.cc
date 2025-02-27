@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/image_fetcher/core/image_fetcher.h"

@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_OPTIMIZATION_GUIDE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 

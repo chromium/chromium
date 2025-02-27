@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 
 namespace sync_pb {

@@ -18,7 +18,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/test_timeouts.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"

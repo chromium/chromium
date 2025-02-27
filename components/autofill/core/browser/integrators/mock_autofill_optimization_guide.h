@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_MOCK_AUTOFILL_OPTIMIZATION_GUIDE_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "testing/gmock/include/gmock/gmock.h"

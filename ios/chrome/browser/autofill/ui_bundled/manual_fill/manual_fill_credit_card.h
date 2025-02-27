@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 
 // This represents a credit card to use with manual fill.
 @interface ManualFillCreditCard : NSObject

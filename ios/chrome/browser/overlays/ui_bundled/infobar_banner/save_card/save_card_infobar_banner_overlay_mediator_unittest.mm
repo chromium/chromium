@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/uuid.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/signin/public/identity_manager/account_info.h"

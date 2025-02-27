@@ -9,7 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "build/branding_buildflags.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"

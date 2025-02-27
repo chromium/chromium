@@ -13,9 +13,9 @@
 #include "chrome/browser/autofill/test/jni_headers/AutofillTestHelper_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/bank_account.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {

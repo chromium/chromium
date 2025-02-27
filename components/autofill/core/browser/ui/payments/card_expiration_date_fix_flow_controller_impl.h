@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller.h"
 

@@ -11,7 +11,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/uuid.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"

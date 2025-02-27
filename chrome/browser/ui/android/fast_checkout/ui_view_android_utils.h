@@ -7,7 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 
 // Creates an FastCheckoutAutofillProfile in Java. This is comparable to
 // AutofillProfile::CreateJavaObject.

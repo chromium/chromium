@@ -12,7 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"

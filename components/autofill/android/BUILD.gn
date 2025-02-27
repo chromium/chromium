@@ -180,8 +180,8 @@ java_cpp_enum("autofill_core_browser_java_enums") {
   sources = [
     "../core/browser/data_model/addresses/autofill_profile.h",
     "../core/browser/data_model/addresses/autofill_structured_address_component.h",
-    "../core/browser/data_model/credit_card.h",
-    "../core/browser/data_model/iban.h",
+    "../core/browser/data_model/payments/credit_card.h",
+    "../core/browser/data_model/payments/iban.h",
     "../core/browser/field_types.h",
     "../core/browser/metrics/payments/iban_metrics.h",
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",
@@ -196,8 +196,8 @@ java_cpp_enum("autofill_core_browser_java_enums") {
 
 java_cpp_enum("payments_autofill_core_browser_java_enums") {
   sources = [
-    "../core/browser/data_model/bank_account.h",
-    "../core/browser/data_model/payment_instrument.h",
+    "../core/browser/data_model/payments/bank_account.h",
+    "../core/browser/data_model/payments/payment_instrument.h",
   ]
 }
 

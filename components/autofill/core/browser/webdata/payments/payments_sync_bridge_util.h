@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 

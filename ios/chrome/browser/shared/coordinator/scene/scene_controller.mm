@@ -18,7 +18,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"

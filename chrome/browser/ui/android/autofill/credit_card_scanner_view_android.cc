@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_view_delegate.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"

@@ -11,7 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"

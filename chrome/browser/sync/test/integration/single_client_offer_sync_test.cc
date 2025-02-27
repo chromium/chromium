@@ -10,7 +10,7 @@
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/data_type_state.pb.h"

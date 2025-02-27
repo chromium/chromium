@@ -11,7 +11,7 @@
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_utils.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"

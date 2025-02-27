@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/browser/web_contents_user_data.h"

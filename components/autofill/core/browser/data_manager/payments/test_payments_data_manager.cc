@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 
 namespace autofill {
 

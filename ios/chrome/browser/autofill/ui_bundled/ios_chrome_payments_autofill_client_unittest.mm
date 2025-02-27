@@ -8,7 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
