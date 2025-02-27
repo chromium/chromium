@@ -91,7 +91,10 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY})
+@EnableFeatures({
+    ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
+    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO
+})
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
@@ -152,7 +155,7 @@ public class PrivacyGuideFragmentTest {
                     FragmentType.HISTORY_SYNC,
                     R.string.privacy_guide_history_and_tabs_sync_toggle,
                     FragmentType.COOKIES,
-                    R.string.privacy_guide_cookies_intro,
+                    R.string.privacy_guide_cookies_header,
                     FragmentType.SAFE_BROWSING,
                     R.string.privacy_guide_safe_browsing_intro,
                     FragmentType.AD_TOPICS,
@@ -430,7 +433,7 @@ public class PrivacyGuideFragmentTest {
         onView(withId(R.id.ad_topics_switch)).check(matches(isChecked()));
 
         pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
+        onViewWaiting(withText(R.string.privacy_guide_cookies_header));
         onViewWaiting(allOf(withId(R.id.block_third_party), isCompletelyDisplayed()));
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
