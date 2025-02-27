@@ -317,6 +317,10 @@ bool WaylandConnection::SupportsSetWindowGeometry() const {
   return !!shell_;
 }
 
+bool WaylandConnection::IsKeyboardAvailable() const {
+  return seat_ && seat_->keyboard();
+}
+
 wl::Object<wl_surface> WaylandConnection::CreateSurface() {
   DCHECK(compositor_);
   return wl::Object<wl_surface>(

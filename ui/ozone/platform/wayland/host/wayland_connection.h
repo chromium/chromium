@@ -268,6 +268,9 @@ class WaylandConnection {
   // Returns true when there an active outgoing drag-and-drop session.
   bool IsDragInProgress() const;
 
+  // Returns true if a wl_keyboard is available.
+  bool IsKeyboardAvailable() const;
+
   // Creates a new wl_surface.
   wl::Object<wl_surface> CreateSurface();
 

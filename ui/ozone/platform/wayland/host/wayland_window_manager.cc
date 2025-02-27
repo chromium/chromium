@@ -188,6 +188,21 @@ void WaylandWindowManager::SetKeyboardFocusedWindow(WaylandWindow* window) {
     return;
   keyboard_focused_window_ = window;
   observers_.Notify(&WaylandWindowObserver::OnKeyboardFocusedWindowChanged);
+  auto* old_focused_toplevel_window =
+      old_focused_window
+          ? old_focused_window->GetRootParentWindow()->AsWaylandToplevelWindow()
+          : nullptr;
+  auto* focused_toplevel_window =
+      window ? window->GetRootParentWindow()->AsWaylandToplevelWindow()
+             : nullptr;
+  if (focused_toplevel_window != old_focused_toplevel_window) {
+    if (old_focused_toplevel_window) {
+      old_focused_toplevel_window->UpdateActivationState();
+    }
+    if (focused_toplevel_window) {
+      focused_toplevel_window->UpdateActivationState();
+    }
+  }
 }
 
 void WaylandWindowManager::AddWindow(gfx::AcceleratedWidget widget,
@@ -216,6 +231,11 @@ void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
   if (window == keyboard_focused_window_) {
     keyboard_focused_window_ = nullptr;
     observers_.Notify(&WaylandWindowObserver::OnKeyboardFocusedWindowChanged);
+    auto* toplevel_window =
+        window->GetRootParentWindow()->AsWaylandToplevelWindow();
+    if (toplevel_window && toplevel_window != window) {
+      toplevel_window->UpdateActivationState();
+    }
   }
 
   observers_.Notify(&WaylandWindowObserver::OnWindowRemoved, window);
@@ -298,6 +318,15 @@ float WaylandWindowManager::DetermineUiScale() const {
           ? Display::GetForcedDeviceScaleFactor()
           : font_scale_;
   return std::clamp(ui_scale, kMinUiScale, kMaxUiScale);
+}
+
+void WaylandWindowManager::UpdateActivationState() {
+  for (auto& pair : window_map_) {
+    auto* toplevel_window = pair.second->AsWaylandToplevelWindow();
+    if (toplevel_window) {
+      toplevel_window->UpdateActivationState();
+    }
+  }
 }
 
 }  // namespace ui

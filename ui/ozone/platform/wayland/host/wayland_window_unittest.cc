@@ -1939,20 +1939,67 @@ TEST_P(WaylandWindowTest, InitialConfigureFollowedByBoundsChangeCompletesAck) {
 TEST_P(WaylandWindowTest, OnActivationChanged) {
   uint32_t serial = 0;
 
-  // Deactivate the surface.
+  MockWaylandPlatformWindowDelegate new_window_delegate;
+  auto new_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, gfx::Rect(100, 100), &new_window_delegate);
+  ASSERT_TRUE(new_window);
+  auto new_window_surface_id = new_window->root_surface()->get_surface_id();
+
+  MockWaylandPlatformWindowDelegate menu_delegate;
+  auto menu = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
+                                            gfx::Rect(100, 100), &menu_delegate,
+                                            new_window->GetWidget());
+  ASSERT_TRUE(menu);
+
   wl::ScopedWlArray empty_state({});
   SendConfigureEvent(surface_id_, {0, 0}, empty_state, ++serial);
+  SendConfigureEvent(new_window_surface_id, {0, 0}, empty_state, ++serial);
 
-  {
-    wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
-    EXPECT_CALL(delegate_, OnActivationChanged(Eq(true)));
-    SendConfigureEvent(surface_id_, {0, 0}, states, ++serial);
-    VerifyAndClearExpectations();
-  }
+  // Request active decorations.
+  wl::ScopedWlArray active_state = InitializeWlArrayWithActivatedState();
+  EXPECT_CALL(delegate_, OnActivationChanged(Eq(true)));
+  SendConfigureEvent(surface_id_, {0, 0}, active_state, ++serial);
+  VerifyAndClearExpectations();
 
-  wl::ScopedWlArray states({});
+  // Plug keyboard.
   EXPECT_CALL(delegate_, OnActivationChanged(Eq(false)));
-  SendConfigureEvent(surface_id_, {0, 0}, states, ++serial);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_KEYBOARD);
+  });
+  VerifyAndClearExpectations();
+
+  // Focus keyboard.
+  EXPECT_CALL(delegate_, OnActivationChanged(Eq(true)));
+  SetKeyboardFocusedWindow(window_.get());
+  VerifyAndClearExpectations();
+
+  // Switch keyboard focus to other window.
+  EXPECT_CALL(delegate_, OnActivationChanged(Eq(false)));
+  EXPECT_CALL(new_window_delegate, OnActivationChanged(Eq(true)));
+  SetKeyboardFocusedWindow(new_window.get());
+  VerifyAndClearExpectations();
+
+  // Switch keyboard focus to menu in other window.
+  EXPECT_CALL(new_window_delegate, OnActivationChanged(_)).Times(0);
+  SetKeyboardFocusedWindow(menu.get());
+  VerifyAndClearExpectations();
+
+  // Unfocus keyboard.
+  EXPECT_CALL(new_window_delegate, OnActivationChanged(Eq(false)));
+  SetKeyboardFocusedWindow(nullptr);
+  VerifyAndClearExpectations();
+
+  // Unplug keyboard - should fall back to xdg-shell activated state.
+  EXPECT_CALL(delegate_, OnActivationChanged(Eq(true)));
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(), 0);
+  });
+  VerifyAndClearExpectations();
+
+  // Request inactive decorations.
+  EXPECT_CALL(delegate_, OnActivationChanged(false));
+  SendConfigureEvent(surface_id_, {0, 0}, empty_state, ++serial);
 }
 
 TEST_P(WaylandWindowTest, OnAcceleratedWidgetDestroy) {
