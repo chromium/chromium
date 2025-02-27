@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
@@ -61,6 +62,7 @@ public class TriStateCookieSettingsPreference extends Preference
 
     // Keeps the params that are applied to the UI if the params are set before the UI is ready.
     private @Nullable Params mInitializationParams;
+    private boolean mIsAlwaysBlock3pcsIncognitoEnabled;
 
     // UI Elements.
     private RadioButtonWithDescription mAllowButton;
@@ -118,6 +120,13 @@ public class TriStateCookieSettingsPreference extends Preference
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        if (mIsAlwaysBlock3pcsIncognitoEnabled) {
+            if (checkedId == mBlockThirdPartyButton.getId()) {
+                RecordUserAction.record("Settings.ThirdPartyCookies.Block");
+            } else if (checkedId == mBlockThirdPartyIncognitoButton.getId()) {
+                RecordUserAction.record("Settings.ThirdPartyCookies.Allow");
+            }
+        }
         callChangeListener(getState());
     }
 
@@ -235,6 +244,7 @@ public class TriStateCookieSettingsPreference extends Preference
         mAllowButton.setVisibility(
                 params.isAlwaysBlock3pcsIncognitoEnabled ? View.GONE : View.VISIBLE);
         if (params.isAlwaysBlock3pcsIncognitoEnabled) {
+            mIsAlwaysBlock3pcsIncognitoEnabled = params.isAlwaysBlock3pcsIncognitoEnabled;
             int allowLabelId = R.string.website_settings_third_party_cookies_page_allow_radio_label;
             mBlockThirdPartyIncognitoButton.setPrimaryText(getResources().getString(allowLabelId));
             int allowSublabelId =
