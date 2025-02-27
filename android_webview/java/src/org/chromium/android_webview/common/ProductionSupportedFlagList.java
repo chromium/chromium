@@ -191,6 +191,9 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.DRAW_IMMEDIATELY_WHEN_INTERACTIVE,
                 "Enable optimization for immediate activation and draw when interactive."),
         Flag.baseFeature(
+                VizFeatures.AVOID_DUPLICATE_DELAY_BEGIN_FRAME,
+                "For epsilonic judder avoid sending duplicate (delay source) begin frames."),
+        Flag.baseFeature(
                 VizFeatures.ACK_ON_SURFACE_ACTIVATION_WHEN_INTERACTIVE,
                 "Enable immediately sending acks to clients when a viz surface activates and when"
                         + " that surface is a dependency of an interactive frame (i.e., when there"
