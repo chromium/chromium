@@ -795,7 +795,8 @@ static const CSSPropertyID kStaticBlockProperties[] = {
                                // elements
     CSSPropertyID::kColumnCount, CSSPropertyID::kColumnGap,
     CSSPropertyID::kColumnRuleColor, CSSPropertyID::kColumnRuleStyle,
-    CSSPropertyID::kColumnRuleWidth, CSSPropertyID::kWebkitColumnBreakBefore,
+    CSSPropertyID::kColumnRuleWidth, CSSPropertyID::kRowRuleWidth,
+    CSSPropertyID::kWebkitColumnBreakBefore,
     CSSPropertyID::kWebkitColumnBreakAfter,
     CSSPropertyID::kWebkitColumnBreakInside, CSSPropertyID::kColumnWidth,
     CSSPropertyID::kPageBreakAfter, CSSPropertyID::kPageBreakBefore,

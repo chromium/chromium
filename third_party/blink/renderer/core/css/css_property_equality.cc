@@ -821,6 +821,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
                  b.InternalVisitedColumnRuleColor();
     case CSSPropertyID::kColumnRuleWidth:
       return a.ColumnRuleWidth() == b.ColumnRuleWidth();
+    case CSSPropertyID::kRowRuleWidth:
+      return a.RowRuleWidth() == b.RowRuleWidth();
     case CSSPropertyID::kColumnWidth:
       return a.ColumnWidth() == b.ColumnWidth();
     case CSSPropertyID::kFilter:

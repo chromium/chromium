@@ -588,6 +588,9 @@ class ComputedStyle final : public ComputedStyleBase {
     return ColumnRuleWidthInternal();
   }
 
+  // row-rule-width
+  GapDataList<int> RowRuleWidth() const { return RowRuleWidthInternal(); }
+
   // content
   ContentData* GetContentData() const { return ContentInternal().Get(); }
 
@@ -2874,6 +2877,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // column-rule-width
   void SetColumnRuleWidth(GapDataList<int> w) { SetColumnRuleWidthInternal(w); }
+
+  // row-rule-width
+  void SetRowRuleWidth(GapDataList<int> w) { SetRowRuleWidthInternal(w); }
 
   // column-width
   void SetColumnWidth(float f) {
