@@ -957,6 +957,63 @@ var availableTests = [
         entityInstancesWithLabelsList);
     chrome.test.succeed();
   },
+
+  async function getEntityInstanceByGuid() {
+    const entityInstance = await chrome.autofillPrivate.getEntityInstanceByGuid(
+        ENTITY_INSTANCE.guid);
+    chrome.test.assertEq(ENTITY_INSTANCE, entityInstance);
+    chrome.test.succeed();
+  },
+
+  async function getAllEntityTypes() {
+    const entityTypesList = await chrome.autofillPrivate.getAllEntityTypes();
+    const expectedEntityTypesList = [
+      {
+        typeName: 0,
+        typeNameAsString: 'Passport',
+        addEntityString: 'Add passport',
+        editEntityString: 'Edit passport'
+      },
+      {
+        typeName: 1,
+        typeNameAsString: 'Loyalty card',
+        addEntityString: 'Add loyalty card',
+        editEntityString: 'Edit loyalty card'
+      },
+      {
+        typeName: 2,
+        typeNameAsString: 'Car',
+        addEntityString: 'Add car',
+        editEntityString: 'Edit car'
+      },
+      {
+        typeName: 3,
+        typeNameAsString: 'Driver\'s license',
+        addEntityString: 'Add driver\'s license',
+        editEntityString: 'Edit driver\'s license'
+      },
+    ];
+    for (const index in expectedEntityTypesList) {
+      chrome.test.assertEq(
+          expectedEntityTypesList[index], entityTypesList[index]);
+    }
+    chrome.test.succeed();
+  },
+
+  async function getAllAttributeTypesForEntity() {
+    const attributeTypesList =
+        await chrome.autofillPrivate.getAllAttributeTypesForEntity(
+            /*entityTypeName=*/ 3);
+    const expectedAttributeTypesList = [
+      {typeName: 13, typeNameAsString: 'Name'},
+      {typeName: 14, typeNameAsString: 'Region'},
+      {typeName: 15, typeNameAsString: 'Number'},
+      {typeName: 16, typeNameAsString: 'Expiration date'},
+      {typeName: 17, typeNameAsString: 'Issue date'},
+    ];
+    chrome.test.assertEq(expectedAttributeTypesList, attributeTypesList);
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -1018,6 +1075,9 @@ var TESTS_FOR_CONFIG = {
   'loadEmptyEntityInstancesList': ['loadEmptyEntityInstancesList'],
   'loadFirstEntityInstance': ['loadFirstEntityInstance'],
   'loadUpdatedEntityInstance': ['loadUpdatedEntityInstance'],
+  'getEntityInstanceByGuid': ['getEntityInstanceByGuid'],
+  'getAllEntityTypes': ['getAllEntityTypes'],
+  'getAllAttributeTypesForEntity': ['getAllAttributeTypesForEntity'],
 };
 
 var testConfig = window.location.search.substring(1);

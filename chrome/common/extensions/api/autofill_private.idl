@@ -402,6 +402,10 @@ namespace autofillPrivate {
   callback hasUserAnnotationsEntriesCallback = void(boolean hasEntries);
   callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
   callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
+  callback GetEntityInstanceByGuid = void(EntityInstance entity);
+  callback GetAllEntityTypesCallback = void(EntityType[] entities);
+  callback GetAllAttributeTypesForEntityCallback =
+      void(AttributeType[] attributes);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -547,6 +551,20 @@ namespace autofillPrivate {
 
     // Returns all of the user's entity instances with labels.
     static void loadEntityInstances(LoadEntityInstancesCallback callback);
+
+    // Returns the entity instance by its guid.
+    static void getEntityInstanceByGuid(
+        DOMString guid, GetEntityInstanceByGuid callback);
+
+    // Returns a list of all possible entity types. Used for the user to decide
+    // what entity instance to add.
+    static void getAllEntityTypes(GetAllEntityTypesCallback callback);
+
+    // Returns a list of all possible attributes that can be set on an entity.
+    // Used for adding/editing a new entity instance.
+    static void getAllAttributeTypesForEntity(
+        long entityTypeName,
+        GetAllAttributeTypesForEntityCallback callback);
   };
 
   interface Events {

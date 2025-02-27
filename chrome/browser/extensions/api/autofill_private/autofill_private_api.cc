@@ -17,6 +17,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
+#include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
@@ -37,6 +39,8 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -56,6 +60,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -81,6 +86,8 @@ using autofill::AddressDataManager;
 using autofill::AutofillEntityDataManagerFactory;
 using autofill::EntityDataManager;
 using autofill::EntityInstance;
+using autofill::EntityType;
+using autofill::EntityTypeName;
 using autofill::PaymentsDataManager;
 using autofill::autofill_metrics::LogMandatoryReauthOptInOrOutUpdateEvent;
 using autofill::autofill_metrics::LogMandatoryReauthSettingsPageEditCardEvent;
@@ -90,10 +97,12 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 static const char kSettingsOrigin[] = "Chrome settings";
 static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
-static const char kErrorAutofillAIUnavailable[] =
+static const char kErrorAutofillAiUnavailable[] =
     "Autofill AI data unavailable.";
 static const char kErrorAutofillAiEntityOutOfBounds[] =
     "The provided Autofill AI entity/attribute is out of bounds.";
+static const char kErrorAutofillAiEntityInstanceNotFound[] =
+    "The provided Autofill AI entity instance cannot be found.";
 static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
 
 // Constant to assign a user-verified verification status to the autofill
@@ -999,7 +1008,7 @@ AutofillPrivateGetUserAnnotationsEntriesFunction::Run() {
   user_annotations::UserAnnotationsService* user_annotations_service =
       profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
   if (!user_annotations_service) {
-    return RespondNow(Error(kErrorAutofillAIUnavailable));
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
 
   user_annotations_service->RetrieveAllEntries(base::BindOnce(
@@ -1041,7 +1050,7 @@ AutofillPrivateDeleteUserAnnotationsEntryFunction::Run() {
       profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
 
   if (!user_annotations_service) {
-    return RespondNow(Error(kErrorAutofillAIUnavailable));
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
 
   user_annotations_service->RemoveEntry(
@@ -1105,7 +1114,7 @@ AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::Run() {
       profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
 
   if (!user_annotations_service) {
-    return RespondNow(Error(kErrorAutofillAIUnavailable));
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
 
   user_annotations_service->RemoveAllEntries(
@@ -1162,7 +1171,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
               : nullptr;
 
   if (!entity_data_manager) {
-    return RespondNow(Error(kErrorAutofillAIUnavailable));
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
   entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
   return RespondNow(NoArguments());
@@ -1178,6 +1187,9 @@ AutofillPrivateRemoveEntityInstanceFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   base::Uuid guid = base::Uuid::ParseLowercase(parameters->guid);
+  if (!guid.is_valid()) {
+    return RespondNow(Error(kErrorAutofillAiEntityInstanceNotFound));
+  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   EntityDataManager* entity_data_manager =
@@ -1185,7 +1197,7 @@ AutofillPrivateRemoveEntityInstanceFunction::Run() {
               : nullptr;
 
   if (!entity_data_manager) {
-    return RespondNow(Error(kErrorAutofillAIUnavailable));
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
   entity_data_manager->RemoveEntityInstance(guid);
   return RespondNow(NoArguments());
@@ -1202,7 +1214,7 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
               : nullptr;
 
   if (!entity_data_manager) {
-    return RespondNow(Error(kErrorAutofillAIUnavailable));
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
   std::vector<autofill_private::EntityInstanceWithLabels> result =
       base::ToVector(entity_data_manager->GetEntityInstances(),
@@ -1210,6 +1222,94 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
                          EntityInstanceToPrivateApiEntityInstanceWithLabels);
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetEntityInstanceByGuidFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
+  std::optional<autofill_private::GetEntityInstanceByGuid::Params> parameters =
+      autofill_private::GetEntityInstanceByGuid::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  base::Uuid guid = base::Uuid::ParseLowercase(parameters->guid);
+  if (!guid.is_valid()) {
+    return RespondNow(Error(kErrorAutofillAiEntityInstanceNotFound));
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  EntityDataManager* entity_data_manager =
+      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
+              : nullptr;
+
+  if (!entity_data_manager) {
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
+  }
+  base::optional_ref<const EntityInstance> entity_instance =
+      entity_data_manager->GetEntityInstance(guid);
+  if (!entity_instance.has_value()) {
+    return RespondNow(Error(kErrorAutofillAiEntityInstanceNotFound));
+  }
+  return RespondNow(ArgumentList(
+      api::autofill_private::GetEntityInstanceByGuid::Results::Create(
+          autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
+              entity_instance.value()))));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetAllEntityTypesFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetAllEntityTypesFunction::Run() {
+  std::vector<autofill_private::EntityType> result = base::ToVector(
+      autofill::DenseSet<EntityType>::all(), [](const EntityType& entity_type) {
+        autofill_private::EntityType private_api_entity_type;
+        private_api_entity_type.type_name =
+            base::to_underlying(entity_type.name());
+        private_api_entity_type.type_name_as_string =
+            base::UTF16ToUTF8(entity_type.GetNameForI18n());
+        private_api_entity_type.add_entity_string =
+            autofill_ai_util::GetAddEntityStringForI18n(entity_type);
+        private_api_entity_type.edit_entity_string =
+            autofill_ai_util::GetEditEntityStringForI18n(entity_type);
+        return private_api_entity_type;
+      });
+  return RespondNow(ArgumentList(
+      autofill_private::GetAllEntityTypes::Results::Create(result)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetAllAttributeTypesForEntityFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetAllAttributeTypesForEntityFunction::Run() {
+  std::optional<autofill_private::GetAllAttributeTypesForEntity::Params>
+      parameters =
+          autofill_private::GetAllAttributeTypesForEntity::Params::Create(
+              args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  std::optional<EntityTypeName> entity_type_name =
+      autofill::ToSafeEntityTypeName(parameters->entity_type_name);
+  if (!entity_type_name.has_value()) {
+    return RespondNow(Error(kErrorAutofillAiEntityOutOfBounds));
+  }
+
+  EntityType entity_type(entity_type_name.value());
+  std::vector<autofill_private::AttributeType> result = base::ToVector(
+      entity_type.attributes(),
+      [](const autofill::AttributeType& attribute_type) {
+        autofill_private::AttributeType private_api_attribute_type;
+        private_api_attribute_type.type_name =
+            base::to_underlying(attribute_type.name());
+        private_api_attribute_type.type_name_as_string =
+            base::UTF16ToUTF8(attribute_type.GetNameForI18n());
+        return private_api_attribute_type;
+      });
+  return RespondNow(ArgumentList(
+      autofill_private::GetAllAttributeTypesForEntity::Results::Create(
+          result)));
 }
 
 }  // namespace extensions

@@ -270,6 +270,11 @@ declare global {
       export function removeEntityInstance(guid: string): void;
       export function loadEntityInstances():
           Promise<EntityInstanceWithLabels[]>;
+      export function getEntityInstanceByGuid(guid: string):
+          Promise<EntityInstance>;
+      export function getAllEntityTypes(): Promise<EntityType[]>;
+      export function getAllAttributeTypesForEntity(entityTypeName: number):
+          Promise<AttributeType[]>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], accountInfo?: AccountInfo) => void>;
