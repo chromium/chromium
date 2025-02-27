@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.test;
+package org.chromium.android_webview.test.payments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,6 +20,13 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.test.AwActivityTestRule;
+import org.chromium.android_webview.test.AwJUnit4ClassRunnerWithParameters;
+import org.chromium.android_webview.test.AwParameterizedTest;
+import org.chromium.android_webview.test.AwSettingsMutation;
+import org.chromium.android_webview.test.AwTestContainerView;
+import org.chromium.android_webview.test.TestAwContentsClient;
+import org.chromium.android_webview.test.TestWebMessageListener;
 import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.Callback;
