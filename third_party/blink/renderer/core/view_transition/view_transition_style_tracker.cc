@@ -1016,11 +1016,6 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
 void ViewTransitionStyleTracker::SetCaptureRectsFromCompositor(
     const std::unordered_map<viz::ViewTransitionElementResourceId, gfx::RectF>&
         rects) {
-  if (!RuntimeEnabledFeatures::ViewTransitionOverflowRectFromSurfaceEnabled()) {
-    // CC might collect these rects when the feature is disabled, but we're
-    // ignoring them in that case.
-    return;
-  }
 
   CHECK(!HasLiveNewContent());
   for (auto& entry : element_data_map_) {
@@ -1594,17 +1589,15 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
   snapshot_matrix_in_css_space.Zoom(1.0 / device_pixel_ratio_);
 
   PhysicalOffset offset_in_css_space;
-  if (RuntimeEnabledFeatures::ViewTransitionOverflowRectFromSurfaceEnabled()) {
-    // In this mode, the max extents rect (the capture rect we guess here) and
-    // the border box are in the enclosing layer coordinate space. That's a more
-    // convenient coordinate space than the element's own space as it matches
-    // CC's coordinate space (e.g. RenderSurfaceImpl::content_rect()).
-    if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
-      offset_in_css_space = layout_inline->PhysicalLinesBoundingBox().offset;
-    }
-
-    offset_in_css_space.Scale(1.f / device_pixel_ratio_);
+  // In this mode, the max extents rect (the capture rect we guess here) and
+  // the border box are in the enclosing layer coordinate space. That's a more
+  // convenient coordinate space than the element's own space as it matches
+  // CC's coordinate space (e.g. RenderSurfaceImpl::content_rect()).
+  if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
+    offset_in_css_space = layout_inline->PhysicalLinesBoundingBox().offset;
   }
+
+  offset_in_css_space.Scale(1.f / device_pixel_ratio_);
 
   // For layered capture, the reference box might be the content box, based on
   // box-sizing.
@@ -2185,8 +2178,7 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetInkOverflowRect(
 
 gfx::RectF ViewTransitionStyleTracker::ElementData::GetCapturedSubrect(
     bool use_cached_data) const {
-  if (RuntimeEnabledFeatures::ViewTransitionOverflowRectFromSurfaceEnabled() &&
-      use_cached_data) {
+  if (use_cached_data) {
     return GetInkOverflowRect(true);
   }
   auto captured_rect = use_cached_data ? cached_captured_rect_in_layout_space
@@ -2214,9 +2206,7 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetReferenceRect(
 
 bool ViewTransitionStyleTracker::ElementData::
     ShouldPropagateVisualOverflowRectAsMaxExtentsRect() const {
-  return RuntimeEnabledFeatures::
-             ViewTransitionOverflowRectFromSurfaceEnabled() &&
-         target_element && !target_element->IsDocumentElement();
+  return target_element && !target_element->IsDocumentElement();
 }
 
 void ViewTransitionStyleTracker::ElementData::CacheStateForOldSnapshot() {
@@ -2244,158 +2234,24 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     LayoutBoxModelObject& box,
     const LayoutBoxModelObject* ancestor) const {
   DCHECK(!box.IsLayoutView());
-  if (RuntimeEnabledFeatures::ViewTransitionOverflowRectFromSurfaceEnabled()) {
-    // In this mode, we don't try to compute the pixel-precise capture rect.
-    // Instead, we compute the max extents: a rect that's close enough to that
-    // rect and contains it. This rect is used for clipping computation in CC.
-    // When displaying live content, ViewTransitionContentImpl would later
-    // "correct" this rect to the actual capture rect that's computed inside CC.
-    // Note that this rect is in enclosing layer space, to match the CC
-    // coordinate space. So the border box rect also has to be in the same
-    // coordinate space.
-    auto rect = box.EnclosingLayer()
-                    ->LocalBoundingBoxIncludingSelfPaintingDescendants();
-    if (!ViewTransitionUtils::UseLayeredCapture(box.StyleRef())) {
-      rect = box.ApplyFiltersToRect(rect);
-    }
 
-    // Correct for fractional offset.
-    rect.Move(box.FirstFragment().PaintOffset());
-    return PhysicalRect(ToEnclosingRect(rect));
+  // We don't try to compute the pixel-precise capture rect.
+  // Instead, we compute the max extents: a rect that's close enough to that
+  // rect and contains it. This rect is used for clipping computation in CC.
+  // When displaying live content, ViewTransitionContentImpl would later
+  // "correct" this rect to the actual capture rect that's computed inside CC.
+  // Note that this rect is in enclosing layer space, to match the CC
+  // coordinate space. So the border box rect also has to be in the same
+  // coordinate space.
+  auto rect =
+      box.EnclosingLayer()->LocalBoundingBoxIncludingSelfPaintingDescendants();
+  if (!ViewTransitionUtils::UseLayeredCapture(box.StyleRef())) {
+    rect = box.ApplyFiltersToRect(rect);
   }
 
-  if (ancestor) {
-    if (auto* element = DynamicTo<Element>(box.GetNode());
-        element && IsTransitionElement(*element)) {
-      return {};
-    }
-  }
-
-  const bool visible = box.StyleRef().Visibility() == EVisibility::kVisible ||
-                       !box.VisualRectRespectsVisibility();
-  const bool layered_effects_contribute_to_visual_overflow =
-      ancestor || !ViewTransitionUtils::UseLayeredCapture(box.StyleRef());
-  PhysicalRect result;
-
-  if (layered_effects_contribute_to_visual_overflow) {
-    if (auto clip_path_bounds =
-            ClipPathClipper::LocalClipPathBoundingBox(box)) {
-      // TODO(crbug.com/40840594): This is just the bounds of the clip-path, as
-      // opposed to the intersection between the clip-path and the border box
-      // bounds. This seems suboptimal, but that's the rect that we use further
-      // down the pipeline to generate the texture.
-      // TODO(khushalsagar): This doesn't account for CSS clip property.
-      if (visible) {
-        result = PhysicalRect::EnclosingRect(*clip_path_bounds);
-        if (ancestor) {
-          box.MapToVisualRectInAncestorSpace(ancestor, result,
-                                             kUseGeometryMapper);
-        }
-      }
-
-      return result;
-    }
-  }
-
-  auto* paint_layer = box.Layer();
-  if (!paint_layer || (!box.ChildPaintBlockedByDisplayLock() &&
-                       !paint_layer->KnownToClipSubtreeToPaddingBox())) {
-    const LayoutBoxModelObject* ancestor_for_recursion =
-        ancestor ? ancestor : &box;
-    for (auto* child = box.SlowFirstChild(); child;
-         child = child->NextSibling()) {
-      // Recurse for every child. Doing a paint walk here is insufficient
-      // because of visibility considerations on each layout object. See
-      // crbug.com/1458568 for more details.
-      if (auto* child_box = DynamicTo<LayoutBoxModelObject>(child)) {
-        PhysicalRect mapped_overflow_rect =
-            ComputeVisualOverflowRect(*child_box, ancestor_for_recursion);
-        result.Unite(mapped_overflow_rect);
-      } else if (auto* child_text = DynamicTo<LayoutText>(child)) {
-        if (box.IsLayoutInline()) {
-          continue;
-        }
-
-        const bool child_visible =
-            child_text->StyleRef().Visibility() == EVisibility::kVisible ||
-            !child_text->VisualRectRespectsVisibility();
-        if (!child_visible) {
-          continue;
-        }
-
-        auto overflow_rect = child_text->VisualOverflowRect();
-        child_text->MapToVisualRectInAncestorSpace(
-            ancestor_for_recursion, overflow_rect, kUseGeometryMapper);
-        result.Unite(overflow_rect);
-      }
-    }
-  }
-
-  PhysicalRect overflow_rect;
-  if (visible) {
-    if (auto* layout_box = DynamicTo<LayoutBox>(box)) {
-      overflow_rect = layout_box->PhysicalBorderBoxRect();
-      if (layout_box->StyleRef().HasVisualOverflowingEffect()) {
-        PhysicalBoxStrut outsets =
-            layout_box->ComputeVisualEffectOverflowOutsets();
-        overflow_rect.Expand(outsets);
-      }
-    } else {
-      overflow_rect = To<LayoutInline>(box).LinesVisualOverflowBoundingBox();
-    }
-  }
-
-  if (ancestor) {
-    // For any recursive call, we map our overflow rect into the
-    // ancestor space and combine that with the result. GeometryMapper should
-    // take care of any filters and clips that are necessary between this box
-    // and the ancestor.
-    if (visible) {
-      box.MapToVisualRectInAncestorSpace(ancestor, overflow_rect,
-                                         kUseGeometryMapper);
-      result.Unite(overflow_rect);
-    }
-  } else {
-    // We're at the root of the recursion, so clip self painting descendant
-    // overflow by the overflow clip rect, then add in the visual overflow (with
-    // filters) from the own painting layer.
-    if (auto* layout_box = DynamicTo<LayoutBox>(&box);
-        layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
-      result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
-    } else if (auto* layout_inline = DynamicTo<LayoutInline>(box)) {
-      // We need the `overflow_rect` to be relative to the inline's
-      // border-box. However, `LayoutInline::LinesVisualOverflowBoundingBox()`
-      // is relative to the inline's container's border-box. The offset below
-      // removes the translation between the container's border-box and the
-      // inline's border-box.
-      //
-      // This mapping is done internally by
-      // `LayoutObject::MapToVisualRectInAncestorSpace` so its not necessary
-      // when computing overflow for an ancestor.
-      overflow_rect.Move(-layout_inline->PhysicalLinesBoundingBox().offset);
-    }
-
-    if (visible) {
-      result.Unite(overflow_rect);
-    }
-
-    if (layered_effects_contribute_to_visual_overflow) {
-      result = box.ApplyFiltersToRect(result);
-    }
-
-    // TODO(crbug.com/1432868): This captures a couple of common cases --
-    // box-shadow and no box shadow on the element. However, this isn't at all
-    // comprehensive. The paint system determines per element whether it
-    // should pixel snap or enclosing rect or something else. We need to think
-    // of a better way to fix this for all cases.
-    result.Move(box.FirstFragment().PaintOffset());
-    if (visible && box.StyleRef().BoxShadow()) {
-      result = PhysicalRect(ToEnclosingRect(result));
-    } else {
-      result = PhysicalRect(ToPixelSnappedRect(result));
-    }
-  }
-  return result;
+  // Correct for fractional offset.
+  rect.Move(box.FirstFragment().PaintOffset());
+  return PhysicalRect(ToEnclosingRect(rect));
 }
 
 const char* ViewTransitionStyleTracker::StateToString(State state) {

@@ -5669,12 +5669,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kViewTransitionOnNavigationIframeDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kViewTransitionOnNavigationForIframes)},
-    {"view-transition-overflow-rect-from-surface",
-     flag_descriptions::kViewTransitionOverflowRectFromSurfaceName,
-     flag_descriptions::kViewTransitionOverflowRectFromSurfaceDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kViewTransitionOverflowRectFromSurface)},
 #if BUILDFLAG(IS_WIN)
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,

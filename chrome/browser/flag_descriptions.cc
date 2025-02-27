@@ -1164,14 +1164,6 @@ const char kViewTransitionOnNavigationIframeDescription[] =
     "navigations in a subframe. Must be used with "
     "view-transition-on-navigation";
 
-const char kViewTransitionOverflowRectFromSurfaceName[] =
-    "CSS view transitions: compute visual overflow from surfaces";
-const char kViewTransitionOverflowRectFromSurfaceDescription[] =
-    "Changes the underlying mechanism to compute the view transition live "
-    "element geometry. "
-    "This shouldn't have web-observable effects, but exposing as a flag for "
-    "easy triage.";
-
 const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
 const char kEnableAutoDisableAccessibilityDescription[] =
     "When accessibility APIs are no longer being requested, automatically "

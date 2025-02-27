@@ -4735,11 +4735,6 @@
       status: "stable",
     },
     {
-      name: "ViewTransitionOverflowRectFromSurface",
-      status: "stable",
-      implied_by: ["ViewTransitionLayeredCapture"],
-    },
-    {
       name: "VisibilityCollapseColumn",
     },
     {
