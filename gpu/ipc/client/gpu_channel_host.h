@@ -114,6 +114,11 @@ class GPU_EXPORT GpuChannelHost
   // flushed.
   virtual void EnsureFlush(uint32_t deferred_message_id);
 
+  // Ensure that the all deferred messages prior up to |deferred_message_id|
+  // have been flushed after a delay of `kDelayForEnsuringFlush`. Pass
+  // UINT32_MAX to force all pending deferred messages to be flushed.
+  virtual void DelayedEnsureFlush(uint32_t deferred_message_id);
+
   // Verify that the all deferred messages prior upto |deferred_message_id| have
   // reached the service. Pass UINT32_MAX to force all pending deferred messages
   // to be verified.
@@ -335,6 +340,12 @@ class GPU_EXPORT GpuChannelHost
   uint32_t enqueued_deferred_message_id_ GUARDED_BY(deferred_message_lock_) = 0;
   // Highest deferred message id sent to the channel.
   uint32_t flushed_deferred_message_id_ GUARDED_BY(deferred_message_lock_) = 0;
+
+  // Optional deferred message id up to which the deferred messages are flushed.
+  // Reset in the delayed task.
+  std::optional<uint32_t> delayed_flush_deferred_message_id_
+      GUARDED_BY(deferred_message_lock_);
+  static constexpr base::TimeDelta kDelayForEnsuringFlush = base::Seconds(2);
 
   const bool sync_point_graph_validation_enabled_;
 };
