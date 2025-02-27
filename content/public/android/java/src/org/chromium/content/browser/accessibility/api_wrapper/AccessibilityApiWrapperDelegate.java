@@ -4,17 +4,19 @@
 
 package org.chromium.content.browser.accessibility.api_wrapper;
 
-import androidx.annotation.Nullable;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A delegation interface for accessibility API wrapper library with accessibility API signatures
  * exposed to internal clank to implement. Methods should exactly match the API.
  */
+@NullMarked
 public interface AccessibilityApiWrapperDelegate {
     /** An example test API demonstrating the usage of the accessibility API wrapper library. */
-    @Nullable
-    public CharSequence getMyTestStringApi(AccessibilityNodeInfoCompat node);
+    public @Nullable CharSequence getMyTestStringApi(AccessibilityNodeInfoCompat node);
 
     /** An example test API demonstrating the usage of the accessibility API wrapper library. */
     public void setMyTestStringApi(
