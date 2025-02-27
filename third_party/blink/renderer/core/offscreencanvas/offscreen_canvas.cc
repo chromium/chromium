@@ -568,7 +568,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // using the software compositor
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
-    provider = CanvasResourceProvider::CreateSharedBitmapProvider(
+    provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
         Size(), format, alpha_type, color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::SharedImageInterfaceProvider(), this);

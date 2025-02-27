@@ -128,11 +128,12 @@ class CanvasResourceDispatcherTest
 
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(
         agent_group_scheduler_compositor_task_runner);
-    resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-        gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
-        kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
-        test_web_shared_image_interface_provider_.get());
+    resource_provider_ =
+        CanvasResourceProvider::CreateSoftwareSharedImageProvider(
+            gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
+            kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
+            CanvasResourceProvider::ShouldInitialize::kCallClear,
+            test_web_shared_image_interface_provider_.get());
   }
 
   MockCanvasResourceDispatcher* Dispatcher() { return dispatcher_.get(); }

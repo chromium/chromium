@@ -600,12 +600,12 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
 }
 
 TEST_F(CanvasResourceProviderTest,
-       CanvasResourceProviderSharedBitmap_GPUCompositing) {
+       CanvasResourceProviderSoftwareSharedImage_GPUCompositing) {
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
 
-  EXPECT_FALSE(CanvasResourceProvider::CreateSharedBitmapProvider(
+  EXPECT_FALSE(CanvasResourceProvider::CreateSoftwareSharedImageProvider(
       gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
@@ -613,7 +613,7 @@ TEST_F(CanvasResourceProviderTest,
 }
 
 TEST_F(CanvasResourceProviderTest,
-       CanvasResourceProviderSharedBitmap_SWCompositing) {
+       CanvasResourceProviderSoftwareSharedImage_SWCompositing) {
   platform_->SetGpuCompositingDisabled(true);
 
   const gfx::Size kSize(10, 10);
@@ -623,7 +623,7 @@ TEST_F(CanvasResourceProviderTest,
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
 
-  auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
+  auto provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
       kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
       gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
