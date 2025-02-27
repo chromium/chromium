@@ -148,7 +148,7 @@ struct GeneratedFiles {
   const base::FilePath::CharType* expected_name;
   bool need_htm_ext;
 };
-const auto kGeneratedFiles = std::to_array<GeneratedFiles>({
+constexpr auto kGeneratedFiles = std::to_array<GeneratedFiles>({
     // We mainly focus on testing duplicated names here, since retrieving file
     // name from disposition and url has been tested in DownloadManagerTest.
 
