@@ -4,6 +4,7 @@
 
 source_set("strike_databases") {
   sources = [
+    "autofill_ai_save_strike_database_by_attribute.h",
     "autofill_ai_save_strike_database_by_host.cc",
     "autofill_ai_save_strike_database_by_host.h",
   ]
