@@ -213,9 +213,23 @@ AndroidPlatformConfiguration::GetEnableRates(
     return RelativePopulations{0.0, 100.0, 0.0};
   }
 
-  CHECK(*release_channel == version_info::Channel::CANARY ||
-        *release_channel == version_info::Channel::DEV ||
-        *release_channel == version_info::Channel::BETA);
+  CHECK(*release_channel != version_info::Channel::UNKNOWN);
+
+  if (*release_channel == version_info::Channel::STABLE) {
+// Only enable for arm64, as this does not require DFM installation.
+#if defined(ARCH_CPU_ARM64)
+    // For 100% of population
+    // - 1/2 within the subgroup, i.e. 50.0% of total population, enable
+    // profiling.
+    // - 1/2 within the subgroup, disable profiling.
+    // This results a total of 0.00005% enable rate.
+    static constexpr double experiment_rate = 0.0001;
+    return RelativePopulations{100.0 - experiment_rate, 0.0, experiment_rate};
+#else
+    // Don't enable for arm32.
+    return RelativePopulations{100.0, 0.0, 0.0};
+#endif
+  }
 
   if (*release_channel == version_info::Channel::BETA) {
     // For 100% of population
@@ -310,11 +324,15 @@ bool AndroidPlatformConfiguration::IsSupportedForChannel(
     return true;
   }
 
-  // Canary, dev, and beta channels are supported in release builds.
+  // Canary, dev, beta, stable channels are supported in release builds, with
+  // stable only support on arm64.
   switch (*release_channel) {
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
+#if defined(ARCH_CPU_ARM64)
+    case version_info::Channel::STABLE:
+#endif
       return true;
 
     default:
