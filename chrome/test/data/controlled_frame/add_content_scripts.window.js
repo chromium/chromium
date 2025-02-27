@@ -38,7 +38,7 @@ promise_test(async (test) => {
     name: 'test',
     matches: ['https://*/*'],
     js: {files: ['/resources/content_script.js']},
-    run_at: 'document_start',
+    runAt: 'document-start',
   }]);
 
   assert_equals('', await getBackgroundColor(controlledFrame));
@@ -60,7 +60,7 @@ promise_test(async (test) => {
     name: 'test',
     matches: ['*invalid pattern*'],
     js: {files: ['/resources/content_script.js']},
-    run_at: 'document_start',
+    runAt: 'document-start',
   }]);
 
   const expectedErrorMessage =
