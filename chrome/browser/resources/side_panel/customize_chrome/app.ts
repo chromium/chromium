@@ -80,7 +80,6 @@ export class AppElement extends AppElementBase {
       selectedCollection_: {type: Object},
       extensionsCardEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
-      toolbarCustomizationEnabled_: {type: Boolean},
       isSourceTabFirstPartyNtp_: {type: Boolean},
     };
   }
@@ -100,8 +99,6 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('extensionsCardEnabled');
   protected wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  protected toolbarCustomizationEnabled_: boolean =
-      loadTimeData.getBoolean('toolbarCustomizationEnabled');
   protected isSourceTabFirstPartyNtp_: boolean = true;
   private scrollToSectionListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;

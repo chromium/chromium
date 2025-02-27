@@ -22,20 +22,17 @@ export function getHtml(this: AppElement) {
           id="appearanceElement">
       </customize-chrome-appearance>
     </div>
-    ${this.toolbarCustomizationEnabled_ ? html`
-      <hr class="sp-cards-separator">
-      <cr-button id="toolbarButton" class="section sp-card"
-          @click="${this.onToolbarCustomizationButtonClick_}">
-        <sp-heading hide-back-button id="toolbar-customization-heading">
-          <h2 slot="heading" id="toolbar-customization-inner-heading"
-              aria-label="$i18n{toolbarButtonA11yLabel}">
-            $i18n{toolbarHeader}
-            <new-badge></new-badge>
-          </h2>
-        </sp-heading>
-        <cr-icon icon="cr:chevron-right" slot="suffix-icon"></cr-icon>
-      </cr-button>
-    ` : ''}
+    <hr class="sp-cards-separator">
+    <cr-button id="toolbarButton" class="section sp-card"
+        @click="${this.onToolbarCustomizationButtonClick_}">
+      <sp-heading hide-back-button id="toolbar-customization-heading">
+        <h2 slot="heading" id="toolbar-customization-inner-heading"
+            aria-label="$i18n{toolbarButtonA11yLabel}">
+          $i18n{toolbarHeader}
+        </h2>
+      </sp-heading>
+      <cr-icon icon="cr:chevron-right" slot="suffix-icon"></cr-icon>
+    </cr-button>
      ${this.isSourceTabFirstPartyNtp_ ? html`<hr class="sp-cards-separator">
     <div id="shortcuts" class="section sp-card">
       <sp-heading hide-back-button>
@@ -97,10 +94,8 @@ export function getHtml(this: AppElement) {
         page-name="wallpaper-search" id="wallpaperSearchPage">
     </customize-chrome-wallpaper-search>
   ` : ''}
-  ${this.toolbarCustomizationEnabled_ ? html`
-    <customize-chrome-toolbar @back-click="${this.onBackClick_}"
+  <customize-chrome-toolbar @back-click="${this.onBackClick_}"
       page-name="toolbar" id="toolbarPage"></customize-chrome-toolbar>
-  ` : ''}
 </cr-page-selector>
 <!--_html_template_end_-->`;
   // clang-format on
