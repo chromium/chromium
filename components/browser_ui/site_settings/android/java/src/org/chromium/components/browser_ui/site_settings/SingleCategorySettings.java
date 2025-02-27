@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
@@ -1125,6 +1126,57 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         return false;
     }
 
+    private @StringRes int getTextInfoResourceId() {
+        if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
+            return R.string.website_settings_site_data_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+            return R.string.website_settings_third_party_cookies_page_description;
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER) {
+            return R.string.website_settings_category_javascript_optimizer_page_description;
+        } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
+            if (mCategory.getType() == SiteSettingsCategory.Type.DEVICE_LOCATION) {
+                return R.string.website_settings_location_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS) {
+                return R.string.website_settings_notifications_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.CAMERA) {
+                return R.string.website_settings_camera_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.MICROPHONE) {
+                return R.string.website_settings_mic_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.SENSORS) {
+                return R.string.website_settings_motion_sensors_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.NFC) {
+                return R.string.website_settings_nfc_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.USB) {
+                return R.string.website_settings_usb_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.CLIPBOARD) {
+                return R.string.website_settings_clipboard_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.VIRTUAL_REALITY) {
+                return R.string.website_settings_vr_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.AUGMENTED_REALITY) {
+                return R.string.website_settings_ar_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.IDLE_DETECTION) {
+                return R.string.website_settings_idle_detection_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT) {
+                return R.string.website_settings_javascript_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.POPUPS) {
+                return R.string.website_settings_popups_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.ADS) {
+                return R.string.website_settings_ads_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
+                return R.string.website_settings_sound_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.FEDERATED_IDENTITY_API) {
+                return R.string.website_settings_federated_identity_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+                return R.string.website_settings_desktop_site_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.BACKGROUND_SYNC) {
+                return R.string.website_settings_background_sync_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS) {
+                return R.string.website_settings_automatic_downloads_page_description;
+            }
+        }
+        return -1;
+    }
+
     private void configureGlobalToggles() {
         int contentType = mCategory.getContentSettingsType();
         PreferenceScreen screen = getPreferenceScreen();
@@ -1175,15 +1227,14 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         }
 
         Preference infoText = assumeNonNull(screen.findPreference(INFO_TEXT_KEY));
-        if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
-            infoText.setSummary(R.string.website_settings_site_data_page_description);
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
-            infoText.setSummary(R.string.website_settings_third_party_cookies_page_description);
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
+        @StringRes int res_id = getTextInfoResourceId();
+        if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
             infoText.setSummary(getStorageAccessSummary());
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER) {
-            infoText.setSummary(
-                    R.string.website_settings_category_javascript_optimizer_page_description);
+        } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()
+         && mCategory.getType() == SiteSettingsCategory.Type.PROTECTED_MEDIA) {
+            infoText.setSummary(getProtectedMediaSummary());
+        } else if (res_id != -1) {
+            infoText.setSummary(res_id);
         } else {
             screen.removePreference(infoText);
         }
@@ -1330,6 +1381,22 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                         });
         return SpanApplier.applySpans(
                 storageAccessRawString,
+                new SpanApplier.SpanInfo("<link>", "</link>", clickableSpan));
+    }
+
+    private SpannableString getProtectedMediaSummary() {
+        final String protectedMediaRawString =
+                getContext()
+                        .getString(R.string.website_settings_protected_content_page_description);
+        final ChromeClickableSpan clickableSpan =
+                new ChromeClickableSpan(
+                        getContext(),
+                        (widget) -> {
+                            getSiteSettingsDelegate()
+                                    .launchProtectedContentHelpAndFeedbackActivity(getActivity());
+                        });
+        return SpanApplier.applySpans(
+                protectedMediaRawString,
                 new SpanApplier.SpanInfo("<link>", "</link>", clickableSpan));
     }
 
