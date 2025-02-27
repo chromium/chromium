@@ -202,6 +202,8 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
     quad_offset = gfx::Vector2d(-visible_rect.x(), -visible_rect.y());
   }
 
+  // TODO(crbug.com/40902346): Use scaled_cull_rect to set
+  // append_quads_data->checkerboarded_needs_record.
   std::optional<gfx::Rect> scaled_cull_rect;
   const ScrollTree& scroll_tree =
       layer_tree_impl()->property_trees()->scroll_tree();
@@ -222,6 +224,18 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
            tilings_, shared_quad_state->visible_quad_layer_rect,
            max_contents_scale, ideal_scale_key);
        iter; ++iter) {
+    if (is_backdrop_filter_mask_) {
+      // Don't create and append a quad as that will be done in
+      // RenderSurfaceImpl::AppendQuads. However, it's necessary to pass the
+      // TransferableResource that will be used for that code to
+      // LayerContextImpl to ensure that it gets added to the CompositorFrame.
+      CHECK_EQ(tilings_.size(), 1u);
+      CHECK(iter->resource());
+      used_resources.push_back(iter->resource()->resource);
+      client_->DidAppendQuadsWithResources(used_resources);
+      return;
+    }
+
     const gfx::Rect geometry_rect = iter.geometry_rect();
     const gfx::Rect visible_geometry_rect =
         scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
@@ -279,6 +293,16 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
 
   client_->DidAppendQuadsWithResources(used_resources);
+}
+
+void TileDisplayLayerImpl::GetContentsResourceId(
+    viz::ResourceId* resource_id,
+    gfx::Size* resource_size,
+    gfx::SizeF* resource_uv_size) const {
+  CHECK(is_backdrop_filter_mask_);
+  *resource_id = resource_id_;
+  *resource_size = texture_size_;
+  *resource_uv_size = uv_size_;
 }
 
 }  // namespace cc
