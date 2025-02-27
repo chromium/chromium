@@ -801,10 +801,16 @@ struct AutocompleteMatch {
   // for how headers should be represented.
   std::string extra_headers;
 
-  // Optional image information. Used for entity suggestions. The dominant color
-  // can be used to paint the image placeholder while fetching the image.
+  // Optional image information. Used for some types of suggestions, such as
+  // entity suggestions, that want to display an associated image, which will be
+  // rendered larger than a regular suggestion icon. The dominant color can be
+  // used to paint the image placeholder while fetching the image.
   std::string image_dominant_color;
   GURL image_url;
+
+  // Optional icon URL. Providers may set this to override the default icon for
+  // the match.
+  GURL icon_url;
 
   // Optional entity id for entity suggestions. Empty string means no entity ID.
   // This is not meant for display, but internal use only. The actual UI display

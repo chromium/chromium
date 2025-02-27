@@ -1436,6 +1436,38 @@ TEST_F(OmniboxEditModelPopupTest,
   gfx::test::CheckColors(bitmap.getColor(0, 0),
                          image.ToSkBitmap()->getColor(0, 0));
 }
+
+// Tests the `GetMatchIcon()` method, verifying that the icon served by a URL,
+// if one is supplied with a content suggestion, is returned.
+TEST_F(OmniboxEditModelPopupTest,
+       GetMatchIconForFeaturedEnterpriseSearchAggregatorContentSuggestion) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorBLUE);
+
+  // Creates a set of matches.
+  ACMatches matches;
+  AutocompleteMatch search_aggregator_match(
+      nullptr, 1350, false, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
+  search_aggregator_match.keyword = u"searchaggregator";
+  search_aggregator_match.associated_keyword =
+      std::make_unique<AutocompleteMatch>(search_aggregator_match);
+  matches.push_back(search_aggregator_match);
+  AutocompleteMatch content_match(nullptr, 1000, false,
+                                  AutocompleteMatchType::NAVSUGGEST);
+  content_match.icon_url = GURL("https://example.com/icon.png");
+  matches.push_back(content_match);
+  AutocompleteResult* result =
+      &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  // Sets the popup rich suggestion bitmap for search aggregator match.
+  model()->SetPopupRichSuggestionBitmap(1, bitmap);
+
+  gfx::Image image = model()->GetMatchIcon(content_match, 0);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.ToSkBitmap()->getColor(0, 0));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1512,7 +1544,7 @@ TEST_F(OmniboxEditModelPopupTest, GetIconForExtensionWithImageURL) {
   gfx::test::CheckColors(bitmap.getColor(0, 0),
                          image.ToSkBitmap()->getColor(0, 0));
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
   // Escape should incrementally revert temporary text, close the popup, clear

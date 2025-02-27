@@ -103,9 +103,6 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                      const TemplateURLRef& url_ref,
                                      SuggestionType suggestion_type) const;
 
-  // Helper method to get `image_url`, if one is available, for `CreateMatch()`.
-  std::string GetMatchImageUrl(const base::Value::Dict& result) const;
-
   // Helper method to get `description` based on `suggestion_type` for
   // `CreateMatch()`.
   std::string GetMatchDescription(const base::Value::Dict& result,
@@ -122,6 +119,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                 int relevance,
                                 const std::string& destination_url,
                                 const std::string& image_url,
+                                const std::string& icon_url,
                                 const std::u16string& description,
                                 const std::u16string& contents);
 

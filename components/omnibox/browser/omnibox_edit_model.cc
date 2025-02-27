@@ -1717,6 +1717,13 @@ bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
                                           SkColor vector_icon_color) const {
+  if (!match.icon_url.is_empty()) {
+    const SkBitmap* bitmap = GetPopupRichSuggestionBitmap(match.icon_url);
+    if (bitmap) {
+      return controller_->client()->GetSizedIcon(bitmap);
+    }
+  }
+
   gfx::Image extension_icon = GetMatchIconIfExtension(match);
   if (!extension_icon.IsEmpty()) {
     return extension_icon;
@@ -2227,8 +2234,10 @@ const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
   auto iter =
       std::ranges::find_if(autocomplete_controller()->result(),
                            [&image_url](const AutocompleteMatch& result_match) {
-                             return !result_match.ImageUrl().is_empty() &&
-                                    result_match.ImageUrl() == image_url;
+                             return (!result_match.ImageUrl().is_empty() &&
+                                    result_match.ImageUrl() == image_url)
+                             || (!result_match.icon_url.is_empty() &&
+                                    result_match.icon_url == image_url);
                            });
   return iter == autocomplete_controller()->result().end()
              ? nullptr
