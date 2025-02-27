@@ -15,8 +15,9 @@
     },
     {
       "name": "HorizontalScrollbar",
-      "position": [10, 97],
-      "bounds": [104, 257]
+      "position": [2, 87],
+      "bounds": [100, 15],
+      "transform": 1
     },
     {
       "name": "VerticalScrollbar",
@@ -38,8 +39,10 @@
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV id='scrolled-absolute-grandchildren-not-contained' class='scrolled'",
-      "position": [6, 6],
-      "bounds": [75, 136],
+      "position": [6, 90],
+      "bounds": [75, 24],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 2
     },
     {
@@ -107,8 +110,10 @@
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV id='scrolled-absolute-not-contained' class='scrolled'",
-      "position": [6, 6],
-      "bounds": [75, 136],
+      "position": [6, 90],
+      "bounds": [75, 24],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 6
     },
     {
@@ -154,6 +159,11 @@
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='container-absolute-sibling-grandchildren' class='positionAbsolute overflow'",
+      "bounds": [104, 104],
+      "transform": 9
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container-absolute-sibling-grandchildren' class='positionAbsolute overflow'",
       "position": [2, 2],
       "bounds": [85, 85],
       "drawsContent": false,
@@ -193,8 +203,9 @@
     },
     {
       "name": "HorizontalScrollbar",
-      "position": [130, 217],
-      "bounds": [224, 137]
+      "position": [2, 87],
+      "bounds": [100, 15],
+      "transform": 11
     },
     {
       "name": "VerticalScrollbar",
@@ -277,14 +288,20 @@
     },
     {
       "name": "Scroll corner of LayoutBlockFlow (positioned) DIV id='container-absolute' class='positionAbsolute overflow'",
-      "position": [370, 217],
-      "bounds": [104, 137]
+      "position": [87, 87],
+      "bounds": [15, 15],
+      "transform": 15
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='container-absolute' class='positionAbsolute overflow'",
       "position": [2, 2],
       "bounds": [105, 144],
       "transform": 16
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container-fixed-sibling-grandchildren' class='positionAbsolute overflow'",
+      "position": [10, 250],
+      "bounds": [344, 104]
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='container-fixed-sibling-grandchildren' class='positionAbsolute overflow'",
@@ -411,6 +428,11 @@
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='container-fixed' class='positionAbsolute overflow'",
+      "bounds": [104, 104],
+      "transform": 26
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container-fixed' class='positionAbsolute overflow'",
       "position": [2, 2],
       "bounds": [85, 85],
       "drawsContent": false,
@@ -491,6 +513,24 @@
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 34
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='scrolled-absolute-grandchildren-not-contained' class='scrolled onTop'",
+      "position": [6, 6],
+      "bounds": [75, 136],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='scrolled-absolute-grandchildren' class='scrolled onTop'",
+      "position": [6, 6],
+      "bounds": [75, 136],
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='scrolled-absolute-not-contained' class='scrolled onTop'",
+      "position": [6, 6],
+      "bounds": [75, 136],
+      "transform": 6
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-grandchildren-not-contained' class='scrolled onTop'",
