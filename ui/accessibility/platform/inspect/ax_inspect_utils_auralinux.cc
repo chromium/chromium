@@ -294,7 +294,7 @@ const char* ATSPIRoleToString(AtspiRole role) {
 // a new role and newer versions may have changed the name returned by
 // atk_role_get_name. This table should be kept up to date with newer ATK
 // releases.
-const auto kRoleNames = std::to_array<const char*>({
+constexpr auto kRoleNames = std::to_array<const char*>({
     "invalid",  // ATK_ROLE_INVALID.
     "accelerator label",
     "alert",

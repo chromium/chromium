@@ -234,7 +234,7 @@ void AXEventRecorderAuraLinux::ProcessATKEvent(const char* event,
 // This list is composed of the sorted event names taken from the list provided
 // in the libatspi documentation at:
 // https://developer.gnome.org/libatspi/stable/AtspiEventListener.html#atspi-event-listener-register
-const auto kEventNames = std::to_array<const char*>({
+constexpr auto kEventNames = std::to_array<const char*>({
     "document:load-complete",
     "object:active-descendant-changed",
     "object:children-changed",
