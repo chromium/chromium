@@ -61,6 +61,7 @@
 #include "components/user_education/test/user_education_session_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"

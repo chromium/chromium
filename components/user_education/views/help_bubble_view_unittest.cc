@@ -18,6 +18,7 @@
 #include "components/user_education/common/user_education_events.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"

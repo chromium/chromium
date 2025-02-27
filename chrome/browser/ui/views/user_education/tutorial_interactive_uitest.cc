@@ -31,6 +31,7 @@
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
