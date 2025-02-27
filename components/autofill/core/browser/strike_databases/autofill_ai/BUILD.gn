@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("strike_databases") {
+source_set("autofill_ai") {
   sources = [
     "autofill_ai_save_strike_database_by_attribute.h",
     "autofill_ai_save_strike_database_by_host.cc",
@@ -17,7 +17,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "autofill_ai_save_strike_database_by_host_unittest.cc" ]
   deps = [
-    ":strike_databases",
+    ":autofill_ai",
     "//testing/gtest",
   ]
 }

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_HOST_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_HOST_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_HOST_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_HOST_H_
 
 #include <string>
 #include <string_view>
 
 #include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 struct AutofillAiSaveStrikeDatabaseByHostTraits {
   static constexpr std::string_view kName = "AutofillEntitySaveByHost";
@@ -36,6 +36,6 @@ class AutofillAiSaveStrikeDatabaseByHost
   static std::string GetId(std::string_view entity_name, std::string_view host);
 };
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_HOST_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_HOST_H_

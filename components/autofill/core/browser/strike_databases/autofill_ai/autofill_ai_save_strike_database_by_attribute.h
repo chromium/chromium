@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_ATTRIBUTE_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_ATTRIBUTE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_ATTRIBUTE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_ATTRIBUTE_H_
 
 #include <string_view>
 
 #include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 // A strike database for AutofillAI save prompts that is keyed by
 // (entity_type;attribute_type_1;attribute_1_value;attribute_type_2;...)
@@ -27,6 +27,6 @@ using AutofillAiSaveStrikeDatabaseByAttribute =
     autofill::SimpleAutofillStrikeDatabase<
         AutofillAiSaveStrikeDatabaseByAttributeTraits>;
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_ATTRIBUTE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_AUTOFILL_AI_AUTOFILL_AI_SAVE_STRIKE_DATABASE_BY_ATTRIBUTE_H_

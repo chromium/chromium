@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_host.h"
+#include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
 
@@ -49,4 +49,4 @@ TEST(GetIdForSaveStrikeDatabaseByHostTest, DifferentEntities) {
 
 }  // namespace
 
-}  // namespace autofill_ai
+}  // namespace autofill

@@ -10,13 +10,13 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
+#include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
+#include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
+#include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
-#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_attribute.h"
-#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_host.h"
-#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_update_strike_database.h"
 
 namespace autofill {
 class FormData;
@@ -112,16 +112,17 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   const raw_ref<AutofillAiClient> client_;
 
   // A strike database for save prompts keyed by (entity_type_name, host).
-  std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;
+  std::unique_ptr<autofill::AutofillAiSaveStrikeDatabaseByHost>
+      save_strike_db_by_host_;
 
   // A strike database for save prompts keyed by (entity_type_name,
   // attribute_type_name_1, attribute_value_1, ...).
-  std::unique_ptr<AutofillAiSaveStrikeDatabaseByAttribute>
+  std::unique_ptr<autofill::AutofillAiSaveStrikeDatabaseByAttribute>
       save_strike_db_by_attribute_;
 
   // A strike database for update prompts keyed by the guid of the entity that
   // is to be updated.
-  std::unique_ptr<AutofillAiUpdateStrikeDatabase> update_strike_db_;
+  std::unique_ptr<autofill::AutofillAiUpdateStrikeDatabase> update_strike_db_;
 
   base::WeakPtrFactory<AutofillAiManager> weak_ptr_factory_{this};
 };

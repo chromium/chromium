@@ -183,6 +183,7 @@ test("components_unittests") {
     "//components/assist_ranker:unit_tests",
     "//components/attribution_reporting:unit_tests",
     "//components/autofill/core/browser:unit_tests",
+    "//components/autofill/core/browser/strike_databases/autofill_ai:unit_tests",
     "//components/autofill/core/common:unit_tests",
     "//components/base32:unit_tests",
     "//components/blocklist/opt_out_blocklist:unit_tests",
@@ -722,10 +723,7 @@ test("components_unittests") {
   }
 
   if (!is_android && !is_ios && (!is_fuchsia || !optimize_for_size)) {
-    deps += [
-      "//components/autofill_ai/core/browser:unit_tests",
-      "//components/autofill_ai/core/browser/strike_databases:unit_tests",
-    ]
+    deps += [ "//components/autofill_ai/core/browser:unit_tests" ]
   }
 
   if (!is_android) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_host.h"
+#include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 
 #include <string>
 #include <string_view>
@@ -10,7 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
 // Used as a separator to create "(entity_type, host)" pairs.
@@ -34,4 +34,4 @@ std::string AutofillAiSaveStrikeDatabaseByHost::GetId(
                           std::string_view(&kHostSeparator, 1));
 }
 
-}  // namespace autofill_ai
+}  // namespace autofill
