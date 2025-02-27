@@ -23,7 +23,7 @@ class VisitedURLRankingService;
 class TabAndroid;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.auxiliary_search
-enum class AuxiliarySearchEntryType { kTab, kCustomTab, kTopSites };
+enum class AuxiliarySearchEntryType { kTab, kCustomTab, kTopSite };
 
 // AuxiliarySearchProvider is responsible for providing the necessary
 // information for the auxiliary search.

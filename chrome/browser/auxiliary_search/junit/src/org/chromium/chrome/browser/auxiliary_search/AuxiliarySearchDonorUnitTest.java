@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,12 +46,16 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.schema.CustomTabWebPage;
 import org.chromium.chrome.browser.auxiliary_search.schema.TabWebPage;
 import org.chromium.chrome.browser.auxiliary_search.schema.TopSiteWebPage;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,17 +133,67 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     @SmallTest
-    public void testBuildDocument() {
+    public void testBuildDocument_Tab() {
+        int id = 10;
+        GURL url = JUnitTestGURLs.URL_1;
+        String title = "Title";
+        long lastAccessTimeStamp = 100;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getUrl()).thenReturn(url);
+        when(tab.getTitle()).thenReturn(title);
+        when(tab.getTimestampMillis()).thenReturn(lastAccessTimeStamp);
+        when(tab.getId()).thenReturn(id);
+
+        testBuildDocumentImplAndVerify(tab, url.getSpec(), title, lastAccessTimeStamp, id);
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildDocument_AuxiliarySearchEntry() {
         int id = 10;
         String url = "Url";
         String title = "Title";
         long lastAccessTimeStamp = 100;
-        Bitmap bitmap = Bitmap.createBitmap(100, 100, Config.RGB_565);
-        String documentId = "Tab-10";
-        assertEquals(documentId, AuxiliarySearchDonor.getDocumentId(id));
 
-        WebPage webPage =
-                mAuxiliarySearchDonor.buildDocument(id, url, title, lastAccessTimeStamp, bitmap);
+        var builder =
+                AuxiliarySearchEntry.newBuilder()
+                        .setTitle(title)
+                        .setUrl(url)
+                        .setId(id)
+                        .setLastAccessTimestamp(lastAccessTimeStamp);
+        AuxiliarySearchEntry entry = builder.build();
+
+        testBuildDocumentImplAndVerify(entry, url, title, lastAccessTimeStamp, id);
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildDocument_AuxiliarySearchDataEntry() {
+        int id = 10;
+        GURL url = JUnitTestGURLs.URL_1;
+        String title = "Title";
+        long lastAccessTimeStamp = 100;
+
+        AuxiliarySearchDataEntry entry =
+                new AuxiliarySearchDataEntry(
+                        AuxiliarySearchEntryType.TAB,
+                        url,
+                        title,
+                        lastAccessTimeStamp,
+                        id,
+                        /* appId= */ null,
+                        -1);
+
+        testBuildDocumentImplAndVerify(entry, url.getSpec(), title, lastAccessTimeStamp, id);
+    }
+
+    private <T> void testBuildDocumentImplAndVerify(
+            T entry, String url, String title, long lastAccessTimeStamp, int id) {
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Config.RGB_565);
+        String documentId = "Tab-" + id;
+
+        WebPage webPage = mAuxiliarySearchDonor.buildDocument(entry, bitmap);
 
         assertEquals(documentId, webPage.getId());
         assertEquals(url, webPage.getUrl());
@@ -193,6 +248,25 @@ public class AuxiliarySearchDonorUnitTest {
     public void testSharedPreferenceKeyIsUpdated_multiDataSourceEnabled() {
         testSharedPreferenceKeyIsUpdatedImpl(
                 ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetDocumentId() {
+        int id = 10;
+        String tabDocumentId = "Tab-10";
+        String customTabDocumentId = "CustomTab-10";
+        String topSiteDocumentId = "TopSite-10";
+
+        assertEquals(
+                tabDocumentId,
+                AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.TAB, id));
+        assertEquals(
+                customTabDocumentId,
+                AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.CUSTOM_TAB, id));
+        assertEquals(
+                topSiteDocumentId,
+                AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.TOP_SITE, id));
     }
 
     private void testSharedPreferenceKeyIsUpdatedImpl(String key) {
