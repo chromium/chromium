@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/embedder_support/user_agent_utils.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -324,10 +323,6 @@ KioskDelegate* ShellExtensionsBrowserClient::GetKioskDelegate() {
 std::string ShellExtensionsBrowserClient::GetApplicationLocale() {
   // TODO(michaelpg): Use system locale.
   return "en-US";
-}
-
-std::string ShellExtensionsBrowserClient::GetUserAgent() const {
-  return embedder_support::GetUserAgent();
 }
 
 void ShellExtensionsBrowserClient::InitWithBrowserContext(

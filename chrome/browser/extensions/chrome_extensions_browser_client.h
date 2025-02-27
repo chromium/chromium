@@ -179,7 +179,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   UserScriptListener* GetUserScriptListener() override;
   void SignalContentScriptsLoaded(content::BrowserContext* context) override;
-  std::string GetUserAgent() const override;
   bool ShouldSchemeBypassNavigationChecks(
       const std::string& scheme) const override;
   base::FilePath GetSaveFilePath(content::BrowserContext* context) override;

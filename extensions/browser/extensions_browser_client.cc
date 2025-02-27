@@ -108,10 +108,6 @@ UserScriptListener* ExtensionsBrowserClient::GetUserScriptListener() {
 void ExtensionsBrowserClient::SignalContentScriptsLoaded(
     content::BrowserContext* context) {}
 
-std::string ExtensionsBrowserClient::GetUserAgent() const {
-  return std::string();
-}
-
 bool ExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
     const std::string& scheme) const {
   return false;

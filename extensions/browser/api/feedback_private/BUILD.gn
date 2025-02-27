@@ -31,6 +31,7 @@ source_set("feedback_private") {
 
   deps = [
     "//components/account_id",
+    "//components/embedder_support:user_agent",
     "//components/feedback/content",
     "//components/variations/net",
     "//content/public/browser",
