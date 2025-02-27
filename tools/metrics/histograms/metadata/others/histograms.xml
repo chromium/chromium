@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DemoModeAppName">
+  <variant name="Browser"/>
+  <variant name="GooglePhoto"/>
+  <variant name="Minecraft"/>
+  <variant name="OtherArcApp"/>
+  <variant name="PlayStore"/>
+  <variant name="StardewValley"/>
+  <variant name="YouTubePwa"/>
+</variants>
+
 <variants name="GridTabSwitcherMessageTypes">
   <variant name="PriceAlertsMessageCard"
       summary="the promo message for price notifications"/>
@@ -3503,6 +3513,18 @@ chromium-metrics-reviews@google.com.
     The source of app launches in demo mode, either the shelf, the app list, the
     demo mode app, or the search result in the app list.
   </summary>
+</histogram>
+
+<histogram name="DemoMode.AppUsageTime.{DemoModeAppName}" units="s"
+    expires_after="2026-01-21">
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    Records most popular apps usage time in Demo mode. The duration starts from
+    app created and end on closed. Note apps could be closed by user or auto
+    closed by program when idle time reaches.
+  </summary>
+  <token key="DemoModeAppName" variants="DemoModeAppName"/>
 </histogram>
 
 <histogram name="DemoMode.AttractLoop.Timestamp" units="ms"
