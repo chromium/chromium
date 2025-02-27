@@ -359,6 +359,8 @@ enum WebDXFeature {
   kBadging = 301,
   kManifest = 302,
   kBeforeInstallPrompt = 303,
+  kAppShareTargets = 304,
+  kAppShortcuts = 305,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
