@@ -1519,11 +1519,10 @@ suite('SelectionOverlay', function() {
     });
 
     test('SelectedRegionContextMenuAppearsWithNoText', async () => {
-      await addEmptyText();
-
       await simulateDrag(
           selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
       await waitAfterNextRender(selectionOverlayElement);
+      await addEmptyText();
 
       assertTrue(
           selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
@@ -1561,11 +1560,10 @@ suite('SelectionOverlay', function() {
     });
 
     test('SelectedRegionContextMenuAppearsWithEmptyText', async () => {
-      await addEmptyText();
-
       await simulateDrag(
           selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
       await waitAfterNextRender(selectionOverlayElement);
+      await addEmptyText();
 
       assertTrue(
           selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
@@ -1603,11 +1601,10 @@ suite('SelectionOverlay', function() {
     });
 
     test('SelectedRegionContextMenuAppearsWithText', async () => {
-      await addWords();
-
       await simulateDrag(
           selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
       await waitAfterNextRender(selectionOverlayElement);
+      await addWords();
 
       assertTrue(
           selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
@@ -1665,11 +1662,10 @@ suite('SelectionOverlay', function() {
     });
 
     test('SelectedRegionContextMenuCopyDetectedText', async () => {
-      await addWords();
-
       await simulateDrag(
           selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
       await waitAfterNextRender(selectionOverlayElement);
+      await addWords();
 
       assertTrue(
           selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
@@ -1685,6 +1681,28 @@ suite('SelectionOverlay', function() {
       await waitAfterNextRender(selectionOverlayElement);
       assertFalse(
           selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+    });
+
+    test('NewSelectionClearsDetectedTextOptions', async () => {
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+      await waitAfterNextRender(selectionOverlayElement);
+      await addWords();
+
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(selectionOverlayElement
+                     .getShowDetectedTextContextMenuOptionsForTesting());
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+      await waitAfterNextRender(selectionOverlayElement);
+      await addEmptyText();
+
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertFalse(selectionOverlayElement
+                      .getShowDetectedTextContextMenuOptionsForTesting());
     });
   });
 

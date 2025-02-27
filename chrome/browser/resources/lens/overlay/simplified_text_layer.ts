@@ -74,11 +74,6 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
       this.browserProxy.callbackRouter.textReceived.addListener(
           this.onTextReceived.bind(this)),
     ];
-
-    this.textReceivedTimeoutId = setTimeout(() => {
-      this.textReceivedTimeoutElapsedOrCleared = true;
-      this.textReceivedTimeoutId = -1;
-    }, this.textReceivedTimeout);
   }
 
   override disconnectedCallback() {
@@ -119,6 +114,16 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     // Do nothing. Gestures are currently not used in this layer.
   }
 
+  onSelectionStart(): void {
+    this.fire('hide-selected-region-context-menu');
+  }
+
+  onSelectionFinish(): void {
+    this.receivedWords = [];
+    this.contentLanguage = '';
+    this.setTextReceivedTimeout();
+  }
+
   selectAndSendWords(_selectionStartIndex: number, _selectionEndIndex: number) {
     // Do nothing. The simplified text layer does not support selecting words.
   }
@@ -129,6 +134,14 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     translateWords(
         this.getRegionText(), this.contentLanguage, startIndex, endIndex,
         this.browserProxy);
+  }
+
+  private setTextReceivedTimeout() {
+    this.textReceivedTimeoutElapsedOrCleared = false;
+    this.textReceivedTimeoutId = setTimeout(() => {
+      this.textReceivedTimeoutElapsedOrCleared = true;
+      this.textReceivedTimeoutId = -1;
+    }, this.textReceivedTimeout);
   }
 
   private detectTextInRegion(box: CenterRotatedBox) {

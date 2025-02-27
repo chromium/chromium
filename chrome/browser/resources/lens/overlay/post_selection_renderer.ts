@@ -509,6 +509,7 @@ export class PostSelectionRendererElement extends PolymerElement {
         left: this.left,
         width: this.width,
         height: this.height,
+        centerRotatedBox: this.getNormalizedCenterRotatedBox(),
       },
     }));
   }

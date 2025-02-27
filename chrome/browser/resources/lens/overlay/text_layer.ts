@@ -584,6 +584,16 @@ export class TextLayerElement extends PolymerElement implements TextLayerBase {
     this.unselectWords();
   }
 
+  onSelectionStart(): void {
+    // Do nothing.
+    return;
+  }
+
+  onSelectionFinish(): void {
+    // Do nothing.
+    return;
+  }
+
   private unselectWords() {
     this.selectWords(-1, -1);
     this.dispatchEvent(new CustomEvent(
