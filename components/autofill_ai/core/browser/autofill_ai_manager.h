@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
+#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_host.h"
 
 namespace autofill {
@@ -106,8 +107,12 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // it.
   const raw_ref<AutofillAiClient> client_;
 
-  // A strike database for saved keyed by (entity_type_name, host) entries.
+  // A strike database for save prompts keyed by (entity_type_name, host).
   std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;
+  // A strike database for save prompts keyed by (entity_type_name,
+  // attribute_type_name_1, attribute_value_1, ...).
+  std::unique_ptr<AutofillAiSaveStrikeDatabaseByAttribute>
+      save_strike_db_by_attribute_;
 
   base::WeakPtrFactory<AutofillAiManager> weak_ptr_factory_{this};
 };
