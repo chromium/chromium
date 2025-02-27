@@ -98,7 +98,7 @@ source_set("unit_tests") {
   ]
 
   if (is_ios) {
-    deps += [ "//components/test:history_embeddings_test_bundle_data" ]
+    deps += [ "//components/test:passage_embeddings_test_bundle_data" ]
   }
 
   data = [ "//components/test/data/passage_embeddings/" ]
