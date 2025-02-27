@@ -7,6 +7,34 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
 
+mojom("mojom_ad_auction") {
+  generate_java = true
+  sources = [ "ad_auction.mojom" ]
+
+  public_deps = [ "//url/mojom:url_mojom_origin" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.AdAuctionEventRecord"
+          cpp = "::network::AdAuctionEventRecord"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/ad_auction/event_record_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//net" ]
+    },
+  ]
+}
+
 # These interfaces are put in their own target to avoid a circular dependency,
 # which comes from the fact that proxy_resolver service uses these interfaces,
 # and the network service uses the proxy_resolver service.

@@ -1,0 +1,28 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/origin.mojom";
+
+// Represents the result of parsing the Ad-Auction-Record-Event header, which
+// allows providing origins to record ad view or click events. Counts of those
+// events are provided to eligible origins during interest group auctions.
+struct AdAuctionEventRecord {
+  enum Type {
+    kUninitialized = 0,
+    kView,
+    kClick,
+  };
+
+  // Whether this event is a view or a click.
+  Type type;
+
+  // The origin that served the header that was parsed into this record.
+  url.mojom.Origin providing_origin;
+
+  // The set of origins that may include this event among their view and click
+  // counts.
+  array<url.mojom.Origin> eligible_origins;
+};
