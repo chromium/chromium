@@ -1087,24 +1087,10 @@ class MockOnDeviceVisionSession : public on_device_model::mojom::Session {
   // on_device_model::mojom::Session:
   MOCK_METHOD(
       void,
-      AddContext,
-      (on_device_model::mojom::InputOptionsPtr input,
-       mojo::PendingRemote<on_device_model::mojom::ContextClient> client),
-      (override));
-
-  MOCK_METHOD(
-      void,
       Append,
       (on_device_model::mojom::AppendOptionsPtr options,
        mojo::PendingRemote<on_device_model::mojom::ContextClient> client),
       (override));
-
-  MOCK_METHOD(void,
-              Execute,
-              (on_device_model::mojom::InputOptionsPtr input,
-               mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
-                   response),
-              (override));
 
   MOCK_METHOD(void,
               Generate,

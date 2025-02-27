@@ -322,7 +322,6 @@ void OnDeviceExecution::OnComplete(
   MutableLoggedResponse()->set_time_to_completion_millis(
       time_to_completion.InMilliseconds());
 
-  input_token_count_ = summary->input_token_count;
   output_token_count_ = summary->output_token_count;
 
   opts_.model_client->OnResponseCompleted();
@@ -542,7 +541,6 @@ void OnDeviceExecution::SendSuccessCompletionCallback(
   std::move(callback_).Run(OptimizationGuideModelStreamingExecutionResult(
       base::ok(StreamingResponse{.response = success_response_metadata,
                                  .is_complete = true,
-                                 .input_token_count = input_token_count_,
                                  .output_token_count = output_token_count_}),
       /*provided_by_on_device=*/true, std::move(log_entry),
       std::move(model_execution_info)));

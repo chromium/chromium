@@ -34,9 +34,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   // These methods forward to the relevant ChromeMLSession methods on the task
   // runner.
   Ptr Clone();
-  ChromeMLCancelFn Execute(on_device_model::mojom::InputOptionsPtr input,
-                           ChromeMLExecutionOutputFn output_fn,
-                           ChromeMLContextSavedFn context_saved_fn);
   ChromeMLCancelFn Append(on_device_model::mojom::AppendOptionsPtr options,
                           ChromeMLContextSavedFn context_saved_fn);
   ChromeMLCancelFn Generate(on_device_model::mojom::GenerateOptionsPtr options,
@@ -54,10 +51,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
 
   void CloneFrom(SessionAccessor* other);
   void CreateInternal(on_device_model::mojom::LoadAdaptationParamsPtr params);
-  void ExecuteInternal(on_device_model::mojom::InputOptionsPtr input,
-                       ChromeMLExecutionOutputFn output_fn,
-                       ChromeMLContextSavedFn context_saved_fn,
-                       scoped_refptr<Canceler> canceler);
   void AppendInternal(on_device_model::mojom::AppendOptionsPtr append_options,
                       ChromeMLContextSavedFn context_saved_fn,
                       scoped_refptr<Canceler> canceler);
