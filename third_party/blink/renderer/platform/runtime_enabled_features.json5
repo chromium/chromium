@@ -1818,7 +1818,7 @@
       // Event Timings should not get interactionId assigned if the next paint
       // was affected by autoscroll, i.e. from text selection.
       name: "EventTimingSelectionAutoScrollNoInteractionId",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ExperimentalContentSecurityPolicyFeatures",
