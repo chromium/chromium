@@ -118,12 +118,6 @@ void TestCreateTranslator(Browser* browser,
                           const std::string_view targetLang,
                           const std::string_view result);
 
-// Tests that the canTranslate() returns the expected result.
-void TestCanTranslate(Browser* browser,
-                      const std::string_view sourceLang,
-                      const std::string_view targetLang,
-                      const std::string_view result);
-
 // Tests that the AITranslatorCapabilities.available returns the expected
 // result.
 void TestTranslatorCapabilitiesAvailable(Browser* browser,

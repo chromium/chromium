@@ -156,7 +156,7 @@ void TestSimpleTranslationWorks(Browser* browser,
                    base::StringPrintf(R"(
         (async () => {
           try {
-            const translator = await translation.createTranslator({
+            const translator = await ai.translator.create({
               sourceLanguage: '%s',
               targetLanguage: '%s',
             });
@@ -180,34 +180,11 @@ void TestCreateTranslator(Browser* browser,
                    base::StringPrintf(R"(
   (async () => {
     try {
-      await translation.createTranslator({
+      await ai.translator.create({
           sourceLanguage: '%s',
           targetLanguage: '%s',
         });
       return 'OK';
-    } catch (e) {
-      return e.toString();
-    }
-    })();
-  )",
-                                      sourceLang, targetLang))
-                .ExtractString(),
-            result);
-}
-
-// Tests that the canTranslate() returns the expected result.
-void TestCanTranslate(Browser* browser,
-                      const std::string_view sourceLang,
-                      const std::string_view targetLang,
-                      const std::string_view result) {
-  ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
-                   base::StringPrintf(R"(
-  (async () => {
-    try {
-      return await translation.canTranslate({
-          sourceLanguage: '%s',
-          targetLanguage: '%s',
-        });
     } catch (e) {
       return e.toString();
     }
