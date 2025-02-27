@@ -20,7 +20,6 @@ import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetoo
 import type * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
-/* eslint-disable @typescript-eslint/no-unnecessary-template-expression */
 export type EventNames =
   // keep-sorted start
   | Cdp.EventNames
@@ -31,7 +30,6 @@ export type EventNames =
   | `${Network.EventNames}`
   | `${Script.EventNames}`;
 // keep-sorted end
-/* eslint-enable @typescript-eslint/no-unnecessary-template-expression */
 
 export enum BiDiModule {
   // keep-sorted start
