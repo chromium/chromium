@@ -6902,6 +6902,10 @@ test("unit_tests") {
     "//base:path_service_unittest",
   ]
 
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic:glic" ]
+  }
+
   if (chrome_root_store_cert_management_ui) {
     sources += [
       "../browser/ui/webui/certificate_manager/client_cert_sources_unittest.cc",
