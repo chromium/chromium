@@ -75,6 +75,7 @@ try_.builder(
     ),
 )
 
+# TODO(crbug.com/391893869): Set back to a normal includable_only trybot.
 try_.builder(
     name = "android-desktop-x64-compile-rel",
     mirrors = [
@@ -91,7 +92,6 @@ try_.builder(
         ],
     ),
     builderless = False,
-    tryjob = try_.job(),
 )
 
 try_.orchestrator_builder(
@@ -118,9 +118,7 @@ try_.orchestrator_builder(
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.compilator_builder(
