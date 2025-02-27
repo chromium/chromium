@@ -10973,6 +10973,27 @@
           }
         ]
       },
+      "linux-x64-fuzzilli-coverage": {
+        "contact_team_email": "v8-security@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "mac-angle-chromium-amd": {
         "contact_team_email": "angle-team@google.com",
         "problem_specs": [
