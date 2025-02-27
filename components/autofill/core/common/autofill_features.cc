@@ -856,6 +856,12 @@ BASE_FEATURE(kAutofillOverridePredictions,
 const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
     &kAutofillOverridePredictions, "spec", ""};
 
+// The override specification using alternative_form_signature in string form.
+// See `OverrideFormat::kSpec` for details.
+const base::FeatureParam<std::string>
+    kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification{
+        &kAutofillOverridePredictions, "alternative_signature_spec", ""};
+
 // The override specification in Base64-encoded JSON.
 // See `OverrideFormat::kJson` for details.
 const base::FeatureParam<std::string> kAutofillOverridePredictionsJson{
