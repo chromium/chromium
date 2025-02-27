@@ -52,9 +52,6 @@ import java.util.List;
 public class AuxiliarySearchProviderTest {
     private static final String TAB_TITLE = "tab";
     private static final String TAB_URL = "https://tab.google.com/";
-    private static final String BOOKMARK_TITLE = "bookmark";
-    private static final String BOOKMARK_URL = "https://bookmark.google.com";
-    private static final String NEW_TAB_PAGE_URL = "chrome-native://newtab";
     private static final long FAKE_NATIVE_PROVIDER = 1;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();

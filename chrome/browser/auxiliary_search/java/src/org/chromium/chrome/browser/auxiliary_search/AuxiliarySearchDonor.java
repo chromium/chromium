@@ -382,6 +382,12 @@ public class AuxiliarySearchDonor {
         donateTabsImpl(docs, callback);
     }
 
+    /** Donates a list of entries. */
+    @VisibleForTesting
+    public void donateEntries(List<AuxiliarySearchDataEntry> entries, Callback<Boolean> callback) {
+        // TODO(https://397457989): Implement this method.
+    }
+
     @VisibleForTesting
     WebPage buildDocument(
             int id,
