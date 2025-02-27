@@ -59,6 +59,8 @@ component("controller") {
     "javascript_call_stack_collector.h",
     "javascript_call_stack_generator.cc",
     "javascript_call_stack_generator.h",
+    "memory_saver_controller.cc",
+    "memory_saver_controller.h",
     "memory_usage_monitor.cc",
     "memory_usage_monitor.h",
     "performance_manager/renderer_resource_coordinator_impl.cc",

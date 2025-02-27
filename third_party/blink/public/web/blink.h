@@ -105,6 +105,8 @@ BLINK_EXPORT void ResetPluginCache(bool reload_pages = false);
 BLINK_EXPORT void DecommitFreeableMemory();
 
 // Send memory pressure notification to isolates.
+// This should be use as last resort only to prevent an OOM. Avoid using this
+// as a general way of reducing memory footprint.
 BLINK_EXPORT void MemoryPressureNotificationToAllIsolates(
     v8::MemoryPressureLevel);
 
