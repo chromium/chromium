@@ -35,7 +35,10 @@ source_set("content_settings") {
   allow_circular_includes_from = []
 
   if (is_android) {
-    sources += [ "request_desktop_site_web_contents_observer_android.h" ]
+    sources += [
+      "javascript_optimizer_provider_android.h",
+      "request_desktop_site_web_contents_observer_android.h",
+    ]
   } else {
     sources += [
       "generated_cookie_prefs.h",
@@ -85,7 +88,10 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    sources += [ "request_desktop_site_web_contents_observer_android.cc" ]
+    sources += [
+      "javascript_optimizer_provider_android.cc",
+      "request_desktop_site_web_contents_observer_android.cc",
+    ]
 
     deps += [
       "//chrome/browser/notifications",
@@ -305,7 +311,9 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (!is_android) {
+  if (is_android) {
+    sources += [ "javascript_optimizer_provider_android_unittest.cc" ]
+  } else {
     sources += [ "generated_cookie_prefs_unittest.cc" ]
 
     deps += [

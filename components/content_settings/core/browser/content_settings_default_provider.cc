@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/single_value_wildcard_rule_iterator.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -89,33 +90,6 @@ const std::string& GetPrefName(ContentSettingsType type) {
       ->Get(type)
       ->default_value_pref_name();
 }
-
-class DefaultRuleIterator : public RuleIterator {
- public:
-  explicit DefaultRuleIterator(base::Value value) {
-    if (!value.is_none())
-      value_ = std::move(value);
-    else
-      is_done_ = true;
-  }
-
-  DefaultRuleIterator(const DefaultRuleIterator&) = delete;
-  DefaultRuleIterator& operator=(const DefaultRuleIterator&) = delete;
-
-  bool HasNext() const override { return !is_done_; }
-
-  std::unique_ptr<Rule> Next() override {
-    DCHECK(HasNext());
-    is_done_ = true;
-    return std::make_unique<Rule>(ContentSettingsPattern::Wildcard(),
-                                  ContentSettingsPattern::Wildcard(),
-                                  std::move(value_), RuleMetaData{});
-  }
-
- private:
-  bool is_done_ = false;
-  base::Value value_;
-};
 
 }  // namespace
 
@@ -247,7 +221,7 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
   if (it == default_settings_.end()) {
     NOTREACHED();
   }
-  return std::make_unique<DefaultRuleIterator>(it->second.Clone());
+  return std::make_unique<SingleValueWildcardRuleIterator>(it->second.Clone());
 }
 
 std::unique_ptr<Rule> DefaultProvider::GetRule(

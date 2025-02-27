@@ -75,6 +75,7 @@ enum ProviderType {
   kNotificationAndroidProvider,
   kOneTimePermissionProvider,
   kPrefProvider,
+  kJavascriptOptimizerAndroidProvider,
 
   // The following providers are for tests only. The priority is intentionally
   // higher than kDefaultProvider.

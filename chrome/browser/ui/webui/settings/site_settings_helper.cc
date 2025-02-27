@@ -713,6 +713,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     case ProviderType::kDefaultProvider:
       return SiteSettingSource::kDefault;
 
+    case ProviderType::kJavascriptOptimizerAndroidProvider:
     case ProviderType::kNone:
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
@@ -736,7 +737,7 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
     case ProviderType::kWebuiAllowlistProvider:
     case ProviderType::kDefaultProvider:
       return "default";
-
+    case ProviderType::kJavascriptOptimizerAndroidProvider:
     case ProviderType::kNone:
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:

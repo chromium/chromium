@@ -33,6 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/content_settings/javascript_optimizer_provider_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
 #include "chrome/browser/webapps/installable/installed_webapp_provider.h"
@@ -158,6 +159,10 @@ scoped_refptr<RefcountedKeyedService>
     settings_map->RegisterProvider(ProviderType::kInstalledWebappProvider,
                                    std::move(webapp_provider));
   }
+
+  settings_map->RegisterProvider(
+      ProviderType::kJavascriptOptimizerAndroidProvider,
+      std::make_unique<JavascriptOptimizerProviderAndroid>());
 #endif  // defined (OS_ANDROID)
   auto one_time_permission_provider =
       std::make_unique<OneTimePermissionProvider>(
