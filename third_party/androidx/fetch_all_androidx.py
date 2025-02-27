@@ -231,7 +231,7 @@ def _write_cipd_yaml(libs_dir,
             continue
 
         for lib_file in lib_files:
-            if lib_file == 'cipd.yaml' or lib_file == 'OWNERS':
+            if lib_file == 'cipd.yaml':
                 continue
             data_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
 
@@ -351,7 +351,7 @@ def main():
     for root, _, files in os.walk(libs_dir):
         for file in files:
             # Avoid committing actual artifacts.
-            if file.endswith(('.aar', '.jar')):
+            if file.endswith(('.aar', '.jar', 'cipd.yaml')):
                 continue
             file_path = os.path.join(root, file)
             file_path_in_committed = os.path.relpath(file_path, _CIPD_PATH)
