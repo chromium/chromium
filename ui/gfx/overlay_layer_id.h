@@ -5,8 +5,11 @@
 #ifndef UI_GFX_OVERLAY_LAYER_ID_H_
 #define UI_GFX_OVERLAY_LAYER_ID_H_
 
+#include <stdint.h>
+
 #include <compare>
 #include <string>
+#include <utility>
 
 #include "base/component_export.h"
 
