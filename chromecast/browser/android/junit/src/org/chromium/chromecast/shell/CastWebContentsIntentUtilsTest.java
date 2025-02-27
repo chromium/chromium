@@ -71,17 +71,6 @@ public class CastWebContentsIntentUtilsTest {
     }
 
     @Test
-    public void testRequestStartCastService() {
-        Intent in = CastWebContentsIntentUtils.requestStartCastService(mWebContents, SESSION_ID);
-        String uri = in.getDataString();
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        WebContents webContents = CastWebContentsIntentUtils.getWebContents(in);
-        Assert.assertEquals(mWebContents, webContents);
-        Assert.assertEquals(Intent.ACTION_VIEW, in.getAction());
-    }
-
-    @Test
     public void testRequestStopWebContents() {
         Intent in = CastWebContentsIntentUtils.requestStopWebContents(SESSION_ID);
         String uri = CastWebContentsIntentUtils.getUriString(in);

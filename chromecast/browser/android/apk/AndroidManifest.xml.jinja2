@@ -37,12 +37,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-        <service android:name="org.chromium.chromecast.shell.CastWebContentsService"
-                 android:process=":cast_browser_process"
-                 android:foregroundServiceType="mediaPlayback">
-             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                       android:value="cast" />
-        </service>
 
         <activity android:name="org.chromium.chromecast.shell.CastWebContentsActivity"
                   android:theme="@style/CastShellTheme"

@@ -332,9 +332,11 @@ public class CastWebContentsActivity extends Activity {
     @RequiresApi(Build.VERSION_CODES.S)
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mRootSessionId = CastWebContentsIntentUtils.getSessionId(getIntent());
+
+        Log.d(TAG, "Activity created: rootSessionId=%s", mRootSessionId);
+
         mCreatedState.set(Unit.unit());
         mGotIntentState.set(getIntent());
 

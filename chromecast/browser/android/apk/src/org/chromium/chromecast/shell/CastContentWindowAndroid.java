@@ -86,9 +86,7 @@ public class CastContentWindowAndroid
 
     private void maybeStartComponent() {
         if (mStartParams == null || !mScreenAccess) return;
-
-        Log.d(TAG, "mComponent.start()");
-        mComponent.start(mStartParams, !mScreenAccess /* isHeadless */);
+        mComponent.start(mStartParams);
     }
 
     @SuppressWarnings("unused")

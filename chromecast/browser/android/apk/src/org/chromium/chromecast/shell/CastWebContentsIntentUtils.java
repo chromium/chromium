@@ -196,19 +196,6 @@ public class CastWebContentsIntentUtils {
         return intent;
     }
 
-    // CastWebContentsComponent.Receiver -> CastWebContentsService
-    public static Intent requestStartCastService(WebContents webContents, String instanceId) {
-        WebContentsRegistry.addWebContents(instanceId, webContents);
-        Intent intent =
-                new Intent(
-                        Intent.ACTION_VIEW,
-                        getInstanceUri(instanceId),
-                        ContextUtils.getApplicationContext(),
-                        CastWebContentsService.class);
-        intent.putExtra(INTENT_EXTRA_SESSION_ID, instanceId);
-        return intent;
-    }
-
     // CastWebContentsComponent.Delegate -> CastWebContentsSurfaceHelper
     public static Intent requestStopWebContents(String instanceId) {
         WebContentsRegistry.removeWebContents(instanceId);
