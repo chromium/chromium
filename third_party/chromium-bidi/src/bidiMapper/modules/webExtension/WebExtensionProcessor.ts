@@ -37,16 +37,20 @@ export class WebExtensionProcessor {
   async install(
     params: WebExtension.InstallParameters,
   ): Promise<WebExtension.InstallResult> {
-    if (!(params.extensionData as WebExtension.ExtensionPath).path) {
-      throw new UnsupportedOperationException(
-        'Archived and Base64 extensions are not supported',
-      );
+    switch (params.extensionData.type) {
+      case 'archivePath':
+      case 'base64':
+        throw new UnsupportedOperationException(
+          'Archived and Base64 extensions are not supported',
+        );
+      case 'path':
+        break;
     }
     try {
       const response = await this.#browserCdpClient.sendCommand(
         'Extensions.loadUnpacked',
         {
-          path: (params.extensionData as WebExtension.ExtensionPath).path,
+          path: params.extensionData.path,
         },
       );
       return {
