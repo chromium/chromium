@@ -2609,8 +2609,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       SidePanel_LinkClickWithTextDirective_TextIsMissing) {
+// TODO(crbug.com/399899383): Disabled due to flakiness on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SidePanel_LinkClickWithTextDirective_TextIsMissing \
+  DISABLED_SidePanel_LinkClickWithTextDirective_TextIsMissing
+#else
+#define MAYBE_SidePanel_LinkClickWithTextDirective_TextIsMissing \
+  SidePanel_LinkClickWithTextDirective_TextIsMissing
+#endif
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerBrowserTest,
+    MAYBE_SidePanel_LinkClickWithTextDirective_TextIsMissing) {
   WaitForPaint();
 
   // State should start in off.
@@ -2690,8 +2699,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       SidePanel_LinkClickWithTextDirective_TextIsIncomplete) {
+// TODO(crbug.com/399899383): Disabled due to flakiness on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SidePanel_LinkClickWithTextDirective_TextIsIncomplete \
+  DISABLED_SidePanel_LinkClickWithTextDirective_TextIsIncomplete
+#else
+#define MAYBE_SidePanel_LinkClickWithTextDirective_TextIsIncomplete \
+  SidePanel_LinkClickWithTextDirective_TextIsIncomplete
+#endif
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerBrowserTest,
+    MAYBE_SidePanel_LinkClickWithTextDirective_TextIsIncomplete) {
   WaitForPaint();
 
   // State should start in off.
