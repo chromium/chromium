@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v2.0.0...chromium-bidi-v2.1.0) (2025-02-28)
+
+
+### Features
+
+* webExtension module ([#3012](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3012)) ([3994b79](https://github.com/GoogleChromeLabs/chromium-bidi/commit/3994b79aa92f33b299808f1f644ab309755b7fa9))
+
+
+### Bug Fixes
+
+* hide cdp.send after the mapper receives it ([#3137](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3137)) ([9ad3d11](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9ad3d113b1594aa1318ad2223292e5bc0b149566))
+
 ## [2.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v1.3.0...chromium-bidi-v2.0.0) (2025-02-18)
 
 
