@@ -268,8 +268,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     featureTracker->NotifyEvent(
         feature_engagement::events::kLensButtonKeyboardUsed);
   } else if (entrypoint == LensEntrypoint::NewTabPage) {
-    profile->GetPrefs()->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount,
-                                    INT_MAX);
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kNTPLensEntryPointNewBadgeShownCount, INT_MAX);
   }
 
   if (!isIncognito) {

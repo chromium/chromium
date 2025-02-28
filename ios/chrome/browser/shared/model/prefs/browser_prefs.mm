@@ -651,6 +651,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
                                 0);
+  registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
 
   registry->RegisterIntegerPref(
       prefs::kProminenceNotificationAlertImpressionCount, 0);
@@ -724,6 +725,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
                                 0);
   registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
+
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
                                 true);
   registry->RegisterBooleanPref(
@@ -1221,6 +1223,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
       prefs);
+
+  // Added 02/2025.
+  MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kNTPLensEntryPointNewBadgeShownCount, prefs);
 }
 
 void MigrateObsoleteUserDefault() {
