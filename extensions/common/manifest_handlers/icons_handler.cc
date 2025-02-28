@@ -29,13 +29,15 @@ static base::LazyInstance<ExtensionIconSet>::DestructorAtExit g_empty_icon_set =
     LAZY_INSTANCE_INITIALIZER;
 
 // static
-const ExtensionIconSet& IconsInfo::GetIcons(const Extension* extension) {
+const ExtensionIconSet& IconsInfo::GetIcons(
+    const Extension* extension,
+    std::optional<ExtensionIconVariant::ColorScheme> color_scheme) {
   DCHECK(extension);
   // Prefer `icon_variants` over `icons`.
   const IconVariantsInfo* icon_variants_info =
       IconVariantsInfo::GetIconVariants(extension);
   if (icon_variants_info) {
-    return icon_variants_info->Get();
+    return icon_variants_info->Get(color_scheme);
   }
 
   IconsInfo* info = static_cast<IconsInfo*>(
@@ -47,16 +49,20 @@ const ExtensionIconSet& IconsInfo::GetIcons(const Extension* extension) {
 ExtensionResource IconsInfo::GetIconResource(
     const Extension* extension,
     int size_in_px,
-    ExtensionIconSet::Match match_type) {
-  const std::string& path = GetIcons(extension).Get(size_in_px, match_type);
+    ExtensionIconSet::Match match_type,
+    ExtensionIconVariant::ColorScheme color_scheme) {
+  const std::string& path =
+      GetIcons(extension, color_scheme).Get(size_in_px, match_type);
   return path.empty() ? ExtensionResource() : extension->GetResource(path);
 }
 
 // static
 GURL IconsInfo::GetIconURL(const Extension* extension,
                            int size_in_px,
-                           ExtensionIconSet::Match match_type) {
-  const std::string& path = GetIcons(extension).Get(size_in_px, match_type);
+                           ExtensionIconSet::Match match_type,
+                           ExtensionIconVariant::ColorScheme color_scheme) {
+  const std::string& path =
+      GetIcons(extension, color_scheme).Get(size_in_px, match_type);
   return path.empty() ? GURL() : extension->GetResourceURL(path);
 }
 

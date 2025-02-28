@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
+#include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version_info/channel.h"
@@ -9,7 +12,9 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/icons/extension_icon_set.h"
+#include "extensions/common/icons/extension_icon_variant.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -198,6 +203,93 @@ TEST_F(IconVariantsManifestTest, PreferIconVariantsOverIcons) {
   EXPECT_EQ("icon_variants.16.png",
             icons.Get(extension_misc::EXTENSION_ICON_BITTY,
                       ExtensionIconSet::Match::kExactly));
+}
+
+TEST_F(IconVariantsManifestTest, GetIconMethods) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icons": {
+          "16": "icons.16.png"
+        },
+        "icon_variants": [
+          {
+            "16": "icon_variants.16.png"
+          },
+          {
+            "16": "icon_variants.16.dark.png",
+            "color_schemes": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+
+  static constexpr struct {
+    const char* title;
+    const std::optional<ExtensionIconVariant::ColorScheme> color_scheme;
+    const char* expected;
+  } test_cases[] = {
+      {
+          "Light theme icons are returned by default sans color scheme.",
+          std::nullopt,
+          "icon_variants.16.png",
+      },
+      {
+          "Light theme specified.",
+          ExtensionIconVariant::ColorScheme::kLight,
+          "icon_variants.16.png",
+      },
+      {
+          "Dark theme specified.",
+          ExtensionIconVariant::ColorScheme::kDark,
+          "icon_variants.16.dark.png",
+      }};
+
+  // GetIcons.
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("GetIcons: '%s'", test_case.title));
+    const ExtensionIconSet& icons =
+        !test_case.color_scheme.has_value()
+            ? IconsInfo::GetIcons(extension.get())
+            : IconsInfo::GetIcons(extension.get(),
+                                  test_case.color_scheme.value());
+    EXPECT_EQ(test_case.expected,
+              icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                        ExtensionIconSet::Match::kExactly));
+  }
+
+  // GetIconResource.
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("GetIconResource: '%s'", test_case.title));
+    const ExtensionResource& resource =
+        !test_case.color_scheme.has_value()
+            ? IconsInfo::GetIconResource(extension.get(),
+                                         extension_misc::EXTENSION_ICON_BITTY,
+                                         ExtensionIconSet::Match::kExactly)
+            : IconsInfo::GetIconResource(extension.get(),
+                                         extension_misc::EXTENSION_ICON_BITTY,
+                                         ExtensionIconSet::Match::kExactly,
+                                         test_case.color_scheme.value());
+    EXPECT_EQ(test_case.expected, resource.relative_path().AsUTF8Unsafe());
+  }
+
+  // GetIconURL.
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("GetIconURL: '%s'", test_case.title));
+    const GURL& icon_url =
+        !test_case.color_scheme.has_value()
+            ? IconsInfo::GetIconURL(extension.get(),
+                                    extension_misc::EXTENSION_ICON_BITTY,
+                                    ExtensionIconSet::Match::kExactly)
+            : IconsInfo::GetIconURL(extension.get(),
+                                    extension_misc::EXTENSION_ICON_BITTY,
+                                    ExtensionIconSet::Match::kExactly,
+                                    test_case.color_scheme.value());
+    EXPECT_EQ(test_case.expected, icon_url.path().substr(1));
+  }
 }
 
 }  // namespace extensions

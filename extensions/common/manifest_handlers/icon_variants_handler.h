@@ -26,6 +26,8 @@ struct IconVariantsInfo : public Extension::ManifestData {
 
   // Retrieve a matching ExtensionIconSet.
   const ExtensionIconSet& Get() const;
+  const ExtensionIconSet& Get(
+      std::optional<ExtensionIconVariant::ColorScheme> color_scheme) const;
 
   // Data structure for `icon_variants`, based on icon_variants.idl.
   std::unique_ptr<ExtensionIconVariants> icon_variants;

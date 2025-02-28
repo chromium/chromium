@@ -126,13 +126,14 @@ void IconVariantsInfo::InitializeIconSets() {
   }
 }
 
-const ExtensionIconSet& IconVariantsInfo::Get() const {
+const ExtensionIconSet& IconVariantsInfo::Get(
+    std::optional<ExtensionIconVariant::ColorScheme> color_scheme) const {
   if (!icon_variants) {
     g_empty_icon_set.Get();
   }
 
-  // TODO(crbug.com/344639840): Determine the current browser theme color.
-  return light_;
+  return color_scheme == ExtensionIconVariant::ColorScheme::kDark ? dark_
+                                                                  : light_;
 }
 
 // TODO(crbug.com/41419485): Add more test coverage for warnings and errors.
