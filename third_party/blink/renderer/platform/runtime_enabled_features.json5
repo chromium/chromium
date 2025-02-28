@@ -362,10 +362,6 @@
       status: "stable",
     },
     {
-      name: "AllowPreloadingWithCSPMetaTag",
-      status: "experimental",
-    },
-    {
       name: "AllowSameSiteNoneCookiesInSandbox",
       base_feature: "none",
 

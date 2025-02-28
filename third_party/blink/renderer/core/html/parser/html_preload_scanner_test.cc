@@ -475,7 +475,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
     auto data = scanner_->Scan(base_url);
-    EXPECT_EQ(test_case.should_see_csp_tag, data->csp_meta_tag_count > 0);
+    EXPECT_EQ(test_case.should_see_csp_tag, data->has_csp_meta_tag);
   }
 
   void Test(NonceTestCase test_case) {
@@ -1521,42 +1521,23 @@ TEST_F(HTMLPreloadScannerTest, Integrity) {
     Test(test_case);
 }
 
-class MetaCspNoPreloadsAfterTest : public HTMLPreloadScannerTest,
-                                   public ::testing::WithParamInterface<bool> {
- public:
-  MetaCspNoPreloadsAfterTest() : scopedAllow(GetParam()) {}
-
-  bool ExpectPreloads() const { return GetParam(); }
-
- private:
-  blink::RuntimeEnabledFeaturesTestHelpers::ScopedAllowPreloadingWithCSPMetaTag
-      scopedAllow;
-};
-
-INSTANTIATE_TEST_SUITE_P(MetaCspNoPreloadsAfterTests,
-                         MetaCspNoPreloadsAfterTest,
-                         testing::Bool());
-
 // Regression test for http://crbug.com/898795 where preloads after a
 // dynamically inserted meta csp tag are dispatched on subsequent calls to the
 // HTMLPreloadScanner, after they had been parsed.
-TEST_P(MetaCspNoPreloadsAfterTest, NoPreloadsAfter) {
+TEST_F(HTMLPreloadScannerTest, MetaCsp_NoPreloadsAfter) {
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",
        "<meta http-equiv='Content-Security-Policy'><link rel=preload href=bla "
        "as=SCRIPT>",
-       ExpectPreloads() ? "bla" : nullptr, "http://example.test/",
-       ResourceType::kScript, 0},
-      // The buffered text referring to the preload above should be
-      // cleared, so make sure it is not preloaded on subsequent calls to
-      // Scan.
+       nullptr, "http://example.test/", ResourceType::kScript, 0},
+      // The buffered text referring to the preload above should be cleared, so
+      // make sure it is not preloaded on subsequent calls to Scan.
       {"http://example.test", "", nullptr, "http://example.test/",
        ResourceType::kScript, 0},
   };
 
-  for (const auto& test_case : test_cases) {
+  for (const auto& test_case : test_cases)
     Test(test_case);
-  }
 }
 
 TEST_F(HTMLPreloadScannerTest, LazyLoadImage) {
