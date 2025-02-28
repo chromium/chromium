@@ -1435,13 +1435,6 @@
       status: "experimental"
     },
     {
-      name: "CursorAnchorInfoMojoPipe",
-      status: {
-        "Android": "stable",
-        "default": "",
-      }
-    },
-    {
       // Adds the appearance:base-select CSS value which makes <select>
       // rendering using alternate content in the UA shadowroot which is
       // customizable.

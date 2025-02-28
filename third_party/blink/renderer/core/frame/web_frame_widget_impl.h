@@ -259,6 +259,9 @@ class CORE_EXPORT WebFrameWidgetImpl
       Vector<gfx::Rect>* bounds_in_dips) override;
   // Return the last calculated line bounds.
   Vector<gfx::Rect>& GetVisibleLineBoundsOnScreen() override;
+  bool HasImeRenderWidgetHost() const override {
+    return !!ime_render_widget_host_;
+  }
   void UpdateLineBounds() override;
   void UpdateCursorAnchorInfo() override;
   gfx::Range CompositionRange() override;
@@ -1143,11 +1146,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   HeapMojoReceiverSet<viz::mojom::blink::InputTargetClient, WebFrameWidgetImpl>
       input_target_receivers_;
 
-#if BUILDFLAG(IS_ANDROID)
   // WebFrameWidgetImpl is not tied to ExecutionContext
   HeapMojoRemote<mojom::blink::ImeRenderWidgetHost> ime_render_widget_host_{
       nullptr};
-#endif
 
   // Different consumers in the browser process makes different assumptions, so
   // must always send the first IPC regardless of value.

@@ -826,10 +826,6 @@ public final class ProductionSupportedFlagList {
                 "Use initial network state at startup"),
         Flag.baseFeature("StandardCompliantNonSpecialSchemeURLParsing"),
         Flag.baseFeature(
-                BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE,
-                "If enabled, CursorAnchorInfo is sent from Blink to the browser using a single"
-                        + " IPC."),
-        Flag.baseFeature(
                 NetworkServiceFeatures.AVOID_RESOURCE_REQUEST_COPIES,
                 "Avoids copying ResourceRequest when possible."),
         Flag.baseFeature(

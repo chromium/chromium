@@ -1329,9 +1329,9 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
   composition_character_bounds_ = character_bounds;
   composition_range_ = range;
 
-  // If using the new pipeline for CursorAnchorInfo data, send data from the
-  // frame widget.
-  if (RuntimeEnabledFeatures::CursorAnchorInfoMojoPipeEnabled()) {
+  // If the new pipeline for CursorAnchorInfo data is available, send data from
+  // the frame widget instead.
+  if (frame_widget->HasImeRenderWidgetHost()) {
     frame_widget->UpdateCursorAnchorInfo();
     return;
   }

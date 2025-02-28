@@ -1282,31 +1282,6 @@ void RenderWidgetHostViewAndroid::OnUpdateTextInputStateCalled(
   }
 }
 
-void RenderWidgetHostViewAndroid::OnImeCompositionRangeChanged(
-    TextInputManager* text_input_manager,
-    RenderWidgetHostViewBase* updated_view,
-    bool character_bounds_changed,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
-  DCHECK_EQ(text_input_manager_, text_input_manager);
-  // Don't pass data to Java if using the new pipeline.
-  if (!ime_adapter_android_ ||
-      base::FeatureList::IsEnabled(
-          blink::features::kCursorAnchorInfoMojoPipe)) {
-    return;
-  }
-
-  if (character_bounds_changed) {
-    const TextInputManager::CompositionRangeInfo* info =
-        text_input_manager_->GetCompositionRangeInfo();
-    ime_adapter_android_->SetBounds(
-        info ? info->character_bounds : std::vector<gfx::Rect>(),
-        character_bounds_changed, line_bounds);
-    return;
-  }
-
-  ime_adapter_android_->SetBounds(std::vector<gfx::Rect>(), false, line_bounds);
-}
-
 void RenderWidgetHostViewAndroid::OnImeCancelComposition(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view) {
