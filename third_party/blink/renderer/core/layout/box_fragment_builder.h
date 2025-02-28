@@ -100,6 +100,52 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return *initial_fragment_geometry_;
   }
 
+  // Set up text box trimming state, based on the constraint space and computed
+  // style. To be called by all algorithms that implement text box trimming.
+  void SetInitialTextBoxTrim();
+
+  bool ShouldTextBoxTrimStart() const {
+    return should_text_box_trim_node_start_ ||
+           should_text_box_trim_fragmentainer_start_;
+  }
+
+  bool ShouldTextBoxTrimEnd() const {
+    return should_text_box_trim_node_end_ ||
+           should_text_box_trim_fragmentainer_end_;
+  }
+
+  bool ShouldTextBoxTrim() const {
+    return ShouldTextBoxTrimStart() || ShouldTextBoxTrimEnd();
+  }
+
+  void ClearShouldTextBoxTrimEnd() {
+    should_text_box_trim_node_end_ = false;
+    should_text_box_trim_fragmentainer_end_ = false;
+  }
+
+  void ClearShouldTextBoxTrimNodeStart() {
+    should_text_box_trim_node_start_ = false;
+  }
+  bool ShouldTextBoxTrimNodeStart() const {
+    return should_text_box_trim_node_start_;
+  }
+  void SetShouldTextBoxTrimNodeEnd(bool b) {
+    should_text_box_trim_node_end_ = b;
+  }
+  bool ShouldTextBoxTrimNodeEnd() const {
+    return should_text_box_trim_node_end_;
+  }
+
+  void ClearShouldTextBoxTrimFragmentainerStart() {
+    should_text_box_trim_fragmentainer_start_ = false;
+  }
+  bool ShouldTextBoxTrimFragmentainerStart() const {
+    return should_text_box_trim_fragmentainer_start_;
+  }
+  bool ShouldTextBoxTrimFragmentainerEnd() const {
+    return should_text_box_trim_fragmentainer_end_;
+  }
+
   const BlockBreakToken* PreviousBreakToken() const {
     return To<BlockBreakToken>(previous_break_token_);
   }
@@ -758,6 +804,17 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   bool is_truncated_by_fragmentation_line = false;
   bool use_last_baseline_for_inline_baseline_ = false;
   bool has_moved_children_in_block_direction_ = false;
+
+  // Whether the `text-box-trim` is effective for block-start/end edges of a
+  // node.
+  bool should_text_box_trim_node_start_ = false;
+  bool should_text_box_trim_node_end_ = false;
+
+  // Whether the `text-box-trim` is effective for block-start/end edges of a
+  // fragmentainer.
+  bool should_text_box_trim_fragmentainer_start_ = false;
+  bool should_text_box_trim_fragmentainer_end_ = false;
+
   LayoutUnit block_offset_for_additional_columns_;
 
   LayoutUnit block_size_for_fragmentation_;
