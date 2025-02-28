@@ -304,3 +304,134 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
                       GURL("https://www.example.com/")), ),
       })));
 }
+
+IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, RedirectedResponse) {
+  net::test_server::ControllableHttpResponse redirect_response(
+      embedded_test_server(), kSearchAggregatorPolicySuggestPath);
+  const std::string redirected_path = "/suggest-redirect";
+  net::test_server::ControllableHttpResponse search_aggregator_response(
+      embedded_test_server(), redirected_path);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  base::Value policy_value = CreateEnterpriseSearchAggregatorPolicyValue(
+      embedded_test_server()
+          ->GetURL(kSearchAggregatorPolicySuggestPath)
+          .spec());
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, std::move(policy_value), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
+
+  AutocompleteInput input(
+      kSearchInput, metrics::OmniboxEventProto::NTP,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  controller()->Start(input);
+
+  // Redirect response.
+  redirect_response.WaitForRequest();
+  EXPECT_EQ(redirect_response.http_request()->method,
+            net::test_server::METHOD_POST);
+  redirect_response.Send(net::HTTP_MOVED_PERMANENTLY, "text/html",
+                         /* content = */ "", /* cookies = */ {},
+                         {base::StrCat({"Location: ", redirected_path})});
+  redirect_response.Done();
+  // Respond for SearchAggregator request.
+  search_aggregator_response.WaitForRequest();
+  EXPECT_EQ(search_aggregator_response.http_request()->method,
+            net::test_server::METHOD_GET);
+  search_aggregator_response.Send(net::HTTP_OK, "application/json",
+                                  kGoodJsonResponse);
+  search_aggregator_response.Done();
+
+  // Wait for the autocomplete controller to finish.
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(controller()->done());
+  const AutocompleteResult& result = controller()->result();
+  ASSERT_FALSE(result.empty());
+  EXPECT_EQ(result.size(), 4u);
+}
+
+class OmniboxSearchAggregatorHTTPErrorTest
+    : public OmniboxSearchAggregatorTest,
+      public ::testing::WithParamInterface<net::HttpStatusCode> {
+ public:
+  net::HttpStatusCode GetHttpStatusCode() { return GetParam(); }
+  void SetUpOnMainThread() override {
+    OmniboxSearchAggregatorTest::SetUpOnMainThread();
+
+    // Handle search aggregator response
+    search_aggregator_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), kSearchAggregatorPolicySuggestPath);
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    InitSearchAggregatorPolicyConfig();
+  }
+
+ protected:
+  void InitSearchAggregatorPolicyConfig() {
+    base::Value policy_value = CreateEnterpriseSearchAggregatorPolicyValue(
+        embedded_test_server()
+            ->GetURL(kSearchAggregatorPolicySuggestPath)
+            .spec());
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kEnterpriseSearchAggregatorSettings,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, std::move(policy_value), nullptr);
+    policy_provider()->UpdateChromePolicy(policies);
+  }
+
+  net::test_server::ControllableHttpResponse* search_aggregator_response() {
+    return search_aggregator_response_.get();
+  }
+
+ private:
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      search_aggregator_response_;
+};
+
+IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
+                       HTTPErrorResponse) {
+  AutocompleteInput input(
+      kSearchInput, metrics::OmniboxEventProto::NTP,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  controller()->Start(input);
+
+  // Respond for SearchAggregator request.
+  search_aggregator_response()->WaitForRequest();
+  EXPECT_EQ(search_aggregator_response()->http_request()->method,
+            net::test_server::METHOD_POST);
+  EXPECT_EQ(search_aggregator_response()->http_request()->content,
+            R"({"query":"@aggregator abc","suggestionTypes":[2,3,5]})");
+  search_aggregator_response()->Send(GetHttpStatusCode());
+  search_aggregator_response()->Done();
+
+  // Wait for the autocomplete controller to finish.
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(controller()->done());
+  const AutocompleteResult& result = controller()->result();
+  ASSERT_FALSE(result.empty());
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_THAT(
+      result.default_match(),
+      AllOf(Field(&AutocompleteMatch::type,
+                  AutocompleteMatchType::SEARCH_OTHER_ENGINE),
+            Field(&AutocompleteMatch::contents, u"abc"),
+            Field(&AutocompleteMatch::description, u"Aggregator Search"),
+            Field(&AutocompleteMatch::destination_url,
+                  GURL("https://www.aggregator.com/search?q=abc"))));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OmniboxSearchAggregatorHTTPErrorTest,
+    ::testing::Values(net::HTTP_BAD_REQUEST,
+                      net::HTTP_FORBIDDEN,
+                      net::HTTP_NOT_FOUND,
+                      net::HTTP_METHOD_NOT_ALLOWED,
+                      net::HTTP_INTERNAL_SERVER_ERROR,
+                      net::HTTP_BAD_GATEWAY),
+    [](const testing::TestParamInfo<net::HttpStatusCode>& info) {
+      return base::NumberToString(info.param);
+    });
