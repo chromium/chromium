@@ -5,7 +5,7 @@
 #ifndef MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
 #define MEDIA_FILTERS_HLS_RENDITION_IMPL_H_
 
-#include "crypto/encryptor.h"
+#include "crypto/aes_cbc.h"
 #include "media/filters/hls_rendition.h"
 #include "media/formats/hls/segment_stream.h"
 
@@ -115,8 +115,9 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   std::optional<base::TimeTicks> livestream_pause_time_ = std::nullopt;
 
   // Decrypt full segments if using AES128 or AES256.
-  std::unique_ptr<crypto::Encryptor> decryptor_;
   scoped_refptr<hls::MediaSegment> segment_with_key_;
+  std::vector<uint8_t> key_;
+  std::array<uint8_t, crypto::aes_cbc::kBlockSize> iv_;
 
   std::unique_ptr<MediaLog> media_log_;
 

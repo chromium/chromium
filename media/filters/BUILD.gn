@@ -320,6 +320,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
+    "//crypto:crypto",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "crypto/aes_cbc.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
@@ -958,29 +959,26 @@ void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
       }
       case hls::XKeyTagMethod::kAES128:
       case hls::XKeyTagMethod::kAES256: {
-        auto decryptor = std::make_unique<crypto::Encryptor>();
         auto maybe_iv = enc_data->GetIVStr(segment->GetMediaSequenceNumber());
-        auto mode = crypto::Encryptor::Mode::CBC;
         base::span<const uint8_t> stream_data =
             base::span(stream->raw_data(), stream->buffer_size());
-        if (!maybe_iv.has_value()) {
+        if (!maybe_iv.has_value() ||
+            maybe_iv->size() != crypto::aes_cbc::kBlockSize) {
           std::move(cb).Run(
               HlsDemuxerStatus::Codes::kInsufficientCryptoMetadata);
           return;
         }
-        auto iv = std::move(maybe_iv).value();
-        if (!decryptor->Init(enc_data->GetKey(), mode, iv)) {
+
+        auto iv =
+            base::as_byte_span(*maybe_iv).first<crypto::aes_cbc::kBlockSize>();
+        auto maybe_plaintext =
+            crypto::aes_cbc::Decrypt(enc_data->GetKey(), iv, stream_data);
+        if (!maybe_plaintext) {
           std::move(cb).Run(HlsDemuxerStatus::Codes::kFailedToDecryptSegment);
           return;
         }
-        std::vector<uint8_t> plaintext;
-        if (!decryptor->Decrypt(stream_data, &plaintext)) {
-          std::move(cb).Run(HlsDemuxerStatus::Codes::kFailedToDecryptSegment);
-          return;
-        }
-        decryptor = nullptr;
-        std::move(cb).Run(CheckBitstreamForContainerMagic(plaintext.data(),
-                                                          plaintext.size()));
+        std::move(cb).Run(CheckBitstreamForContainerMagic(
+            maybe_plaintext->data(), maybe_plaintext->size()));
         return;
       }
       default: {
