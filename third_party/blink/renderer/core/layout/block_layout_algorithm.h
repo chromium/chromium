@@ -359,6 +359,13 @@ class CORE_EXPORT BlockLayoutAlgorithm
       InlineChildLayoutContext*,
       const InlineBreakToken** previous_inline_break_token);
 
+  // Update text box trim state after child layout.
+  void UpdateTextBoxTrim(LayoutInputNode child,
+                         const BreakToken* incoming_child_break_token,
+                         const InlineBreakToken* outgoing_inline_break_token,
+                         const LayoutResult*,
+                         PreviousInflowPosition*);
+
   // Consume all remaining fragmentainer space. This happens when we decide to
   // break before a child.
   //
