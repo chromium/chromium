@@ -130,6 +130,7 @@ void SwitchToPersonalProfile(Browser* browser,
                                forScene:scene_state
                            continuation:std::move(continuation)];
 }
+
 }  // namespace
 
 #pragma mark - Public
@@ -496,6 +497,15 @@ bool IsFullscreenSigninPromoManagerMigrationDone() {
 void LogFullscreenSigninPromoManagerMigrationDone() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setBool:YES forKey:kFullscreenSigninPromoManagerMigrationDone];
+}
+
+void FetchUnsyncedDataForSignOutOrProfileSwitching(
+    syncer::SyncService* sync_service,
+    UnsyncedDataForSignoutOrProfileSwitchingCallback callback) {
+  constexpr syncer::DataTypeSet kDataTypesToQuery =
+      syncer::TypesRequiringUnsyncedDataCheckOnSignout();
+  sync_service->GetTypesWithUnsyncedData(kDataTypesToQuery,
+                                         std::move(callback));
 }
 
 }  // namespace signin

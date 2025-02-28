@@ -19,6 +19,10 @@ class ProfileIOS;
 @class SceneState;
 @protocol SystemIdentity;
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 // Callback called the profile switching succeeded (`success` is true) or failed
 // (`success` is false).
 // If `success is true:
@@ -42,6 +46,12 @@ using OnProfileSwitchCompletion =
 // animation if `animated` is true. Calls `completion` synchronously.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
+
+// Fetches the list of data types with unsync data in the primary account.
+// `-[id<AuthenticationFlowPerformerDelegate>
+// didFetchUnsyncedDataWithUnsyncedDataTypes:]` is called once the data are
+// fetched.
+- (void)fetchUnsyncedDataWithSyncService:(syncer::SyncService*)syncService;
 
 // Fetches the managed status for `identity`.
 - (void)fetchManagedStatus:(ProfileIOS*)profile

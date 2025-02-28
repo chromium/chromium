@@ -135,6 +135,16 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   [self stopWatchdogTimer];
 }
 
+- (void)fetchUnsyncedDataWithSyncService:(syncer::SyncService*)syncService {
+  auto callback = base::BindOnce(
+      [](__typeof(_delegate) delegate, syncer::DataTypeSet set) {
+        [delegate didFetchUnsyncedDataWithUnsyncedDataTypes:set];
+      },
+      _delegate);
+  signin::FetchUnsyncedDataForSignOutOrProfileSwitching(syncService,
+                                                        std::move(callback));
+}
+
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
   SystemIdentityManager* systemIdentityManager =

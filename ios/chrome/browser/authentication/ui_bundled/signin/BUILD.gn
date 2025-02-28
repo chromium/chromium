@@ -21,6 +21,7 @@ source_set("signin_headers") {
     "//base",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
+    "//components/sync/base",
     "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/profile",

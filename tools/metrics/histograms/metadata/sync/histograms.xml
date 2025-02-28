@@ -2144,6 +2144,34 @@ chromium-metrics-reviews@google.com.
       variants="TrustedVaultTimeSinceMigrationSuffix"/>
 </histogram>
 
+<histogram name="Sync.UnsyncedDataOnAccountSwitching" enum="SyncDataTypes"
+    expires_after="2026-01-20">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the unsynced data types, when the user switches from one account to
+    another within the same profile, but some data has not been synced yet. Only
+    PASSWORDS, BOOKMARKS, READING_LIST and CONTACT_INFO are considered. This
+    metric is only recorded when kSeparateProfilesForManagedAccounts feature is
+    enabled.
+
+    Note: iOS only.
+  </summary>
+</histogram>
+
+<histogram name="Sync.UnsyncedDataOnProfileSwitching" enum="SyncDataTypes"
+    expires_after="2026-01-20">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the unsynced data types, when the user switches from one account to
+    another with two different profiles, but some data has not been synced yet.
+    Only PASSWORDS, BOOKMARKS, READING_LIST and CONTACT_INFO are considered.
+
+    Note: iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Sync.UnsyncedDataOnSignout2" enum="SyncDataTypes"
     expires_after="2026-01-20">
   <owner>ankushkush@google.com</owner>

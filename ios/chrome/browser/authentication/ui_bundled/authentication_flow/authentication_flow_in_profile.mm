@@ -367,6 +367,15 @@ enum class AuthenticationFlowInProfileState {
   NOTREACHED();
 }
 
+- (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
+    (syncer::DataTypeSet)unsyncedDataTypes {
+  // Unsynced data is checked by AuthenticationFlow before calling
+  // `AuthenticationFlowInProfile`.
+  // So unsynced data is checked when leaving a profile (for profile switching),
+  // or before sign-out (for account switching).
+  NOTREACHED();
+}
+
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   NOTREACHED();
 }

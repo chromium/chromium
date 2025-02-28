@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
+#import "components/sync/base/data_type.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
 @class UIViewController;
@@ -21,6 +22,12 @@
 
 // Indicates that browsing data finished clearing.
 - (void)didClearData;
+
+// Called after `-[AuthenticationFlowPerformer
+// fetchUnsyncedDataWithSyncService:]`, to return the list of data types
+// unsynced in the current profile.
+- (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
+    (syncer::DataTypeSet)unsyncedDataTypes;
 
 // Indicates that the identity managed status was fetched.
 - (void)didFetchManagedStatus:(NSString*)hostedDomain;

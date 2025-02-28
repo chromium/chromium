@@ -272,18 +272,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 - (void)checkForUnsyncedDataAndSignOut {
   [self preventUserInteraction];
 
-  constexpr syncer::DataTypeSet kDataTypesToQuery =
-      syncer::TypesRequiringUnsyncedDataCheckOnSignout();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   __weak __typeof(self) weakSelf = self;
   auto callback = base::BindOnce(^(syncer::DataTypeSet set) {
-    CHECK(kDataTypesToQuery.HasAll(set))
-        << "Result: {" << set << "} not a subset of the queried types: {"
-        << kDataTypesToQuery << "}.";
     [weakSelf continueSignOutWithUnsyncedDataTypeSet:set];
   });
-  syncService->GetTypesWithUnsyncedData(kDataTypesToQuery, std::move(callback));
+  signin::FetchUnsyncedDataForSignOutOrProfileSwitching(syncService,
+                                                        std::move(callback));
 }
 
 // Displays the sign-out confirmation dialog if `set` contains an "interesting"

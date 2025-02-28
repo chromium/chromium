@@ -96,6 +96,15 @@ enum class CancelationReason {
   kFailed,
 };
 
+// Used by `RecordUnsyncedDataHistogramIfNeeded()` to know which histogram to
+// record the unsynced data types.
+enum class UnsyncedDataTypeHistogram {
+  // `Sync.UnsyncedDataOnAccountSwitching` histogram.
+  kUnsyncedDataOnAccountSwitching,
+  // `Sync.UnsyncedDataOnProfileSwitching` histogram.
+  kUnsyncedDataOnProfileSwitching,
+};
+
 // Name for `Signin.IOSIdentityAvailableInProfile` histogram.
 const char kIOSIdentityAvailableInProfileHistogram[] =
     "Signin.IOSIdentityAvailableInProfile";
@@ -197,6 +206,25 @@ void RecordIOSIdentityAvailableInProfile(
                                 identity_available);
 }
 
+// Records histogram for the unsync data.
+void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
+                                         syncer::DataTypeSet set) {
+  const char* histogram_name = nullptr;
+  switch (histogram) {
+    case UnsyncedDataTypeHistogram::kUnsyncedDataOnAccountSwitching:
+      histogram_name = "Sync.UnsyncedDataOnAccountSwitching";
+      break;
+    case UnsyncedDataTypeHistogram::kUnsyncedDataOnProfileSwitching:
+      histogram_name = "Sync.UnsyncedDataOnProfileSwitching";
+      break;
+  }
+  CHECK(histogram_name);
+  for (syncer::DataType type : set) {
+    base::UmaHistogramEnumeration(histogram_name,
+                                  syncer::DataTypeHistogramValue(type));
+  }
+}
+
 }  // namespace
 
 @interface AuthenticationFlow ()
@@ -253,9 +281,10 @@ void RecordIOSIdentityAvailableInProfile(
 
   // `YES` if the profile switching is done.
   BOOL _didSwitchProfile;
-  // `YES` if the user is signed in and there are unsynced data in the current
-  // profile.
-  std::optional<BOOL> _hasUnsyncedData;
+  // List of unsynced data types in the current profile. If there is no primary
+  // account the set is empty.
+  // The value is set during `kCheckUnsyncedData` step.
+  std::optional<syncer::DataTypeSet> _unsyncedDataTypes;
   // The lifetime of this ScopedClosureRunner denotes a batch of primary account
   // changes. UI listens to batched changes to avoid visual artifacts during an
   // account switch.
@@ -532,19 +561,18 @@ void RecordIOSIdentityAvailableInProfile(
   CHECK(![currentIdentity isEqual:_identityToSignIn],
         base::NotFatalUntil::M140);
   if (!currentIdentity) {
-    _hasUnsyncedData = NO;
+    _unsyncedDataTypes = syncer::DataTypeSet();
     [self continueFlow];
     return;
   }
-  // TODO(crbug.com/375604649): Need to check for unsynced data and set
-  // `_hasUnsyncedData`.
-  _hasUnsyncedData = NO;
-  [self continueFlow];
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForProfile([self originalProfile]);
+  [_performer fetchUnsyncedDataWithSyncService:syncService];
 }
 
 - (void)askUnsyncedDataConfirmationIfNeededStep {
-  CHECK(_hasUnsyncedData.has_value(), base::NotFatalUntil::M140);
-  if (!_hasUnsyncedData.value()) {
+  CHECK(_unsyncedDataTypes.has_value(), base::NotFatalUntil::M140);
+  if (_unsyncedDataTypes.value().empty()) {
     [self continueFlow];
     return;
   }
@@ -636,6 +664,7 @@ void RecordIOSIdentityAvailableInProfile(
 // If the identity is assigned to the current profile this step is a no-op.
 - (void)switchProfileIfNeededStep {
   CHECK(!_didSwitchProfile);
+  CHECK(_unsyncedDataTypes.has_value());
   ProfileIOS* profile = [self originalProfile];
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -663,9 +692,15 @@ void RecordIOSIdentityAvailableInProfile(
   if (isValidIdentityInProfile) {
     // If the identity is in the current profile, the flow should continue,
     // without switching profile.
+    RecordUnsyncedDataHistogramIfNeeded(
+        UnsyncedDataTypeHistogram::kUnsyncedDataOnAccountSwitching,
+        _unsyncedDataTypes.value());
     [self continueFlow];
     return;
   }
+  RecordUnsyncedDataHistogramIfNeeded(
+      UnsyncedDataTypeHistogram::kUnsyncedDataOnProfileSwitching,
+      _unsyncedDataTypes.value());
   SceneState* sceneState = _browser->GetSceneState();
   __weak __typeof(self) weakSelf = self;
   OnProfileSwitchCompletion completion = base::BindOnce(
@@ -841,6 +876,12 @@ void RecordIOSIdentityAvailableInProfile(
 }
 
 - (void)didClearData {
+  [self continueFlow];
+}
+
+- (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
+    (syncer::DataTypeSet)unsyncedDataTypes {
+  _unsyncedDataTypes = unsyncedDataTypes;
   [self continueFlow];
 }
 
