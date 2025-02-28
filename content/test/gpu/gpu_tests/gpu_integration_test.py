@@ -1189,7 +1189,6 @@ class GpuIntegrationTest(
       # target the discrete GPU.
       gpu_tags.append(gpu_helper.GetANGLERenderer(gpu_info))
       gpu_tags.append(gpu_helper.GetCommandDecoder(gpu_info))
-      gpu_tags.append(gpu_helper.GetOOPCanvasStatus())
       gpu_tags.append(gpu_helper.GetAsanStatus(gpu_info))
       gpu_tags.append(gpu_helper.GetClangCoverage(gpu_info))
       gpu_tags.append(gpu_helper.GetTargetCpuStatus(gpu_info))
