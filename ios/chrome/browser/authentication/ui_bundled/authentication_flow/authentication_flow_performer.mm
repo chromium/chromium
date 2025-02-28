@@ -145,6 +145,17 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
                                                         std::move(callback));
 }
 
+- (void)showUnsyncedDataConfirmationWithBaseViewController:
+            (UIViewController*)baseViewController
+                                                   browser:(Browser*)browser
+                                                anchorView:(UIView*)anchorView
+                                                anchorRect:(CGRect)anchorRect {
+  // TODO(crbug.com/375604649): Need to display the confirmation dialog and then
+  // call `-[id<AuthenticationFlowPerformerDelegate>
+  // didAcceptToContinueWithUnsyncedData:]`.
+  [_delegate didAcceptToContinueWithUnsyncedData:YES];
+}
+
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
   SystemIdentityManager* systemIdentityManager =

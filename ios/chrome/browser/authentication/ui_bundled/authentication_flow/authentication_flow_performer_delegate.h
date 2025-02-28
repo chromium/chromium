@@ -29,6 +29,12 @@
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
     (syncer::DataTypeSet)unsyncedDataTypes;
 
+// Called once the user accepts or refuses the unsynced data confirmation
+// dialog. See `-[AuthenticationFlowPerformer
+// showUnsyncedDataConfirmationWithBaseViewController:browser:anchorView:
+// anchorRect:]`.
+- (void)didAcceptToContinueWithUnsyncedData:(BOOL)acceptToContinue;
+
 // Indicates that the identity managed status was fetched.
 - (void)didFetchManagedStatus:(NSString*)hostedDomain;
 

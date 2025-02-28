@@ -238,7 +238,15 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 @end
 
 @implementation AuthenticationFlow {
+  // View used to display dialogs.
   UIViewController* _presentingViewController;
+  // Anchor based on the sign-in button that triggered sign-in.
+  // Used to display popover dialog (like the unsynced data confirmation dialog)
+  // with a regular window size (like iPad).
+  // TODO(crbug.com/375604649): Need to set the values from the owner of
+  // `AuthenticationFlow`, in the init method.
+  UIView* _anchorView;
+  CGRect _anchorRect;
   SigninCompletionCallback _signInCompletion;
   AuthenticationFlowPerformer* _performer;
 
@@ -576,8 +584,11 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     [self continueFlow];
     return;
   }
-  // TODO(crbug.com/375604649): Need to display the unsynced data dialog.
-  [self continueFlow];
+  [_performer showUnsyncedDataConfirmationWithBaseViewController:
+                  _presentingViewController
+                                                         browser:_browser
+                                                      anchorView:_anchorView
+                                                      anchorRect:_anchorRect];
 }
 
 // Fetches ManagedAccountsSigninRestriction policy, if needed.
@@ -882,6 +893,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
     (syncer::DataTypeSet)unsyncedDataTypes {
   _unsyncedDataTypes = unsyncedDataTypes;
+  [self continueFlow];
+}
+
+- (void)didAcceptToContinueWithUnsyncedData:(BOOL)acceptToContinue {
+  // TODO(crbug.com/375604649): Need to abort sign-in if `acceptToContinue` is
+  // `NO`.
   [self continueFlow];
 }
 

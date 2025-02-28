@@ -376,6 +376,13 @@ enum class AuthenticationFlowInProfileState {
   NOTREACHED();
 }
 
+- (void)didAcceptToContinueWithUnsyncedData:(BOOL)acceptToContinue {
+  // Unsynced data confirmation dialog should not be shown. See the explaination
+  // in `-[AuthenticationFlowInProfile
+  // didFetchUnsyncedDataWithUnsyncedDataTypes:]`.
+  NOTREACHED();
+}
+
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   NOTREACHED();
 }
