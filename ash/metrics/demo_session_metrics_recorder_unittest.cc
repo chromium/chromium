@@ -733,7 +733,11 @@ TEST_F(DemoSessionMetricsRecorderTest, DwellTime) {
 }
 
 TEST_F(DemoSessionMetricsRecorderTest, ShopperSessionDwellTime) {
-  // Simulate user activity for 12 seconds.
+  // Simulate a signed-in demo session.
+  DemoSessionMetricsRecorder::SetCurrentSessionType(
+      DemoSessionMetricsRecorder::SessionType::kSignedInDemoSession);
+
+  // Simulate user activities for 12 seconds.
   SendUserActivity();
 
   task_environment()->FastForwardBy(base::Seconds(4));
@@ -779,8 +783,6 @@ TEST_F(DemoSessionMetricsRecorderTest, ZeroDwellTime) {
   // The recorded dwell time should be 0 second because the first and the last
   // user activities are the same.
   histogram_tester_->ExpectUniqueSample("DemoMode.DwellTime", 0, 1);
-  histogram_tester_->ExpectUniqueSample("DemoMode.SignedIn.Shopper.DwellTime",
-                                        0, 1);
 }
 
 // Within the demo session, test user clicks the home button on shelf, clicks on
@@ -883,8 +885,9 @@ TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsMGS) {
 // In signed-in demo session, test user actively exits the session. Check the
 // corresponding user actions are recorded.
 TEST_F(DemoSessionMetricsRecorderTest, UserActivelyExitsSignedInSession) {
-  // Simulate to sign in the session with a regular user.
-  GetSessionControllerClient()->AddUserSession(kUserEmail);
+  // Simulate a signed-in demo session.
+  DemoSessionMetricsRecorder::SetCurrentSessionType(
+      DemoSessionMetricsRecorder::SessionType::kSignedInDemoSession);
 
   // Even though it's signed-in, the generic exit demo session user actions are
   // still recorded.

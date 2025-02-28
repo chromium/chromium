@@ -293,6 +293,9 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
         EXPECT_EQ(GaiaId(g_browser_process->local_state()->GetString(
                       prefs::kDemoAccountGaiaId)),
                   gaia_id);
+        EXPECT_EQ(
+            DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting(),
+            DemoSessionMetricsRecorder::SessionType::kSignedInDemoSession);
         loop.Quit();
       }));
 
@@ -319,6 +322,8 @@ TEST_F(DemoLoginControllerTest, InValidGaia) {
             DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
                 kInvalidCreds,
             1);
+        EXPECT_EQ(DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting(),
+                  DemoSessionMetricsRecorder::SessionType::kFallbackMGS);
         loop.Quit();
       }));
   // Verify demo account login gets triggered by `ExistingUserController`.
@@ -379,6 +384,8 @@ TEST_F(DemoLoginControllerTest, SetupDemoAccountEmptyClientID) {
       kSetupDemoAccountRequestResultHistogram,
       DemoSessionMetricsRecorder::DemoAccountRequestResultCode::kEmptyClientID,
       1);
+  EXPECT_EQ(DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting(),
+            DemoSessionMetricsRecorder::SessionType::kFallbackMGS);
 }
 
 TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
@@ -573,6 +580,8 @@ TEST_F(DemoLoginControllerTest, CleanupDemoAccountEmptyClientID) {
       kSetupDemoAccountRequestResultHistogram,
       DemoSessionMetricsRecorder::DemoAccountRequestResultCode::kEmptyClientID,
       1);
+  EXPECT_EQ(DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting(),
+            DemoSessionMetricsRecorder::SessionType::kFallbackMGS);
 }
 
 TEST_F(DemoLoginControllerTest, FallbackToMGS) {
@@ -593,6 +602,8 @@ TEST_F(DemoLoginControllerTest, FallbackToMGS) {
             DemoSessionMetricsRecorder::DemoAccountRequestResultCode::
                 kInvalidCreds,
             1);
+        EXPECT_EQ(DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting(),
+                  DemoSessionMetricsRecorder::SessionType::kFallbackMGS);
         loop.Quit();
       }));
   // Verify demo account login gets triggered by `ExistingUserController`.
