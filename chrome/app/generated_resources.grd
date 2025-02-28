@@ -18417,12 +18417,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
-    <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
-      Location
-    </message>
-    <message name="IDS_SIDEBAR_WEBVIEW_TITLE" desc="The menu entry name for the sidebar webview.">
-      Webview
-    </message>
     <if expr="is_android">
       <message name="IDS_FAST_CHECKOUT_A11Y_ADDRESS_FORM_FILLED" desc="Accessibility string announced when an address form was filled.">
         <ph name="ADDRESS_LABEL">$1<ex>Work</ex></ph> address form filled.
