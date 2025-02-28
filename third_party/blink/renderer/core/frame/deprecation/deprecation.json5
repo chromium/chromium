@@ -280,7 +280,7 @@
       ],
     },
     {
-      name: "Intl.v8BreakIterator",
+      name: "IntlV8BreakIterator",
       message: "`Intl.v8BreakIterator` is deprecated. Please use `Intl.Segmenter` instead.",
       translation_note: "Warning displayed to developers that instead of calling the `Intl.v8BreakIterator` constructor, which is not a standard JavaScript API, use ECMA402 standard API Intl.Segmenter shipped in end of 2020 instead.",
       web_features: [
