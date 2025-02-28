@@ -14,10 +14,6 @@
 
 DEFINE_EMPTY_FUNC(DeveloperPrivateAutoUpdateFunction,
                   "developerPrivate.autoUpdate")
-DEFINE_EMPTY_FUNC(DeveloperPrivateGetExtensionsInfoFunction,
-                  "developerPrivate.getExtensionsInfo")
-DEFINE_EMPTY_FUNC(DeveloperPrivateGetExtensionInfoFunction,
-                  "developerPrivate.getExtensionInfo")
 DEFINE_EMPTY_FUNC(DeveloperPrivateGetExtensionSizeFunction,
                   "developerPrivate.getExtensionSize")
 DEFINE_EMPTY_FUNC(DeveloperPrivateGetProfileConfigurationFunction,

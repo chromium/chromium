@@ -66,6 +66,71 @@ const Extension* DeveloperPrivateAPIFunction::GetEnabledExtensionById(
       .GetByID(id);
 }
 
+DeveloperPrivateGetExtensionsInfoFunction::
+    DeveloperPrivateGetExtensionsInfoFunction() = default;
+
+DeveloperPrivateGetExtensionsInfoFunction::
+    ~DeveloperPrivateGetExtensionsInfoFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetExtensionsInfoFunction::Run() {
+  std::optional<developer::GetExtensionsInfo::Params> params =
+      developer::GetExtensionsInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  bool include_disabled = true;
+  bool include_terminated = true;
+  if (params->options) {
+    if (params->options->include_disabled) {
+      include_disabled = *params->options->include_disabled;
+    }
+    if (params->options->include_terminated) {
+      include_terminated = *params->options->include_terminated;
+    }
+  }
+
+  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
+  info_generator_->CreateExtensionsInfo(
+      include_disabled, include_terminated,
+      base::BindOnce(
+          &DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated, this));
+
+  return RespondLater();
+}
+
+void DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated(
+    ExtensionInfoGenerator::ExtensionInfoList list) {
+  Respond(ArgumentList(developer::GetExtensionsInfo::Results::Create(list)));
+}
+
+DeveloperPrivateGetExtensionInfoFunction::
+    DeveloperPrivateGetExtensionInfoFunction() = default;
+
+DeveloperPrivateGetExtensionInfoFunction::
+    ~DeveloperPrivateGetExtensionInfoFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetExtensionInfoFunction::Run() {
+  std::optional<developer::GetExtensionInfo::Params> params =
+      developer::GetExtensionInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
+  info_generator_->CreateExtensionInfo(
+      params->id,
+      base::BindOnce(
+          &DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated, this));
+
+  return RespondLater();
+}
+
+void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
+    ExtensionInfoGenerator::ExtensionInfoList list) {
+  DCHECK_LE(1u, list.size());
+  Respond(list.empty() ? Error(kNoSuchExtensionError)
+                       : WithArguments(list[0].ToValue()));
+}
+
 DeveloperPrivateUpdateProfileConfigurationFunction::
     ~DeveloperPrivateUpdateProfileConfigurationFunction() = default;
 
