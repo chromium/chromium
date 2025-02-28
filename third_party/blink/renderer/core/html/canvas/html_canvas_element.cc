@@ -125,6 +125,33 @@ namespace blink {
 
 namespace {
 
+// Serves as killswitch for changing GetOrCreateCanvasResourceProvider() away
+// from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
+// TODO(crbug.com/40280152): Eliminate post safe-rollout.
+BASE_FEATURE(kAdjustGetOrCreate2DCanvasProvider,
+             "AdjustGetOrCreate2DCanvasProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool AdjustGetOrCreate2DCanvasProvider() {
+  // The change to GetOrCreateCanvasResourceProvider() is safe only if the below
+  // new features are also enabled, as (a) our reasoning about the
+  // GetOrCreateCanvasResourceProvider() change is built on the behavior enabled
+  // by these features feature, and (b) if we were to ever disable the below
+  // features but leave the GetOrCreateCanvasResourceProvider() change in place
+  // we would be putting the codebase in an untested state.
+  if (!CanvasRenderingContext::
+          CheckProviderInCanCreateCanvas2dResourceProvider()) {
+    return false;
+  }
+
+  if (!CanvasRenderingContext::
+          CheckProviderInCanvas2DRenderingContextIsPaintable()) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kAdjustGetOrCreate2DCanvasProvider);
+}
+
 // These two constants determine if a newly created canvas starts with
 // acceleration disabled. Specifically:
 // 1. More than `kDisableAccelerationThreshold` canvases have been created.
@@ -2090,9 +2117,11 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
 CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     RasterModeHint hint) {
   if (IsRenderingContext2D()) {
-    Canvas2DLayerBridge* bridge = GetOrCreateCanvas2DLayerBridge();
-    if (bridge == nullptr) {
-      return nullptr;
+    if (!AdjustGetOrCreate2DCanvasProvider()) {
+      Canvas2DLayerBridge* bridge = GetOrCreateCanvas2DLayerBridge();
+      if (bridge == nullptr) {
+        return nullptr;
+      }
     }
 
     CanvasResourceProvider* resource_provider = ResourceProvider();
@@ -2105,8 +2134,38 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
       return resource_provider;
     }
 
-    return RecreateCanvasResourceProviderFor2DContext(
+    if (AdjustGetOrCreate2DCanvasProvider()) {
+      if (did_fail_to_create_resource_provider_) {
+        return nullptr;
+      }
+
+      if (!IsValidImageSize(Size())) {
+        did_fail_to_create_resource_provider_ = true;
+        if (!Size().IsEmpty() && context_) {
+          context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+        }
+        return nullptr;
+      }
+
+      UpdatePreferred2DRasterMode();
+
+      if (!canvas2d_bridge_) {
+        canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
+      }
+    }
+
+    resource_provider = RecreateCanvasResourceProviderFor2DContext(
         canvas2d_bridge_->GetHibernationHandler());
+
+    if (AdjustGetOrCreate2DCanvasProvider()) {
+      UpdateMemoryUsage();
+
+      if (context_) {
+        SetNeedsCompositingUpdate();
+      }
+    }
+
+    return resource_provider;
   }
 
   return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(hint);
