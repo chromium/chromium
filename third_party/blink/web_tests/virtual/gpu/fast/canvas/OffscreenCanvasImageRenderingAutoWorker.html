@@ -8,31 +8,20 @@
   }
 </style>
 
-<canvas id="can" width="50" height="50"></canvas>
+<canvas id="can" width="1" height="1"></canvas>
 
 <script id="myWorker" type="text/worker">
-  var ctx_o;
   self.onmessage = function(msg) {
-    ctx_o = msg.data.getContext('2d');
-    draw();
+    const canvas = msg.data;
+    canvas.width = 50;
+    canvas.height = 50;
+    const ctx = canvas.getContext('2d');
+    ctx.fillRect(10, 10, 30, 30);
   };
-
-  function draw() {
-    ctx_o.clearRect(0, 0, 50, 50);
-    ctx_o.fillRect(10, 10, 30, 30);
-    const d = ctx_o.getImageData(20, 20, 1, 1);
-    if (d.data[0] == 0 && d.data[3] == 255) {
-      self.postMessage('done');
-    } else {
-      requestAnimationFrame(draw);
-    }
-  }
 </script>
 
-<script>
+<script type="module">
   const canvas = document.getElementById('can');
-  canvas.width = 50;
-  canvas.height = 50;
   const offscreen = canvas.transferControlToOffscreen();
 
   const blob = new Blob([document.getElementById('myWorker').textContent]);
@@ -40,42 +29,20 @@
   canvas.style.imageRendering = 'auto';
   worker.postMessage(offscreen, [offscreen]);
 
-  function waitForCanvasToDraw() {
-    return new Promise(resolve => {
-      const testPixel = function() {
-        canvas.toBlob(blob => {
-          createImageBitmap(blob).then(image => {
-            if (verifyImage(image,
-                            'Verify if image is drawn on offscreencanvas.')) {
-              setTimeout(resolve, 2000);
-            } else {
-              requestAnimationFrame(testPixel);
-            }
-          })
-        });
-      }
-      testPixel();
-    })
-  }
-
-  function verifyImage(image, description) {
-    const testCanvas = document.createElement('canvas');
-    const testCtx = testCanvas.getContext('2d');
-    testCtx.drawImage(image, 0, 0);
-    const d = testCtx.getImageData(20, 20, 1, 1);
-    return (d.data[0] == 0 && d.data[3] == 255);
+  async function waitForCanvasToDraw(canvas) {
+    while (canvas.width != 50) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    await new Promise(resolve => requestAnimationFrame(resolve));
   }
 
   if (window.testRunner) {
     testRunner.waitUntilDone();
   }
 
-  waitForCanvasToDraw().then(() => {
-    if (window.testRunner) {
-      testRunner.notifyDone();
-    }
-  }).catch(err => {
+  await waitForCanvasToDraw(canvas);
+
+  if (window.testRunner) {
     testRunner.notifyDone();
-    throw err;
-  });
+  }
 </script>

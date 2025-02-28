@@ -7030,7 +7030,6 @@ crbug.com/1290077 [ Mac11-arm64 ] fast/canvas/canvas-drawImage-live-video.html [
 crbug.com/1393995 fast/dom/shadow/import-rule-in-shadow-tree-needs-document-style-recalc.html [ Failure Pass ]
 crbug.com/1379180 fast/events/event-hit-testing-fallback-to-iframe.html [ Failure Pass ]
 crbug.com/1394041 [ Mac11-arm64 ] virtual/gpu-rasterization/images/2-dht.html [ Failure Pass ]
-crbug.com/1394151 virtual/gpu/fast/canvas/OffscreenCanvasImageRenderingPixelatedWorker.html [ Failure Pass ]
 
 # Sheriff 2022-12-5
 crbug.com/1395549 webaudio/codec-tests/vorbis/vbr-96kbps-44khz.html [ Failure Pass ]
