@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest,
   ASSERT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
       (async () => {
         try {
-          window._translator = await translation.createTranslator({
+          window._translator = await ai.translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest,
       })();
       )")
                 .ExtractString(),
-            "NotReadableError: Unable to translate the given text.");
+            "UnknownError: Other generic failures occurred.");
 
   // Allow the API.
   SetTranslatorAPIAllowedPolicy(true);

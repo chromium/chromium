@@ -651,7 +651,6 @@
         "AISummarizationAPI",
         "AIWriterAPI",
         "LanguageDetectionAPI",
-        "TranslationAPIEntryPoint",
         "TranslationAPI",
       ]
     },
@@ -4514,12 +4513,6 @@
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
       implied_by: ["TranslationAPIV1"],
-    },
-    {
-      name: "TranslationAPIEntryPoint",
-      status: "test",
-      origin_trial_feature_name: "TranslationAPIEntryPoint",
-      implied_by: ["TranslationAPI", "LanguageDetectionAPI"],
     },
     {
       name: "TranslationAPIV1",

@@ -102,26 +102,4 @@ void Translator::Translate(
   }
 }
 
-void Translator::TranslateDeprecated(const std::string& input,
-                                     TranslateDeprecatedCallback callback) {
-  CHECK(browser_context_);
-  if (!Profile::FromBrowserContext(browser_context_.get())
-           ->GetPrefs()
-           ->GetBoolean(prefs::kTranslatorAPIAllowed)) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  RecordTranslationAPICallForLanguagePair("Translate", source_lang_,
-                                          target_lang_);
-  RecordTranslationCharacterCount(source_lang_, target_lang_, input.size());
-  if (translator_remote_.is_connected()) {
-    translator_remote_->Translate(
-        input, mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                           std::nullopt));
-  } else {
-    std::move(callback).Run(std::nullopt);
-  }
-}
-
 }  // namespace on_device_translation

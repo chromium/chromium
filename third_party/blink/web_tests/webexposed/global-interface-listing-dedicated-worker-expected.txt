@@ -1352,11 +1352,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter selectedTrack
 [Worker]     method @@iterator
 [Worker]     method constructor
-[Worker] interface LanguageTranslator
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method translate
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode
@@ -2309,11 +2304,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method enqueue
 [Worker]     method error
 [Worker]     method terminate
-[Worker] interface Translation
-[Worker]     attribute @@toStringTag
-[Worker]     method canTranslate
-[Worker]     method constructor
-[Worker]     method createTranslator
 [Worker] interface TrustedHTML
 [Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag
@@ -4010,7 +4000,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter performance
 [Worker]     getter scheduler
 [Worker]     getter self
-[Worker]     getter translation
 [Worker]     getter trustedTypes
 [Worker]     method atob
 [Worker]     method btoa
@@ -4034,7 +4023,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter origin
 [Worker]     setter performance
 [Worker]     setter scheduler
-[Worker]     setter translation
 [Worker] interface WorkerLocation
 [Worker]     attribute @@toStringTag
 [Worker]     getter hash

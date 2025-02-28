@@ -5510,9 +5510,9 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_V8DeviceProperties_UniqueId_AttributeGetter"/>
   <int value="4944"
       label="SharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient"/>
-  <int value="4945" label="V8LanguageTranslator_Translate_Method"/>
-  <int value="4946" label="V8Translation_CanTranslate_Method"/>
-  <int value="4947" label="V8Translation_CreateTranslator_Method"/>
+  <int value="4945" label="OBSOLETE_V8LanguageTranslator_Translate_Method"/>
+  <int value="4946" label="OBSOLETE_V8Translation_CanTranslate_Method"/>
+  <int value="4947" label="OBSOLETE_V8Translation_CreateTranslator_Method"/>
   <int value="4948" label="IdentityDigitalCredentialsDeepLink"/>
   <int value="4949"
       label="V8WebView_GetExperimentalMediaIntegrityTokenProvider_Method"/>
