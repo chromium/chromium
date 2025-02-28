@@ -273,10 +273,6 @@ class GlicWindowController : public views::WidgetObserver {
   // browser window. The top right of the widget should be placed here.
   gfx::Point GetTopRightPositionForAttachedGlicWindow(GlicButton* glic_button);
 
-  // Determines the correct initial position for the glic window when in a
-  // detached state. The top right of the widget should be placed here.
-  gfx::Point GetTopRightPositionForDetachedGlicWindow();
-
   // Reparents the glic widget under 'browser' and runs an animation to move it
   // to its target position.
   void AttachToBrowser(Browser& browser);
@@ -320,6 +316,12 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Called anytime GlicEnabling::IsEnabled() may have changed value.
   void EnableChanged();
+
+  // Return the last size Resize() was called with, or the default initial size
+  // if Resize() hasn't been called. The return value is clamped to fit between
+  // the minimum and maximum sizes (max height is calculated from
+  // `work_area_height`).
+  gfx::Size GetLastRequestedSizeClamped(int work_area_height) const;
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
