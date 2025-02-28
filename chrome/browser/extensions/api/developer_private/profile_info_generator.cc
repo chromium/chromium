@@ -21,29 +21,27 @@ namespace extensions {
 
 namespace developer = api::developer_private;
 
-std::unique_ptr<developer::ProfileInfo> CreateProfileInfo(Profile* profile) {
-  std::unique_ptr<developer::ProfileInfo> info =
-      std::make_unique<developer::ProfileInfo>();
+developer::ProfileInfo CreateProfileInfo(Profile* profile) {
+  developer::ProfileInfo info;
 
   PrefService* prefs = profile->GetPrefs();
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kExtensionsUIDeveloperMode);
-  info->is_incognito_available = IncognitoModePrefs::GetAvailability(prefs) !=
-                                 policy::IncognitoModeAvailability::kDisabled;
-  info->is_developer_mode_controlled_by_policy = pref->IsManaged();
-  info->in_developer_mode =
-      !info->is_child_account &&
-      prefs->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+  info.is_incognito_available = IncognitoModePrefs::GetAvailability(prefs) !=
+                                policy::IncognitoModeAvailability::kDisabled;
+  info.is_developer_mode_controlled_by_policy = pref->IsManaged();
+  info.in_developer_mode = !info.is_child_account &&
+                           prefs->GetBoolean(prefs::kExtensionsUIDeveloperMode);
 
   // TODO(crbug.com/392777363): Enable these fields once we get to build their
   // dependencies on Android.
 #if !BUILDFLAG(IS_ANDROID)
-  info->is_child_account =
+  info.is_child_account =
       supervised_user::AreExtensionsPermissionsEnabled(profile);
-  info->can_load_unpacked =
+  info.can_load_unpacked =
       ExtensionManagementFactory::GetForBrowserContext(profile)
           ->HasAllowlistedExtension();
-  info->is_mv2_deprecation_notice_dismissed =
+  info.is_mv2_deprecation_notice_dismissed =
       ManifestV2ExperimentManager::Get(profile)
           ->DidUserAcknowledgeNoticeGlobally();
 #endif  // !BUILDFLAG(IS_ANDROID)

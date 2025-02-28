@@ -1661,7 +1661,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
   EXPECT_FALSE(extension_management->HasAllowlistedExtension());
 
   auto info = CreateProfileInfo(profile());
-  EXPECT_FALSE(info->can_load_unpacked);
+  EXPECT_FALSE(info.can_load_unpacked);
 
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
@@ -1694,7 +1694,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   auto info = CreateProfileInfo(profile());
 
-  EXPECT_TRUE(info->can_load_unpacked);
+  EXPECT_TRUE(info.can_load_unpacked);
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileNoDraggedPath) {

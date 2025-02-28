@@ -87,7 +87,7 @@ void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
 
 void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
   base::Value::List args;
-  args.Append(CreateProfileInfo(profile_)->ToValue());
+  args.Append(CreateProfileInfo(profile_).ToValue());
 
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
@@ -128,7 +128,7 @@ void DeveloperPrivateEventRouter::OnExtensionsUploadabilityChanged() {
 
 void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
   base::Value::List args;
-  args.Append(CreateProfileInfo(profile_)->ToValue());
+  args.Append(CreateProfileInfo(profile_).ToValue());
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
       developer::OnProfileStateChanged::kEventName, std::move(args));

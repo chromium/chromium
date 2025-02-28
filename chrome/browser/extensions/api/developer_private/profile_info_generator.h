@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_PROFILE_INFO_GENERATOR_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_PROFILE_INFO_GENERATOR_H_
 
-#include <memory>
-
 #include "chrome/common/extensions/api/developer_private.h"
 
 class Profile;
@@ -14,8 +12,7 @@ class Profile;
 namespace extensions {
 
 // Creates ProfileInfo from Profile.
-std::unique_ptr<api::developer_private::ProfileInfo> CreateProfileInfo(
-    Profile* profile);
+api::developer_private::ProfileInfo CreateProfileInfo(Profile* profile);
 
 }  // namespace extensions
 

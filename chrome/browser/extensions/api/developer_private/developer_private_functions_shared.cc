@@ -170,7 +170,7 @@ DeveloperPrivateGetProfileConfigurationFunction::
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetProfileConfigurationFunction::Run() {
-  std::unique_ptr<developer::ProfileInfo> info =
+  developer::ProfileInfo info =
       CreateProfileInfo(Profile::FromBrowserContext(browser_context()));
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -183,7 +183,7 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  return RespondNow(WithArguments(info->ToValue()));
+  return RespondNow(WithArguments(info.ToValue()));
 }
 
 DeveloperPrivateUpdateProfileConfigurationFunction::
