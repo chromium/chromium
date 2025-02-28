@@ -110,11 +110,9 @@ class TextInputManagerTester::InternalObserver
       on_selection_bounds_changed_callback_.Run();
   }
 
-  void OnImeCompositionRangeChanged(
-      TextInputManager* text_input_manager,
-      RenderWidgetHostViewBase* updated_view,
-      bool character_bounds_changed,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) override {
+  void OnImeCompositionRangeChanged(TextInputManager* text_input_manager,
+                                    RenderWidgetHostViewBase* updated_view,
+                                    bool character_bounds_changed) override {
     updated_view_ = updated_view;
     const gfx::Range* range =
         text_input_manager_->GetCompositionRangeForTesting();

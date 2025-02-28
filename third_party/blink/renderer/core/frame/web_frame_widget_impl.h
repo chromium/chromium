@@ -258,7 +258,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void GetCompositionCharacterBoundsInWindow(
       Vector<gfx::Rect>* bounds_in_dips) override;
   // Return the last calculated line bounds.
-  Vector<gfx::Rect>& GetVisibleLineBoundsOnScreen() override;
+  Vector<gfx::Rect>& GetVisibleLineBoundsOnScreenForTesting();
   bool HasImeRenderWidgetHost() const override {
     return !!ime_render_widget_host_;
   }

@@ -442,9 +442,8 @@ void InputRouterImpl::ImeCancelComposition() {
 
 void InputRouterImpl::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::optional<std::vector<gfx::Rect>>& character_bounds,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
-  client_->OnImeCompositionRangeChanged(range, character_bounds, line_bounds);
+    const std::optional<std::vector<gfx::Rect>>& character_bounds) {
+  client_->OnImeCompositionRangeChanged(range, character_bounds);
 }
 
 void InputRouterImpl::SetMouseCapture(bool capture) {

@@ -1335,12 +1335,10 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
     frame_widget->UpdateCursorAnchorInfo();
     return;
   }
-  std::optional<Vector<gfx::Rect>> line_bounds =
-      frame_widget->GetVisibleLineBoundsOnScreen();
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
-    host->ImeCompositionRangeChanged(
-        composition_range_, composition_character_bounds_, line_bounds);
+    host->ImeCompositionRangeChanged(composition_range_,
+                                     composition_character_bounds_);
   }
 }
 

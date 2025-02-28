@@ -758,11 +758,10 @@ void RenderWidgetHostViewBase::ImeCancelComposition() {
 
 void RenderWidgetHostViewBase::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::optional<std::vector<gfx::Rect>>& character_bounds,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds) {
   if (GetTextInputManager()) {
-    GetTextInputManager()->ImeCompositionRangeChanged(
-        this, range, character_bounds, line_bounds);
+    GetTextInputManager()->ImeCompositionRangeChanged(this, range,
+                                                      character_bounds);
   }
 }
 

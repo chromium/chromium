@@ -4196,7 +4196,8 @@ Vector<gfx::Rect> WebFrameWidgetImpl::CalculateVisibleLineBoundsOnScreen() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-Vector<gfx::Rect>& WebFrameWidgetImpl::GetVisibleLineBoundsOnScreen() {
+Vector<gfx::Rect>&
+WebFrameWidgetImpl::GetVisibleLineBoundsOnScreenForTesting() {
   return input_visible_line_bounds_;
 }
 

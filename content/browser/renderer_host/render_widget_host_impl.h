@@ -816,8 +816,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // RenderInputRouterClient overrides.
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds) override;
   void OnImeCancelComposition() override;
   void OnStartStylusWriting() override;
   void UpdateElementFocusForStylusWriting(

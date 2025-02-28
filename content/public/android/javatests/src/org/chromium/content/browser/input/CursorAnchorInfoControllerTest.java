@@ -6,7 +6,6 @@ package org.chromium.content.browser.input;
 
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
@@ -568,12 +567,6 @@ public class CursorAnchorInfoControllerTest {
                 immw.getLastCursorAnchorInfo().getCharacterBoundsFlags(2));
         Assert.assertEquals(null, immw.getLastCursorAnchorInfo().getCharacterBounds(3));
         Assert.assertEquals(0, immw.getLastCursorAnchorInfo().getCharacterBoundsFlags(3));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            Assert.assertEquals(1, immw.getLastCursorAnchorInfo().getVisibleLineBounds().size());
-            Assert.assertEquals(
-                    new RectF(0.0f, 1.0f, 6.0f, 3.0f),
-                    immw.getLastCursorAnchorInfo().getVisibleLineBounds().get(0));
-        }
         AssertionHelper.assertComposingText("12", 1, immw.getLastCursorAnchorInfo());
         AssertionHelper.assertSelection(1, 1, immw.getLastCursorAnchorInfo());
     }
