@@ -163,6 +163,10 @@
     --color-searchbox-background: var(--color-searchbox-results-background);
   }
 
+  #toast {
+    justify-content: space-between;
+  }
+
   cr-icon-button.icon-arrow-back {
     margin-block-start: 26px;
     margin-inline-start: 8px;
@@ -269,3 +273,9 @@
     allow="cross-origin-isolated; display-capture; geolocation; microphone;"
     frameBorder="0">
 </iframe>
+<cr-toast id="toast" duration="4000">
+  <div>[[toastMessage]]</div>
+  <cr-button on-click="onHideToastClick">
+    $i18n{dismiss}
+  </cr-button>
+</cr-toast>

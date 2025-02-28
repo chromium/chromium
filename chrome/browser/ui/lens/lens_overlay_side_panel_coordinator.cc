@@ -417,8 +417,8 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
                              ->GetLastCommittedURL();
   if (lookup_results.empty()) {
     if (URLsMatchWithoutTextFragment(page_url, nav_url)) {
-      // TODO(crbug.com/399452472): Send a message to WebUI to show a toast
-      // explaining that text finding failed.
+      lens_overlay_controller_->ShowToastInSidePanel(l10n_util::GetStringUTF8(
+          IDS_LENS_OVERLAY_TOAST_PAGE_CONTENT_NOT_FOUND_MESSAGE));
       return;
     }
 
@@ -433,8 +433,8 @@ void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
     // If any of the text fragments are not found, then open in a new tab.
     if (!pair.second) {
       if (URLsMatchWithoutTextFragment(page_url, nav_url)) {
-        // TODO(crbug.com/399452472): Send a message to WebUI to show a toast
-        // explaining that text finding failed.
+        lens_overlay_controller_->ShowToastInSidePanel(l10n_util::GetStringUTF8(
+            IDS_LENS_OVERLAY_TOAST_PAGE_CONTENT_NOT_FOUND_MESSAGE));
         return;
       }
 

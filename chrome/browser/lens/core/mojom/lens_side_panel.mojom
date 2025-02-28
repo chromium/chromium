@@ -57,4 +57,8 @@ interface LensSidePanelPage {
   // Notifies the side panel that the page content type has changed.
   // `new_page_content_type` is the new type of the page.
   PageContentTypeChanged(PageContentType new_page_content_type);
+
+  // Shows a toast with the `message` provided in the side panel. This is
+  // anchored to the bottom of the page. This text is provided by the browser.
+  ShowToast(string message);
 };

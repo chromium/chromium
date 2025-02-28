@@ -767,6 +767,12 @@ void LensOverlayController::ResetSidePanelSearchboxHandler() {
   side_panel_searchbox_handler_.reset();
 }
 
+void LensOverlayController::ShowToastInSidePanel(std::string message) {
+  if (side_panel_page_) {
+    side_panel_page_->ShowToast(message);
+  }
+}
+
 uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
   return invocation_time_since_epoch_.InMillisecondsSinceUnixEpoch();
 }
