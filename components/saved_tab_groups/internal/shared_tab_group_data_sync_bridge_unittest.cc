@@ -20,10 +20,12 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/internal/sync_bridge_tab_group_model_wrapper.h"
+#include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -333,7 +335,10 @@ syncer::UniquePosition GenerateRandomUniquePosition() {
 class SharedTabGroupDataSyncBridgeTest : public testing::Test {
  public:
   SharedTabGroupDataSyncBridgeTest()
-      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kDidEnableSharedTabGroupsInLastSession, false);
+  }
 
   // Creates the bridges and initializes the model. Returns true when succeeds.
   bool InitializeBridgeAndModel() {
@@ -516,7 +521,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   }
   syncer::DataTypeStore& store() { return *store_; }
 
- private:
+ protected:
   // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
@@ -1246,6 +1251,67 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
                           HasTabMetadata("tab 2", "http://google.com/2")));
   EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               Each(HasSharedAttribution(kDefaultGaiaId, kDefaultGaiaId)));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       Migration_FixLocalTabGroupIDsForSharedGroupsDuringFeatureEnabling) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  const CollaborationId kCollaborationId("collaboration");
+
+  // Create a group add to model.
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+  group.SetUpdatedByAttribution(kDefaultGaiaId);
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  tab1.SetUpdatedByAttribution(kDefaultGaiaId);
+  group.AddTabLocally(tab1);
+
+  model()->AddedLocally(group);
+
+  // Open the group locally.
+  model()->OnGroupOpenedInTabStrip(group.saved_guid(),
+                                   test::GenerateRandomTabGroupID());
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 1u);
+  ASSERT_TRUE(model()->Get(group.saved_guid())->local_group_id().has_value());
+
+  // Mimic browser restart and mimic that the previous session had shared tab
+  // group disabled. On loading from DB, it will clear the local group ID.
+  pref_service_.SetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession,
+                           false);
+  StoreMetadataAndReset();
+  ASSERT_EQ(model(), nullptr);
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  const SavedTabGroup* loaded_group = model()->Get(group.saved_guid());
+  EXPECT_THAT(loaded_group->saved_tabs(),
+              ElementsAre(HasTabMetadata("tab 1", "http://google.com/1")));
+
+  // Local group ID should have been cleared after restart.
+  EXPECT_FALSE(loaded_group->local_group_id().has_value());
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession));
+
+  model()->OnGroupOpenedInTabStrip(loaded_group->saved_guid(),
+                                   test::GenerateRandomTabGroupID());
+
+  // Mimic browser restart again. This time shared tab group feature was already
+  // enabled. So it will persist the local group ID.
+  StoreMetadataAndReset();
+  ASSERT_EQ(model(), nullptr);
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  loaded_group = model()->Get(group.saved_guid());
+  EXPECT_THAT(loaded_group->saved_tabs(),
+              ElementsAre(HasTabMetadata("tab 1", "http://google.com/1")));
+
+  // Local group ID should not be cleared after restart on supported platforms.
+  EXPECT_EQ(AreLocalIdsPersisted(), loaded_group->local_group_id().has_value());
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,

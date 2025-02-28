@@ -25,6 +25,7 @@
 #include "components/saved_tab_groups/internal/stats.h"
 #include "components/saved_tab_groups/internal/sync_bridge_tab_group_model_wrapper.h"
 #include "components/saved_tab_groups/proto/shared_tab_group_data.pb.h"
+#include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -554,7 +555,8 @@ SharedTabGroupDataSyncBridge::SharedTabGroupDataSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     PrefService* pref_service)
     : syncer::DataTypeSyncBridge(std::move(change_processor)),
-      model_wrapper_(model_wrapper) {
+      model_wrapper_(model_wrapper),
+      pref_service_(pref_service) {
   CHECK(model_wrapper_);
 
   std::move(create_store_callback)
@@ -1083,10 +1085,47 @@ void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
     stored_entries.emplace_back(std::move(proto));
   }
 
+  // Check if this is the first time shared tab groups is enabled and we need
+  // to do some migrations.
+  if (!pref_service_->GetBoolean(
+          prefs::kDidEnableSharedTabGroupsInLastSession)) {
+    pref_service_->SetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession,
+                              true);
+    FixLocalTabGroupIDsForSharedGroupsDuringFeatureEnabling(stored_entries);
+  }
+
   // TODO(crbug.com/370719750): Handle tabs missing groups.
   LoadStoredEntries(std::move(stored_entries), model_wrapper_,
                     metadata_batch->GetAllMetadata());
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+}
+
+void SharedTabGroupDataSyncBridge::
+    FixLocalTabGroupIDsForSharedGroupsDuringFeatureEnabling(
+        std::vector<proto::SharedTabGroupData>& stored_entries) {
+  base::ScopedClosureRunner write_batch_scoped_destroy_closure =
+      CreateWriteBatchWithDestroyClosure(/*store_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
+
+  for (proto::SharedTabGroupData& proto : stored_entries) {
+    if (!proto.specifics().has_tab_group()) {
+      continue;
+    }
+
+    if (!proto.has_local_group_data() ||
+        !proto.local_group_data().has_local_group_id()) {
+      continue;
+    }
+
+    // At this point, this is a tab group and it has non-empty local ID.
+    // In the last session, the shared tab group feature was not enabled, hence
+    // it must be a left over from an earlier feature rollback. Clear it as the
+    // group in local tab model must have been closed by now in the earlier
+    // session.
+    proto.mutable_local_group_data()->clear_local_group_id();
+    ongoing_write_batch_->WriteData(proto.specifics().guid(),
+                                    proto.SerializeAsString());
+  }
 }
 
 void SharedTabGroupDataSyncBridge::OnDatabaseSave(

@@ -48,6 +48,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kLocallyClosedRemoteTabGroupIds,
                                    base::Value::Dict());
   registry->RegisterBooleanPref(prefs::kDidSyncTabGroupsInLastSession, false);
+  registry->RegisterBooleanPref(prefs::kDidEnableSharedTabGroupsInLastSession,
+                                false);
 }
 
 void KeepAccountSettingsPrefsOnlyForUsers(

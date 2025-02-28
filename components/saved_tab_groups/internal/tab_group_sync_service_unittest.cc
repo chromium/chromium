@@ -196,6 +196,8 @@ class TabGroupSyncServiceTest : public testing::Test {
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kDidSyncTabGroupsInLastSession, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kDidEnableSharedTabGroupsInLastSession, true);
     pref_service_.registry()->RegisterDictionaryPref(prefs::kDeletedTabGroupIds,
                                                      base::Value::Dict());
     pref_service_.registry()->RegisterDictionaryPref(
