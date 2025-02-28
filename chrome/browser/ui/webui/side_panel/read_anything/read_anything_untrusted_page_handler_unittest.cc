@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/read_anything/read_anything.mojom-forward.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_value_map.h"

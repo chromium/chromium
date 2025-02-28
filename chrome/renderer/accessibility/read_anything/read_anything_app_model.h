@@ -13,7 +13,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -355,8 +354,13 @@ class ReadAnythingAppModel {
   bool redraw_required_ = false;
   ui::AXNodeID last_expanded_node_id_ = ui::kInvalidAXNodeID;
 
+  // Cached set of fonts that support `base_language_code_`, updated whenever
+  // that is changed.
+  std::vector<std::string> supported_fonts_ =
+      GetSupportedFonts(base_language_code_);
+
   // Theme information.
-  std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
+  std::string font_name_ = supported_fonts_.front();
   float font_size_;
   bool links_enabled_ = true;
   bool images_enabled_ = false;
@@ -388,11 +392,6 @@ class ReadAnythingAppModel {
 
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;
-
-  // Cached set of fonts that support `base_language_code_`, updated whenever
-  // that is changed.
-  std::vector<std::string> supported_fonts_ =
-      GetSupportedFonts(base_language_code_);
 
   // If the page language can't be determined by the model, we can check the
   // AX tree to see if it has that information, but the ax tree is created

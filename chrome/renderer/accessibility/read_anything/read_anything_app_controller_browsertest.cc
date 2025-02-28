@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
@@ -721,13 +721,15 @@ TEST_F(ReadAnythingAppControllerTest, GetValidatedFontName_FontWithoutQuotes) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetValidatedFontName_InvalidFont) {
-  std::string expected_font = string_constants::kReadAnythingDefaultFont;
+  // All languages have the same default font.
+  std::string expected_font = GetSupportedFonts("en").front();
   std::string actual_font = GetValidatedFont("not a real font");
   ASSERT_EQ(actual_font, expected_font);
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetValidatedFontName_UnsupportedFont) {
-  std::string expected_font = string_constants::kReadAnythingDefaultFont;
+  // All languages have the same default font.
+  std::string expected_font = GetSupportedFonts("en").front();
   std::string actual_font = GetValidatedFont("Times New Roman");
   ASSERT_EQ(actual_font, expected_font);
 }

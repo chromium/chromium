@@ -259,7 +259,7 @@ TEST_F(ReadAnythingAppModelTest, IsDocs_FalseBeforeTreeInitialization) {
 }
 
 TEST_F(ReadAnythingAppModelTest, FontName) {
-  EXPECT_EQ(string_constants::kReadAnythingPlaceholderFontName, FontName());
+  EXPECT_NE(model().font_name(), std::string());
 
   std::string font_name = "Montserrat";
   SetFontName(font_name);
