@@ -64,6 +64,7 @@ mojom("test_interfaces") {
   generate_legacy_js_bindings = true
 
   sources = [
+    "equals_test_structs.test-mojom",
     "math_calculator.test-mojom",
     "no_module.test-mojom",
     "nullable_value_types.test-mojom",

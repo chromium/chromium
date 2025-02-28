@@ -249,6 +249,24 @@ IPC. Serialization and deserialization when being sent or received across a Mojo
 channel will both perform nullness checks. If you receive a struct over IPC, it
 is guaranteed to comply with the nullability specified in the mojom file.
 
+### Struct equality
+
+Structs autogenerate `equals` and `hashCode` methods. However, you should take
+caution if you plan to use a generated Java struct in a collection that relies
+on the `hashCode` as the struct's Java object itself is mutable.
+
+Additionally, structs with `float` fields set to NaN will report those fields as
+equal despite `Float.NaN != Float.NaN` being `true` in Java. This behavior was
+chosen to satisfy the reflexivity requirement for Java objects (for any non-null
+object x, `x.equals(x)` should be `true`). This decision has the side effect of
+meaning that float fields set to `-0.0f` and `0.0f` respectively will report as
+not equal despite `-0.0f == 0.0f` being `true`.
+
+Structs with fields like handles, remotes and receivers will compare these with
+reference equality checks. This means that it will be very rare for structs
+containing these field types to be equal unless they contain the same instance
+in those fields.
+
 ## Unions
 
 ```
@@ -298,6 +316,14 @@ and therefore may continue to hold references to any nested data under them.
 The constants for the different tags/variants of a union are available under a
 static Tag class under the union's generated Java class and use
 PascalCase. (Note that this is unlike the variants for enums.)
+
+### Union equality
+
+Unions also generate `equals` and `hashCode` methods with the same rules and
+caveats as structs (see [Struct equality](#struct-equality)). One important note
+for unions is that only the tag and the field it represents is compared. Two
+unions may be equal despite some of their fields holding different data
+(provided the tag for those fields is not set).
 
 # Interfaces
 
