@@ -20,9 +20,11 @@ namespace extensions {
 class ExtensionIconVariants {
  public:
   ExtensionIconVariants();
-  ExtensionIconVariants(const ExtensionIconVariants& other) = delete;
-  ExtensionIconVariants(ExtensionIconVariants&& other);
   ~ExtensionIconVariants();
+  ExtensionIconVariants(ExtensionIconVariants&& other);
+  ExtensionIconVariants& operator=(ExtensionIconVariants&& other) = default;
+  ExtensionIconVariants(const ExtensionIconVariants& other) = delete;
+  ExtensionIconVariants& operator=(const ExtensionIconVariants& other) = delete;
 
   // Parse the provided list from manifest.json and set `list_` with the result.
   void Parse(const base::Value::List* list);
@@ -39,6 +41,9 @@ class ExtensionIconVariants {
   }
 
   const std::vector<ExtensionIconVariant>& GetList() const { return list_; }
+
+  void AddDiagnostic(diagnostics::icon_variants::Feature feature,
+                     diagnostics::icon_variants::Id id);
 
  private:
   std::vector<ExtensionIconVariant> list_;

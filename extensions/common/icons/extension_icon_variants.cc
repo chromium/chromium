@@ -59,4 +59,11 @@ void ExtensionIconVariants::Add(
   list_.emplace_back(std::move(*icon_variant));
 }
 
+void ExtensionIconVariants::AddDiagnostic(
+    diagnostics::icon_variants::Feature feature,
+    diagnostics::icon_variants::Id id) {
+  diagnostics_.emplace_back(
+      diagnostics::icon_variants::GetDiagnostic(feature, id));
+}
+
 }  //  namespace extensions
