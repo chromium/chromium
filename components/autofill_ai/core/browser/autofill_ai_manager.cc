@@ -95,7 +95,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     const autofill::FormStructure& submitted_form,
     const std::string& app_locale) {
   std::map<autofill::Section,
-           std::map<EntityType, std::vector<autofill::AttributeInstance>>>
+           std::map<EntityType, std::map<AttributeType, AttributeInstance>>>
       section_to_entity_types_attributes;
   for (const std::unique_ptr<autofill::AutofillField>& field :
        submitted_form.fields()) {
@@ -114,22 +114,37 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       continue;
     }
 
-    section_to_entity_types_attributes[field->section()][field_attribute_type
-                                                             ->entity_type()]
-        .emplace_back(*field_attribute_type)
-        .SetInfoWithVerificationStatus(field->Type().GetStorableType(), value,
-                                       app_locale,
-                                       autofill::VerificationStatus::kObserved);
+    std::map<AttributeType, AttributeInstance>& entity_attributes =
+        section_to_entity_types_attributes[field->section()]
+                                          [field_attribute_type->entity_type()];
+    auto attribute_it =
+        entity_attributes
+            .try_emplace(*field_attribute_type, *field_attribute_type)
+            .first;
+    attribute_it->second.SetInfoWithVerificationStatus(
+        field->Type().GetStorableType(), value, app_locale,
+        autofill::VerificationStatus::kObserved);
+  }
+
+  for (auto& [section, entities] : section_to_entity_types_attributes) {
+    for (auto& [entity_type, attributes] : entities) {
+      for (auto& [attribute_type, attribute] : attributes) {
+        attribute.FinalizeInfo();
+      }
+    }
   }
 
   std::vector<EntityInstance> entities_found_in_form;
   for (auto& [section, entity_to_attributes] :
        section_to_entity_types_attributes) {
     for (auto& [entity_name, attributes] : entity_to_attributes) {
-      EntityInstance entity =
-          EntityInstance(EntityType(entity_name), std::move(attributes),
-                         base::Uuid::GenerateRandomV4(),
-                         /*nickname=*/std::string(""), base::Time::Now());
+      EntityInstance entity = EntityInstance(
+          EntityType(entity_name),
+          base::ToVector(
+              attributes,
+              &std::pair<const AttributeType, AttributeInstance>::second),
+          base::Uuid::GenerateRandomV4(),
+          /*nickname=*/std::string(""), base::Time::Now());
       if (!CheckIfEntitySatisfiesConstraints(entity)) {
         continue;
       }
