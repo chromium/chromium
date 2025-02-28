@@ -109,6 +109,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEB_STORAGE_DELETE_BROWSING_DATA,
                 Features.SPECULATIVE_LOADING_CONFIG,
                 Features.SAVE_STATE + Features.DEV_SUFFIX,
+                Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -238,6 +239,19 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.WEB_STORAGE_DELETE_BROWSING_DATA_FOR_SITE,
         ApiCall.SET_SPECULATIVE_LOADING_CONFIG,
         ApiCall.SAVE_STATE,
+        ApiCall.GET_WEBVIEW_NAVIGATION_CLIENT,
+        ApiCall.SET_WEBVIEW_NAVIGATION_CLIENT,
+        ApiCall.NAVIGATION_GET_URL,
+        ApiCall.NAVIGATION_IS_PAGE_INITIATED,
+        ApiCall.NAVIGATION_IS_SAME_DOCUMENT,
+        ApiCall.NAVIGATION_IS_RELOAD,
+        ApiCall.NAVIGATION_IS_HISTORY,
+        ApiCall.NAVIGATION_IS_RESTORE,
+        ApiCall.NAVIGATION_IS_BACK,
+        ApiCall.NAVIGATION_IS_FORWARD,
+        ApiCall.NAVIGATION_HAS_COMMITTED,
+        ApiCall.NAVIGATION_DID_COMMIT_ERROR_PAGE,
+        ApiCall.NAVIGATION_GET_STATUS_CODE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -365,9 +379,22 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int WEB_STORAGE_DELETE_BROWSING_DATA_FOR_SITE = 118;
         int SET_SPECULATIVE_LOADING_CONFIG = 119;
         int SAVE_STATE = 120;
+        int GET_WEBVIEW_NAVIGATION_CLIENT = 121;
+        int SET_WEBVIEW_NAVIGATION_CLIENT = 122;
+        int NAVIGATION_GET_URL = 123;
+        int NAVIGATION_IS_PAGE_INITIATED = 124;
+        int NAVIGATION_IS_SAME_DOCUMENT = 125;
+        int NAVIGATION_IS_RELOAD = 126;
+        int NAVIGATION_IS_HISTORY = 127;
+        int NAVIGATION_IS_RESTORE = 128;
+        int NAVIGATION_IS_BACK = 129;
+        int NAVIGATION_IS_FORWARD = 130;
+        int NAVIGATION_HAS_COMMITTED = 131;
+        int NAVIGATION_DID_COMMIT_ERROR_PAGE = 132;
+        int NAVIGATION_GET_STATUS_CODE = 133;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 121;
+        int COUNT = 134;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

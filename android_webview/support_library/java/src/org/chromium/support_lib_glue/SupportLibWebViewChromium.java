@@ -22,7 +22,9 @@ import com.android.webview.chromium.SharedWebViewRendererClientAdapter;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwNavigationClient;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.SpeculativeLoadingParametersBoundaryInterface;
 import org.chromium.support_lib_boundary.VisualStateCallbackBoundaryInterface;
@@ -283,6 +285,37 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.SAVE_STATE")) {
             recordApiCall(ApiCall.SAVE_STATE);
             mSharedWebViewChromium.saveState(outState, maxSize, includeForwardState);
+        }
+    }
+
+    @Override
+    public /* WebViewNavigationClient */ InvocationHandler getWebViewNavigationClient() {
+        assert ThreadUtils.runningOnUiThread();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_NAVIGATION_CLIENT")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_NAVIGATION_CLIENT);
+            AwNavigationClient webViewNavigationClient =
+                    mSharedWebViewChromium.getAwContents().getNavigationClient();
+            return webViewNavigationClient != null
+                    ? webViewNavigationClient.getSupportLibInvocationHandler()
+                    : null;
+        }
+    }
+
+    @Override
+    public void setWebViewNavigationClient(
+            /* WebViewNavigationClient */ InvocationHandler webViewNavigationClient) {
+        assert ThreadUtils.runningOnUiThread();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_WEBVIEW_NAVIGATION_CLIENT")) {
+            recordApiCall(ApiCall.SET_WEBVIEW_NAVIGATION_CLIENT);
+            mSharedWebViewChromium
+                    .getAwContents()
+                    .setNavigationClient(
+                            webViewNavigationClient != null
+                                    ? new SupportLibWebViewNavigationClientAdapter(
+                                            webViewNavigationClient)
+                                    : null);
         }
     }
 }

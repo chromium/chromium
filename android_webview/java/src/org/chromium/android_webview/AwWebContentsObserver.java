@@ -19,6 +19,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.WeakHashMap;
 
 /** Routes notifications from WebContents to AwContentsClient and other listeners. */
 @Lifetime.WebView
@@ -29,6 +30,29 @@ public class AwWebContentsObserver extends WebContentsObserver {
     // and should be found and cleaned up.
     private final WeakReference<AwContents> mAwContents;
     private final WeakReference<AwContentsClient> mAwContentsClient;
+
+    // Maps a NavigationHandle to its associated AwNavigation object. Since the AwNavigation object
+    // subclasses AwSupportLibIsomorphic in order to hold onto a reference to the client-side
+    // object and we want to keep it stable (so that apps can use the object itself as implicit
+    // IDs), we need to keep a mapping. Some important points:
+    // - If the app keeps a reference to the app-facing navigation object around, that object will
+    //   reference the AwNavigation, which references the NavigationHandle, and so all these
+    //   objects will be kept alive: the map will continue to associate the two so that future
+    //   callbacks use the same object, and the app can also continue calling the getters even
+    //   after //content's native code is no longer keeping the handle around.
+    // - If the app doesn't keep a reference to the app-facing navigation object, then the
+    //   NavigationHandle will be kept alive by //content for as long as the navigation is in
+    //   progress, which will also keep the entry in the hashmap alive, but because the hashmap
+    //   value is a weak reference then this will not keep the AwNavigation alive and it might get
+    //   GCed in between callbacks; we would have to create a new AwNavigation wrapper if that
+    //   happens to call the next callback which is not ideal for performance but doesn't affect
+    //   the app-visible behavior of the API much: they didn't keep a reference to the
+    //   navigation around the first time and so they can't tell whether the second time is the
+    //   same object or not.
+    // - The app unfortunately can tell if they store a weak reference to the navigation object,
+    //   but there's no need for them to do that here: strongly referencing the object doesn't
+    //   leak the WebView or anything.
+    WeakHashMap<NavigationHandle, WeakReference<AwNavigation>> mNavigationMap;
 
     // Whether this webcontents has ever committed any navigation.
     private boolean mCommittedNavigation;
@@ -52,6 +76,19 @@ public class AwWebContentsObserver extends WebContentsObserver {
             }
         }
         return null;
+    }
+
+    private AwNavigation getAwNavigationFor(NavigationHandle navigation) {
+        WeakReference<AwNavigation> awNavigationRef = mNavigationMap.get(navigation);
+        if (awNavigationRef != null) {
+            AwNavigation awNavigation = awNavigationRef.get();
+            if (awNavigation != null) {
+                return awNavigation;
+            }
+        }
+        AwNavigation awNavigation = new AwNavigation(navigation);
+        mNavigationMap.put(navigation, new WeakReference<>(awNavigation));
+        return awNavigation;
     }
 
     @Override
@@ -134,6 +171,28 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
+    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient client = awContents.getNavigationClient();
+            if (client != null) {
+                client.onNavigationStarted(getAwNavigationFor(navigation));
+            }
+        }
+    }
+
+    @Override
+    public void didRedirectNavigation(NavigationHandle navigation) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient client = awContents.getNavigationClient();
+            if (client != null && navigation.isInPrimaryMainFrame()) {
+                client.onNavigationRedirected(getAwNavigationFor(navigation));
+            }
+        }
+    }
+
+    @Override
     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
         String url = navigation.getUrl().getPossiblyInvalidSpec();
         if (navigation.errorCode() != NetError.OK && !navigation.isDownload()) {
@@ -162,15 +221,23 @@ public class AwWebContentsObserver extends WebContentsObserver {
             client.getCallbackHelper().postDoUpdateVisitedHistory(url, isReload);
         }
 
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient navClient = awContents.getNavigationClient();
+            if (navClient != null && navigation.isInPrimaryMainFrame()) {
+                navClient.onNavigationCompleted(getAwNavigationFor(navigation));
+            }
+        }
+
         // Only invoke the onPageCommitVisible callback when navigating to a different document,
         // but not when navigating to a different fragment within the same document.
         if (!navigation.isSameDocument()) {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () -> {
-                        AwContents awContents = mAwContents.get();
-                        if (awContents != null) {
-                            awContents.insertVisualStateCallbackIfNotDestroyed(
+                        AwContents awContents2 = mAwContents.get();
+                        if (awContents2 != null) {
+                            awContents2.insertVisualStateCallbackIfNotDestroyed(
                                     0,
                                     new VisualStateCallback() {
                                         @Override
