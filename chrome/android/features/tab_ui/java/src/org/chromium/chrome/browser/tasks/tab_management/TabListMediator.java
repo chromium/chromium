@@ -211,14 +211,10 @@ class TabListMediator implements TabListNotificationHandler {
         }
 
         @Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-
-            if (other instanceof TabActionButtonData otherData) {
-                return this.type == otherData.type
-                        && Objects.equals(this.tabActionListener, otherData.tabActionListener);
-            }
-            return false;
+        public boolean equals(Object obj) {
+            return (obj instanceof TabActionButtonData other)
+                    && type == other.type
+                    && Objects.equals(tabActionListener, other.tabActionListener);
         }
 
         @Override

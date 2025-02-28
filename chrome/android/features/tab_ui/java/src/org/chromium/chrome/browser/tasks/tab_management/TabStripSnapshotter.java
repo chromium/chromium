@@ -62,13 +62,9 @@ public class TabStripSnapshotter {
 
         @Override
         public boolean equals(@Nullable Object obj) {
-            if (!(obj instanceof TabStripSnapshotToken other)) {
-                return false;
-            }
-            if (mScrollX != other.mScrollX) {
-                return false;
-            }
-            return mList.equals(other.mList);
+            return (obj instanceof TabStripSnapshotToken other)
+                    && mScrollX == other.mScrollX
+                    && Objects.equals(mList, other.mList);
         }
     }
 
@@ -94,13 +90,10 @@ public class TabStripSnapshotter {
 
         @Override
         public boolean equals(@Nullable Object obj) {
-            if (!(obj instanceof TabStripItemSnapshot)) {
-                return false;
-            }
-            TabStripItemSnapshot other = (TabStripItemSnapshot) obj;
-            return Objects.equals(mTabFaviconFetcher, other.mTabFaviconFetcher)
-                    && this.mFaviconFetched == other.mFaviconFetched
-                    && this.mIsSelected == other.mIsSelected;
+            return (obj instanceof TabStripItemSnapshot other)
+                    && Objects.equals(mTabFaviconFetcher, other.mTabFaviconFetcher)
+                    && mFaviconFetched == other.mFaviconFetched
+                    && mIsSelected == other.mIsSelected;
         }
     }
 
