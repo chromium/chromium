@@ -48,6 +48,7 @@ def __step_config(ctx, step_config):
         step_config["platforms"].update({
             "clang-cl": reproxy_config["platform"],
             "clang-cl_large": largePlatform,
+            "lld-link": largePlatform,
         })
         step_config["input_deps"].update(clang_all.input_deps)
 
@@ -151,12 +152,69 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?solink",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
+                    win_sdk.toolchain_dir(ctx) + ":libs",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                "remote_wrapper": remote_wrapper,
+                "platform_ref": "lld-link",
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "timeout": "2m",
+            },
+            {
+                "name": "lld-link/solink_module",
+                "action": "(.*_)?solink_module",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
+                "handler": "lld_link",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
+                    win_sdk.toolchain_dir(ctx) + ":libs",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                "remote_wrapper": remote_wrapper,
+                "platform_ref": "lld-link",
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "timeout": "2m",
             },
             {
                 "name": "lld-link/link",
                 "action": "(.*_)?link",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
+                    win_sdk.toolchain_dir(ctx) + ":libs",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                ],
+                "remote": config.get(ctx, "remote-link"),
+                "remote_wrapper": remote_wrapper,
+                "platform_ref": "lld-link",
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "timeout": "2m",
             },
         ])
     elif gn.args(ctx).get("use_remoteexec") == "true":
