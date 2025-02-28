@@ -243,8 +243,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // Anchor based on the sign-in button that triggered sign-in.
   // Used to display popover dialog (like the unsynced data confirmation dialog)
   // with a regular window size (like iPad).
-  // TODO(crbug.com/375604649): Need to set the values from the owner of
-  // `AuthenticationFlow`, in the init method.
   UIView* _anchorView;
   CGRect _anchorRect;
   SigninCompletionCallback _signInCompletion;
@@ -308,7 +306,9 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
                        identity:(id<SystemIdentity>)identity
                     accessPoint:(signin_metrics::AccessPoint)accessPoint
               postSignInActions:(PostSignInActionSet)postSignInActions
-       presentingViewController:(UIViewController*)presentingViewController {
+       presentingViewController:(UIViewController*)presentingViewController
+                     anchorView:(UIView*)anchorView
+                     anchorRect:(CGRect)anchorRect {
   if ((self = [super init])) {
     DCHECK(browser);
     DCHECK(presentingViewController);
@@ -318,6 +318,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     _accessPoint = accessPoint;
     _postSignInActions = postSignInActions;
     _presentingViewController = presentingViewController;
+    _anchorView = anchorView;
+    _anchorRect = anchorRect;
     _state = AuthenticationState::kBegin;
     _cancelationReason = CancelationReason::kNotCanceled;
     _profileSeparationDataMigrationSettings =
