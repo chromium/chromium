@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 
 namespace autofill {
 class FormData;
@@ -23,41 +24,19 @@ namespace autofill_ai {
 // The filling engine that provides autofill predictions improvements.
 class AutofillAiModelExecutor {
  public:
-  struct Prediction {
-    Prediction(std::u16string value, std::u16string label, bool is_focusable);
-    Prediction(std::u16string value,
-               std::u16string label,
-               bool is_focusable,
-               std::optional<std::u16string> select_option_text);
-    Prediction(const Prediction& other);
-    ~Prediction();
-
-    // The value to be filled into a field. Also shown as the main text in the
-    // suggestion unless `select_option_text` is set.
-    std::u16string value;
-    // The label to be shown in the suggestion.
-    std::u16string label;
-    // True when the field targeted for this prediction is focusable.
-    bool is_focusable;
-    // Shown as main text in the suggestion if set.
-    std::optional<std::u16string> select_option_text = std::nullopt;
-  };
-  using PredictionsByGlobalId =
-      base::flat_map<autofill::FieldGlobalId, Prediction>;
-  using PredictionsOrError = base::expected<PredictionsByGlobalId, bool>;
-  using PredictionsReceivedCallback =
-      base::OnceCallback<void(PredictionsOrError,
-                              std::optional<std::string> feedback_id)>;
+  using Predictions = optimization_guide::proto::AutofillAiTypeResponse;
+  using PredictionCallback =
+      base::OnceCallback<void(std::optional<Predictions>)>;
 
   virtual ~AutofillAiModelExecutor() = default;
 
   // Retrieves predictions for `form_data` with context of `ax_tree_update`.
-  // Invokes `callback` when done. The unexpected value is always `false` if
-  // there was an error retrieving predictions.
+  // Invokes `callback` when done. If the model encountered an error, the
+  // callback's is called with `std::nullopt`.
   virtual void GetPredictions(
       autofill::FormData form_data,
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
-      PredictionsReceivedCallback callback) = 0;
+      PredictionCallback callback) = 0;
 };
 
 }  // namespace autofill_ai

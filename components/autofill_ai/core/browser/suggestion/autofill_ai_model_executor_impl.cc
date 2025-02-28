@@ -45,7 +45,7 @@ AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 void AutofillAiModelExecutorImpl::GetPredictions(
     autofill::FormData form_data,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
-    PredictionsReceivedCallback callback) {
+    PredictionCallback callback) {
   // Construct request.
   AutofillAiTypeRequest request;
   optimization_guide::proto::PageContext* page_context =
@@ -74,17 +74,14 @@ void AutofillAiModelExecutorImpl::GetPredictions(
 
 void AutofillAiModelExecutorImpl::OnModelExecuted(
     autofill::FormData form_data,
-    PredictionsReceivedCallback callback,
+    PredictionCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::proto::FormsClassificationsLoggingData>
         logging_data) {
-  CHECK(logging_data);
   auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
       logs_uploader_);
-  const std::optional<std::string> execution_id =
-      logging_data->model_execution_info().execution_id();
   if (!execution_result.response.has_value()) {
-    std::move(callback).Run(base::unexpected(false), execution_id);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -93,22 +90,11 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
           execution_result.response.value());
 
   if (!response) {
-    std::move(callback).Run(base::unexpected(false), execution_id);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::move(callback).Run(
-      ExtractPredictions(form_data, std::move(response).value()), execution_id);
-}
-
-// static
-AutofillAiModelExecutor::PredictionsByGlobalId
-AutofillAiModelExecutorImpl::ExtractPredictions(
-    const autofill::FormData& form_data,
-    AutofillAiTypeResponse model_response) {
-  // TODO(crbug.com/389631477): Implement, but keep it simple - maybe just
-  // pass on the proto.
-  return {};
+  std::move(callback).Run(std::move(response).value());
 }
 
 }  // namespace autofill_ai

@@ -36,12 +36,7 @@
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
 #include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
-#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
-#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,7 +49,6 @@ using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
 using enum SuggestionType;
 using AutofillAiPayload = Suggestion::AutofillAiPayload;
-using PredictionsByGlobalId = AutofillAiModelExecutor::PredictionsByGlobalId;
 using ::autofill::AttributeInstance;
 using ::autofill::AttributeType;
 using ::autofill::AttributeTypeName;
@@ -122,17 +116,6 @@ auto VehicleWithLicensePlate(std::u16string license_plate) {
       std::move(license_plate));
 }
 
-class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
- public:
-  MOCK_METHOD(
-      void,
-      GetPredictions,
-      (autofill::FormData form_data,
-       optimization_guide::proto::AXTreeUpdate ax_tree_update,
-       PredictionsReceivedCallback callback),
-      (override));
-};
-
 class BaseAutofillAiManagerTest : public testing::Test {
  public:
   BaseAutofillAiManagerTest() {
@@ -142,7 +125,6 @@ class BaseAutofillAiManagerTest : public testing::Test {
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));
   }
 
-  MockAutofillAiModelExecutor& model_executor() { return model_executor_; }
   MockAutofillAiClient& client() { return client_; }
   AutofillAiManager& manager() { return manager_; }
   autofill::TestStrikeDatabase& strike_database() { return strike_database_; }
@@ -151,7 +133,6 @@ class BaseAutofillAiManagerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   autofill::TestAutofillClient autofill_client_;
-  NiceMock<MockAutofillAiModelExecutor> model_executor_;
   NiceMock<MockAutofillAiClient> client_;
   autofill::TestStrikeDatabase strike_database_;
   AutofillAiManager manager_{&client(), &strike_database_};
@@ -160,12 +141,6 @@ class BaseAutofillAiManagerTest : public testing::Test {
 class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
  public:
   AutofillAiManagerTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillAi, {{"skip_allowlist", "true"},
-                      {"extract_ax_tree_for_predictions", "true"},
-                      {"send_title_url", "false"}});
-    ON_CALL(client(), GetModelExecutor)
-        .WillByDefault(Return(&model_executor()));
     ON_CALL(client(), GetEntityDataManager)
         .WillByDefault(Return(&entity_data_manager_));
     ON_CALL(client(), IsUserEligible).WillByDefault(Return(true));

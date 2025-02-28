@@ -34,26 +34,20 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   ~AutofillAiModelExecutorImpl() override;
 
   // AutofillAiModelExecutor:
-  void GetPredictions(
-      autofill::FormData form_data,
-      optimization_guide::proto::AXTreeUpdate ax_tree_update,
-      PredictionsReceivedCallback callback) override;
+  void GetPredictions(autofill::FormData form_data,
+                      optimization_guide::proto::AXTreeUpdate ax_tree_update,
+                      PredictionCallback callback) override;
 
  private:
   // Invokes `callback` when model execution response has been returned.
   void OnModelExecuted(
       autofill::FormData form_data,
-      PredictionsReceivedCallback callback,
+      PredictionCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
       std::unique_ptr<
           optimization_guide::proto::FormsClassificationsLoggingData>
           logging_data);
-
-  // TODO(crbug.com/389631477): Move into anonymous namespace.
-  static PredictionsByGlobalId ExtractPredictions(
-      const autofill::FormData& form_data,
-      optimization_guide::proto::AutofillAiTypeResponse model_response);
 
   const raw_ref<optimization_guide::OptimizationGuideModelExecutor>
       model_executor_;

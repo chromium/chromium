@@ -28,7 +28,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_manager.h",
       "autofill_ai_utils.cc",
       "autofill_ai_utils.h",
-      "suggestion/autofill_ai_model_executor.cc",
       "suggestion/autofill_ai_model_executor.h",
       "suggestion/autofill_ai_model_executor_impl.cc",
       "suggestion/autofill_ai_model_executor_impl.h",
@@ -54,8 +53,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     testonly = true
     sources = [
       "autofill_ai_manager_test_api.h",
-      "autofill_ai_test_utils.cc",
-      "autofill_ai_test_utils.h",
       "mock_autofill_ai_client.cc",
       "mock_autofill_ai_client.h",
     ]
