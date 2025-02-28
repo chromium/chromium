@@ -119,6 +119,10 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
       base::FeatureParam<bool>(&kSearchAggregatorProvider,
                                "parse_response_in_utility_process", true)
           .Get();
+  use_discovery_engine_oauth_scope =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "use_discovery_engine_oauth_scope", false)
+          .Get();
 }
 
 SearchAggregatorProvider::SearchAggregatorProvider(

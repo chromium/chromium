@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -133,9 +134,12 @@ void EnterpriseSearchAggregatorSuggestionsService::
   // Create and fetch an OAuth2 token.
   signin::ScopeSet scopes;
 
-  // TODO(crbug.com/380631529): This is a temporary scope used for testing.
-  //   Update once final scope is setup.
-  scopes.insert(GaiaConstants::kCloudSearchQueryOAuth2Scope);
+  if (omnibox_feature_configs::SearchAggregatorProvider::Get()
+          .use_discovery_engine_oauth_scope) {
+    scopes.insert(GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope);
+  } else {
+    scopes.insert(GaiaConstants::kCloudSearchQueryOAuth2Scope);
+  }
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "enterprise_search_aggregator_suggestions_service", identity_manager_,
       scopes,

@@ -43,6 +43,7 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCloudSearchQueryOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
+ {GaiaConstants::kDiscoveryEngineCompleteQueryOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kOAuth1LoginScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCalendarReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
 #if BUILDFLAG(IS_CHROMEOS)
