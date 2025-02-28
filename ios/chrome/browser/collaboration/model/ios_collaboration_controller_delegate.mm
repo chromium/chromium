@@ -199,12 +199,9 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     const data_sharing::GroupToken& token,
     const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
-  base::WeakPtr<IOSCollaborationControllerDelegate> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-
   auto callback = base::BindOnce(
-      &IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup, weak_this,
-      token, std::move(result));
+      &IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup,
+      weak_ptr_factory_.GetWeakPtr(), token, std::move(result));
 
   // Check if preview data contains shared tab group preview information.
   if (const auto& tab_group_preview = preview_data.shared_tab_group_preview) {
@@ -229,18 +226,12 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
     return;
   }
 
-  ShareKitShareGroupConfiguration* config =
-      [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = tab_group;
-  config.baseViewController = base_view_controller_;
-  config.applicationHandler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
-  auto completion_block = base::CallbackToBlock(std::move(result));
-  config.completion = ^(ShareKitFlowOutcome outcome) {
-    completion_block(ConvertOutcome(outcome), data_sharing::GroupToken());
-  };
+  auto callback = base::BindOnce(
+      &IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup,
+      weak_ptr_factory_.GetWeakPtr(), either_id, std::move(result), tab_group);
 
-  session_id_ = share_kit_service_->ShareTabGroup(config);
+  favicons_grid_configurator_->FetchFaviconsGrid(tab_group,
+                                                 std::move(callback));
 }
 
 void IOSCollaborationControllerDelegate::OnUrlReadyToShare(
@@ -454,6 +445,32 @@ UIImage* IOSCollaborationControllerDelegate::JoinGroupImage(
                                                      preview_items);
   [favicons_grid layoutIfNeeded];
   return ImageFromView(favicons_grid, nil, UIEdgeInsetsZero);
+}
+
+void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
+    const tab_groups::EitherGroupID& either_id,
+    ResultWithGroupTokenCallback result,
+    const TabGroup* tab_group,
+    UIImage* faviconsGridImage) {
+  if (!tab_group || !faviconsGridImage) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure,
+                          data_sharing::GroupToken());
+    return;
+  }
+
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = tab_group;
+  config.groupImage = faviconsGridImage;
+  config.baseViewController = base_view_controller_;
+  config.applicationHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  auto completion_block = base::CallbackToBlock(std::move(result));
+  config.completion = ^(ShareKitFlowOutcome outcome) {
+    completion_block(ConvertOutcome(outcome), data_sharing::GroupToken());
+  };
+
+  session_id_ = share_kit_service_->ShareTabGroup(config);
 }
 
 }  // namespace collaboration

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 
 class FaviconLoader;
@@ -21,6 +22,8 @@ class Uuid;
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
+
+using FaviconsGridImageCallBack = base::OnceCallback<void(UIImage*)>;
 
 // Configures favicon for TabGroupFaviconsGrid objects.
 class TabGroupFaviconsGridConfigurator {
@@ -47,6 +50,10 @@ class TabGroupFaviconsGridConfigurator {
   // `preview_items`.
   void ConfigureFaviconsGrid(TabGroupFaviconsGrid* favicons_grid,
                              NSArray<ShareKitPreviewItem*>* preview_items);
+
+  // Fetches a favicons grid image and executes `callback`.
+  void FetchFaviconsGrid(const TabGroup* tab_group,
+                         FaviconsGridImageCallBack callback);
 
  private:
   // The tab group sync service to retrieve group info.

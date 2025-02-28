@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/model/mock_favicon_loader.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
@@ -48,6 +49,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+using testing::_;
 using testing::Return;
 
 namespace collaboration {
@@ -75,6 +77,11 @@ std::unique_ptr<KeyedService> BuildTestSyncService(web::BrowserState* context) {
 std::unique_ptr<KeyedService> BuildMockCollaborationService(
     web::BrowserState* context) {
   return std::make_unique<MockCollaborationService>();
+}
+
+std::unique_ptr<KeyedService> BuildMockFaviconLoader(
+    web::BrowserState* context) {
+  return std::make_unique<MockFaviconLoader>();
 }
 
 }  // namespace
@@ -113,7 +120,8 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         base::BindRepeating(&BuildTestShareKitService));
     test_cbs_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
-        IOSChromeFaviconLoaderFactory::GetDefaultFactory());
+        base::BindRepeating(&BuildMockFaviconLoader));
+
     profile_ = std::move(test_cbs_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -146,8 +154,19 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
 
     mock_collaboration_service_ = static_cast<MockCollaborationService*>(
         CollaborationServiceFactory::GetForProfile(profile_.get()));
+    mock_favicon_loader_ = static_cast<MockFaviconLoader*>(
+        IOSChromeFaviconLoaderFactory::GetForProfile(profile_.get()));
 
     collaboration_status_.sync_status = SyncStatus::kSyncWithoutTabGroup;
+
+    EXPECT_CALL(*mock_favicon_loader_, FaviconForPageUrl(_, _, _, _, _))
+        .WillRepeatedly([](auto, auto, auto, auto,
+                           FaviconLoader::FaviconAttributesCompletionBlock
+                               favicon_block_handler) {
+          favicon_block_handler([FaviconAttributes
+              attributesWithImage:[UIImage
+                                      imageNamed:@"default_world_favicon"]]);
+        });
   }
 
   // Init the delegate for a flow.
@@ -229,6 +248,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
   raw_ptr<MockCollaborationService> mock_collaboration_service_;
+  raw_ptr<MockFaviconLoader> mock_favicon_loader_;
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate_;
   raw_ptr<WebStateList> web_state_list_;
   id application_commands_mock_;

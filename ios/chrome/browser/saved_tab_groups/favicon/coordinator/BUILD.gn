@@ -18,6 +18,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util:image_util",
     "//ui/gfx",
   ]
 }

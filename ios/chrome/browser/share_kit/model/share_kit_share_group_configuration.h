@@ -20,6 +20,9 @@ class TabGroup;
 // Local tab group.
 @property(nonatomic, assign) const TabGroup* tabGroup;
 
+// The group image preview.
+@property(nonatomic, copy) UIImage* groupImage;
+
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
