@@ -89,8 +89,9 @@ def _BinaryDirTargetOS(binary_dir):
     if os.path.exists(build_ninja_path):
         with open(build_ninja_path) as build_ninja_file:
             build_ninja_content = build_ninja_file.read()
-            match = re.search(r'-linux-android(eabi)?-ar$', build_ninja_content,
-                              re.MULTILINE)
+            match = re.search(r'-linux-android(eabi)?-ar$',
+                              build_ninja_content,
+                              flags=re.MULTILINE)
             if match:
                 return 'android'
 

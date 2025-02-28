@@ -74,7 +74,6 @@ static_library("handler") {
     ":common",
     "../minidump",
     "../snapshot",
-    "../third_party/mini_chromium:chromeos_buildflags",
     "../tools:tool_support",
   ]
 

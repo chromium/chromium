@@ -409,8 +409,6 @@ crashpad_static_library("util") {
     ]
   }
 
-  deps = [ "//build:chromeos_buildflags" ]
-
   if (crashpad_is_android) {
     sources += [
       "linux/initial_signal_dispositions.cc",
@@ -580,10 +578,7 @@ crashpad_static_library("util") {
     "../third_party/zlib",
   ]
 
-  deps += [
-    "$mini_chromium_source_parent:base",
-    "$mini_chromium_source_parent:chromeos_buildflags",
-  ]
+  deps = [ "$mini_chromium_source_parent:base" ]
 
   configs = [ "../build:flock_always_supported_defines" ]
 
