@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
@@ -368,6 +369,15 @@ id<GREYMatcher> PasswordManagerWidgetPromoInstructionsCloseButton() {
 // Returns matcher for the Password Details move to account button.
 id<GREYMatcher> PasswordDetailsMoveToAccountButton() {
   return grey_accessibilityID(kMovePasswordToAccountButtonID);
+}
+
+// Returns a matcher for the "Turn on AutoFill…" button.
+id<GREYMatcher> TurnOnPasswordsInOtherAppsButton() {
+  return grey_allOf(
+      ButtonWithAccessibilityLabelId(
+          IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)),
+      grey_userInteractionEnabled(), nil);
 }
 
 // Saves two example forms in the store.
@@ -712,6 +722,11 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // prevent flakiness, due to a spinner that appears in some tests and blocks
   // later ones from interacting with the UI.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  if ([self isRunningTest:@selector
+            (testTurnOnPasswordsInOtherAppsItemVisibility)]) {
+    config.features_enabled.push_back(kIOSPasskeysM2);
+  }
 
   if ([self isRunningTest:@selector(testClosingPasswordManagerWidgetPromo)] ||
       [self isRunningTest:@selector
@@ -2947,10 +2962,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       grey_sufficientlyVisible(), nil);
   if ([PasswordManagerAppInterface isPasskeysM2FeatureEnabled]) {
     if (@available(iOS 18, *)) {
-      offMatcher = grey_allOf(
-          grey_accessibilityLabel(l10n_util::GetNSString(
-              IDS_IOS_PASSWORD_SETTINGS_PASSWORDS_IN_OTHER_APPS_DESCRIPTION)),
-          grey_sufficientlyVisible(), nil);
+      offMatcher = grey_allOf(TurnOnPasswordsInOtherAppsButton(),
+                              grey_sufficientlyVisible(), nil);
     }
   }
 
@@ -2974,6 +2987,44 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [PasswordsInOtherAppsAppInterface setAutoFillStatus:YES];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:onMatcher];
+}
+
+// Tests that the "Turn on AutoFill…" button is only visible on iOS 18+ when
+// AutoFill is off.
+- (void)testTurnOnPasswordsInOtherAppsItemVisibility {
+  REQUIRE_PASSKEYS
+
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  // Check initial visibility. AutoFill is off by default.
+  id<GREYMatcher> initialVisibilityMatcher = grey_nil();
+  if (@available(iOS 18, *)) {
+    initialVisibilityMatcher = grey_sufficientlyVisible();
+  }
+  [[EarlGrey selectElementWithMatcher:TurnOnPasswordsInOtherAppsButton()]
+      assertWithMatcher:initialVisibilityMatcher];
+
+  // Turn on AutoFill. The button should not be visible afterwards.
+  [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:YES];
+  if (@available(iOS 18, *)) {
+    id<GREYMatcher> turnOnButtonNotVisibleMatcher =
+        grey_allOf(TurnOnPasswordsInOtherAppsButton(), grey_notVisible(), nil);
+    [ChromeEarlGrey waitForMatcher:turnOnButtonNotVisibleMatcher];
+  } else {
+    [[EarlGrey selectElementWithMatcher:TurnOnPasswordsInOtherAppsButton()]
+        assertWithMatcher:grey_nil()];
+  }
+
+  // Turn off AutoFill. The button should only become visible on iOS 18+.
+  [PasswordsInOtherAppsAppInterface setAutoFillStatus:NO];
+  if (@available(iOS 18, *)) {
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:TurnOnPasswordsInOtherAppsButton()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:TurnOnPasswordsInOtherAppsButton()]
+        assertWithMatcher:grey_nil()];
+  }
 }
 
 // Tests that the detail view is dismissed when the last password is deleted,
