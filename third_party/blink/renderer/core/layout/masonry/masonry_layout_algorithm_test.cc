@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
 
 namespace blink {
 
@@ -61,6 +62,11 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   const GridSpan& MasonryItemSpan(wtf_size_t index) {
     return masonry_items_->At(index).resolved_position.Span(
         grid_axis_tracks_->Direction());
+  }
+
+  const Vector<LayoutUnit>& GetRunningPositions(
+      const MasonryRunningPositions& running_positions) {
+    return running_positions.running_positions_;
   }
 
  private:
@@ -365,6 +371,28 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
   for (wtf_size_t i = 0; i < set_count; ++i) {
     EXPECT_EQ(TrackSize(i), LayoutUnit(expected_track_sizes[i]));
   }
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
+  MasonryRunningPositions running_positions(4);
+
+  Vector<LayoutUnit> expected_running_positions = {
+      LayoutUnit(0), LayoutUnit(3), LayoutUnit(3), LayoutUnit(0)};
+  running_positions.UpdateRunningPositionsForSpan(
+      GridSpan::TranslatedDefiniteGridSpan(1, 3), LayoutUnit(3));
+  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
+
+  expected_running_positions = {LayoutUnit(4), LayoutUnit(4), LayoutUnit(4),
+                                LayoutUnit(4)};
+  running_positions.UpdateRunningPositionsForSpan(
+      GridSpan::TranslatedDefiniteGridSpan(0, 4), LayoutUnit(4));
+  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
+
+  expected_running_positions = {LayoutUnit(4), LayoutUnit(4), LayoutUnit(5),
+                                LayoutUnit(5)};
+  running_positions.UpdateRunningPositionsForSpan(
+      GridSpan::TranslatedDefiniteGridSpan(2, 4), LayoutUnit(5));
+  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
 }
 
 }  // namespace blink
