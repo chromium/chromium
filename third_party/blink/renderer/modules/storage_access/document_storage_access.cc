@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
 namespace blink {
@@ -282,12 +283,14 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
     return promise;
   }
 
-  if (GetSupplementable()->IsInOutermostMainFrame()) {
+  // If this is the outermost frame we no longer need to make a request and
+  // can resolve the promise unless we are in a partitioned popin. Partitioned
+  // popins can be partitioned even as a top-frame, so need to continue.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  if (GetSupplementable()->IsInOutermostMainFrame() &&
+      !GetSupplementable()->GetPage()->IsPartitionedPopin()) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::APPROVED_PRIMARY_FRAME);
-
-    // If this is the outermost frame we no longer need to make a request and
-    // can resolve the promise.
     resolver->Resolve();
     return promise;
   }

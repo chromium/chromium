@@ -36,6 +36,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
@@ -63,6 +64,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -123,6 +125,13 @@ constexpr char kQueryStorageAccessPermission[] =
 constexpr char kHeaderNotProvidedSentinel[] = "HEADER_NOT_PROVIDED";
 
 constexpr char kSecFetchStorageAccess[] = "Sec-Fetch-Storage-Access";
+
+const ContentSettingPatternSource kExpectedSettingDefault(
+    ContentSettingsPattern::Wildcard(),
+    ContentSettingsPattern::Wildcard(),
+    content_settings::ContentSettingToValue(CONTENT_SETTING_ASK),
+    content_settings::ProviderType::kDefaultProvider,
+    /*incognito=*/false);
 
 enum class TestType { kFrame, kWorker };
 
@@ -245,6 +254,21 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRetryRequest(
   return http_response;
 }
 
+// Intercepts requests and sets the 'Popin-Policy' response header to * if
+// the query param `allow_popins` is set.
+std::unique_ptr<net::test_server::HttpResponse> PopinRequestHandler(
+    const net::test_server::HttpRequest& request) {
+  net::test_server::RequestQuery query =
+      net::test_server::ParseQuery(request.GetURL());
+  if (query.find("allow_popins") == query.end()) {
+    return nullptr;
+  }
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_content_type("text/html");
+  http_response->AddCustomHeader("Popin-Policy", "partitioned=*");
+  return http_response;
+}
+
 std::string QueryPermission(content::RenderFrameHost* render_frame_host) {
   return content::EvalJs(render_frame_host, kQueryStorageAccessPermission)
       .ExtractString();
@@ -317,6 +341,8 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
           return HandleRetryRequest(retry_path_fetch_count_,
                                     retry_allowed_origin_, request);
         }));
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&PopinRequestHandler));
     https_server_.RegisterRequestMonitor(base::BindLambdaForTesting(
         [&](const net::test_server::HttpRequest& request) {
           base::AutoLock lock(lock_);
@@ -3485,6 +3511,235 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersWithFedCMBrowserTest, RetryHeader) {
   EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
-// TODO(): Add test cases of 3PC enabled by other mechanisms.
+class StorageAccessAPIPartitionedPopinTest
+    : public StorageAccessAPIBaseBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+ public:
+  void SetUpOnMainThread() override {
+    StorageAccessAPIBaseBrowserTest::SetUpOnMainThread();
+    SetBlockThirdPartyCookies(!Are3PCEnabled());
+    SetFirstPartyData();
+  }
 
+  void TearDownOnMainThread() override {
+    new_prompt_factory_.reset();
+    StorageAccessAPIBaseBrowserTest::TearDownOnMainThread();
+  }
+
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {
+        {blink::features::kPartitionedPopins, {}},
+    };
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    if (AreTrackingProtectionsEnabled()) {
+      return {};
+    }
+    return {content_settings::features::kTrackingProtection3pcd};
+  }
+
+ protected:
+  bool Are3PCEnabled() const { return std::get<0>(GetParam()); }
+
+  bool AreTrackingProtectionsEnabled() const { return std::get<1>(GetParam()); }
+
+  bool ArePermissionPromptsAccepted() const { return std::get<2>(GetParam()); }
+
+  bool TestCrossOrigin() const { return std::get<3>(GetParam()); }
+
+  void SetupPromptFactoryForNewWebContents(
+      content::WebContents* new_web_contents) {
+    new_prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(
+            permissions::PermissionRequestManager::FromWebContents(
+                new_web_contents));
+    new_prompt_factory_->set_response_type(
+        ArePermissionPromptsAccepted()
+            ? permissions::PermissionRequestManager::ACCEPT_ALL
+            : permissions::PermissionRequestManager::DENY_ALL);
+  }
+
+ private:
+  void SetFirstPartyData() {
+    NavigateToPage(kHostA, "/empty.html");
+    EXPECT_TRUE(content::ExecJs(GetPrimaryMainFrame(),
+                                "window.localStorage.setItem('a', 'a');"));
+    NavigateToPage(kHostB, "/empty.html");
+    EXPECT_TRUE(content::ExecJs(GetPrimaryMainFrame(),
+                                "window.localStorage.setItem('b', 'b');"));
+  }
+
+  std::unique_ptr<permissions::MockPermissionPromptFactory> new_prompt_factory_;
+};
+
+// Opens a popup and checks that the RSA call within the main frame fails.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIPartitionedPopinTest,
+                       PopupRSAMainFrameTest) {
+  // Navigate to site a and open popup of site b.
+  NavigateToPage(kHostA, "/empty.html");
+  content::WebContentsAddedObserver new_tab_observer;
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::JsReplace(
+          "window.open($1, '_blank', 'popup')",
+          EchoCookiesURL(TestCrossOrigin() ? kHostB : kHostA).spec())));
+  content::WebContents* popup_web_contents = new_tab_observer.GetWebContents();
+  nav_observer.Wait();
+  SetupPromptFactoryForNewWebContents(popup_web_contents);
+
+  // Expect first-party data for popup.
+  EXPECT_EQ(!TestCrossOrigin(),
+            content::EvalJs(popup_web_contents,
+                            "!!window.localStorage.getItem('a')"));
+  EXPECT_EQ(TestCrossOrigin(),
+            content::EvalJs(popup_web_contents,
+                            "!!window.localStorage.getItem('b')"));
+  EXPECT_EQ(ReadCookiesAndContent(popup_web_contents->GetPrimaryMainFrame(),
+                                  TestCrossOrigin() ? kHostB : kHostA),
+            CookieBundleWithContent(TestCrossOrigin() ? "cross-site=b.test"
+                                                      : "cross-site=a.test"));
+
+  // Expect no custom content settings related to storage access.
+  EXPECT_THAT(HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+                  ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(kExpectedSettingDefault));
+
+  // Expect no handle returned for popup.
+  EXPECT_EQ(false, content::EvalJs(popup_web_contents,
+                                   "document.requestStorageAccess("
+                                   "  {localStorage: true}"
+                                   ").then("
+                                   "  (handle) => !!handle"
+                                   ")"));
+
+  // Expect no custom content settings related to storage access.
+  EXPECT_THAT(HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+                  ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(kExpectedSettingDefault));
+}
+
+// Opens a popin and checks that the RSA call within the main frame fails.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIPartitionedPopinTest,
+                       PopinRSAMainFrameTest) {
+  // Navigate to site a and open popin of site b.
+  NavigateToPage(kHostA, "/empty.html");
+  content::WebContentsAddedObserver new_tab_observer;
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::JsReplace(
+          "window.open($1 + '?allow_popins=true', '_blank', 'popin')",
+          GetURL(TestCrossOrigin() ? kHostB : kHostA, "/empty.html").spec())));
+  content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
+  nav_observer.Wait();
+  SetupPromptFactoryForNewWebContents(popin_web_contents);
+
+  // Expect no first-party data for cross-origin popin.
+  EXPECT_EQ(!TestCrossOrigin(),
+            content::EvalJs(popin_web_contents,
+                            "!!window.localStorage.getItem('a')"));
+  EXPECT_EQ(false, content::EvalJs(popin_web_contents,
+                                   "!!window.localStorage.getItem('b')"));
+
+  // Expect 3p cookies only if enabled.
+  // TODO(crbug.com/340606651): Popins are granting their own 1p cookie access
+  // via heuristics. This should be prevented, but would require changing a data
+  // structure so will likely not be done for the origin trial stage.
+  const auto& cookie_before =
+      ReadCookies(popin_web_contents->GetPrimaryMainFrame(),
+                  TestCrossOrigin() ? kHostB : kHostA);
+  if (!TestCrossOrigin()) {
+    EXPECT_EQ(cookie_before, CookieBundle("cross-site=a.test"));
+  } else if (Are3PCEnabled() || AreTrackingProtectionsEnabled()) {
+    EXPECT_EQ(cookie_before, CookieBundle("cross-site=b.test"));
+  } else {
+    EXPECT_EQ(cookie_before, kNoCookies);
+  }
+
+  // Expect no custom content settings related to storage access.
+  EXPECT_THAT(HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+                  ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(kExpectedSettingDefault));
+
+  // Expect handle returned for popin if the popin is same-origin, if it accepts
+  // all prompts, or if 3pc are enabled and tracking protection is disabled.
+  EXPECT_EQ(
+      !TestCrossOrigin() || ArePermissionPromptsAccepted() ||
+          (Are3PCEnabled() && !AreTrackingProtectionsEnabled()),
+      content::EvalJs(
+          popin_web_contents,
+          content::JsReplace("document.requestStorageAccess("
+                             "  {localStorage: true}"
+                             ").then("
+                             "  (handle) => !!handle &&"
+                             "              !!handle.localStorage.getItem($1),"
+                             "  () => false"
+                             ")",
+                             TestCrossOrigin() ? "b" : "a")));
+
+  // Expect 3p cookies added only if granted.
+  const auto& cookie_after =
+      ReadCookies(popin_web_contents->GetPrimaryMainFrame(),
+                  TestCrossOrigin() ? kHostB : kHostA);
+  if (!TestCrossOrigin()) {
+    EXPECT_EQ(cookie_after, CookieBundle("cross-site=a.test"));
+  } else if (Are3PCEnabled() || AreTrackingProtectionsEnabled()) {
+    EXPECT_EQ(cookie_after, CookieBundle("cross-site=b.test"));
+  } else {
+    EXPECT_EQ(cookie_after, kNoCookies);
+  }
+
+  // Expect custom content settings related to storage access if an explicit
+  // deny/allow occurred.
+  if (!TestCrossOrigin() ||
+      (Are3PCEnabled() && !AreTrackingProtectionsEnabled())) {
+    EXPECT_THAT(
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+            ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS),
+        UnorderedElementsAre(kExpectedSettingDefault));
+  } else {
+    std::vector<ContentSettingPatternSource> settings =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+            ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
+    for (ContentSettingPatternSource& setting : settings) {
+      // We aren't trying to verify metadata so it's easier to clear it.
+      setting.metadata = content_settings::RuleMetaData();
+    }
+    EXPECT_THAT(
+        settings,
+        UnorderedElementsAre(
+            kExpectedSettingDefault,
+            ContentSettingPatternSource(
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    GetURL(kHostB)),
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    GetURL(kHostA)),
+                content_settings::ContentSettingToValue(
+                    ArePermissionPromptsAccepted() ? CONTENT_SETTING_ALLOW
+                                                   : CONTENT_SETTING_BLOCK),
+                content_settings::ProviderType::kPrefProvider,
+                /*incognito=*/false)));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    StorageAccessAPIPartitionedPopinTest,
+    testing::Combine(/*3pc_enabled=*/testing::Bool(),
+                     /*tracking_protections_enabled=*/testing::Bool(),
+                     /*permission_prompts_accepted=*/testing::Bool(),
+                     /*cross_origin=*/testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool, bool, bool>>& info) {
+      return base::StringPrintf(
+          "%s_%s_%s_%s", std::get<0>(info.param) ? "3PCEnabled" : "3PCDisabled",
+          std::get<1>(info.param) ? "TrackingProtectionsEnabled"
+                                  : "TrackingProtectionsDisabled",
+          std::get<2>(info.param) ? "PermissionPromptsAccepted"
+                                  : "PermissionPromptsDenied",
+          std::get<3>(info.param) ? "CrossOrigin" : "SameOrigin");
+    });
 }  // namespace

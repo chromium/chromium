@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_GRANT_PERMISSION_CONTEXT_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/permissions/permission_context_base.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 
@@ -66,6 +67,8 @@ enum class RequestOutcome {
 class StorageAccessGrantPermissionContext
     : public permissions::PermissionContextBase {
  public:
+  using PassKey = base::PassKey<StorageAccessGrantPermissionContext>;
+
   explicit StorageAccessGrantPermissionContext(
       content::BrowserContext* browser_context);
 
@@ -105,6 +108,11 @@ class StorageAccessGrantPermissionContext
                             const GURL& embedding_origin,
                             ContentSetting content_setting,
                             bool is_one_time) override;
+
+  // If the request is from a context partitioned as a popin we need to set
+  // the embedding origin to the popin opener's origin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  GURL GetEffectiveEmbedderOrigin(content::RenderFrameHost* rfh) const override;
 
   // Internal implementation for NotifyPermissionSet.
   void NotifyPermissionSetInternal(
