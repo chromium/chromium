@@ -256,13 +256,9 @@ ColorPickerView::ColorPickerView(
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                   views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kUnbounded)
-              .WithAlignment(views::LayoutAlignment::kCenter)
-              .WithWeight(1));
+      .SetDefault(views::kFlexBehaviorKey,
+                  views::FlexSpecification().WithAlignment(
+                      views::LayoutAlignment::kCenter));
 }
 
 ColorPickerView::~ColorPickerView() = default;
