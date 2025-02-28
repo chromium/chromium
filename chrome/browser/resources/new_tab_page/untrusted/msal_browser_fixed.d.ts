@@ -8,16 +8,13 @@ import type {PopupRequest as MsalPopupRequest} from '@azure/msal-browser/lib/req
 import type {AuthenticationResult as MsalAuthenticationResult} from '@azure/msal-browser/lib/response/AuthenticationResult.d.ts';
 import type {AccountInfo as MsalAccountInfo} from '@azure/msal-common/lib/account/AccountInfo.d.ts';
 import type {AuthError as MsalAuthError} from '@azure/msal-common/lib/error/AuthError.d.ts';
-import type {InteractionRequiredAuthError as MsalInteractionRequiredAuthError} from '@azure/msal-common/lib/error/InteractionRequiredAuthError.d.ts';
 
 declare global {
   export namespace msal {
     export const AccountInfo: MsalAccountInfo;
     export const AuthenticationResult: MsalAuthenticationResult;
-    export const AuthError: typeof MsalAuthError;
+    export const AuthError: MsalAuthError;
     export const Configuration: MsalConfiguration;
-    export const InteractionRequiredAuthError:
-        typeof MsalInteractionRequiredAuthError;
     export const PopupRequest: MsalPopupRequest;
     export const PublicClientApplication: typeof MsalPublicClientApplication;
   }

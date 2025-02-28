@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NTP_MICROSOFT_AUTH_NTP_MICROSOFT_AUTH_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NTP_MICROSOFT_AUTH_NTP_MICROSOFT_AUTH_PAGE_HANDLER_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
@@ -42,7 +44,8 @@ class MicrosoftAuthUntrustedPageHandler
   void MaybeAcquireTokenSilent() override;
   void SetAccessToken(
       new_tab_page::mojom::AccessTokenPtr access_token) override;
-  void SetAuthStateError() override;
+  void SetAuthStateError(const std::string& error_code,
+                         const std::string& error_message) override;
 
   // MicrosoftAuthServiceObserver:
   void OnAuthStateUpdated() override;

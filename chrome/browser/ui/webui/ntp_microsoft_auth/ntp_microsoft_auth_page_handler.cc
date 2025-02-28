@@ -4,22 +4,18 @@
 
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_page_handler.h"
 
+#include <string>
 #include <utility>
 
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom.h"
+#include "components/search/ntp_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-
-namespace {
-
-// Enum for use in NewTabPage.MicrosoftAuth.AuthError histogram.
-// Must match the NTPMicrosoftAuthError enum.
-enum class MicrosoftAuthError { kOther = 0, kMaxValue = kOther };
-
-}  // namespace
 
 MicrosoftAuthUntrustedPageHandler::MicrosoftAuthUntrustedPageHandler(
     mojo::PendingReceiver<
@@ -55,10 +51,18 @@ void MicrosoftAuthUntrustedPageHandler::SetAccessToken(
   auth_service_->SetAccessToken(std::move(token));
 }
 
-void MicrosoftAuthUntrustedPageHandler::SetAuthStateError() {
+void MicrosoftAuthUntrustedPageHandler::SetAuthStateError(
+    const std::string& error_code,
+    const std::string& error_message) {
+  // All authentication errors are currently treated the same:
+  // the service is marked as errored, which cancels the current
+  // authentication attempt and triggers UI updates to prompt
+  // the user to retry authenticating.
   auth_service_->SetAuthStateError();
-  base::UmaHistogramEnumeration("NewTabPage.MicrosoftAuth.AuthError",
-                                MicrosoftAuthError::kOther);
+  base::UmaHistogramSparse("NewTabPage.MicrosoftAuth.AuthError",
+                           base::PersistentHash(error_code));
+  LogModuleError(ntp_features::kNtpMicrosoftAuthenticationModule,
+                 error_message);
 }
 
 void MicrosoftAuthUntrustedPageHandler::OnAuthStateUpdated() {
