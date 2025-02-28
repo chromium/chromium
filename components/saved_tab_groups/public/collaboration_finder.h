@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_COLLABORATION_FINDER_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_COLLABORATION_FINDER_H_
 
-#include <string>
+#include "components/sync/base/collaboration_id.h"
 
 namespace tab_groups {
 
@@ -28,7 +28,7 @@ class CollaborationFinder {
     // `collaboration_id` has become available. If the client was waiting on
     // this collaboration, they should proceed.
     virtual void OnCollaborationAvailable(
-        const std::string& collaboration_id) = 0;
+        const syncer::CollaborationId& collaboration_id) = 0;
 
    protected:
     virtual ~Client() = default;
@@ -39,11 +39,11 @@ class CollaborationFinder {
 
   // Method to query whether a collaboration is currently available.
   virtual bool IsCollaborationAvailable(
-      const std::string& collaboration_id) = 0;
+      const syncer::CollaborationId& collaboration_id) = 0;
 
   // For testing only. Marks a collaboration as available.
   virtual void SetCollaborationAvailableForTesting(
-      const std::string& collaboration_id) {}
+      const syncer::CollaborationId& collaboration_id) {}
 
   virtual ~CollaborationFinder() = default;
 };

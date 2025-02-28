@@ -173,7 +173,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // tab_groups::CollaborationFinder::Client:
-  void OnCollaborationAvailable(const std::string& collaboration_id) override;
+  void OnCollaborationAvailable(
+      const syncer::CollaborationId& collaboration_id) override;
 
   // For testing only.
   void SetIsInitializedForTesting(bool initialized) override;
@@ -359,7 +360,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // handle these groups, hence the service needs to wait before notifying the
   // observers. Once the group becomes available, OnTabGroupAdded() will be
   // invoked for the shared tab group.
-  std::vector<std::tuple<std::string, base::Uuid, TriggerSource>>
+  std::vector<std::tuple<syncer::CollaborationId, base::Uuid, TriggerSource>>
       shared_tab_groups_waiting_for_collaboration_;
 
   // Obsevers of the model.

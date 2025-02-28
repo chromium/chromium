@@ -262,21 +262,23 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupId(
     tab_groups::LocalTabGroupID tab_group_id,
     NSString* collab_id) {
   if (tab_group_sync_service_ && collab_id) {
-    std::string collaboration_id = base::SysNSStringToUTF8(collab_id);
+    syncer::CollaborationId collaboration_id(
+        base::SysNSStringToUTF8(collab_id));
     // It is necessary to make the collab available on both the sync server and
     // the finder.
-    chrome_test_util::AddCollaboration(collaboration_id);
+    chrome_test_util::AddCollaboration(collaboration_id.value());
     tab_group_sync_service_->GetCollaborationFinderForTesting()
         ->SetCollaborationAvailableForTesting(collaboration_id);
 
     std::optional<tab_groups::SavedTabGroup> saved_group =
         tab_group_sync_service_->GetGroup(tab_group_id);
     if (saved_group && !saved_group->is_shared_tab_group()) {
-      chrome_test_util::AddCollaborationGroupToFakeServer(collaboration_id);
+      chrome_test_util::AddCollaborationGroupToFakeServer(
+          collaboration_id.value());
       chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
       // TODO(crbug.com/382557489): implement the callback.
       tab_group_sync_service_->MakeTabGroupShared(
-          tab_group_id, collaboration_id,
+          tab_group_id, collaboration_id.value(),
           tab_groups::TabGroupSyncService::TabGroupSharingCallback());
     }
   }
