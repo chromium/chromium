@@ -2868,6 +2868,10 @@ source_set("browser") {
     sources += [ "accessibility/browser_accessibility_state_impl_auralinux.cc" ]
   }
 
+  if (is_chromeos) {
+    sources += [ "accessibility/browser_accessibility_state_impl_chromeos.cc" ]
+  }
+
   # Desktop/Window/WebContents screen capture implementations, conditionally
   # built depending on the available implementations for each platform.
   if (enable_screen_capture) {
