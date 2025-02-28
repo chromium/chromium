@@ -18,5 +18,6 @@ void AutoDeletionService::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDownloadAutoDeletionEnabled, false);
   registry->RegisterBooleanPref(prefs::kDownloadAutoDeletionIPHShown, false);
+  registry->RegisterListPref(prefs::kDownloadAutoDeletionScheduledFiles);
 }
 }  // namespace auto_deletion
