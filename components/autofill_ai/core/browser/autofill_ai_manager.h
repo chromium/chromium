@@ -98,9 +98,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   void OnReceivedAXTree(const autofill::FormData& form,
                         optimization_guide::proto::AXTreeUpdate);
 
-  // Returns values to fill based on the `cache_`.
-  base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();
-
   // Logger that records various Autofill AI metrics.
   AutofillAiLogger logger_;
 
