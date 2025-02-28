@@ -3,3 +3,7 @@ file://chrome/android/OWNERS
 jinsukkim@chromium.org
 mdjones@chromium.org
 twellington@chromium.org
+
+per-file BottomControlsStacker*=clhager@google.com
+per-file BottomControlsLayer.java=clhager@google.com
+
