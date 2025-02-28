@@ -9,7 +9,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 shopt -s globstar  # Enable **
 
-for FILE in "${SCRIPT_DIR}"/**/*.json; do
+for FILE in "${SCRIPT_DIR}"/**/**/*.json; do
   if [[ -f "${FILE}.new" ]]; then
     echo "${FILE} has different results:"
     diff -U6 "${FILE}" "${FILE}.new"

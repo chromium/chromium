@@ -640,6 +640,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillSupportPhoneticNameForJP,
       features::kAutofillEnableExpirationDateImprovements,
       features::kAutofillSupportLastNamePrefix,
+      features::kAutofillEnableLoyaltyCardsFilling,
       // Other improvements.
       features::kAutofillEnableCacheForRegexMatching,
       features::kAutofillEnableSupportForParsingWithSharedLabels,
