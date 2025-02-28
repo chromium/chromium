@@ -16,6 +16,7 @@ class FilePath;
 }
 
 namespace extensions {
+class ComponentLoader;
 class DelayedInstallManager;
 class ExtensionPrefs;
 class ExtensionRegistry;
@@ -25,11 +26,12 @@ class ExtensionSystem;
 // The ExtensionRegistrar::Delegate for the //chrome/browser layer.
 class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
  public:
-  ChromeExtensionRegistrarDelegate(Profile* profile,
-                                   ExtensionService* extension_service,
-                                   ExtensionPrefs* extension_prefs,
-                                   ExtensionSystem* system,
-                                   ExtensionRegistry* registry);
+  ChromeExtensionRegistrarDelegate(
+      Profile* profile,
+      ExtensionService* extension_service,
+      ComponentLoader* component_loader,
+      const base::FilePath& install_directory,
+      const base::FilePath& unpacked_install_directory);
   ChromeExtensionRegistrarDelegate(const ChromeExtensionRegistrarDelegate&) =
       delete;
   ChromeExtensionRegistrarDelegate& operator=(
@@ -93,12 +95,20 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   // The normal profile associated with this delegate.
   raw_ptr<Profile> profile_ = nullptr;
 
+  raw_ptr<ExtensionSystem> system_ = nullptr;
   raw_ptr<ExtensionService> extension_service_ = nullptr;
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
-  raw_ptr<ExtensionSystem> system_ = nullptr;
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
   raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
   raw_ptr<DelayedInstallManager> delayed_install_manager_ = nullptr;
+  raw_ptr<ComponentLoader> component_loader_ = nullptr;
+
+  // The full path to the directory where extensions are installed.
+  const base::FilePath install_directory_;
+
+  // The full path to the directory where unpacked (e.g. from .zip files)
+  // extensions are installed.
+  const base::FilePath unpacked_install_directory_;
 
   base::WeakPtrFactory<ChromeExtensionRegistrarDelegate> weak_factory_{this};
 };

@@ -75,14 +75,17 @@ bool SkipDeleteExtensionDir(const Extension& extension,
 ChromeExtensionRegistrarDelegate::ChromeExtensionRegistrarDelegate(
     Profile* profile,
     ExtensionService* extension_service,
-    ExtensionPrefs* extension_prefs,
-    ExtensionSystem* system,
-    ExtensionRegistry* registry)
+    ComponentLoader* component_loader,
+    const base::FilePath& install_directory,
+    const base::FilePath& unpacked_install_directory)
     : profile_(profile),
+      system_(ExtensionSystem::Get(profile_)),
       extension_service_(extension_service),
-      extension_prefs_(extension_prefs),
-      system_(system),
-      registry_(registry) {}
+      extension_prefs_(ExtensionPrefs::Get(profile_)),
+      registry_(ExtensionRegistry::Get(profile_)),
+      component_loader_(component_loader),
+      install_directory_(install_directory),
+      unpacked_install_directory_(unpacked_install_directory) {}
 
 ChromeExtensionRegistrarDelegate::~ChromeExtensionRegistrarDelegate() = default;
 
@@ -101,6 +104,7 @@ void ChromeExtensionRegistrarDelegate::Shutdown() {
   registry_ = nullptr;
   extension_registrar_ = nullptr;
   delayed_install_manager_ = nullptr;
+  component_loader_ = nullptr;
 }
 
 void ChromeExtensionRegistrarDelegate::PreAddExtension(
@@ -208,8 +212,7 @@ void ChromeExtensionRegistrarDelegate::PostUninstallExtension(
         is_unpacked_location ? extension->path() : extension->path().DirName();
 
     base::FilePath extensions_install_dir =
-        is_unpacked_location ? extension_service_->unpacked_install_directory()
-                             : extension_service_->install_directory();
+        is_unpacked_location ? unpacked_install_directory_ : install_directory_;
 
     // Tell the backend to start deleting the installed extension on the file
     // thread.
@@ -246,9 +249,8 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
 
   // If we're reloading a component extension, use the component extension
   // loader's reloader.
-  auto* component_loader = extension_service_->component_loader();
-  if (component_loader->Exists(extension_id)) {
-    component_loader->Reload(extension_id);
+  if (component_loader_->Exists(extension_id)) {
+    component_loader_->Reload(extension_id);
     return;
   }
 
@@ -277,7 +279,10 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
 void ChromeExtensionRegistrarDelegate::ShowExtensionDisabledError(
     const Extension* extension,
     bool is_remote_install) {
-  AddExtensionDisabledError(extension_service_, extension, is_remote_install);
+  // TODO(crbug.com/399680111): Android will need a different implementation of
+  // this function (e.g. an extension_disabled_ui_android.cc file) as it cannot
+  // use the views implementation of this bubble.
+  AddExtensionDisabledError(profile_, extension, is_remote_install);
 }
 
 void ChromeExtensionRegistrarDelegate::FinishDelayedInstallationsIfAny() {
@@ -385,7 +390,7 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
       extension->was_installed_by_default() ||
       ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode();
   if (auto_grant_permission) {
-    extension_service_->GrantPermissions(extension);
+    PermissionsUpdater(profile_).GrantActivePermissions(extension);
   }
 
   bool is_privilege_increase = false;
@@ -424,7 +429,7 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
     // warning messages are suppressed by existing permissions). Grant the new
     // permissions.
     if (!is_privilege_increase) {
-      extension_service_->GrantPermissions(extension);
+      PermissionsUpdater(profile_).GrantActivePermissions(extension);
     }
   }
 

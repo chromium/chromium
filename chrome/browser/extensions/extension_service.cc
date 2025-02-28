@@ -418,13 +418,15 @@ ExtensionService::ExtensionService(
       unpacked_install_directory_(unpacked_install_directory),
       extensions_enabled_(extensions_enabled),
       ready_(ready),
+      component_loader_(std::make_unique<ComponentLoader>(system_, profile_)),
       shared_module_service_(new SharedModuleService(profile_)),
       extension_registrar_delegate_(
-          std::make_unique<ChromeExtensionRegistrarDelegate>(profile_,
-                                                             this,
-                                                             extension_prefs_,
-                                                             system_,
-                                                             registry_)),
+          std::make_unique<ChromeExtensionRegistrarDelegate>(
+              profile_,
+              this,
+              component_loader_.get(),
+              install_directory,
+              unpacked_install_directory)),
       extension_registrar_(ExtensionRegistrar::Get(profile)),
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
@@ -467,8 +469,6 @@ ExtensionService::ExtensionService(
         base::BindRepeating(ChromeExtensionDownloaderFactory::CreateForProfile,
                             profile));
   }
-
-  component_loader_ = std::make_unique<ComponentLoader>(system_, profile);
 
   if (extensions_enabled_) {
     ExternalProviderImpl::CreateExternalProviders(
