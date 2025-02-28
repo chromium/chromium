@@ -128,36 +128,36 @@ GWSAbandonedPageLoadMetricsObserverBrowserTest::
 }
 
 GURL GWSAbandonedPageLoadMetricsObserverBrowserTest::url_srp() {
-  GURL url(embedded_test_server()->GetURL(kSRPDomain, kSRPPath));
+  GURL url(current_test_server()->GetURL(kSRPDomain, kSRPPath));
   EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(url));
   return url;
 }
 GURL GWSAbandonedPageLoadMetricsObserverBrowserTest::url_srp_redirect() {
-  GURL url(embedded_test_server()->GetURL(kSRPDomain, kSRPRedirectPath));
+  GURL url(current_test_server()->GetURL(kSRPDomain, kSRPRedirectPath));
   EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(url));
   return url;
 }
 GURL GWSAbandonedPageLoadMetricsObserverBrowserTest::url_non_srp() {
-  GURL url(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url(current_test_server()->GetURL("a.test", "/title1.html"));
   EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
   return url;
 }
 GURL GWSAbandonedPageLoadMetricsObserverBrowserTest::url_non_srp_2() {
-  GURL url(embedded_test_server()->GetURL("b.test", "/title2.html"));
+  GURL url(current_test_server()->GetURL("b.test", "/title2.html"));
   EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
   return url;
 }
 
 GURL GWSAbandonedPageLoadMetricsObserverBrowserTest::
     url_non_srp_redirect_to_srp() {
-  GURL url(embedded_test_server()->GetURL("a.test", "/redirect-to-srp"));
+  GURL url(current_test_server()->GetURL("a.test", "/redirect-to-srp"));
   EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
   return url;
 }
 
 GURL GWSAbandonedPageLoadMetricsObserverBrowserTest::
     url_srp_redirect_to_non_srp() {
-  GURL url(embedded_test_server()->GetURL(kSRPDomain, "/webhp?q="));
+  GURL url(current_test_server()->GetURL(kSRPDomain, "/webhp?q="));
   EXPECT_TRUE(page_load_metrics::IsGoogleSearchResultUrl(url));
   return url;
 }
@@ -198,23 +198,23 @@ GWSAbandonedPageLoadMetricsObserverBrowserTest::
 
 void GWSAbandonedPageLoadMetricsObserverBrowserTest::SetUpOnMainThread() {
   MetricIntegrationTest::SetUpOnMainThread();
-  embedded_test_server()->RegisterDefaultHandler(
+  current_test_server()->RegisterDefaultHandler(
       base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/search",
                           base::BindRepeating(SRPHandler)));
-  embedded_test_server()->RegisterDefaultHandler(
+  current_test_server()->RegisterDefaultHandler(
       base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/custom",
                           base::BindRepeating(SRPRedirectHandler)));
-  embedded_test_server()->RegisterDefaultHandler(base::BindRepeating(
+  current_test_server()->RegisterDefaultHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/redirect-to-srp",
       base::BindRepeating(&GWSAbandonedPageLoadMetricsObserverBrowserTest::
                               NonSRPToSRPRedirectHandler,
                           base::Unretained(this))));
-  embedded_test_server()->RegisterDefaultHandler(base::BindRepeating(
+  current_test_server()->RegisterDefaultHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/webhp",
       base::BindRepeating(&GWSAbandonedPageLoadMetricsObserverBrowserTest::
                               SRPToNonSRPRedirectHandler,
                           base::Unretained(this))));
-  prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
+  prerender_helper_.RegisterServerRequestMonitor(current_test_server());
   Start();
 }
 
@@ -723,6 +723,11 @@ void GWSAbandonedPageLoadMetricsObserverBrowserTest::LogAFTBeacons() {
                                                internal::kGwsAFTEndMarkName)));
 }
 
+net::EmbeddedTestServer*
+GWSAbandonedPageLoadMetricsObserverBrowserTest::current_test_server() {
+  return embedded_test_server();
+}
+
 // Test that a successful navigation to SRP will log all the navigation
 // milestones metrics and none of the abandonment metrics.
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest, Search) {
@@ -866,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 // to SRP.
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        PrerenderToSrp) {
-  GURL url_srp_prerender(embedded_test_server()->GetURL(
+  GURL url_srp_prerender(current_test_server()->GetURL(
       kSRPDomain, std::string(kSRPPath) + "prerender"));
 
   // Navigate to an initial SRP page and wait until load event.]
