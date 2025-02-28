@@ -131,7 +131,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
       blink::features::kLowLatencyWebGLImageChromium);
 
   // Disable Shared Storage on WebView.
-  aw_feature_overrides.DisableFeature(blink::features::kSharedStorageAPI);
+  aw_feature_overrides.DisableFeature(network::features::kSharedStorageAPI);
 
   // Disable scrollbar-color on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kScrollbarColor);
@@ -306,7 +306,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
       base::features::kPartitionAllocMemoryTagging);
 
   // Disable Topics on WebView.
-  aw_feature_overrides.DisableFeature(blink::features::kBrowsingTopics);
+  aw_feature_overrides.DisableFeature(network::features::kBrowsingTopics);
 
   // Sharing ANGLE's Vulkan queue is not supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kVulkanFromANGLE);

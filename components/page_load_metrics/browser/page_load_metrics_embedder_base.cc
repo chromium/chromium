@@ -22,6 +22,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace page_load_metrics {
@@ -56,7 +57,7 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
       std::make_unique<PrerenderPageLoadMetricsObserver>(is_incognito));
   tracker->AddObserver(std::make_unique<SameOriginPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<CrossOriginPageLoadMetricsObserver>());
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
     tracker->AddObserver(
         std::make_unique<SharedStoragePageLoadMetricsObserver>());
   }

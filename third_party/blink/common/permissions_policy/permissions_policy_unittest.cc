@@ -2079,9 +2079,9 @@ TEST_F(PermissionsPolicyTest, TestUndefinedFeaturesInFramePolicy) {
 TEST_F(PermissionsPolicyTest,
        ProposedTestIsFeatureEnabledForSubresourceRequest) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kBrowsingTopics, blink::features::kSharedStorageAPI},
-      /*disabled_features=*/{});
+  feature_list.InitWithFeatures({network::features::kBrowsingTopics,
+                                 network::features::kSharedStorageAPI},
+                                /*disabled_features=*/{});
 
   network::ResourceRequest request_without_any_opt_in;
 
@@ -2457,7 +2457,7 @@ TEST_F(PermissionsPolicyTest,
 TEST_F(PermissionsPolicyTest,
        ProposedTestIsFeatureEnabledForSubresourceRequestAssumingOptIn) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kSharedStorageAPI},
+  feature_list.InitWithFeatures({network::features::kSharedStorageAPI},
                                 /*disabled_features=*/{});
 
   {

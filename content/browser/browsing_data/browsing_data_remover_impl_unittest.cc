@@ -2000,7 +2000,7 @@ class BrowsingDataRemoverImplSharedStorageTest
     : public BrowsingDataRemoverImplTest {
  public:
   BrowsingDataRemoverImplSharedStorageTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
   }
 
  private:

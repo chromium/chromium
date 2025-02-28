@@ -25,6 +25,7 @@
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/shared_storage/shared_storage_test_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -152,7 +153,7 @@ TEST_F(SharedStorageDatabaseTest, OptionsCreatedFromFeatures) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {blink::features::kSharedStorageAPI},
+      {network::features::kSharedStorageAPI},
       {{"MaxSharedStoragePageSize", "2048"},
        {"MaxSharedStorageCacheSize", "1024"},
        {"MaxSharedStorageInitTries", "5"},

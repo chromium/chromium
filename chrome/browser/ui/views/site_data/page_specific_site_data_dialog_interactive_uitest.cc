@@ -49,6 +49,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -685,7 +686,7 @@ class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
-        {blink::features::kSharedStorageAPI, blink::features::kFencedFrames,
+        {network::features::kSharedStorageAPI, blink::features::kFencedFrames,
          features::kPrivacySandboxAdsAPIsOverride},
         {});
   }

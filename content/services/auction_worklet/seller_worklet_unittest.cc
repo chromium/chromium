@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/http/http_status_code.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -6314,7 +6315,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ScoreAdBrowserSignalRenderSizeTest);
 class SellerWorkletSharedStorageAPIDisabledTest : public SellerWorkletTest {
  public:
   SellerWorkletSharedStorageAPIDisabledTest() {
-    feature_list_.InitAndDisableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndDisableFeature(network::features::kSharedStorageAPI);
   }
 
  protected:
@@ -6352,7 +6353,7 @@ TEST_F(SellerWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
 class SellerWorkletSharedStorageAPIEnabledTest : public SellerWorkletTest {
  public:
   SellerWorkletSharedStorageAPIEnabledTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,

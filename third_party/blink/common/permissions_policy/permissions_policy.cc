@@ -8,6 +8,7 @@
 #include "base/containers/map_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
@@ -16,7 +17,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -192,7 +192,7 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
   // Derive the opt-in features from the request attributes.
   std::set<network::mojom::PermissionsPolicyFeature> opt_in_features;
   if (request.browsing_topics) {
-    DCHECK(base::FeatureList::IsEnabled(blink::features::kBrowsingTopics));
+    DCHECK(base::FeatureList::IsEnabled(network::features::kBrowsingTopics));
 
     opt_in_features.insert(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics);
@@ -205,14 +205,14 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
   // `network::ResourceRequest` is not available at the call site and
   // `blink::ResourceRequest` should not be used in blink public APIs.
   if (request.shared_storage_writable_eligible) {
-    DCHECK(base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI));
+    DCHECK(base::FeatureList::IsEnabled(network::features::kSharedStorageAPI));
     opt_in_features.insert(
         network::mojom::PermissionsPolicyFeature::kSharedStorage);
   }
 
   if (request.ad_auction_headers) {
     DCHECK(
-        base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage));
+        base::FeatureList::IsEnabled(network::features::kInterestGroupStorage));
 
     opt_in_features.insert(
         network::mojom::PermissionsPolicyFeature::kRunAdAuction);

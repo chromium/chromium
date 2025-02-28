@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -158,10 +159,10 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     // be handled via `SubresourceProxyingURLLoaderService` (i.e. sets
     // browsing_topics but not ad_auction_headers).
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kInterestGroupStorage,
+        /*enabled_features=*/{network::features::kInterestGroupStorage,
                               blink::features::kFledgeBiddingAndAuctionServer,
                               blink::features::kAdAuctionSignals,
-                              blink::features::kBrowsingTopics},
+                              network::features::kBrowsingTopics},
         /*disabled_features=*/{});
   }
 

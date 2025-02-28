@@ -2391,9 +2391,13 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/permissions_policy/permissions_policy.cc',
             'third_party/blink/public/common/permissions_policy/permissions_policy.h',
         ],
         'allowed': [
+            'network::features::kBrowsingTopics',
+            'network::features::kInterestGroupStorage',
+            'network::features::kSharedStorageAPI',
             'url::Origin',
         ]
     },
@@ -2471,6 +2475,16 @@ _CONFIG = [
         ],
         'allowed': [
             'gfx::SkPixmapToWritableSpan',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/common/features.cc',
+        ],
+        'allowed': [
+            'network::features::kBrowsingTopics',
+            'network::features::kInterestGroupStorage',
+            'network::features::kSharedStorageAPI',
         ]
     },
     {

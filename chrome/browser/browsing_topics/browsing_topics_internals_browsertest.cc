@@ -28,6 +28,7 @@
 #include "content/public/test/browsing_topics_test_util.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -349,7 +350,7 @@ class BrowsingTopicsDisabledInternalsBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
-            blink::features::kBrowsingTopics,
+            network::features::kBrowsingTopics,
             blink::features::kBrowsingTopicsParameters,
             features::kPrivacySandboxAdsAPIsOverride,
         });
@@ -427,7 +428,7 @@ class BrowsingTopicsInternalsBrowserTest
         {{blink::features::kBrowsingTopicsParameters,
           {{"number_of_top_topics_per_epoch", "2"},
            {"time_period_per_epoch", "15s"}}},
-         {blink::features::kBrowsingTopics, {}},
+         {network::features::kBrowsingTopics, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {privacy_sandbox::kPrivacySandboxSettings4,
           {{"consent-required", "true"}}}},

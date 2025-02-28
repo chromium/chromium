@@ -24,6 +24,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -69,8 +70,9 @@ BrowsingTopicsServiceFactory::~BrowsingTopicsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 BrowsingTopicsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics))
+  if (!base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
     return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(context);
 

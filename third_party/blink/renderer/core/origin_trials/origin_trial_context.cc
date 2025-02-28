@@ -514,7 +514,8 @@ void OriginTrialContext::AddForceEnabledTrials(
 
 bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "FledgeBiddingAndAuctionServer") {
-    return base::FeatureList::IsEnabled(features::kInterestGroupStorage) &&
+    return base::FeatureList::IsEnabled(
+               network::features::kInterestGroupStorage) &&
            base::FeatureList::IsEnabled(
                features::kFledgeBiddingAndAuctionServer);
   }
@@ -522,8 +523,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "FencedFrames")
     return base::FeatureList::IsEnabled(features::kFencedFrames);
 
-  if (trial_name == "AdInterestGroupAPI")
-    return base::FeatureList::IsEnabled(features::kInterestGroupStorage);
+  if (trial_name == "AdInterestGroupAPI") {
+    return base::FeatureList::IsEnabled(
+        network::features::kInterestGroupStorage);
+  }
 
   if (trial_name == "SpeculationRulesPrefetchFuture") {
     return base::FeatureList::IsEnabled(

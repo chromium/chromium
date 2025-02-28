@@ -37,6 +37,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "crypto/sha2.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -75,7 +76,7 @@ class InterestGroupStorageTest : public testing::Test {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{
-             blink::features::kInterestGroupStorage,
+             network::features::kInterestGroupStorage,
              {{"max_owners", "10"},
               {"max_groups_per_owner", "10"},
               {"max_negative_groups_per_owner", "30"},
@@ -2212,7 +2213,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyRegularGroupNames) {
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
   const size_t max_groups_per_owner =
-      blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get();
+      network::features::kInterestGroupStorageMaxGroupsPerOwner.Get();
   const size_t num_groups = max_groups_per_owner + kExcessOwners;
   std::vector<std::string> added_groups;
 
@@ -2268,7 +2269,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyNegativeGroupNames) {
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
   const size_t max_negative_groups_per_owner =
-      blink::features::kInterestGroupStorageMaxNegativeGroupsPerOwner.Get();
+      network::features::kInterestGroupStorageMaxNegativeGroupsPerOwner.Get();
   const size_t num_groups = max_negative_groups_per_owner + kExcessOwners;
   std::vector<std::string> added_groups;
 
@@ -2326,7 +2327,7 @@ TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
       url::Origin::Create(GURL("https://owner.example.com"));
   const size_t kGroupSize = 800;
   const size_t groups_before_full =
-      blink::features::kInterestGroupStorageMaxStoragePerOwner.Get() /
+      network::features::kInterestGroupStorageMaxStoragePerOwner.Get() /
       kGroupSize;
   std::vector<std::string> added_groups;
 
@@ -2358,7 +2359,7 @@ TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
   // than `kGroupSize`, so that once this group is removed, one more group of
   // `kGroupSize` can be stored.
   size_t size_left_before_full =
-      blink::features::kInterestGroupStorageMaxStoragePerOwner.Get() -
+      network::features::kInterestGroupStorageMaxStoragePerOwner.Get() -
       kGroupSize * (groups_before_full - 1);
   big_group.user_bidding_signals =
       std::string(size_left_before_full - big_group.EstimateSize() + 1, 'P');
@@ -2417,9 +2418,9 @@ TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
 TEST_F(InterestGroupStorageTest, JoinTooManyGroupOwners) {
   const size_t kExcessGroups = 10;
   const size_t max_owners =
-      blink::features::kInterestGroupStorageMaxOwners.Get();
+      network::features::kInterestGroupStorageMaxOwners.Get();
   const size_t max_ops =
-      blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get();
+      network::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get();
   const size_t num_groups = max_owners + kExcessGroups;
   std::vector<url::Origin> added_origins;
 
@@ -2734,7 +2735,7 @@ class InterestGroupStorageWithNoIdleFastForwardTest
     InterestGroupStorageTest::SetUp();
 
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kInterestGroupStorage,
+        network::features::kInterestGroupStorage,
         {
             {"max_ops_before_maintenance", "1000000000"}  // 1 billion ops
         });

@@ -416,4 +416,113 @@ BASE_FEATURE(kUpdateRequestForCorsRedirect,
              "UpdateRequestForCorsRedirect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// https://github.com/patcg-individual-drafts/topics
+// Kill switch for the Topics API.
+BASE_FEATURE(kBrowsingTopics,
+             "BrowsingTopics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable the shared storage API. Note that enabling this feature does not
+// automatically expose this API to the web, it only allows the element to be
+// enabled by the runtime enabled feature, for origin trials.
+// https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
+BASE_FEATURE(kSharedStorageAPI,
+             "SharedStorageAPI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kSharedStorageURLSelectionOperationInputURLSizeLimit,
+                   &kSharedStorageAPI,
+                   "url_selection_operation_input_url_size_limit",
+                   8);
+BASE_FEATURE_PARAM(int,
+                   kMaxSharedStoragePageSize,
+                   &kSharedStorageAPI,
+                   "MaxSharedStoragePageSize",
+                   4096);
+BASE_FEATURE_PARAM(int,
+                   kMaxSharedStorageCacheSize,
+                   &kSharedStorageAPI,
+                   "MaxSharedStorageCacheSize",
+                   1024);
+BASE_FEATURE_PARAM(int,
+                   kMaxSharedStorageInitTries,
+                   &kSharedStorageAPI,
+                   "MaxSharedStorageInitTries",
+                   2);
+BASE_FEATURE_PARAM(int,
+                   kMaxSharedStorageIteratorBatchSize,
+                   &kSharedStorageAPI,
+                   "MaxSharedStorageIteratorBatchSize",
+                   100);
+BASE_FEATURE_PARAM(int,
+                   kSharedStorageBitBudget,
+                   &kSharedStorageAPI,
+                   "SharedStorageBitBudget",
+                   12);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSharedStorageBudgetInterval,
+                   &kSharedStorageAPI,
+                   "SharedStorageBudgetInterval",
+                   base::Hours(24));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSharedStorageStalePurgeInitialInterval,
+                   &kSharedStorageAPI,
+                   "SharedStorageStalePurgeInitialInterval",
+                   base::Minutes(2));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSharedStorageStalePurgeRecurringInterval,
+                   &kSharedStorageAPI,
+                   "SharedStorageStalePurgeRecurringInterval",
+                   base::Hours(2));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSharedStorageStalenessThreshold,
+                   &kSharedStorageAPI,
+                   "SharedStorageStalenessThreshold",
+                   base::Days(30));
+BASE_FEATURE_PARAM(size_t,
+                   kSharedStorageMaxAllowedFencedFrameDepthForSelectURL,
+                   &kSharedStorageAPI,
+                   "SharedStorageMaxAllowedFencedFrameDepthForSelectURL",
+                   1);
+// NOTE: To preserve user privacy, the
+// `kSharedStorageExposeDebugMessageForSettingsStatus` feature param MUST remain
+// false by default.
+BASE_FEATURE_PARAM(bool,
+                   kSharedStorageExposeDebugMessageForSettingsStatus,
+                   &kSharedStorageAPI,
+                   "ExposeDebugMessageForSettingsStatus",
+                   false);
+
+// Kill switch for the Interest Group API, i.e. if disabled, the
+// API exposure will be disabled regardless of the OT config.
+BASE_FEATURE(kInterestGroupStorage,
+             "InterestGroupStorage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// TODO(crbug.com/40176812): Adjust these limits in response to usage.
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxOwners,
+                   &kInterestGroupStorage,
+                   "max_owners",
+                   1000);
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxStoragePerOwner,
+                   &kInterestGroupStorage,
+                   "max_storage_per_owner",
+                   10 * 1024 * 1024);
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxGroupsPerOwner,
+                   &kInterestGroupStorage,
+                   "max_groups_per_owner",
+                   2000);
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxNegativeGroupsPerOwner,
+                   &kInterestGroupStorage,
+                   "max_negative_groups_per_owner",
+                   20000);
+BASE_FEATURE_PARAM(int,
+                   kInterestGroupStorageMaxOpsBeforeMaintenance,
+                   &kInterestGroupStorage,
+                   "max_ops_before_maintenance",
+                   1000);
+
 }  // namespace network::features

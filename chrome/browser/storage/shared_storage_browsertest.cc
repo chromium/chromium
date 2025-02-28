@@ -67,6 +67,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -399,7 +400,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     base::test::TaskEnvironment task_environment;
 
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kSharedStorageAPI,
+        /*enabled_features=*/{network::features::kSharedStorageAPI,
                               features::kPrivacySandboxAdsAPIsOverride,
                               privacy_sandbox::
                                   kOverridePrivacySandboxSettingsLocalTesting},
@@ -823,7 +824,7 @@ class SharedStoragePrefBrowserTest
     params["ExposeDebugMessageForSettingsStatus"] =
         base::ToString(EnableDebugMessages());
     shared_storage_feature_.InitAndEnableFeatureWithParameters(
-        blink::features::kSharedStorageAPI, params);
+        network::features::kSharedStorageAPI, params);
     fenced_frame_api_change_feature_.InitWithFeatureState(
         blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
     fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);
@@ -4215,7 +4216,7 @@ class SharedStorageFencedFrameChromeBrowserTest
 
     shared_storage_feature_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kSharedStorageAPI,
+        {{network::features::kSharedStorageAPI,
           {{"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)}}}},
         /*disabled_features=*/{});
 
@@ -5123,7 +5124,7 @@ class SharedStorageExtensionBrowserTest
 
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kSharedStorageAPI,
+        {network::features::kSharedStorageAPI,
          features::kPrivacySandboxAdsAPIsOverride,
          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting,
          blink::features::kFencedFrames,

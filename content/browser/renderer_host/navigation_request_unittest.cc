@@ -29,6 +29,7 @@
 #include "content/test/test_web_contents.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
@@ -479,7 +480,7 @@ TEST_F(NavigationRequestTest, WillFailRequestSetsSSLInfo) {
 TEST_F(NavigationRequestTest, SharedStorageWritable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kSharedStorageAPI,
+      /*enabled_features=*/{network::features::kSharedStorageAPI,
                             blink::features::kFencedFrames},
       /*disabled_features=*/{});
 

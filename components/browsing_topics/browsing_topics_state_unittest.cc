@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/browsing_topics/util.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -78,7 +79,7 @@ class BrowsingTopicsStateTest : public testing::Test {
     // during tests where expiration is irrelevant.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kBrowsingTopics, {}},
+        {{network::features::kBrowsingTopics, {}},
          {blink::features::kBrowsingTopicsParameters,
           {{"epoch_retention_duration", "3650000d"}}}},
         /*disabled_features=*/{});
@@ -395,7 +396,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_PhaseOutTime) {
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"epoch_retention_duration", "28d"}}}},
       /*disabled_features=*/{});
@@ -888,7 +889,7 @@ TEST_F(BrowsingTopicsStateTest, ScheduleEpochsExpiration) {
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"epoch_retention_duration", "28s"}}}},
       /*disabled_features=*/{});
@@ -947,7 +948,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpochAndVerifyExpiration) {
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"epoch_retention_duration", "28s"}}}},
       /*disabled_features=*/{});

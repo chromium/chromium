@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -90,12 +91,12 @@ const char kSharedStorageMethodFromInsecureContextMessage[] =
     "Attempted to invoke a sharedStorage method from an insecure context";
 
 // NOTE: To preserve user privacy, the default value of the
-// `blink::features::kSharedStorageExposeDebugMessageForSettingsStatus`
+// `network::features::kSharedStorageExposeDebugMessageForSettingsStatus`
 // feature param MUST remain set to false (although the value can be overridden
 // via the command line or in tests).
 std::string GetSharedStorageErrorMessage(const std::string& debug_message,
                                          const std::string& input_message) {
-  return blink::features::kSharedStorageExposeDebugMessageForSettingsStatus
+  return network::features::kSharedStorageExposeDebugMessageForSettingsStatus
                  .Get()
              ? base::StrCat({input_message, "\nDebug: ", debug_message})
              : input_message;

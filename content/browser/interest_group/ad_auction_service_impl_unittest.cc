@@ -849,7 +849,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kInterestGroupStorage,
+        {network::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFledgeRealTimeReporting,
          blink::features::kFledgeAuctionDealSupport},
@@ -9600,7 +9600,7 @@ class AdAuctionServiceImplSharedStorageEnabledTest
     : public AdAuctionServiceImplTest {
  public:
   AdAuctionServiceImplSharedStorageEnabledTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
   }
 
   std::u16string SharedStorageGet(const url::Origin& context_origin,
@@ -9830,7 +9830,7 @@ class AdAuctionServiceImplSharedStorageDisabledTest
     : public AdAuctionServiceImplTest {
  public:
   AdAuctionServiceImplSharedStorageDisabledTest() {
-    feature_list_.InitAndDisableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndDisableFeature(network::features::kSharedStorageAPI);
   }
 
  protected:

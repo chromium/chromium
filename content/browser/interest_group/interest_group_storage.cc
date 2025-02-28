@@ -46,6 +46,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -5693,12 +5694,13 @@ InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
 InterestGroupStorage::InterestGroupStorage(const base::FilePath& path,
                                            base::TimeDelta idle_period)
     : path_to_database_(DBPath(path)),
-      max_owners_(blink::features::kInterestGroupStorageMaxOwners.Get()),
+      max_owners_(network::features::kInterestGroupStorageMaxOwners.Get()),
       max_owner_regular_interest_groups_(MaxOwnerRegularInterestGroups()),
       max_owner_negative_interest_groups_(MaxOwnerNegativeInterestGroups()),
       max_owner_storage_size_(MaxOwnerStorageSize()),
       max_ops_before_maintenance_(
-          blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
+          network::features::kInterestGroupStorageMaxOpsBeforeMaintenance
+              .Get()),
       db_maintenance_timer_(FROM_HERE,
                             idle_period,
                             this,
@@ -6363,17 +6365,18 @@ InterestGroupStorage::GetBiddingAndAuctionServerKeys(
 
 // static
 size_t InterestGroupStorage::MaxOwnerRegularInterestGroups() {
-  return blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get();
+  return network::features::kInterestGroupStorageMaxGroupsPerOwner.Get();
 }
 
 // static
 size_t InterestGroupStorage::MaxOwnerNegativeInterestGroups() {
-  return blink::features::kInterestGroupStorageMaxNegativeGroupsPerOwner.Get();
+  return network::features::kInterestGroupStorageMaxNegativeGroupsPerOwner
+      .Get();
 }
 
 // static
 size_t InterestGroupStorage::MaxOwnerStorageSize() {
-  return blink::features::kInterestGroupStorageMaxStoragePerOwner.Get();
+  return network::features::kInterestGroupStorageMaxStoragePerOwner.Get();
 }
 
 base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {
