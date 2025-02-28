@@ -121,6 +121,13 @@ class FakeDeviceManagerRemote extends TestBrowserProxy implements
     assertNotReached();
   }
 
+  // <if expr="is_android">
+  refreshDeviceInfo(_guid: string):
+      Promise<{deviceInfo: UsbDeviceInfo | null}> {
+    assertNotReached();
+  }
+  // </if>
+
   async setClient() {}
 }
 

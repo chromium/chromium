@@ -21,20 +21,24 @@ source_set("browser_tests") {
   testonly = true
 
   sources = [
+    "bluetooth_internals/bluetooth_internals_browsertest.cc",
     "chrome_urls/chrome_urls_browsertest.cc",
+    "commerce_internals/commerce_internals_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
     "flags/flags_browsertest.cc",
+    "js/js_browsertest.cc",
+    "location_internals/location_internals_browsertest.cc",
+    "sync_internals/sync_internals_browsertest.cc",
+    "usb_internals/usb_internals_browsertest.cc",
   ]
 
   if (!is_android) {
     sources += [
       "about_sys/about_sys_browsertest.cc",
       "access_code_cast/access_code_cast_browsertest.cc",
-      "bluetooth_internals/bluetooth_internals_browsertest.cc",
       "bookmarks/bookmarks_browsertest.cc",
       "chrome_timeticks_browsertest.cc",
       "commerce/product_specifications/product_specifications_browsertest.cc",
-      "commerce_internals/commerce_internals_browsertest.cc",
       "cr_components/cr_components_browsertest.cc",
       "css/css_browsertest.cc",
       "data_sharing/data_sharing_browsertest.cc",
@@ -46,11 +50,9 @@ source_set("browser_tests") {
       "history/history_ui_browsertest.cc",
       "history_clusters_internals/history_clusters_internals_browsertest.cc",
       "inspect/inspect_ui_browsertest.cc",
-      "js/js_browsertest.cc",
       "key_value_pair_viewer/key_value_pair_viewer_browsertest.cc",
       "lens/lens_overlay_webui_browsertest.cc",
       "lens/lens_side_panel_webui_browsertest.cc",
-      "location_internals/location_internals_browsertest.cc",
       "media/media_engagement_browsertest.cc",
       "media_internals/media_internals_browsertest.cc",
       "metrics_internals/metrics_internals_browsertest.cc",
@@ -71,9 +73,7 @@ source_set("browser_tests") {
       "side_panel/history_clusters/history_clusters_browsertest.cc",
       "side_panel/read_anything/read_anything_browsertest.cc",
       "side_panel/reading_list/reading_list_browsertest.cc",
-      "sync_internals/sync_internals_browsertest.cc",
       "tab_search/tab_search_browsertest.cc",
-      "usb_internals/usb_internals_browsertest.cc",
       "webview/webui_webview_browsertest.cc",
     ]
     if (is_chrome_branded) {
@@ -181,6 +181,7 @@ source_set("browser_tests") {
 
   deps = [
     "//chrome/test:test_support",
+    "//components/commerce/core:commerce_constants",
     "//components/webui/chrome_urls/",
   ]
 
@@ -205,7 +206,6 @@ source_set("browser_tests") {
       "//components/bookmarks/browser",
       "//components/bookmarks/managed",
       "//components/commerce/core:account_checker_test_support",
-      "//components/commerce/core:commerce_constants",
       "//components/commerce/core:feature_list",
       "//components/commerce/core:shopping_service_test_support",
       "//components/compose/core/browser:features",
@@ -383,7 +383,10 @@ webui_ts_library("build_ts") {
     "chai_assert.ts",
     "keyboard_mock_interactions.ts",
     "mocha_adapter_simple.ts",
+    "mock_timer.ts",
+    "mock_timer_test.ts",
     "test_browser_proxy.ts",
+    "test_mock.ts",
     "test_util.ts",
   ]
 
@@ -395,12 +398,9 @@ webui_ts_library("build_ts") {
       "metrics_test_support.ts",
       "mock_controller.ts",
       "mocked_metrics_reporter.ts",
-      "mock_timer_test.ts",
-      "mock_timer.ts",
       "mouse_mock_interactions.ts",
       "polymer_test_util.ts",
       "test_api.ts",
-      "test_mock.ts",
       "test_open_window_proxy.ts",
       "test_plural_string_proxy.ts",
       "test_store.ts",
@@ -445,17 +445,29 @@ generate_grd("build_grd") {
     ":build_chai_grdp",
     ":build_mocha_grdp",
     ":build_ts",
+    "bluetooth_internals:build_grdp",
     "chrome_urls:build_grdp",
+    "commerce_internals:build_grdp",
     "cr_elements:build_grdp",
     "flags:build_grdp",
+    "js:build_grdp",
+    "location_internals:build_grdp",
+    "sync_internals:build_grdp",
+    "usb_internals:build_grdp",
   ]
 
   grdp_files = [
+    "$target_gen_dir/bluetooth_internals/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",
-    "$target_gen_dir/mocha_resources.grdp",
     "$target_gen_dir/chrome_urls/resources.grdp",
+    "$target_gen_dir/commerce_internals/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/flags/resources.grdp",
+    "$target_gen_dir/js/resources.grdp",
+    "$target_gen_dir/location_internals/resources.grdp",
+    "$target_gen_dir/mocha_resources.grdp",
+    "$target_gen_dir/sync_internals/resources.grdp",
+    "$target_gen_dir/usb_internals/resources.grdp",
   ]
 
   if (!is_android) {
@@ -467,10 +479,8 @@ generate_grd("build_grd") {
     deps += [
       "about_sys:build_grdp",
       "access_code_cast:build_grdp",
-      "bluetooth_internals:build_grdp",
       "bookmarks:build_grdp",
       "commerce/product_specifications:build_grdp",
-      "commerce_internals:build_grdp",
       "cr_components:build_grdp",
       "cr_components/cr_shortcut_input:build_grdp",
       "cr_components/help_bubble:build_grdp",
@@ -488,10 +498,8 @@ generate_grd("build_grd") {
       "history:build_grdp",
       "history_clusters_internals:build_grdp",
       "inspect:build_grdp",
-      "js:build_grdp",
       "key_value_pair_viewer:build_grdp",
       "lens:build_grdp",
-      "location_internals:build_grdp",
       "media:build_grdp",
       "media_internals:build_grdp",
       "metrics_internals:build_grdp",
@@ -511,20 +519,16 @@ generate_grd("build_grd") {
       "side_panel/customize_chrome:build_grdp",
       "side_panel/read_anything:build_grdp",
       "support_tool:build_grdp",
-      "sync_internals:build_grdp",
       "tab_search:build_grdp",
-      "usb_internals:build_grdp",
       "webview:build_grdp",
     ]
 
     grdp_files += [
       "$target_gen_dir/about_sys/resources.grdp",
       "$target_gen_dir/access_code_cast/resources.grdp",
-      "$target_gen_dir/bluetooth_internals/resources.grdp",
       "$target_gen_dir/webview/resources.grdp",
       "$target_gen_dir/bookmarks/resources.grdp",
       "$target_gen_dir/commerce/product_specifications/resources.grdp",
-      "$target_gen_dir/commerce_internals/resources.grdp",
       "$target_gen_dir/cr_components/resources.grdp",
       "$target_gen_dir/cr_components/cr_shortcut_input/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
@@ -542,9 +546,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/history/resources.grdp",
       "$target_gen_dir/history_clusters_internals/resources.grdp",
       "$target_gen_dir/inspect/resources.grdp",
-      "$target_gen_dir/js/resources.grdp",
       "$target_gen_dir/key_value_pair_viewer/resources.grdp",
-      "$target_gen_dir/location_internals/resources.grdp",
       "$target_gen_dir/media_internals/resources.grdp",
       "$target_gen_dir/media/resources.grdp",
       "$target_gen_dir/metrics_internals/resources.grdp",
@@ -565,9 +567,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/side_panel/read_anything/resources.grdp",
       "$target_gen_dir/side_panel/resources.grdp",
       "$target_gen_dir/support_tool/resources.grdp",
-      "$target_gen_dir/sync_internals/resources.grdp",
       "$target_gen_dir/tab_search/resources.grdp",
-      "$target_gen_dir/usb_internals/resources.grdp",
     ]
   }
 

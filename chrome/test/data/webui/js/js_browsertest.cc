@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(WebUiJsTest, MetricsReporter) {
   // MetricsReporter needs a host that enables BindingsPolicyValue::kMojoWebUi.
   // Any WebUI host should work, except chrome://webui-test since it is just a
   // WebUIDataSource.
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  set_test_loader_host(chrome::kChromeUIChromeURLsHost);
   RunTest("js/metrics_reporter/metrics_reporter_test.js", "mocha.run();");
 }
 
