@@ -1209,7 +1209,7 @@
       // For ::column pseudo element for fragment styling.
       // https://github.com/flackr/carousel/blob/main/fragmentation/README.md
       name: "CSSPseudoColumn",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Enables the :has-slotted pseudo-selector.
@@ -1234,14 +1234,14 @@
       // For ::scroll-up-button and ::scroll-down-button pseudo elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-button
       name: "CSSPseudoScrollButtons",
-      status: "experimental",
+      status: "stable",
       depends_on: ["PseudoElementsFocusable"],
     },
     {
       // For ::scroll-marker and ::scroll-marker-group pseudo elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-marker
       name: "CSSPseudoScrollMarkers",
-      status: "experimental",
+      status: "stable",
       depends_on: ["PseudoElementsFocusable"],
     },
     {
@@ -3495,7 +3495,7 @@
     {
       // Allowing pseudo elements to have focus.
       name: "PseudoElementsFocusable",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PushMessageDataBytes",
