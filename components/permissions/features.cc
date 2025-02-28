@@ -126,6 +126,17 @@ BASE_FEATURE(kCpssUseTfliteSignatureRunner,
 BASE_FEATURE(kFedCmUpdatedCooldownPeriod,
              "FedCmUpdatedCooldownPeriod",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// When the kill switch is unset, some Chrome features such as
+// Javascript-Optimizers are gated on an additional OS-provided security
+// permission. When the kill switch is set, the OS-provided security permission
+// is ignored when determining whether to enable Chrome features such as
+// Javascript-Optimizers.
+BASE_FEATURE(kOsAdditionalSecurityPermissionKillSwitch,
+             "OsAdditionalSecurityPermissionKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 }  // namespace features
 namespace feature_params {
 

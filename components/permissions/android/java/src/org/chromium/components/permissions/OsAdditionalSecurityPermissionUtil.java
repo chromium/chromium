@@ -21,6 +21,11 @@ public class OsAdditionalSecurityPermissionUtil {
      */
     @CalledByNative
     public static boolean hasJavascriptOptimizerPermission() {
+        if (PermissionsAndroidFeatureMap.isEnabled(
+                PermissionsAndroidFeatureList.OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH)) {
+            return true;
+        }
+
         if (sProviderInstance == null) {
             sProviderInstance =
                     ServiceLoaderUtil.maybeCreate(OsAdditionalSecurityPermissionProvider.class);
