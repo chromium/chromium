@@ -142,6 +142,14 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
+        // If the activity is being recreated, #onEnterAnimationComplete() doesn't get called.
+        // So, we need to manually set mIsEnterAnimationCompleted to true. See crbug.com/399194973.
+        if (sBlockTouchesDuringEnterAnimation) {
+            var savedInstanceState = getSavedInstanceState();
+            if (savedInstanceState != null) {
+                mIsEnterAnimationCompleted = true;
+            }
+        }
         mOpenTimeRecorder =
                 new CustomTabsOpenTimeRecorder(
                         getLifecycleDispatcher(),
