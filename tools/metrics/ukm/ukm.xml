@@ -17555,9 +17555,22 @@ be describing additional metrics about the same event.
   <owner>vasilii@chromium.org</owner>
   <summary>
     Metrics for clientside password form classifications. Recorded when the
-    field types are received by Password Manager, iff there is data available
-    for the below metrics.
+    field types are received by Password Manager after the model finishes
+    execution, iff there is data available for the below metrics.
   </summary>
+  <metric name="ModelPredictionsEmpty" enum="Boolean">
+    <summary>
+      Records if the predictions made by Password manager clientside
+      classification model are empty (= contain only NO_SERVER_DATA values).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="PasswordVsOtpFormType" enum="PasswordVsOtpFormType">
     <summary>
       Records whether a form is an OTP form, a normal multi-use password form,
