@@ -221,8 +221,8 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // The model wrapper used to access and mutate SavedTabGroupModel.
   raw_ptr<SyncBridgeTabGroupModelWrapper> model_wrapper_;
 
-  // The pref service for storing migration status.
-  raw_ptr<PrefService> pref_service_;
+  // Whether shared tab group was enabled in last session. Used for migration.
+  const bool did_enable_shared_tab_groups_in_last_session_;
 
   // List of tab groups waiting for being committed to the server.
   std::vector<base::Uuid> tab_groups_waiting_for_commit_;

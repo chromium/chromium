@@ -337,7 +337,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   SharedTabGroupDataSyncBridgeTest()
       : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     pref_service_.registry()->RegisterBooleanPref(
-        prefs::kDidEnableSharedTabGroupsInLastSession, false);
+        prefs::kDidEnableSharedTabGroupsInLastSession, true);
   }
 
   // Creates the bridges and initializes the model. Returns true when succeeds.
@@ -1292,14 +1292,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   // Local group ID should have been cleared after restart.
   EXPECT_FALSE(loaded_group->local_group_id().has_value());
-  EXPECT_TRUE(
-      pref_service_.GetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession));
 
   model()->OnGroupOpenedInTabStrip(loaded_group->saved_guid(),
                                    test::GenerateRandomTabGroupID());
 
-  // Mimic browser restart again. This time shared tab group feature was already
-  // enabled. So it will persist the local group ID.
+  // Mimic browser restart again and mimic that the previous session had shared
+  // tab group enabled. So it will persist the local group ID.
+  pref_service_.SetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession, true);
   StoreMetadataAndReset();
   ASSERT_EQ(model(), nullptr);
   ASSERT_TRUE(InitializeBridgeAndModel());
@@ -1310,8 +1309,6 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   // Local group ID should not be cleared after restart on supported platforms.
   EXPECT_EQ(AreLocalIdsPersisted(), loaded_group->local_group_id().has_value());
-  EXPECT_TRUE(
-      pref_service_.GetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,

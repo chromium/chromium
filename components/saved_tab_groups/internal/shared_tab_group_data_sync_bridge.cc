@@ -556,7 +556,8 @@ SharedTabGroupDataSyncBridge::SharedTabGroupDataSyncBridge(
     PrefService* pref_service)
     : syncer::DataTypeSyncBridge(std::move(change_processor)),
       model_wrapper_(model_wrapper),
-      pref_service_(pref_service) {
+      did_enable_shared_tab_groups_in_last_session_(pref_service->GetBoolean(
+          prefs::kDidEnableSharedTabGroupsInLastSession)) {
   CHECK(model_wrapper_);
 
   std::move(create_store_callback)
@@ -1105,10 +1106,7 @@ void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
 
   // Check if this is the first time shared tab groups is enabled and we need
   // to do some migrations.
-  if (!pref_service_->GetBoolean(
-          prefs::kDidEnableSharedTabGroupsInLastSession)) {
-    pref_service_->SetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession,
-                              true);
+  if (!did_enable_shared_tab_groups_in_last_session_) {
     FixLocalTabGroupIDsForSharedGroupsDuringFeatureEnabling(stored_entries);
   }
 
