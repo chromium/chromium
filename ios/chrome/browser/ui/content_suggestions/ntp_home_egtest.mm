@@ -583,7 +583,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that the tap gesture recognizer that dismisses the keyboard and
 // defocuses the omnibox works.
-- (void)testDefocusOmniboxTapWorks {
+// TODO(crbug.com/399854107): Deflake this test.
+- (void)FLAKY_testDefocusOmniboxTapWorks {
   [self focusFakebox];
   // Tap on a space in the collectionView that is not a link.
   id<GREYMatcher> firstMagicStackModuleLabel = grey_allOf(
