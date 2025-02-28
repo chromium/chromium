@@ -23,7 +23,7 @@ import {GlicBrowserProxyImpl} from './glic_browser_proxy.js';
 import {getTemplate} from './glic_page.html.js';
 
 export enum SettingsGlicPageFeaturePrefName {
-  SETTINGS_POLICY = 'glic.settings_policy',
+  SETTINGS_POLICY = 'browser.gemini_settings',
   LAUNCHER_ENABLED = 'glic.launcher_enabled',
 
 }

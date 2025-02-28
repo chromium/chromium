@@ -95,7 +95,7 @@
           <settings-section id="glicPolicyHeader" class="expanded"
               section="glicPolicy" nest-under-section="glic">
             <template is="dom-if"
-                if="[[isGlicPolicyDisabled_(prefs.glic.settings_policy.value)]]"
+                if="[[isGlicDisabled_(prefs.browser.gemini_settings.value)]]"
                 restamp>
               <div>
                 <cr-icon icon="cr:domain"></cr-icon>

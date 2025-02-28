@@ -2197,7 +2197,6 @@ chromium-metrics-reviews@google.com.
   <int value="1324" label="WebRtcIPHandlingUrl"/>
   <int value="1325" label="GenAIPhotoEditingSettings"/>
   <int value="1326" label="PartitionedBlobUrlUsage"/>
-  <int value="1327" label="GlicSettings"/>
   <int value="1328" label="DefaultControlledFrameSetting"/>
   <int value="1329" label="ControlledFrameAllowedForUrls"/>
   <int value="1330" label="ControlledFrameBlockedForUrls"/>

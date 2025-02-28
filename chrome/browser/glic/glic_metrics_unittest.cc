@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -262,9 +263,9 @@ TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
   ExpectEntryPointImpressionLogged(/*kBeforeFre=*/0);
 }
 
-// kGlicSettingsPolicy is by default enabled, however if we initialize a scoped
+// kGeminiSettings is by default enabled, however if we initialize a scoped
 // feature list in a test, since the features were initially off during setup,
-// glic is considered disabled until the kGlicSettingsPolicy pref changes and
+// glic is considered disabled until the kGeminiSettings pref changes and
 // subscribers are notified. The following tests turn the feature flags on
 // before setup happens, so that glic is enabled from the start.
 class GlicMetricsFeaturesEnabledTest : public GlicMetricsTest {
@@ -285,14 +286,14 @@ class GlicMetricsFeaturesEnabledTest : public GlicMetricsTest {
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabledPolicy) {
   profile_.GetPrefs()->SetInteger(
-      prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
 
   ExpectEntryPointImpressionLogged(/*kAfterFreDisabled=*/4);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
-  // kGlicSettingsPolicy is enabled
+  // kGeminiSettings is enabled
   // kGlicPinnedToTabstrip is true
   // kGlicLauncherEnabled is false
 
@@ -300,7 +301,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreOsOnly) {
-  // kGlicSettingsPolicy is enabled
+  // kGeminiSettings is enabled
   profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
 
@@ -308,7 +309,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreOsOnly) {
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreEnabled) {
-  // kGlicSettingsPolicy is enabled
+  // kGeminiSettings is enabled
   // kGlicPinnedToTabstrip is true
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
 
@@ -316,7 +317,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreEnabled) {
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabled) {
-  // kGlicSettingsPolicy is enabled
+  // kGeminiSettings is enabled
   profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   // kGlicLauncherEnabled is false
 
@@ -327,12 +328,12 @@ TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
   profile_.GetPrefs()->SetInteger(
-      prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
   profile_.GetPrefs()->SetInteger(
-      prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);

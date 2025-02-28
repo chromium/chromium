@@ -14,7 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './glic_data_page.html.js';
 
 export enum SettingsGlicDataPageFeaturePrefName {
-  SETTINGS_POLICY = 'glic.settings_policy',
+  SETTINGS_POLICY = 'browser.gemini_settings',
   GEOLOCATION_ENABLED = 'glic.geolocation_enabled',
   MICROPHONE_ENABLED = 'glic.microphone_enabled',
   TAB_CONTEXT_ENABLED = 'glic.tab_context_enabled',

@@ -261,10 +261,6 @@
 #include "components/device_signals/core/browser/pref_names.h"  // nogncheck due to crbug.com/1125897
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_pref_names.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/idle/idle_timeout_policy_handler.h"
@@ -3352,13 +3348,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           base::Value::Type::BOOLEAN),
       std::make_unique<PowerBatteryChargingOptimizationPolicyHandler>()));
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_GLIC)
-  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
-      key::kGlicSettings, glic::prefs::kGlicSettingsPolicy,
-      static_cast<int>(glic::prefs::SettingsPolicyState::kMinValue),
-      static_cast<int>(glic::prefs::SettingsPolicyState::kMaxValue), false));
-#endif
 
   return handlers;
 }

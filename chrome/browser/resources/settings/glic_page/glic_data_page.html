@@ -3,7 +3,7 @@
 
 <!-- Glic Policy Disabled - show disabled controls -->
 <template is="dom-if"
-    if="[[!isEnabledByPolicy_(prefs.glic.settings_policy.value)]]" restamp>
+    if="[[!isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]" restamp>
   <settings-toggle-button
       id="geolocationToggle" pref="[[fakePref_]]" disabled
       label="$i18n{glicLocationToggle}"
@@ -23,7 +23,7 @@
 
 <!-- Glic Policy Enabled -->
 <template is="dom-if"
-    if="[[isEnabledByPolicy_(prefs.glic.settings_policy.value)]]" restamp>
+    if="[[isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]" restamp>
   <settings-toggle-button
       id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
       label="$i18n{glicLocationToggle}"

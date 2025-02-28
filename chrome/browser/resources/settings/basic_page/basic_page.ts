@@ -355,8 +355,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         this.showPage_(visibility);
   }
 
-  private isGlicPolicyDisabled_(): boolean {
-    return this.getPref<number>('glic.settings_policy').value === 1;
+  private isGlicDisabled_(): boolean {
+    return this.getPref<number>('browser.gemini_settings').value === 1;
   }
   // </if>
 

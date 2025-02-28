@@ -22,9 +22,11 @@ inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile
 
-// Integer pref that determines Glic enabling state for this user profile. This
-// is controlled from enterprise policy.
-inline constexpr char kGlicSettingsPolicy[] = "glic.settings_policy";
+// Value enums for the browser.gemini_settings pref. Integer pref that
+// determines Glic enabling state for this user profile. This is controlled from
+// enterprise policy.
+// TODO(crbug.com/393537628): This should be moved to a less Glic-specific
+// place.
 enum class SettingsPolicyState {
   kMinValue = 0,
 

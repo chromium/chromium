@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_downloader.h"
@@ -41,6 +42,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -168,7 +170,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  TestingPrefServiceSimple pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
@@ -498,7 +500,7 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
 
-    glic::prefs::RegisterProfilePrefs(pref_service_.registry());
+    RegisterGeminiSettingsPrefs(pref_service_.registry());
   }
 
   // Expects that the primary account is set.
@@ -518,7 +520,7 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
 
     // Enable enterprise policy for glic control
     pref_service_.SetInteger(
-        glic::prefs::kGlicSettingsPolicy,
+        ::prefs::kGeminiSettings,
         static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   }
 

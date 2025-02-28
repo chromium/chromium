@@ -9,7 +9,7 @@
 </style>
 <!-- Glic Policy Disabled - show disabled controls -->
 <template is="dom-if"
-    if="[[!isEnabledByPolicy_(prefs.glic.settings_policy.value)]]" restamp>
+    if="[[!isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]" restamp>
   <settings-toggle-button id="launcherToggle" pref="[[fakePref_]]" disabled
       label="$i18n{glicOsWidgetToggle}">
   </settings-toggle-button>
@@ -18,7 +18,7 @@
 <!-- Glic Policy Enabled -->
 <template is="dom-if"
     on-dom-change="onEnabledTemplateDomChange_"
-    if="[[isEnabledByPolicy_(prefs.glic.settings_policy.value)]]" restamp>
+    if="[[isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]" restamp>
   <settings-toggle-button
       id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
       label="$i18n{glicOsWidgetToggle}"
