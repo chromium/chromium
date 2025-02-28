@@ -536,7 +536,6 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromShelf) {
   // Views.
   raw_ptr<ash::ShelfAppButton> chrome_app = nullptr;
   raw_ptr<ash::ShelfAppButton> gemini_app = nullptr;
-  raw_ptr<ash::ShelfAppButton> gmail_app = nullptr;
   raw_ptr<ash::ShelfView> shelf = nullptr;
 
   // Test.
@@ -562,28 +561,22 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromShelf) {
       // Cache Chrome app.
       AssignView(kChromeAppElementName, std::ref(chrome_app)),
 
-      // Find Gmail app.
-      NameDescendantView(
-          ash::kShelfViewElementId, kGmailAppElementName,
-          base::BindRepeating(&IsShelfAppButtonForWebApp, std::cref(shelf),
-                              ash::kGmailAppId)),
-
-      // Cache Gmail app.
-      AssignView(kGmailAppElementName, std::ref(gmail_app)),
-
       // Check Gemini app position.
-      Check([&]() {
-        std::vector<raw_ptr<ash::ShelfAppButton>> apps;
-        FindDescendantsOfClass(shelf, apps);
-        const auto gemini_app_index = FindIndex(apps, gemini_app.get());
-        if (IsExistingUser()) {
-          return gemini_app_index == 0u;
-        }
-        const auto chrome_app_index = FindIndex(apps, chrome_app.get());
-        const auto gmail_app_index = FindIndex(apps, gmail_app.get());
-        return (chrome_app_index == gemini_app_index.value() - 1u) &&
-               (gmail_app_index == gemini_app_index.value() + 1u);
-      }),
+      Check(
+          [&]() {
+            std::vector<raw_ptr<ash::ShelfAppButton>> apps;
+
+            FindDescendantsOfClass(shelf, apps);
+
+            const auto gemini_app_index = FindIndex(apps, gemini_app.get());
+            const auto chrome_app_index = FindIndex(apps, chrome_app.get());
+            if (IsExistingUser()) {
+              return gemini_app_index == 0u;
+            }
+
+            return chrome_app_index == 0u && gemini_app_index == 1u;
+          },
+          "Gemini app is positioned correctly"),
 
       // Launch Gemini app.
       InstrumentNextTab(kGeminiAppWebContentsElementId, AnyBrowser()),

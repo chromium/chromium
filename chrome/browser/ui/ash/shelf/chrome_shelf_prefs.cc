@@ -360,6 +360,17 @@ void AddMallPinIfNeeded(Profile* profile,
     return;
   }
 
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kShelfMallAppPinRolls);
+  update->Append("v1");
+
+  // If Mall is already pinned (by default_pinned_apps.cc), do nothing.
+  const app_list::AppListSyncableService::SyncItem* sync_item =
+      syncable_service->GetSyncItem(ash::kMallSystemAppId);
+  if (sync_item && sync_item->item_pin_ordinal.IsValid()) {
+    return;
+  }
+
   // Mall should be pinned immediately after Chrome, but also after Gemini if it
   // is next after Chrome.
   syncer::StringOrdinal chrome_position =
@@ -394,10 +405,6 @@ void AddMallPinIfNeeded(Profile* profile,
   syncer::StringOrdinal mall_position =
       pin_mall_after.CreateBetween(pin_mall_before);
   syncable_service->SetPinPosition(ash::kMallSystemAppId, mall_position);
-
-  ScopedListPrefUpdate update(profile->GetPrefs(),
-                              prefs::kShelfMallAppPinRolls);
-  update->Append("v1");
 }
 
 void SetPreloadPinComplete(Profile* profile) {
