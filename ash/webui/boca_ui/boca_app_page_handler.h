@@ -30,6 +30,7 @@
 
 namespace ash::boca {
 
+// TODO(crbug.com/399923859): Remove `mojom::Page` implementation.
 class BocaAppHandler : public mojom::PageHandler,
                        public mojom::Page,
                        public BocaSessionManager::Observer {
@@ -102,6 +103,7 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnSessionConfigUpdated(mojom::ConfigResultPtr config) override;
   void OnActiveNetworkStateChanged(
       std::vector<mojom::NetworkInfoPtr> active_networks) override;
+  void OnLocalCaptionDisabled() override;
 
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(

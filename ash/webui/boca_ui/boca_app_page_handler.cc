@@ -630,6 +630,8 @@ void BocaAppHandler::OnConsumerActivityUpdated(
   OnStudentActivityUpdated(SessionActivityProtoToMojom(activities));
 }
 
+void BocaAppHandler::OnLocalCaptionDisabled() {}
+
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
                                       const ::boca::UserIdentity& producer) {
   UpdateSessionConfig();

@@ -304,6 +304,7 @@ class FakePage : public mojom::Page {
   }
   void OnActiveNetworkStateChanged(
       std::vector<mojom::NetworkInfoPtr> active_networks) override {}
+  void OnLocalCaptionDisabled() override {}
 
   ActivityInterceptorCallback student_activity_updated_cb_;
   SessionConfigInterceptorCallback session_config_updated_cb_;
