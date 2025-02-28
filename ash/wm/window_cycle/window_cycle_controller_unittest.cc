@@ -38,7 +38,6 @@
 #include "ash/style/tab_slider_button.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/raster_scale_change_tracker.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -1797,31 +1796,6 @@ TEST_F(WindowCycleControllerTest, ArrowKeyBeforeCycleViewUI) {
   controller->HandleKeyboardNavigation(
       WindowCycleController::KeyboardNavDirection::kRight);
   CompleteCycling(controller);
-}
-
-// Tests that raster scale is not set for alt-tab on visible windows.
-TEST_F(WindowCycleControllerTest, RasterScaleNotSetForVisibleWindows) {
-  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-
-  std::unique_ptr<Window> window0(CreateAppWindow(gfx::Rect(600, 600)));
-  std::unique_ptr<Window> window1(CreateAppWindow(gfx::Rect(600, 600)));
-  wm::ActivateWindow(window0.get());
-
-  auto tracker0 = RasterScaleChangeTracker(window0.get());
-  auto tracker1 = RasterScaleChangeTracker(window1.get());
-
-  // Simulate pressing and releasing Alt-tab.
-  EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
-  controller->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kForward);
-
-  EXPECT_EQ(std::vector<float>{}, tracker0.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{}, tracker1.TakeRasterScaleChanges());
-
-  CompleteCycling(controller);
-
-  EXPECT_EQ(std::vector<float>{}, tracker0.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{}, tracker1.TakeRasterScaleChanges());
 }
 
 // Tests the UAF issue reported in https://crbug.com/1350558. `OnFlingStep()`

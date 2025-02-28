@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
-#include "ash/wm/raster_scale/raster_scale_layer_observer.h"
 #include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -217,10 +216,6 @@ class ASH_EXPORT ScopedOverviewTransformWindow
       window_observations_{this};
 
   std::unique_ptr<ScopedWindowTreeSynchronizer> window_tree_synchronizer_;
-
-  // While the transform window exists, apply dynamic raster scale to the
-  // underlying window.
-  std::optional<ScopedRasterScaleLayerObserverLock> raster_scale_observer_lock_;
 
   base::WeakPtrFactory<ScopedOverviewTransformWindow> weak_ptr_factory_{this};
 };

@@ -22,7 +22,6 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
-#include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
@@ -3837,86 +3836,6 @@ TEST_F(ShellSurfaceTest, Reparent) {
   child_shell_surface->Activate();
   EXPECT_TRUE(child_widget->ShouldPaintAsActive());
   EXPECT_TRUE(widget2->ShouldPaintAsActive());
-}
-
-// Tests raster scale changes happen before occlusion changes on entering
-// overview mode, and raster scale changes happen after occlusion changes on
-// exiting overview mode. This to ensure windows that become visible do not get
-// rastered twice.
-TEST_F(ShellSurfaceTest, RasterScaleChangeVsOcclusionChangeOrder) {
-  ash::Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
-  ash::Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
-      false);
-  auto* overview_controller = ash::Shell::Get()->overview_controller();
-  overview_controller->set_occlusion_pause_duration_for_end_for_test(
-      base::Milliseconds(1));
-  std::vector<ConfigureData> config_vec;
-  auto shell_surface =
-      test::ShellSurfaceBuilder({100, 100})
-          .SetConfigureCallback(base::BindRepeating(
-              &ConfigureSerialVec, base::Unretained(&config_vec)))
-          .BuildShellSurface();
-  auto* surface = shell_surface->root_surface();
-  aura::Window* root_window = surface->window();
-  aura::Window* widget_window = shell_surface->GetWidget()->GetNativeWindow();
-  shell_surface->Minimize();
-
-  // Initial configure and configure for minimize.
-  EXPECT_EQ(2u, config_vec.size());
-
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
-            root_window->GetOcclusionState());
-  EXPECT_EQ(1.0, widget_window->GetProperty(aura::client::kRasterScale));
-  overview_controller->StartOverview(ash::OverviewStartAction::kTests);
-  ash::WaitForOverviewEnterAnimation();
-
-  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
-            root_window->GetOcclusionState());
-  EXPECT_NE(1.0, widget_window->GetProperty(aura::client::kRasterScale));
-
-  // Make sure raster scale was changed first.
-  ASSERT_EQ(4u, config_vec.size());
-  EXPECT_NE(1.0, config_vec[2].raster_scale);
-  EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
-            config_vec[2].occlusion_state);
-  EXPECT_NE(1.0, config_vec[3].raster_scale);
-  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
-            config_vec[3].occlusion_state);
-
-  ash::WaitForOverviewEnterAnimation();
-
-  // No extra configure should occur.
-  EXPECT_EQ(4u, config_vec.size());
-
-  overview_controller->EndOverview(ash::OverviewEndAction::kTests);
-
-  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
-            root_window->GetOcclusionState());
-  EXPECT_NE(1.0, widget_window->GetProperty(aura::client::kRasterScale));
-
-  // No extra configure should occur.
-  EXPECT_EQ(4u, config_vec.size());
-
-  ash::WaitForOverviewExitAnimation();
-
-  // Overview mode on exiting pauses the occlusion tracker for a while.
-  ash::WaitForOcclusionStateChange(root_window,
-                                   aura::Window::OcclusionState::HIDDEN);
-  EXPECT_EQ(1.0, widget_window->GetProperty(aura::client::kRasterScale));
-
-  // Make sure occlusion is updated before raster scale.
-  ASSERT_EQ(6u, config_vec.size());
-  EXPECT_NE(1.0, config_vec[4].raster_scale);
-  EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
-            config_vec[4].occlusion_state);
-  EXPECT_EQ(1.0, config_vec[5].raster_scale);
-  EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
-            config_vec[5].occlusion_state);
 }
 
 TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {

@@ -1772,11 +1772,6 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
                                          DesksCreationRemovalSource source,
                                          DeskCloseType close_type,
                                          bool desk_switched) {
-  // Removing a desk can cause transient raster scale updates during overview
-  // mode, if desks are combined. Pause raster scale updates until windows are
-  // in their final state.
-  ScopedPauseRasterScaleUpdates scoped_pause;
-
   MaybeCommitPendingDeskRemoval();
 
   DCHECK(CanRemoveDesks());
