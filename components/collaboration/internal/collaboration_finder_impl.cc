@@ -49,7 +49,9 @@ void CollaborationFinderImpl::OnGroupAdded(const GroupData& group_data,
 
 void CollaborationFinderImpl::SetCollaborationAvailableForTesting(
     const syncer::CollaborationId& collaboration_id) {
-  collaborations_available_for_testing_.insert(collaboration_id);
+  if (collaborations_available_for_testing_.insert(collaboration_id).second) {
+    client_->OnCollaborationAvailable(collaboration_id);
+  }
 }
 
 }  // namespace collaboration
