@@ -25,6 +25,10 @@ constexpr CGFloat kLargeAccessoryHeight = 59;
 // Button target area for the large keyboard accessory.
 constexpr CGFloat kLargeButtonTargetArea = 44;
 
+// Numer of pixels of horizontal padding on either side of the keyboard
+// accessory.
+constexpr CGFloat kKeyboardHozirontalPadding = 16;
+
 // The padding between the image and the title on the manual fill button.
 // Only applies to the iPad version of this button.
 constexpr CGFloat kManualFillTitlePadding = 4;
@@ -302,41 +306,62 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         constraintEqualToAnchor:_contentView.topAnchor],
     [leadingViewContainer.bottomAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
-    [leadingViewContainer.leadingAnchor
-        constraintEqualToAnchor:layoutGuide.leadingAnchor],
-    [trailingView.trailingAnchor
-        constraintEqualToAnchor:layoutGuide.trailingAnchor],
     [trailingView.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
     [trailingView.bottomAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
   ]];
 
-  UIView* topGrayLine = [[UIView alloc] init];
-  topGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
-  topGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
-  [_contentView addSubview:topGrayLine];
+  if (_isTabletFormFactor && _largeAccessoryViewEnabled) {
+    // On tablets, when using the large keyboard accessory, add padding at both
+    // ends of the content view to match the keyboard's padding.
+    [NSLayoutConstraint activateConstraints:@[
+      [leadingViewContainer.leadingAnchor
+          constraintEqualToAnchor:layoutGuide.leadingAnchor
+                         constant:kKeyboardHozirontalPadding],
+      [trailingView.trailingAnchor
+          constraintEqualToAnchor:layoutGuide.trailingAnchor
+                         constant:-kKeyboardHozirontalPadding],
+    ]];
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [leadingViewContainer.leadingAnchor
+          constraintEqualToAnchor:layoutGuide.leadingAnchor],
+      [trailingView.trailingAnchor
+          constraintEqualToAnchor:layoutGuide.trailingAnchor],
+    ]];
+  }
 
-  UIView* bottomGrayLine = [[UIView alloc] init];
-  bottomGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
-  bottomGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
-  [_contentView addSubview:bottomGrayLine];
+  // When using the blur effect background, do not add top and bottom lines.
+  if (!_largeAccessoryViewEnabled) {
+    UIView* topGrayLine = [[UIView alloc] init];
+    topGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
+    topGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:topGrayLine];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [topGrayLine.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
-    [topGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [topGrayLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [topGrayLine.heightAnchor
-        constraintEqualToConstant:ManualFillSeparatorHeight],
+    UIView* bottomGrayLine = [[UIView alloc] init];
+    bottomGrayLine.backgroundColor = [UIColor colorNamed:kGrey50Color];
+    bottomGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:bottomGrayLine];
 
-    [bottomGrayLine.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-    [bottomGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [bottomGrayLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [bottomGrayLine.heightAnchor
-        constraintEqualToConstant:ManualFillSeparatorHeight],
+    [NSLayoutConstraint activateConstraints:@[
+      [topGrayLine.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
+      [topGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [topGrayLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+      [topGrayLine.heightAnchor
+          constraintEqualToConstant:ManualFillSeparatorHeight],
 
-    [leadingViewContainer.trailingAnchor
-        constraintEqualToAnchor:trailingView.leadingAnchor],
-  ]];
+      [bottomGrayLine.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [bottomGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [bottomGrayLine.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [bottomGrayLine.heightAnchor
+          constraintEqualToConstant:ManualFillSeparatorHeight],
+    ]];
+  }
+
+  [leadingViewContainer.trailingAnchor
+      constraintEqualToAnchor:trailingView.leadingAnchor]
+      .active = YES;
 
   [self createOmniboxTypingShield];
 }
