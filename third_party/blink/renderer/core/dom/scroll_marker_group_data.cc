@@ -10,15 +10,6 @@
 
 namespace blink {
 
-ScrollMarkerChooser::ScrollAxis GetPrimaryScrollAxis(
-    const ScrollOffset& min_offset,
-    const ScrollOffset& max_offset) {
-  using ScrollAxis = ScrollMarkerChooser::ScrollAxis;
-  const float vertical_range = std::abs(max_offset.y() - min_offset.y());
-  const float horizontal_range = std::abs(max_offset.x() - min_offset.x());
-  return vertical_range >= horizontal_range ? ScrollAxis::kY : ScrollAxis::kX;
-}
-
 ScrollMarkerChooser::ScrollTargetOffsetData
 ScrollMarkerChooser::GetScrollTargetOffsetData(const Element* scroll_marker) {
   const LayoutBox* target_box = nullptr;
@@ -293,9 +284,11 @@ Element* ScrollMarkerGroupData::ChooseMarker(const ScrollOffset& scroll_offset,
                                              ScrollableArea* scrollable_area,
                                              LayoutBox* scroller_box) {
   using ScrollAxis = ScrollMarkerChooser::ScrollAxis;
-  ScrollOffset max_offset = scrollable_area->MaximumScrollOffset();
-  ScrollOffset min_offset = scrollable_area->MinimumScrollOffset();
-  ScrollAxis primary_axis = GetPrimaryScrollAxis(min_offset, max_offset);
+  // The primary axis is, by default, the block axis.
+  ScrollAxis primary_axis =
+      IsHorizontalWritingMode(scroller_box->Style()->GetWritingMode())
+          ? ScrollAxis::kY
+          : ScrollAxis::kX;
 
   Element* selected = nullptr;
 
