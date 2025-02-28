@@ -380,11 +380,9 @@ export namespace Browser {
   };
 }
 export namespace Browser {
-  export type SetClientWindowStateParameters =
-    | ({
-        clientWindow: Browser.ClientWindow;
-      } & Browser.ClientWindowNamedState)
-    | Browser.ClientWindowRectState;
+  export type SetClientWindowStateParameters = {
+    clientWindow: Browser.ClientWindow;
+  } & (Browser.ClientWindowNamedState | Browser.ClientWindowRectState);
 }
 export namespace Browser {
   export type ClientWindowNamedState = {

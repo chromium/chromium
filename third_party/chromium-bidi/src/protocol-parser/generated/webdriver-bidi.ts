@@ -511,14 +511,16 @@ export namespace Browser {
 }
 export namespace Browser {
   export const SetClientWindowStateParametersSchema = z.lazy(() =>
-    z.union([
-      z
-        .object({
-          clientWindow: Browser.ClientWindowSchema,
-        })
-        .and(Browser.ClientWindowNamedStateSchema),
-      Browser.ClientWindowRectStateSchema,
-    ]),
+    z
+      .object({
+        clientWindow: Browser.ClientWindowSchema,
+      })
+      .and(
+        z.union([
+          Browser.ClientWindowNamedStateSchema,
+          Browser.ClientWindowRectStateSchema,
+        ]),
+      ),
   );
 }
 export namespace Browser {
