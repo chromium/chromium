@@ -526,6 +526,11 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyAlwaysCreateCore;
 // Context won't proxy traffic using IP Protection.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito;
 
+// Enables the ability to detect when a user has requests being actively
+// proxied by IP Protection and thus allowing the user to made aware and offer
+// the ability to bypass IP Protection via the User Bypass UX.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableUserBypass;
+
 // Maximum report body size (KB) to include in serialized reports. Bodies
 // exceeding this are omitted when kExcludeLargeBodyReports is enabled.  Use
 // Reporting.ReportBodySize UMA histogram to monitor report body sizes and

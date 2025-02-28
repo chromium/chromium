@@ -477,6 +477,11 @@ const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito{
     /*name=*/"IpPrivacyOnlyInIncognito",
     /*default_value=*/false};
 
+const base::FeatureParam<bool> kIpPrivacyEnableUserBypass{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyEnableUserBypass",
+    /*default_value=*/false};
+
 BASE_FEATURE(kExcludeLargeBodyReports,
              "ExcludeLargeReportBodies",
              base::FEATURE_ENABLED_BY_DEFAULT);

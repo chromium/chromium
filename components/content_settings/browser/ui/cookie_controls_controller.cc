@@ -29,6 +29,8 @@
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/ip_protection/common/ip_protection_status.h"
+#include "components/ip_protection/common/ip_protection_status_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -178,6 +180,10 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
 void CookieControlsController::OnSubresourceBlocked() {
   // When a subresource is blocked by fingerprinting protection,
   // `UpdateUserBypass` will show the User Bypass.
+  UpdateUserBypass();
+}
+
+void CookieControlsController::OnFirstSubresourceProxiedOnCurrentPrimaryPage() {
   UpdateUserBypass();
 }
 
@@ -454,6 +460,19 @@ bool CookieControlsController::GetIsSubresourceBlocked() const {
          fpf_web_contents_helper->subresource_blocked_in_current_primary_page();
 }
 
+bool CookieControlsController::GetIsSubresourceProxied() const {
+  // Check WebContents are valid. A possible race condition on Android causes
+  // this to be called before WebContents are instantiated.
+  if (GetWebContents() == nullptr) {
+    return false;
+  }
+
+  auto* ip_protection_status =
+      ip_protection::IpProtectionStatus::FromWebContents(GetWebContents());
+  return ip_protection_status != nullptr &&
+         ip_protection_status->IsSubresourceProxiedOnCurrentPrimaryPage();
+}
+
 void CookieControlsController::UpdateUserBypass() {
   auto status = GetStatus(GetWebContents());
   for (auto& observer : observers_) {
@@ -669,7 +688,8 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
   // contexts.
   return controls_visible &&
          (HasOriginSandboxedTopLevelDocument() || !protections_on ||
-          site_data_access_attempted || GetIsSubresourceBlocked());
+          site_data_access_attempted || GetIsSubresourceBlocked() ||
+          GetIsSubresourceProxied());
 }
 
 CookieControlsController::TabObserver::TabObserver(
@@ -686,12 +706,19 @@ CookieControlsController::TabObserver::TabObserver(
   if (fpf_web_contents_helper) {
     fpf_observation_.Observe(fpf_web_contents_helper);
   }
+
+  auto* ip_protection_status =
+      ip_protection::IpProtectionStatus::FromWebContents(web_contents);
+  if (ip_protection_status) {
+    ip_protection_observation_.Observe(ip_protection_status);
+  }
 }
 
 CookieControlsController::TabObserver::~TabObserver() = default;
 
 void CookieControlsController::TabObserver::WebContentsDestroyed() {
   fpf_observation_.Reset();
+  ip_protection_observation_.Reset();
 }
 
 void CookieControlsController::TabObserver::OnSiteDataAccessed(
@@ -729,6 +756,11 @@ void CookieControlsController::TabObserver::OnStatefulBounceDetected() {
 
 void CookieControlsController::TabObserver::OnSubresourceBlocked() {
   cookie_controls_->OnSubresourceBlocked();
+}
+
+void CookieControlsController::TabObserver::
+    OnFirstSubresourceProxiedOnCurrentPrimaryPage() const {
+  cookie_controls_->OnFirstSubresourceProxiedOnCurrentPrimaryPage();
 }
 
 void CookieControlsController::TabObserver::PrimaryPageChanged(

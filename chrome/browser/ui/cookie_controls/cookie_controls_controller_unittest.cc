@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -25,6 +26,7 @@
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/ip_protection/common/ip_protection_status.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -32,11 +34,16 @@
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/global_request_id.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/features.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -224,6 +231,18 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
       CookieControlsEnforcement enforcement,
       BlockingStatus blocking_status) {
     return {{FeatureType::kThirdPartyCookies, enforcement, blocking_status}};
+  }
+
+  blink::mojom::ResourceLoadInfoPtr
+  CreateResourceLoadInfoWithIpProtectionChain() {
+    blink::mojom::ResourceLoadInfoPtr resource_load_info =
+        blink::mojom::ResourceLoadInfo::New();
+
+    resource_load_info->proxy_chain = net::ProxyChain::ForIpProtection(
+        {net::ProxyUriToProxyServer("foo:555", net::ProxyServer::SCHEME_HTTPS),
+         net::ProxyUriToProxyServer("foo:666",
+                                    net::ProxyServer::SCHEME_HTTPS)});
+    return resource_load_info;
   }
 
  private:
@@ -1629,6 +1648,36 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlockedInIncognito) {
   cookie_controls()->Update(web_contents());
 }
 
+TEST_F(CookieControlsUserBypassTest, SubresourceProxied) {
+  base::test::ScopedFeatureList ip_protection_feature_list;
+  ip_protection_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  ip_protection::IpProtectionStatus::CreateForWebContents(web_contents());
+
+  NavigateAndCommit(GURL(kUrl));
+
+  ip_protection::IpProtectionStatus::FromWebContents(web_contents())
+      ->ResourceLoadComplete(ChromeRenderViewHostTestHarness::main_rfh(),
+                             content::GlobalRequestID(),
+                             *CreateResourceLoadInfoWithIpProtectionChain());
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/true,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kBlocked)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+  cookie_controls()->Update(web_contents());
+}
+
 TEST_F(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader("Content-Security-Policy", "sandbox");
@@ -1778,6 +1827,37 @@ TEST_F(CookieControlsUserBypassIncognitoTest, ToggleUpdatesUi) {
 
   incognito_cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
+}
+
+TEST_F(CookieControlsUserBypassIncognitoTest, SubresourceProxied) {
+  base::test::ScopedFeatureList ip_protection_feature_list;
+  ip_protection_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  ip_protection::IpProtectionStatus::CreateForWebContents(web_contents());
+
+  NavigateAndCommit(GURL(kUrl));
+
+  ip_protection::IpProtectionStatus::FromWebContents(web_contents())
+      ->ResourceLoadComplete(ChromeRenderViewHostTestHarness::main_rfh(),
+                             content::GlobalRequestID(),
+                             *CreateResourceLoadInfoWithIpProtectionChain());
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/true,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kBlocked)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+
+  incognito_cookie_controls()->Update(web_contents());
 }
 
 class CookieControlsUserBypassTrackingProtectionUiTest

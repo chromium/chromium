@@ -13,6 +13,7 @@ include_rules = [
   "+components/endpoint_fetcher",
   "+components/enterprise",
   "+components/fingerprinting_protection_filter/browser",
+  "+components/ip_protection/common",
   "+components/infobars/android",
   "+components/language_detection/core",
   "+components/live_caption",

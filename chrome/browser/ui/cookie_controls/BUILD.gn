@@ -51,8 +51,11 @@ source_set("unit_tests") {
     "//components/content_settings/browser",
     "//components/content_settings/browser/ui",
     "//components/fingerprinting_protection_filter/browser",
+    "//components/ip_protection/common:ip_protection_status",
     "//components/privacy_sandbox:features",
     "//components/site_engagement/content",
     "//components/ukm:test_support",
+    "//net",
+    "//third_party/blink/public:blink_headers",
   ]
 }
