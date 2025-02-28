@@ -261,7 +261,7 @@ class ReadAloudAppModel {
   bool speech_playing_ = false;
 
   // The current speech rate for reading aloud.
-  double speech_rate_ = read_anything::kReadAnythingDefaultSpeechRate;
+  double speech_rate_ = 1.0;
 
   // The languages that the user has enabled for reading aloud.
   base::Value::List languages_enabled_in_pref_;

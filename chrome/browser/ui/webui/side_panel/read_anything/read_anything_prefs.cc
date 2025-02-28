@@ -40,8 +40,7 @@ void RegisterReadAnythingProfilePrefs(
         prefs::kAccessibilityReadAnythingVoiceName, base::Value::Dict(),
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     registry->RegisterDoublePref(
-        prefs::kAccessibilityReadAnythingSpeechRate,
-        read_anything::kReadAnythingDefaultSpeechRate,
+        prefs::kAccessibilityReadAnythingSpeechRate, 1.0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     registry->RegisterIntegerPref(
         prefs::kAccessibilityReadAnythingHighlightGranularity,
