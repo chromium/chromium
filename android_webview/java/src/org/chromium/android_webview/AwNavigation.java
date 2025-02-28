@@ -33,23 +33,19 @@ public class AwNavigation extends AwSupportLibIsomorphic {
     }
 
     public boolean isHistory() {
-        // TODO: Expose this info from NavigationHandle.
-        return false;
+        return mNavigationHandle.isHistory();
     }
 
     public boolean isRestore() {
-        // TODO: Expose this info from NavigationHandle.
-        return false;
+        return mNavigationHandle.isRestore();
     }
 
     public boolean isBack() {
-        // TODO: Expose this info from NavigationHandle.
-        return false;
+        return mNavigationHandle.isBack();
     }
 
     public boolean isForward() {
-        // TODO: Expose this info from NavigationHandle.
-        return false;
+        return mNavigationHandle.isForward();
     }
 
     public boolean hasCommitted() {

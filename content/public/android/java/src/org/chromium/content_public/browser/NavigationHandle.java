@@ -46,6 +46,10 @@ public class NavigationHandle {
     private long mNavigationId;
     private boolean mIsPageActivation;
     private boolean mIsReload;
+    private boolean mIsHistory;
+    private boolean mIsBack;
+    private boolean mIsForward;
+    private boolean mIsRestore;
     private @Nullable UserDataHost mUserDataHost;
     private boolean mIsPdf;
     private @Nullable String mMimeType;
@@ -115,6 +119,10 @@ public class NavigationHandle {
                 /* navigationId= */ 0,
                 /* isPageActivation= */ false,
                 isReload,
+                /* isHistory= */ false,
+                /* isBack= */ false,
+                /* isForward= */ false,
+                /* isRestore= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
                 isSaveableNavigation,
@@ -144,6 +152,10 @@ public class NavigationHandle {
             long navigationId,
             boolean isPageActivation,
             boolean isReload,
+            boolean isHistory,
+            boolean isBack,
+            boolean isForward,
+            boolean isRestore,
             boolean isPdf,
             String mimeType,
             boolean isSaveableNavigation,
@@ -163,6 +175,10 @@ public class NavigationHandle {
         mNavigationId = navigationId;
         mIsPageActivation = isPageActivation;
         mIsReload = isReload;
+        mIsHistory = isHistory;
+        mIsBack = isBack;
+        mIsForward = isForward;
+        mIsRestore = isRestore;
         mIsPdf = isPdf;
         mMimeType = mimeType;
         mIsSaveableNavigation = isSaveableNavigation;
@@ -405,6 +421,30 @@ public class NavigationHandle {
     public boolean isReload() {
         assert mStarted;
         return mIsReload;
+    }
+
+    /** Whether this navigation is a history navigation or not. */
+    public boolean isHistory() {
+        assert mStarted;
+        return mIsHistory;
+    }
+
+    /** Whether this navigation is a back history navigation or not (offset < 0). */
+    public boolean isBack() {
+        assert mStarted;
+        return mIsBack;
+    }
+
+    /** Whether this navigation is a back history navigation or not (offset > 0). */
+    public boolean isForward() {
+        assert mStarted;
+        return mIsForward;
+    }
+
+    /** Whether this navigation was initiated by a session restore. */
+    public boolean isRestore() {
+        assert mStarted;
+        return mIsRestore;
     }
 
     /** Return any user data which has been set on the NavigationHandle. */
