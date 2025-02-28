@@ -6,7 +6,6 @@
 
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
-#include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace extensions {
