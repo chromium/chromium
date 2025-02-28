@@ -35,6 +35,7 @@ TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
   AttributeInstance passport_name(
       (AttributeType(AttributeTypeName::kPassportName)));
   passport_name.SetInfoWithVerificationStatus(NAME_FULL, u"Some Name",
+                                              /*app_locale=*/"",
                                               VerificationStatus::kObserved);
   passport_name.FinalizeInfo();
 

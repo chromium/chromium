@@ -96,13 +96,17 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
                      info_);
 }
 
-void AttributeInstance::SetInfo(FieldType type, const std::u16string& value) {
-  SetInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
+void AttributeInstance::SetInfo(FieldType type,
+                                const std::u16string& value,
+                                const std::string& app_locale) {
+  SetInfoWithVerificationStatus(type, value, app_locale,
+                                VerificationStatus::kNoStatus);
 }
 
 void AttributeInstance::SetInfoWithVerificationStatus(
     FieldType type,
     const std::u16string& value,
+    const std::string& app_locale,
     VerificationStatus status) {
   type = GetNormalizedType(type);
   if (type == UNKNOWN_TYPE) {
@@ -110,11 +114,11 @@ void AttributeInstance::SetInfoWithVerificationStatus(
   }
   absl::visit(base::Overloaded{[&](NameInfo& name) {
                                  name.SetInfoWithVerificationStatus(
-                                     type, value, /*app_locale=*/"", status);
+                                     type, value, app_locale, status);
                                },
                                [&](std::u16string& old_value) {
-                                 CHECK_EQ(type, type_.field_type());
-                                 old_value = value;
+                                 SetRawInfoWithVerificationStatus(type, value,
+                                                                  status);
                                }},
               info_);
 }
@@ -127,13 +131,14 @@ void AttributeInstance::SetRawInfoWithVerificationStatus(
   if (type == UNKNOWN_TYPE) {
     return;
   }
-  absl::visit(base::Overloaded{
-                  [&](NameInfo& name) {
-                    name.SetRawInfoWithVerificationStatus(type, value, status);
-                  },
-                  [&](std::u16string& old_value) {
-                    SetInfoWithVerificationStatus(type, value, status);
-                  }},
+  absl::visit(base::Overloaded{[&](NameInfo& name) {
+                                 name.SetRawInfoWithVerificationStatus(
+                                     type, value, status);
+                               },
+                               [&](std::u16string& old_value) {
+                                 CHECK_EQ(type, type_.field_type());
+                                 old_value = value;
+                               }},
               info_);
 }
 

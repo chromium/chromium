@@ -871,25 +871,29 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   std::vector<AttributeInstance> attributes;
   if (options.number) {
     attributes.emplace_back(AttributeType(kPassportNumber));
-    attributes.back().SetInfo(PASSPORT_NUMBER, options.number);
+    attributes.back().SetInfo(PASSPORT_NUMBER, options.number,
+                              /*app_locale=*/"");
   }
   if (options.name) {
     attributes.emplace_back(AttributeType(kPassportName));
-    attributes.back().SetInfo(PASSPORT_NAME_TAG, options.name);
+    attributes.back().SetInfo(PASSPORT_NAME_TAG, options.name,
+                              /*app_locale=*/"");
     attributes.back().FinalizeInfo();
   }
   if (options.country) {
     attributes.emplace_back(AttributeType(kPassportCountry));
-    attributes.back().SetInfo(PASSPORT_ISSUING_COUNTRY_TAG, options.country);
+    attributes.back().SetInfo(PASSPORT_ISSUING_COUNTRY_TAG, options.country,
+                              /*app_locale=*/"");
   }
   if (options.expiry_date) {
     attributes.emplace_back(AttributeType(kPassportExpiryDate));
-    attributes.back().SetInfo(PASSPORT_EXPIRATION_DATE_TAG,
-                              options.expiry_date);
+    attributes.back().SetInfo(PASSPORT_EXPIRATION_DATE_TAG, options.expiry_date,
+                              /*app_locale=*/"");
   }
   if (options.issue_date) {
     attributes.emplace_back(AttributeType(kPassportIssueDate));
-    attributes.back().SetInfo(PASSPORT_ISSUE_DATE_TAG, options.issue_date);
+    attributes.back().SetInfo(PASSPORT_ISSUE_DATE_TAG, options.issue_date,
+                              /*app_locale=*/"");
   }
   return EntityInstance(
       EntityType(EntityTypeName::kPassport), std::move(attributes),
@@ -902,15 +906,18 @@ EntityInstance GetLoyaltyCardEntityInstance(LoyaltyCardEntityOptions options) {
   std::vector<AttributeInstance> attributes;
   if (options.program) {
     attributes.emplace_back(AttributeType(kLoyaltyCardProgram));
-    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_PROGRAM, options.program);
+    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_PROGRAM, options.program,
+                              /*app_locale=*/"");
   }
   if (options.provider) {
     attributes.emplace_back(AttributeType(kLoyaltyCardProvider));
-    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_PROVIDER, options.provider);
+    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_PROVIDER, options.provider,
+                              /*app_locale=*/"");
   }
   if (options.member_id) {
     attributes.emplace_back(AttributeType(kLoyaltyCardMemberId));
-    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_ID, options.member_id);
+    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_ID, options.member_id,
+                              /*app_locale=*/"");
   }
   return EntityInstance(
       EntityType(EntityTypeName::kLoyaltyCard), std::move(attributes),

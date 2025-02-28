@@ -27,6 +27,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -91,7 +92,8 @@ bool CheckIfEntitySatisfiesConstraints(const EntityInstance& entity) {
 }
 
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
-    const autofill::FormStructure& submitted_form) {
+    const autofill::FormStructure& submitted_form,
+    const std::string& app_locale) {
   std::map<autofill::Section,
            std::map<EntityType, std::vector<autofill::AttributeInstance>>>
       section_to_entity_types_attributes;
@@ -112,12 +114,12 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       continue;
     }
 
-    section_to_entity_types_attributes[field->section()]
-                                      [field_attribute_type->entity_type()]
-                                          .emplace_back(*field_attribute_type)
-                                          .SetInfo(
-                                              field->Type().GetStorableType(),
-                                              value);
+    section_to_entity_types_attributes[field->section()][field_attribute_type
+                                                             ->entity_type()]
+        .emplace_back(*field_attribute_type)
+        .SetInfoWithVerificationStatus(field->Type().GetStorableType(), value,
+                                       app_locale,
+                                       autofill::VerificationStatus::kObserved);
   }
 
   std::vector<EntityInstance> entities_found_in_form;
@@ -332,7 +334,8 @@ void AutofillAiManager::MaybeImportForm(
     return;
   }
   std::vector<EntityInstance> entity_instances_from_form =
-      GetPossibleEntitiesFromSubmittedForm(*form);
+      GetPossibleEntitiesFromSubmittedForm(
+          *form, client_->GetAutofillClient().GetAppLocale());
   if (entity_instances_from_form.empty()) {
     std::move(autofill_callback).Run(std::move(form), false);
     return;

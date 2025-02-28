@@ -114,19 +114,22 @@ class AttributeInstance final {
   // Returns the verification status of a value stored in this attribute
   // instance for a specific `type`.
   VerificationStatus GetVerificationStatus(FieldType type) const;
-  // Populates the attribute with a value for a specific `type`.
-  void SetInfo(FieldType type, const std::u16string& value);
+  // Populates the attribute with a value for a specific `type`, according to a
+  // given `app_locale`.
+  void SetInfo(FieldType type,
+               const std::u16string& value,
+               const std::string& app_locale);
   // Similar to `SetInfo` but also assigns a verification status to the set
   // value.
   void SetInfoWithVerificationStatus(FieldType type,
                                      const std::u16string& value,
+                                     const std::string& app_locale,
                                      const VerificationStatus status);
 
   // Same as `SetInfoWithVerificationStatus`, but for structured types this
   // function does nothing but modify the information in `type`, while the other
   // function might perform additional steps (e.g., name formatting). This
-  // function should not be used except by database logic and settings page
-  // logic.
+  // function should only be used by database logic and settings page logic.
   // TODO(crbug.com/389625753): Investigate merging SetInfo* and SetRawInfo*.
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
