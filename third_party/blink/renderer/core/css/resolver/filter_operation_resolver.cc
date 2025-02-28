@@ -189,12 +189,10 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
       CountFilterUse(FilterOperation::OperationType::kReference,
                      state.GetDocument());
 
-      SVGResource* resource =
-          state.GetElementStyleResources().GetSVGResourceFromValue(property_id,
-                                                                   *url_value);
       operations.Operations().push_back(
           MakeGarbageCollected<ReferenceFilterOperation>(
-              url_value->ValueForSerialization(), resource));
+              url_value->ValueForSerialization(),
+              state.GetSVGResource(property_id, *url_value)));
       continue;
     }
 

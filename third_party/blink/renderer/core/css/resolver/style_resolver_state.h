@@ -175,6 +175,7 @@ class CORE_EXPORT StyleResolverState {
   StyleImage* GetStyleImage(CSSPropertyID property_id, const CSSValue& value) {
     return element_style_resources_.GetStyleImage(property_id, value);
   }
+  SVGResource* GetSVGResource(CSSPropertyID, const cssvalue::CSSURIValue&);
 
   FontBuilder& GetFontBuilder() { return font_builder_; }
   const FontBuilder& GetFontBuilder() const { return font_builder_; }

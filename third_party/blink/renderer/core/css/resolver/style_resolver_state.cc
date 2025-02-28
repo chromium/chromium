@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -241,6 +242,17 @@ void StyleResolverState::LoadPendingResources() {
 
   element_style_resources_.LoadPendingResources(StyleBuilder(),
                                                 css_to_length_conversion_data_);
+}
+
+SVGResource* StyleResolverState::GetSVGResource(
+    CSSPropertyID property_id,
+    const cssvalue::CSSURIValue& value) {
+  SVGResource* resource =
+      element_style_resources_.GetSVGResourceFromValue(property_id, value);
+  if (resource && value.IsLocal(GetDocument())) {
+    SetHasTreeScopedReference();
+  }
+  return resource;
 }
 
 const FontDescription& StyleResolverState::ParentFontDescription() const {

@@ -260,11 +260,9 @@ StyleSVGResource* StyleBuilderConverter::ConvertElementReference(
   }
 
   const auto& url_value = To<cssvalue::CSSURIValue>(value);
-  SVGResource* resource =
-      state.GetElementStyleResources().GetSVGResourceFromValue(property_id,
-                                                               url_value);
   return MakeGarbageCollected<StyleSVGResource>(
-      resource, url_value.ValueForSerialization());
+      state.GetSVGResource(property_id, url_value),
+      url_value.ValueForSerialization());
 }
 
 LengthBox StyleBuilderConverter::ConvertClip(StyleResolverState& state,
@@ -306,11 +304,9 @@ ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
   }
 
   if (const auto* url_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
-    SVGResource* resource =
-        state.GetElementStyleResources().GetSVGResourceFromValue(
-            CSSPropertyID::kClipPath, *url_value);
     return MakeGarbageCollected<ReferenceClipPathOperation>(
-        url_value->ValueForSerialization(), resource);
+        url_value->ValueForSerialization(),
+        state.GetSVGResource(CSSPropertyID::kClipPath, *url_value));
   }
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   DCHECK(identifier_value &&
@@ -3117,11 +3113,9 @@ OffsetPathOperation* ConvertOffsetPathValueToOperation(
         path_value->GetStylePath(), coord_box);
   }
   const auto& url_value = To<cssvalue::CSSURIValue>(value);
-  SVGResource* resource =
-      state.GetElementStyleResources().GetSVGResourceFromValue(
-          CSSPropertyID::kOffsetPath, url_value);
   return MakeGarbageCollected<ReferenceOffsetPathOperation>(
-      url_value.ValueForSerialization(), resource, coord_box);
+      url_value.ValueForSerialization(),
+      state.GetSVGResource(CSSPropertyID::kOffsetPath, url_value), coord_box);
 }
 
 }  // namespace
