@@ -2155,9 +2155,16 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
     const JavaParamRef<jobject>& obj,
     jboolean is_screen_reader_enabled,
     jboolean form_controls_mode,
+    jboolean is_known_screen_reader_running,
     jboolean is_any_accessibility_tool_present) {
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
+
+  // Always update state if a known screen reader is running.
+  auto* accessibility_state_android =
+      static_cast<BrowserAccessibilityStateImplAndroid*>(accessibility_state);
+  accessibility_state_android->SetKnownScreenReaderAppActive(
+      is_known_screen_reader_running);
 
   // The AXMode flags will be set according to requirements of the current
   // system based on running services. This can be disabled with an enterprise

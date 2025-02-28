@@ -824,6 +824,17 @@ public class AccessibilityState {
     }
 
     /**
+     * Checks whether or not a known screen reader is running, i.e. TalkBack. This differs from the
+     * isScreenReaderEnabled method in that this method is based on a running Bundle ID, and the
+     * other method is based on a heuristic that identifies screen-reader-like services.
+     *
+     * @return True when a known screen reader is running (e.g. TalkBack).
+     */
+    public static boolean isKnownScreenReaderRunning() {
+        return getTalkBackEnabledState().first;
+    }
+
+    /**
      * Return a bitmask containing the union of all event types that running accessibility services
      * listen to.
      */

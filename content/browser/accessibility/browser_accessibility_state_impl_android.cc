@@ -453,6 +453,21 @@ void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
                         mode.has_mode(ui::AXMode::kScreenReader));
 }
 
+void BrowserAccessibilityStateImplAndroid::SetKnownScreenReaderAppActive(
+    bool is_known_screen_reader_running) {
+  static auto* ax_talkback_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_talkback", base::debug::CrashKeySize::Size32);
+
+  if (is_known_screen_reader_running) {
+    base::debug::SetCrashKeyString(ax_talkback_crash_key, "true");
+  } else {
+    base::debug::ClearCrashKeyString(ax_talkback_crash_key);
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.Talkback",
+                        is_known_screen_reader_running);
+}
+
 // static
 std::unique_ptr<BrowserAccessibilityStateImpl>
 BrowserAccessibilityStateImpl::Create() {

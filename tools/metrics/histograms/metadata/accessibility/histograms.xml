@@ -3331,7 +3331,10 @@ even if they fit the naming pattern. -->
     {ReportDelay}
   </summary>
   <token key="ScreenReader">
-    <variant name="Android.ScreenReader" summary="Android (e.g. Talkback)"/>
+    <variant name="Android.ScreenReader"
+        summary="Android (e.g. Talkback, or any other screen reader, or app
+                 masquerading as a screen reader)."/>
+    <variant name="Android.TalkBack" summary="Android, specifically TalkBack."/>
     <variant name="Linux.Orca"
         summary="This tracks Orca screen reader usage specifically"/>
     <variant name="Mac.ScreenReader"
