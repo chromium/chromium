@@ -442,10 +442,8 @@ void LobsterSessionImpl::PreviewFeedback(
     return;
   }
 
-  // TODO: b/362403784 - add the proper version.
   std::move(callback).Run(LobsterFeedbackPreview(
-      {{"model_version", "dummy_version"}, {"model_input", candidate->query}},
-      candidate->image_bytes));
+      {{"Query and image", candidate->query}}, candidate->image_bytes));
 }
 
 bool LobsterSessionImpl::SubmitFeedback(int candidate_id,
