@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
-#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/launcher/glic_status_icon.h"
+#include "chrome/browser/background/glic/glic_status_icon.h"
 
 #include <memory>
 
@@ -11,8 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/glic/launcher/glic_controller.h"
-#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/background/glic/glic_controller.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profiles_state.h"

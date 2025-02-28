@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/launcher/glic_status_icon.h"
+#include "chrome/browser/background/glic/glic_status_icon.h"
 
 #include <memory>
 #include <optional>
@@ -12,10 +12,10 @@
 #include "base/version_info/channel.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/glic_vector_icon_manager.h"
-#include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/status_icons/status_icon.h"

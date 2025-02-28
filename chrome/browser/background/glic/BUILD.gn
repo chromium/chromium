@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("launcher") {
+source_set("glic") {
   sources = [
     "glic_background_mode_manager.h",
     "glic_controller.h",
@@ -31,7 +31,7 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    ":launcher",
+    ":glic",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
@@ -58,8 +58,8 @@ source_set("unit_tests") {
     "glic_status_icon_unittest.cc",
   ]
   deps = [
+    ":glic",
     ":impl",
-    ":launcher",
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser/glic:glic",
@@ -79,7 +79,7 @@ source_set("browser_tests") {
   sources = [ "glic_background_mode_manager_browsertest.cc" ]
 
   deps = [
-    ":launcher",
+    ":glic",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
@@ -103,7 +103,7 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [ "glic_controller_interactive_uitest.cc" ]
   deps = [
-    ":launcher",
+    ":glic",
     "//chrome/browser/glic:glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic:test_support",

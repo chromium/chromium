@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
-#include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

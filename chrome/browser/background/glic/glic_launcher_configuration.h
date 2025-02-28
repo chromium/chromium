@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_LAUNCHER_GLIC_LAUNCHER_CONFIGURATION_H_
-#define CHROME_BROWSER_GLIC_LAUNCHER_GLIC_LAUNCHER_CONFIGURATION_H_
+#ifndef CHROME_BROWSER_BACKGROUND_GLIC_GLIC_LAUNCHER_CONFIGURATION_H_
+#define CHROME_BROWSER_BACKGROUND_GLIC_GLIC_LAUNCHER_CONFIGURATION_H_
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -46,4 +46,4 @@ class GlicLauncherConfiguration {
 };
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_LAUNCHER_CONFIGURATION_H_
+#endif  // CHROME_BROWSER_BACKGROUND_GLIC_GLIC_LAUNCHER_CONFIGURATION_H_

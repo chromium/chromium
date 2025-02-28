@@ -6020,14 +6020,14 @@ static_library("browser") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/background/glic",
+      "//chrome/browser/background/glic:impl",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
-      "//chrome/browser/glic/launcher",
-      "//chrome/browser/glic/launcher:impl",
     ]
 
     allow_circular_includes_from += [
-      "//chrome/browser/glic/launcher:impl",
+      "//chrome/browser/background/glic:impl",
       "//chrome/browser/glic:impl",
     ]
   }

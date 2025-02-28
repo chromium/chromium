@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
-#include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

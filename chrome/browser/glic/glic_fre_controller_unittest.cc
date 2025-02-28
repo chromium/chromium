@@ -8,9 +8,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

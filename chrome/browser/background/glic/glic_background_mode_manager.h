@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_
-#define CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_
+#ifndef CHROME_BROWSER_BACKGROUND_GLIC_GLIC_BACKGROUND_MODE_MANAGER_H_
+#define CHROME_BROWSER_BACKGROUND_GLIC_GLIC_BACKGROUND_MODE_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -11,7 +11,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -119,4 +119,4 @@ class GlicBackgroundModeManager
 };
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_
+#endif  // CHROME_BROWSER_BACKGROUND_GLIC_GLIC_BACKGROUND_MODE_MANAGER_H_

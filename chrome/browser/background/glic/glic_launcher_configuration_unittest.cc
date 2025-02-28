@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_pref_names.h"

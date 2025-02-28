@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_test_util.h"
-#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

@@ -3488,11 +3488,11 @@ if (!is_android) {
       sources += [ "../browser/ui/webui/settings/glic_handler_browsertest.cc" ]
 
       deps += [
+        "//chrome/browser/background/glic",
+        "//chrome/browser/background/glic:browser_tests",
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
         "//chrome/browser/glic:test_support",
-        "//chrome/browser/glic/launcher:browser_tests",
-        "//chrome/browser/glic/launcher:launcher",
       ]
     }
 
@@ -6922,9 +6922,9 @@ test("unit_tests") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/background/glic:unit_tests",
       "//chrome/browser/glic:test_support",
       "//chrome/browser/glic:unit_tests",
-      "//chrome/browser/glic/launcher:unit_tests",
     ]
   }
 
@@ -11550,12 +11550,12 @@ if (!is_android && !is_chromeos_device) {
 
     if (enable_glic) {
       deps += [
+        "//chrome/browser/background/glic:interactive_ui_tests",
         "//chrome/browser/glic:interactive_ui_tests",
-        "//chrome/browser/glic/launcher:interactive_ui_tests",
       ]
       data_deps += [
+        "//chrome/browser/background/glic:interactive_ui_tests",
         "//chrome/browser/glic:interactive_ui_tests",
-        "//chrome/browser/glic/launcher:interactive_ui_tests",
       ]
     }
 

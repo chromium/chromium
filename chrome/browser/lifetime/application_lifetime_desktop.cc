@@ -52,7 +52,7 @@
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #endif
 
 namespace chrome {
