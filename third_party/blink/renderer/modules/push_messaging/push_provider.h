@@ -5,19 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_PROVIDER_H_
 
-#include <stdint.h>
-#include <memory>
-
-#include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-blink-forward.h"
-#include "third_party/blink/renderer/modules/push_messaging/push_subscription_callbacks.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -26,6 +20,7 @@ enum class PushGetRegistrationStatus;
 enum class PushRegistrationStatus;
 }  // namespace mojom
 
+class PushSubscription;
 class PushSubscriptionOptions;
 
 class PushProvider final : public GarbageCollected<PushProvider>,
@@ -44,9 +39,10 @@ class PushProvider final : public GarbageCollected<PushProvider>,
 
   void Subscribe(PushSubscriptionOptions* options,
                  bool user_gesture,
-                 std::unique_ptr<PushSubscriptionCallbacks> callbacks);
-  void Unsubscribe(std::unique_ptr<PushUnsubscribeCallbacks> callbacks);
-  void GetSubscription(std::unique_ptr<PushSubscriptionCallbacks> callbacks);
+                 ScriptPromiseResolver<PushSubscription>* resolver);
+  void Unsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver);
+  void GetSubscription(
+      ScriptPromiseResolver<IDLNullable<PushSubscription>>* resolver);
 
   void Trace(Visitor*) const override;
 
@@ -55,18 +51,19 @@ class PushProvider final : public GarbageCollected<PushProvider>,
   // established after the first call to this method.
   mojom::blink::PushMessaging* GetPushMessagingRemote();
 
-  void DidSubscribe(std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+  void DidSubscribe(ScriptPromiseResolver<PushSubscription>* resolver,
                     mojom::blink::PushRegistrationStatus status,
                     mojom::blink::PushSubscriptionPtr subscription);
 
-  void DidUnsubscribe(std::unique_ptr<PushUnsubscribeCallbacks> callbacks,
+  void DidUnsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver,
                       mojom::blink::PushErrorType error_type,
                       bool did_unsubscribe,
                       const WTF::String& error_message);
 
-  void DidGetSubscription(std::unique_ptr<PushSubscriptionCallbacks> callbacks,
-                          mojom::blink::PushGetRegistrationStatus status,
-                          mojom::blink::PushSubscriptionPtr subscription);
+  void DidGetSubscription(
+      ScriptPromiseResolver<IDLNullable<PushSubscription>>* resolver,
+      mojom::blink::PushGetRegistrationStatus status,
+      mojom::blink::PushSubscriptionPtr subscription);
 
   HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
 };
