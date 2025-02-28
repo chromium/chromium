@@ -15,7 +15,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "content/browser/dips/dips_bounce_detector.h"
+#include "content/browser/btm/btm_bounce_detector.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

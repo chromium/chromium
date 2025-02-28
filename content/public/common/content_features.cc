@@ -12,8 +12,8 @@
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "content/common/buildflags.h"
+#include "content/public/common/btm_utils.h"
 #include "content/public/common/buildflags.h"
-#include "content/public/common/dips_utils.h"
 
 namespace features {
 

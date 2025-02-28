@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/common/dips_utils.h"
+#include "content/public/common/btm_utils.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 
 namespace features {
