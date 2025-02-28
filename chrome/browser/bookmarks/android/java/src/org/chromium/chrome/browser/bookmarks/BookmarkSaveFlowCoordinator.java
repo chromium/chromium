@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.DestroyChecker;
@@ -294,17 +295,17 @@ public class BookmarkSaveFlowCoordinator {
         }
 
         @Override
-        public int getSheetClosedAccessibilityStringId() {
+        public @StringRes int getSheetClosedAccessibilityStringId() {
             return R.string.bookmarks_save_flow_closed_description;
         }
 
         @Override
-        public int getSheetHalfHeightAccessibilityStringId() {
+        public @StringRes int getSheetHalfHeightAccessibilityStringId() {
             return R.string.bookmarks_save_flow_opened_half;
         }
 
         @Override
-        public int getSheetFullHeightAccessibilityStringId() {
+        public @StringRes int getSheetFullHeightAccessibilityStringId() {
             return R.string.bookmarks_save_flow_opened_full;
         }
 

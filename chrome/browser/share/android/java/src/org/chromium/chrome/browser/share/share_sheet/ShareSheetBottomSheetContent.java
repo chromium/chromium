@@ -27,6 +27,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -688,17 +689,17 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.sharing_hub_sheet_half_height;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.sharing_hub_sheet_full_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.sharing_hub_sheet_closed;
     }
 

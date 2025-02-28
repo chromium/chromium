@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webauthn;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -107,18 +109,18 @@ class AuthenticatorIncognitoConfirmationBottomsheet {
                 }
 
                 @Override
-                public int getSheetHalfHeightAccessibilityStringId() {
+                public @StringRes int getSheetHalfHeightAccessibilityStringId() {
                     assert false : "This method should not be called";
-                    return 0;
+                    return Resources.ID_NULL;
                 }
 
                 @Override
-                public int getSheetFullHeightAccessibilityStringId() {
+                public @StringRes int getSheetFullHeightAccessibilityStringId() {
                     return R.string.webauthn_incognito_confirmation_sheet_opened;
                 }
 
                 @Override
-                public int getSheetClosedAccessibilityStringId() {
+                public @StringRes int getSheetClosedAccessibilityStringId() {
                     return R.string.webauthn_incognito_confirmation_sheet_closed;
                 }
             };

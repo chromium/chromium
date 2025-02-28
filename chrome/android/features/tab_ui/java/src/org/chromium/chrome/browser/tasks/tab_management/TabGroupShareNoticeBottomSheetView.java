@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -100,17 +101,17 @@ public class TabGroupShareNoticeBottomSheetView extends LinearLayout implements 
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.tab_group_share_notice_bottom_sheet_full_height;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.tab_group_share_notice_bottom_sheet_half_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.tab_group_share_notice_bottom_sheet_closed;
     }
 

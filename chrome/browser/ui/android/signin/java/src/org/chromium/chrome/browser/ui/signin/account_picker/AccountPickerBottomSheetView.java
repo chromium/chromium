@@ -298,17 +298,17 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.account_picker_bottom_sheet_accessibility_opened;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.account_picker_bottom_sheet_accessibility_opened;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.account_picker_bottom_sheet_accessibility_closed;
     }
 

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -117,17 +118,17 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.fast_checkout_sheet_closed;
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.fast_checkout_content_description;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.fast_checkout_content_description;
     }
 

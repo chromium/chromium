@@ -6,8 +6,10 @@ package org.chromium.components.payments.secure_payment_confirmation;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -111,18 +113,18 @@ public class SecurePaymentConfirmationNoMatchingCredController {
                 }
 
                 @Override
-                public int getSheetHalfHeightAccessibilityStringId() {
+                public @StringRes int getSheetHalfHeightAccessibilityStringId() {
                     assert false : "This method should not be called";
-                    return 0;
+                    return Resources.ID_NULL;
                 }
 
                 @Override
-                public int getSheetFullHeightAccessibilityStringId() {
+                public @StringRes int getSheetFullHeightAccessibilityStringId() {
                     return R.string.secure_payment_confirmation_no_matching_credential_sheet_opened;
                 }
 
                 @Override
-                public int getSheetClosedAccessibilityStringId() {
+                public @StringRes int getSheetClosedAccessibilityStringId() {
                     return R.string.secure_payment_confirmation_no_matching_credential_sheet_closed;
                 }
             };

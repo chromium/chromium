@@ -7,6 +7,7 @@ package org.chromium.components.webapps.bottomsheet;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -89,17 +90,17 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
 }
