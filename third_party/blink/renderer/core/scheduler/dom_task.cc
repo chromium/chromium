@@ -177,8 +177,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
         script_state, parent_task_,
         scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask,
         scheduler_task_context_);
-  } else if (RuntimeEnabledFeatures::SchedulerYieldEnabled(
-                 ExecutionContext::From(script_state))) {
+  } else {
     auto* task_state = MakeGarbageCollected<WebSchedulingTaskState>(
         /*TaskAttributionInfo=*/nullptr, scheduler_task_context_);
     ScriptWrappableTaskState::SetCurrent(

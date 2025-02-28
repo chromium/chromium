@@ -44,14 +44,12 @@ class V8IdleTask : public IdleTask {
     if (tracker && script_state->World().IsMainWorld()) {
       parent_task_ = tracker->RunningTask();
     }
-    if (RuntimeEnabledFeatures::SchedulerYieldEnabled(scheduling_context)) {
-      auto* signal =
-          DOMScheduler::scheduler(*scheduling_context)
-              ->GetFixedPriorityTaskSignal(
-                  script_state, WebSchedulingPriority::kBackgroundPriority);
-      task_context_ = MakeGarbageCollected<SchedulerTaskContext>(
-          scheduling_context, /*abort_source=*/nullptr, signal);
-    }
+    auto* signal =
+        DOMScheduler::scheduler(*scheduling_context)
+            ->GetFixedPriorityTaskSignal(
+                script_state, WebSchedulingPriority::kBackgroundPriority);
+    task_context_ = MakeGarbageCollected<SchedulerTaskContext>(
+        scheduling_context, /*abort_source=*/nullptr, signal);
   }
 
   ~V8IdleTask() override = default;

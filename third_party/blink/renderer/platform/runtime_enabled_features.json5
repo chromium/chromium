@@ -3766,10 +3766,6 @@
       status: "test",
     },
     {
-      name: "SchedulerYield",
-      status: "stable",
-    },
-    {
       name: "SchedulerYieldCrossOriginFix",
       status: "stable",
     },
