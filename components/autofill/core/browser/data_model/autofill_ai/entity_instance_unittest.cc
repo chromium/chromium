@@ -40,9 +40,9 @@ TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
   passport_name.FinalizeInfo();
 
   // The value propagated correctly.
-  EXPECT_EQ(passport_name.GetInfo(NAME_FULL), u"Some Name");
-  EXPECT_EQ(passport_name.GetInfo(NAME_FIRST), u"Some");
-  EXPECT_EQ(passport_name.GetInfo(NAME_LAST), u"Name");
+  EXPECT_EQ(passport_name.GetInfo(NAME_FULL, /*app_locale=*/""), u"Some Name");
+  EXPECT_EQ(passport_name.GetInfo(NAME_FIRST, /*app_locale=*/""), u"Some");
+  EXPECT_EQ(passport_name.GetInfo(NAME_LAST, /*app_locale=*/""), u"Name");
 }
 
 TEST(AutofillEntityInstanceTest,

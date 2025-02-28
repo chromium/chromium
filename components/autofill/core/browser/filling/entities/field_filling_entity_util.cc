@@ -46,7 +46,8 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
 std::pair<std::u16string, std::optional<FieldType>>
 GetFillValueAndTypeForEntity(const EntityInstance& entity,
                              const AutofillField& field,
-                             mojom::ActionPersistence action_persistence) {
+                             mojom::ActionPersistence action_persistence,
+                             const std::string& app_locale) {
   std::optional<FieldType> field_type =
       field.GetAutofillAiServerTypePredictions();
   if (!field_type) {
@@ -65,20 +66,20 @@ GetFillValueAndTypeForEntity(const EntityInstance& entity,
   const bool should_obfuscate =
       action_persistence != mojom::ActionPersistence::kFill &&
       attribute_instance->type().is_obfuscated();
+
+  // TODO(crbug.com/389625753): Investigate whether only passing the
+  // field type is the right choice here. This would for example
+  // fail the fill a PASSPORT_NUMBER field that gets a
+  // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
+  // prediction logic.
+  const std::u16string attribute_value =
+      attribute_instance->GetInfo(field.Type().GetStorableType(), app_locale);
   // TODO(crbug.com/397620383): Which type should we return here?
-  return {should_obfuscate
-              ?
-              // TODO(crbug.com/394011769): Investigate whether the obfuscation
-              // should should include some of the attribute's value, e.g. the
-              // last x characters.
-              GetObfuscatedValue(attribute_instance->value())
-              // TODO(crbug.com/389625753): Investigate whether only passing the
-              // field type is the right choice here. This would for example
-              // fail the fill a PASSPORT_NUMBER field that gets a
-              // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
-              // prediction logic.
-              : attribute_instance->GetInfo(field.Type().GetStorableType()),
-          std::nullopt};
+  // TODO(crbug.com/394011769): Investigate whether the obfuscation should
+  // should include some of the attribute's value, e.g. the last x characters.
+  return {
+      should_obfuscate ? GetObfuscatedValue(attribute_value) : attribute_value,
+      std::nullopt};
 }
 
 }  // namespace autofill

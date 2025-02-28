@@ -65,7 +65,24 @@ std::u16string AttributeInstance::NormalizedValue() const {
   return AutofillProfileComparator::NormalizeForComparison(value());
 }
 
-std::u16string AttributeInstance::GetInfo(FieldType type) const {
+std::u16string AttributeInstance::GetInfo(FieldType type,
+                                          const std::string& app_locale) const {
+  type = GetNormalizedType(type);
+  if (type == UNKNOWN_TYPE) {
+    return u"";
+  }
+  return absl::visit(
+      base::Overloaded{[&](const NameInfo& name) {
+                         return GetRawInfo(/*pass_key=*/{}, type);
+                       },
+                       [&](const std::u16string& value) {
+                         return GetRawInfo(/*pass_key=*/{}, type);
+                       }},
+      info_);
+}
+
+std::u16string AttributeInstance::GetRawInfo(GetRawInfoPassKey,
+                                             FieldType type) const {
   type = GetNormalizedType(type);
   if (type == UNKNOWN_TYPE) {
     return u"";

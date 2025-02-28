@@ -238,7 +238,7 @@ bool EntityTable::AddAttribute(const EntityInstance& entity,
     s.BindString(1, attribute.type().name_as_string());
     s.BindInt(2, type);
     if (std::string encrypted_value; encryptor()->EncryptString16(
-            attribute.GetInfo(type), &encrypted_value)) {
+            attribute.GetRawInfo(/*pass_key=*/{}, type), &encrypted_value)) {
       s.BindString(3, encrypted_value);
     } else {
       return false;

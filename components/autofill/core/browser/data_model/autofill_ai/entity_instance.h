@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
-#include "base/types/pass_key.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
@@ -109,8 +108,18 @@ class AttributeInstance final {
   // and is assumed to be just the attribute-type-equivalent field type for
   // unstructured ones.
 
-  // Returns the value stored in this attribute instance for a specific `type`.
-  std::u16string GetInfo(FieldType type) const;
+  // Returns the value stored in this attribute instance for a specific `type`,
+  // formatted according to a given `app_locale`.
+  std::u16string GetInfo(FieldType type, const std::string& app_locale) const;
+
+  class GetRawInfoPassKey {
+    constexpr GetRawInfoPassKey() = default;
+    friend class AttributeInstance;
+    friend class EntityTable;
+  };
+  // Same as `GetInfo` but returns the value as stored with no formatting
+  // whatsoever.
+  std::u16string GetRawInfo(GetRawInfoPassKey pass_key, FieldType type) const;
   // Returns the verification status of a value stored in this attribute
   // instance for a specific `type`.
   VerificationStatus GetVerificationStatus(FieldType type) const;

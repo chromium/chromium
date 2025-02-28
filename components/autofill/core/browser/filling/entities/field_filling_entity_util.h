@@ -31,7 +31,8 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
 std::pair<std::u16string, std::optional<FieldType>>
 GetFillValueAndTypeForEntity(const EntityInstance& entity,
                              const AutofillField& field,
-                             mojom::ActionPersistence action_persistence);
+                             mojom::ActionPersistence action_persistence,
+                             const std::string& app_locale);
 
 }  // namespace autofill
 

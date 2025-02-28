@@ -26,6 +26,8 @@
 namespace autofill {
 namespace {
 
+constexpr char kAppLocaleUS[] = "en-US";
+
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
@@ -118,12 +120,13 @@ TEST(GetFillValueAndTypeForEntityTest, UnobfuscatedAttributes) {
 
   constexpr char16_t kName[] = u"John";
   EntityInstance passport = test::GetPassportEntityInstance({.name = kName});
-  EXPECT_EQ(GetFillValueAndTypeForEntity(passport, field,
-                                         mojom::ActionPersistence::kPreview)
-                .first,
-            kName);
-  EXPECT_EQ(GetFillValueAndTypeForEntity(passport, field,
-                                         mojom::ActionPersistence::kFill)
+  EXPECT_EQ(
+      GetFillValueAndTypeForEntity(
+          passport, field, mojom::ActionPersistence::kPreview, kAppLocaleUS)
+          .first,
+      kName);
+  EXPECT_EQ(GetFillValueAndTypeForEntity(
+                passport, field, mojom::ActionPersistence::kFill, kAppLocaleUS)
                 .first,
             kName);
 }
@@ -144,12 +147,13 @@ TEST(GetFillValueAndTypeForEntityTest, ObfuscatedAttributes) {
   constexpr char16_t kNumber[] = u"12";
   EntityInstance passport =
       test::GetPassportEntityInstance({.number = kNumber});
-  EXPECT_EQ(GetFillValueAndTypeForEntity(passport, field,
-                                         mojom::ActionPersistence::kPreview)
-                .first,
-            u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
-  EXPECT_EQ(GetFillValueAndTypeForEntity(passport, field,
-                                         mojom::ActionPersistence::kFill)
+  EXPECT_EQ(
+      GetFillValueAndTypeForEntity(
+          passport, field, mojom::ActionPersistence::kPreview, kAppLocaleUS)
+          .first,
+      u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
+  EXPECT_EQ(GetFillValueAndTypeForEntity(
+                passport, field, mojom::ActionPersistence::kFill, kAppLocaleUS)
                 .first,
             kNumber);
 }
@@ -172,10 +176,11 @@ TEST(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
     field.set_server_predictions({prediction});
     field.SetTypeTo(type, AutofillPredictionSource::kServerCrowdsourcing);
 
-    EXPECT_EQ(GetFillValueAndTypeForEntity(passport, field,
-                                           mojom::ActionPersistence::kFill)
-                  .first,
-              expectation)
+    EXPECT_EQ(
+        GetFillValueAndTypeForEntity(
+            passport, field, mojom::ActionPersistence::kFill, kAppLocaleUS)
+            .first,
+        expectation)
         << FieldTypeToStringView(type);
   }
 }
