@@ -347,6 +347,8 @@ targets.bundle(
     name = "android_desktop_fyi_tests",
     targets = [
         "android_browsertests",
+        "android_smoke_tests",
+        "android_trichrome_smoke_tests",
         "chrome_public_test_apk",
     ],
     mixins = [
