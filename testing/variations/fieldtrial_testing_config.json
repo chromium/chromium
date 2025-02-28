@@ -11470,6 +11470,7 @@
     "HttpsFirstModeV2ForTypicallySecureUsers": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
