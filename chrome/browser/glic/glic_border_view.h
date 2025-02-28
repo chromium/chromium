@@ -102,7 +102,9 @@ class GlicBorderView : public views::View,
   const base::TimeTicks creation_time_;
   base::TimeTicks first_frame_time_;
   base::TimeTicks first_emphasis_frame_;
+  base::TimeTicks last_emphasis_frame_;
   base::TimeTicks last_animation_step_time_;
+  base::TimeDelta total_steady_time_;
 
   bool record_first_ramp_down_frame_ = false;
   base::TimeTicks first_ramp_down_frame_;
