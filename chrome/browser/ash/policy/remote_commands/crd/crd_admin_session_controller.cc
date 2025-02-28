@@ -359,7 +359,9 @@ remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
   params.allow_troubleshooting_tools = parameters.allow_troubleshooting_tools;
   params.allow_reconnections = parameters.allow_reconnections;
   params.allow_file_transfer = parameters.allow_file_transfer;
-  // TODO: joedow - Add new enterprise fields.
+  params.connection_dialog_required = parameters.show_confirmation_dialog;
+  // TODO(b:397902801): Add `connection_auto_accept_timeout` when the dialog is
+  // auto-approved.
   return params;
 }
 
