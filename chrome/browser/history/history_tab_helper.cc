@@ -267,55 +267,50 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           : static_cast<ChromeNavigationUIData*>(
                 navigation_handle->GetNavigationUIData());
 
-  // (crbug.com/365922169) When generating the HistoryAddPageArgs below, we must
-  // calculate the value for its member `is_ephemeral`. This member represents
-  // whether our navigation came from a credentialless iframe (which is an
-  // ephemeral context). Our goal is to use this information to avoid storing
-  // ephemeral navigations from credentialless iframes in the history backend.
-  // Currently, this is behavior which will be tested behind the partitioned
-  // :visited links experiments flags (PartitionVisitedLinkDatabase and
+  // (crbug.com/365922169) When generating the HistoryAddPageArgs below,
+  // we must calculate the value for its member `is_ephemeral`. This
+  // member represents whether our navigation came from a credentialless
+  // iframe (which is an ephemeral context). Our goal is to use this
+  // information to avoid storing ephemeral navigations from
+  // credentialless iframes in the history backend. Currently, this is
+  // behavior which will be tested behind the partitioned :visited links
+  // experiments flags (PartitionVisitedLinkDatabase and
   // PartitionVisitedLinkDatabaseWithSelfLinks). HOWEVER, due to layering
-  // constraints, we do not have the ability to check these blink::feature flags
-  // in any code found in components/history/core/ (which is where most history
-  // DB code lives).
+  // constraints, we do not have the ability to check these blink::feature
+  // flags in any code found in components/history/core/ (which is where
+  // most history DB code lives).
 
-  // Instead, we check the values of these flags here - setting `is_ephemeral`
-  // to false if neither of these experimental flags are enabled. Once the
-  // experiments have completed, is_ephemeral will go back to being a pure check
-  // of whether the navigation is from a credentialless iframe.
+  // Instead, we check the values of these flags here - setting
+  // `is_ephemeral` to false if neither of these experimental flags are
+  // enabled. Once the experiments have completed, is_ephemeral will go
+  // back to being a pure check of whether the navigation is from a
+  // credentialless iframe.
   const bool are_partitioned_visited_links_enabled =
       base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabase) ||
       base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
+  const bool is_ephemeral = are_partitioned_visited_links_enabled &&
+                                    navigation_handle->GetRenderFrameHost()
+                                ? navigation_handle->GetRenderFrameHost()
+                                      ->GetStorageKey()
+                                      .nonce()
+                                      .has_value()
+                                : false;
 
-  history::HistoryAddPageArgs add_page_args(
-      navigation_handle->GetURL(), timestamp,
-      history::ContextIDForWebContents(web_contents()), nav_entry_id,
-      navigation_handle->GetNavigationId(), referrer_url,
-      navigation_handle->GetRedirectChain(), page_transition, hidden,
-      history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
-      ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
-      // Determine if this navigation is ephemeral.
-      are_partitioned_visited_links_enabled &&
-              navigation_handle->GetRenderFrameHost()
-          ? navigation_handle->GetRenderFrameHost()
-                ->GetStorageKey()
-                .nonce()
-                .has_value()
-          : false,
-      // Reloads do not result in calling TitleWasSet() (which normally sets
-      // the title), so a reload needs to set the title. This is
-      // important for a reload after clearing history.
+  // Reloads do not result in calling TitleWasSet() (which normally sets
+  // the title), so a reload needs to set the title. This is
+  // important for a reload after clearing history.
+  const std::optional<std::u16string> title =
       navigation_handle->IsSameDocument() ||
               navigation_handle->GetReloadType() != content::ReloadType::NONE
           ? std::optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())
-          : std::nullopt,
-      // Our top-level site is the previous primary main frame.
-      navigation_handle->GetPreviousPrimaryMainFrameURL(),
-      // Only compute the opener page if it's the first committed page for this
-      // WebContents.
+          : std::nullopt;
+
+  // Only compute the opener page if it's the first committed page for this
+  // WebContents.
+  const std::optional<history::Opener> opener =
       navigation_handle->GetPreviousPrimaryMainFrameURL().is_empty()
           ? GetHistoryOpenerFromOpenerWebContents(opener_web_contents_)
           // Or use the opener for same-document navigations to connect these
@@ -325,7 +320,18 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                        history::ContextIDForWebContents(web_contents()),
                        nav_entry_id,
                        navigation_handle->GetPreviousPrimaryMainFrameURL()))
-                 : std::nullopt),
+                 : std::nullopt);
+
+  history::HistoryAddPageArgs add_page_args(
+      navigation_handle->GetURL(), timestamp,
+      history::ContextIDForWebContents(web_contents()), nav_entry_id,
+      navigation_handle->GetNavigationId(), referrer_url,
+      navigation_handle->GetRedirectChain(), page_transition, hidden,
+      history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
+      ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
+      is_ephemeral, title,
+      // Our top-level site is the previous primary main frame.
+      navigation_handle->GetPreviousPrimaryMainFrameURL(), opener,
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
       app_id_, std::move(context_annotations));
 
