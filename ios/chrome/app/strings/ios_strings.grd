@@ -312,11 +312,11 @@
       <message name="IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER" translateable="false" desc="Label for the slider allowing the user to choose the temperature hyper parameter passed to the model [Length: unlimited].">
         Temperature:
       </message>
-      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES" desc="Title for the switch item in password manager settings that can be toggled allowing users to automatically upgrade their passwords to passkeys. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
-        Allow automatic passkey upgrades
+      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES" desc="Title for the switch item in password manager settings that can be toggled letting the user control a feature where websites can request to upgrade an existing password in the password manager to a passkey. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
+        Automatically create a passkey to sign in faster
       </message>
-      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE" desc="Subtitle for the switch item in password manager settings that can be toggled allowing users to automatically upgrade their passwords to passkeys. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
-        Allow websites and apps to automatically upgrade existing accounts to use passkeys when available
+      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE" desc="Subtitle for the switch item in password manager settings that can be toggled letting the user control a feature where websites can request to upgrade an existing password in the password manager to a passkey. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
+        Allow sites and apps to upgrade existing accounts to use passkeys
       </message>
       <message name="IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE" desc="Message when opening a New Incognito Search from springboard force touch static shortcuts. [Length: unlimited] [iOS only]." meaning="3D Touch entry to create a new Incognito tab.">
        Incognito search
