@@ -1038,6 +1038,24 @@ void SharedTabGroupDataSyncBridge::ProcessTabGroupLocalIdChanged(
                    GroupToLocalOnlyData(*group));
 }
 
+void SharedTabGroupDataSyncBridge::UntrackEntitiesForCollaboration(
+    const syncer::CollaborationId& collaboration_id) {
+  for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
+    if (!group->collaboration_id().has_value()) {
+      continue;
+    }
+
+    if (group->collaboration_id().value() != collaboration_id) {
+      continue;
+    }
+
+    for (const SavedTabGroupTab& tab : group->saved_tabs()) {
+      change_processor()->UntrackEntityForStorageKey(StorageKeyForTab(tab));
+    }
+    change_processor()->UntrackEntityForStorageKey(StorageKeyForGroup(*group));
+  }
+}
+
 void SharedTabGroupDataSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {

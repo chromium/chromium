@@ -80,6 +80,10 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
   void SavedTabGroupLastUserInteractionTimeUpdated(
       const base::Uuid& group_guid) override;
 
+  // Called to untrack entities for a given collaboration from sync server.
+  void UntrackEntitiesForCollaboration(
+      const syncer::CollaborationId& collaboration_id);
+
  private:
   // Populates loaded entries to the model when all data is loaded.
   void InitializeModelIfReady();

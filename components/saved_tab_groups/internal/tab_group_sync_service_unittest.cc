@@ -2215,33 +2215,51 @@ TEST_F(TabGroupSyncServiceTest, OnCollaborationRemoved) {
   ASSERT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
   ASSERT_TRUE(model_->Contains(group->saved_guid()));
   ASSERT_TRUE(model_->Contains(shared_group->saved_guid()));
+  ASSERT_EQ(shared_group->saved_tabs().size(), 1u);
+  SavedTabGroupTab tab = shared_group->saved_tabs()[0];
 
+  // Observer should get 5 OnTabGroupRemoved() calls, first is the saved group,
+  // then 2 comes from the shared group with guid and local group id, then 2
+  // for updating UI.
   Sequence s;
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                                                group->saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .InSequence(s);
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                                                shared_group->saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .InSequence(s);
   EXPECT_CALL(*observer_,
-              OnTabGroupRemoved(
-                  testing::TypedEq<const LocalTabGroupID&>(local_group_id_1_),
-                  Eq(TriggerSource::REMOTE)))
+              OnTabGroupRemoved(testing::TypedEq<const LocalTabGroupID&>(
+                                    shared_group->local_group_id().value()),
+                                Eq(TriggerSource::LOCAL)))
+      .InSequence(s);
+  EXPECT_CALL(*observer_,
+              OnTabGroupRemoved(testing::TypedEq<const LocalTabGroupID&>(
+                                    shared_group->local_group_id().value()),
+                                Eq(TriggerSource::REMOTE)))
       .InSequence(s);
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
                                                 shared_group->saved_guid()),
                                             Eq(TriggerSource::REMOTE)))
       .InSequence(s);
-  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
-                                                group->saved_guid()),
-                                            Eq(TriggerSource::LOCAL)))
-      .InSequence(s);
 
+  EXPECT_CALL(*mock_shared_processor(),
+              UntrackEntityForStorageKey(
+                  shared_group->saved_guid().AsLowercaseString()))
+      .Times(1);
+  EXPECT_CALL(
+      *mock_shared_processor(),
+      UntrackEntityForStorageKey(tab.saved_tab_guid().AsLowercaseString()))
+      .Times(1);
   tab_group_sync_service_->OnCollaborationRemoved(
       syncer::CollaborationId(kCollaborationId));
-  shared_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
-  EXPECT_TRUE(shared_group->is_shared_tab_group());
-  EXPECT_TRUE(shared_group->is_hidden());
+  EXPECT_FALSE(tab_group_sync_service_->GetGroup(local_group_id_1_));
 
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 2u);
-  // The originating group is cleaned up, but the shared group is
-  // still tracked in model and will be deleted later.
   EXPECT_FALSE(model_->Contains(group->saved_guid()));
-  EXPECT_TRUE(model_->Contains(shared_group->saved_guid()));
+  EXPECT_FALSE(model_->Contains(shared_group->saved_guid()));
 }
 
 class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {

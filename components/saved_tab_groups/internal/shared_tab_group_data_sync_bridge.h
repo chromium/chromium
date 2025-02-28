@@ -98,6 +98,9 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // Process updated local ID for the group.
   void ProcessTabGroupLocalIdChanged(const base::Uuid& group_guid);
 
+  void UntrackEntitiesForCollaboration(
+      const syncer::CollaborationId& collaboration_id);
+
  private:
   // Loads the data already stored in the DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,

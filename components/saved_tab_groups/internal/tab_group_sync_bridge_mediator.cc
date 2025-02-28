@@ -280,6 +280,12 @@ void TabGroupSyncBridgeMediator::SavedTabGroupLastUserInteractionTimeUpdated(
   }
 }
 
+void TabGroupSyncBridgeMediator::UntrackEntitiesForCollaboration(
+    const syncer::CollaborationId& collaboration_id) {
+  CHECK(shared_bridge_);
+  shared_bridge_->UntrackEntitiesForCollaboration(collaboration_id);
+}
+
 void TabGroupSyncBridgeMediator::OnSavedGroupsWithTabsLoaded(
     std::vector<SavedTabGroup> groups,
     std::vector<SavedTabGroupTab> tabs) {

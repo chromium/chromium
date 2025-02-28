@@ -2225,6 +2225,36 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
                                         syncer::EntityChangeList());
 }
 
+TEST_F(SharedTabGroupDataSyncBridgeTest, UntrackEntitiesForCollaboration) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+  CollaborationId collaboration("collaboration");
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(collaboration);
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+
+  group.AddTabLocally(tab1);
+  model()->AddedLocally(group);
+
+  SavedTabGroup group2(u"title2", tab_groups::TabGroupColorId::kBlue,
+                       /*urls=*/{}, /*position=*/std::nullopt);
+  group2.SetCollaborationId(CollaborationId("collaboration2"));
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group2.saved_guid(), /*position=*/0);
+  model()->AddedLocally(group2);
+
+  // Only group 1 and its tab will be untracked.
+  EXPECT_CALL(mock_processor(), UntrackEntityForStorageKey(
+                                    group.saved_guid().AsLowercaseString()))
+      .Times(1);
+  EXPECT_CALL(mock_processor(), UntrackEntityForStorageKey(
+                                    tab1.saved_tab_guid().AsLowercaseString()))
+      .Times(1);
+  bridge()->UntrackEntitiesForCollaboration(collaboration);
+}
+
 // The number of tabs to test the correct ordering of remote updates.
 constexpr size_t kNumTabsForOrderTest = 5;
 
