@@ -4184,6 +4184,16 @@
     "expires": "August 31, 2025"
   },
   {
+    "prefix": "dbsc-enabled",
+    "owners": ["thefrog@chromium.org", "drubery@chromium.org"],
+    "platforms": ["Mac", "Win", "Linux"],
+    "bases": ["external/wpt/device-bound-session-credentials"],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions"],
+    "expires": "never"
+  },
+  {
     "prefix": "css-line-clamp-line-breaking-ellipsis",
     "platforms": [
       "Linux"
