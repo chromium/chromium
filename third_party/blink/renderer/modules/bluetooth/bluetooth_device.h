@@ -30,11 +30,6 @@ class BluetoothRemoteGATTService;
 class WatchAdvertisementsOptions;
 
 // BluetoothDevice represents a physical bluetooth device in the DOM. See IDL.
-//
-// Callbacks providing WebBluetoothDevice objects are handled by
-// CallbackPromiseAdapter templatized with this class. See this class's
-// "Interface required by CallbackPromiseAdapter" section and the
-// CallbackPromiseAdapter class comments.
 class BluetoothDevice final
     : public EventTarget,
       public ExecutionContextClient,

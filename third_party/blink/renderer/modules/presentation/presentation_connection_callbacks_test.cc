@@ -91,8 +91,8 @@ TEST(PresentationConnectionCallbacksTest, HandleReconnect) {
   ScriptPromiseTester promise_tester(scope.GetScriptState(),
                                      resolver->Promise());
 
-  auto* connection = ControllerPresentationConnection::Take(
-      resolver, *info, MakeRequest(&scope));
+  auto* connection = ControllerPresentationConnection::Create(
+      scope.GetExecutionContext(), *info, MakeRequest(&scope));
   // Connection must be closed for reconnection to succeed.
   connection->close();
 

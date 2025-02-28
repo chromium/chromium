@@ -71,8 +71,8 @@ void PresentationConnectionCallbacks::OnSuccess(
 
   // Create a new connection.
   if (!connection_ && request_) {
-    connection_ = ControllerPresentationConnection::Take(
-        resolver_.Get(), presentation_info, request_);
+    connection_ = ControllerPresentationConnection::Create(
+        resolver_->GetExecutionContext(), presentation_info, request_);
   }
 
   connection_->Init(std::move(connection_remote),
