@@ -176,8 +176,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Helper function encapsulating the processing of refresh
   SessionError::ErrorType OnRefreshRequestCompletionInternal(
       OnAccessCallback on_access_callback,
-      SchemefulSite site,
-      Session::Id session_id,
+      const SchemefulSite& site,
+      const Session::Id& session_id,
       base::expected<SessionParams, SessionError> params_or_error);
 
   // Callback after unwrapping a session key

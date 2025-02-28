@@ -251,8 +251,14 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
     Session::Id session_id,
     base::expected<SessionParams, SessionError> params_or_error) {
   SessionError::ErrorType result = OnRefreshRequestCompletionInternal(
-      std::move(on_access_callback), std::move(site), std::move(session_id),
+      std::move(on_access_callback), site, session_id,
       std::move(params_or_error));
+
+  Session* session = GetSession(site, session_id);
+  if (session) {
+    session->InformOfRefreshResult(result);
+  }
+
   base::UmaHistogramEnumeration("Net.DeviceBoundSessions.RefreshResult",
                                 result);
 }
@@ -480,8 +486,8 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
 
 SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     OnAccessCallback on_access_callback,
-    SchemefulSite site,
-    Session::Id session_id,
+    const SchemefulSite& site,
+    const Session::Id& session_id,
     base::expected<SessionParams, SessionError> params_or_error) {
   // If refresh succeeded:
   // 1. update the session by adding a new session and deleting the old one
@@ -531,7 +537,7 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
   } else {
     // Transient error, unblock the request without cookies.
-    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/true);
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
   }
 
   return params_or_error.has_value() ? SessionError::ErrorType::kSuccess

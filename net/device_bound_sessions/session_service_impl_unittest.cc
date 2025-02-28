@@ -788,6 +788,40 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
   }
 }
 
+TEST_F(SessionServiceImplTest, SessionBackoff) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto scoped_test_fetcher =
+      ScopedTestRegistrationFetcher(base::BindRepeating([]() {
+        return base::expected<SessionParams, SessionError>(base::unexpected(
+            SessionError{SessionError::ErrorType::kTransientHttpError,
+                         net::SchemefulSite(kTestRefreshUrl), kSessionId}));
+      }));
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  EXPECT_TRUE(service().ShouldDefer(request.get(), FirstPartySetMetadata()));
+
+  // Do four failing refreshes.
+  for (size_t i = 0; i < 4; i++) {
+    FastForwardBy(base::Minutes(5));
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
+  }
+
+  // Backoff should prevent us from deferring anymore.
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+  EXPECT_FALSE(maybe_deferral);
+}
+
 }  // namespace
 
 class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {

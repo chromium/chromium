@@ -11,6 +11,7 @@
 
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/cookie_craving.h"
 #include "net/device_bound_sessions/session_error.h"
@@ -96,6 +97,10 @@ class NET_EXPORT Session {
   // Whether the URL is in-scope for the session.
   bool IncludesUrl(const GURL& url) const;
 
+  // Inform the session about a refresh so it can decide whether to
+  // enter backoff mode.
+  void InformOfRefreshResult(SessionError::ErrorType error_type);
+
  private:
   Session(Id id, url::Origin origin, GURL refresh);
   Session(Id id,
@@ -141,6 +146,10 @@ class NET_EXPORT Session {
       base::unexpected(unexportable_keys::ServiceError::kKeyNotReady);
   // Precached challenge, if any. Should not be persisted.
   std::optional<std::string> cached_challenge_;
+  // Backoff for unreachable refresh endpoints. This is essential for
+  // preventing Chrome from causing a DoS due to expiring session
+  // cookies.
+  net::BackoffEntry backoff_;
 };
 
 }  // namespace net::device_bound_sessions

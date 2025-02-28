@@ -140,7 +140,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     if (!IsSecure(redirect_info.new_url)) {
       request->Cancel();
       OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kHttpError);
+          /*error_on_no_data=*/SessionError::ErrorType::kPersistentHttpError);
       // *this is deleted here
     }
   }
@@ -175,9 +175,25 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       return;
     }
 
-    if (response_code < 200 || response_code >= 300) {
+    if (response_code < 200) {
       OnResponseCompleted(
-          /*error_on_no_data=*/SessionError::ErrorType::kHttpError);
+          /*error_on_no_data=*/SessionError::ErrorType::kPersistentHttpError);
+      // *this is deleted here
+      return;
+    } else if (response_code == 407) {
+      // Proxy errors are treated as network errors
+      OnResponseCompleted(
+          /*error_on_no_data=*/SessionError::ErrorType::kNetError);
+      // *this is deleted here
+      return;
+    } else if (300 <= response_code && response_code < 500) {
+      OnResponseCompleted(
+          /*error_on_no_data=*/SessionError::ErrorType::kPersistentHttpError);
+      // *this is deleted here
+      return;
+    } else if (response_code >= 500) {
+      OnResponseCompleted(
+          /*error_on_no_data=*/SessionError::ErrorType::kTransientHttpError);
       // *this is deleted here
       return;
     }
