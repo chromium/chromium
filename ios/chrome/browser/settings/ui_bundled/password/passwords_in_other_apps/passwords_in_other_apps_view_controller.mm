@@ -37,6 +37,18 @@ CGFloat const kContentWidthMultiplier = 0.65;
 CGFloat const kBottomMargin = 10;
 CGFloat const kButtonHorizontalMargin = 4;
 CGFloat const kContentOptimalWidth = 327;
+CGFloat const kCheckmarkIconSize = 18;
+
+// Helper method that returns the green checkmark image.
+UIImage* GetCheckmarkImage(bool passkeys_m2_enabled) {
+  if (passkeys_m2_enabled) {
+    return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                      kCheckmarkIconSize);
+  } else {
+    return [[UIImage imageNamed:@"settings_safe_state"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+}
 
 // Helper method that returns the string to use as title.
 NSString* GetTitleString(bool passkeys_m2_enabled) {
@@ -585,10 +597,10 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
 - (UIView*)turnOffInstructionView {
   if (!_turnOffInstructionView) {
     UITextView* captionTextView = [self drawCaptionTextView];
-    UIImage* checkmark = [[UIImage imageNamed:@"settings_safe_state"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* checkmark = GetCheckmarkImage(_passkeysM2Enabled);
     UIImageView* checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
-    checkmarkView.tintColor = [UIColor colorNamed:kGreenColor];
+    checkmarkView.tintColor =
+        [UIColor colorNamed:_passkeysM2Enabled ? kGreen500Color : kGreenColor];
     checkmarkView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _turnOffInstructionView = [[UIView alloc] init];
