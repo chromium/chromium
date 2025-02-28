@@ -209,11 +209,10 @@ def GetDisplayServer(browser_type: str) -> Optional[str]:
   return None
 
 
-def GetOOPCanvasStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
-  if gpu_info and gpu_info.feature_status and gpu_info.feature_status.get(
-      'canvas_oop_rasterization') == 'enabled_on':
-    return 'oop-c'
-  return 'no-oop-c'
+def GetOOPCanvasStatus() -> str:
+  # TODO(zmo): Remove this function after removing all "oop-c" tags in
+  # test expectations.
+  return 'oop-c'
 
 
 def GetAsanStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
