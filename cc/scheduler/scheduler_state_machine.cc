@@ -12,6 +12,7 @@
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/features.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
 
@@ -1317,16 +1318,14 @@ bool SchedulerStateMachine::ProactiveBeginFrameWanted() const {
   return false;
 }
 
-void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameId& frame_id,
-                                             bool animate_only,
-                                             base::TimeTicks frame_time) {
+void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameArgs& args) {
   begin_impl_frame_state_ = BeginImplFrameState::INSIDE_BEGIN_FRAME;
   current_frame_number_++;
-  begin_frame_is_animate_only_ = animate_only;
+  begin_frame_is_animate_only_ = args.animate_only;
   // Pin the timestamp as passed from the caller. This makes timestamps more
   // consistent, and insensitive to e.g. descheduling between receiving a
   // BeginFrame() call, and actually getting to BeginImplFrame().
-  last_begin_impl_frame_time_ = frame_time;
+  last_begin_impl_frame_time_ = args.frame_time;
 
   // Cache the values from the previous impl frame before reseting them for this
   // frame.
