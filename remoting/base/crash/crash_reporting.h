@@ -12,6 +12,11 @@
 
 namespace remoting {
 
+// Query and log the entries in the crash database.
+// This will also verify that crash entries were uploaded and will clean up
+// old entries to help reduce disk space usage.
+void LogAndCleanupCrashDatabase();
+
 // Initializes collection and upload of crash reports. The caller has to ensure
 // that the user has agreed to crash dump reporting.
 //

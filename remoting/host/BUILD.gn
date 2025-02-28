@@ -1087,8 +1087,9 @@ if (enable_me2me_host) {
     defines = []
 
     configs += [
-      "//remoting/build/config:version",
+      "//remoting/build/config:host_implementation",
       "//remoting/build/config:remoting_me2me_host",
+      "//remoting/build/config:version",
     ]
 
     deps = [
@@ -1105,6 +1106,7 @@ if (enable_me2me_host) {
       "//remoting/base:authorization",
       "//remoting/base:errors",
       "//remoting/base:session_policies",
+      "//remoting/base/crash",
       "//remoting/host",
       "//remoting/host/base",
       "//remoting/host/mojom",

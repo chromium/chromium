@@ -25,6 +25,7 @@ class CrashpadLinux {
   ~CrashpadLinux() = delete;
 
   bool Initialize();
+  void LogAndCleanupCrashpadDatabase();
 
   static CrashpadLinux& GetInstance();
 

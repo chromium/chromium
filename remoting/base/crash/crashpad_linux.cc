@@ -148,25 +148,6 @@ bool CrashpadLinux::InitializeCrashpadDatabase(base::FilePath database_path) {
     return false;
   }
 
-  // Log the crash report ids.
-  CrashReportDatabase::OperationStatus status;
-  std::vector<CrashReportDatabase::Report> completed_reports;
-  status = database_->GetCompletedReports(&completed_reports);
-  if (status == CrashReportDatabase::OperationStatus::kNoError) {
-    SortAndLogCrashReports(completed_reports, "Completed", kMaxReportsToLog);
-    CleanupOldCrashReports(completed_reports, kMaxReportAgeDays);
-  } else {
-    LOG(ERROR) << "Unable to read completed crash reports: " << status;
-  }
-
-  std::vector<CrashReportDatabase::Report> pending_reports;
-  status = database_->GetPendingReports(&pending_reports);
-  if (status == CrashReportDatabase::OperationStatus::kNoError) {
-    SortAndLogCrashReports(pending_reports, "Pending", kMaxReportsToLog);
-  } else {
-    LOG(ERROR) << "Unable to read pending crash reports: " << status;
-  }
-
   return true;
 }
 
@@ -212,6 +193,30 @@ bool CrashpadLinux::Initialize() {
 
   HOST_LOG << "Crashpad handler started.";
   return true;
+}
+
+void CrashpadLinux::LogAndCleanupCrashpadDatabase() {
+  if (!database_) {
+    return;
+  }
+
+  CrashReportDatabase::OperationStatus status;
+  std::vector<CrashReportDatabase::Report> completed_reports;
+  status = database_->GetCompletedReports(&completed_reports);
+  if (status == CrashReportDatabase::OperationStatus::kNoError) {
+    SortAndLogCrashReports(completed_reports, "Completed", kMaxReportsToLog);
+    CleanupOldCrashReports(completed_reports, kMaxReportAgeDays);
+  } else {
+    LOG(ERROR) << "Unable to read completed crash reports: " << status;
+  }
+
+  std::vector<CrashReportDatabase::Report> pending_reports;
+  status = database_->GetPendingReports(&pending_reports);
+  if (status == CrashReportDatabase::OperationStatus::kNoError) {
+    SortAndLogCrashReports(pending_reports, "Pending", kMaxReportsToLog);
+  } else {
+    LOG(ERROR) << "Unable to read pending crash reports: " << status;
+  }
 }
 
 // static

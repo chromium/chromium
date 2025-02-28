@@ -32,8 +32,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -52,6 +54,7 @@
 #include "remoting/base/cloud_session_authz_service_client_factory.h"
 #include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/cpu_utils.h"
+#include "remoting/base/crash/crash_reporting.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/instance_identity_token_getter.h"
@@ -100,6 +103,7 @@
 #include "remoting/host/session_policies_from_dict.h"
 #include "remoting/host/shutdown_watchdog.h"
 #include "remoting/host/test_echo_extension.h"
+#include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/zombie_host_detector.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -2112,6 +2116,20 @@ int HostProcessMain() {
   if (!context) {
     return kInitializationFailed;
   }
+
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
+  // Log and cleanup the crash database. We do this after a short delay so that
+  // the crash database has a chance to be updated properly if we just got
+  // relaunched after a crash.
+  if (IsUsageStatsAllowed()) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner_crashdb =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+    task_runner_crashdb->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&LogAndCleanupCrashDatabase),
+        base::Seconds(3));
+  }
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   // NetworkChangeNotifier must be initialized after SingleThreadTaskExecutor.
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier(
