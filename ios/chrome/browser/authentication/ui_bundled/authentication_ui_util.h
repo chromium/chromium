@@ -13,6 +13,7 @@
 
 @class ActionSheetCoordinator;
 @class AlertCoordinator;
+class AuthenticationService;
 class Browser;
 class PrefService;
 
@@ -32,6 +33,22 @@ typedef NS_ENUM(NSUInteger, SignoutActionSheetCoordinatorResult) {
   SignoutActionSheetCoordinatorResultClearFromDevice,
   // The user chose to sign-out and keep their data on the device.
   SignoutActionSheetCoordinatorResultKeepOnDevice,
+};
+
+// Enum to describe all 3 cases for a user being signed-in and syncing.
+enum class SignedInUserState {
+  // Sign-in with UNO. The sign-out needs to ask confirmation to sign out only
+  // if there are unsaved data. When signed out, a snackbar needs to be
+  // displayed.
+  kNotSyncingAndReplaceSyncWithSignin,
+  // Sign-in with UNO, where the user is managed, and was migrated from the
+  // syncing state. In this state, data needs to be cleared on signout only when
+  // kSeparateProfilesForManagedAccounts is disabled.
+  kManagedAccountAndMigratedFromSyncing,
+  // Signed in with managed account with the ClearDeviceDataOnSignoutForManaged
+  // user feature enabled. In this state, data needs to be cleared on signout
+  // only when kSeparateProfilesForManagedAccounts is disabled.
+  kManagedAccountClearsDataOnSignout
 };
 
 // Sign-out completion block.
@@ -86,5 +103,11 @@ BOOL ShouldShowManagedConfirmationForHostedDomain(
     signin_metrics::AccessPoint access_point,
     NSString* gaia_ID,
     PrefService* prefs);
+
+// Returns the current sign-in&sync state.
+SignedInUserState GetSignedInUserState(
+    AuthenticationService* authentication_service,
+    signin::IdentityManager* identity_manager,
+    PrefService* profile_pref_service);
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_AUTHENTICATION_UI_UTIL_H_

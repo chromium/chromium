@@ -20,6 +20,7 @@ source_set("ui_bundled") {
     ":authentication_constants",
     ":signin_presenter",
     "//components/bookmarks/common",
+    "//components/browser_sync",
     "//components/consent_auditor",
     "//components/infobars/core",
     "//components/policy/core/common",
