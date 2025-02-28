@@ -13,10 +13,11 @@
 namespace page_actions {
 
 // All ActionIds associated with a page action.
-inline constexpr std::array<actions::ActionId, 3> kActionIds = {
+inline constexpr std::array<actions::ActionId, 4> kActionIds = {
     kActionSidePanelShowLensOverlayResults,
     kActionShowTranslate,
     kActionShowMemorySaverChip,
+    kActionShowIntentPicker,
 };
 
 }  // namespace page_actions

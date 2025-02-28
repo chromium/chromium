@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/location_bar/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -341,6 +343,11 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   if (!browser) {
     return;
   }
+
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(&GetWebContents());
+  UpdatePageAction(tab_interface, should_show_icon);
+
   browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
 
   icon_resolved_ = true;
@@ -483,6 +490,16 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
 
 void IntentPickerTabHelper::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
+}
+
+void IntentPickerTabHelper::UpdatePageAction(tabs::TabInterface* tab_interface,
+                                             bool show_icon) {
+  if (auto* const tab_features = tab_interface->GetTabFeatures()) {
+    if (auto* controller =
+            tab_features->intent_picker_view_page_action_controller()) {
+      controller->UpdatePageActionVisibility(show_icon);
+    }
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IntentPickerTabHelper);
