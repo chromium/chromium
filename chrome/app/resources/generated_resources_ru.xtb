@@ -4895,7 +4895,7 @@
 <translation id="4412547955014928315">Удалить данные и разрешения сайта <ph name="SITE_NAME" /> и всех связанных с ним сайтов?</translation>
 <translation id="4412632005703201014">Мы переходим к использованию современных веб-приложений вместо приложений Chrome. Это приложение было установлено в браузер вашей организацией. Чтобы открыть современное веб-приложение, попросите администратора удалить приложение Chrome. Пока вы можете открыть расширение "<ph name="EXTENSION_NAME" />" в браузере, перейдя по адресу <ph name="EXTENSION_LAUNCH_URL" />.</translation>
 <translation id="4412698727486357573">Справочный центр</translation>
-<translation id="4412992751769744546">Разрешить использование сторонних файлов cookie</translation>
+<translation id="4412992751769744546">Принимать сторонние файлы cookie</translation>
 <translation id="4413087696295876280">Чтение сведений об устройстве с ChromeOS Flex и данных на нем</translation>
 <translation id="44137799675104237">Зачитать текст естественным голосом</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
