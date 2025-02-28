@@ -93,13 +93,18 @@ void CrashpadLinux::SortAndLogCrashReports(
 void CrashpadLinux::CleanupOldCrashReports(
     const std::vector<CrashReportDatabase::Report>& reports,
     size_t max_age_days) {
-  // Cleanup uploaded reports.
+  base::Time now = base::Time::Now();
+  base::Time threshold = now - base::Days(max_age_days);
+
+  // Cleanup old uploaded reports.
   bool header_shown = false;
   for (const auto& report : reports) {
-    if (report.uploaded) {
+    base::Time created = base::Time::FromTimeT(report.creation_time);
+    if (report.uploaded && created < threshold) {
       if (!header_shown) {
         header_shown = true;
-        HOST_LOG << "Deleting uploaded crash reports:";
+        HOST_LOG << "Deleting uploaded crash reports older than "
+                 << max_age_days << " days:";
       }
       HOST_LOG << "  Deleting crash report: " << report.id << " ("
                << base::Time::FromTimeT(report.creation_time) << ")";
@@ -112,8 +117,6 @@ void CrashpadLinux::CleanupOldCrashReports(
   }
 
   // Cleanup old reports that haven't been uploaded.
-  base::Time now = base::Time::Now();
-  base::Time threshold = now - base::Days(max_age_days);
   header_shown = false;
   for (const auto& report : reports) {
     base::Time created = base::Time::FromTimeT(report.creation_time);
