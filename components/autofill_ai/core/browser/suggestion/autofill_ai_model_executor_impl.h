@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
+#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 
 namespace autofill {
 class FormData;
@@ -22,7 +22,6 @@ class FormData;
 
 namespace optimization_guide::proto {
 class AXTreeUpdate;
-class FilledFormData;
 }  // namespace optimization_guide::proto
 
 namespace autofill_ai {
@@ -41,9 +40,9 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
       base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
       PredictionsReceivedCallback callback) override;
-  const std::optional<optimization_guide::proto::FormsPredictionsRequest>&
+  const std::optional<optimization_guide::proto::AutofillAiTypeRequest>&
   GetLatestRequest() const override;
-  const std::optional<optimization_guide::proto::FormsPredictionsResponse>&
+  const std::optional<optimization_guide::proto::AutofillAiTypeResponse>&
   GetLatestResponse() const override;
 
  private:
@@ -53,35 +52,34 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
       PredictionsReceivedCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
-      std::unique_ptr<optimization_guide::proto::FormsPredictionsLoggingData>
+      std::unique_ptr<
+          optimization_guide::proto::FormsClassificationsLoggingData>
           logging_data);
 
+  // TODO(crbug.com/389631477): Move into anonymous namespace.
   static PredictionsByGlobalId ExtractPredictions(
       const autofill::FormData& form_data,
-      const optimization_guide::proto::FilledFormData& form_data_proto);
+      const std::optional<optimization_guide::proto::AutofillAiTypeResponse>&
+          model_response);
 
-  // Setter for `latest_request_`. Also resets `latest_response_`.
+  // TODO(crbug.com/389631477): Remove these and the state connected to them.
   void SetLatestRequestForDebugging(
-      optimization_guide::proto::FormsPredictionsRequest request);
-
-  // Setter for `latest_response_`.
-  // Note that within a tab and thus per model executor instance, there cannot
-  // be multiple requests as per the
-  // `AutofillAiManager::prediction_retrieval_state_`.
+      optimization_guide::proto::AutofillAiTypeRequest request);
   void SetLatestResponseForDebugging(
-      std::optional<optimization_guide::proto::FormsPredictionsResponse>
+      std::optional<optimization_guide::proto::AutofillAiTypeResponse>
           response);
 
   // Latest request made to the optimization guide.
-  std::optional<optimization_guide::proto::FormsPredictionsRequest>
-      latest_request_ = std::nullopt;
+  std::optional<optimization_guide::proto::AutofillAiTypeRequest>
+      latest_request_;
 
   // Response received for `latest_request_`, if any.
-  std::optional<optimization_guide::proto::FormsPredictionsResponse>
-      latest_response_ = std::nullopt;
+  std::optional<optimization_guide::proto::AutofillAiTypeResponse>
+      latest_response_;
 
-  raw_ptr<optimization_guide::OptimizationGuideModelExecutor> model_executor_ =
-      nullptr;
+  const raw_ref<optimization_guide::OptimizationGuideModelExecutor>
+      model_executor_;
+  // TODO(crbug.com/389631477): Remove until we need it.
   base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
       logs_uploader_;
 

@@ -96,7 +96,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       AutofillAiClient::SaveOrUpdatePromptResult result);
 
   void OnReceivedAXTree(const autofill::FormData& form,
-                        const autofill::FormFieldData& trigger_field,
                         optimization_guide::proto::AXTreeUpdate);
 
   // Returns values to fill based on the `cache_`.
