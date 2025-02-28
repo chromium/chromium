@@ -1818,7 +1818,8 @@ void HostProcess::StartHost() {
   std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher;
   if (is_cloud_host_) {
     ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherCloud>(
-        context_->url_loader_factory(), oauth_token_getter_.get());
+        context_->url_loader_factory(), oauth_token_getter_.get(),
+        instance_identity_token_getter_.get());
     // TODO: joedow - Implement IceConfigFetcherCorp.
     // } else if (is_corp_host_) {
     // ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherCorp>(

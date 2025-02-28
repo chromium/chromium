@@ -49,6 +49,7 @@ class ProtobufHttpTestResponder final {
   // be resolved with the same response/error.
   void AddResponse(const std::string& url,
                    const google::protobuf::MessageLite& response_message);
+  void AddResponse(const std::string& url, const std::string& response);
   void AddResponseToMostRecentRequestUrl(
       const google::protobuf::MessageLite& response_message);
   void AddError(const std::string& url, const HttpStatus& error_status);

@@ -112,7 +112,8 @@ class CloudServiceClient {
                               std::string_view instance_identity_token,
                               UpdateRemoteAccessHostCallback callback);
 
-  void GenerateIceConfig(GenerateIceConfigCallback callback);
+  void GenerateIceConfig(std::string_view instance_identity_token,
+                         GenerateIceConfigCallback callback);
 
   void GenerateHostToken(std::string_view instance_identity_token,
                          GenerateHostTokenCallback callback);

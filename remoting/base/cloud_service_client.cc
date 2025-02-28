@@ -404,12 +404,16 @@ void CloudServiceClient::GenerateHostToken(
                  std::move(callback));
 }
 
-void CloudServiceClient::GenerateIceConfig(GenerateIceConfigCallback callback) {
+void CloudServiceClient::GenerateIceConfig(
+    std::string_view instance_identity_token,
+    GenerateIceConfigCallback callback) {
   constexpr char path[] = "/v1alpha/networkTraversal:generateIceConfig";
 
+  auto request = std::make_unique<GenerateIceConfigRequest>();
+  request->set_instance_identity_token(instance_identity_token);
+
   ExecuteRequest(kGenerateIceConfigTrafficAnnotation, path, /*api_key=*/"",
-                 net::HttpRequestHeaders::kPostMethod,
-                 std::make_unique<GenerateIceConfigRequest>(),
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
                  std::move(callback));
 }
 

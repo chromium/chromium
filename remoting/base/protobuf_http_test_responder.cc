@@ -59,6 +59,11 @@ void ProtobufHttpTestResponder::AddResponse(
                                        response_message.SerializeAsString());
 }
 
+void ProtobufHttpTestResponder::AddResponse(const std::string& url,
+                                            const std::string& response) {
+  test_url_loader_factory_.AddResponse(url, response);
+}
+
 void ProtobufHttpTestResponder::AddResponseToMostRecentRequestUrl(
     const google::protobuf::MessageLite& response_message) {
   AddResponse(GetMostRecentRequestUrl(), response_message);
