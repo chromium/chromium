@@ -356,12 +356,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             // REQUEST_DESKTOP_SITE has its own Allowed list header.
             resourceId = R.string.website_settings_allowed_group_heading_request_desktop_site;
-        } else if (toggleValue) {
-            resourceId = R.string.website_settings_allowed_group_heading;
-        } else {
+        } else if (!toggleValue
+                && !getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
             // When the toggle is set to Blocked, the Allowed list header should read 'Exceptions',
             // not 'Allowed' (because it shows exceptions from the rule).
             resourceId = R.string.website_settings_exceptions_group_heading;
+        } else {
+            resourceId = R.string.website_settings_allowed_group_heading;
         }
         allowedGroup.setTitle(getHeaderTitle(resourceId, numAllowed));
         allowedGroup.setExpanded(mAllowListExpanded);
@@ -382,6 +383,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             resourceId = R.string.website_settings_blocked_group_heading_sound;
         } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             resourceId = R.string.website_settings_blocked_group_heading_request_desktop_site;
+        } else if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
+            resourceId = R.string.website_settings_not_allowed_group_heading;
         } else {
             resourceId = R.string.website_settings_blocked_group_heading;
         }
@@ -407,28 +410,41 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     private CharSequence getHeaderTitle(int resourceId, int count) {
-        SpannableStringBuilder spannable = new SpannableStringBuilder(getString(resourceId));
-        String prefCount = String.format(Locale.getDefault(), " - %d", count);
-        spannable.append(prefCount);
+        if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
+            SpannableStringBuilder spannable = new SpannableStringBuilder(getString(resourceId));
 
-        // Color the first part of the title blue.
-        ForegroundColorSpan blueSpan =
-                new ForegroundColorSpan(
-                        SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
-        spannable.setSpan(
-                blueSpan,
-                0,
-                spannable.length() - prefCount.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Color the title blue.
+            ForegroundColorSpan blueSpan =
+                    new ForegroundColorSpan(
+                            SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
+            spannable.setSpan(blueSpan, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        // Gray out the total count of items.
-        final @ColorInt int gray = SemanticColorUtils.getDefaultTextColorSecondary(getContext());
-        spannable.setSpan(
-                new ForegroundColorSpan(gray),
-                spannable.length() - prefCount.length(),
-                spannable.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return spannable;
+            return spannable;
+        } else {
+            SpannableStringBuilder spannable = new SpannableStringBuilder(getString(resourceId));
+            String prefCount = String.format(Locale.getDefault(), " - %d", count);
+            spannable.append(prefCount);
+
+            // Color the first part of the title blue.
+            ForegroundColorSpan blueSpan =
+                    new ForegroundColorSpan(
+                            SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
+            spannable.setSpan(
+                    blueSpan,
+                    0,
+                    spannable.length() - prefCount.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Gray out the total count of items.
+            final @ColorInt int gray =
+                    SemanticColorUtils.getDefaultTextColorSecondary(getContext());
+            spannable.setSpan(
+                    new ForegroundColorSpan(gray),
+                    spannable.length() - prefCount.length(),
+                    spannable.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return spannable;
+        }
     }
 
     @Override
