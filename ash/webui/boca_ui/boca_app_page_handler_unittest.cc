@@ -1907,6 +1907,44 @@ TEST_F(BocaAppPageHandlerTest, OpenFeedbackDialog) {
   EXPECT_TRUE(open_feedback_future.Wait());
 }
 
+TEST_F(BocaAppPageHandlerTest, SetViewScreenSessionActiveSucceeded) {
+  const std::string student_id = "123";
+  EXPECT_CALL(
+      *spotlight_service(),
+      UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::ACTIVE,
+                            kTestUrlBase, _))
+      .WillOnce(WithArg<3>(Invoke(
+          [&](auto request) { std::move(request).Run(base::ok(true)); })));
+
+  base::test::TestFuture<std::optional<mojom::SetViewScreenSessionActiveError>>
+      future;
+
+  boca_app_handler()->SetViewScreenSessionActive(student_id,
+                                                 future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(BocaAppPageHandlerTest, SetViewScreenSessionActiveFailed) {
+  const std::string student_id = "123";
+
+  EXPECT_CALL(
+      *spotlight_service(),
+      UpdateViewScreenState(student_id, ::boca::ViewScreenConfig::ACTIVE,
+                            kTestUrlBase, _))
+      .WillOnce(WithArg<3>(Invoke([&](auto request) {
+        std::move(request).Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+      })));
+
+  base::test::TestFuture<std::optional<mojom::SetViewScreenSessionActiveError>>
+      future;
+
+  boca_app_handler()->SetViewScreenSessionActive(student_id,
+                                                 future.GetCallback());
+  EXPECT_EQ(mojom::SetViewScreenSessionActiveError::kHTTPError,
+            future.Get().value());
+}
+
 class BocaAppPageHandlerFloatModeTest : public AshTestBase {
  public:
   BocaAppPageHandlerFloatModeTest() = default;

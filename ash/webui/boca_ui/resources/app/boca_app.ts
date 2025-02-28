@@ -318,6 +318,12 @@ export declare interface ClientApiDelegate {
   endViewScreenSession(id: string): Promise<boolean>;
 
   /**
+   * Request to set the view screen session to active for the student with the
+   * given id.
+   */
+  setViewScreenSessionActive(id: string): Promise<boolean>;
+
+  /**
    * Get the value of a boca specific user pref.
    */
   getUserPref(pref: BocaValidPref): Promise<any>;

@@ -84,6 +84,9 @@ class BocaAppHandler : public mojom::PageHandler,
                          ViewStudentScreenCallback callback) override;
   void EndViewScreenSession(const std::string& id,
                             EndViewScreenSessionCallback callback) override;
+  void SetViewScreenSessionActive(
+      const std::string& id,
+      SetViewScreenSessionActiveCallback callback) override;
   void GetUserPref(mojom::BocaValidPref pref,
                    GetUserPrefCallback callback) override;
   void SetUserPref(mojom::BocaValidPref pref,

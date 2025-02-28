@@ -536,6 +536,8 @@ void BocaAppHandler::ViewStudentScreen(const std::string& id,
           [](ViewStudentScreenCallback callback,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              LOG(WARNING) << "[Boca] Error requesting to view student screen: "
+                           << result.error();
               std::move(callback).Run(
                   mojom::ViewStudentScreenError::kHTTPError);
               return;
@@ -557,7 +559,33 @@ void BocaAppHandler::EndViewScreenSession(
           [](EndViewScreenSessionCallback cb,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              LOG(WARNING)
+                  << "[Boca] Error setting view screen state to inactive: "
+                  << result.error();
               std::move(cb).Run(mojom::EndViewScreenSessionError::kHTTPError);
+              return;
+            }
+            std::move(cb).Run(std::nullopt);
+          },
+          std::move(callback)));
+}
+
+void BocaAppHandler::SetViewScreenSessionActive(
+    const std::string& id,
+    SetViewScreenSessionActiveCallback callback) {
+  CHECK(spotlight_service_);
+
+  spotlight_service_->UpdateViewScreenState(
+      id, ::boca::ViewScreenConfig::ACTIVE, base_url_,
+      base::BindOnce(
+          [](SetViewScreenSessionActiveCallback cb,
+             base::expected<bool, google_apis::ApiErrorCode> result) {
+            if (!result.has_value()) {
+              LOG(WARNING)
+                  << "[Boca] Error setting view screen state to active: "
+                  << result.error();
+              std::move(cb).Run(
+                  mojom::SetViewScreenSessionActiveError::kHTTPError);
               return;
             }
             std::move(cb).Run(std::nullopt);

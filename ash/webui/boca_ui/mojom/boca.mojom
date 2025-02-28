@@ -245,6 +245,10 @@ enum EndViewScreenSessionError {
   kHTTPError,
 };
 
+enum SetViewScreenSessionActiveError {
+  kHTTPError,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Performs authentication and sets the credential in the webview.
@@ -285,6 +289,9 @@ interface PageHandler {
   ViewStudentScreen(string id) => (ViewStudentScreenError? error);
   // Sets the state of the view screen session as inactive for a given student.
   EndViewScreenSession(string id) => (EndViewScreenSessionError? error);
+  // Sets the state of the view screen session as active for a given student.
+  SetViewScreenSessionActive(string id)
+    => (SetViewScreenSessionActiveError? error);
   // Get the value of a boca specific user pref.
   GetUserPref(BocaValidPref pref)
     => (mojo_base.mojom.Value value);
