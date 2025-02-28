@@ -259,6 +259,7 @@ public final class PrivacySandboxDialogTest {
         ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY,
         ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
     })
+    @DisabledTest(message = "https://crbug.com/399734809")
     public void renderEeaConsentV2PrivacyPolicyDisabled() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
         launchDialog();
@@ -293,6 +294,7 @@ public final class PrivacySandboxDialogTest {
         ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY,
         ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY
     })
+    @DisabledTest(message = "https://crbug.com/399734809")
     public void renderEeaConsentV2ContentParityPrivacyPolicyEnabled() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
         launchDialog();
