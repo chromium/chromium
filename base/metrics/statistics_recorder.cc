@@ -58,7 +58,16 @@ std::atomic<StatisticsRecorder::GlobalSampleCallback>
 StatisticsRecorder::ScopedHistogramSampleObserver::
     ScopedHistogramSampleObserver(std::string_view name,
                                   OnSampleCallback callback)
-    : histogram_name_(name), callback_(callback) {
+    : histogram_name_(name),
+      callback_(
+          base::IgnoreArgs<std::optional<uint64_t>>(std::move(callback))) {
+  StatisticsRecorder::AddHistogramSampleObserver(histogram_name_, this);
+}
+
+StatisticsRecorder::ScopedHistogramSampleObserver::
+    ScopedHistogramSampleObserver(std::string_view name,
+                                  OnSampleWithEventCallback callback)
+    : histogram_name_(name), callback_(std::move(callback)) {
   StatisticsRecorder::AddHistogramSampleObserver(histogram_name_, this);
 }
 
@@ -70,8 +79,9 @@ StatisticsRecorder::ScopedHistogramSampleObserver::
 void StatisticsRecorder::ScopedHistogramSampleObserver::RunCallback(
     std::string_view histogram_name,
     uint64_t name_hash,
-    HistogramBase::Sample32 sample) {
-  callback_.Run(histogram_name, name_hash, sample);
+    HistogramBase::Sample32 sample,
+    std::optional<uint64_t> event_id) {
+  callback_.Run(event_id, histogram_name, name_hash, sample);
 }
 
 StatisticsRecorder::~StatisticsRecorder() {
@@ -386,7 +396,8 @@ void StatisticsRecorder::FindAndRunHistogramCallbacks(
     base::PassKey<HistogramBase>,
     std::string_view histogram_name,
     uint64_t name_hash,
-    HistogramBase::Sample32 sample) {
+    HistogramBase::Sample32 sample,
+    std::optional<uint64_t> event_id) {
   DCHECK_EQ(name_hash, HashMetricName(histogram_name));
 
   const AutoLock auto_lock(GetLock());
@@ -406,7 +417,7 @@ void StatisticsRecorder::FindAndRunHistogramCallbacks(
   }
 
   it->second->Notify(FROM_HERE, &ScopedHistogramSampleObserver::RunCallback,
-                     histogram_name, name_hash, sample);
+                     histogram_name, name_hash, sample, event_id);
 }
 
 // static

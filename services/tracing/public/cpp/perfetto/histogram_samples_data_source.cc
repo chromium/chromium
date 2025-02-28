@@ -136,6 +136,7 @@ void HistogramSamplesDataSource::OnStop(const StopArgs&) {
 void HistogramSamplesDataSource::OnMetricSample(
     std::optional<base::HistogramBase::Sample32> reference_lower_value,
     std::optional<base::HistogramBase::Sample32> reference_upper_value,
+    std::optional<uint64_t> event_id,
     std::string_view histogram_name,
     uint64_t name_hash,
     base::HistogramBase::Sample32 sample) {
@@ -143,18 +144,20 @@ void HistogramSamplesDataSource::OnMetricSample(
       (reference_upper_value && sample > reference_upper_value)) {
     return;
   }
-  OnMetricSampleImpl(histogram_name, name_hash, sample,
+  OnMetricSampleImpl(event_id, histogram_name, name_hash, sample,
                      reinterpret_cast<uintptr_t>(this));
 }
 
 void HistogramSamplesDataSource::OnAnyMetricSample(
     std::string_view histogram_name,
     uint64_t name_hash,
-    base::HistogramBase::Sample32 sample) {
-  OnMetricSampleImpl(histogram_name, name_hash, sample, std::nullopt);
+    base::HistogramBase::Sample32 sample,
+    std::optional<uint64_t> event_id) {
+  OnMetricSampleImpl(event_id, histogram_name, name_hash, sample, std::nullopt);
 }
 
 void HistogramSamplesDataSource::OnMetricSampleImpl(
+    std::optional<uint64_t> event_id,
     std::string_view histogram_name,
     uint64_t name_hash,
     base::HistogramBase::Sample32 sample,
@@ -186,6 +189,9 @@ void HistogramSamplesDataSource::OnMetricSampleImpl(
     event->set_name_iid(1);
     event->add_category_iids(1);
     event->set_type(::perfetto::protos::pbzero::TrackEvent::TYPE_INSTANT);
+    if (event_id) {
+      event->add_flow_ids(*event_id);
+    }
 
     perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
         event->set_chrome_histogram_sample();

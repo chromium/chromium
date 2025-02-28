@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/histogram_scope.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 

@@ -268,6 +268,7 @@ class HistogramRule : public BackgroundTracingRule,
   void OnHistogramChangedCallback(
       base::Histogram::Sample32 reference_lower_value,
       base::Histogram::Sample32 reference_upper_value,
+      std::optional<uint64_t> event_id,
       std::string_view histogram_name,
       uint64_t name_hash,
       base::Histogram::Sample32 actual_value) {
@@ -277,8 +278,8 @@ class HistogramRule : public BackgroundTracingRule,
       return;
     }
 
-    uint64_t flow_id = base::trace_event::HistogramScope::GetFlowId().value_or(
-        base::trace_event::GetNextGlobalTraceId());
+    uint64_t flow_id =
+        event_id.value_or(base::trace_event::GetNextGlobalTraceId());
 
     // Add the histogram name and its corresponding value to the trace.
     const auto trace_details = [&](perfetto::EventContext& ctx) {

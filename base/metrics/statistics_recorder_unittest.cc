@@ -22,6 +22,7 @@
 #include "base/metrics/record_histogram_checker.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/test/task_environment.h"
+#include "base/trace_event/histogram_scope.h"  // no-presubmit-check
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -477,7 +478,16 @@ struct CallbackCheckWrapper {
     last_histogram_value = histogram_value;
   }
 
+  void OnHistogramChangedWithEventId(std::optional<uint64_t> event_id,
+                                     std::string_view histogram_name,
+                                     uint64_t name_hash,
+                                     HistogramBase::Sample32 histogram_value) {
+    last_event_id = event_id;
+    OnHistogramChanged(histogram_name, name_hash, histogram_value);
+  }
+
   bool called = false;
+  std::optional<uint64_t> last_event_id;
   std::string last_histogram_name = "";
   uint64_t last_name_hash;
   base::HistogramBase::Sample32 last_histogram_value = 0;
@@ -730,6 +740,44 @@ TEST_P(StatisticsRecorderTest, CallbackUsedBeforeHistogramCreatedTest) {
   EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
 }
 
+// Check that setting a callback before the histogram exists works.
+TEST_P(StatisticsRecorderTest, CallbackWithEventIdTest) {
+  test::TaskEnvironment task_environment;
+  CallbackCheckWrapper callback_wrapper;
+
+  auto callback =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          "TestHistogram",
+          base::BindRepeating(
+              &CallbackCheckWrapper::OnHistogramChangedWithEventId,
+              base::Unretained(&callback_wrapper)));
+
+  HistogramBase* histogram = Histogram::FactoryGet("TestHistogram", 1, 1000, 10,
+                                                   HistogramBase::kNoFlags);
+  EXPECT_TRUE(histogram);
+  {
+    base::trace_event::HistogramScope histogram_trace_scope(42);
+    histogram->Add(1);
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(callback_wrapper.called);
+    EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
+    EXPECT_EQ(callback_wrapper.last_event_id, 42);
+    EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
+    EXPECT_EQ(callback_wrapper.last_histogram_value, 1);
+  }
+
+  callback_wrapper = CallbackCheckWrapper();  // clear previous callback data
+  histogram->Add(2);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(callback_wrapper.called);
+  EXPECT_EQ(callback_wrapper.last_histogram_name, "TestHistogram");
+  EXPECT_EQ(callback_wrapper.last_event_id, std::nullopt);
+  EXPECT_EQ(callback_wrapper.last_name_hash, HashMetricName("TestHistogram"));
+  EXPECT_EQ(callback_wrapper.last_histogram_value, 2);
+}
+
 TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
   HistogramBase* histogram = Histogram::FactoryGet("TestHistogram", 1, 1000, 10,
                                                    HistogramBase::kNoFlags);
@@ -741,7 +789,8 @@ TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
   static size_t callback_callcount;
   callback_callcount = 0;
   auto callback = [](std::string_view histogram_name, uint64_t name_hash,
-                     HistogramBase::Sample32 sample) {
+                     HistogramBase::Sample32 sample,
+                     std::optional<uint64_t> event_id) {
     EXPECT_EQ(histogram_name, "TestHistogram");
     EXPECT_EQ(sample, 1);
     ++callback_callcount;
