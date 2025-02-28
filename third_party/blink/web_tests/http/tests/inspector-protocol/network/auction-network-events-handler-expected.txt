@@ -71,6 +71,22 @@ Note: There are two bidding requests because we reload the bidding worklet when 
         cacheDisabled : true
         finished : true
         headers : {
+            Accept : application/json
+            acceptLanguage : ar
+            userAgent : Vending Machine
+        }
+        method : GET
+        received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
+        url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.json.php?hostname=a.test&interestGroupNames=0
+    }
+    [5] : {
+        cacheDisabled : true
+        finished : true
+        headers : {
             Accept : application/javascript
             acceptLanguage : ar
             userAgent : Vending Machine
@@ -82,6 +98,22 @@ Note: There are two bidding requests because we reload the bidding worklet when 
         responseExtraInfoReceived : true
         responseHasTiming : true
         url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+    }
+    [6] : {
+        cacheDisabled : true
+        finished : true
+        headers : {
+            Accept : application/json
+            acceptLanguage : ar
+            userAgent : Vending Machine
+        }
+        method : GET
+        received : true
+        requestExtraInfoReceived : true
+        requestHasTiming : true
+        responseExtraInfoReceived : true
+        responseHasTiming : true
+        url : https://a.test:8443/inspector-protocol/resources/fledge_scoring_signals.json.php?hostname=a.test&renderUrls=https%3A%2F%2Fexample.com%2Frender0
     }
 ]
 

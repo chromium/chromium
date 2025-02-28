@@ -2,7 +2,7 @@
   const base = 'https://a.test:8443/inspector-protocol/resources/'
   const { session, dp } = await testRunner.startBlank(
     'Verifying the events that go through the auction network event handler are accurate.\nNote: There are two bidding requests because we reload the bidding worklet when we are reporting. ',
-    { url: base + 'fledge_join.html?1' });
+    { url: base + 'fledge_join.html?count=1&useTrustedBiddingSignals=true' });
 
   await dp.Network.enable();
   await dp.Network.setCacheDisabled({ cacheDisabled: true });
@@ -17,7 +17,7 @@
   });
 
   function checkIfAllRequestsCompleted() {
-    if (finishedLoadingRequests > 4 && finishedReceivingExtraInfo > 4) {
+    if (finishedLoadingRequests > 6 && finishedReceivingExtraInfo > 6) {
       resolveAllRequestsCompleted(true);
     }
   }
@@ -75,6 +75,7 @@
   async function runAdAuction() {
       const result = await navigator.runAdAuction({
         decisionLogicURL: "${base}fledge_decision_logic.js.php",
+        trustedScoringSignalsURL: "${base}fledge_scoring_signals.json.php",
         seller: "https://a.test:8443",
         interestGroupBuyers: ["https://a.test:8443"],
         resolveToConfig: true
