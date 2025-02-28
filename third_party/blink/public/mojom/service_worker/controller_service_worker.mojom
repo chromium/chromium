@@ -72,7 +72,10 @@ struct ServiceWorkerRouterData {
   // ServiceWorker.
   ServiceWorkerRouterRules router_rules;
   // ServiceWorker running status at initialization time.
-  ServiceWorkerEmbeddedWorkerStatus initial_running_status;
+  // Null if the ServiceWorkerRouterRules do not contain a rule that needs
+  // running status. See
+  // ServiceWorkerContainerHostForClient::CreateControllerServiceWorkerInfo.
+  ServiceWorkerEmbeddedWorkerStatus? initial_running_status;
   // A receiver to notify the ServiceWorker running status change.
   // It is used for judging the running status condition.
   pending_receiver<ServiceWorkerRunningStatusCallback>? running_status_receiver;
