@@ -38,13 +38,17 @@ interface PageHandler {
   // based on its contents.
   UpdateViewHeight(uint32 height);
 
-  // The user has accepted the prompt through clicking a button.
-  Accept();
+  // The user has accepted the dialog through clicking a button.
+  // If accepting the dialog will sign the user out, their account extensions
+  // will be uninstalled if `uninstall_account_extensions` is true.
+  Accept(bool uninstall_account_extensions);
 
-  // The user has cancelled the prompt through clicking a button.
-  Cancel();
+  // The user has cancelled the dialog through clicking a button.
+  // If cancelling the dialog will sign the user out, their account extensions
+  // will be uninstalled if `uninstall_account_extensions` is true.
+  Cancel(bool uninstall_account_extensions);
 
-  // The user has explicitly dismissed the prompt, e.g. via the escape key.
+  // The user has explicitly dismissed the dialog, e.g. via the escape key.
   Close();
 };
 

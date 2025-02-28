@@ -155,7 +155,7 @@ SignoutConfirmationHandler::SignoutConfirmationHandler(
     mojo::PendingRemote<signout_confirmation::mojom::Page> page,
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback)
+    SignoutConfirmationCallback callback)
     : browser_(browser ? browser->AsWeakPtr() : nullptr),
       variant_(variant),
       completion_callback_(std::move(callback)),
@@ -176,33 +176,35 @@ void SignoutConfirmationHandler::UpdateViewHeight(uint32_t height) {
   }
 }
 
-void SignoutConfirmationHandler::Accept() {
+void SignoutConfirmationHandler::Accept(bool uninstall_account_extensions) {
   ChromeSignoutConfirmationChoice ok_choice =
       (variant_ ==
        ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton)
           ? ChromeSignoutConfirmationChoice::kCancelSignoutAndReauth
           : ChromeSignoutConfirmationChoice::kSignout;
 
-  FinishAndCloseDialog(ok_choice);
+  FinishAndCloseDialog(ok_choice, uninstall_account_extensions);
 }
 
-void SignoutConfirmationHandler::Cancel() {
+void SignoutConfirmationHandler::Cancel(bool uninstall_account_extensions) {
   ChromeSignoutConfirmationChoice cancel_choice =
       (variant_ ==
        ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton)
           ? ChromeSignoutConfirmationChoice::kSignout
           : ChromeSignoutConfirmationChoice::kCancelSignout;
-  FinishAndCloseDialog(cancel_choice);
+  FinishAndCloseDialog(cancel_choice, uninstall_account_extensions);
 }
 
 void SignoutConfirmationHandler::Close() {
-  FinishAndCloseDialog(ChromeSignoutConfirmationChoice::kCancelSignout);
+  FinishAndCloseDialog(ChromeSignoutConfirmationChoice::kCancelSignout,
+                       /*uninstall_account_extensions=*/false);
 }
 
 void SignoutConfirmationHandler::FinishAndCloseDialog(
-    ChromeSignoutConfirmationChoice choice) {
+    ChromeSignoutConfirmationChoice choice,
+    bool uninstall_account_extensions) {
   RecordChromeSignoutConfirmationPromptMetrics(variant_, choice);
-  std::move(completion_callback_).Run(choice);
+  std::move(completion_callback_).Run(choice, uninstall_account_extensions);
   if (browser_) {
     browser_->signin_view_controller()->CloseModalSignin();
   }

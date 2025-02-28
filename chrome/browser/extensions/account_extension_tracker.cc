@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -164,15 +165,30 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
-      // TODO(crbug.com/366474682): If extension syncing is enabled in transport
-      // mode, only set the pref if the user chooses to keep extensions when
-      // signing out.
+      ExtensionService* extension_service =
+          ExtensionSystem::Get(profile_)->extension_service();
+
       const ExtensionSet extensions =
           extension_registry->GenerateInstalledExtensionsSet();
 
+      // Uninstall any signed in account extensions if
+      // `uninstall_account_extensions_on_signout_` is true. Otherwise, set all
+      // extensions' AccountExtensionType to `kLocal`.
       for (const auto& extension : extensions) {
-        SetAccountExtensionType(extension->id(), AccountExtensionType::kLocal);
+        if (uninstall_account_extensions_on_signout_ &&
+            GetAccountExtensionType(extension->id()) ==
+                AccountExtensionType::kAccountInstalledSignedIn) {
+          extension_service->UninstallExtension(extension->id(),
+                                                UNINSTALL_REASON_USER_INITIATED,
+                                                /*error=*/nullptr);
+        } else {
+          SetAccountExtensionType(extension->id(),
+                                  AccountExtensionType::kLocal);
+        }
       }
+
+      // Reset the value of `uninstall_account_extensions_on_signout_`.
+      uninstall_account_extensions_on_signout_ = false;
 
       NotifyOnExtensionsUploadabilityChanged();
       observers_notified = true;

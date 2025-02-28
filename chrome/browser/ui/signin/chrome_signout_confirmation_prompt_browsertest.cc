@@ -43,8 +43,8 @@ class ChromeSignoutConfirmationPromptPixelTest
 
     auto* controller = browser()->signin_view_controller();
     controller->ShowSignoutConfirmationPrompt(
-        GetVariant(),
-        base::BindOnce([](ChromeSignoutConfirmationChoice choice) {}));
+        GetVariant(), base::BindOnce([](ChromeSignoutConfirmationChoice choice,
+                                        bool uninstall_extensions) {}));
 
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();

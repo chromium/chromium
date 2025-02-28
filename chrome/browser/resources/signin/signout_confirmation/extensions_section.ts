@@ -11,6 +11,7 @@ import '/strings.m.js';
 
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -25,6 +26,7 @@ const UPDATE_REQUEST_COUNT: number = 10;
 
 export interface ExtensionsSectionElement {
   $: {
+    checkbox: CrCheckboxElement,
     expandButton: CrExpandButtonElement,
     collapse: CrCollapseElement,
   };
@@ -85,6 +87,10 @@ export class ExtensionsSectionElement extends CrLitElement {
               'extensionsSectionTooltip', this.accountExtensions.length)
           .then(tooltip => this.tooltip_ = tooltip);
     }
+  }
+
+  checked(): boolean {
+    return this.$.checkbox.checked;
   }
 
   protected onExpandChanged_(e: CustomEvent<{value: boolean}>) {

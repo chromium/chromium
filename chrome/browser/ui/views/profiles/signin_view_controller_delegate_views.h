@@ -70,7 +70,7 @@ class SigninViewControllerDelegateViews
   static std::unique_ptr<views::WebView> CreateSignoutConfirmationWebView(
       Browser* browser,
       ChromeSignoutConfirmationPromptVariant variant,
-      base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
+      SignoutConfirmationCallback callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

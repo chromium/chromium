@@ -171,7 +171,8 @@ void HandleSignoutConfirmationChoice(
     signin_metrics::AccessPoint reauth_access_point,
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
-    ChromeSignoutConfirmationChoice user_choice) {
+    ChromeSignoutConfirmationChoice user_choice,
+    bool uninstall_account_extensions_on_signout) {
   if (!browser) {
     return;
   }
@@ -185,6 +186,12 @@ void HandleSignoutConfirmationChoice(
           profile, reauth_access_point);
       return;
     case ChromeSignoutConfirmationChoice::kSignout: {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      extensions::AccountExtensionTracker::Get(profile)
+          ->set_uninstall_account_extensions_on_signout(
+              uninstall_account_extensions_on_signout);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
       // Sign out from all accounts on the web if needed.
@@ -664,15 +671,15 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
       sign_out_immediately = false;
     }
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
-      base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
-                     reauth_access_point, profile_signout_source,
-                     token_signout_source);
+  SignoutConfirmationCallback callback = base::BindOnce(
+      &HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
+      reauth_access_point, profile_signout_source, token_signout_source);
 
   if (sign_out_immediately) {
-    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
+    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout,
+                            /*uninstall_account_extensions_on_signout=*/false);
     return;
   }
 
@@ -760,12 +767,13 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
 
 void SigninViewController::ShowSignoutConfirmationPrompt(
     ChromeSignoutConfirmationPromptVariant prompt_variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+    SignoutConfirmationCallback callback) {
   if (!switches::IsImprovedSigninUIOnDesktopEnabled() &&
       prompt_variant ==
           ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData) {
     // This variant is not enabled. Skip the UI and sign out immediately.
-    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
+    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout,
+                            /*uninstall_account_extensions_on_signout=*/false);
     return;
   }
 

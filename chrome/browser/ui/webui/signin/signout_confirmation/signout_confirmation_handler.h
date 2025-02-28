@@ -26,7 +26,7 @@ class SignoutConfirmationHandler
       mojo::PendingRemote<signout_confirmation::mojom::Page> page,
       Browser* browser,
       ChromeSignoutConfirmationPromptVariant variant,
-      base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
+      SignoutConfirmationCallback callback);
   ~SignoutConfirmationHandler() override;
 
   SignoutConfirmationHandler(const SignoutConfirmationHandler&) = delete;
@@ -35,14 +35,15 @@ class SignoutConfirmationHandler
 
   // signout_confirmation::mojom::PageHandler:
   void UpdateViewHeight(uint32_t height) override;
-  void Accept() override;
-  void Cancel() override;
+  void Accept(bool uninstall_account_extensions) override;
+  void Cancel(bool uninstall_account_extensions) override;
   void Close() override;
 
  private:
-  // Run `completion_callback_` with the given `choice` and close the dialog if
-  // there is one open.
-  void FinishAndCloseDialog(ChromeSignoutConfirmationChoice choice);
+  // Run `completion_callback_` with the given `choice` and `bool
+  // uninstall_account_extensions`, and close the dialog if there is one open.
+  void FinishAndCloseDialog(ChromeSignoutConfirmationChoice choice,
+                            bool uninstall_account_extensions);
 
   // Same as the below version except there are no `ExtensionInfoPtr` to send.
   void ComputeAndSendSignoutConfirmationDataWithoutExtensions();
@@ -67,8 +68,7 @@ class SignoutConfirmationHandler
   ChromeSignoutConfirmationPromptVariant variant_;
 
   // Called when the user accepts, cancels or closes the prompt.
-  base::OnceCallback<void(ChromeSignoutConfirmationChoice)>
-      completion_callback_;
+  SignoutConfirmationCallback completion_callback_;
 
   // Allows handling received messages from the web ui page.
   mojo::Receiver<signout_confirmation::mojom::PageHandler> receiver_;

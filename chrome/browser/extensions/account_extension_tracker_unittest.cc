@@ -156,8 +156,47 @@ TEST_F(AccountExtensionTrackerUnitTest,
   // Sign the user out and verify that `kGoodCrx` is now treated as a local
   // extension again.
   identity_test_env()->ClearPrimaryAccount();
+  EXPECT_TRUE(registry()->GetInstalledExtension(kGoodCrx));
   EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
             GetAccountExtensionType(kGoodCrx));
+}
+
+TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionsRemovedWhenSignedOut) {
+  // Enable extension syncing in transport mode.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kEnableExtensionsExplicitBrowserSignin);
+
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  InstallCRX(good_crx_path, INSTALL_NEW);
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(kGoodCrx));
+
+  // Install an extension and pretend it's a `kAccountInstalledSignedIn`
+  // extension.
+  ChromeTestExtensionLoader extension_loader(profile());
+  extension_loader.set_pack_extension(true);
+  scoped_refptr<const Extension> other_extension =
+      extension_loader.LoadExtension(
+          data_dir().AppendASCII("simple_with_file"));
+  const ExtensionId other_extension_id = other_extension->id();
+  AccountExtensionTracker::Get(profile())->SetAccountExtensionTypeForTesting(
+      other_extension_id,
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally);
+
+  // Set the uninstall flag.
+  AccountExtensionTracker::Get(profile())
+      ->set_uninstall_account_extensions_on_signout(true);
+
+  // Sign the user out and verify that `kGoodCrx` is now uninstalled.
+  identity_test_env()->ClearPrimaryAccount();
+  EXPECT_FALSE(registry()->GetInstalledExtension(kGoodCrx));
+
+  // But `other_extension` is still installed.
+  EXPECT_TRUE(registry()->GetInstalledExtension(other_extension_id));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

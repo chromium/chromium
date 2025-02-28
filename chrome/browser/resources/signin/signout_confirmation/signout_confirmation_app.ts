@@ -17,6 +17,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {SignoutConfirmationBrowserProxyImpl} from './browser_proxy.js';
 import type {SignoutConfirmationBrowserProxy} from './browser_proxy.js';
+import type {ExtensionsSectionElement} from './extensions_section.js';
 import type {SignoutConfirmationData} from './signout_confirmation.mojom-webui.js';
 import {getCss} from './signout_confirmation_app.css.js';
 import {getHtml} from './signout_confirmation_app.html.js';
@@ -108,16 +109,22 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     }
   }
 
+  uninstallExtensionsOnSignoutForTesting(): boolean {
+    return this.uninstallExtensionsOnSignout_();
+  }
+
   protected showExtensionsSection_(): boolean {
     return !!this.data_.accountExtensions.length;
   }
 
   protected onAcceptButtonClick_() {
-    this.signoutConfirmationBrowserProxy_.handler.accept();
+    this.signoutConfirmationBrowserProxy_.handler.accept(
+        this.uninstallExtensionsOnSignout_());
   }
 
   protected onCancelButtonClick_() {
-    this.signoutConfirmationBrowserProxy_.handler.cancel();
+    this.signoutConfirmationBrowserProxy_.handler.cancel(
+        this.uninstallExtensionsOnSignout_());
   }
 
   // Request the browser to update the native view to match the current height
@@ -135,6 +142,15 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     if (e.key === 'Escape') {
       this.signoutConfirmationBrowserProxy_.handler.close();
     }
+  }
+
+  // Returns Whether account extensions should be uninstalled when the user
+  // signs out from the dialog.
+  private uninstallExtensionsOnSignout_(): boolean {
+    const extensionsSection =
+        this.shadowRoot.querySelector<ExtensionsSectionElement>(
+            'extensions-section');
+    return !!extensionsSection && extensionsSection.checked();
   }
 }
 

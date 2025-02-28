@@ -115,6 +115,12 @@ class AccountExtensionTracker : public KeyedService,
   // their account.
   void OnAccountUploadInitiatedForExtension(const ExtensionId& extension_id);
 
+  void set_uninstall_account_extensions_on_signout(
+      bool uninstall_account_extensions_on_signout) {
+    uninstall_account_extensions_on_signout_ =
+        uninstall_account_extensions_on_signout;
+  }
+
   void SetAccountExtensionTypeForTesting(const ExtensionId& extension_id,
                                          AccountExtensionType type);
 
@@ -143,6 +149,10 @@ class AccountExtensionTracker : public KeyedService,
   // Keeps track of extensions for which a signin promo was shown after
   // installation.
   std::vector<ExtensionId> extensions_installed_with_signin_promo_;
+
+  // Whether account extensions with type `kAccountInstalledSignedIn` should be
+  // uninstalled when the primary user signs out.
+  bool uninstall_account_extensions_on_signout_ = false;
 
   base::ObserverList<Observer> observers_;
 

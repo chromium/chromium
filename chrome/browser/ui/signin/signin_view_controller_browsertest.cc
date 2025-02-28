@@ -41,6 +41,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -78,6 +79,7 @@ constexpr char16_t kTestExtensionName[] = u"Test extension";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kChecked);
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
@@ -611,7 +613,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
 // dialog.
 class SigninViewControllerInteractiveBrowserTest
     : public SigninBrowserTestBaseT<
-          WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
+          WebUiInteractiveTestMixin<InteractiveBrowserTest>>,
+      public testing::WithParamInterface<bool> {
  public:
   SigninViewControllerInteractiveBrowserTest() {
     feature_list_.InitWithFeatures(
@@ -629,8 +632,14 @@ class SigninViewControllerInteractiveBrowserTest
   }
 
  protected:
+  bool uninstall_account_extensions() const { return GetParam(); }
+
   const base::FilePath& extension_data_dir() const {
     return extension_data_dir_;
+  }
+
+  extensions::ExtensionRegistry* extension_registry() {
+    return extensions::ExtensionRegistry::Get(GetProfile());
   }
 
   AccountInfo SetPrimaryAccount() {
@@ -648,6 +657,69 @@ class SigninViewControllerInteractiveBrowserTest
     return WaitForStateChange(contents_id, element_exists);
   }
 
+  // Waits for the dialog to be ready to uninstall account extensions.
+  auto WaitForUninstallExtensionsChecked(
+      const ui::ElementIdentifier& contents_id) {
+    StateChange uninstall_extensions_checked;
+    uninstall_extensions_checked.type = WebContentsInteractionTestUtil::
+        StateChange::Type::kExistsAndConditionTrue;
+    uninstall_extensions_checked.event = kChecked;
+    uninstall_extensions_checked.test_function =
+        "el => { return el.uninstallExtensionsOnSignoutForTesting(); }";
+    uninstall_extensions_checked.where = {"signout-confirmation-app"};
+    return WaitForStateChange(contents_id, uninstall_extensions_checked);
+  }
+
+  // Accept the dialog, which signs the user out. Optionally, check the checkbox
+  // at `kCheckbox` which will specify that account extensions should be
+  // uninstalled after signing out.
+  auto AcceptDialogAndSignout() {
+    const DeepQuery kAcceptButton = {"signout-confirmation-app",
+                                     "#acceptButton"};
+    const DeepQuery kCheckbox = {"signout-confirmation-app",
+                                 "extensions-section", "#checkbox"};
+
+    auto steps = Steps(
+        ExecuteJsAt(kWebContentsId, kAcceptButton, "(el) => { el.click(); }"),
+        // Verify that the dialog closes correctly.
+        WaitForHide(
+            SigninViewController::kSignoutConfirmationDialogViewElementId),
+        CheckResult(
+            [&] {
+              return browser()->signin_view_controller()->ShowsModalDialog();
+            },
+            false),
+        // Verify that the user has signed out.
+        CheckResult(
+            [&] {
+              return identity_manager()->HasPrimaryAccount(
+                  signin::ConsentLevel::kSignin);
+            },
+            false));
+
+    // Check the checkbox for uninstalling account extensions in the dialog and
+    // wait for the proper state to propagate.
+    if (uninstall_account_extensions()) {
+      auto steps_plus_click_checkbox = Steps(
+          ExecuteJsAt(kWebContentsId, kCheckbox, "(el) => { el.click(); }"),
+          WaitForUninstallExtensionsChecked(kWebContentsId));
+      steps_plus_click_checkbox += std::move(steps);
+      return steps_plus_click_checkbox;
+    }
+
+    return steps;
+  }
+
+  // Checks if the extension with the given `id` is installed.
+  auto CheckExtensionInstalled(const extensions::ExtensionId& id,
+                               bool installed) {
+    return CheckResult(
+        [&]() {
+          return extension_registry()->GetInstalledExtension(id) != nullptr;
+        },
+        installed);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 
@@ -656,8 +728,12 @@ class SigninViewControllerInteractiveBrowserTest
 };
 
 // Test that the user's installed account extensions are shown in the signout
-// confirmation prompt.
-IN_PROC_BROWSER_TEST_F(SigninViewControllerInteractiveBrowserTest,
+// confirmation prompt, then test accepting the dialog with two outcomes based
+// on the test variant:
+// - UninstallAccountExtensions: account extensions are uninstalled after
+//   signing out.
+// - KeepAccountExtensions: account extensions are kept after signing out.
+IN_PROC_BROWSER_TEST_P(SigninViewControllerInteractiveBrowserTest,
                        ShowAccountExtensionsInSignoutPrompt) {
   auto load_extension = [this](const std::string& extension_path) {
     extensions::ChromeTestExtensionLoader extension_loader(GetProfile());
@@ -671,6 +747,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerInteractiveBrowserTest,
   scoped_refptr<const extensions::Extension> local_extension =
       load_extension("simple_with_file");
   ASSERT_TRUE(local_extension);
+  auto local_extension_id = local_extension->id();
 
   // Setup a primary account.
   extensions::signin_test_util::SimulateExplicitSignIn(
@@ -688,10 +765,12 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerInteractiveBrowserTest,
   scoped_refptr<const extensions::Extension> first_account_extension =
       load_extension("simple_with_host");
   ASSERT_TRUE(first_account_extension);
+  auto first_account_extension_id = first_account_extension->id();
 
   scoped_refptr<const extensions::Extension> second_account_extension =
       load_extension("simple_with_icon");
   ASSERT_TRUE(second_account_extension);
+  auto second_account_extension_id = second_account_extension->id();
 
   const int expected_num_account_extensions = 2;
 
@@ -743,8 +822,29 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerInteractiveBrowserTest,
       // There should be `expected_num_account_extensions` shown in the list.
       CheckJsResultAt(kWebContentsId, kExtensionsSectionCollapse,
                       get_num_shown_account_extensions,
-                      expected_num_account_extensions));
+                      expected_num_account_extensions),
+
+      // Now accept the dialog and sign out.
+      AcceptDialogAndSignout(),
+
+      // The local extension should always still be installed.
+      CheckExtensionInstalled(local_extension_id, true),
+
+      // The account extensions should be uninstalled if the user chose to
+      // uninstall them from the dialog based on uninstall_account_extensions().
+      CheckExtensionInstalled(first_account_extension_id,
+                              !uninstall_account_extensions()),
+      CheckExtensionInstalled(second_account_extension_id,
+                              !uninstall_account_extensions()));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SigninViewControllerInteractiveBrowserTest,
+                         testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "UninstallAccountExtensions"
+                                             : "KeepAccountExtensions";
+                         });
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

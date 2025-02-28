@@ -243,7 +243,7 @@ class SigninViewController {
   // prompt.
   void ShowSignoutConfirmationPrompt(
       ChromeSignoutConfirmationPromptVariant prompt_variant,
-      base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
+      SignoutConfirmationCallback callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the web contents of the modal dialog.
