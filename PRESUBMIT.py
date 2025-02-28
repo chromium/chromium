@@ -1904,16 +1904,18 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         explanation=(
             'Do not use `features::kIsolatedWebApps` directly to guard Isolated ',
             'Web App code. ',
-            'Use `content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled()` in ',
-            'the browser process or check the `kEnableIsolatedWebAppsInRenderer` ',
-            'command line flag in the renderer process.',
+            'Use `content::AreIsolatedWebAppsEnabled()` in the browser process '
+            'or check the `kEnableIsolatedWebAppsInRenderer` command line flag '
+            'in the renderer process.',
         ),
         treat_as_error=True,
-        excluded_paths=_TEST_CODE_EXCLUDED_PATHS +
-        ('^chrome/browser/about_flags.cc',
-         '^chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.cc',
-         '^chrome/browser/ui/startup/bad_flags_prompt.cc',
-         '^content/shell/browser/shell_content_browser_client.cc')),
+        excluded_paths=_TEST_CODE_EXCLUDED_PATHS + (
+            '^chrome/browser/about_flags.cc',
+            '^chrome/browser/component_updater/iwa_key_distribution_component_installer.cc',
+            '^chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.cc',
+            '^chrome/browser/ui/startup/bad_flags_prompt.cc',
+            '^content/shell/browser/shell_content_browser_client.cc',
+        )),
     BanRule(
         pattern=r'features::kIsolatedWebAppDevMode',
         explanation=(

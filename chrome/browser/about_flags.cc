@@ -5205,11 +5205,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppDevModeName,
      flag_descriptions::kEnableIsolatedWebAppDevModeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebAppDevMode)},
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"enable-iwa-key-distribution-component",
      flag_descriptions::kEnableIwaKeyDistributionComponentName,
      flag_descriptions::kEnableIwaKeyDistributionComponentDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(component_updater::kIwaKeyDistributionComponent)},
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"iwa-key-distribution-component-exp-cohort",
      flag_descriptions::kIwaKeyDistributionComponentExpCohortName,
      flag_descriptions::kIwaKeyDistributionComponentExpCohortDescription,

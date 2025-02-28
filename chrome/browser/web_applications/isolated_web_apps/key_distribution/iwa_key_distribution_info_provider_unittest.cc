@@ -31,6 +31,7 @@
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -443,8 +444,15 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
   testing::NiceMock<MockOnDemandUpdater> on_demand_updater_;
 
   std::unique_ptr<base::ScopedTempDir> dir_;
-  base::test::ScopedFeatureList feature_list_{
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  base::test::ScopedFeatureList features_{
       component_updater::kIwaKeyDistributionComponent};
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// TODO(crbug.com/393102554): Remove this after launch.
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList features_{features::kIsolatedWebApps};
+#endif  // BUILDFLAG(IS_WIN)
 
   base::ScopedPathOverride user_dir_override_{
       component_updater::DIR_COMPONENT_USER};

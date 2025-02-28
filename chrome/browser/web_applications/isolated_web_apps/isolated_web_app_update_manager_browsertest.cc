@@ -1198,8 +1198,10 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
   IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList scoped_feature_list_{
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  base::test::ScopedFeatureList features_{
       component_updater::kIwaKeyDistributionComponent};
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   web_package::SignedWebBundleId web_bundle_id_ =
       test::GetDefaultEd25519WebBundleId();

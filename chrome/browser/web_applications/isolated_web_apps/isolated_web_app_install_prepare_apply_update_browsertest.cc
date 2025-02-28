@@ -128,8 +128,10 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
 
   bool is_dev_mode_ = GetParam();
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   base::test::ScopedFeatureList features_{
       component_updater::kIwaKeyDistributionComponent};
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Override the pre-install component directory and its alternative directory
   // so that the component update will not find the pre-installed key dist

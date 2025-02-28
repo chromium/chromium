@@ -918,8 +918,10 @@ extern const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[];
 extern const char kEnableIsolatedWebAppDevModeName[];
 extern const char kEnableIsolatedWebAppDevModeDescription[];
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const char kEnableIwaKeyDistributionComponentName[];
 extern const char kEnableIwaKeyDistributionComponentDescription[];
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 extern const char kIwaKeyDistributionComponentExpCohortName[];
 extern const char kIwaKeyDistributionComponentExpCohortDescription[];

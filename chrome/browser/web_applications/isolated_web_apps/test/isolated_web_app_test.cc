@@ -106,7 +106,10 @@ IsolatedWebAppTest::IsolatedWebAppTest(
 #if !BUILDFLAG(IS_CHROMEOS)
       features::kIsolatedWebApps,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-      component_updater::kIwaKeyDistributionComponent};
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      component_updater::kIwaKeyDistributionComponent
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  };
   if (dev_mode) {
     enabled_features.push_back(features::kIsolatedWebAppDevMode);
   }
