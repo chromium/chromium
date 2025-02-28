@@ -142,16 +142,20 @@ void AppManagementPageHandlerChromeOs::OnPinnedChanged(
 void AppManagementPageHandlerChromeOs::GetSubAppToParentMap(
     GetSubAppToParentMapCallback callback) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
-  CHECK(provider);
-  provider->scheduler().ScheduleCallbackWithResult(
-      "AppManagementPageHandlerBase::GetSubAppToParentMap",
-      web_app::AllAppsLockDescription(),
-      base::BindOnce(
-          [](web_app::AllAppsLock& lock, base::Value::Dict& debug_value) {
-            return lock.registrar().GetSubAppToParentMap();
-          }),
-      /*on_complete=*/std::move(callback),
-      /*arg_for_shutdown=*/base::flat_map<std::string, std::string>());
+  if (provider) {
+    provider->scheduler().ScheduleCallbackWithResult(
+        "AppManagementPageHandlerBase::GetSubAppToParentMap",
+        web_app::AllAppsLockDescription(),
+        base::BindOnce(
+            [](web_app::AllAppsLock& lock, base::Value::Dict& /*debug_value*/) {
+              return lock.registrar().GetSubAppToParentMap();
+            }),
+        /*on_complete=*/std::move(callback),
+        /*arg_for_shutdown=*/base::flat_map<std::string, std::string>());
+  } else {
+    LOG(ERROR) << "Could not find WebAppProvider.";
+    std::move(callback).Run(base::flat_map<std::string, std::string>());
+  }
 }
 
 void AppManagementPageHandlerChromeOs::GetExtensionAppPermissionMessages(
