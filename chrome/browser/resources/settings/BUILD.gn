@@ -274,7 +274,6 @@ build_webui("build") {
     "autofill_page/entity_data_manager_proxy.ts",
     "autofill_page/password_manager_proxy.ts",
     "autofill_page/payments_manager_proxy.ts",
-    "autofill_page/user_annotations_manager_proxy.ts",
     "base_mixin.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/settings_idle_load.ts",

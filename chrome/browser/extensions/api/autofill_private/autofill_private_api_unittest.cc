@@ -17,7 +17,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
@@ -34,8 +33,6 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
-#include "components/user_annotations/test_user_annotations_service.h"
-#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -198,13 +195,6 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
     payments_data_manager().SetSyncingForTest(/*is_syncing_for_test=*/true);
     payments_data_manager().SetPrefService(autofill_client()->GetPrefs());
-    UserAnnotationsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindLambdaForTesting([](content::BrowserContext* context)
-                                       -> std::unique_ptr<KeyedService> {
-          return std::make_unique<
-              user_annotations::TestUserAnnotationsService>();
-        }));
   }
 
   void TearDownOnMainThread() override {
@@ -225,18 +215,6 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
     return autofill_client()->GetPersonalDataManager();
   }
 
-  user_annotations::TestUserAnnotationsService* user_annotations_service() {
-    return static_cast<user_annotations::TestUserAnnotationsService*>(
-        UserAnnotationsServiceFactory::GetForProfile(profile()));
-  }
-
-  user_annotations::UserAnnotationsEntries GetAllUserAnnotationsEntries() {
-    base::test::TestFuture<user_annotations::UserAnnotationsEntries>
-        test_future;
-    user_annotations_service()->RetrieveAllEntries(test_future.GetCallback());
-    return test_future.Take();
-  }
-
  protected:
   bool RunAutofillSubtest(const std::string& subtest) {
     const std::string extension_url = "main.html?" + subtest;
@@ -248,8 +226,6 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
  private:
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;
-  raw_ptr<user_annotations::TestUserAnnotationsService>
-      user_annotations_service_;
   base::test::ScopedFeatureList feature_list_{
       autofill::features::kAutofillAiWithDataSchema};
 };
@@ -297,42 +273,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RetrieveAllUserAnnotations) {
-  ASSERT_EQ(user_annotations_service()->count_entries_retrieved(), 0u);
-  RunAutofillSubtest("getUserAnnotationsEntries");
-  ASSERT_EQ(user_annotations_service()->count_entries_retrieved(), 1u);
-}
-
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveUserAnnotationEntry) {
-  // Seed user annotations service with entries.
-  ASSERT_TRUE(RunAutofillSubtest("deleteUserAnnotationsEntry"));
-  optimization_guide::proto::UserAnnotationsEntry entry_1;
-  entry_1.set_entry_id(123);
-  optimization_guide::proto::UserAnnotationsEntry entry_2;
-  entry_2.set_entry_id(321);
-  user_annotations_service()->ReplaceAllEntries({entry_1, entry_2});
-  EXPECT_EQ(GetAllUserAnnotationsEntries().size(), 2u);
-
-  // By default, the test deletes the entry whose id is 123.
-  RunAutofillSubtest("deleteUserAnnotationsEntry");
-
-  user_annotations::UserAnnotationsEntries entries =
-      GetAllUserAnnotationsEntries();
-  EXPECT_EQ(entries.size(), 1u);
-  EXPECT_EQ(entries[0].entry_id(), 321u);
-}
-
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveAllUserAnnotations) {
-  // Seed user annotations service with entries.
-  optimization_guide::proto::UserAnnotationsEntry entry;
-  entry.set_entry_id(0);
-  user_annotations_service()->ReplaceAllEntries({entry});
-  EXPECT_EQ(GetAllUserAnnotationsEntries().size(), 1u);
-
-  RunAutofillSubtest("deleteAllUserAnnotationsEntries");
-  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
-}
-
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
                        PredictionImprovementsIphFeatureUsed) {
   using NotifyIphMockCallback =
@@ -346,7 +286,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
               Call(autofill::AutofillClient::IphFeature::kAutofillAi));
 
   RunAutofillSubtest("predictionImprovementsIphFeatureUsed");
-  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, LogServerCardLinkClicked) {
