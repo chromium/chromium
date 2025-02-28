@@ -84,6 +84,12 @@ class IOSCollaborationControllerDelegate
                                  const TabGroup* tab_group,
                                  UIImage* faviconsGridImage);
 
+  // Configures the shareKit config for the manage flow and starts the flow.
+  void ConfigureAndManageTabGroup(const tab_groups::EitherGroupID& either_id,
+                                  ResultCallback result,
+                                  const TabGroup* tab_group,
+                                  UIImage* faviconsGridImage);
+
   // Returns the join group image displayed in the join flow.
   UIImage* JoinGroupImage(NSArray<ShareKitPreviewItem*>* preview_items);
 

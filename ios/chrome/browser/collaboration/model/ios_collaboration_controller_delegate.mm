@@ -248,29 +248,12 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
     return;
   }
 
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->GetProfile());
-  tab_groups::CollaborationId collaboration_id =
-      tab_groups::utils::GetTabGroupCollabID(either_id, tab_group_sync_service);
-  if (collaboration_id->empty()) {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
-    return;
-  }
+  auto callback = base::BindOnce(
+      &IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup,
+      weak_ptr_factory_.GetWeakPtr(), either_id, std::move(result), tab_group);
 
-  ShareKitManageConfiguration* config =
-      [[ShareKitManageConfiguration alloc] init];
-  config.baseViewController = base_view_controller_;
-  config.tabGroup = tab_group;
-  config.collabID = base::SysUTF8ToNSString(collaboration_id.value());
-  config.applicationHandler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
-  auto completion_block = base::CallbackToBlock(std::move(result));
-  config.completion = ^(ShareKitFlowOutcome outcome) {
-    completion_block(ConvertOutcome(outcome));
-  };
-
-  session_id_ = share_kit_service_->ManageTabGroup(config);
+  favicons_grid_configurator_->FetchFaviconsGrid(tab_group,
+                                                 std::move(callback));
 }
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(
@@ -434,19 +417,6 @@ void IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup(
   session_id_ = share_kit_service_->JoinTabGroup(config);
 }
 
-UIImage* IOSCollaborationControllerDelegate::JoinGroupImage(
-    NSArray<ShareKitPreviewItem*>* preview_items) {
-  CGRect frame = CGRectMake(0, 0, kJoinGroupImageSize, kJoinGroupImageSize);
-  TabGroupFaviconsGrid* favicons_grid =
-      [[TabGroupFaviconsGrid alloc] initWithFrame:frame];
-  favicons_grid.translatesAutoresizingMaskIntoConstraints = NO;
-  favicons_grid.numberOfTabs = [preview_items count];
-  favicons_grid_configurator_->ConfigureFaviconsGrid(favicons_grid,
-                                                     preview_items);
-  [favicons_grid layoutIfNeeded];
-  return ImageFromView(favicons_grid, nil, UIEdgeInsetsZero);
-}
-
 void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
     const tab_groups::EitherGroupID& either_id,
     ResultWithGroupTokenCallback result,
@@ -471,6 +441,55 @@ void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
   };
 
   session_id_ = share_kit_service_->ShareTabGroup(config);
+}
+
+void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
+    const tab_groups::EitherGroupID& either_id,
+    ResultCallback result,
+    const TabGroup* tab_group,
+    UIImage* faviconsGridImage) {
+  if (!tab_group || !faviconsGridImage) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    return;
+  }
+
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  tab_groups::CollaborationId collaboration_id =
+      tab_groups::utils::GetTabGroupCollabID(either_id, tab_group_sync_service);
+  if (collaboration_id->empty()) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    return;
+  }
+
+  ShareKitManageConfiguration* config =
+      [[ShareKitManageConfiguration alloc] init];
+  config.baseViewController = base_view_controller_;
+  config.tabGroup = tab_group;
+  config.groupImage = faviconsGridImage;
+  config.collabID = base::SysUTF8ToNSString(collaboration_id.value());
+  config.applicationHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  auto completion_block = base::CallbackToBlock(std::move(result));
+  config.completion = ^(ShareKitFlowOutcome outcome) {
+    completion_block(ConvertOutcome(outcome));
+  };
+
+  session_id_ = share_kit_service_->ManageTabGroup(config);
+}
+
+UIImage* IOSCollaborationControllerDelegate::JoinGroupImage(
+    NSArray<ShareKitPreviewItem*>* preview_items) {
+  CGRect frame = CGRectMake(0, 0, kJoinGroupImageSize, kJoinGroupImageSize);
+  TabGroupFaviconsGrid* favicons_grid =
+      [[TabGroupFaviconsGrid alloc] initWithFrame:frame];
+  favicons_grid.translatesAutoresizingMaskIntoConstraints = NO;
+  favicons_grid.numberOfTabs = [preview_items count];
+  favicons_grid_configurator_->ConfigureFaviconsGrid(favicons_grid,
+                                                     preview_items);
+  [favicons_grid layoutIfNeeded];
+  return ImageFromView(favicons_grid, nil, UIEdgeInsetsZero);
 }
 
 }  // namespace collaboration
