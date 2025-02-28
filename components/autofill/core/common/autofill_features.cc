@@ -208,6 +208,13 @@ BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
              "AutofillImproveAddressFieldSwapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, new `negative_pattern` regex values will be used
+// in order to reduce false positive classifications of city fields.
+// TODO(crbug.com/330508437): Clean up when launched.
+BASE_FEATURE(kAutofillImproveCityFieldClassification,
+             "AutofillImproveCityFieldClassification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill will try to reuse the result of previous form
 // extractions in subsequent functions that needs the form extracted, provided
 // we have guarantees that in the meantime the form couldn't have changed.
