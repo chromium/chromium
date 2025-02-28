@@ -586,7 +586,7 @@ public class MiniPlayerMediatorUnitTest {
                 .getBottomControlsMinHeightOffset();
 
         if (mTestBottomControlsStacker) {
-            mMediator.onBrowserControlsOffsetUpdate(layerYOffset, false);
+            mMediator.onBrowserControlsOffsetUpdate(layerYOffset);
         } else {
             mBrowserControlsObserverCaptor
                     .getValue()

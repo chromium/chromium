@@ -492,7 +492,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
         assertEquals(LayerScrollBehavior.DEFAULT_SCROLL_OFF, toolbarLayer.getScrollBehavior());
 
-        toolbarLayer.onBrowserControlsOffsetUpdate(12, false);
+        toolbarLayer.onBrowserControlsOffsetUpdate(12);
         verify(mControlContainerView).setTranslationY(12);
         assertEquals(12, mBottomToolbarOffsetSupplier.get().intValue());
 
@@ -502,7 +502,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(LayerVisibility.VISIBLE, progressBarLayer.getLayerVisibility());
         assertEquals(LayerScrollBehavior.DEFAULT_SCROLL_OFF, progressBarLayer.getScrollBehavior());
 
-        progressBarLayer.onBrowserControlsOffsetUpdate(-12, false);
+        progressBarLayer.onBrowserControlsOffsetUpdate(-12);
         verify(mProgressBarContainer).setTranslationY(-12);
 
         mIsOmniboxFocused.set(true);

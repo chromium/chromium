@@ -116,5 +116,5 @@ public interface BottomControlsLayer {
      * @param layerYOffset The yOffset for the layer's position in the bottom controls
      * @see BrowserControlsStateProvider.Observer#onControlsOffsetChanged
      */
-    default void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {}
+    default void onBrowserControlsOffsetUpdate(int layerYOffset) {}
 }
