@@ -1150,6 +1150,15 @@ public class TabGroupUiMediatorUnitTest {
         assertNotNull(composite3);
         assertNotEquals(composite1, composite3);
         assertNotEquals(composite2, composite3);
+
+        reset(mOnSnapshotTokenChange);
+        mModel.get(TabGroupUiProperties.WIDTH_PX_CALLBACK).onResult(123);
+        verify(mOnSnapshotTokenChange).onResult(mTokenCaptor.capture());
+        Object composite4 = mTokenCaptor.getValue();
+        assertNotNull(composite4);
+        assertNotEquals(composite1, composite4);
+        assertNotEquals(composite2, composite4);
+        assertNotEquals(composite3, composite4);
     }
 
     @Test

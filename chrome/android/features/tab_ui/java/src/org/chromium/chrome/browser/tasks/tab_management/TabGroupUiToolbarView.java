@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -30,6 +31,7 @@ public class TabGroupUiToolbarView extends FrameLayout {
     private ViewGroup mContainerView;
     private ViewGroup mMainContent;
     private @Nullable FrameLayout mImageTilesContainer;
+    private @Nullable Callback<Integer> mWidthPxCallback;
 
     public TabGroupUiToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,6 +48,14 @@ public class TabGroupUiToolbarView extends FrameLayout {
         mContainerView = findViewById(R.id.toolbar_container_view);
         mMainContent = findViewById(R.id.main_content);
         mImageTilesContainer = findViewById(R.id.toolbar_image_tiles_container);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (mWidthPxCallback != null) {
+            mWidthPxCallback.onResult(getWidth());
+        }
     }
 
     void setShowGroupDialogButtonOnClickListener(OnClickListener listener) {
@@ -113,5 +123,10 @@ public class TabGroupUiToolbarView extends FrameLayout {
         if (mImageTilesContainer == null) return;
 
         mImageTilesContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setWidthPxCallback(Callback<Integer> widthPxCallback) {
+        mWidthPxCallback = widthPxCallback;
+        mWidthPxCallback.onResult(getWidth());
     }
 }

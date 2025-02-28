@@ -91,28 +91,34 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
     private static class NestedSnapshot {
         private final Object mChildSnapshot;
         private final @ColorInt int mBackgroundColor;
+        private final int mWidthPx;
 
-        /* package */ NestedSnapshot(Object childSnapshot, @ColorInt int backgroundColor) {
+        /* package */ NestedSnapshot(
+                Object childSnapshot, @ColorInt int backgroundColor, int widthPx) {
             mChildSnapshot = childSnapshot;
             mBackgroundColor = backgroundColor;
+            mWidthPx = widthPx;
         }
 
         @Override
         public boolean equals(@Nullable Object obj) {
             return (obj instanceof NestedSnapshot other)
                     && Objects.equals(mChildSnapshot, other.mChildSnapshot)
-                    && mBackgroundColor == other.mBackgroundColor;
+                    && mBackgroundColor == other.mBackgroundColor
+                    && this.mWidthPx == other.mWidthPx;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(mChildSnapshot, mBackgroundColor);
+            return Objects.hash(mChildSnapshot, mBackgroundColor, mWidthPx);
         }
     }
 
     private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
     private final Callback<List<GroupMember>> mOnGroupMembersChanged = this::onGroupMembersChanged;
-    private final Callback<Object> mOnChildTokenChange = this::onChildTokenChange;
+    private final Callback mOnTokenComponentChange = this::onTokenComponentChange;
+    private final ObservableSupplierImpl<Integer> mWidthPxSupplier =
+            new ObservableSupplierImpl<>(0);
     private final PropertyModel mModel;
     private final TabModelObserver mTabModelObserver;
     private final ResetHandler mResetHandler;
@@ -175,7 +181,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         mThemeColorProvider.addTintObserver(this);
         mOnSnapshotTokenChange = onSnapshotTokenChange;
         mChildTokenSupplier = childTokenSupplier;
-        mChildTokenSupplier.addObserver(mOnChildTokenChange);
+        mChildTokenSupplier.addObserver(mOnTokenComponentChange);
+        mWidthPxSupplier.addObserver(mOnTokenComponentChange);
 
         onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
         onTintChanged(
@@ -327,6 +334,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         setupToolbarButtons();
         mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE, true);
         mModel.set(TabGroupUiProperties.IS_MAIN_CONTENT_VISIBLE, true);
+        mModel.set(TabGroupUiProperties.WIDTH_PX_CALLBACK, mWidthPxSupplier::set);
         resetTabStrip();
 
         mHandleBackPressChangedSupplier = handleBackPressChangedSupplier;
@@ -508,13 +516,16 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         return mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
     }
 
-    private void onChildTokenChange(Object ignored) {
+    private void onTokenComponentChange(Object ignored) {
         publishSnapshotToken();
     }
 
     private void publishSnapshotToken() {
         Object token =
-                new NestedSnapshot(mChildTokenSupplier.get(), mThemeColorProvider.getThemeColor());
+                new NestedSnapshot(
+                        mChildTokenSupplier.get(),
+                        mThemeColorProvider.getThemeColor(),
+                        mWidthPxSupplier.get());
         mOnSnapshotTokenChange.onResult(token);
     }
 
@@ -577,7 +588,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                     .removeObserver(mOnGroupMembersChanged);
             mTransitiveSharedGroupObserver.destroy();
         }
-        mChildTokenSupplier.removeObserver(mOnChildTokenChange);
+        mChildTokenSupplier.removeObserver(mOnTokenComponentChange);
+        mWidthPxSupplier.removeObserver(mOnTokenComponentChange);
     }
 
     private @Nullable DialogController getTabGridDialogControllerIfExists() {

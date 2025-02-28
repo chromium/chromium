@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiPropert
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.TINT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.WIDTH_PX_CALLBACK;
 
 import android.view.View;
 
@@ -60,10 +61,12 @@ class TabGroupUiViewBinder {
         } else if (IMAGE_TILES_CONTAINER_VISIBLE == propertyKey) {
             viewHolder.toolbarView.setImageTilesContainerVisible(
                     model.get(IMAGE_TILES_CONTAINER_VISIBLE));
-        } else if (INITIAL_SCROLL_INDEX == propertyKey) {
-            scrollToIndex(viewHolder, model);
         } else if (TINT == propertyKey) {
             viewHolder.toolbarView.setTint(model.get(TINT));
+        } else if (INITIAL_SCROLL_INDEX == propertyKey) {
+            scrollToIndex(viewHolder, model);
+        } else if (WIDTH_PX_CALLBACK == propertyKey) {
+            viewHolder.toolbarView.setWidthPxCallback(model.get(WIDTH_PX_CALLBACK));
         }
     }
 
