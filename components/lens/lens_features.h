@@ -661,6 +661,11 @@ extern bool ShouldShowUploadProgressBar();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double GetUploadProgressBarShowHeuristic();
 
+// Whether the contextual searchbox should be auto-focused when the overlay is
+// first opened.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldAutoFocusSearchbox();
+
 // Whether to enable the simplified selection flow in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsSimplifiedSelectionEnabled();
