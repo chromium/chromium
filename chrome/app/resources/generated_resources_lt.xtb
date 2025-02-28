@@ -462,6 +462,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1303101771013849280">Žymių HTML failas</translation>
 <translation id="1303671224831497365">Nerasta jokių „Bluetooth“ įrenginių</translation>
 <translation id="130491383855577612">„Linux“ programos ir failai sėkmingai pakeisti</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Pašalinti vieną plėtinį ir duomenis, išsaugotus šiame įrenginyje}one{Pašalinti {ACCOUNT_EXTENSIONS_COUNT} plėtinį ir duomenis, išsaugotus šiame įrenginyje}few{Pašalinti {ACCOUNT_EXTENSIONS_COUNT} plėtinius ir duomenis, išsaugotus šiame įrenginyje}many{Pašalinti {ACCOUNT_EXTENSIONS_COUNT} plėtinio ir duomenis, išsaugotus šiame įrenginyje}other{Pašalinti {ACCOUNT_EXTENSIONS_COUNT} plėtinių ir duomenis, išsaugotus šiame įrenginyje}}</translation>
 <translation id="1306518237408758433">Atidaryti „<ph name="BOOKMARK_TITLE" />“</translation>
 <translation id="1306606229401759371">Keisti nustatymus</translation>
 <translation id="1307165550267142340">PIN kodas sukurtas</translation>
@@ -1219,6 +1220,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1826192255355608658">„Chrome“ naršyklės žymių, slaptažodžių, istorijos ir kt. sinchronizavimas</translation>
 <translation id="1826516787628120939">Tikrinama</translation>
 <translation id="1826657447823925402">Atvirkštinis slinkimas išjungtas</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> spalva</translation>
 <translation id="1827504459960247692">Viešosios interneto prieigos taško pavadinimas</translation>
 <translation id="1828378091493947763">Šis papildinys šiame įrenginyje nepalaikomas</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Atidaryti viską}=1{&amp;Atidaryti žymę}one{&amp;Atidaryti viską ({COUNT})}few{&amp;Atidaryti viską ({COUNT})}many{&amp;Atidaryti viską ({COUNT})}other{&amp;Atidaryti viską ({COUNT})}}</translation>
@@ -6737,6 +6739,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5749214722697335450">Siųskite naudojimo ir diagnostikos duomenis. Padėkite tobulinti „Android“ funkcijas automatiškai siųsdami „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie suminiai duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomos žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie metriką<ph name="BEGIN_LINK1_END" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Patikrinti, ar parengta naudoti įrenginį kaip modemą</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Šis plėtinys išsaugotas „Google“ paskyroje, bet bet kokie duomenys, išsaugoti tik šiame įrenginyje, gali būti ištrinti}one{Šie plėtiniai išsaugoti „Google“ paskyroje, bet bet kokie duomenys, išsaugoti tik šiame įrenginyje, gali būti ištrinti}few{Šie plėtiniai išsaugoti „Google“ paskyroje, bet bet kokie duomenys, išsaugoti tik šiame įrenginyje, gali būti ištrinti}many{Šie plėtiniai išsaugoti „Google“ paskyroje, bet bet kokie duomenys, išsaugoti tik šiame įrenginyje, gali būti ištrinti}other{Šie plėtiniai išsaugoti „Google“ paskyroje, bet bet kokie duomenys, išsaugoti tik šiame įrenginyje, gali būti ištrinti}}</translation>
 <translation id="5753570386948603678">Ištrinti iš istorijos</translation>
 <translation id="5756163054456765343">P&amp;agalbos centras</translation>
 <translation id="5757187557809630523">kitas takelis</translation>
@@ -9876,9 +9879,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> – <ph name="COUNT" /> balsas</translation>
 <translation id="7990958035181555539">Automatinis „Wi-Fi“ perkėlimas iš „Android“ telefono</translation>
 <translation id="7991296728590311172">Prieigos jungikliu nustatymai</translation>
-<translation id="7992080146463834191">Apibendrinkite turinį, supaprastinkite sudėtingą kalbą arba užduokite klausimų.</translation>
 <translation id="7992203134935383159">Kalbos sintezė</translation>
-<translation id="799570308305997052">Žiniatinklio rodinys</translation>
 <translation id="7997826902155442747">Apdorojimo pirmumas</translation>
 <translation id="7997828719430450286">Pavyko.</translation>
 <translation id="7998701048266085837">URL</translation>
@@ -11143,7 +11144,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8874448314264883207">Plėtinys „<ph name="EXTENSION_NAME" />“ buvo išjungtas</translation>
 <translation id="8874647982044395866">Organiškas</translation>
 <translation id="8874790741333031443">Pabandykite laikinai leisti trečiųjų šalių slapukus: tai reiškia, kad naršydami būsite mažiau apsaugoti, bet labiau tikėtina, kad svetainės funkcijos tinkamai veiks.</translation>
-<translation id="8875221558267407626">Apibendrinkite turinį, supaprastinkite sudėtingą kalbą arba užduokite klausimų</translation>
 <translation id="8875520811099717934">„Linux“ naujovinimas</translation>
 <translation id="8875736897340638404">Pasirinkite matomumo nustatymą</translation>
 <translation id="8876307312329369159">Šio nustatymo negalima pakeisti demonstracinėje sesijoje.</translation>

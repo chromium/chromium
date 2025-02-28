@@ -246,7 +246,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="17722141032474077">Càlculs</translation>
 <translation id="1774796056689732716">Calendari, <ph name="CURRENT_MONTH_YEAR" />, actualment està seleccionat el dia <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configura la visualització de les notificacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
-<translation id="1785317913592722944">Suprimeix l'element del grup suggerit</translation>
 <translation id="1786487376942610288">Canvia entre la mida màxima o l'actual de la finestra d'imatge sobre imatge</translation>
 <translation id="1787955149152357925">Desactivat</translation>
 <translation id="1796561540704213354">Llocs web que inclouen les pàgines que has visitat i les pàgines obertes</translation>
@@ -853,6 +852,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3859364108019690">No es poden reproduir aplicacions en continu</translation>
 <translation id="3861651314799684201">Prem Retorn per gravar la pantalla completa</translation>
 <translation id="3870197372373144624">Prova d'apagar el dispositiu.</translation>
+<translation id="3879748587602334249">Gestor de baixades</translation>
 <translation id="3886872229787704059">Obert avui</translation>
 <translation id="3891340733213178823">Premeu Ctrl+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="3892148308691398805">Copia el text</translation>
@@ -878,6 +878,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3958714870339660776">Tot el dia</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963124517343721543">Obre les teves finestres i pestanyes anteriors perquè et resulti fàcil continuar des d'on ho havies deixat. També veuràs suggeriments personalitzats de coses a fer a continuació.</translation>
+<translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3969043077941541451">Desactivada</translation>
 <translation id="3970324493235864154">Consulta les notificacions del telèfon</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
@@ -1619,6 +1620,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6319058840130157106">Retrocedeix entre l'extrem inferior dret, el menú d'aplicacions, la barra d'adreces, la barra d'adreces d'interès, el lloc web que està obert i les baixades</translation>
 <translation id="6319503618073410818">Mostra els detalls al navegador</translation>
 <translation id="6324916366299863871">Edita la drecera</translation>
+<translation id="6325525973963619867">Error</translation>
 <translation id="6330012934079202188">S'estan mostrant les finestres de tots els escriptoris. Prem la tecla de fletxa amunt per mostrar les finestres de l'escriptori actual.</translation>
 <translation id="6337159624125741244">La lupa de pantalla completa està activada</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> és una sessió gestionada per <ph name="MANAGER" /></translation>

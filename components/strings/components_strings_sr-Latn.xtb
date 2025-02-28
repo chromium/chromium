@@ -837,6 +837,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2451607499823206582">Prati se</translation>
 <translation id="2452098632681057184">Ekologija i životna sredina</translation>
 <translation id="2452837234288608067">Nismo uspeli da vam pomognemo s time. Probajte ponovo.</translation>
+<translation id="2453045048779611513">Vaša organizacija ograničava sadržaj koji možete da čuvate</translation>
 <translation id="2456755709261364512">Baterija mora da se napuni iznad <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vam pruža centralizovanu alatku za konfigurisanje smernica pregledača iz klauda</translation>
 <translation id="2461822463642141190">Aktuelno</translation>
@@ -1086,6 +1087,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2942492342931589800">Neformalno</translation>
 <translation id="2942515540157583425">IT i tehnički poslovi</translation>
 <translation id="2943895734390379394">Vreme otpremanja:</translation>
+<translation id="2947281105969315778">Da biste delili grupe kartica ili im se pridružili, neophodno je da imate mogućnost da se prijavite u Chrome</translation>
 <translation id="2948083400971632585">Na stranici Podešavanja možete da onemogućite sve proksije konfigurisane za vezu.</translation>
 <translation id="2949183777371959169">Zanemareno zato što mašina nije registrovana za upravljanje klaudom u pregledaču Chrome.</translation>
 <translation id="2951588413176968965">Moje poštansko sanduče</translation>
@@ -1946,6 +1948,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Otpremanje fajla u Microsoft OneDrive je pauzirano</translation>
+<translation id="4389931020843542579">Učitava se grupa kartica</translation>
 <translation id="4390472908992056574">Obod</translation>
 <translation id="4395550503472021297">Ove smernice kontrolišu podrazumevano ponašanje sledećih smernica: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Otvara iskačući prozor za verifikaciju na veb-sajtu banke</translation>
@@ -3903,6 +3906,7 @@ Dodatni detalji:
 <translation id="791107458486222637">Rezultat se ponavlja</translation>
 <translation id="791551905239004656">Crtanje i bojenje</translation>
 <translation id="7916162853251942238">Flexo baza</translation>
+<translation id="791698251820376781">Organizacija vam ne dozvoljava da se prijavite</translation>
 <translation id="7926503317156566022">Avioindustrija</translation>
 <translation id="793209273132572360">Želite da ažurirate adresu?</translation>
 <translation id="7932579305932748336">Omot</translation>
@@ -4616,6 +4620,7 @@ Dodatni detalji:
 <translation id="9191834167571392248">Bušenje u donjem levom uglu</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Prirodni kozmetički proizvodi</translation>
+<translation id="9195969368671142407">Kada organizacija ograniči čuvanje na Google nalogu, ne možete da delite grupe kartica niti da im se pridružite</translation>
 <translation id="9199905725844810519">Štampanje je blokirano</translation>
 <translation id="9201904868909900493">Otvara se anketa…</translation>
 <translation id="9204089334327209740">Kada se otpremanje završi, možete da izmenite fajlove u usluzi <ph name="CLOUD_PROVIDER" />. Lokalno skladište, uključujući sve fajlove u otpadu, automatski će biti uklonjeno.</translation>

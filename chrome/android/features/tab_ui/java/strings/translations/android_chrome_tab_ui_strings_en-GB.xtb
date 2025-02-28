@@ -12,7 +12,6 @@
 <translation id="1293272072740285747">Keep this group to add tabs later or delete it if you no longer need it.
 
 If you delete it, everyone will immediately lose access to the '<ph name="TITLE_OF_GROUP" />' tab group and it will be deleted from all devices.</translation>
-<translation id="1326654401173629446">The '<ph name="TAB_GROUP_NAME" />' tab group is no longer available</translation>
 <translation id="1329584516321524826">Updated just now</translation>
 <translation id="1340839264183302272">Leave group</translation>
 <translation id="1419023007528516122">This will permanently delete the group from your device</translation>
@@ -47,7 +46,9 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="266935134738038806">Visit site</translation>
 <translation id="2671423594960767771">Share group</translation>
 <translation id="2677748264148917807">Leave</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Updated <ph name="NUM_WEEKS_ONE" /> week ago}other{Updated <ph name="NUM_WEEKS_MANY" /> weeks ago}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{Updated <ph name="NUM_HOURS_ONE" /> hour ago}other{Updated <ph name="NUM_HOURS_MANY" /> hours ago}}</translation>
 <translation id="2755485474385016903">Changes made are seen by everyone in the group</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Created <ph name="NUM_HOURS_ONE" /> hour ago}other{Created <ph name="NUM_HOURS_MANY" /> hours ago}}</translation>
 <translation id="2801787514987684416">View shop info?</translation>
@@ -84,6 +85,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_CHANGED" /> tabs changed, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4431937619879060901">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{Updated <ph name="NUM_DAYS_ONE" /> day ago}other{Updated <ph name="NUM_DAYS_MANY" /> days ago}}</translation>
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Close 1 inactive tab?}other{Close <ph name="TAB_COUNT_MANY" /> inactive tabs?}}</translation>
 <translation id="4686942373615810936">Created just now</translation>
@@ -164,6 +166,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7688386659311034820">Inactive tabs dialogue</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Share <ph name="TABS_COUNT_ONE" /> selected tab}other{Share <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{Updated <ph name="NUM_YEARS_ONE" /> year ago}other{Updated <ph name="NUM_YEARS_MANY" /> years ago}}</translation>
 <translation id="7773714564112603605">Remove tab and delete group</translation>
 <translation id="7792771145871471484">Review the suggestions.</translation>
 <translation id="7792860826279960128">Notice about shared tab group changes at half-height</translation>
@@ -181,10 +184,12 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Move tab up</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{Updated <ph name="NUM_MINS_ONE" /> minute ago}other{Updated <ph name="NUM_MINS_MANY" /> minutes ago}}</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8338427544764842461">Your tab groups are saved here and get updated across all your signed-in devices</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Expand shared tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Expand shared tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Close <ph name="TABS_COUNT_ONE" /> selected tab}other{Close <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Updated <ph name="NUM_MONTHS_ONE" /> month ago}other{Updated <ph name="NUM_MONTHS_MANY" /> months ago}}</translation>
 <translation id="8398929769197326728">New folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CLOSED" /> closed}}</translation>

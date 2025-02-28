@@ -119,6 +119,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2583187216237139145">Any Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continue using Chromium</translation>
 <translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2629740064077610681">Your organisation can see and manage browsing data, such as your bookmarks, history and passwords. It can't see browsing data in other Chromium profiles</translation>
 <translation id="2635452620547538388">Verify that it's you to use and save Chromium data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium runs faster and features that use JavaScript should work as designed (recommended)</translation>
 <translation id="2648074677641340862">An operating system error occurred during installation. Please download Chromium again.</translation>
@@ -383,6 +384,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6366160072964553914">Chromium blocked this download because the file isn't commonly downloaded and it may be dangerous</translation>
 <translation id="6373523479360886564">Are you sure you want to uninstall Chromium?</translation>
 <translation id="6375219077595103062">Add a shortcut to Password Manager</translation>
+<translation id="6390800440335263989">To continue, sign in to Chromium as <ph name="EMAIL" />. This makes sure that you've got your organisation's policies.</translation>
 <translation id="6400112897226594999">Chromium logo inside a computer screen.</translation>
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>
 <translation id="6436260184216827876">Image search is not available. Please try again later.</translation>

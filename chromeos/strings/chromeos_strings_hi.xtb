@@ -81,6 +81,7 @@
 <translation id="131461803491198646">होम नेटवर्क, रोमिंग नहीं</translation>
 <translation id="1327977588028644528">गेटवे</translation>
 <translation id="1328223165223065150">वॉलपेपर का रंग</translation>
+<translation id="1329478709358066995">ट्रांसक्रिप्ट:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कैन करने की जगह में फ़िट करें</translation>
 <translation id="1343442362630695901">सॉल्ट लेक</translation>
@@ -1275,6 +1276,7 @@
 <translation id="6930597342185648547">बैकग्राउंड के बारे में जानकारी</translation>
 <translation id="6939667434404433010">रिकॉर्डिंग को नाम से खोजें</translation>
 <translation id="6939766318048400022">कैफ़े</translation>
+<translation id="6942253772720771875">सुझाव, शिकायत या राय भेजें या अपनी समस्या के बारे में बताएं</translation>
 <translation id="6943893908656559156">रिमोट आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="6953137545147683679">सुनहरे</translation>
 <translation id="6957231940976260713">सेवा का नाम</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">इस <ph name="DEVICE_TYPE" /> को एंटरप्राइज़ मैनेज करता है</translation>
 <translation id="8398927464629426868">वह दर जिस पर डिवाइस अभी चार्ज या डिस्चार्ज हो रहा है</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> स्टाइल में बनी <ph name="ART_FEATURE" /> की पेंटिंग</translation>
+<translation id="8409219750150841791">जनरेट की गई खास जानकारी:</translation>
 <translation id="8410244574650205435">एपीएन का पता अपने-आप लगाया जाता है</translation>
 <translation id="8420955526972171689">गड़बड़ी की जानकारी देने वाले टेस्ट करके, हार्डवेयर से जुड़ी समस्याओं को हल करता है</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> से जुड़ी और कार्रवाइयां</translation>
 <translation id="86356131183441916">हल्का बैंगनी</translation>
 <translation id="8647595191512746911">ऑडियो को टेक्स्ट में बदलने की सुविधा</translation>
+<translation id="8648578954147795914">जनरेट किए गए नाम:</translation>
 <translation id="8650852232143958317">Gmail और Google Drive में मौजूद फ़ाइलों को अपने निजी खाते में ट्रांसफ़र करें</translation>
 <translation id="8651481478098336970">आवाज़ बंद करें</translation>
 <translation id="8655295600908251630">चैनल</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">अक्सर इस्तेमाल किए जाने वाले एपीएन दिखाएं</translation>
 <translation id="932327136139879170">होम बटन</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">पक्का करें आपका माइक कनेक्ट हो या Chromebook को रीस्टार्ट करें</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> के लिए कोई बटन नहीं चुना गया है. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">पूरी रिकॉर्डिंग में आवाज़ों को मैच करता है, ताकि ट्रांसक्रिप्ट में यह पता चल सके कि किसी स्पीकर ने क्या कहा और कब कहा</translation>

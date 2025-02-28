@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Namų tinklas, ne tarptinklinis ryšys</translation>
 <translation id="1327977588028644528">Tinklų sietuvas</translation>
 <translation id="1328223165223065150">Ekrano fono spalva</translation>
+<translation id="1329478709358066995">Transkribuotas tekstas:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pritaikyti pagal nuskaitomą sritį</translation>
 <translation id="1343442362630695901">druskų ežeras</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">Apie foną</translation>
 <translation id="6939667434404433010">Ieškoti įrašo pavadinimo</translation>
 <translation id="6939766318048400022">Kavinė</translation>
+<translation id="6942253772720771875">Pateikite atsiliepimą arba aprašykite problemą</translation>
 <translation id="6943893908656559156">Nuotolinio ryšio tapatybė (pasirenkama)</translation>
 <translation id="6953137545147683679">aukso spalvos</translation>
 <translation id="6957231940976260713">Paslaugos pavadinimas</translation>
@@ -1598,6 +1600,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8395584934117017006">Šį „<ph name="DEVICE_TYPE" />“ įrenginį valdo įmonė</translation>
 <translation id="8398927464629426868">Rodiklis, nurodantis, per kiek laiko įrenginys šiuo metu įkraunamas arba išsikrauna</translation>
 <translation id="8403988360557588704">Paveikslas, kuriame vaizduojama: <ph name="ART_FEATURE" />, šiuo stiliumi: <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Sugeneruota suvestinė:</translation>
 <translation id="8410244574650205435">Automatiškai aptikta</translation>
 <translation id="8420955526972171689">Atllikti aparatinės įrangos problemų bandymus ir trikčių šalinimą</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8626489604350149811">Daugiau veiksmų („<ph name="APN_NAME" />“)</translation>
 <translation id="86356131183441916">Šviesiai violetinė</translation>
 <translation id="8647595191512746911">Garso įrašo transkribavimas</translation>
+<translation id="8648578954147795914">Sugeneruoti pavadinimai:</translation>
 <translation id="8650852232143958317">Turėkite „Gmail“ ir „Google“ disko failus su savimi</translation>
 <translation id="8651481478098336970">garsumo nutildymas</translation>
 <translation id="8655295600908251630">Kanalas</translation>
@@ -1784,6 +1788,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="9218016617214286986">Rodyti žinomus APN</translation>
 <translation id="932327136139879170">Kontaktinė namų informacija</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Įsitikinkite, kad mikrofonas prijungtas, arba bandykite iš naujo paleisti „Chromebook“</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="950520315903467048">Trūksta klavišo, skirto veiksmui „<ph name="DIRECTION" />“. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Palyginti įrašo balsus, kad transkribuotame tekste atsispindėtų, ką ir kada pasakė kiekvienas kalbantysis</translation>

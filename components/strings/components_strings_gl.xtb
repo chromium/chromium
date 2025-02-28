@@ -837,6 +837,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2451607499823206582">Estase facendo un seguimento</translation>
 <translation id="2452098632681057184">Ecoloxía e medio ambiente</translation>
 <translation id="2452837234288608067">Non che puidemos axudar con iso. Téntao de novo.</translation>
+<translation id="2453045048779611513">A túa organización limita o que podes gardar</translation>
 <translation id="2456755709261364512">Debes cargar a batería máis dun <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core ofréceche unha ferramenta centralizada para configurar as políticas do navegador desde a nube</translation>
 <translation id="2461822463642141190">Actual</translation>
@@ -1086,6 +1087,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2942492342931589800">Usar rexistro informal</translation>
 <translation id="2942515540157583425">Postos tecnolóxicos e técnicos</translation>
 <translation id="2943895734390379394">Momento da carga:</translation>
+<translation id="2947281105969315778">Para compartir grupos de pestanas ou unirte a eles, tes que poder iniciar sesión en Chrome</translation>
 <translation id="2948083400971632585">Podes desactivar os proxies configurados para unha conexión desde a páxina de configuración.</translation>
 <translation id="2949183777371959169">Ignorouse porque o dispositivo non está inscrito en Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">A miña caixa de correo</translation>
@@ -1946,6 +1948,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Púxose en pausa a carga de ficheiros en Microsoft OneDrive</translation>
+<translation id="4389931020843542579">Cargando grupo de pestanas</translation>
 <translation id="4390472908992056574">Bordo</translation>
 <translation id="4395550503472021297">Esta política controla o comportamento predeterminado das seguintes políticas: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Abre unha ventá emerxente para facer a verificación no sitio web do teu banco</translation>
@@ -3903,6 +3906,7 @@ Detalles adicionais:
 <translation id="791107458486222637">Refacendo resultado</translation>
 <translation id="791551905239004656">Debuxo e coloreado</translation>
 <translation id="7916162853251942238">Base flexográfica</translation>
+<translation id="791698251820376781">A túa organización non permite que inicies sesión</translation>
 <translation id="7926503317156566022">Industria aeronáutica</translation>
 <translation id="793209273132572360">Queres cambiar o enderezo?</translation>
 <translation id="7932579305932748336">Recubrimento</translation>
@@ -4615,6 +4619,7 @@ Detalles adicionais:
 <translation id="9191834167571392248">Perforación na parte inferior esquerda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Cosmética ecolóxica</translation>
+<translation id="9195969368671142407">Cando a túa organización limita a función de gardado para a túa Conta de Google, non podes compartir grupos de pestanas nin unirte a eles</translation>
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
 <translation id="9201904868909900493">Abrindo enquisa...</translation>
 <translation id="9204089334327209740">Cando se complete a carga, poderás modificar os ficheiros en <ph name="CLOUD_PROVIDER" />. O almacenamento local (incluídos os ficheiros da papeleira) quitarase automaticamente.</translation>

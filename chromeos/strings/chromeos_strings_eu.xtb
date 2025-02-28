@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">katuak</translation>
 <translation id="5907649332524363701">teklen kolorea</translation>
 <translation id="5908813850962688338">Minutu batzuk beharko dira eguneratze hau instalatzeko. Mantendu gailua entxufatuta eta piztuta eguneratzea deskargatu bitartean. Prozesua egiten den bitartean, baliteke gailua behin eta berriro berrabiaraztea eta pantaila beltz bat erakustea. Instalazioa osatzeko, gailua berrabiarazteko eskatuko zaizu.</translation>
+<translation id="5915794087373112615">Irakasleak zure pantaila ikusiko du <ph name="NUM_SECONDS" /> segundo barru</translation>
 <translation id="5916084858004523819">Debekatuta</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fitxategia eskaneatu da, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}other{Fitxategiak eskaneatu dira, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}}</translation>
@@ -1525,6 +1526,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8054112564438735763">kolore beixeko</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_BACKGROUND" /> atzeko plano batean</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Konektatu mikrofono bat audioa grabatzen hasteko</translation>
 <translation id="8067126283828232460">APNa konektatuta dago.</translation>
 <translation id="8067208048261192356">kolore marroiko</translation>
 <translation id="8067224607978179455">Ezabatu <ph name="ACTION_NAME" /></translation>

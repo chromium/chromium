@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">När detta är aktiverat kan webbplatser be om att få använda NFC-enheter. När detta är inaktiverat får webbplatser inte använda NFC-enheter.</translation>
 <translation id="1660204651932907780">Tillåt att ljud spelas upp på webbplatser (rekommenderas)</translation>
 <translation id="1677097821151855053">Cookies och annan webbplatsdata används för att komma ihåg dig, till exempel vid inloggning och annonsanpassning. Du kan hantera cookies för alla webbplatser i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Webbplatser skickar vanligen aviseringar om senaste nytt eller chattmeddelanden.</translation>
 <translation id="169515064810179024">Blockera webbplatser från att använda enhetens rörelsesensorer</translation>
 <translation id="1717218214683051432">Rörelsesensorer</translation>
 <translation id="1743802530341753419">Fråga innan webbplatser tillåts ansluta till en enhet (rekommenderas)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Ljud</translation>
 <translation id="2096716221239095980">Radera all data</translation>
 <translation id="2117655453726830283">Nästa bild</translation>
+<translation id="2146263598007866206">Webbplatser kan automatiskt ladda ned relaterade filer samtidigt så att du sparar tid</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Trots de skyddande gröna glasögonen blev Dorothy och hennes vänner först bländade av</translation>
 <translation id="2176704795966505152">Visa zoomalternativ i huvudmenyn</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Webbplatser får visa inloggningsmeddelanden från identitetstjänster.</translation>
 <translation id="2787357173144933081">Snabbstarta adressfältet</translation>
 <translation id="2790501146643349491">När detta är aktiverat kan nyligen stängda webbplatser fortsätta att skicka och ta emot data. När detta är inaktiverat får webbplatser som nyligen stängts inte skicka eller ta emot data.</translation>
+<translation id="2795716239552913152">Åtkomst till enhetens plats brukar kunna behövas för relevanta funktioner eller information som lokala nyheter eller affärer i närheten</translation>
 <translation id="2814830417943086299">Chrome visar nu dina senaste flikar i enhetens applista och sökresultat. Du kan inaktivera detta när som helst i Chrome-inställningarna.</translation>
 <translation id="2822354292072154809">Vill du återställa alla webbplatsbehörigheter för <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Begär mobilvy</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Tredjepartscookies har blockerats</translation>
 <translation id="3448554387819310837">När detta är aktiverat kan webbplatser be om att få använda kameran. När detta är inaktiverat får webbplatser inte använda kameran.</translation>
+<translation id="3491678231052507920">Åtkomst till VR-enheter och VR-data brukar kunna behövas för VR-sessioner på webbplatsen</translation>
+<translation id="3496995426334945408">JavaScript brukar användas på webbplatser för interaktiva funktioner som spel eller webbformulär</translation>
 <translation id="3521663503435878242">Webbplatser under <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Tillåt inte att webbplatser spårar dina händer</translation>
 <translation id="3532312529397438268">Webbplatser får inte använda V8-optimeraren</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Öppna platsinställningarna</translation>
 <translation id="4226663524361240545">Aviseringar kan göra att enheten vibrerar</translation>
 <translation id="4259722352634471385">Webbadressen har blockerats: <ph name="URL" /></translation>
+<translation id="4274673989874969668">När du har lämnat en webbplats kan den fortsätta med synkroniseringen i syfte att slutföra uppgifter som att ladda upp foton eller skicka ett chattmeddelande</translation>
 <translation id="4278390842282768270">Tillåts</translation>
 <translation id="429312253194641664">Media spelas upp på en webbplats</translation>
 <translation id="42981349822642051">Expandera</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Sparade zoomnivåer för webbplatser</translation>
 <translation id="4836046166855586901">Fråga när en webbplats vill veta om du använder enheten aktivt</translation>
 <translation id="483914009762354899">Inkludera alla webbplatser på den här domänen</translation>
+<translation id="4882919381756638075">Åtkomst till mikrofonen brukar kunna behövas för kommunikationsfunktioner på webbplatsen, t.ex. videochatt</translation>
 <translation id="4883854917563148705">Hanterade inställningar kan inte återställas</translation>
 <translation id="4887024562049524730">Fråga innan webbplatser tillåts att använda VR-enheter och VR-data (rekommenderas)</translation>
 <translation id="4936863036653376783">Du hittar dina grupper i avsnittet Flikgrupper på alla dina enheter</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Välj objekt</translation>
 <translation id="6838525730752203626">Använd Chrome som standard</translation>
 <translation id="6840760312327750441">Gruppera flikar genom att trycka länge på en flik. Dra sedan fliken ovanpå en annan flik.</translation>
+<translation id="6842868554183332230">Webbplatser kan normalt se om du använder din enhet aktivt för att ange din tillgänglighet i chattappar</translation>
 <translation id="6851981911629679515">Aktivera ytterligare skydd i Chromes JavaScript- och WebAssembly-motor</translation>
 <translation id="6864395892908308021">Enheten kan inte läsa NFC</translation>
 <translation id="6870169401250095575">Dölj kortet Säkerhetskontroll</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Inställningar för <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Säkerhetskontroll</translation>
 <translation id="7406113532070524618">Den här inställningen fungerar utan att du identifieras eller att webbplatser tillåts se din webbhistorik, men webbplatser kan dela en del uppgifter som en del av verifieringen</translation>
+<translation id="7409735910987429903">Webbplatser kan öppna popup-fönster med annonser eller omdirigera dig till webbplatser som du kanske inte vill besöka</translation>
 <translation id="7423098979219808738">Fråga först</translation>
 <translation id="7423538860840206698">Läsbehörighet till Urklipp har nekats</translation>
 <translation id="7425915948813553151">Mörkt tema för webbplatser</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Avsluta hubbsökning</translation>
 <translation id="7554752735887601236">En webbplats använder mikrofonen</translation>
 <translation id="7561196759112975576">Alltid</translation>
+<translation id="7573594921350120855">Åtkomst till videokameran brukar kunna behövas för kommunikationsfunktioner på webbplatsen, t.ex. videochatt</translation>
 <translation id="757524316907819857">Blockera webbplatser från att spela upp skyddat innehåll</translation>
 <translation id="7594634374516752650">Ansluten till en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan radera all eller delar av din historik, dina cookies, webbplatsdata med mera</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7667547420449112975">Trollkarlen från Oz</translation>
+<translation id="7681597159868843240">Åtkomst till enhetens rörelsesensorer brukar kunna behövas för funktioner som virtuell verklighet eller att hålla koll på träningen</translation>
 <translation id="7688240020069572972">Dölj kortet med tips om Chrome</translation>
 <translation id="7719367874908701697">Sidzoom</translation>
 <translation id="7759147511335618829">Styra/omprogrammera MIDI-enheter</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Sök bakåt</translation>
 <translation id="8444433999583714703">Om du vill ge <ph name="APP_NAME" /> åtkomst till din plats måste du även aktivera plats i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Återkalla enhetsbehörighet</translation>
+<translation id="8471525937465764768">Åtkomst till USB-enheter brukar kunna behövas för funktioner som att skriva ut dokument eller spara filer på en lagringsenhet</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> är inaktuell. Installera om appen.</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>
 <translation id="848952951823693243">Begär alltid mobilversionen</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">När detta är aktiverat kan webbplatser spara data på enheten. När detta är inaktiverat får webbplatser inte spara data på enheten.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> tillåts</translation>
 <translation id="9019902583201351841">Hanteras av dina föräldrar</translation>
+<translation id="902236149563113779">Att registrera kamerans position brukar kunna behövas för AR-funktioner på webbplatsen, som spel eller vägbeskrivningar</translation>
 <translation id="9039697262778250930">Du kan loggas ut från de här webbplatserna</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Vill du radera cookies?</translation>

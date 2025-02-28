@@ -837,6 +837,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2451607499823206582">Sledování</translation>
 <translation id="2452098632681057184">Ekologie a životní prostředí</translation>
 <translation id="2452837234288608067">Pomoc se nepodařila. Zkuste to znovu.</translation>
+<translation id="2453045048779611513">Vaše organizace omezuje, co můžete ukládat</translation>
 <translation id="2456755709261364512">Baterie musí být nabitá na více než <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core poskytuje centralizovaný nástroj pro konfiguraci zásad prohlížeče z cloudu</translation>
 <translation id="2461822463642141190">Aktuální</translation>
@@ -1086,6 +1087,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2942492342931589800">Neformální</translation>
 <translation id="2942515540157583425">Zaměstnání v oblasti IT a techniky</translation>
 <translation id="2943895734390379394">Čas nahrání:</translation>
+<translation id="2947281105969315778">Pokud chcete sdílet skupiny karet nebo se k nim připojit, musíte mít možnost přihlásit se do Chromu</translation>
 <translation id="2948083400971632585">Libovolné servery proxy nakonfigurované pro připojení můžete zakázat na stránce Nastavení.</translation>
 <translation id="2949183777371959169">Ignorováno, protože počítač není zaregistrován do Cloudové správy prohlížeče Chrome.</translation>
 <translation id="2951588413176968965">Moje schránka</translation>
@@ -3898,6 +3900,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="791107458486222637">Opakování výsledku</translation>
 <translation id="791551905239004656">Kreslení a vybarvování</translation>
 <translation id="7916162853251942238">Flexotisková báze</translation>
+<translation id="791698251820376781">Vaše organizace přihlášení nepovoluje</translation>
 <translation id="7926503317156566022">Letecký průmysl</translation>
 <translation id="793209273132572360">Aktualizovat adresu?</translation>
 <translation id="7932579305932748336">Potah</translation>
@@ -4610,6 +4613,7 @@ Další podrobnosti:
 <translation id="9191834167571392248">Děrování vlevo dole</translation>
 <translation id="9192361865877479444">Kov (matný)</translation>
 <translation id="9192947025498305328">Ekologická krása</translation>
+<translation id="9195969368671142407">Když vaše organizace omezuje ukládání do vašeho účtu Google, nemůžete sdílet skupiny karet ani se k nim připojovat</translation>
 <translation id="9199905725844810519">Tisk je blokován</translation>
 <translation id="9201904868909900493">Otevírání průzkumu…</translation>
 <translation id="9204089334327209740">Po dokončení nahrávání můžete své soubory upravit ve službě <ph name="CLOUD_PROVIDER" />. Místní úložiště, včetně všech souborů v koši, bude automaticky odstraněno.</translation>

@@ -660,6 +660,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2145193671493396738">Ekonomikas ziņas</translation>
 <translation id="214556005048008348">Atcelt maksājumu</translation>
 <translation id="2147117373852943630">Mūzikas instrumenti</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> vēlas izmantot par jums saglabāto informāciju</translation>
 <translation id="2148613324460538318">Pievienot karti</translation>
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="2149968176347646218">Savienojums nav drošs</translation>
@@ -837,6 +838,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2451607499823206582">Izsekošana</translation>
 <translation id="2452098632681057184">Ekoloģija un vide</translation>
 <translation id="2452837234288608067">Pieprasījumu nevarēja izpildīt. Mēģiniet vēlreiz.</translation>
+<translation id="2453045048779611513">Jūsu organizācija ierobežo to, kādu saturu varat saglabāt</translation>
 <translation id="2456755709261364512">Akumulatora uzlādes līmenim ir jāpārsniedz <ph name="REQUIRED_BATTERY_PRECENT" />%.</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core nodrošina centralizētu rīku pārlūka politiku konfigurēšanai mākonī</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
@@ -1086,6 +1088,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2942492342931589800">Neformāls</translation>
 <translation id="2942515540157583425">Darba piedāvājumi IT un tehnikas nozarē</translation>
 <translation id="2943895734390379394">Augšupielādes laiks:</translation>
+<translation id="2947281105969315778">Lai kopīgotu vai pievienotos ciļņu grupām, ir svarīgi, lai jūs varētu pierakstīties pārlūkā Chrome.</translation>
 <translation id="2948083400971632585">Iestatījumu lapā varat atspējot jebkurus starpniekserverus, kas konfigurēti savienojuma izveidei.</translation>
 <translation id="2949183777371959169">Tiek ignorēta, jo iekārta nav reģistrēta pārlūka Chrome mākoņa pārvaldībā.</translation>
 <translation id="2951588413176968965">Mana pastkaste</translation>
@@ -3902,6 +3905,7 @@ Papildu informācija:
 <translation id="791107458486222637">Rezultāta atsaukšanas atcelšana</translation>
 <translation id="791551905239004656">Zīmēšana un krāsošana</translation>
 <translation id="7916162853251942238">Fleksogrāfijas pamatne</translation>
+<translation id="791698251820376781">Jūsu organizācija neatļauj jums pierakstīties</translation>
 <translation id="7926503317156566022">Aviācijas nozare</translation>
 <translation id="793209273132572360">Vai atjaunināt adresi?</translation>
 <translation id="7932579305932748336">Pārklājums</translation>
@@ -4614,6 +4618,7 @@ Papildu informācija:
 <translation id="9191834167571392248">Caurums apakšējā kreisajā malā</translation>
 <translation id="9192361865877479444">Metāls (matēts)</translation>
 <translation id="9192947025498305328">Videi draudzīga skaistumkopšana</translation>
+<translation id="9195969368671142407">Ja jūsu organizācija ierobežo saglabāšanas iespējas jūsu Google kontā, jūs nevarat kopīgot vai pievienoties ciļņu grupām.</translation>
 <translation id="9199905725844810519">Drukāšana ir bloķēta</translation>
 <translation id="9201904868909900493">Notiek aptaujas atvēršana…</translation>
 <translation id="9204089334327209740">Kad augšupielāde būs pabeigta, varēsiet pārveidot savus failus pakalpojumā <ph name="CLOUD_PROVIDER" />. Lokālā krātuve un visi atkritnē esošie faili tiks automātiski noņemti.</translation>

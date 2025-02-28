@@ -837,6 +837,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2451607499823206582">Seguiment</translation>
 <translation id="2452098632681057184">Ecologia i medi ambient</translation>
 <translation id="2452837234288608067">No hem pogut ajudar-te. Torna-ho a provar.</translation>
+<translation id="2453045048779611513">La teva organització limita el que pots desar</translation>
 <translation id="2456755709261364512">La bateria ha d'estar carregada per sobre del <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core et proporciona una eina centralitzada per configurar polítiques del navegador des del núvol</translation>
 <translation id="2461822463642141190">Actual</translation>
@@ -1086,6 +1087,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2942492342931589800">Informal</translation>
 <translation id="2942515540157583425">Feines tècniques i de tecnologies de la informació</translation>
 <translation id="2943895734390379394">Hora de la pujada:</translation>
+<translation id="2947281105969315778">Per compartir grups de pestanyes o unir-t'hi, has de poder iniciar la sessió a Chrome</translation>
 <translation id="2948083400971632585">Podeu desactivar qualsevol servidor intermediari configurat per a una connexió des de la pàgina de configuració.</translation>
 <translation id="2949183777371959169">S'ha ignorat perquè la màquina no s'ha inscrit amb Gestió de navegadors Chrome al núvol.</translation>
 <translation id="2951588413176968965">La meva bústia de correu</translation>
@@ -3904,6 +3906,7 @@ Detalls addicionals:
 <translation id="791107458486222637">S'està refent el resultat</translation>
 <translation id="791551905239004656">Dibuix i pintura</translation>
 <translation id="7916162853251942238">Base flexogràfica</translation>
+<translation id="791698251820376781">La teva organització no et permet iniciar la sessió</translation>
 <translation id="7926503317156566022">Sector de l'aviació</translation>
 <translation id="793209273132572360">Vols actualitzar l'adreça?</translation>
 <translation id="7932579305932748336">Recobriment</translation>
@@ -4615,6 +4618,7 @@ Detalls addicionals:
 <translation id="9191834167571392248">Encunyació a la part inferior esquerra</translation>
 <translation id="9192361865877479444">Metall (mat)</translation>
 <translation id="9192947025498305328">Cosmètica ètica i sostenible</translation>
+<translation id="9195969368671142407">Si la teva organització limita el que pots desar al teu Compte de Google, no podràs compartir grups de pestanyes ni unir-t'hi</translation>
 <translation id="9199905725844810519">La impressió està bloquejada</translation>
 <translation id="9201904868909900493">S'està obrint l'enquesta...</translation>
 <translation id="9204089334327209740">Un cop s'hagi completat la pujada, podràs modificar els fitxers a <ph name="CLOUD_PROVIDER" />. L'emmagatzematge local, inclosos els fitxers de la paperera, se suprimirà automàticament.</translation>

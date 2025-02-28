@@ -246,7 +246,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="17722141032474077">Obliczenia</translation>
 <translation id="1774796056689732716">Kalendarz, <ph name="CURRENT_MONTH_YEAR" />, obecnie wybrana jest data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Skonfiguruj wyświetlanie najnowszych zdjęć, plików multimedialnych i powiadomień z telefonu</translation>
-<translation id="1785317913592722944">Usuń element z sugerowanej grupy</translation>
 <translation id="1786487376942610288">Przełączanie między maksymalnym a bieżącym rozmiarem okna obrazu w obrazie</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="1796561540704213354">Strony internetowe, w tym strony odwiedzone i otwarte</translation>
@@ -853,6 +852,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3859364108019690">Nie można przesyłać strumieniowo aplikacji</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
 <translation id="3870197372373144624">Spróbuj wyłączyć urządzenie.</translation>
+<translation id="3879748587602334249">Menedżer pobierania</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
@@ -878,6 +878,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3958714870339660776">Cały dzień</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3963124517343721543">Z łatwością kontynuuj od tego samego miejsca, otwierając ostatnie okna i karty. Zobaczysz też spersonalizowane sugestie dotyczące kolejnych czynności.</translation>
+<translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3969043077941541451">Wyłączone</translation>
 <translation id="3970324493235864154">Wyświetlaj powiadomienia z telefonu</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
@@ -1619,6 +1620,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6319058840130157106">Przejdź wstecz między prawym dolnym rogiem, Menu z aplikacjami, paskiem adresu, paskiem zakładek, otwartą stroną internetową i pobranymi plikami</translation>
 <translation id="6319503618073410818">Wyświetl szczegóły w przeglądarce</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>
+<translation id="6325525973963619867">Niepowodzenie</translation>
 <translation id="6330012934079202188">Pokazuję okna ze wszystkich biurek, naciśnij klawisz strzałki w górę, aby wyświetlić okna z aktualnego biurka</translation>
 <translation id="6337159624125741244">Lupa pełnego ekranu jest włączona</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="MANAGER" /></translation>

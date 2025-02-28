@@ -246,7 +246,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="17722141032474077">Beregninger</translation>
 <translation id="1774796056689732716">Kalender for <ph name="CURRENT_MONTH_YEAR" /> – <ph name="DATE" /> er valgt.</translation>
 <translation id="178347895271755507">Konfigurer visning af din telefons seneste billeder, medier og notifikationer</translation>
-<translation id="1785317913592722944">Fjern element fra foreslået gruppe</translation>
 <translation id="1786487376942610288">Skift mellem den maksimale eller aktuelle størrelse på vinduet med integreret billede</translation>
 <translation id="1787955149152357925">Fra</translation>
 <translation id="1796561540704213354">Websites, der omfatter sider, du har besøgt, og åbne sider</translation>
@@ -853,6 +852,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3859364108019690">Der kan ikke streames apps</translation>
 <translation id="3861651314799684201">Tryk på Enter for at optage fuld skærm</translation>
 <translation id="3870197372373144624">Prøv at slukke din enhed.</translation>
+<translation id="3879748587602334249">Downloadadministrator</translation>
 <translation id="3886872229787704059">Åbnet i dag</translation>
 <translation id="3891340733213178823">Tryk på Ctrl+Shift+Q to gange for at logge ud.</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
@@ -878,6 +878,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3958714870339660776">Hele dagen</translation>
 <translation id="3962859241508114581">Forrige nummer</translation>
 <translation id="3963124517343721543">Fortsæt nemt, hvor du slap, ved at åbne tidligere vinduer og faner. Du får også tilpassede forslag til ting, du kan foretage dig efterfølgende.</translation>
+<translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3969043077941541451">Fra</translation>
 <translation id="3970324493235864154">Se din telefons notifikationer</translation>
 <translation id="397105322502079400">Beregner...</translation>
@@ -1619,6 +1620,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6319058840130157106">Naviger tilbage mellem nederste højre hjørne, applisten, adresselinjen, bogmærkelinjen, det åbne website og downloads</translation>
 <translation id="6319503618073410818">Se oplysninger i browseren</translation>
 <translation id="6324916366299863871">Rediger genvej</translation>
+<translation id="6325525973963619867">Mislykket</translation>
 <translation id="6330012934079202188">Når du får vist vinduer fra alle skriveborde, kan du trykke på pil op for at få vist vinduer fra det aktuelle skrivebord</translation>
 <translation id="6337159624125741244">Forstørrelse af fuld skærm er aktiveret</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er en session, der administreres af <ph name="MANAGER" /></translation>

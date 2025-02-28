@@ -837,6 +837,7 @@
 <translation id="2451607499823206582">پیگیری</translation>
 <translation id="2452098632681057184">بوم‌شناسی و محیط زیست</translation>
 <translation id="2452837234288608067">در این مورد نمی‌توانم کمک کنم. دوباره امتحان کنید.</translation>
+<translation id="2453045048779611513">سازمانتان مواردی را که می‌توانید ذخیره کنید محدود می‌کند</translation>
 <translation id="2456755709261364512">شارژ باتری باید بیشتر از <ph name="REQUIRED_BATTERY_PRECENT" />٪ باشد</translation>
 <translation id="2461385121573678775">‏‫Chrome Enterprise Core ابزاری مرکزی برای پیکربندی خط‌مشی‌های مرورگر از فضای ابری دراختیارتان قرار می‌دهد</translation>
 <translation id="2461822463642141190">فعلی</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2942492342931589800">راحت</translation>
 <translation id="2942515540157583425">مشاغل فنی و فناوری اطلاعات</translation>
 <translation id="2943895734390379394">زمان بارگذاری:</translation>
+<translation id="2947281105969315778">‏برای هم‌رسانی کردن گروه‌های برگه یا پیوستن به آن‌ها، باید بتوانید به سیستم Chrome وارد شوید</translation>
 <translation id="2948083400971632585">در صفحه تنظیمات می‌توانید همه پراکسی‌های پیکربندی شده برای هر اتصال را از کار بیاندازید.</translation>
 <translation id="2949183777371959169">‏نادیده گرفته می‌شود زیرا دستگاه در «مدیریت ابری مرورگر Chrome» ثبت‌نام نشده است.</translation>
 <translation id="2951588413176968965">صندوق پست من</translation>
@@ -1946,6 +1948,7 @@
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏بارگذاری فایل در Microsoft OneDrive موقتاً متوقف شده است</translation>
+<translation id="4389931020843542579">درحال بار کردن گروه برگه</translation>
 <translation id="4390472908992056574">لبه</translation>
 <translation id="4395550503472021297">این خط‌مشی رفتار پیش‌فرض خط‌مشی‌های زیر را کنترل می‌کند: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">پنجره بالاپری برای درستی‌سنجی در وب‌سایت بانک شما باز می‌کند</translation>
@@ -3904,6 +3907,7 @@
 <translation id="791107458486222637">درحال ازنو انجام دادن نتیجه</translation>
 <translation id="791551905239004656">نقاشی و رنگ‌آمیزی</translation>
 <translation id="7916162853251942238">پایه فلکسو</translation>
+<translation id="791698251820376781">سازمانتان به شما اجازه نمی‌دهد به سیستم وارد شوید</translation>
 <translation id="7926503317156566022">صنعت هوانوردی</translation>
 <translation id="793209273132572360">نشانی به‌روزرسانی شود؟</translation>
 <translation id="7932579305932748336">جلد</translation>
@@ -4616,6 +4620,7 @@
 <translation id="9191834167571392248">سوراخ در پایین سمت چپ</translation>
 <translation id="9192361865877479444">فلز (مات)</translation>
 <translation id="9192947025498305328">زیباییِ پاک</translation>
+<translation id="9195969368671142407">‏وقتی سازمانتان ذخیره‌سازی در «حساب Google» شما را محدود می‌کند، نمی‌توانید گروه‌های برگه را هم‌رسانی کنید یا به آن‌ها بپیوندید</translation>
 <translation id="9199905725844810519">چاپ کردن مسدود شده است</translation>
 <translation id="9201904868909900493">درحال باز کردن نظرسنجی…</translation>
 <translation id="9204089334327209740">بعداز کامل شدن بارگذاری، می‌توانید فایل‌هایتان را در <ph name="CLOUD_PROVIDER" /> اصلاح کنید. فضای ذخیره‌سازی محلی، شامل هر فایلی در «حذف‌شده‌ها»، به‌طور خودکار برداشته خواهد شد.</translation>

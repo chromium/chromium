@@ -246,7 +246,6 @@
 <translation id="17722141032474077">Számítások</translation>
 <translation id="1774796056689732716">Naptár, <ph name="CURRENT_MONTH_YEAR" />, jelenleg kijelölt dátum: <ph name="DATE" /></translation>
 <translation id="178347895271755507">A telefonján lévő legutóbbi fotók, médiatartalmak és értesítések megtekintésének beállítása</translation>
-<translation id="1785317913592722944">Elem eltávolítása a javasolt csoportból</translation>
 <translation id="1786487376942610288">Váltás a „kép a képben” ablak maximális és aktuális mérete között</translation>
 <translation id="1787955149152357925">Ki</translation>
 <translation id="1796561540704213354">Webhelyek, például a felkeresett oldalak és a megnyitott oldalak</translation>
@@ -854,6 +853,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3859364108019690">Az alkalmazástreamelés nem sikerült</translation>
 <translation id="3861651314799684201">Nyomja le az Entert a teljes képernyő tartalmának rögzítéséhez</translation>
 <translation id="3870197372373144624">Próbálja meg kikapcsolni az eszközt.</translation>
+<translation id="3879748587602334249">Letöltéskezelő</translation>
 <translation id="3886872229787704059">Ma nyitotta meg</translation>
 <translation id="3891340733213178823">Nyomja meg a Ctrl+Shift+Q billentyűkombinációt kétszer a kijelentkezéshez.</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
@@ -879,6 +879,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3958714870339660776">Egész nap</translation>
 <translation id="3962859241508114581">Előző szám</translation>
 <translation id="3963124517343721543">Az előző ablakok és lapok megnyitásával egyszerűen folytathatja ott, ahol abbahagyta. Emellett személyre szabott javaslatokat is láthat a következő műveletekre.</translation>
+<translation id="3967822245660637423">A letöltés sikeres</translation>
 <translation id="3969043077941541451">Kikapcsolva</translation>
 <translation id="3970324493235864154">A telefon értesítéseinek megtekintése</translation>
 <translation id="397105322502079400">Számítás…</translation>
@@ -1620,6 +1621,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6319058840130157106">Mozgás visszafelé a jobb alsó sarok, az Indító, a címsáv, a könyvjelzősáv, a megnyitott webhely és a letöltések között</translation>
 <translation id="6319503618073410818">Részletek megtekintése böngészőben</translation>
 <translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>
+<translation id="6325525973963619867">Nem sikerült</translation>
 <translation id="6330012934079202188">Most az összes asztal ablakait mutatja; az aktuális asztal ablakainak megjelenítéséhez nyomja meg a felfelé nyilat</translation>
 <translation id="6337159624125741244">A teljes képernyős nagyító be van kapcsolva</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> által kezelt munkamenet</translation>

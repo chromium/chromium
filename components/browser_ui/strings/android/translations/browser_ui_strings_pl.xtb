@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na użycie urządzeń z NFC. Gdy jest wyłączona, strony nie mogą używać takich urządzeń.</translation>
 <translation id="1660204651932907780">Zezwalaj na odtwarzanie dźwięku na stronach internetowych (zalecane)</translation>
 <translation id="1677097821151855053">Plików cookie i innych danych stron używamy, żeby Cię zapamiętać, na przykład w celu logowania czy personalizowania reklam. Plikami cookie wszystkich stron możesz zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Witryny zazwyczaj wysyłają powiadomienia o aktualnościach lub wiadomościach czatu.</translation>
 <translation id="169515064810179024">Blokuj stronom dostęp do czujników ruchu</translation>
 <translation id="1717218214683051432">Czujniki ruchu</translation>
 <translation id="1743802530341753419">Pytaj, zanim zezwolisz stronom na połączenie z urządzeniem (zalecane)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Dźwięk</translation>
 <translation id="2096716221239095980">Usuń wszystkie dane</translation>
 <translation id="2117655453726830283">Następny slajd</translation>
+<translation id="2146263598007866206">Strony mogą automatycznie pobierać powiązane pliki, by zaoszczędzić Twój czas</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="216989819110952009">Chociaż oczy ich osłaniały zielone okulary, Dorotę i jej przyjaciół po prostu oślepił przepych</translation>
 <translation id="2176704795966505152">Pokaż opcję powiększenia w menu głównym</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
 <translation id="2787357173144933081">Szybki start omniboksa</translation>
 <translation id="2790501146643349491">Gdy ta opcja jest włączona, ostatnio zamknięte strony internetowe mogą dokończyć wysyłanie i odbieranie danych. Gdy jest wyłączona, nie mogą tego zrobić.</translation>
+<translation id="2795716239552913152">Strony zwykle używają lokalizacji w celu dobierania funkcji lub informacji, na przykład wiadomości lokalnych lub sklepów w pobliżu</translation>
 <translation id="2814830417943086299">Chrome wyświetla teraz ostatnie karty na liście aplikacji i w wynikach wyszukiwania na urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="2822354292072154809">Czy na pewno chcesz zresetować wszystkie uprawnienia witryny dla obiektu <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Żądaj wersji na urządzenia mobilne</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Pliki cookie innych firm zostały zablokowane</translation>
 <translation id="3448554387819310837">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do kamery. Gdy jest wyłączona, strony nie mogą używać kamery.</translation>
+<translation id="3491678231052507920">Strony zwykle używają urządzeń i danych rzeczywistości wirtualnej, by umożliwić Ci udział w sesjach VR</translation>
+<translation id="3496995426334945408">Strony zwykle używają JavaScriptu do wyświetlania elementów interaktywnych, takich jak gry wideo czy formularze</translation>
 <translation id="3521663503435878242">Witryny w domenie <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Nie zezwalaj witrynom na śledzenie rąk</translation>
 <translation id="3532312529397438268">Witryny nie mogą używać optymalizatora V8</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Otwórz ustawienia lokalizacji</translation>
 <translation id="4226663524361240545">Powiadomienia będą sygnalizowane wibracjami</translation>
 <translation id="4259722352634471385">Adres zablokowany: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Gdy zamkniesz witrynę, może ona kontynuować synchronizację, aby dokończyć zadania takie jak przesłanie zdjęć czy wysłanie wiadomości czatu</translation>
 <translation id="4278390842282768270">Dozwolone</translation>
 <translation id="429312253194641664">Strona odtwarza multimedia</translation>
 <translation id="42981349822642051">Rozwiń</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Zapisane powiększenie witryn</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="483914009762354899">Uwzględnij wszystkie witryny w tej domenie</translation>
+<translation id="4882919381756638075">Strony zwykle używają mikrofonu na potrzeby komunikacji, na przykład czatu wideo</translation>
 <translation id="4883854917563148705">Ustawień zarządzanych nie można zresetować</translation>
 <translation id="4887024562049524730">Pytaj, zanim zezwolisz stronom na korzystanie z urządzenia i danych rzeczywistości wirtualnej (zalecane)</translation>
 <translation id="4936863036653376783">Grupy znajdziesz w sekcji grup kart na wszystkich swoich urządzeniach</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Wybierz elementy</translation>
 <translation id="6838525730752203626">Używaj domyślnie Chrome</translation>
 <translation id="6840760312327750441">Aby pogrupować karty, naciśnij i przytrzymaj jedną z nich. Następnie przeciągnij ją na inną kartę.</translation>
+<translation id="6842868554183332230">Witryny zwykle wykrywają, kiedy używasz urządzenia, aby określić Twoją dostępność w aplikacjach do czatowania</translation>
 <translation id="6851981911629679515">Włącz dodatkową ochronę w mechanizmie JavaScript i WebAssembly w Chrome</translation>
 <translation id="6864395892908308021">To urządzenie nie obsługuje NFC</translation>
 <translation id="6870169401250095575">Ukryj kartę Kontrola zabezpieczeń</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Ustawienia domeny <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7406113532070524618">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania, chociaż witryny mogą w ramach weryfikacji udostępniać niewielką ilość informacji.</translation>
+<translation id="7409735910987429903">Strony mogą wysyłać wyskakujące okienka, by wyświetlać reklamy, albo używać przekierowań, by otwierać strony, których możesz nie chcieć odwiedzać</translation>
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
 <translation id="7425915948813553151">Ciemny motyw witryn</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Zamknij wyszukiwanie w hubie</translation>
 <translation id="7554752735887601236">Strona używa mikrofonu</translation>
 <translation id="7561196759112975576">Zawsze</translation>
+<translation id="7573594921350120855">Strony zwykle używają kamery wideo na potrzeby komunikacji, na przykład czatu wideo</translation>
 <translation id="757524316907819857">Blokuj odtwarzanie treści chronionej na stronach</translation>
 <translation id="7594634374516752650">Połączono z urządzeniem Bluetooth</translation>
 <translation id="7617547684249261169">Możesz w całości lub częściowo usunąć m.in. historię, pliki cookie i dane witryn</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7667547420449112975">Czarnoksiężnik z Krainy Oz</translation>
+<translation id="7681597159868843240">Witryny zwykle używają czujników ruchu urządzenia, aby obsługiwać funkcje takie jak rzeczywistość wirtualna czy monitorowanie aktywności</translation>
 <translation id="7688240020069572972">Ukryj kartę ze wskazówkami dotyczącymi Chrome</translation>
 <translation id="7719367874908701697">Powiększenie strony</translation>
 <translation id="7759147511335618829">Urządzenia MIDI: sterowanie/przeprogramowywanie</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Przewiń do tyłu</translation>
 <translation id="8444433999583714703">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do lokalizacji, musisz ją też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Cofnij zgodę na dostęp do urządzenia</translation>
+<translation id="8471525937465764768">Strony zwykle łączą się z urządzeniami USB na przykład w celu drukowania dokumentów lub zapisywania plików na urządzeniu pamięci masowej</translation>
 <translation id="8473055640493819707">Aplikacja „<ph name="APP_NAME" />” jest nieaktualna. Zainstaluj ją ponownie.</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="848952951823693243">Zawsze żądaj strony mobilnej</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Gdy ta opcja jest włączona, strony internetowe mogą zapisywać dane na Twoim urządzeniu. Gdy jest wyłączona, nie mogą tego robić.</translation>
 <translation id="9011903857143958461">Zezwolono: <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Zarządzany przez Twoich rodziców</translation>
+<translation id="902236149563113779">Strony zwykle śledzą pozycję kamery na potrzeby funkcji AR, na przykład w grach czy do wyświetlania trasy</translation>
 <translation id="9039697262778250930">Może nastąpić wylogowanie z tych stron</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Usunąć pliki cookie?</translation>

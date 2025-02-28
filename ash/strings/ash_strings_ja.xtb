@@ -246,7 +246,6 @@
 <translation id="17722141032474077">計算</translation>
 <translation id="1774796056689732716">カレンダー、<ph name="CURRENT_MONTH_YEAR" />、現在 <ph name="DATE" /> が選択されています。</translation>
 <translation id="178347895271755507">スマートフォンの最近の写真、メディア、通知の表示を設定</translation>
-<translation id="1785317913592722944">提案グループから項目を削除</translation>
 <translation id="1786487376942610288">ピクチャー イン ピクチャー ウィンドウの最大サイズと現在のサイズを切り替えます</translation>
 <translation id="1787955149152357925">オフ</translation>
 <translation id="1796561540704213354">アクセスしたページ、開いているページなどのウェブサイト</translation>
@@ -853,6 +852,7 @@
 <translation id="3859364108019690">アプリをストリーミングできません</translation>
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
 <translation id="3870197372373144624">デバイスをシャットダウンしてみてください。</translation>
+<translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3886872229787704059">今日開いたファイル</translation>
 <translation id="3891340733213178823">ログアウトするには、Ctrl+Shift+Q を 2 回押します。</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
@@ -878,6 +878,7 @@
 <translation id="3958714870339660776">終日</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3963124517343721543">以前のウィンドウやタブが開かれ、中断したところから簡単に再開できます。また、次のアクティビティに関するパーソナライズされた候補も表示されます。</translation>
+<translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3969043077941541451">オフ</translation>
 <translation id="3970324493235864154">スマートフォンの通知を表示する</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -1619,6 +1620,7 @@
 <translation id="6319058840130157106">右下隅、ランチャー、アドレスバー、ブックマーク バー、開いているウェブサイト、ダウンロード ページ間を逆方向に移動します</translation>
 <translation id="6319503618073410818">ブラウザで詳細を表示</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
+<translation id="6325525973963619867">失敗しました</translation>
 <translation id="6330012934079202188">すべてのデスクのウィンドウを表示しています、現在のデスクのウィンドウを表示するには上矢印キーを押してください</translation>
 <translation id="6337159624125741244">全画面拡大鏡はオンです</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> は <ph name="MANAGER" /> が管理する管理対象セッションです</translation>

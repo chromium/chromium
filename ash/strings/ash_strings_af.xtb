@@ -246,7 +246,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="17722141032474077">Berekeninge</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> is tans gekies.</translation>
 <translation id="178347895271755507">Stel jou foon op om jou onlangse foto’s, media en kennisgewings te bekyk</translation>
-<translation id="1785317913592722944">Verwyder item van voorgestelde groep</translation>
 <translation id="1786487376942610288">Wissel tussen die maksimum of huidige grootte van die prent-in-prent-venster</translation>
 <translation id="1787955149152357925">Af</translation>
 <translation id="1796561540704213354">Webwerwe insluitend bladsye wat jy besoek het en oop bladsye</translation>
@@ -854,6 +853,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3859364108019690">Kan nie apps stroom nie</translation>
 <translation id="3861651314799684201">Druk Enter om volskerm op te neem</translation>
 <translation id="3870197372373144624">Probeer om jou toestel af te skakel.</translation>
+<translation id="3879748587602334249">Aflaaibestuurder</translation>
 <translation id="3886872229787704059">Vandag oopgemaak</translation>
 <translation id="3891340733213178823">Druk Ctrl+Shift+Q twee keer om af te meld.</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
@@ -879,6 +879,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3958714870339660776">Heeldag</translation>
 <translation id="3962859241508114581">Vorige snit</translation>
 <translation id="3963124517343721543">Gaan maklik voort waar jy opgehou het deur jou vorige vensters en oortjies oop te maak. Jy sal ook gepersonaliseerde voorstelle sien vir dinge om volgende te doen.</translation>
+<translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3969043077941541451">Af</translation>
 <translation id="3970324493235864154">Bekyk jou foon se kennisgewings</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
@@ -1620,6 +1621,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6319058840130157106">Beweeg agtertoe tussen regter onderste hoek, Lanseerder, adresbalk, boekmerkbalk, webwerf wat oop is en aflaaie</translation>
 <translation id="6319503618073410818">Bekyk besonderhede in blaaier</translation>
 <translation id="6324916366299863871">Wysig kortpad</translation>
+<translation id="6325525973963619867">Misluk</translation>
 <translation id="6330012934079202188">Vensters van alle lessenaars word tans gewys; druk die oppylsleutel om vensters van die huidige lessenaar te wys</translation>
 <translation id="6337159624125741244">Volskermvergrootglas is aan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is 'n bestuurde sessie wat deur <ph name="MANAGER" /> bestuur word</translation>

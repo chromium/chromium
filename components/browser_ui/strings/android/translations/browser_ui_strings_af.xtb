@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Wanneer dit aan is, kan werwe vra om NFC-toestelle te gebruik. Wanneer dit af is, kan werwe nie NFC-toestelle gebruik nie.</translation>
 <translation id="1660204651932907780">Laat werwe toe om klank te speel (aanbeveel)</translation>
 <translation id="1677097821151855053">Webkoekies en ander werfdata word gebruik om jou te onthou, byvoorbeeld om jou aan te meld of om advertensies te personaliseer. Sien <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
+<translation id="1686785653877010442">Werwe stuur gewoonlik kennisgewings om jou in te lig oor brekende nuus of kletsboodskappe.</translation>
 <translation id="169515064810179024">Blokkeer werwe om toegang tot bewegingsensors te kry</translation>
 <translation id="1717218214683051432">Bewegingsensors</translation>
 <translation id="1743802530341753419">Vra voordat werwe toegelaat word om aan 'n toestel te koppel (aanbeveel)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Klank</translation>
 <translation id="2096716221239095980">Vee alle data uit</translation>
 <translation id="2117655453726830283">Volgende skyfie</translation>
+<translation id="2146263598007866206">Werwe kan dalk outomaties verwante lêers saam aflaai om jou tyd te bespaar</translation>
 <translation id="2148716181193084225">Vandag</translation>
 <translation id="216989819110952009">Selfs met die groen brille wat hul oë beskerm het, was Dorothy en haar vriende in die begin verblind deur die</translation>
 <translation id="2176704795966505152">Wys zoemopsies op hoofkieslys</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys.</translation>
 <translation id="2787357173144933081">Kitsaktiveer Omnibox</translation>
 <translation id="2790501146643349491">Wanneer dit aan is, kan werwe wat onlangs toegemaak is data klaar stuur en ontvang. Wanneer dit af is, kan werwe wat onlangs toegemaak is nie data klaar stuur en ontvang nie.</translation>
+<translation id="2795716239552913152">Werwe gebruik gewoonlik jou ligging vir relevante kenmerke, soos plaaslike nuus of nabygeleë winkels</translation>
 <translation id="2814830417943086299">Chrome wys nou jou onlangse oortjies in jou toestel se applys en soekresultate. Jy kan dit enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="2822354292072154809">Is jy seker jy wil alle werftoestemmings vir <ph name="CHOSEN_OBJECT_NAME" /> terugstel?</translation>
 <translation id="2850913818900871965">Versoek mobiele aansig</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Derdepartywebkoekies geblokkeer</translation>
 <translation id="3448554387819310837">Wanneer dit aan is, kan werwe vra om jou kamera te gebruik. Wanneer dit af is, kan werwe nie jou kamera gebruik nie.</translation>
+<translation id="3491678231052507920">Werwe gebruik gewoonlik jou virtuelerealiteittoestelle en -data sodat jy by VR-sessies kan ingaan</translation>
+<translation id="3496995426334945408">Werwe gebruik gewoonlik JavaScript om interaktiewe kenmerke te wys, soos videospeletjies of webvorms</translation>
 <translation id="3521663503435878242">Werwe onder <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Moenie werwe toelaat om jou hande na te spoor nie</translation>
 <translation id="3532312529397438268">Werwe kan nie V8-optimeerder gebruik nie</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Maak ligginginstellings oop</translation>
 <translation id="4226663524361240545">Kennisgewings kan die toestel laat vibreer</translation>
 <translation id="4259722352634471385">Navigasie is geblokkeer: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Nadat jy 'n werf verlaat het, kan dit aanhou sinkroniseer om take soos oplaai van foto's of stuur van kletsboodskappe te voltooi</translation>
 <translation id="4278390842282768270">Toegelaat</translation>
 <translation id="429312253194641664">'n Werf speel tans media</translation>
 <translation id="42981349822642051">Vou uit</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Gestoorde zoem vir werwe</translation>
 <translation id="4836046166855586901">Vra as 'n werf wil weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="483914009762354899">Sluit alle werwe in hierdie domein in</translation>
+<translation id="4882919381756638075">Werwe gebruik gewoonlik jou mikrofoon vir kommunikasiekenmerke soos videoklets</translation>
 <translation id="4883854917563148705">Bestuurde instellings kan nie teruggestel word nie</translation>
 <translation id="4887024562049524730">Vra voordat werwe toegelaat word om jou virtuelerealiteittoestel en -data te gebruik (aanbeveel)</translation>
 <translation id="4936863036653376783">Jy sal jou groepe in die oortjiegroep-afdeling op al jou toestelle kry</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Kies items</translation>
 <translation id="6838525730752203626">Gebruik Chrome by verstek</translation>
 <translation id="6840760312327750441">Raak en hou 'n oortjie om oortjies te groepeer. Sleep dit dan op 'n ander oortjie.</translation>
+<translation id="6842868554183332230">Werwe bespeur gewoonlik wanneer jy jou toestel aktief gebruik om jou beskikbaarheid op kletsprogramme te stel</translation>
 <translation id="6851981911629679515">Skakel bykomende beskerming in Chrome se JavaScript- en WebAssembly-enjin aan</translation>
 <translation id="6864395892908308021">Hierdie toestel kan nie NFC lees nie</translation>
 <translation id="6870169401250095575">Versteek Veiligheidskontrole-kaart</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Instellings vir <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Veiligheidskontrole</translation>
 <translation id="7406113532070524618">Hierdie instelling werk sonder om jou te identifiseer of werwe toe te laat om jou blaaigeskiedenis te sien, hoewel werwe ’n klein hoeveelheid inligting as deel van die verifikasie kan stoor</translation>
+<translation id="7409735910987429903">Werwe kan dalk opspringers stuur om advertensies te wys, of herleidings gebruik om jou te lei na webwerwe wat jy dalk nie wil besoek nie</translation>
 <translation id="7423098979219808738">Vra eers</translation>
 <translation id="7423538860840206698">Geblokkeer om knipbord te lees</translation>
 <translation id="7425915948813553151">Donkertema vir werwe</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Verlaat sentrumsoektog</translation>
 <translation id="7554752735887601236">'n Werf gebruik tans jou mikrofoon</translation>
 <translation id="7561196759112975576">Altyd</translation>
+<translation id="7573594921350120855">Werwe gebruik gewoonlik jou videokamera vir kommunikasiekenmerke soos videoklets</translation>
 <translation id="757524316907819857">Blokkeer werwe om beskermde inhoud te speel</translation>
 <translation id="7594634374516752650">Aan ’n Bluetooth-toestel gekoppel</translation>
 <translation id="7617547684249261169">Jy kan sommige of al jou geskiedenis, webkoekies, werfdata en meer uitvee</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7667547420449112975">Die Wonderlike Towenaar van Oz</translation>
+<translation id="7681597159868843240">Werwe gebruik gewoonlik jou toestel se bewegingsensors vir kenmerke soos virtuele realiteit of fiksheidnasporing</translation>
 <translation id="7688240020069572972">Versteek Chrome-wenkekaart</translation>
 <translation id="7719367874908701697">Bladsyzoem:</translation>
 <translation id="7759147511335618829">MIDI-toestelkontrole en herprogrammering</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Soek agtertoe</translation>
 <translation id="8444433999583714703">Om <ph name="APP_NAME" /> toegang tot jou ligging te gee, moet jy ligging ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="8447861592752582886">Herroep toesteltoestemming</translation>
+<translation id="8471525937465764768">Werwe koppel gewoonlik aan USB-toestelle vir kenmerke soos om 'n dokument te druk of om op 'n bergingtoestel te stoor</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />” is verouderd. Herinstalleer die app.</translation>
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="848952951823693243">Versoek altyd mobiele werf</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Wanneer dit aan is, kan werwe data op jou toestel stoor. Wanneer dit af is, kan werwe nie data op jou toestel stoor nie.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> word toegelaat</translation>
 <translation id="9019902583201351841">Deur jou ouers bestuur</translation>
+<translation id="902236149563113779">Werwe spoor gewoonlik jou kameraposisie na vir AR-kenmerke, soos speletjies of voorafwaarskuwingaanwysings</translation>
 <translation id="9039697262778250930">Jy sal dalk by hierdie werwe afgemeld word</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Vee webkoekies uit?</translation>

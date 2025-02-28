@@ -837,6 +837,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2451607499823206582">Dilyn</translation>
 <translation id="2452098632681057184">Ecoleg a'r Amgylchedd</translation>
 <translation id="2452837234288608067">Methu â helpu gyda hynny. Rhowch gynnig arall arni.</translation>
+<translation id="2453045048779611513">Mae eich sefydliad yn cyfyngu ar yr hyn y gallwch ei gadw</translation>
 <translation id="2456755709261364512">Rhaid i'ch batri fod wedi'i wefru dros <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">Mae Chrome Enterprise Core yn rhoi offeryn canolog i chi ar gyfer ffurfweddu polisïau porwr o'r cwmwl</translation>
 <translation id="2461822463642141190">Presennol</translation>
@@ -1086,6 +1087,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2942492342931589800">Achlysurol</translation>
 <translation id="2942515540157583425">Swyddi TG a Thechnegol</translation>
 <translation id="2943895734390379394">Amser Uwchlwytho:</translation>
+<translation id="2947281105969315778">I rannu neu ymuno â grwpiau tabiau, rhaid i chi allu mewngofnodi i Chrome</translation>
 <translation id="2948083400971632585">Gallwch analluogi unrhyw ddirprwy weinyddion sydd wedi'u ffurfweddu ar gyfer cysylltiad o'r dudalen gosodiadau.</translation>
 <translation id="2949183777371959169">Anwybyddwyd oherwydd nad yw'r peiriant wedi'i gofrestru â Rheoli Cwmwl Porwr Chrome.</translation>
 <translation id="2951588413176968965">Fy mlwch post</translation>
@@ -1946,6 +1948,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4378154925671717803">Ffôn</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Mae uwchlwytho ffeil i Microsoft OneDrive wedi'i seibio</translation>
+<translation id="4389931020843542579">Wrthi'n llwytho'r grŵp tabiau</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4395550503472021297">Mae'r polisi hwn yn rheoli ymddygiad diofyn y polisïau a ganlyn: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Yn agor ffenestr naid i'w dilysu ar wefan eich banc</translation>
@@ -3903,6 +3906,7 @@ Manylion ychwanegol:
 <translation id="791107458486222637">Wrthi'n ailwneud y canlyniad</translation>
 <translation id="791551905239004656">Llunio a Lliwio</translation>
 <translation id="7916162853251942238">Sylfaen Flexo</translation>
+<translation id="791698251820376781">Nid yw eich sefydliad yn caniatáu i chi fewngofnodi</translation>
 <translation id="7926503317156566022">Diwydiant Hedfan</translation>
 <translation id="793209273132572360">Diweddaru'r cyfeiriad?</translation>
 <translation id="7932579305932748336">Gorchuddio</translation>
@@ -4615,6 +4619,7 @@ Manylion ychwanegol:
 <translation id="9191834167571392248">Twll ar y chwith isaf</translation>
 <translation id="9192361865877479444">Metel (Matte)</translation>
 <translation id="9192947025498305328">Harddwch Glân</translation>
+<translation id="9195969368671142407">Pan fydd eich sefydliad yn cyfyngu ar gynilo i'ch Cyfrif Google, ni allwch rannu neu ymuno â grwpiau tabiau</translation>
 <translation id="9199905725844810519">Ni chewch argraffu</translation>
 <translation id="9201904868909900493">Wrthi'n agor yr arolwg...</translation>
 <translation id="9204089334327209740">Unwaith y bydd y llwythiad wedi'i gwblhau, gallwch chi addasu'ch ffeiliau yn <ph name="CLOUD_PROVIDER" />. Bydd storfa leol, gan gynnwys unrhyw ffeiliau yn y Sbwriel, yn cael eu tynnu'n awtomatig.</translation>

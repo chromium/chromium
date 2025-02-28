@@ -116,6 +116,7 @@
 <translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2629740064077610681">您的组织可以查看和管理浏览数据，例如您的书签、历史记录和密码，但无法查看其他 Chromium 资料中的浏览数据</translation>
 <translation id="2635452620547538388">请验证您的身份，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="264613044588233783">提高 Chromium 运行速度，让使用 JavaScript 的功能按预期运行（建议）</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
@@ -380,6 +381,7 @@
 <translation id="6366160072964553914">Chromium 阻止了此项下载操作，因为这不是常下载的文件，可能具有危险性</translation>
 <translation id="6373523479360886564">确定要卸载 Chromium 吗？</translation>
 <translation id="6375219077595103062">添加密码管理工具快捷方式</translation>
+<translation id="6390800440335263989">如需继续操作，请以 <ph name="EMAIL" /> 的身份登录 Chromium。这样可以确保应用所属组织的政策。</translation>
 <translation id="6400112897226594999">计算机屏幕中的 Chromium 徽标。</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
 <translation id="6436260184216827876">图片搜索功能不可用，请稍后再试。</translation>

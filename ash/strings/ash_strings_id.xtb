@@ -246,7 +246,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="17722141032474077">Penghitungan</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> saat ini dipilih.</translation>
 <translation id="178347895271755507">Siapkan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
-<translation id="1785317913592722944">Hapus item dari saran grup</translation>
 <translation id="1786487376942610288">Beralih antara ukuran jendela picture-in-picture maksimum atau saat ini</translation>
 <translation id="1787955149152357925">Nonaktif</translation>
 <translation id="1796561540704213354">Situs, termasuk halaman yang telah Anda kunjungi dan halaman yang dibuka</translation>
@@ -853,6 +852,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3859364108019690">Tidak dapat men-streaming aplikasi</translation>
 <translation id="3861651314799684201">Tekan Enter untuk merekam dalam layar penuh</translation>
 <translation id="3870197372373144624">Coba matikan perangkat.</translation>
+<translation id="3879748587602334249">Pengelola download</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3892148308691398805">Salin teks</translation>
@@ -878,6 +878,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3958714870339660776">Sepanjang Hari</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3963124517343721543">Lanjutkan dengan mudah dari bagian terakhir yang dibuka dengan membuka jendela dan tab sebelumnya. Anda juga akan melihat saran yang dipersonalisasi untuk rekomendasi aktivitas berikutnya.</translation>
+<translation id="3967822245660637423">Download selesai</translation>
 <translation id="3969043077941541451">Nonaktif</translation>
 <translation id="3970324493235864154">Lihat notifikasi ponsel Anda</translation>
 <translation id="397105322502079400">Menghitung...</translation>
@@ -1619,6 +1620,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6319058840130157106">Bergerak mundur antara pojok kanan bawah, Peluncur, kolom URL, kolom bookmark, situs yang terbuka, dan download</translation>
 <translation id="6319503618073410818">Lihat detail di browser</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
+<translation id="6325525973963619867">Gagal</translation>
 <translation id="6330012934079202188">Menampilkan jendela dari semua desktop, tekan tombol Panah atas untuk menampilkan jendela dari desktop saat ini</translation>
 <translation id="6337159624125741244">Pembesar layar penuh aktif</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> adalah sesi terkelola yang dikelola oleh <ph name="MANAGER" /></translation>

@@ -836,6 +836,7 @@
 <translation id="2451607499823206582">追蹤中</translation>
 <translation id="2452098632681057184">生態學與環境</translation>
 <translation id="2452837234288608067">無法協助，請再試一次。</translation>
+<translation id="2453045048779611513">貴機構對你能儲存的內容設有限制</translation>
 <translation id="2456755709261364512">請務必將電池充到 <ph name="REQUIRED_BATTERY_PRECENT" />% 以上</translation>
 <translation id="2461385121573678775">Chrome Enterprise 基本版提供集中式工具，你可以從雲端設定瀏覽器政策</translation>
 <translation id="2461822463642141190">電流</translation>
@@ -1085,6 +1086,7 @@
 <translation id="2942492342931589800">非正式</translation>
 <translation id="2942515540157583425">資訊科技與技術相關工作</translation>
 <translation id="2943895734390379394">上傳時間：</translation>
+<translation id="2947281105969315778">你必須能夠登入 Chrome，才能分享或加入分頁群組</translation>
 <translation id="2948083400971632585">你可以在設定頁面停用任何為連線設置的 Proxy。</translation>
 <translation id="2949183777371959169">裝置並未透過 Chrome 瀏覽器雲端管理服務註冊，因此系統已忽略這項政策。</translation>
 <translation id="2951588413176968965">我的出紙槽</translation>
@@ -1944,6 +1946,7 @@
 <translation id="4378154925671717803">電話</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">已暫停 Microsoft OneDrive 檔案上傳作業</translation>
+<translation id="4389931020843542579">正在載入分頁群組</translation>
 <translation id="4390472908992056574">邊裙</translation>
 <translation id="4395550503472021297">這項政策會控管下列政策的預設行為：<ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">開啟彈出式視窗，將你導向至銀行網站進行驗證</translation>
@@ -3902,6 +3905,7 @@
 <translation id="791107458486222637">重新產生結果</translation>
 <translation id="791551905239004656">繪畫與著色</translation>
 <translation id="7916162853251942238">彈性凸版基底</translation>
+<translation id="791698251820376781">貴機構不允許你登入</translation>
 <translation id="7926503317156566022">航空產業</translation>
 <translation id="793209273132572360">要更新地址嗎？</translation>
 <translation id="7932579305932748336">塗布</translation>
@@ -4613,6 +4617,7 @@
 <translation id="9191834167571392248">打孔 (左下方)</translation>
 <translation id="9192361865877479444">金屬 (霧面)</translation>
 <translation id="9192947025498305328">純淨美妝</translation>
+<translation id="9195969368671142407">如果貴機構限制你儲存內容到 Google 帳戶，你就無法分享或加入分頁群組</translation>
 <translation id="9199905725844810519">列印功能已遭封鎖</translation>
 <translation id="9201904868909900493">正在開啟問卷調查...</translation>
 <translation id="9204089334327209740">上傳完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 中修改檔案。系統會自動移除本機儲存空間中的檔案 (包括垃圾桶中的所有檔案)。</translation>

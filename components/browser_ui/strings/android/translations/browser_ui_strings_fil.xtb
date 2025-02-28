@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga NFC device. Kapag naka-off, hindi makakagamit ang mga site ng mga NFC device.</translation>
 <translation id="1660204651932907780">Payagan ang mga site na mag-play ng tunog (inirerekomenda)</translation>
 <translation id="1677097821151855053">Ginagamit ang cookies at iba pang data ng site para tandaan ka, halimbawa para i-sign in ka o i-personalize ang mga ad. Para mapamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Karaniwang nagpapadala ng mga notification ang mga site para ipaalam sa iyo ang tungkol sa breaking news o mga mensahe sa chat.</translation>
 <translation id="169515064810179024">I-block ang mga site sa pag-access sa mga sensor ng paggalaw</translation>
 <translation id="1717218214683051432">Mga sensor ng paggalaw</translation>
 <translation id="1743802530341753419">Magtanong bago payagan ang mga site na kumonekta sa isang device (inirerekomenda)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Tunog</translation>
 <translation id="2096716221239095980">I-delete ang lahat ng data</translation>
 <translation id="2117655453726830283">Susunod na slide</translation>
+<translation id="2146263598007866206">Posibleng awtomatikong i-download ng mga site ang magkakaugnay na file nang magkakasama para makatipid ka sa oras</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="216989819110952009">Kahit na pinoprotektahan ng berdeng salamin ang mga mata, sa una ay nasilaw si Dorothy at ang kanyang mga kaibigan sa</translation>
 <translation id="2176704795966505152">Ipakita ang opsyon sa pag-zoom sa pangunahing menu</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Puwedeng magpakita ang mga site ng mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan.</translation>
 <translation id="2787357173144933081">Simulan ang Omnibox</translation>
 <translation id="2790501146643349491">Kapag naka-on, matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data. Kapag naka-off, hindi matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data.</translation>
+<translation id="2795716239552913152">Karaniwang ginagamit ng mga site ang iyong lokasyon para sa mga nauugnay na feature o impormasyon, gaya ng lokal na balita o mga kalapit na tindahan</translation>
 <translation id="2814830417943086299">Ipinapakita na ngayon ng Chrome ang iyong mga kamakailang tab sa listahan ng app at mga resulta ng paghahanap ng device mo. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
 <translation id="2822354292072154809">Sigurado ka bang gusto mong i-reset ang lahat ng pahintulot sa site para sa <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Mag-request ng mobile view</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Naka-block ang third-party na cookies</translation>
 <translation id="3448554387819310837">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong camera. Kapag naka-off, hindi magagamit ng mga site ang iyong camera.</translation>
+<translation id="3491678231052507920">Karaniwang ginagamit ng mga site ang iyong mga virtual reality device at data para payagan kang pumasok sa mga VR session</translation>
+<translation id="3496995426334945408">Karaniwang gumagamit ang mga site ng JavaScript para makapagpakita ng mga interactive na feature, tulad ng mga video game o web form</translation>
 <translation id="3521663503435878242">Mga site sa ilalim ng <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Huwag payagan ang mga site na i-track ang iyong mga kamay</translation>
 <translation id="3532312529397438268">Hindi magagamit ng mga site ang V8 optimizer</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Buksan ang Mga Setting ng Lokasyon</translation>
 <translation id="4226663524361240545">Maaaring mag-vibrate ang device dahil sa mga notification</translation>
 <translation id="4259722352634471385">Naka-block ang navigation: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Pagkatapos mong umalis sa isang site, puwede itong patuloy na mag-sync para matapos ang mga gawain, tulad ng pag-upload ng mga larawan o pagpapadala ng mensahe sa chat</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
 <translation id="429312253194641664">May site na nagpe-play ng media</translation>
 <translation id="42981349822642051">Palawakin</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Naka-save na pag-zoom para sa mga site</translation>
 <translation id="4836046166855586901">Magtanong kapag gusto ng site na alamin kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="483914009762354899">Isama ang lahat ng site sa ilalim ng domain na ito</translation>
+<translation id="4882919381756638075">Karaniwang ginagamit ng mga site ang iyong mikropono para sa mga feature sa pakikipag-ugnayan gaya ng pakikipag-video chat</translation>
 <translation id="4883854917563148705">Hindi puwedeng i-reset ang mga pinapamahalaang setting</translation>
 <translation id="4887024562049524730">Magtanong bago payagan ang mga site na gamitin ang iyong virtual reality device at data (inirerekomenda)</translation>
 <translation id="4936863036653376783">Mahahanap mo ang iyong mga grupo sa seksyon ng grupo ng tab sa lahat ng device mo</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Pumili ng mga item</translation>
 <translation id="6838525730752203626">Gamitin ang Chrome bilang default</translation>
 <translation id="6840760312327750441">Sa mga tab ng grupo, pindutin nang matagal ang isang tab. Pagkatapos, i-drag ito sa isa pang tab.</translation>
+<translation id="6842868554183332230">Karaniwang nade-detect ng mga site kung aktibo mong ginagamit ang iyong device para maitakda ang iyong availability sa mga chat app</translation>
 <translation id="6851981911629679515">I-on ang karagdagang proteksyon sa JavaScript at WebAssembly engine ng Chrome</translation>
 <translation id="6864395892908308021">Hindi nababasa ng device na ito ang NFC</translation>
 <translation id="6870169401250095575">I-hide ang card na Pag-check sa Kaligtasan</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Mga setting para sa <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Pagsusuri sa Kaligtasan</translation>
 <translation id="7406113532070524618">Gumagana ang setting na ito nang hindi ka tinutukoy o hindi pinapayagan ang mga site na makita ang iyong history ng pag-browse, bagama't puwedeng mag-share ang mga site ng kaunting impormasyon bilang bahagi ng pag-verify</translation>
+<translation id="7409735910987429903">Posibleng magpadala ng mga pop-up ang mga site para magpakita ng mga ad, o gumamit ng mga pag-redirect para dalhin ka sa mga website na posibleng hindi mo gustong bisitahin</translation>
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7423538860840206698">Na-block sa pag-read ng clipboard</translation>
 <translation id="7425915948813553151">Madilim na tema para sa mga site</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Lumabas sa paghahanap sa hub</translation>
 <translation id="7554752735887601236">Gingamit ng isang site ang iyong mikropono</translation>
 <translation id="7561196759112975576">Palagi</translation>
+<translation id="7573594921350120855">Karaniwang ginagamit ng mga site ang iyong video camera para sa mga feature sa pakikipag-ugnayan gaya ng pakikipag-video chat</translation>
 <translation id="757524316907819857">I-block ang mga site sa pag-play ng pinoprotektahang content</translation>
 <translation id="7594634374516752650">Nakakonekta sa isang Bluetooth device</translation>
 <translation id="7617547684249261169">Puwede mong i-delete ang ilan sa o lahat ng iyong history, cookies, data ng site at higit pa</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
+<translation id="7681597159868843240">Karaniwang ginagamit ng mga site ang mga sensor ng paggalaw ng iyong device para sa mga feature na tulad ng virtual reality o pag-track sa fitness</translation>
 <translation id="7688240020069572972">Itago ang card ng mga tip sa Chrome</translation>
 <translation id="7719367874908701697">Pag-zoom ng page</translation>
 <translation id="7759147511335618829">Kontrol / reprogram: MIDI device</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Maghanap nang pabalik</translation>
 <translation id="8444433999583714703">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong lokasyon, i-on din ang lokasyon sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Bawiin ang pahintulot ng device</translation>
+<translation id="8471525937465764768">Karaniwang kumokonekta ang mga site sa mga USB device para sa mga feature gaya ng pag-print ng dokumento o pag-save sa storage device</translation>
 <translation id="8473055640493819707">Luma na ang '<ph name="APP_NAME" />.' Paki-install ulit ang app.</translation>
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="848952951823693243">Palaging hilingin ang pang-mobile na site</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Kapag naka-on, makakapag-save ng data sa iyong device ang mga site. Kapag naka-off, hindi makakapag-save ng data sa iyong device ang mga site.</translation>
 <translation id="9011903857143958461">Pinapayagan ang <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Pinamamahalaan ng iyong mga magulang</translation>
+<translation id="902236149563113779">Karaniwang tina-track ng mga site ang posisyon ng iyong camera para sa mga feature ng AR, gaya ng mga laro o mga heads-up na direksyon</translation>
 <translation id="9039697262778250930">Posibleng ma-sign out ka sa mga site na ito</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">I-delete ang cookies?</translation>

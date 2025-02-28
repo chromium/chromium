@@ -246,7 +246,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="17722141032474077">Calcoli</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, è attualmente selezionata la data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configura la visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
-<translation id="1785317913592722944">Rimuovi l'elemento dal gruppo suggerito</translation>
 <translation id="1786487376942610288">Passa dalla dimensione massima a quella corrente e viceversa della finestra Picture in picture</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Siti web che includono le pagine che hai visitato e le pagine aperte</translation>
@@ -850,6 +849,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3859364108019690">Impossibile trasmettere app in streaming</translation>
 <translation id="3861651314799684201">Premi invio per registrare a schermo intero</translation>
 <translation id="3870197372373144624">Prova a spegnere il dispositivo.</translation>
+<translation id="3879748587602334249">Gestione dei download</translation>
 <translation id="3886872229787704059">Aperto oggi</translation>
 <translation id="3891340733213178823">Premi due volte Ctrl+Maiusc+Q per uscire.</translation>
 <translation id="3892148308691398805">Copia testo</translation>
@@ -875,6 +875,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3958714870339660776">Tutto il giorno</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3963124517343721543">Continua facilmente da dove avevi interrotto aprendo le finestre e le schede precedenti. Vedrai anche suggerimenti personalizzati su cosa fare dopo.</translation>
+<translation id="3967822245660637423">Download completato</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="3970324493235864154">Visualizza le notifiche dello smartphone</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
@@ -1616,6 +1617,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6319058840130157106">Spostati indietro tra l'angolo in basso a destra, Avvio app, la barra degli indirizzi, la barra dei preferiti, il sito web aperto e i download</translation>
 <translation id="6319503618073410818">Visualizza i dettagli nel browser</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
+<translation id="6325525973963619867">Non riuscito</translation>
 <translation id="6330012934079202188">Dalla visualizzazione delle finestre di tutte le scrivanie, premi il tasto Freccia su per mostrare le finestre della scrivania corrente</translation>
 <translation id="6337159624125741244">Ingrandimento a schermo intero attivato</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> è una sessione gestita da <ph name="MANAGER" /></translation>
@@ -2355,6 +2357,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8847100217801213944">Mostra la temperatura in gradi Fahrenheit</translation>
 <translation id="8849001918648564819">Nascosto</translation>
+<translation id="8855792845239861369">Questa lingua non è supportata</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>
 <translation id="8858369206579825206">Controlli per la privacy</translation>
 <translation id="8860366331836346216">Aggiungi eSIM</translation>

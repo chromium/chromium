@@ -837,6 +837,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2451607499823206582">Overvågning</translation>
 <translation id="2452098632681057184">Økologi og miljø</translation>
 <translation id="2452837234288608067">Det kunne vi ikke hjælpe med. Prøv igen.</translation>
+<translation id="2453045048779611513">Din organisation begrænser, hvad du kan gemme</translation>
 <translation id="2456755709261364512">Dit batteri skal være opladet til mere end <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core giver dig et centraliseret værktøj til konfiguration af browserpolitikker i skyen</translation>
 <translation id="2461822463642141190">Aktuel</translation>
@@ -1086,6 +1087,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2942492342931589800">Uformel</translation>
 <translation id="2942515540157583425">Jobs inden for IT og teknik</translation>
 <translation id="2943895734390379394">Tidspunkt for upload:</translation>
+<translation id="2947281105969315778">Du skal kunne logge ind i Chrome for at dele eller deltage i fanegrupper</translation>
 <translation id="2948083400971632585">Du kan deaktivere alle proxyer, der er konfigureret for en forbindelse, fra siden Indstillinger.</translation>
 <translation id="2949183777371959169">Ignoreret, fordi maskinen ikke er tilmeldt via Skybaseret administration af Chrome-browseren.</translation>
 <translation id="2951588413176968965">Min postkasse</translation>
@@ -3904,6 +3906,7 @@ Yderligere oplysninger:
 <translation id="791107458486222637">Annullerer fortrydelse af resultat</translation>
 <translation id="791551905239004656">Tegning og farvelægning</translation>
 <translation id="7916162853251942238">Flexo-base</translation>
+<translation id="791698251820376781">Din organisation tillader ikke, at du logger ind</translation>
 <translation id="7926503317156566022">Flybranchen</translation>
 <translation id="793209273132572360">Vil du opdater adressen?</translation>
 <translation id="7932579305932748336">Bestrygning</translation>
@@ -4617,6 +4620,7 @@ Yderligere oplysninger:
 <translation id="9191834167571392248">Hul nederst til venstre</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Ren skønhed</translation>
+<translation id="9195969368671142407">Når din organisation begrænser muligheden for at gemme på din Google-konto, kan du ikke dele eller deltage i fanegrupper</translation>
 <translation id="9199905725844810519">Udskrivning er blokeret</translation>
 <translation id="9201904868909900493">Åbner undersøgelse…</translation>
 <translation id="9204089334327209740">Du kan redigere dine filer i <ph name="CLOUD_PROVIDER" />, når uploaden er fuldført. Lokal lagerplads, herunder filer i papirkurven, fjernes automatisk.</translation>

@@ -246,7 +246,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="17722141032474077">Pengiraan</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, pada masa ini <ph name="DATE" /> dipilih.</translation>
 <translation id="178347895271755507">Menyediakan pemaparan foto, media dan pemberitahuan terbaharu telefon anda</translation>
-<translation id="1785317913592722944">Alih keluar item daripada kumpulan yang dicadangkan</translation>
 <translation id="1786487376942610288">Beralih antara saiz tetingkap gambar dalam gambar maksimum atau semasa</translation>
 <translation id="1787955149152357925">Mati</translation>
 <translation id="1796561540704213354">Laman web termasuk halaman yang anda lawati dan halaman terbuka</translation>
@@ -854,6 +853,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3859364108019690">Tidak dapat menstrim apl</translation>
 <translation id="3861651314799684201">Tekan kekunci enter untuk merakam skrin penuh</translation>
 <translation id="3870197372373144624">Cuba matikan peranti anda.</translation>
+<translation id="3879748587602334249">Pengurus muat turun</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3892148308691398805">Salin teks</translation>
@@ -879,6 +879,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3958714870339660776">Sepanjang Hari</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3963124517343721543">Teruskan dari tempat anda berhenti dengan mudah dengan membuka tetingkap dan tab anda sebelumnya. Anda juga akan melihat cadangan diperibadikan untuk aktiviti yang boleh dilakukan seterusnya.</translation>
+<translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3969043077941541451">Mati</translation>
 <translation id="3970324493235864154">Lihat pemberitahuan telefon anda</translation>
 <translation id="397105322502079400">Mengira...</translation>
@@ -1619,6 +1620,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6319058840130157106">Bergerak ke belakang antara penjuru bawah sebelah kanan, Pelancar, bar alamat, bar penanda halaman, laman web yang terbuka dengan muat turun</translation>
 <translation id="6319503618073410818">Lihat butiran dalam penyemak imbas</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
+<translation id="6325525973963619867">Gagal</translation>
 <translation id="6330012934079202188">Memaparkan tetingkap daripada semua meja, tekan kekunci Anak panah ke atas untuk memaparkan tetingkap daripada meja semasa</translation>
 <translation id="6337159624125741244">Penggadang skrin penuh dihidupkan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ialah sesi terurus yang diurus oleh <ph name="MANAGER" /></translation>
@@ -2359,6 +2361,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8847100217801213944">Paparkan suhu dalam Fahrenheit</translation>
 <translation id="8849001918648564819">Disembunyikan</translation>
+<translation id="8855792845239861369">Bahasa ini tidak disokong</translation>
 <translation id="8855885154700222542">Kekunci skrin penuh</translation>
 <translation id="8858369206579825206">Kawalan privasi</translation>
 <translation id="8860366331836346216">Tambahkan eSIM</translation>

@@ -837,6 +837,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2451607499823206582">Sporing</translation>
 <translation id="2452098632681057184">Økologi og miljø</translation>
 <translation id="2452837234288608067">Vi kunne ikke hjelpe deg med det. Prøv på nytt.</translation>
+<translation id="2453045048779611513">Organisasjonen din begrenser hva du kan synkronisere</translation>
 <translation id="2456755709261364512">Batteriet må være ladet til mer enn <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Med Chrome Enterprise Core får du et sentralisert verktøy for konfigurering av nettleserregler fra nettskyen</translation>
 <translation id="2461822463642141190">Nåværende</translation>
@@ -1086,6 +1087,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2942492342931589800">Casual</translation>
 <translation id="2942515540157583425">IT-jobber og tekniske jobber</translation>
 <translation id="2943895734390379394">Opplastingstidspunkt:</translation>
+<translation id="2947281105969315778">For å dele eller bli med i fanegrupper må du kunne logge på Chrome</translation>
 <translation id="2948083400971632585">På innstillingssiden kan du deaktivere eventuelle proxy-tjenere for tilkoblinger.</translation>
 <translation id="2949183777371959169">Ignorert fordi maskinen ikke er registrert med Skybasert Chrome-administrering.</translation>
 <translation id="2951588413176968965">Min postkasse</translation>
@@ -1946,6 +1948,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Filopplasting til Microsoft OneDrive er satt på pause</translation>
+<translation id="4389931020843542579">Laster inn fanegruppen</translation>
 <translation id="4390472908992056574">Rand</translation>
 <translation id="4395550503472021297">Denne regelen styrer standardfunksjonaliteten for disse reglene: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Åpner et forgrunnsvindu for bekreftelse på bankens nettsted</translation>
@@ -3903,6 +3906,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="791107458486222637">Gjør om resultatet</translation>
 <translation id="791551905239004656">Tegning og fargelegging</translation>
 <translation id="7916162853251942238">Flexo-base</translation>
+<translation id="791698251820376781">Organisasjonen din tillater ikke at du logger på</translation>
 <translation id="7926503317156566022">Flybransjen</translation>
 <translation id="793209273132572360">Vil du oppdatere adressen?</translation>
 <translation id="7932579305932748336">Belegg</translation>
@@ -4615,6 +4619,7 @@ Mer informasjon:
 <translation id="9191834167571392248">Hull nede til venstre</translation>
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Ren skjønnhet</translation>
+<translation id="9195969368671142407">Når organisasjonen din begrenser lagring i Google-kontoen din, kan du ikke dele eller bli med i fanegrupper</translation>
 <translation id="9199905725844810519">Utskrift er blokkert</translation>
 <translation id="9201904868909900493">Åpner spørreundersøkelsen …</translation>
 <translation id="9204089334327209740">Når opplastingen er fullført, kan du endre filene dine i <ph name="CLOUD_PROVIDER" />. Lokal lagring, inkludert eventuelle filer i papirkurven, fjernes automatisk.</translation>

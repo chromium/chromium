@@ -837,6 +837,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2451607499823206582">Spårning</translation>
 <translation id="2452098632681057184">Ekologi och miljö</translation>
 <translation id="2452837234288608067">Det gick inte att hjälpa till med det. Försök igen.</translation>
+<translation id="2453045048779611513">Organisationen begränsar vad du kan spara</translation>
 <translation id="2456755709261364512">Batteriet måste vara laddat över <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Med Chrome Enterprise Core får du ett centraliserat verktyg för att konfigurera webbläsarprinciper från molnet</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
@@ -1086,6 +1087,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2942492342931589800">Informell</translation>
 <translation id="2942515540157583425">Jobb inom IT och teknik</translation>
 <translation id="2943895734390379394">Uppladdningstid:</translation>
+<translation id="2947281105969315778">Om du vill dela eller gå med i flikgrupper måste du kunna logga in i Chrome</translation>
 <translation id="2948083400971632585">Du kan inaktivera alla proxyservrar som har konfigurerats för en anslutning från sidan Inställningar.</translation>
 <translation id="2949183777371959169">Principen ignoreras eftersom datorn inte är registrerad för Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">Mitt postfack</translation>
@@ -3904,6 +3906,7 @@ Mer information.
 <translation id="791107458486222637">Gör om resultatet</translation>
 <translation id="791551905239004656">Rita och måla</translation>
 <translation id="7916162853251942238">Flexo-base</translation>
+<translation id="791698251820376781">Organisationen tillåter inte att du loggar in</translation>
 <translation id="7926503317156566022">Luftfartsindustri</translation>
 <translation id="793209273132572360">Vill du uppdatera adressen?</translation>
 <translation id="7932579305932748336">Beläggning</translation>
@@ -4617,6 +4620,7 @@ Mer information:
 <translation id="9191834167571392248">Hål nere till vänster</translation>
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Naturlig skönhetsvård</translation>
+<translation id="9195969368671142407">När organisationen begränsar sparandet i Google-kontot kan du inte dela eller gå med i flikgrupper</translation>
 <translation id="9199905725844810519">Utskrift har blockerats</translation>
 <translation id="9201904868909900493">Öppnar enkäten …</translation>
 <translation id="9204089334327209740">När uppladdningen är klar kan du ändra filerna i <ph name="CLOUD_PROVIDER" />. Lokal lagring, inklusive filer i papperskorgen, tas bort automatiskt.</translation>

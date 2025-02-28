@@ -836,6 +836,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2451607499823206582">Kuzatuvda</translation>
 <translation id="2452098632681057184">Ekologiya va atrof-muhit</translation>
 <translation id="2452837234288608067">Xatolik yuz berdi. Qayta urining.</translation>
+<translation id="2453045048779611513">Tashkilotingiz faqat muayyan maʼlumotlarni saqlashga ruxsat bergan</translation>
 <translation id="2456755709261364512">Batareya quvvati <ph name="REQUIRED_BATTERY_PRECENT" />% dan yuqori boʻlishi kerak</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core brauzer qoidalarini bulut orqali sozlash uchun markazlashtirilgan vositasini taklif qiladi</translation>
 <translation id="2461822463642141190">Ayni vaqtda</translation>
@@ -1085,6 +1086,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2942492342931589800">Erkin</translation>
 <translation id="2942515540157583425">IT va texnik sohadagi vakansiyalar</translation>
 <translation id="2943895734390379394">Yuklash vaqti:</translation>
+<translation id="2947281105969315778">Varaqlar guruhini ulashish yoki ularga qoʻshilish uchun Chrome hisobiga kiring</translation>
 <translation id="2948083400971632585">Ulanishga sozlangan proksilarni sozlamalar sahifasida o‘chirib qo‘yishingiz mumkin.</translation>
 <translation id="2949183777371959169">Kompyuter Chrome brauzeri bulutli boshqaruviga qayd qilinmagani uchun tashlab ketildi.</translation>
 <translation id="2951588413176968965">Pochta qutim</translation>
@@ -3897,6 +3899,7 @@ Batafsil axborot:
 <translation id="791107458486222637">Natija qayta hisoblanmoqda</translation>
 <translation id="791551905239004656">Chizish va boʻyash</translation>
 <translation id="7916162853251942238">Flekso bosib chiqarish uchun asos</translation>
+<translation id="791698251820376781">Tashkilotingiz Chrome hisobiga kirishni taqiqlagan</translation>
 <translation id="7926503317156566022">Aviatsiya sohasi</translation>
 <translation id="793209273132572360">Manzil yangilansinmi?</translation>
 <translation id="7932579305932748336">Muqovalash</translation>
@@ -4609,6 +4612,7 @@ Batafsil axborot:
 <translation id="9191834167571392248">Quyi chapdan teshik ochish</translation>
 <translation id="9192361865877479444">Metall (jilosiz)</translation>
 <translation id="9192947025498305328">Pardozsiz goʻzallik</translation>
+<translation id="9195969368671142407">Tashkilotingiz Google hisobingizga maʼlumotlarni saqlashni cheklasa, varaqlar guruhini ulashish yoki ularga qoʻshilish imkonsiz boʻladi</translation>
 <translation id="9199905725844810519">Chop etish taqiqlangan</translation>
 <translation id="9201904868909900493">Soʻrovnoma ochilmoqda...</translation>
 <translation id="9204089334327209740">Yuklanganidan keyin fayllarni <ph name="CLOUD_PROVIDER" /> xizmatida oʻzgartirish mumkin. Qurilmadagi, jumladan, Chiqitdondagi fayllar avtomatik tozalanadi.</translation>

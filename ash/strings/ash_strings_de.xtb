@@ -246,7 +246,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="17722141032474077">Berechnungen</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, momentan ist der <ph name="DATE" /> ausgewählt.</translation>
 <translation id="178347895271755507">Anzeige der letzten Fotos, Medien und Benachrichtigungen auf deinem Smartphone einrichten</translation>
-<translation id="1785317913592722944">Element aus vorgeschlagener Gruppe entfernen</translation>
 <translation id="1786487376942610288">Zwischen der maximalen und der aktuellen Größe des „Bild im Bild“-Fensters wechseln</translation>
 <translation id="1787955149152357925">Aus</translation>
 <translation id="1796561540704213354">Websites, einschließlich besuchter und derzeit geöffneter Seiten</translation>
@@ -853,6 +852,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3859364108019690">Apps können nicht gestreamt werden</translation>
 <translation id="3861651314799684201">Eingabetaste drücken, um den ganzen Bildschirm aufzuzeichnen</translation>
 <translation id="3870197372373144624">Versuche, dein Gerät herunterzufahren.</translation>
+<translation id="3879748587602334249">Download-Manager</translation>
 <translation id="3886872229787704059">Heute geöffnet</translation>
 <translation id="3891340733213178823">Drücke zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
@@ -878,6 +878,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3958714870339660776">Ganztägig</translation>
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3963124517343721543">Du kannst einfach da weitermachen, wo du aufgehört hast, indem du deine vorherigen Fenster und Tabs öffnest. Außerdem erhältst du personalisierte Vorschläge für mögliche weitere Aktionen.</translation>
+<translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3969043077941541451">Aus</translation>
 <translation id="3970324493235864154">Benachrichtigungen auf deinem Smartphone anzeigen</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
@@ -1619,6 +1620,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6319058840130157106">Zwischen der unteren rechten Ecke, dem Launcher, der Adressleiste, der Lesezeichenleiste, der geöffneten Website und den Downloads rückwärtsgehen</translation>
 <translation id="6319503618073410818">Details im Browser ansehen</translation>
 <translation id="6324916366299863871">Verknüpfung bearbeiten</translation>
+<translation id="6325525973963619867">Fehlgeschlagen</translation>
 <translation id="6330012934079202188">Fenster von allen Desktops werden angezeigt – drücke den Aufwärtspfeil, um die Fenster vom aktuellen Desktop anzuzeigen</translation>
 <translation id="6337159624125741244">Bedienungshilfe „Vollbildlupe“ aktiviert</translation>
 <translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ ist eine verwaltete Sitzung, die von <ph name="MANAGER" /> verwaltet wird</translation>

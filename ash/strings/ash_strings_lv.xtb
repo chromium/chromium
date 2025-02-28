@@ -246,7 +246,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="17722141032474077">Aprēķini</translation>
 <translation id="1774796056689732716">Kalendārs, <ph name="CURRENT_MONTH_YEAR" />, pašlaik atlasītais datums ir <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Iestatīt tālruņa jaunāko fotoattēlu, multivides satura un paziņojumu skatīšanu</translation>
-<translation id="1785317913592722944">Noņemt vienumu no ieteiktās grupas</translation>
 <translation id="1786487376942610288">Pārslēgt funkcijas “Attēls attēlā” loga izmēru starp maksimālo un pašreizējo</translation>
 <translation id="1787955149152357925">Izslēgts</translation>
 <translation id="1796561540704213354">Tīmekļa vietnes, tostarp iepriekš apmeklētās un pašlaik atvērtās lapas</translation>
@@ -853,6 +852,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3859364108019690">Nevar straumēt lietotnes</translation>
 <translation id="3861651314799684201">Lai ierakstītu visu ekrānu, nospiediet taustiņu Enter</translation>
 <translation id="3870197372373144624">Izslēdziet ierīci.</translation>
+<translation id="3879748587602334249">Lejupielāžu pārvaldnieks</translation>
 <translation id="3886872229787704059">Atvērts šodien</translation>
 <translation id="3891340733213178823">Lai izrakstītos, divas reizes nospiediet taustiņu kombināciju Ctrl+Shift+Q.</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
@@ -878,6 +878,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3958714870339660776">Visu dienu</translation>
 <translation id="3962859241508114581">Iepriekšējais ieraksts</translation>
 <translation id="3963124517343721543">Ērti turpiniet darbu no vietas, kur to pārtraucāt, atverot iepriekšējos logus un cilnes. Būs redzami arī personalizēti ieteikumi par nākamajām darbībām.</translation>
+<translation id="3967822245660637423">Lejupielāde pabeigta</translation>
 <translation id="3969043077941541451">Izslēgt</translation>
 <translation id="3970324493235864154">Skatīt tālruņa paziņojumus</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
@@ -1619,6 +1620,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6319058840130157106">Pārvietoties atpakaļ starp apakšējo labo stūri, palaidēju, adreses joslu, grāmatzīmju joslu, atvērto tīmekļa vietni un lejupielādēm</translation>
 <translation id="6319503618073410818">Skatīt informāciju pārlūkā</translation>
 <translation id="6324916366299863871">Saīsnes rediģēšana</translation>
+<translation id="6325525973963619867">Neizdevās</translation>
 <translation id="6330012934079202188">Tiek rādīti visu darbvietu logi. Nospiediet augšupvērsto bultiņu, lai tiktu rādīti pašreizējās darbvietas logi.</translation>
 <translation id="6337159624125741244">Pilnekrāna lupa ir ieslēgta</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ir pārvaldīta sesija, ko pārvalda <ph name="MANAGER" />.</translation>
@@ -2359,6 +2361,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8847100217801213944">Rādīt temperatūru Fārenheita grādos</translation>
 <translation id="8849001918648564819">Paslēpta</translation>
+<translation id="8855792845239861369">Šī valoda netiek atbalstīta.</translation>
 <translation id="8855885154700222542">Pilnekrāna taustiņš</translation>
 <translation id="8858369206579825206">Konfidencialitātes vadīklas</translation>
 <translation id="8860366331836346216">Pievienot eSIM</translation>

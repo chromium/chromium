@@ -9849,9 +9849,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> – <ph name="COUNT" />. hang</translation>
 <translation id="7990958035181555539">Wi-Fi automatikus átvitele androidos telefonról</translation>
 <translation id="7991296728590311172">A kapcsolóalapú hozzáférés beállításai</translation>
-<translation id="7992080146463834191">Összefoglalhatja a tartalmat, egyszerűsítheti a bonyolult nyelvezetet, vagy kérdéseket tehet fel.</translation>
 <translation id="7992203134935383159">Beszédszintézis</translation>
-<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Folyamatprioritás</translation>
 <translation id="7997828719430450286">Sikerült.</translation>
 <translation id="7998701048266085837">URL-ek</translation>
@@ -11112,7 +11110,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8874448314264883207">„<ph name="EXTENSION_NAME" />” kikapcsolva</translation>
 <translation id="8874647982044395866">Organikus</translation>
 <translation id="8874790741333031443">Próbálja meg átmenetileg engedélyezni a harmadik felektől származó cookie-kat, ami kisebb böngészési védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel működnek majd megfelelően.</translation>
-<translation id="8875221558267407626">Összefoglalhatja a tartalmat, egyszerűsítheti a bonyolult nyelvezetet, vagy kérdéseket tehet fel</translation>
 <translation id="8875520811099717934">A Linux frissítése</translation>
 <translation id="8875736897340638404">Itt megadhatja a láthatóságot</translation>
 <translation id="8876307312329369159">Ezt a beállítást nem lehet módosítani demó munkamenetben.</translation>

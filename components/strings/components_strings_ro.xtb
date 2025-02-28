@@ -837,6 +837,7 @@
 <translation id="2451607499823206582">Urmărire</translation>
 <translation id="2452098632681057184">Ecologie și mediul înconjurător</translation>
 <translation id="2452837234288608067">Nu te-am putut ajuta. Încearcă din nou.</translation>
+<translation id="2453045048779611513">Organizația ta limitează ce poți salva</translation>
 <translation id="2456755709261364512">Nivelul bateriei trebuie să fie peste <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core îți oferă un instrument centralizat pentru configurarea politicilor browserului din cloud</translation>
 <translation id="2461822463642141190">Actual</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2942492342931589800">Informal</translation>
 <translation id="2942515540157583425">Locuri de muncă în domeniul IT și tehnic</translation>
 <translation id="2943895734390379394">Ora încărcării:</translation>
+<translation id="2947281105969315778">Pentru a permite accesul la grupuri de file sau a te alătura lor, trebuie să te poți conecta la Chrome</translation>
 <translation id="2948083400971632585">Puteți să dezactivați serverele proxy configurate pentru o conexiune din pagina de setări.</translation>
 <translation id="2949183777371959169">Ignorate deoarece dispozitivul nu este înregistrat pentru Gestionarea în cloud pentru browserul Chrome.</translation>
 <translation id="2951588413176968965">Căsuța mea de e-mail</translation>
@@ -3904,6 +3906,7 @@ Detalii suplimentare:
 <translation id="791107458486222637">Repetă</translation>
 <translation id="791551905239004656">Desenat și colorat</translation>
 <translation id="7916162853251942238">Bază Flexo</translation>
+<translation id="791698251820376781">Organizația nu îți permite să te conectezi</translation>
 <translation id="7926503317156566022">Domeniul aviației</translation>
 <translation id="793209273132572360">Actualizezi adresa?</translation>
 <translation id="7932579305932748336">Acoperire</translation>
@@ -4617,6 +4620,7 @@ Detalii suplimentare:
 <translation id="9191834167571392248">Perforare în stânga jos</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Frumusețe naturală</translation>
+<translation id="9195969368671142407">Când organizația limitează salvarea în Contul Google, nu poți să permiți accesul sau să te alături grupurilor de file</translation>
 <translation id="9199905725844810519">Printarea este blocată</translation>
 <translation id="9201904868909900493">Se deschide sondajul…</translation>
 <translation id="9204089334327209740">După finalizarea încărcării, poți să modifici fișierele în <ph name="CLOUD_PROVIDER" />. Spațiul de stocare local se va elimina automat, inclusiv fișierele din coșul de gunoi.</translation>

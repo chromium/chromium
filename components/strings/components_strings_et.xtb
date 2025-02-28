@@ -837,6 +837,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2451607499823206582">Jälgimine</translation>
 <translation id="2452098632681057184">Ökoloogia ja keskkond</translation>
 <translation id="2452837234288608067">Me ei saanud sellega aidata. Proovige uuesti.</translation>
+<translation id="2453045048779611513">Teie organisatsioon piirab salvestamist</translation>
 <translation id="2456755709261364512">Teie aku peab olema laetud üle <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core annab teile keskse tööriista brauseri reeglite seadistamiseks pilvest</translation>
 <translation id="2461822463642141190">Praegune</translation>
@@ -1086,6 +1087,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2942492342931589800">Lihtne</translation>
 <translation id="2942515540157583425">IT- ja tehnikavaldkonna töökohad</translation>
 <translation id="2943895734390379394">Üleslaadimise aeg:</translation>
+<translation id="2947281105969315778">Vahelehegruppide jagamiseks või nendega liitumiseks peab teil olema võimalik Chrome'i sisse logida</translation>
 <translation id="2948083400971632585">Seadete lehel saate keelata kõik ühenduse jaoks konfigureeritud puhverserverid.</translation>
 <translation id="2949183777371959169">Eirati, kuna seade pole programmis Chrome Browser Cloud Management registreeritud.</translation>
 <translation id="2951588413176968965">Minu postkast</translation>
@@ -1946,6 +1948,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384395682990721132">A4 × 3</translation>
 <translation id="4387692837058041921">Faili üleslaadimine Microsoft OneDrive'i peatati</translation>
+<translation id="4389931020843542579">Vahelehegrupi laadimine</translation>
 <translation id="4390472908992056574">Serv</translation>
 <translation id="4395550503472021297">See reegel juhib järgmiste reeglite vaikekäitumist: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Avab hüpikakna, kus kinnitada panga veebisait</translation>
@@ -3904,6 +3907,7 @@ Lisateave:
 <translation id="791107458486222637">Tulemuse uuesti tegemine</translation>
 <translation id="791551905239004656">Joonistamine ja värvimine</translation>
 <translation id="7916162853251942238">Fleksotrükk</translation>
+<translation id="791698251820376781">Teie organisatsioon ei luba teil sisse logida</translation>
 <translation id="7926503317156566022">Lennutööstus</translation>
 <translation id="793209273132572360">Kas värskendada aadressi?</translation>
 <translation id="7932579305932748336">Kate</translation>
@@ -4616,6 +4620,7 @@ Lisateave:
 <translation id="9191834167571392248">Auk vasakul all</translation>
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Puhas ilu</translation>
+<translation id="9195969368671142407">Kui teie organisatsiooni piirab Google'i kontole salvestamist, ei saa te vahelehegruppe jagada ega nendega liituda</translation>
 <translation id="9199905725844810519">Printimine on blokeeritud</translation>
 <translation id="9201904868909900493">Küsitluse avamine…</translation>
 <translation id="9204089334327209740">Üleslaadimise järel saate faile muuta teenuses <ph name="CLOUD_PROVIDER" />. Kohalikud failid, sh prügikastis olevad failid eemaldatakse automaatselt.</translation>

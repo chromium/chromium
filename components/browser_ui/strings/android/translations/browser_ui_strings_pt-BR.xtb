@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos NFC. Quando está desativada, os sites não podem usar dispositivos NFC.</translation>
 <translation id="1660204651932907780">Permitir o áudio dos sites (recomendado)</translation>
 <translation id="1677097821151855053">Os cookies e outros dados do site são usados para lembrar de você, por exemplo, para conectar sua conta ou personalizar anúncios. Para gerenciar os cookies de todos os sites, acesse <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Sites costumam enviar notificações para avisar sobre as últimas notícias ou mensagens de chat.</translation>
 <translation id="169515064810179024">Impedir que sites acessem os sensores de movimento</translation>
 <translation id="1717218214683051432">Sensores de movimento</translation>
 <translation id="1743802530341753419">Perguntar antes de permitir que sites se conectem ao dispositivo (recomendado)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Som</translation>
 <translation id="2096716221239095980">Excluir todos os dados</translation>
 <translation id="2117655453726830283">Próximo slide</translation>
+<translation id="2146263598007866206">Os sites podem fazer o download automático de arquivos relacionados em conjunto para economizar tempo</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="216989819110952009">Mesmo com os olhos protegidos pelos óculos verdes, Dorothy e seus amigos ficaram encantados pelo</translation>
 <translation id="2176704795966505152">Mostrar opção de zoom no menu principal</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Sites podem exibir solicitações de login de serviços de identificação.</translation>
 <translation id="2787357173144933081">Iniciar com a omnibox</translation>
 <translation id="2790501146643349491">Quando essa configuração está ativada, os sites fechados recentemente podem terminar de enviar e receber dados. Quando está desativada, os sites fechados recentemente não conseguem terminar de enviar ou receber dados.</translation>
+<translation id="2795716239552913152">Os sites geralmente usam sua localização para recursos ou informações relevantes, como notícias locais ou lojas por perto</translation>
 <translation id="2814830417943086299">Agora, o Chrome mostra suas guias recentes na lista de apps e nos resultados da pesquisa do dispositivo. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="2822354292072154809">Tem certeza de que quer redefinir todas as permissões de site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Solicitar a versão para dispositivos móveis</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueados</translation>
 <translation id="3448554387819310837">Quando essa configuração está ativada, os sites podem pedir para usar a câmera. Quando está desativada, os sites não podem usar a câmera.</translation>
+<translation id="3491678231052507920">Os sites geralmente usam dispositivos e dados de realidade virtual para permitir que você participe de sessões de RV</translation>
+<translation id="3496995426334945408">Os sites geralmente usam JavaScript para mostrar recursos interativos, como videogames ou formulários da Web</translation>
 <translation id="3521663503435878242">Sites em <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Não permitir que sites acompanhem suas mãos</translation>
 <translation id="3532312529397438268">Os sites não podem usar o otimizador V8</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Depois que você sai de um site, ele pode continuar a sincronização para finalizar tarefas, como o upload de fotos ou o envio de uma mensagem de chat</translation>
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="429312253194641664">Um site está com mídia aberta</translation>
 <translation id="42981349822642051">Expandir</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Zoom salvo para sites</translation>
 <translation id="4836046166855586901">Perguntar quando um site quiser saber os momentos em que você está usando este dispositivo</translation>
 <translation id="483914009762354899">Incluir todos os sites neste domínio</translation>
+<translation id="4882919381756638075">Os sites geralmente usam o microfone para recursos de comunicação, como chat por vídeo</translation>
 <translation id="4883854917563148705">Não é possível redefinir as configurações gerenciadas</translation>
 <translation id="4887024562049524730">Perguntar antes de permitir que sites usem seus dispositivos e dados de realidade virtual (recomendado)</translation>
 <translation id="4936863036653376783">Seus grupos vão aparecer na seção de grupos de guias em todos os seus dispositivos</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Selecionar itens</translation>
 <translation id="6838525730752203626">Usar o Chrome por padrão</translation>
 <translation id="6840760312327750441">Para agrupar guias, toque em uma delas e a mantenha pressionada. Depois disso, arraste-a para outra guia.</translation>
+<translation id="6842868554183332230">Geralmente, os sites detectam quando você está usando o dispositivo ativamente para definir sua disponibilidade nos apps de chat</translation>
 <translation id="6851981911629679515">Ativar a proteção extra no mecanismo JavaScript e WebAssembly do Chrome</translation>
 <translation id="6864395892908308021">O dispositivo não consegue ler a NFC</translation>
 <translation id="6870169401250095575">Ocultar o card da Confirmação de segurança</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Configurações de <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7406113532070524618">Essa configuração funciona sem identificar você ou permitir que sites acessem o histórico de navegação. Apesar disso, os sites podem compartilhar uma pequena quantidade de informações como parte da verificação.</translation>
+<translation id="7409735910987429903">Os sites podem exibir pop-ups para mostrar anúncios ou usar redirecionamentos para levar você até sites que talvez não queira acessar</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Sair da pesquisa de hub</translation>
 <translation id="7554752735887601236">Um site está usando seu microfone</translation>
 <translation id="7561196759112975576">Sempre</translation>
+<translation id="7573594921350120855">Os sites geralmente usam a câmera de vídeo para recursos de comunicação, como chat por vídeo</translation>
 <translation id="757524316907819857">Impedir que sites mostrem conteúdo protegido</translation>
 <translation id="7594634374516752650">Conectado a um dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Você pode excluir alguns ou todos os dados do seu histórico, cookies, dados do sites e muito mais</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O Mágico de Oz</translation>
+<translation id="7681597159868843240">Os sites geralmente usam os sensores de movimento do dispositivo para recursos como realidade virtual ou monitoramento de atividade física</translation>
 <translation id="7688240020069572972">Ocultar card de dicas do Chrome</translation>
 <translation id="7719367874908701697">Zoom da página:</translation>
 <translation id="7759147511335618829">Controle e reprogramação de dispositivos MIDI</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Voltar</translation>
 <translation id="8444433999583714703">Para permitir que o app <ph name="APP_NAME" /> acesse seu local, ative-o também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revogar permissão do dispositivo</translation>
+<translation id="8471525937465764768">Os sites geralmente se conectam a dispositivos USB para recursos como imprimir um documento ou salvar em um dispositivo de armazenamento</translation>
 <translation id="8473055640493819707">O app <ph name="APP_NAME" /> está desatualizado e precisa ser reinstalado.</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="848952951823693243">Sempre ver a versão para dispositivos móveis</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Quando essa configuração está ativada, os sites podem salvar dados no seu dispositivo. Quando está desativada, os sites não podem salvar dados no seu dispositivo.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> permitido</translation>
 <translation id="9019902583201351841">Gerenciado pelos seus pais</translation>
+<translation id="902236149563113779">Os sites geralmente rastreiam a posição da câmera para recursos de RA, como jogos ou avisos de rotas</translation>
 <translation id="9039697262778250930">Sua conta pode ser desconectada desses sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Excluir cookies?</translation>

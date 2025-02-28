@@ -663,6 +663,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3909222758573607742">Wachtwoorden en andere items opslaan in account</translation>
 <translation id="3913463964270756493">Zoeken op je scherm met Google Lens verbergen</translation>
 <translation id="3914640181019354363">Adressen waarnemen</translation>
+<translation id="3921585859122905677">Positie van adresbalk</translation>
 <translation id="3922185497376658606">Webpagina's vooraf laden</translation>
 <translation id="3922395466317605522">Menu aanpassen</translation>
 <translation id="3929457972718048006">Adressen</translation>
@@ -1116,6 +1117,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5817176759448082654">Wachtwoordcheck</translation>
 <translation id="5819208479324046259">Beheerd door <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchroniseren…</translation>
+<translation id="583923961930319521">Wachtwoorden gebruiken op al je apparaten</translation>
 <translation id="5844284118433003733">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
 <translation id="5854790677617711513">Ouder dan 30 dagen</translation>
 <translation id="5857770089550859117">Wachtwoordzin vereist om de synchronisatie te starten.</translation>
@@ -1691,6 +1693,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8221665793629393739">Je herinnering om terug te gaan</translation>
 <translation id="8230355548492839438">Vorige zoeken</translation>
 <translation id="8232956427053453090">Gegevens behouden</translation>
+<translation id="8233237502828137700">Bannerpromotie sluiten</translation>
 <translation id="8238711781852526820">Prijzen volgen verbergen</translation>
 <translation id="8258999165172757081">Toegevoegd</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
@@ -1712,7 +1715,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8299613349954694191">Open een incognitotabblad om privé op internet te browsen.</translation>
 <translation id="8307481894409578819">Dit bestand kan niet worden geüpload</translation>
 <translation id="8319076807703933069">Nieuwe zoekopdracht</translation>
-<translation id="8328607660158575887">Instellingen voor automatisch invullen en wachtwoorden openen</translation>
 <translation id="833647236762414178">Maak, bewaar en beheer je wachtwoorden en toegangssleutels om makkelijk in te loggen bij sites en apps. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
 <translation id="8349305172487531364">Bookmarkbalk</translation>

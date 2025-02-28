@@ -246,7 +246,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="17722141032474077">Calculs</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, le <ph name="DATE" /> est actuellement sélectionné.</translation>
 <translation id="178347895271755507">Configurer l'affichage des photos, notifications et contenus multimédias récents de votre téléphone</translation>
-<translation id="1785317913592722944">Supprimer l'élément du groupe suggéré</translation>
 <translation id="1786487376942610288">Alterner entre la taille maximale et la taille actuelle de la fenêtre Picture-in-picture</translation>
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1796561540704213354">Sites Web, y compris les pages que vous avez consultées et celles que vous avez ouvertes</translation>
@@ -853,6 +852,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3859364108019690">Impossible de diffuser les applis en streaming</translation>
 <translation id="3861651314799684201">Appuyez sur Entrée pour enregistrer tout l'écran</translation>
 <translation id="3870197372373144624">Essayez d'éteindre votre appareil.</translation>
+<translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
@@ -878,6 +878,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3958714870339660776">Toute la journée</translation>
 <translation id="3962859241508114581">Titre précédent</translation>
 <translation id="3963124517343721543">Reprenez facilement où vous en étiez en ouvrant vos fenêtres et onglets précédents. Vous verrez aussi des suggestions personnalisées de choses à faire ensuite.</translation>
+<translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3969043077941541451">Désactivé</translation>
 <translation id="3970324493235864154">Afficher les notifications de votre téléphone</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
@@ -1619,6 +1620,7 @@ Aucun appareil connecté.</translation>
 <translation id="6319058840130157106">Basculer vers l'arrière entre l'angle inférieur droit, le lanceur d'applications, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
 <translation id="6319503618073410818">Afficher les détails dans le navigateur</translation>
 <translation id="6324916366299863871">Modifier le raccourci</translation>
+<translation id="6325525973963619867">Échec</translation>
 <translation id="6330012934079202188">Affichage des fenêtres de tous les bureaux. Appuyez sur la flèche vers le haut pour afficher les fenêtres du bureau actuel.</translation>
 <translation id="6337159624125741244">La loupe plein écran est activée</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>

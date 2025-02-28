@@ -246,7 +246,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="17722141032474077">Mga Kalkulasyon</translation>
 <translation id="1774796056689732716">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" />, kasalukuyang pinili ang <ph name="DATE" />.</translation>
 <translation id="178347895271755507">I-set up ang pagtingin sa mga kamakailang larawan, media, at notification ng iyong telepono</translation>
-<translation id="1785317913592722944">Alisin ang item sa iminumungkahing grupo</translation>
 <translation id="1786487376942610288">Magpalipat-lipat sa maximum o kasalukuyang laki ng picture-in-picture na window</translation>
 <translation id="1787955149152357925">Naka-off</translation>
 <translation id="1796561540704213354">Mga website kasama ang mga page na binisita mo at nakabukas na page</translation>
@@ -853,6 +852,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3859364108019690">Hindi makapag-stream ng mga app</translation>
 <translation id="3861651314799684201">Pindutin ang enter para mag-record nang full screen</translation>
 <translation id="3870197372373144624">Subukang i-shut down ang iyong device.</translation>
+<translation id="3879748587602334249">Download manager</translation>
 <translation id="3886872229787704059">Binuksan ngayon</translation>
 <translation id="3891340733213178823">Pindutin ang Ctrl+Shift+Q nang dalawang beses upang mag-sign out.</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
@@ -878,6 +878,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3958714870339660776">Buong Araw</translation>
 <translation id="3962859241508114581">Nakaraang Track</translation>
 <translation id="3963124517343721543">Madaling magpatuloy kung saan ka huminto sa pamamagitan ng pagbukas sa iyong mga dating window at tab. Makakakita ka rin ng mga naka-personalize na suhestyon para sa mga susunod na puwedeng gawin.</translation>
+<translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="3969043077941541451">I-off</translation>
 <translation id="3970324493235864154">Tingnan ang mga notification ng iyong telepono</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
@@ -1619,6 +1620,7 @@ Walang nakakonektang device.</translation>
 <translation id="6319058840130157106">Magpalipat-lipat pabalik sa kanang sulok sa ibaba, Launcher, address bar, bookmarks bar, website na nakabukas, at mga download</translation>
 <translation id="6319503618073410818">Tingnan ang mga detalye sa browser</translation>
 <translation id="6324916366299863871">I-edit ang shortcut</translation>
+<translation id="6325525973963619867">Nabigo</translation>
 <translation id="6330012934079202188">Ipinapakita ang mga window mula sa lahat ng desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa kasalukuyang desk</translation>
 <translation id="6337159624125741244">Naka-on ang full-screen magnifier</translation>
 <translation id="6338485349199627913">Ang <ph name="DISPLAY_NAME" /> ay isang session na pinapamahalaan ng <ph name="MANAGER" /></translation>

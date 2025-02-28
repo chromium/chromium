@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">When on, sites can ask to use NFC devices. When off, sites can't use NFC devices.</translation>
 <translation id="1660204651932907780">Allow sites to play sound (recommended)</translation>
 <translation id="1677097821151855053">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Sites usually send notifications to let you know about breaking news or chat messages.</translation>
 <translation id="169515064810179024">Block sites from accessing motion sensors</translation>
 <translation id="1717218214683051432">Motion sensors</translation>
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Sound</translation>
 <translation id="2096716221239095980">Delete all data</translation>
 <translation id="2117655453726830283">Next slide</translation>
+<translation id="2146263598007866206">Sites might automatically download related files together to save you time</translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="216989819110952009">Even with eyes protected by the green spectacles, Dorothy and her friends were at first dazzled by the</translation>
 <translation id="2176704795966505152">Show zoom option in main menu</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Sites can show sign-in prompts from identity services.</translation>
 <translation id="2787357173144933081">Jump-start omnibox</translation>
 <translation id="2790501146643349491">When on, recently closed sites can finish sending and receiving data. When off, recently closed sites can't finish sending or receiving data.</translation>
+<translation id="2795716239552913152">Sites usually use your location for relevant features or info, like local news or nearby shops</translation>
 <translation id="2814830417943086299">Chrome now shows your recent tabs in your device's app list and search results. You can turn this off at any time in Chrome settings.</translation>
 <translation id="2822354292072154809">Are you sure that you want to reset all site permissions for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Request mobile view</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Third-party cookies blocked</translation>
 <translation id="3448554387819310837">When on, sites can ask to use your camera. When off, sites can't use your camera.</translation>
+<translation id="3491678231052507920">Sites usually use your virtual reality devices and data to let you enter VR sessions</translation>
+<translation id="3496995426334945408">Sites usually use JavaScript to display interactive features, like video games or web forms</translation>
 <translation id="3521663503435878242">Sites under <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Don't allow sites to track your hands</translation>
 <translation id="3532312529397438268">Sites cannot use V8 optimiser</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Open location settings</translation>
 <translation id="4226663524361240545">Notifications may vibrate the device</translation>
 <translation id="4259722352634471385">Navigation is blocked: <ph name="URL" /></translation>
+<translation id="4274673989874969668">After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message</translation>
 <translation id="4278390842282768270">Allowed</translation>
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="42981349822642051">Expand</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Saved zoom for sites</translation>
 <translation id="4836046166855586901">Ask when a site wants to know when you're actively using this device</translation>
 <translation id="483914009762354899">Include all sites under this domain</translation>
+<translation id="4882919381756638075">Sites usually use your microphone for communication features like video chatting</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
 <translation id="4936863036653376783">You'll find your groups in the tab group section across all your devices</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Select items</translation>
 <translation id="6838525730752203626">Use Chrome by default</translation>
 <translation id="6840760312327750441">To group tabs, touch and hold a tab. Then, drag it onto another tab.</translation>
+<translation id="6842868554183332230">Sites usually detect when you're actively using your device to set your availability on chat apps</translation>
 <translation id="6851981911629679515">Turn on additional protection in Chrome’s JavaScript and WebAssembly engine</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
 <translation id="6870169401250095575">Hide safety check card</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Settings for <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Safety check</translation>
 <translation id="7406113532070524618">This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification</translation>
+<translation id="7409735910987429903">Sites might send pop-ups to show ads, or use redirects to lead you to websites that you may not want to visit</translation>
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
 <translation id="7425915948813553151">Dark theme for sites</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Exit hub search</translation>
 <translation id="7554752735887601236">A site is using your microphone</translation>
 <translation id="7561196759112975576">Always</translation>
+<translation id="7573594921350120855">Sites usually use your video camera for communication features like video chatting</translation>
 <translation id="757524316907819857">Block sites from playing protected content</translation>
 <translation id="7594634374516752650">Connected to a Bluetooth device</translation>
 <translation id="7617547684249261169">You can delete some or all of your history, cookies, site data and more</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
+<translation id="7681597159868843240">Sites usually use your device's motion sensors for features like virtual reality or fitness tracking</translation>
 <translation id="7688240020069572972">Hide Chrome tips card</translation>
 <translation id="7719367874908701697">Page zoom</translation>
 <translation id="7759147511335618829">MIDI device control and reprogramme.</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Seek backward</translation>
 <translation id="8444433999583714703">To let <ph name="APP_NAME" /> access your location, also turn on location in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoke device permission</translation>
+<translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' is out of date. Please re-install the app.</translation>
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="848952951823693243">Always request mobile site</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">When on, sites can save data on your device. When off, sites can't save data on your device.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> allowed</translation>
 <translation id="9019902583201351841">Managed by your parents</translation>
+<translation id="902236149563113779">Sites usually track your camera position for AR features, like games or heads-up directions</translation>
 <translation id="9039697262778250930">You may be signed out of these sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Delete cookies?</translation>

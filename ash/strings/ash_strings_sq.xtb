@@ -246,7 +246,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="17722141032474077">Llogaritjet</translation>
 <translation id="1774796056689732716">Kalendari, <ph name="CURRENT_MONTH_YEAR" />, aktualisht është zgjedhur <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Konfiguro shikimin e njoftimeve, medias dhe fotografive më të fundit të telefonit tënd</translation>
-<translation id="1785317913592722944">Hiq artikullin nga grupi i sugjeruar</translation>
 <translation id="1786487376942610288">Ndërro mes madhësisë maksimale ose aktuale të dritares në modalitetin "figurë brenda figurës"</translation>
 <translation id="1787955149152357925">Joaktive</translation>
 <translation id="1796561540704213354">Uebsajtet duke përfshirë faqet që ke vizituar dhe faqet e hapura</translation>
@@ -853,6 +852,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3859364108019690">Aplikacionet nuk mund të transmetohen</translation>
 <translation id="3861651314799684201">Shtyp "Enter" për të regjistruar ekranin e plotë</translation>
 <translation id="3870197372373144624">Provo ta fikësh pajisjen tënde.</translation>
+<translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
 <translation id="3886872229787704059">Hapur sot</translation>
 <translation id="3891340733213178823">Shtyp Ctrl+Shift+Q për të dalë nga llogaria.</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
@@ -878,6 +878,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3958714870339660776">Gjithë ditën</translation>
 <translation id="3962859241508114581">Kënga e mëparshme</translation>
 <translation id="3963124517343721543">Vazhdo me lehtësi aty ku e ke lënë duke hapur dritaret dhe skedat e tua të mëparshme. Do të shikosh gjithashtu sugjerime të personalizuara për gjërat për t'u bërë më pas.</translation>
+<translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3969043077941541451">Joaktive</translation>
 <translation id="3970324493235864154">Shiko njoftimet e telefonit tënd</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
@@ -1619,6 +1620,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6319058840130157106">Kalo prapa mes këndit të poshtëm djathtas, "Nisësit", shiritit të adresave, shiritit të faqeshënuesve, uebsajtit që është i hapur dhe shkarkimeve</translation>
 <translation id="6319503618073410818">Shiko detajet në shfletues</translation>
 <translation id="6324916366299863871">Modifiko shkurtoren</translation>
+<translation id="6325525973963619867">Dështoi</translation>
 <translation id="6330012934079202188">Po shfaqen dritaret nga të gjitha tavolinat e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga tavolina aktuale e punës</translation>
 <translation id="6337159624125741244">"Zmadhuesi i ekranit të plotë" është aktiv</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> është sesion i menaxhuar që menaxhohet nga <ph name="MANAGER" /></translation>

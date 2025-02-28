@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Rangkaian utama, bukan perayauan</translation>
 <translation id="1327977588028644528">Get Laluan</translation>
 <translation id="1328223165223065150">Warna kertas dinding</translation>
+<translation id="1329478709358066995">Transkrip:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Muatkan mengikut kawasan imbasan</translation>
 <translation id="1343442362630695901">tasik garam</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">Perihal latar</translation>
 <translation id="6939667434404433010">Cari nama rakaman</translation>
 <translation id="6939766318048400022">Kafe</translation>
+<translation id="6942253772720771875">Kongsi maklum balas anda atau huraikan masalah anda</translation>
 <translation id="6943893908656559156">Identiti jauh (pilihan)</translation>
 <translation id="6953137545147683679">emas</translation>
 <translation id="6957231940976260713">Nama perkhidmatan</translation>
@@ -1598,6 +1600,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini diurus perusahaan</translation>
 <translation id="8398927464629426868">Kadar pengecasan atau penyahcasan semasa peranti</translation>
 <translation id="8403988360557588704">Lukisan <ph name="ART_FEATURE" /> dalam gaya <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Ringkasan dijana:</translation>
 <translation id="8410244574650205435">Dikesan secara automatik</translation>
 <translation id="8420955526972171689">Jalankan ujian dan penyelesaian masalah bagi isu perkakasan</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8626489604350149811">Lagi tindakan untuk <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ungu muda</translation>
 <translation id="8647595191512746911">Transkripsi audio</translation>
+<translation id="8648578954147795914">Nama dijana:</translation>
 <translation id="8650852232143958317">Bawa Gmail dan fail Google Drive anda bersama anda</translation>
 <translation id="8651481478098336970">redam kelantangan</translation>
 <translation id="8655295600908251630">Saluran</translation>
@@ -1784,6 +1788,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="9218016617214286986">Tunjukkan APN yang diketahui</translation>
 <translation id="932327136139879170">Laman Utama</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Pastikan mikrofon anda disambungkan atau cuba mulakan semula Chromebook anda</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="950520315903467048">Tiada kunci untuk <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Bandingkan suara sepanjang rakaman supaya transkrip menggambarkan perkara yang setiap penutur katakan dan masa penutur berkata</translation>

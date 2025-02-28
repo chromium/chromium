@@ -837,6 +837,7 @@
 <translation id="2451607499823206582">Прати се</translation>
 <translation id="2452098632681057184">Екологија и животна средина</translation>
 <translation id="2452837234288608067">Нисмо успели да вам помогнемо с тиме. Пробајте поново.</translation>
+<translation id="2453045048779611513">Ваша организација ограничава садржај који можете да чувате</translation>
 <translation id="2456755709261364512">Батерија мора да се напуни изнад <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core вам пружа централизовану алатку за конфигурисање смерница прегледача из клауда</translation>
 <translation id="2461822463642141190">Актуелно</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2942492342931589800">Неформално</translation>
 <translation id="2942515540157583425">ИТ и технички послови</translation>
 <translation id="2943895734390379394">Време отпремања:</translation>
+<translation id="2947281105969315778">Да бисте делили групе картица или им се придружили, неопходно је да имате могућност да се пријавите у Chrome</translation>
 <translation id="2948083400971632585">На страници Подешавања можете да онемогућите све проксије конфигурисане за везу.</translation>
 <translation id="2949183777371959169">Занемарено зато што машина није регистрована за управљање клаудом у прегледачу Chrome.</translation>
 <translation id="2951588413176968965">Моје поштанско сандуче</translation>
@@ -1946,6 +1948,7 @@
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Отпремање фајла у Microsoft OneDrive је паузирано</translation>
+<translation id="4389931020843542579">Учитава се група картица</translation>
 <translation id="4390472908992056574">Обод</translation>
 <translation id="4395550503472021297">Ове смернице контролишу подразумевано понашање следећих смерница: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Отвара искачући прозор за верификацију на веб-сајту банке</translation>
@@ -3903,6 +3906,7 @@
 <translation id="791107458486222637">Резултат се понавља</translation>
 <translation id="791551905239004656">Цртање и бојење</translation>
 <translation id="7916162853251942238">Flexo база</translation>
+<translation id="791698251820376781">Организација вам не дозвољава да се пријавите</translation>
 <translation id="7926503317156566022">Авиоиндустрија</translation>
 <translation id="793209273132572360">Желите да ажурирате адресу?</translation>
 <translation id="7932579305932748336">Омот</translation>
@@ -4616,6 +4620,7 @@
 <translation id="9191834167571392248">Бушење у доњем левом углу</translation>
 <translation id="9192361865877479444">Метал (мат)</translation>
 <translation id="9192947025498305328">Природни козметички производи</translation>
+<translation id="9195969368671142407">Када организација ограничи чување на Google налогу, не можете да делите групе картица нити да им се придружите</translation>
 <translation id="9199905725844810519">Штампање је блокирано</translation>
 <translation id="9201904868909900493">Отвара се анкета…</translation>
 <translation id="9204089334327209740">Када се отпремање заврши, можете да измените фајлове у услузи <ph name="CLOUD_PROVIDER" />. Локално складиште, укључујући све фајлове у отпаду, аутоматски ће бити уклоњено.</translation>

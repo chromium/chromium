@@ -276,6 +276,7 @@
 <translation id="4720851490453439956">Google 更新工具內部服務</translation>
 <translation id="4724676981607797757">發生不支援的通訊協定錯誤，因此安裝失敗。</translation>
 <translation id="4728575227883772061">安裝因不明錯誤而失敗。如果 Google Chrome 目前正在執行中，請將其關閉然後再試一次。</translation>
+<translation id="4737281654364167024">如要繼續操作，請用 <ph name="EMAIL" /> 登入 Chrome，確保貴機構的政策會套用到 Chrome 上。</translation>
 <translation id="4741235124132242877">已固定！之後可以在工具列上使用 Google 智慧鏡頭</translation>
 <translation id="4747730611090640388">Chrome 可以推測你的興趣喜好。在此之後，你造訪的網站可以要求 Chrome 查看你的興趣喜好，以便向你放送個人化廣告。</translation>
 <translation id="475321580758063259">請更新 Chrome，以便繼續使用 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的 Chrome 資料</translation>
@@ -581,6 +582,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8781673607513845160">如要使用攝影機，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中授予 Chrome 存取權</translation>
 <translation id="878572486461146056">安裝錯誤：網路管理員採用的「群組原則」不允許安裝應用程式：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">這個檔案可能會危害個人和社群網路帳戶 (包括 <ph name="USER_EMAIL" />)，因此 Chrome 已禁止下載</translation>
+<translation id="8798550110818026746">貴機構可以查看及管理瀏覽資料 (例如書籤、歷史記錄和密碼)，但無法查看其他 Chrome 設定檔中的瀏覽資料</translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>
 <translation id="8821043148920470810">如要取得日後的 Google Chrome 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>

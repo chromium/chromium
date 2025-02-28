@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Sentuh dan tahan skrin utama</translation>
 <translation id="1832848789136765277">Untuk memastikan anda dapat mengakses data penyegerakan anda pada bila-bila masa, sahkan itu anda</translation>
 <translation id="1836891464494477513">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}}other{Penanda halaman disimpan dalam Google Account anda, {email}}}</translation>
+<translation id="1838089197478136166">Buka dalam Wallet?</translation>
 <translation id="183878838231635348">Kad ini menunjukkan sebarang masalah privasi atau keselamatan yang Pemeriksaan Keselamatan kesan secara automatik untuk anda.</translation>
 <translation id="1845230888742614096">Simpan Kumpulan</translation>
 <translation id="1854463785401910334">Cari dalam tab terbuka</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">iPad anda dipulihkan baru-baru ini dan mungkin telah menukar penyemak imbas lalai anda.</translation>
 <translation id="1901366738768303267">Bagaimanakah cara menggunakan ciri ini?</translation>
 <translation id="1901600657316773839">Simpan pilihan</translation>
+<translation id="1902277226107477495">Pengesanan alamat dimatikan. Hidupkan semula ciri ini dalam Tetapan.</translation>
 <translation id="1904580727789512086">URL yang anda lawati disimpan pada Google Account anda</translation>
 <translation id="1911619930368729126">Muat naik ke Google Drive</translation>
 <translation id="1923342640370224680">Jam Terakhir</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Halaman web dimuatkan</translation>
 <translation id="2236949375853147973">Aktiviti Saya</translation>
 <translation id="2240256190924001613">Profil konfigurasi tersedia</translation>
+<translation id="2244080985779413662">Laman web ini mahu memuat turun fail dan membuka fail tersebut dalam Wallet anda.</translation>
 <translation id="2245007488813216650">Menterjemahkan…</translation>
 <translation id="2249119578464404734">Pada bahagian atas skrin, ketik ikon Carian</translation>
 <translation id="2251686759395008410">Menu → Sejarah</translation>
@@ -663,6 +666,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3909222758573607742">Simpan kata laluan dan item lain dalam akaun</translation>
 <translation id="3913463964270756493">Sembunyikan skrin Carian dengan Google Lens</translation>
 <translation id="3914640181019354363">Kesan alamat</translation>
+<translation id="3921585859122905677">Kedudukan Bar Alamat</translation>
 <translation id="3922185497376658606">Halaman web pramuat</translation>
 <translation id="3922395466317605522">Sesuaikan Menu</translation>
 <translation id="3929457972718048006">Alamat</translation>
@@ -1362,6 +1366,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Data semakan imbas anda akan dipadamkan</translation>
 <translation id="6790502149545262384">Tidak lama lagi, anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
+<translation id="6794476726485507147">Pilih tarikh dan masa untuk menerima pemberitahuan peringatan untuk melawat semula halaman ini</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6825078212112407882">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}}other{{count} penanda halaman disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="6830728435402077660">Tidak selamat</translation>
@@ -1490,6 +1495,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7425053386765766120">Tambahkan kaedah pembayaran…</translation>
 <translation id="7425346204213733349">Perubahan kepada penanda halaman, sejarah, kata laluan dan tetapan anda yang lain tidak akan disegerakkan ke Google Account anda lagi. Walau bagaimanapun, data sedia ada akan kekal disimpan dalam Google Account anda.</translation>
 <translation id="742664698522525515">Simpan kumpulan?</translation>
+<translation id="7431851541687113774">Matikan pengesanan alamat</translation>
 <translation id="7431991332293347422">Kawal cara sejarah penyemakan imbas anda digunakan untuk memperibadikan Carian dan pelbagai lagi</translation>
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
 <translation id="7438481509621345350">Kini anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
@@ -1643,6 +1649,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8023170444051056234">Anda akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti anda</translation>
 <translation id="8023878949384262191">Mengembangkan bahagian.</translation>
 <translation id="8027581147000338959">Buka dalam Tetingkap Baharu</translation>
+<translation id="8029092694585014252">Buat peringatan</translation>
 <translation id="8032569120109842252">Mengikut</translation>
 <translation id="8035133914807600019">Folder baharu...</translation>
 <translation id="8035412398498507358">Photos</translation>
@@ -1714,7 +1721,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8299613349954694191">Buka tab Inkognito untuk menyemak imbas web secara tertutup.</translation>
 <translation id="8307481894409578819">Fail ini tidak dapat dimuat naik</translation>
 <translation id="8319076807703933069">Carian Baharu</translation>
-<translation id="8328607660158575887">Buka tetapan Autolengkap &amp; Kata laluan</translation>
 <translation id="833647236762414178">Buat, simpan dan urus kata laluan &amp; kunci laluan anda supaya anda dapat log masuk ke laman dan apl dengan mudah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>

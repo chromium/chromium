@@ -9826,9 +9826,7 @@
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, дауыс <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android телефоныңыздан Wi-Fi-ды автоматты түрде тасымалдаңыз</translation>
 <translation id="7991296728590311172">Switch Access параметрлері</translation>
-<translation id="7992080146463834191">Контентті қорытындылап, күрделі тілмен жазылған мәтінді қысқартып, сұрақтарға жауап береді.</translation>
 <translation id="7992203134935383159">Сөз синтезі</translation>
-<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Өңдеу басымдығы</translation>
 <translation id="7997828719430450286">Орындалды.</translation>
 <translation id="7998701048266085837">URL мекенжайлары</translation>
@@ -11088,7 +11086,6 @@
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" өшірілген</translation>
 <translation id="8874647982044395866">Табиғи</translation>
 <translation id="8874790741333031443">Үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз. Бұл жағдайда қорғаныс дәрежесі төмен болады, бірақ сайт функцияларының ойдағыдай жұмыс істеу ықтималдығы артады.</translation>
-<translation id="8875221558267407626">Контентті қорытындылап, күрделі тілмен жазылған мәтінді қысқартып, сұрақтарға жауап береді</translation>
 <translation id="8875520811099717934">Linux жүйесін жаңарту</translation>
 <translation id="8875736897340638404">Көрсетілу параметрін таңдаңыз</translation>
 <translation id="8876307312329369159">Бұл параметр демо сеанста өзгертілмейді.</translation>

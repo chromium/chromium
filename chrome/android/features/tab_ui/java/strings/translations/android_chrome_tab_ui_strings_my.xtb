@@ -12,7 +12,6 @@
 <translation id="1293272072740285747">တဘ်များကို နောက်မှထည့်ရန် ဤအုပ်စုကို ဆက်ထားနိုင်သည်။ သို့မဟုတ် ၎င်းကို သင်မလိုအပ်တော့ပါက ဖျက်နိုင်သည်။
 
 ဖျက်လိုက်ပါက လူတိုင်းသည် “<ph name="TITLE_OF_GROUP" />” တဘ်အုပ်စုသုံးခွင့် ချက်ချင်းဆုံးရှုံးမည်ဖြစ်ပြီး ၎င်းကို စက်အားလုံးမှ ဖျက်ပါမည်။</translation>
-<translation id="1326654401173629446">“<ph name="TAB_GROUP_NAME" />” တဘ်အုပ်စုကို မရနိုင်တော့ပါ</translation>
 <translation id="1329584516321524826">ယခုလေးတင် အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="1340839264183302272">အဖွဲ့မှထွက်ရန်</translation>
 <translation id="1419023007528516122">၎င်းသည် သင့်စက်မှအဖွဲ့ကို အပြီးဖျက်ပါမည်</translation>
@@ -47,7 +46,9 @@
 <translation id="266935134738038806">ဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန်</translation>
 <translation id="2671423594960767771">အုပ်စုကို မျှဝေရန်</translation>
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_WEEKS_ONE" /> ပတ်က အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_WEEKS_MANY" /> ပတ်က အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ် <ph name="ONE_ADDED" /> ခု ထည့်လိုက်သည်။ <ph name="ANY_CHANGED" /> ခု ပြောင်းသွားသည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}other{တဘ် <ph name="MANY_ADDED" /> ခု ထည့်လိုက်သည်။ <ph name="ANY_CHANGED" /> ခု ပြောင်းသွားသည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_HOURS_ONE" /> နာရီက အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_HOURS_MANY" /> နာရီက အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="2755485474385016903">ပြုလုပ်ထားသော အပြောင်းအလဲများကို ဤအုပ်စုရှိ လူတိုင်းက မြင်ရသည်</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{ပြီးခဲ့သော <ph name="NUM_HOURS_ONE" /> နာရီက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_HOURS_MANY" /> နာရီက ပြုလုပ်ထားသည်}}</translation>
 <translation id="2801787514987684416">ဆိုင်အချက်အလက် ကြည့်မလား။</translation>
@@ -84,6 +85,7 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{တဘ် <ph name="ONE_CHANGED" /> ခု ပြောင်းသွားသည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}other{တဘ် <ph name="MANY_CHANGED" /> ခု ပြောင်းသွားသည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}}</translation>
 <translation id="4371591986692297148">သုံးမနေပါ</translation>
 <translation id="4431937619879060901">သင်သည် “<ph name="GROUP_NAME" />” တဘ်အုပ်စုသုံးခွင့်ကို ချက်ချင်းဆုံးရှုံးမည်ဖြစ်ပြီး ၎င်းကို သင့်စက်အားလုံးမှ ဖျက်ပါမည်</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_DAYS_ONE" /> ရက်က အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_DAYS_MANY" /> ရက်က အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="4460014764210899310">အုပ်စု ဖွဲ့မထားပါ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{မသုံးသောတဘ် ၁ ခုကို ပိတ်မလား။}other{မသုံးသောတဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်မလား။}}</translation>
 <translation id="4686942373615810936">ယခုလေးတင် ပြုလုပ်ထားသည်</translation>
@@ -164,6 +166,7 @@
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7688386659311034820">အသုံးမပြုသောတဘ်များ ဒိုင်ယာလော့</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_ONE" /> ခု မျှဝေရန်}other{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_MANY" /> ခု မျှဝေရန်}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_YEARS_ONE" /> နှစ်က အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_YEARS_MANY" /> နှစ်က အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="7773714564112603605">တဘ်ဖယ်ရှားပြီး အုပ်စုကို ဖျက်ရန်</translation>
 <translation id="7792771145871471484">အကြံပြုချက်များကို စစ်ဆေးရန်။</translation>
 <translation id="7792860826279960128">‘မျှဝေထားသော တဘ်အုပ်စု’ အပြောင်းအလဲများအကြောင်း သတိပေးချက်ကို မြင်ကွင်းတစ်ဝက်ဖွင့်ထားသည်</translation>
@@ -181,10 +184,12 @@
 <translation id="8076492880354921740">တဘ်များ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ဖြန့်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ဖြန့်ပါ။}}</translation>
 <translation id="8205266828577616993">တဘ်အပေါ်သို့ ရွှေ့ရန်</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_MINS_ONE" /> မိနစ်က အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_MINS_MANY" /> မိနစ်က အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8338427544764842461">တဘ်အုပ်စုများကို ဤနေရာတွင် သိမ်းထားပြီး လက်မှတ်ထိုးဝင်ထားသည့် သင့်စက်အားလုံးတွင် အပ်ဒိတ်လုပ်ပါသည်</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် မျှဝေထားသော တဘ်အုပ်စုကို ဖြန့်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် မျှဝေထားသော တဘ်အုပ်စုကို ဖြန့်ပါ။}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ရွေးထားသည့် တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ပိတ်ရန်}other{ရွေးထားသည့် တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ပိတ်ရန်}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_MONTHS_ONE" /> လက အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_MONTHS_MANY" /> လက အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="8398929769197326728">ဖိုင်တွဲအသစ် - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ် <ph name="ONE_ADDED" /> ခု ထည့်လိုက်သည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}other{တဘ် <ph name="MANY_ADDED" /> ခု ထည့်လိုက်သည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}}</translation>

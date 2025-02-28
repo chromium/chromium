@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie NFC-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine NFC-Geräte verwenden.</translation>
 <translation id="1660204651932907780">Wiedergabe von Ton auf Websites zulassen (empfohlen)</translation>
 <translation id="1677097821151855053">Durch Cookies und andere Websitedaten erinnert sich die Website an dich, z. B. bei der Anmeldung oder für personalisierte Werbung. Du kannst Cookies für alle Websites <ph name="BEGIN_LINK" />in den Einstellungen verwalten<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Websites senden normalerweise Benachrichtigungen, um dich über Eilmeldungen oder Chatnachrichten zu informieren.</translation>
 <translation id="169515064810179024">Zugriff auf Bewegungssensoren für Websites blockieren</translation>
 <translation id="1717218214683051432">Bewegungssensoren</translation>
 <translation id="1743802530341753419">Nachfragen, bevor Websites eine Verbindung zu einem Gerät herstellen (empfohlen)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Ton</translation>
 <translation id="2096716221239095980">Alle Daten löschen</translation>
 <translation id="2117655453726830283">Nächste Folie</translation>
+<translation id="2146263598007866206">Websites laden zusammengehörende Dateien möglicherweise automatisch gemeinsam herunter, damit du Zeit sparst</translation>
 <translation id="2148716181193084225">Heute</translation>
 <translation id="216989819110952009">Obwohl ihre Augen durch die grünen Gläser der Brillen geschützt waren, wurden Dorothy und ihren Freunden vom Glanz und vom Schimmer der</translation>
 <translation id="2176704795966505152">Zoomoption im Hauptmenü anzeigen</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Websites dürfen Anmeldungsaufforderungen von Identitätsdiensten anzeigen.</translation>
 <translation id="2787357173144933081">Direkt mit Omnibox starten</translation>
 <translation id="2790501146643349491">Wenn dieser Schalter aktiviert ist, können vor Kurzem geschlossene Websites das Senden und Empfangen von Daten abschließen. Wenn er deaktiviert ist, können vor Kurzem geschlossene Websites das Senden oder Empfangen von Daten nicht abschließen.</translation>
+<translation id="2795716239552913152">Websites verwenden deinen Standort normalerweise für relevante Funktionen oder Informationen, wie etwa Lokalnachrichten oder Geschäfte in deiner Nähe</translation>
 <translation id="2814830417943086299">Chrome zeigt deine zuletzt geöffneten Tabs jetzt in der App-Liste und in den Suchergebnissen deines Geräts an. Diese Funktion lässt sich jederzeit in den Chrome-Einstellungen deaktivieren.</translation>
 <translation id="2822354292072154809">Möchtest du wirklich alle Websiteberechtigungen für <ph name="CHOSEN_OBJECT_NAME" /> zurücksetzen?</translation>
 <translation id="2850913818900871965">Mobile Ansicht anfordern</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Drittanbieter-Cookies blockiert</translation>
 <translation id="3448554387819310837">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Kamera verwenden dürfen. Wenn er deaktiviert ist, können Websites deine Kamera nicht verwenden.</translation>
+<translation id="3491678231052507920">Websites verwenden normalerweise Virtual-Reality-Geräte und ‑Daten, um VR-Sitzungen für dich zu starten</translation>
+<translation id="3496995426334945408">Websites verwenden normalerweise JavaScript zum Anzeigen von interaktiven Funktionen wie Videospielen oder Webformularen</translation>
 <translation id="3521663503435878242">Websites unter <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Websites nicht erlauben, meine Handbewegungen zu verfolgen</translation>
 <translation id="3532312529397438268">Websites dürfen das V8‑Optimierungstool nicht verwenden</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Standorteinstellungen öffnen</translation>
 <translation id="4226663524361240545">Bei Benachrichtigungen kann das Gerät vibrieren</translation>
 <translation id="4259722352634471385">Die Navigation zu <ph name="URL" /> ist blockiert.</translation>
+<translation id="4274673989874969668">Wenn du eine Website verlässt, kann die Synchronisierung trotzdem fortgesetzt werden, um Aufgaben wie das Hochladen von Fotos oder das Versenden einer Chatnachricht zu beenden</translation>
 <translation id="4278390842282768270">Zugelassen</translation>
 <translation id="429312253194641664">Eine Website gibt Medien wieder</translation>
 <translation id="42981349822642051">Maximieren</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Gespeicherter Zoom für Websites</translation>
 <translation id="4836046166855586901">Nachfragen, wenn eine Website Informationen zu deiner aktiven Nutzung dieses Geräts abrufen möchte</translation>
 <translation id="483914009762354899">Alle Websites unter dieser Domain einschließen</translation>
+<translation id="4882919381756638075">Websites verwenden normalerweise dein Mikrofon für Kommunikationsfunktionen wie Videochats</translation>
 <translation id="4883854917563148705">Verwaltete Einstellungen können nicht zurückgesetzt werden</translation>
 <translation id="4887024562049524730">Nachfragen, bevor Websites erlaubt wird, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden (empfohlen)</translation>
 <translation id="4936863036653376783">Du findest deine Gruppen auf allen deinen Geräten im Bereich „Tabgruppen“</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Einträge auswählen</translation>
 <translation id="6838525730752203626">Standardmäßig Chrome verwenden</translation>
 <translation id="6840760312327750441">Wenn du Tabs gruppieren möchtest, halte einen Tab gedrückt. Ziehe ihn dann auf einen anderen Tab.</translation>
+<translation id="6842868554183332230">Websites rufen normalerweise Informationen zu deiner aktiven Nutzung eines Geräts ab, um deine Verfügbarkeit in Chat-Apps anzuzeigen</translation>
 <translation id="6851981911629679515">Zusätzlichen Schutz in der JavaScript- und WebAssembly-Engine von Chrome aktivieren</translation>
 <translation id="6864395892908308021">NFC wird von diesem Gerät nicht unterstützt</translation>
 <translation id="6870169401250095575">Karte „Sicherheitscheck“ ausblenden</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Einstellungen für <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7406113532070524618">Diese Einstellung funktioniert, ohne dass dabei deine Identität preisgegeben oder Websites erlaubt wird, deinen Browserverlauf einzusehen; allerdings können Websites bei der Überprüfung eine kleine Datenmenge weitergeben</translation>
+<translation id="7409735910987429903">Websites senden möglicherweise Pop-ups zum Anzeigen von Werbung oder bringen dich mithilfe von Weiterleitungen zu Websites, die du möglicherweise gar nicht besuchen möchtest</translation>
 <translation id="7423098979219808738">Zuerst fragen</translation>
 <translation id="7423538860840206698">Es dürfen keine Dateien aus der Zwischenablage abgerufen werden</translation>
 <translation id="7425915948813553151">Dunkles Design für Websites</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Hub-Suche beenden</translation>
 <translation id="7554752735887601236">Eine Website verwendet dein Mikrofon</translation>
 <translation id="7561196759112975576">Immer</translation>
+<translation id="7573594921350120855">Websites verwenden deine Videokamera normalerweise für Kommunikationsfunktionen wie Videochats</translation>
 <translation id="757524316907819857">Wiedergabe von geschützten Inhalten für Websites blockieren</translation>
 <translation id="7594634374516752650">Mit einem Bluetooth-Gerät verbunden</translation>
 <translation id="7617547684249261169">Du kannst deinen Verlauf, deine Cookies, deine Websitedaten und mehr teilweise oder vollständig löschen</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7667547420449112975">Der Zauberer von Oz</translation>
+<translation id="7681597159868843240">Websites verwenden die Bewegungssensoren deines Geräts normalerweise für Funktionen wie Virtual Reality oder Fitnesstracking</translation>
 <translation id="7688240020069572972">Karte mit Chrome-Tipps ausblenden</translation>
 <translation id="7719367874908701697">Seitenzoom</translation>
 <translation id="7759147511335618829">MIDI-Gerätesteuerung &amp; -Neuprogrammierung</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Zurück navigieren</translation>
 <translation id="8444433999583714703">Um <ph name="APP_NAME" /> Zugriff auf deinen Standort zu gewähren, musst du die Standortberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="8447861592752582886">Zugriffsberechtigung auf Gerät widerrufen</translation>
+<translation id="8471525937465764768">Websites verwenden normalerweise USB-Geräte für Funktionen wie das Drucken eines Dokuments oder das Speichern auf einem Speichergerät</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> ist veraltet. Bitte installiere die App neu.</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="848952951823693243">Mobile Website immer anfordern</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Wenn dieser Schalter aktiviert ist, können Websites Daten auf deinem Gerät speichern. Wenn er deaktiviert ist, können Websites keine Daten auf deinem Gerät speichern.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> zugelassen</translation>
 <translation id="9019902583201351841">Von deinen Eltern verwaltet</translation>
+<translation id="902236149563113779">Websites verfolgen deine Kameraposition normalerweise, um AR-Funktionen beispielsweise in Spielen oder die Wegbeschreibung auf dem Display umzusetzen</translation>
 <translation id="9039697262778250930">Du wirst möglicherweise von diesen Websites abgemeldet</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Cookies löschen?</translation>

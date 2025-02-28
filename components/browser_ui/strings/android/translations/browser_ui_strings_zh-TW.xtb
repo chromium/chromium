@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">如果啟用，網站就可以要求使用 NFC 裝置。如果停用，網站將無法使用 NFC 裝置。</translation>
 <translation id="1660204651932907780">允許網站播放音訊 (建議)</translation>
 <translation id="1677097821151855053">系統會使用 Cookie 和其他網站資料來記住你，以便將你登入帳戶或是提供個人化廣告等服務。如要管理所有網站的 Cookie，請查看<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />。</translation>
+<translation id="1686785653877010442">網站通常會傳送通知，方便你掌握最新消息或留意即時通訊訊息。</translation>
 <translation id="169515064810179024">禁止網站存取動作感應器</translation>
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1743802530341753419">允許網站連線至裝置前，必須先詢問你 (建議)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">音訊</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
 <translation id="2117655453726830283">下一張投影片</translation>
+<translation id="2146263598007866206">網站可能會自動一併下載相關檔案，為你節省時間</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="216989819110952009">即使配戴著綠色眼鏡保護雙眼，這座美麗城市閃耀的光芒還是令桃樂絲和她的朋友們目眩神迷</translation>
 <translation id="2176704795966505152">在主選單中顯示縮放選項</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">網站可以顯示身分識別服務的登入提示。</translation>
 <translation id="2787357173144933081">啟動時將焦點置於網址列</translation>
 <translation id="2790501146643349491">如果啟用，最近關閉的網站就可以完成資料收發作業。如果停用，最近關閉的網站將無法完成資料收發作業。</translation>
+<translation id="2795716239552913152">網站通常會使用你的位置資訊，以提供地方新聞或附近商家等相關功能或資訊</translation>
 <translation id="2814830417943086299">Chrome 現在會在裝置的應用程式清單和搜尋結果顯示最近開啟的分頁。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="2822354292072154809">確定要重設「<ph name="CHOSEN_OBJECT_NAME" />」的所有網站權限嗎？</translation>
 <translation id="2850913818900871965">要求使用行動裝置檢視畫面</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">已封鎖第三方 Cookie</translation>
 <translation id="3448554387819310837">如果啟用，網站就可以要求使用攝影機。如果停用，網站將無法使用攝影機。</translation>
+<translation id="3491678231052507920">網站通常會使用虛擬實境裝置和資料讓你進入 VR 工作階段</translation>
+<translation id="3496995426334945408">網站通常會使用 JavaScript 顯示互動功能，例如電玩遊戲或線上表單</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> 底下的網站</translation>
 <translation id="3523447078673133727">禁止網站追蹤手勢</translation>
 <translation id="3532312529397438268">網站無法使用 V8 最佳化工具</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
+<translation id="4274673989874969668">在你離開網站後，網站可以繼續透過同步作業完成各項工作，例如上傳相片或傳送即時通訊訊息等等</translation>
 <translation id="4278390842282768270">允許</translation>
 <translation id="429312253194641664">一個網站正在播放媒體內容</translation>
 <translation id="42981349822642051">展開</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">已儲存的網站縮放比例</translation>
 <translation id="4836046166855586901">允許網站詢問你使用這部裝置的時間</translation>
 <translation id="483914009762354899">包括這個網域中的所有網站</translation>
+<translation id="4882919381756638075">網站通常會使用你的麥克風，以提供視訊通訊等通訊功能</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">系統必須先詢問你，才能允許網站使用你的虛擬實境裝置和資料 (建議設定)</translation>
 <translation id="4936863036653376783">你可以在「分頁群組」專區中查看所有裝置中的群組</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">選取項目</translation>
 <translation id="6838525730752203626">預設為使用 Chrome</translation>
 <translation id="6840760312327750441">如要將分頁加入群組，請輕觸並按住分頁，然後將其拖曳到其他分頁上。</translation>
+<translation id="6842868554183332230">為了設定你在即時通訊應用程式中的有空與否狀態，網站通常會偵測你使用裝置的時間</translation>
 <translation id="6851981911629679515">開啟 Chrome 的 JavaScript 和 WebAssembly 引擎額外防護</translation>
 <translation id="6864395892908308021">這部裝置無法讀取 NFC</translation>
 <translation id="6870169401250095575">隱藏「安全檢查」資訊卡</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">「<ph name="DOMAIN" />」的設定</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7406113532070524618">你不必提供身分識別資訊或授權讓網站查看瀏覽記錄，這項設定也能完成驗證。不過，網站在驗證時，可能會分享少量資訊</translation>
+<translation id="7409735910987429903">網站可能會傳送彈出式視窗以顯示廣告，或是透過重新導向將你帶往不想造訪的網站</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
 <translation id="7425915948813553151">網站的深色主題</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">結束中樞搜尋</translation>
 <translation id="7554752735887601236">有網站正在使用你的麥克風</translation>
 <translation id="7561196759112975576">一律使用</translation>
+<translation id="7573594921350120855">網站通常會使用你的攝影機提供通訊功能 (例如視訊通訊)</translation>
 <translation id="757524316907819857">禁止網站播放受保護的內容</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
 <translation id="7617547684249261169">你可以刪除部分或全部的歷史記錄、Cookie、網站資料和其他資料</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">綠野仙蹤</translation>
+<translation id="7681597159868843240">網站通常會使用裝置的動作感應器提供虛擬實境或健身追蹤等功能</translation>
 <translation id="7688240020069572972">隱藏 Chrome 提示資訊卡</translation>
 <translation id="7719367874908701697">頁面縮放</translation>
 <translation id="7759147511335618829">控制 MIDI 裝置及重設程式</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">倒轉到特定的播放時間點</translation>
 <translation id="8444433999583714703">如要允許 <ph name="APP_NAME" /> 存取你的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟定位功能。</translation>
 <translation id="8447861592752582886">撤銷裝置權限</translation>
+<translation id="8471525937465764768">網站通常會連線至 USB 裝置，以提供列印文件或儲存至裝置等功能</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」版本過舊，請重新安裝應用程式。</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="848952951823693243">一律要求行動版網站</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">如果啟用，網站就可以在裝置上儲存資料。如果停用，網站將無法在裝置上儲存資料。</translation>
 <translation id="9011903857143958461">已允許「<ph name="SITE_NAME" />」</translation>
 <translation id="9019902583201351841">你的家長已停用這項功能</translation>
+<translation id="902236149563113779">網站通常會追蹤你的攝影機位置，以提供遊戲或抬頭顯示導航等 AR 功能</translation>
 <translation id="9039697262778250930">系統可能已將你登出這些網站</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9106233582039520022">要刪除 Cookie 嗎？</translation>

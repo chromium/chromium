@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Når dette er på, kan nettsteder be om å få bruke NFC-enheter. Når dette er av, kan ikke nettsteder bruke NFC-enheter.</translation>
 <translation id="1660204651932907780">Tillat nettsteder å spille av lyd (anbefales)</translation>
 <translation id="1677097821151855053">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger.</translation>
 <translation id="169515064810179024">Blokkér nettsteder fra å få tilgang til bevegelsessensorer</translation>
 <translation id="1717218214683051432">Bevegelsessensorer</translation>
 <translation id="1743802530341753419">Spør før nettsteder kan koble til en enhet (anbefales)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2096716221239095980">Slett alle data</translation>
 <translation id="2117655453726830283">Neste lysbilde</translation>
+<translation id="2146263598007866206">Nettsteder kan automatisk laste ned beslektede filer sammen for å spare tid</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Selv om øynene deres var beskyttet av de grønne brillene, ble Dorothy og vennene hennes overveldet ved synet av</translation>
 <translation id="2176704795966505152">Vis zoomalternativet i hovedmenyen</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Nettsteder kan vise påloggingsforespørsler fra identitetstjenester.</translation>
 <translation id="2787357173144933081">Start multifunksjonsfeltet</translation>
 <translation id="2790501146643349491">Når dette er på, kan nylig lukkede nettsteder fullføre sending og mottak av data. Når dette er av, kan ikke nylig lukkede nettsteder fullføre sending eller mottak av data.</translation>
+<translation id="2795716239552913152">Nettsteder bruker vanligvis posisjonen din for å kunne tilby relevante funksjoner eller opplysninger, som lokalnyheter eller butikker i nærheten</translation>
 <translation id="2814830417943086299">Chrome viser nå de nylige fanene dine på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Be om mobilvisning</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="3448554387819310837">Når dette er på, kan nettsteder be om å få bruke kameraet ditt. Når dette er av, kan ikke nettsteder bruke kameraet ditt.</translation>
+<translation id="3491678231052507920">Nettsteder bruker vanligvis virtuell virkelighet-enhetene og -dataene dine for å la deg starte VR-økter</translation>
+<translation id="3496995426334945408">Nettsteder bruker vanligvis JavaScript for å kunne vise interaktive funksjoner, som videospill eller nettskjemaer</translation>
 <translation id="3521663503435878242">Nettsteder under <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Ikke la nettsteder spore hendene dine</translation>
 <translation id="3532312529397438268">Nettsteder kan ikke bruke V8-optimalisering</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Åpne posisjonsinnstillingene</translation>
 <translation id="4226663524361240545">Varsler kan gjøre at enheten vibrerer</translation>
 <translation id="4259722352634471385">Nettadressen er blokkert: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Når du forlater nettsteder, kan de fortsette å synkronisere for å fullføre oppgaver, som å laste opp bilder eller sende chatmeldinger</translation>
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="429312253194641664">Et nettsted spiller av medier</translation>
 <translation id="42981349822642051">Vis</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Lagrede zoomnivåer for nettsteder</translation>
 <translation id="4836046166855586901">Spør når nettsteder vil vite når du bruker denne enheten aktivt</translation>
 <translation id="483914009762354899">Inkluder alle nettsteder under dette domenet</translation>
+<translation id="4882919381756638075">Nettsteder bruker vanligvis mikrofonen din for å kunne tilby kommunikasjonsfunksjoner, som videochat</translation>
 <translation id="4883854917563148705">Administrerte innstillinger kan ikke tilbakestilles</translation>
 <translation id="4887024562049524730">Spør før nettsteder får bruke virtuell virkelighet-enheten din eller -dataene dine (anbefales)</translation>
 <translation id="4936863036653376783">Du finner gruppene dine i fanegruppedelen på alle enhetene dine</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Velg elementer</translation>
 <translation id="6838525730752203626">Bruk Chrome som standard</translation>
 <translation id="6840760312327750441">For å gruppere faner, trykk og hold på en fane. Dra den deretter oppå en annen fane.</translation>
+<translation id="6842868554183332230">Nettsteder sjekker vanligvis om du bruker enheten aktivt, for å kunne angi tilgjengeligheten din i chatteapper</translation>
 <translation id="6851981911629679515">Slå på ekstra beskyttelse i JavaScript- og WebAssembly-motoren i Chrome</translation>
 <translation id="6864395892908308021">Denne enheten kan ikke lese NFC</translation>
 <translation id="6870169401250095575">Skjul kortet Sikkerhetssjekk</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Innstillinger for <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
 <translation id="7406113532070524618">Denne innstillingen fungerer uten at du blir identifisert, og uten at nettsteder kan se nettleserloggen din, men nettsteder kan dele noe informasjon som en del av bekreftelsesprosessen</translation>
+<translation id="7409735910987429903">Nettsteder kan sende forgrunnsvinduer for å vise annonser, eller de kan bruke viderekoblinger for å føre deg til nettsteder du kanskje ikke ønsker å besøke</translation>
 <translation id="7423098979219808738">Spør først</translation>
 <translation id="7423538860840206698">Blokkert fra å lese utklippstavlen</translation>
 <translation id="7425915948813553151">Mørkt tema for nettsteder</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">avslutte sentralsøk</translation>
 <translation id="7554752735887601236">Et nettsted bruker mikrofonen din</translation>
 <translation id="7561196759112975576">Alltid</translation>
+<translation id="7573594921350120855">Nettsteder bruker vanligvis videokameraet ditt for å kunne tilby kommunikasjonsfunksjoner, som videochat</translation>
 <translation id="757524316907819857">Blokkér nettsteder fra å spille av beskyttet innhold</translation>
 <translation id="7594634374516752650">Koblet til en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan slette deler av eller hele loggen din, informasjonskapsler, nettstedsdata med mer</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7667547420449112975">Trollmannen fra Oz</translation>
+<translation id="7681597159868843240">Nettsteder bruker vanligvis bevegelsessensorene på enheten din for å kunne tilby funksjoner som virtuell virkelighet eller helsesporing</translation>
 <translation id="7688240020069572972">Skjul Chrome-tipskortet</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
 <translation id="7759147511335618829">Kontroller og omprogrammer MIDI-enheter</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Spol bakover</translation>
 <translation id="8444433999583714703">For å gi <ph name="APP_NAME" /> tilgang til posisjonen din må du også slå på posisjon i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opphev tillatelsen til enhetstilgang</translation>
+<translation id="8471525937465764768">Nettsteder kobler vanligvis til USB-enheter for å kunne tilby funksjoner som å skrive ut dokumenter eller lagre filer på lagringsenheter</translation>
 <translation id="8473055640493819707">«<ph name="APP_NAME" />» er utdatert. Installer appen på nytt.</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
 <translation id="848952951823693243">Be alltid om mobilnettstedet</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Når dette er på, kan nettsteder lagre data på enheten din. Når dette er av, kan ikke nettsteder lagre data på enheten din.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> er tillatt</translation>
 <translation id="9019902583201351841">Administrert av foreldrene dine</translation>
+<translation id="902236149563113779">Nettsteder sporer vanligvis kameraposisjonen din for å kunne tilby AR-funksjoner, som spill eller heads-up-anvisninger</translation>
 <translation id="9039697262778250930">Du kan være logget av disse nettstedene</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Vil du slette informasjonskapslene?</translation>

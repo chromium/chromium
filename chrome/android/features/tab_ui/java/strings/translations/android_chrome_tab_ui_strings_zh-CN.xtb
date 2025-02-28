@@ -12,7 +12,6 @@
 <translation id="1293272072740285747">您可以保留此分组以便日后添加标签页；如果不再需要，也可以将其删除。
 
 如果删除，所有人将立即失去对标签页分组“<ph name="TITLE_OF_GROUP" />”的访问权限，并且该分组将从所有设备中删除。</translation>
-<translation id="1326654401173629446">“<ph name="TAB_GROUP_NAME" />”标签页分组已不可用</translation>
 <translation id="1329584516321524826">上次更新时间：刚才</translation>
 <translation id="1340839264183302272">退出分组</translation>
 <translation id="1419023007528516122">此操作会将该分组从您的设备中永久删除</translation>
@@ -47,7 +46,9 @@
 <translation id="266935134738038806">访问网站</translation>
 <translation id="2671423594960767771">分享组</translation>
 <translation id="2677748264148917807">离开</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 周前更新}other{<ph name="NUM_WEEKS_MANY" /> 周前更新}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{已添加 <ph name="ONE_ADDED" /> 个标签页，已更改 <ph name="ANY_CHANGED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}other{已添加 <ph name="MANY_ADDED" /> 个标签页，已更改 <ph name="ANY_CHANGED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小时前更新}other{<ph name="NUM_HOURS_MANY" /> 小时前更新}}</translation>
 <translation id="2755485474385016903">分组中的所有人都会看到所做的更改</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{创建时间：<ph name="NUM_HOURS_ONE" /> 小时前}other{创建时间：<ph name="NUM_HOURS_MANY" /> 小时前}}</translation>
 <translation id="2801787514987684416">查看商店信息？</translation>
@@ -84,6 +85,7 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{已更改 <ph name="ONE_CHANGED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}other{已更改 <ph name="MANY_CHANGED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}}</translation>
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4431937619879060901">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 天前更新}other{<ph name="NUM_DAYS_MANY" /> 天前更新}}</translation>
 <translation id="4460014764210899310">取消分组</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{要关闭 1 个闲置标签页吗？}other{要关闭 <ph name="TAB_COUNT_MANY" /> 个闲置标签页吗？}}</translation>
 <translation id="4686942373615810936">创建时间：刚刚</translation>
@@ -164,6 +166,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7688386659311034820">“闲置标签页”对话框</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{分享所选的 <ph name="TABS_COUNT_ONE" /> 个标签页}other{分享所选的 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前更新}other{<ph name="NUM_YEARS_MANY" /> 年前更新}}</translation>
 <translation id="7773714564112603605">移除标签页并删除分组</translation>
 <translation id="7792771145871471484">查看建议。</translation>
 <translation id="7792860826279960128">关于共享标签页分组更改的通知已半屏打开</translation>
@@ -181,10 +184,12 @@
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="8205266828577616993">上移标签页</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分钟前更新}other{<ph name="NUM_MINS_MANY" /> 分钟前更新}}</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8338427544764842461">您的标签页分组会保存在此处，并在您所有已登录账号的设备上更新。</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的分享标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的分享标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{关闭 <ph name="TABS_COUNT_ONE" /> 个所选标签页}other{关闭 <ph name="TABS_COUNT_MANY" /> 个所选标签页}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 个月前更新}other{<ph name="NUM_MONTHS_MANY" /> 个月前更新}}</translation>
 <translation id="8398929769197326728">新建文件夹 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{已添加 <ph name="ONE_ADDED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}other{已添加 <ph name="MANY_ADDED" /> 个标签页，已关闭 <ph name="ANY_CLOSED" /> 个标签页}}</translation>

@@ -837,6 +837,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2451607499823206582">Spoor tans na</translation>
 <translation id="2452098632681057184">Ekologie en omgewing</translation>
 <translation id="2452837234288608067">Kon nie daarmee help nie. Probeer weer.</translation>
+<translation id="2453045048779611513">Jou organisasie beperk wat jy kan stoor</translation>
 <translation id="2456755709261364512">Jou battery moet meer as <ph name="REQUIRED_BATTERY_PRECENT" />% gelaai wees</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core gee jou ’n gesentraliseerde nutsding om blaaierbeleide vanaf die wolk op te stel</translation>
 <translation id="2461822463642141190">Huidig</translation>
@@ -1086,6 +1087,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2942492342931589800">Gemaklik</translation>
 <translation id="2942515540157583425">IT- en tegniese poste</translation>
 <translation id="2943895734390379394">Oplaaityd:</translation>
+<translation id="2947281105969315778">Jy moet by Chrome kan aanmeld om oortjiegroepe te deel of by hulle aan te sluit</translation>
 <translation id="2948083400971632585">Jy kan enige instaanbedieners wat vir 'n verbinding opgestel is van die instellingsbladsy af deaktiveer.</translation>
 <translation id="2949183777371959169">Geïgnoreer omdat die masjien nie by Chrome-blaaierwolkbestuur ingeskryf is nie.</translation>
 <translation id="2951588413176968965">My posbus</translation>
@@ -3903,6 +3905,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="791107458486222637">Resultaat word herdoen</translation>
 <translation id="791551905239004656">Teken en inkleur</translation>
 <translation id="7916162853251942238">Fleksobasis</translation>
+<translation id="791698251820376781">Jou organisasie laat jou nie toe om aan te meld nie</translation>
 <translation id="7926503317156566022">Lugvaartbedryf</translation>
 <translation id="793209273132572360">Dateer adres op?</translation>
 <translation id="7932579305932748336">Bestryk</translation>
@@ -4615,6 +4618,7 @@ Bykomende besonderhede:
 <translation id="9191834167571392248">Pons links onder</translation>
 <translation id="9192361865877479444">Metaal (mat)</translation>
 <translation id="9192947025498305328">Skoon skoonheid</translation>
+<translation id="9195969368671142407">As jou organisasie jou Google-rekening se storing beperk, kan jy nie oortjiegroepe deel of by hulle aansluit nie</translation>
 <translation id="9199905725844810519">Druk word geblokkeer</translation>
 <translation id="9201904868909900493">Maak tans opname oop …</translation>
 <translation id="9204089334327209740">Jy kan jou lêers in <ph name="CLOUD_PROVIDER" /> wysig sodra die oplaai voltooi is. Plaaslike berging, insluitend enige lêers in die asblik, sal outomaties verwyder word.</translation>

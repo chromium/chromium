@@ -246,7 +246,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="17722141032474077">Máy tính</translation>
 <translation id="1774796056689732716">Lịch, <ph name="CURRENT_MONTH_YEAR" />, đang chọn <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Thiết lập tính năng xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
-<translation id="1785317913592722944">Xoá mục khỏi nhóm được đề xuất</translation>
 <translation id="1786487376942610288">Chuyển đổi giữa kích thước tối đa hoặc kích thước hiện tại của cửa sổ hình trong hình</translation>
 <translation id="1787955149152357925">Tắt</translation>
 <translation id="1796561540704213354">Trang web, bao gồm các trang bạn đã truy cập và các trang đang mở</translation>
@@ -853,6 +852,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3859364108019690">Không thể truyền trực tuyến các ứng dụng</translation>
 <translation id="3861651314799684201">Nhấn phím Enter để ghi toàn màn hình</translation>
 <translation id="3870197372373144624">Hãy thử tắt thiết bị.</translation>
+<translation id="3879748587602334249">Trình quản lý tải xuống</translation>
 <translation id="3886872229787704059">Mở hôm nay</translation>
 <translation id="3891340733213178823">Nhấn Ctrl+Shift+Q hai lần để đăng xuất.</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
@@ -878,6 +878,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3958714870339660776">Cả ngày</translation>
 <translation id="3962859241508114581">Bản nhạc trước</translation>
 <translation id="3963124517343721543">Dễ dàng tiếp tục từ nơi bạn đã dừng lại bằng cách mở các cửa sổ và thẻ trước đó. Bạn cũng sẽ thấy những việc nên làm tiếp theo được đề xuất dành riêng cho mình.</translation>
+<translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3969043077941541451">Đang tắt</translation>
 <translation id="3970324493235864154">Xem thông báo có trên điện thoại</translation>
 <translation id="397105322502079400">Đang tính...</translation>
@@ -1619,6 +1620,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6319058840130157106">Di chuyển lùi giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>
 <translation id="6319503618073410818">Xem thông tin chi tiết trong trình duyệt</translation>
 <translation id="6324916366299863871">Chỉnh sửa phím tắt</translation>
+<translation id="6325525973963619867">Lỗi</translation>
 <translation id="6330012934079202188">Đang hiện các cửa sổ của mọi không gian làm việc, hãy nhấn phím Mũi tên lên để hiển thị các cửa sổ của không gian làm việc hiện tại</translation>
 <translation id="6337159624125741244">Tính năng phóng to toàn màn hình đang bật</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> là phiên do <ph name="MANAGER" /> quản lý</translation>

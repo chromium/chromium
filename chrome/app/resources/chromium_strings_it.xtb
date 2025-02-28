@@ -316,6 +316,7 @@
 <translation id="5579324208890605088">Errore di avvio: esegui il programma di installazione come utente normale, non come amministratore.</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5605834417512968703">Seleziona un elemento da cercare con la ricerca immagini o premi Esc per uscire dalla ricerca immagini</translation>
+<translation id="5618818588972826921">Seleziona un testo o un'immagine da cercare con la ricerca immagini o premi Esc per uscire dalla ricerca immagini</translation>
 <translation id="5623402015214259806">{0,plural, =0{È disponibile un aggiornamento di Chromium}=1{È disponibile un aggiornamento di Chromium}other{È disponibile un aggiornamento di Chromium da # giorni}}</translation>
 <translation id="5643865575100044307">Elimina sempre i dati dei siti dal dispositivo alla chiusura di Chromium</translation>
 <translation id="5653831366781983928">Riavvia subito Chromium</translation>
@@ -590,5 +591,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="983803489796659991">Installazione non riuscita perché il server di aggiornamento non dispone di dati di hashing per l'applicazione.</translation>
 <translation id="985498048907240953">Utilizza Chromium senza un account</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">Seleziona un testo o un'immagine da cercare con la ricerca immagini</translation>
 <translation id="992780518932311116">Per usare la posizione, consenti l'accesso a Chromium nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
 </translationbundle>

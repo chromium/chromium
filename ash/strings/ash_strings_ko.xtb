@@ -246,7 +246,6 @@
 <translation id="17722141032474077">계산</translation>
 <translation id="1774796056689732716">현재 캘린더에서 <ph name="CURRENT_MONTH_YEAR" />을 표시 중이며 선택된 날짜는 <ph name="DATE" />입니다.</translation>
 <translation id="178347895271755507">휴대전화의 최근 사진, 미디어, 알림 보기 설정</translation>
-<translation id="1785317913592722944">추천 그룹에서 항목 삭제</translation>
 <translation id="1786487376942610288">PIP 모드 창의 최대 크기 또는 현재 크기 간에 전환</translation>
 <translation id="1787955149152357925">꺼짐</translation>
 <translation id="1796561540704213354">방문한 페이지 및 열린 페이지를 포함한 웹사이트</translation>
@@ -853,6 +852,7 @@
 <translation id="3859364108019690">앱을 스트리밍할 수 없음</translation>
 <translation id="3861651314799684201">전체 화면을 녹화하려면 Enter를 누르세요</translation>
 <translation id="3870197372373144624">기기를 종료해 보세요.</translation>
+<translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3891340733213178823">로그아웃하려면 Ctrl+Shift+Q를 두 번 누릅니다.</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
@@ -878,6 +878,7 @@
 <translation id="3958714870339660776">종일</translation>
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3963124517343721543">이전 창과 탭을 열어 중단한 위치에서 계속할 수 있습니다. 다음에 할 일을 위한 맞춤 추천도 표시됩니다.</translation>
+<translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3969043077941541451">사용 안함</translation>
 <translation id="3970324493235864154">휴대전화 알림 보기</translation>
 <translation id="397105322502079400">계산 중...</translation>
@@ -1619,6 +1620,7 @@
 <translation id="6319058840130157106">오른쪽 하단, 런처, 주소 표시줄, 북마크바, 열려 있는 웹사이트, 다운로드 항목 간에 뒤로 이동</translation>
 <translation id="6319503618073410818">브라우저에서 세부정보 보기</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
+<translation id="6325525973963619867">실패</translation>
 <translation id="6330012934079202188">모든 데스크의 창을 표시합니다. 현재 데스크의 창을 표시하려면 위쪽 화살표 키를 누르세요</translation>
 <translation id="6337159624125741244">전체화면 돋보기 사용 설정됨</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> 세션은 <ph name="MANAGER" />에서 관리합니다.</translation>

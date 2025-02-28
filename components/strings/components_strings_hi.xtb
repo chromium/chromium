@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">पेज को बाद में लोड करें</translation>
 <translation id="1010225406377140704">लिंक भेजने वाले व्यक्ति से संपर्क करें और नया लिंक मांगें</translation>
 <translation id="1011206368273183593">फ़ाइलें तैयार की जा रही हैं</translation>
+<translation id="1012264210825687872">ऑर्डर की समीक्षा करने के बाद, आपको अपने <ph name="BNPL_ISSUER_NAME" /> खाते में साइन इन करना होगा या एक नया खाता बनाना होगा. यह खाता, Google Pay से अपने-आप लिंक हो जाएगा.</translation>
 <translation id="1014509239502131234">नतीजे को पहले जैसा किया जा रहा है</translation>
 <translation id="1015730422737071372">ज़्यादा जानकारी दें</translation>
 <translation id="1019413721762100891">बंद है</translation>
@@ -692,6 +693,7 @@
 <translation id="2187317261103489799">पता लगाएं (डिफ़ॉल्ट)</translation>
 <translation id="2188375229972301266">नीचे की ओर एक से ज़्यादा पंच</translation>
 <translation id="2194856509914051091">इन बातों का ध्यान रखें</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> के बारे में ज़्यादा जानें</translation>
 <translation id="2200678913752027654">'नापसंद' बटन. आपको यह सुझाव क्यों पसंद नहीं आया, इस बारे में ज़्यादा जानकारी देने के लिए फ़ॉर्म सबमिट करें. इस फ़ॉर्म को खोलने के लिए, Enter दबाएं</translation>
 <translation id="2202627062836089804">अपने कार्ड के पिछले हिस्से</translation>
 <translation id="2204482073374652408">अपडेट पूरा हुआ!</translation>
@@ -838,6 +840,7 @@
 <translation id="2451607499823206582">ट्रैक किया जा रहा है</translation>
 <translation id="2452098632681057184">ईकोलॉजी और एनवायरमेंट</translation>
 <translation id="2452837234288608067">इस अनुरोध को पूरा नहीं किया जा सका. फिर से कोशिश करें.</translation>
+<translation id="2453045048779611513">आपका संगठन यह मैनेज करता है कि आपके पास किस तरह का डेटा सेव करने की अनुमति है</translation>
 <translation id="2456755709261364512">आपकी बैटरी <ph name="REQUIRED_BATTERY_PRECENT" />% से ज़्यादा चार्ज होनी चाहिए</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core, आपको क्लाउड से ब्राउज़र की नीतियों को कॉन्फ़िगर करने के लिए, एक ही जगह पर टूल उपलब्ध कराता है</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
@@ -1087,6 +1090,7 @@
 <translation id="2942492342931589800">कैज़ुअल</translation>
 <translation id="2942515540157583425">आईटी और तकनीकी सेक्टर की नौकरियां</translation>
 <translation id="2943895734390379394">अपलोड करने का समय:</translation>
+<translation id="2947281105969315778">टैब ग्रुप शेयर करने या उनमें शामिल होने के लिए, आपको Chrome में साइन इन करना होगा</translation>
 <translation id="2948083400971632585">आप किसी कनेक्शन के लिए कॉन्फ़िगर की गई किसी भी प्रॉक्सी को सेटिंग पेज से बंद कर सकते हैं.</translation>
 <translation id="2949183777371959169">'Chrome ब्राउज़र क्लाउड मैनेजमेंट' के लिए मशीन का नाम दर्ज नहीं है, इसलिए यह कार्रवाई पूरी नहीं हो पाई.</translation>
 <translation id="2951588413176968965">मेरा मेलबॉक्स</translation>
@@ -1946,6 +1950,7 @@
 <translation id="4378154925671717803">फ़ोन</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive पर फ़ाइल अपलोड करने की प्रोसेस को रोक दिया गया है</translation>
+<translation id="4389931020843542579">टैब ग्रुप लोड हो रहा है</translation>
 <translation id="4390472908992056574">ब्रिम</translation>
 <translation id="4395550503472021297">इस नीति से, इन नीतियों के काम करने का डिफ़ॉल्ट तरीका तय होता है: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">इससे आपकी स्क्रीन में बैंक की वेबसाइट पर पुष्टि करने के लिए पॉप-अप दिखता है</translation>
@@ -2315,6 +2320,7 @@
 <translation id="5097501891273180634">ए2</translation>
 <translation id="5106405387002409393">Chrome को आपके डिवाइस के <ph name="PERMISSION" /> का ऐक्सेस चाहिए</translation>
 <translation id="510644072453496781">कार्डबोर्ड (एंड)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> की मदद से किए जाने वाले पेमेंट के लिए, वर्चुअल कार्ड की जानकारी भर दी गई है</translation>
 <translation id="5108881358339761672">साइट सुरक्षित नहीं है</translation>
 <translation id="5109892411553231226">पैसे चुकाने के तरीके मैनेज करें</translation>
 <translation id="5112422516732747637">ए5</translation>
@@ -2510,6 +2516,7 @@
             <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
+<translation id="5445340838622821110">समय के साथ पेमेंट करने पर, एक-बार इस्तेमाल किया जा सकने वाला वर्चुअल कार्ड नंबर अपने-आप भर जाता है. यह नंबर सिर्फ़ इस खरीदारी के लिए है. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> को आपकी सेव की गई जानकारी का इस्तेमाल करने की अनुमति दें</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
 <translation id="5452923259299906094">इलेक्ट्रॉनिक वॉलेट और Pix से पेमेंट करें</translation>
@@ -3329,6 +3336,7 @@
 <translation id="6917795328362592458">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें. इस तरह, आपके खाते सुरक्षित रहेंगे.</translation>
 <translation id="6917873303492266709">टैब ग्रुप को शेयर करने, उनमें शामिल होने, और उनमें साथ मिलकर काम करने के लिए, सेटिंग पर जाकर, 'Chrome में साइन इन करने की अनुमति दें' को चालू करें</translation>
 <translation id="6921197121276419421">वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति दी गई</translation>
+<translation id="69238565902785824">खाता लिंक करके, <ph name="BNPL_ISSUER_NAME" /> की मदद से तेज़ी से पेमेंट किया जा सकता है. हालांकि, आपके पास <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> पर जाकर अपने खाते को अनलिंक करने का विकल्प है</translation>
 <translation id="6924013822850225188">चुनें कि चेकआउट करते समय आपको कार्ड के फ़ायदे दिखे या नहीं (बैंक की शर्तें लागू)</translation>
 <translation id="6925267999184670015">नॉर्थ अमेरिकन B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
@@ -3394,6 +3402,7 @@
 <translation id="701757816833614688">विज़ुअल आर्ट और डिज़ाइन से जुड़ी शिक्षा</translation>
 <translation id="702275896380648118">यह साइट, आपकी पसंद के विषयों का पता लगाती है और फिर दूसरी साइटों पर, उनके हिसाब से विज्ञापन के सुझाव देती है. यह साइट आपके पसंदीदा, विज्ञापन के विषयों के बारे में जानने के लिए Chrome की भी मदद लेती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखाए जा सकें.</translation>
 <translation id="7023162328967545559">एडमिन की चेतावनी</translation>
+<translation id="7023765275461720661">क्या आपको खाता लिंक करना है और <ph name="BNPL_ISSUER_NAME" /> से पेमेंट करना है?</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7030164307377592766">पेमेंट के तरीके की जानकारी भरने के लिए, सेटिंग में बदलाव करें</translation>
 <translation id="7031646650991750659">आपने Google Play के कौनसे ऐप्लिकेशन इंस्टॉल किए हैं</translation>
@@ -3616,6 +3625,7 @@
 <translation id="741204030948306876">हां, मैं सहमत हूं</translation>
 <translation id="7416351320495623771">पासवर्ड प्रबंधित करें…</translation>
 <translation id="7416898721136759658">अनुदान, स्कॉलरशिप, और वित्तीय सहायता</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">प्रोग्रामिंग</translation>
 <translation id="7419091773564635591">कंप्यूटर और इलेक्ट्रॉनिक गैजेट</translation>
 <translation id="7419106976560586862">प्रोफ़ाइल पाथ</translation>
@@ -3662,6 +3672,7 @@
 <translation id="7485085230273446323">कारोबार और उद्योग</translation>
 <translation id="7485870689360869515">कोई डेटा नहीं मिला</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> जांच करेगा कि आपको यह सुविधा मिल सकती है या नहीं. इससे आपके क्रेडिट स्कोर पर कोई असर नहीं पड़ेगा. सुविधा इस्तेमाल करने की मंज़ूरी मिलने पर, <ph name="BNPL_ISSUER_NAME" /> आपको अलग-अलग पेमेंट प्लान के सुझाव देगा, ताकि आप उनमें से कोई प्लान चुनकर खरीदारी की प्रोसेस पूरी कर सकें.</translation>
 <translation id="7489392576326061356">शैम्पू और कंडिशनर</translation>
 <translation id="7495528107193238112">इस कॉन्टेंट को ब्लॉक कर दिया गया है. समस्या को ठीक करने के लिए, साइट के मालिक से संपर्क करें.</translation>
 <translation id="749865518782565832">प्लंबिंग</translation>
@@ -3904,6 +3915,7 @@
 <translation id="791107458486222637">नतीजे को फिर से जोड़ा जा रहा है</translation>
 <translation id="791551905239004656">ड्रॉइंग और कलरिंग</translation>
 <translation id="7916162853251942238">फ़्लेक्सो बेस</translation>
+<translation id="791698251820376781">आपका संगठन आपको साइन इन करने की अनुमति नहीं देता है</translation>
 <translation id="7926503317156566022">एविएशन इंडस्ट्री</translation>
 <translation id="793209273132572360">क्या आप पता अपडेट करना चाहते हैं?</translation>
 <translation id="7932579305932748336">कोट</translation>
@@ -4617,6 +4629,7 @@
 <translation id="9191834167571392248">नीचे बाईं ओर पंच</translation>
 <translation id="9192361865877479444">मेटल (मैट)</translation>
 <translation id="9192947025498305328">पर्यावरण और स्वास्थ्य को ध्यान में रखकर बनाए गए प्रॉडक्ट</translation>
+<translation id="9195969368671142407">जब आपका संगठन, Google खाते में डेटा सेव करने की सुविधा को सीमित कर देता है, तब आपके पास टैब ग्रुप शेयर करने या उनमें शामिल होने का विकल्प नहीं होता</translation>
 <translation id="9199905725844810519">प्रिंट करने की सुविधा को ब्लॉक किया गया है</translation>
 <translation id="9201904868909900493">सर्वे खुल रहा है...</translation>
 <translation id="9204089334327209740">अपलोड पूरा हो जाने के बाद, <ph name="CLOUD_PROVIDER" /> में अपनी फ़ाइलों में बदलाव किए जा सकते हैं. लोकल स्टोरेज में मौजूद फ़ाइलों के साथ-साथ, ट्रैश में भेजी गई फ़ाइलें भी अपने-आप हट जाएंगी.</translation>

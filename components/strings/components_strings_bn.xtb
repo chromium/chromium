@@ -838,6 +838,7 @@
 <translation id="2451607499823206582">ট্র্যাক করা হচ্ছে</translation>
 <translation id="2452098632681057184">ইকোলজি ও এনভায়রনমেন্ট</translation>
 <translation id="2452837234288608067">এই অনুরোধ সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন।</translation>
+<translation id="2453045048779611513">আপনি কী সেভ করতে পারবেন তা আপনার সংস্থা সীমিত করেছে</translation>
 <translation id="2456755709261364512">আপনার ডিভাইসের ব্যাটারিতে <ph name="REQUIRED_BATTERY_PRECENT" />%-এর বেশি চার্জ থাকতে হবে</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core আপনাকে ক্লাউড থেকে ব্রাউজার নীতি কনফিগার করার জন্য সেন্ট্রালাইজড টুল প্রদান করে</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
@@ -1087,6 +1088,7 @@
 <translation id="2942492342931589800">ক্যাজুয়াল</translation>
 <translation id="2942515540157583425">আইটি ও প্রযুক্তির চাকরি</translation>
 <translation id="2943895734390379394">যে সময়ে আপলোড করা হয়েছিল:</translation>
+<translation id="2947281105969315778">ট্যাব গ্রুপ শেয়ার করতে বা তাতে যোগ দিতে হলে, আপনাকে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="2948083400971632585">আপনি সেটিংস পৃষ্ঠা থেকে কানেকশনের জন্য কনফিগার করা যেকোনো প্রক্সি নিষ্ক্রিয় করতে পারেন৷</translation>
 <translation id="2949183777371959169">মেশিনটি Chrome ব্রাউজার ক্লাউড ম্যানেজমেন্টে নথিভুক্ত নয় বলে এড়িয়ে যাওয়া হয়েছে।</translation>
 <translation id="2951588413176968965">আমার মেলবক্স</translation>
@@ -1947,6 +1949,7 @@
 <translation id="4378154925671717803">ফোন</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive-এ ফাইল আপলোড করার প্রসেস পজ করা হয়েছে</translation>
+<translation id="4389931020843542579">ট্যাব গ্রুপ লোড করা হচ্ছে</translation>
 <translation id="4390472908992056574">ব্রিম</translation>
 <translation id="4395550503472021297">এই নীতি, এইসব নীতির ডিফল্ট অ্যাকশন কন্ট্রোল করছে: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">আপনার ব্যাঙ্কের ওয়েবসাইট যাচাই করতে পপ-আপ খুলুন</translation>
@@ -3904,6 +3907,7 @@
 <translation id="791107458486222637">ফলাফল আবার যোগ করা হচ্ছে</translation>
 <translation id="791551905239004656">আঁকা ও রঙ করা</translation>
 <translation id="7916162853251942238">ফ্লেক্সো বেস</translation>
+<translation id="791698251820376781">আপনার সংস্থা আপনাকে সাইন-ইন করার অনুমতি দেয়নি</translation>
 <translation id="7926503317156566022">বিমান শিল্প</translation>
 <translation id="793209273132572360">ঠিকানা আপডেট করবেন?</translation>
 <translation id="7932579305932748336">কোট</translation>
@@ -4616,6 +4620,7 @@
 <translation id="9191834167571392248">নিচে বাঁদিকে পাঞ্চ করুন</translation>
 <translation id="9192361865877479444">মেটাল (ম্যাট)</translation>
 <translation id="9192947025498305328">ক্লিন বিউটি</translation>
+<translation id="9195969368671142407">আপনার সংস্থা আপনাকে Google অ্যাকাউন্টে সেভ করতে না দিলে, আপনি ট্যাব গ্রুপে শেয়ার করতে বা যোগ দিতে পারবেন না</translation>
 <translation id="9199905725844810519">প্রিন্টিং ব্লক করা আছে</translation>
 <translation id="9201904868909900493">সমীক্ষা খুলছে …</translation>
 <translation id="9204089334327209740">আপলোড করা হয়ে গেলে, আপনি <ph name="CLOUD_PROVIDER" />-এ নিজের ফাইল মডিফাই করতে পারবেন। ট্র্যাশে থাকা সব ফাইল সহ লোকাল স্টোরেজ অটোমেটিক সরিয়ে দেওয়া হবে।</translation>

@@ -277,6 +277,7 @@
 <translation id="4720851490453439956">Intern Google-oppdateringstjeneste</translation>
 <translation id="4724676981607797757">Installasjonen mislyktes på grunn av en feil med ikke-støttet protokoll.</translation>
 <translation id="4728575227883772061">Installeringen mislyktes på grunn av en uspesifisert feil. Lukk Google Chrome hvis det kjører, og prøv på nytt.</translation>
+<translation id="4737281654364167024">For å fortsette, logg på Chrome som <ph name="EMAIL" />. Dette sikrer at du har organisasjonens regler.</translation>
 <translation id="4741235124132242877">Festet. Bruk Google Lens igjen fra verktøylinjen</translation>
 <translation id="4747730611090640388">Chrome kan anslå interessene dine.  Senere kan nettsteder du besøker, spørre Chrome om interessene dine for å kunne sette personlig preg på annonsene du ser.</translation>
 <translation id="475321580758063259">Oppdater Chrome for å fortsette å bruke Chrome-dataene i Google-kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -580,6 +581,7 @@
 <translation id="8781673607513845160">For å la Chrome bruke kameraet må du gi tilgang i <ph name="BEGIN_LINK" />systeminnstillingene<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Installasjonsfeil: Nettverksadministratoren din har aktivert en grupperegel som forhindrer installasjonen: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome har blokkert denne nedlastingen fordi filen kan skade de personlige kontoene dine og kontoene dine på sosiale nettverk, inkludert <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">Organisasjonen din kan se og administrere nettlesingsdata, for eksempel bokmerker, logg og passord. Den kan ikke se nettlesingsdata i andre Chrome-profiler</translation>
 <translation id="8801657293260363985">V8 er JavaScript- og WebAssembly-motoren som Chrome bruker til å forbedre nettstedsytelsen</translation>
 <translation id="8821043148920470810">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er utdatert</translation>

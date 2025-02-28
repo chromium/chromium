@@ -246,7 +246,6 @@
 <translation id="17722141032474077">ການຄິດໄລ່</translation>
 <translation id="1774796056689732716">ປະຕິທິນ, <ph name="CURRENT_MONTH_YEAR" />, ຕອນນີ້ເລືອກ <ph name="DATE" /> ຢູ່.</translation>
 <translation id="178347895271755507">ຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ ແລະ ການແຈ້ງເຕືອນຂອງໂທລະສັບທ່ານ</translation>
-<translation id="1785317913592722944">ລຶບລາຍການອອກຈາກກຸ່ມແນະນຳ</translation>
 <translation id="1786487376942610288">ສະຫຼັບລະຫວ່າງຂະໜາດສູງສຸດ ຫຼື ຂະໜາດປັດຈຸບັນຂອງໜ້າຈໍການສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="1787955149152357925">ປິດ</translation>
 <translation id="1796561540704213354">ເວັບໄຊຮວມມີໜ້າຕ່າງໆທີ່ທ່ານເຄີຍເຂົ້າ ແລະ ໜ້າທີ່ເປີດໄວ້</translation>
@@ -853,6 +852,7 @@
 <translation id="3859364108019690">ສະຕຣີມແອັບບໍ່ໄດ້</translation>
 <translation id="3861651314799684201">ກົດ enter ເພື່ອບັນທຶກເຕັມຈໍ</translation>
 <translation id="3870197372373144624">ລອງປິດເຄື່ອງອຸປະກອນຂອງທ່ານ.</translation>
+<translation id="3879748587602334249">ຕົວຈັດການການດາວໂຫລດ</translation>
 <translation id="3886872229787704059">ເປີດມື້ນີ້</translation>
 <translation id="3891340733213178823">ກົດ Ctrl+Shift+Q ສອງຄັ້ງເພື່ອອອກຈາກລະບົບ.</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
@@ -878,6 +878,7 @@
 <translation id="3958714870339660776">ໝົດມື້</translation>
 <translation id="3962859241508114581">ເພງກ່ອນນີ້</translation>
 <translation id="3963124517343721543">ດຳເນີນການຕໍ່ຈາກບ່ອນທີ່ທ່ານຄ້າງໄວ້ໄດ້ຢ່າງງ່າຍດາຍໂດຍການເປີດໜ້າຈໍ ແລະ ແຖບກ່ອນໜ້າ. ນອກຈາກນີ້, ທ່ານຍັງຈະເຫັນການແນະນຳທີ່ປັບແຕ່ງສ່ວນຕົວສຳລັບສິ່ງທີ່ຕ້ອງເຮັດຕໍ່ໄປນຳ.</translation>
+<translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="3969043077941541451">ປິດ</translation>
 <translation id="3970324493235864154">ເບິ່ງການແຈ້ງເຕືອນຂອງໂທລະສັບທ່ານ</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
@@ -1619,6 +1620,7 @@
 <translation id="6319058840130157106">ຍ້າຍກັບຫຼັງລະຫວ່າງມຸມຂວາລຸ່ມ, ຕົວເປີດໃຊ້, ແຖບທີ່ຢູ່, ແຖບບຸກມາກ, ເວັບໄຊທີ່ເປີດ ແລະ ດາວໂຫຼດ</translation>
 <translation id="6319503618073410818">ເບິ່ງລາຍລະອຽດໃນໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="6324916366299863871">ແກ້ໄຂທາງລັດ</translation>
+<translation id="6325525973963619867">ບໍ່ສຳເລັດ</translation>
 <translation id="6330012934079202188">ກຳລັງສະແດງໜ້າຈໍຈາກໂຕະທັງໝົດ, ກົດປຸ່ມລູກສອນຂຶ້ນເພື່ອສະແດງໜ້າຈໍຈາກໂຕະປັດຈຸບັນ</translation>
 <translation id="6337159624125741244">ແວ່ນຂະຫຍາຍເຕັມຈໍເປີດຢູ່</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ແມ່ນເຊດຊັນແບບມີການຈັດການທີ່ຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>

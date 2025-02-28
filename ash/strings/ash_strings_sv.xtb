@@ -246,7 +246,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="17722141032474077">Uträkningar</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, just nu är <ph name="DATE" /> markerat.</translation>
 <translation id="178347895271755507">Ställ in visning av de senaste bilderna, mediefilerna och aviseringarna på telefonen</translation>
-<translation id="1785317913592722944">Ta bort objekt från föreslagen grupp</translation>
 <translation id="1786487376942610288">Växla mellan största tillåtna och aktuell storlek på bild-i-bild-fönstret</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Webbplatser, inklusive sidor som du har besökt och öppna sidor</translation>
@@ -853,6 +852,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3859364108019690">Det gick inte att streama appar</translation>
 <translation id="3861651314799684201">Tryck på retur för att spela in hela skärmen</translation>
 <translation id="3870197372373144624">Testa att stänga av enheten.</translation>
+<translation id="3879748587602334249">Nedladdningshanterare</translation>
 <translation id="3886872229787704059">Öppnades i dag</translation>
 <translation id="3891340733213178823">Tryck på Ctrl+Skift+Q två gånger om du vill logga ut.</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
@@ -878,6 +878,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3958714870339660776">Heldag</translation>
 <translation id="3962859241508114581">Föregående spår</translation>
 <translation id="3963124517343721543">Fortsätt enkelt där du slutade genom att öppna tidigare fönster och flikar. Du får även anpassade förslag på saker du kan göra härnäst.</translation>
+<translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="3970324493235864154">Visa telefonens aviseringar</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
@@ -1619,6 +1620,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6319058840130157106">Flytta bakåt mellan det nedre högra hörnet, Appstartaren, adressfältet, bokmärkesfältet, webbplatsen som är öppen och nedladdningar</translation>
 <translation id="6319503618073410818">Visa detaljer i webbläsaren</translation>
 <translation id="6324916366299863871">Redigera genväg</translation>
+<translation id="6325525973963619867">Misslyckades</translation>
 <translation id="6330012934079202188">Visar fönster från alla skrivbord, tryck på uppåtpilen för att visa fönster från det aktuella skrivbordet</translation>
 <translation id="6337159624125741244">Helskärmsförstoring är aktiverat</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> är en hanterad session som hanteras av <ph name="MANAGER" /></translation>

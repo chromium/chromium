@@ -663,6 +663,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3909222758573607742">Tallenna salasanat ja muut tilin kohteet</translation>
 <translation id="3913463964270756493">Piilota Google Lens -hakunäyttö</translation>
 <translation id="3914640181019354363">Tunnista osoitteet</translation>
+<translation id="3921585859122905677">Osoitepalkin sijainti</translation>
 <translation id="3922185497376658606">Verkkosivujen esilataus</translation>
 <translation id="3922395466317605522">Muokkaa valikkoa</translation>
 <translation id="3929457972718048006">Osoitteet</translation>
@@ -1116,6 +1117,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5817176759448082654">Salasanan tarkistus</translation>
 <translation id="5819208479324046259">Ylläpitäjä on <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkronoidaan…</translation>
+<translation id="583923961930319521">Käytä salasanoja kaikilla laitteillasi</translation>
 <translation id="5844284118433003733">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
 <translation id="5854790677617711513">Yli 30 päivää vanhat</translation>
 <translation id="5857770089550859117">Synkronointi edellyttää tunnuslausetta.</translation>
@@ -1691,6 +1693,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8221665793629393739">Muistutus palata sivulle</translation>
 <translation id="8230355548492839438">Hae edellinen</translation>
 <translation id="8232956427053453090">Säilytä data</translation>
+<translation id="8233237502828137700">Sulje banneripromo</translation>
 <translation id="8238711781852526820">Piilota "Hintaseuranta"</translation>
 <translation id="8258999165172757081">Lisätty</translation>
 <translation id="8261506727792406068">Poista</translation>
@@ -1712,7 +1715,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8299613349954694191">Selaa verkkoa yksityisesti avaamalla incognito-välilehden.</translation>
 <translation id="8307481894409578819">Tiedoston lataaminen epäonnistui</translation>
 <translation id="8319076807703933069">Uusi haku</translation>
-<translation id="8328607660158575887">Avaa automaattisen täytön ja salasanojen asetukset</translation>
 <translation id="833647236762414178">Luo, tallenna ja muokkaa salasanoja ja avainkoodeja, jotta voit kirjautua helposti sivustoille ja sovelluksiin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella.</translation>
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>

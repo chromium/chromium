@@ -281,6 +281,7 @@
 <translation id="4720851490453439956">Servizo interno de Google Updater</translation>
 <translation id="4724676981607797757">Produciuse un erro na instalación debido a un erro de protocolo non compatible.</translation>
 <translation id="4728575227883772061">Non se puido efectuar a instalación debido a un erro non especificado. Se Google Chrome se está executando nestes momentos, péchao e téntao de novo.</translation>
+<translation id="4737281654364167024">Para continuar, inicia sesión en Chrome como <ph name="EMAIL" />. Deste xeito, asegúraste de que se apliquen as políticas da túa organización.</translation>
 <translation id="4741235124132242877">Elemento fixado! Usa Google Lens de novo desde a barra de ferramentas</translation>
 <translation id="4747730611090640388">Chrome pode facer unha estimación dos teus intereses.  Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren.</translation>
 <translation id="475321580758063259">Actualiza Chrome para seguir usando os datos de Chrome na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -588,6 +589,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8781673607513845160">Para usar a cámara, concédelle acceso a Chrome na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erro de instalación: A persoa que administra a rede aplicou unha política de grupo que non permite a instalación (<ph name="INSTALL_ERROR" />)</translation>
 <translation id="8796073561259064743">Chrome bloqueou esta descarga porque o ficheiro pode ser perigoso para as túas contas de redes sociais e persoais, incluída <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">A túa organización pode ver e xestionar os datos de navegación (como, por exemplo, os marcadores, o historial e os contrasinais). Non poderá ver os datos de navegación doutros perfís de Chrome</translation>
 <translation id="8801657293260363985">V8 é o motor de Chrome para JavaScript e WebAssembly que se usa para mellorar o rendemento dos sitios</translation>
 <translation id="8821043148920470810">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 7.</translation>
 <translation id="8823341990149967727">Chrome está desactualizado</translation>

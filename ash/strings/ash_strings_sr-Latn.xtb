@@ -246,7 +246,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="17722141032474077">Proračuni</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> je trenutno izabran.</translation>
 <translation id="178347895271755507">Podesite pregled nedavnih slika, medija i obaveštenja na telefonu</translation>
-<translation id="1785317913592722944">Uklonite stavku iz predložene grupe</translation>
 <translation id="1786487376942610288">Prebacujte između maksimalne ili aktuelne veličine prozora slike u slici</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Veb-sajtovi, uključujući stranice koje ste posetili i otvorili</translation>
@@ -853,6 +852,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3859364108019690">Strimovanje aplikacija nije uspelo</translation>
 <translation id="3861651314799684201">Pritisnite Enter da biste snimili ceo ekran</translation>
 <translation id="3870197372373144624">Probajte da isključite uređaj.</translation>
+<translation id="3879748587602334249">Menadžer preuzimanja</translation>
 <translation id="3886872229787704059">Otvarano danas</translation>
 <translation id="3891340733213178823">Dvaput pritisnite Ctrl+Shift+Q da biste se odjavili.</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
@@ -878,6 +878,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3958714870339660776">Ceo dan</translation>
 <translation id="3962859241508114581">Prethodna pesma</translation>
 <translation id="3963124517343721543">Lako nastavite tamo gde ste stali tako što ćete otvoriti prethodne prozore i kartice. Videćete i personalizovane predloge za predložene aktivnosti.</translation>
+<translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
 <translation id="3969043077941541451">Isključi</translation>
 <translation id="3970324493235864154">Pregledajte obaveštenja na telefonu</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
@@ -1620,6 +1621,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6319058840130157106">Krećite se unazad iz donjeg desnog ugla na pokretač, traku za adresu, traku sa obeleživačima, veb-sajt koji je otvoren i preuzimanja</translation>
 <translation id="6319503618073410818">Prikaži detalje u pregledaču</translation>
 <translation id="6324916366299863871">Izmeni prečicu</translation>
+<translation id="6325525973963619867">Neuspešno</translation>
 <translation id="6330012934079202188">Prikazuju se prozori sa svih radnih površina. Pritisnite taster sa strelicom nagore da bi se prikazivali prozori sa aktuelne radne površine.</translation>
 <translation id="6337159624125741244">Lupa preko celog ekrana je uključena</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je sesija kojom upravlja <ph name="MANAGER" /></translation>

@@ -246,7 +246,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="17722141032474077">Cálculos</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />; nestes momentos está seleccionada a data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configurar a visualización do contido multimedia, das notificacións e das fotos recentes do teu teléfono</translation>
-<translation id="1785317913592722944">Quitar o elemento do grupo suxerido</translation>
 <translation id="1786487376942610288">Cambiar entre o tamaño máximo e o actual da ventá da pantalla superposta</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="1796561540704213354">Sitios web que inclúen as páxinas que visitaches e as abertas</translation>
@@ -854,6 +853,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3859364108019690">Non se pode reproducir en tempo real o contido das aplicacións</translation>
 <translation id="3861651314799684201">Premer Introducir para gravar a pantalla completa</translation>
 <translation id="3870197372373144624">Proba a apagar o dispositivo.</translation>
+<translation id="3879748587602334249">Xestor de descargas</translation>
 <translation id="3886872229787704059">Abriuse hoxe</translation>
 <translation id="3891340733213178823">Preme Ctrl + Maiús + Q dúas veces para pechar sesión.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -879,6 +879,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3958714870339660776">Todo o día</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963124517343721543">Abre as ventás e pestanas anteriores para continuar facilmente onde o deixases. Tamén verás suxestións personalizadas sobre cousas que podes facer a continuación.</translation>
+<translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3969043077941541451">Desactivar</translation>
 <translation id="3970324493235864154">Consulta as notificacións do teu teléfono</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -1620,6 +1621,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6319058840130157106">Desprazarse cara atrás entre a esquina inferior dereita, o menú de aplicacións, a barra de enderezos, a barra de marcadores, o sitio web que teñas aberto e as descargas</translation>
 <translation id="6319503618073410818">Ver detalles no navegador</translation>
 <translation id="6324916366299863871">Editar atallo</translation>
+<translation id="6325525973963619867">Produciuse un erro</translation>
 <translation id="6330012934079202188">Estanse mostrando as ventás de todos os escritorios. Para que se mostren só as do actual, preme a tecla Frecha arriba</translation>
 <translation id="6337159624125741244">A lupa de pantalla completa está activada</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> xestiona esta sesión (<ph name="DISPLAY_NAME" />)</translation>

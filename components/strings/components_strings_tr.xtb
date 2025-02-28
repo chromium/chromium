@@ -837,6 +837,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2451607499823206582">İzleniyor</translation>
 <translation id="2452098632681057184">Ekoloji ve Çevre</translation>
 <translation id="2452837234288608067">Bu konuda yardımcı olamadım. Tekrar deneyin.</translation>
+<translation id="2453045048779611513">Kaydedebilecekleriniz kuruluşunuz tarafından kısıtlanmıştır</translation>
 <translation id="2456755709261364512">Piliniz %<ph name="REQUIRED_BATTERY_PRECENT" /> üzerinde şarj olmalıdır</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core, tarayıcı politikalarını buluttan yapılandırmanız için merkezi bir araç sağlar</translation>
 <translation id="2461822463642141190">Şu an</translation>
@@ -1086,6 +1087,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2942492342931589800">Gündelik dilde</translation>
 <translation id="2942515540157583425">BT İşleri ve Teknik İşler</translation>
 <translation id="2943895734390379394">Yükleme Süresi:</translation>
+<translation id="2947281105969315778">Sekme gruplarını paylaşmak veya bunlara katılmak için Chrome'da oturum açabilmeniz gerekir</translation>
 <translation id="2948083400971632585">Ayarlar sayfasından, bir bağlantı için yapılandırılmış proxy'leri devre dışı bırakabilirsiniz.</translation>
 <translation id="2949183777371959169">Makine, Chrome Tarayıcı Bulut Yönetimi'ne kayıtlı olmadığı için yok sayıldı.</translation>
 <translation id="2951588413176968965">Posta kutum</translation>
@@ -3904,6 +3906,7 @@ Ek ayrıntılar:
 <translation id="791107458486222637">Sonuç yeniden üretiliyor</translation>
 <translation id="791551905239004656">Çizim ve Boyama</translation>
 <translation id="7916162853251942238">Flekso Taban</translation>
+<translation id="791698251820376781">Kuruluşunuz oturum açmanıza izin vermiyor</translation>
 <translation id="7926503317156566022">Havacılık Sektörü</translation>
 <translation id="793209273132572360">Adres güncellensin mi?</translation>
 <translation id="7932579305932748336">Kaplama</translation>
@@ -4616,6 +4619,7 @@ Ek ayrıntılar:
 <translation id="9191834167571392248">Sol altta delik</translation>
 <translation id="9192361865877479444">Metal (Mat)</translation>
 <translation id="9192947025498305328">Temiz İçeriğe Sahip Güzellik Ürünleri</translation>
+<translation id="9195969368671142407">Kuruluşunuz, Google Hesabınıza kaydetme işlemini kısıtladığında sekme gruplarını paylaşamaz veya bunlara katılamazsınız</translation>
 <translation id="9199905725844810519">Yazdırma engellendi</translation>
 <translation id="9201904868909900493">Anket açılıyor…</translation>
 <translation id="9204089334327209740">Yükleme işlemi tamamlandıktan sonra dosyalarınızı <ph name="CLOUD_PROVIDER" /> içinde düzenleyebilirsiniz. Çöp kutusundaki dosyalar da dahil olmak üzere yerel depolama alanı otomatik olarak kaldırılır.</translation>

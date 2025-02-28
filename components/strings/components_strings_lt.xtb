@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Įkelti puslapį vėliau</translation>
 <translation id="1010225406377140704">Susisiekite su siuntėju ir paprašykite naujos nuorodos</translation>
 <translation id="1011206368273183593">Ruošiami failai</translation>
+<translation id="1012264210825687872">Peržiūrėję užsakymą turite prisijungti prie „<ph name="BNPL_ISSUER_NAME" />“ paskyros arba ją susikurti. Ši paskyra bus automatiškai susieta su „Google Pay“.</translation>
 <translation id="1014509239502131234">Anuliuojamas rezultatas</translation>
 <translation id="1015730422737071372">Pateikti papildomos išsamios informacijos</translation>
 <translation id="1019413721762100891">Išjungta</translation>
@@ -692,6 +693,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2187317261103489799">Aptikti (numatytoji parinktis)</translation>
 <translation id="2188375229972301266">Kelios skylės apačioje</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
+<translation id="2198071643181968308">Sužinokite daugiau apie „<ph name="BNPL_ISSUER_NAME" />“</translation>
 <translation id="2200678913752027654">Mygtukas „Nepatinka“; paspauskite „Enter“, kad atidarytumėte formą ir pateiktumėte išsamų atsiliepimą apie tai, kodėl jums nepatinka šis pasiūlymas</translation>
 <translation id="2202627062836089804">užpakalinėje kortelės dalyje</translation>
 <translation id="2204482073374652408">Atnaujinimas baigtas!</translation>
@@ -838,6 +840,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2451607499823206582">Stebėjimas</translation>
 <translation id="2452098632681057184">Ekologija ir aplinka</translation>
 <translation id="2452837234288608067">Nepavyko padėti. Bandykite dar kartą.</translation>
+<translation id="2453045048779611513">Jūsų organizacija riboja, ką galite išsaugoti</translation>
 <translation id="2456755709261364512">Akumuliatorius turi būti įkrautas daugiau nei <ph name="REQUIRED_BATTERY_PRECENT" /> proc.</translation>
 <translation id="2461385121573678775">„Chrome Enterprise Core“ suteikia centralizuotą įrankį, skirtą naršyklės politikai konfigūruoti iš debesies</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
@@ -1087,6 +1090,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2942492342931589800">Paprastas</translation>
 <translation id="2942515540157583425">IT ir techniniai darbai</translation>
 <translation id="2943895734390379394">Įkėlimo laikas:</translation>
+<translation id="2947281105969315778">Kad galėtumėte bendrinti skirtukų grupes arba prisijungti prie jų, privalote galėti prisijungti prie „Chrome“</translation>
 <translation id="2948083400971632585">Galite neleisti visų tarpinių serverių, jungimasis prie kurių sukonfigūruotas nustatymų puslapyje.</translation>
 <translation id="2949183777371959169">Ignoruojama, nes įrenginys neužregistruotas naudoti „Chrome Browser Cloud Management“.</translation>
 <translation id="2951588413176968965">Mano pašto dėžutė</translation>
@@ -2318,6 +2322,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">„Chrome“ reikia prieigos prie įrenginio <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Kartonas (užbaigimas)</translation>
+<translation id="5106648964679263509">Virtuali kortelė („<ph name="BNPL_ISSUER_NAME" />“) užpildyta</translation>
 <translation id="5108881358339761672">Svetainė nėra saugi</translation>
 <translation id="5109892411553231226">Mokėjimo metodų tvarkymas</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2518,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
           <ph name="LIST_ITEM" />formose įvestos informacijos.
         <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Atvirkštine tvarka, gerąja puse į viršų</translation>
+<translation id="5445340838622821110">Kai mokate dalimis, užpildomas vienkartinis virtualios kortelės numeris. Šis numeris taikomas tik šiam pirkiniui. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Leisti <ph name="SITE" /> naudoti informaciją apie jus, kurią išsaugojo</translation>
 <translation id="5452270690849572955">Nepavyksta rasti šio <ph name="HOST_NAME" /> puslapio</translation>
 <translation id="5452923259299906094">Mokėkite naudodami el. piniginę ir „Pix“</translation>
@@ -3332,6 +3338,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6917795328362592458">Slaptažodis, kurį ką tik naudojote, buvo rastas duomenų saugos pažeidime. Siekiant užtikrinti paskyrų saugumą, Slaptažodžių tvarkyklė rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="6917873303492266709">Jei norite bendrinti, prisijungti ir bendradarbiauti skirtukų grupėse, atidarykite nustatymų skiltį ir įjunkite parinktį „Leisti „Chrome“ prisijungti“</translation>
 <translation id="6921197121276419421">Leidžiama įdiegti žiniatinklio programas</translation>
+<translation id="69238565902785824">Susieję paskyrą galėsite greičiau mokėti naudodamiesi „<ph name="BNPL_ISSUER_NAME" />“ paslaugomis (galite ją atsieti adresu <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />)</translation>
 <translation id="6924013822850225188">Pasirinkite, ar atsiskaitant rodomos kortelės privilegijos (taikomos banko sąlygos)</translation>
 <translation id="6925267999184670015">Šiaurės Amerikos B+</translation>
 <translation id="6926216138694948720">Kūno menas</translation>
@@ -3397,6 +3404,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="701757816833614688">Regimojo meno ir dizaino mokymai</translation>
 <translation id="702275896380648118">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines. Ši svetainė taip pat gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus.</translation>
 <translation id="7023162328967545559">Administratoriaus įspėjimas</translation>
+<translation id="7023765275461720661">Susieti paskyrą ir mokėti naudojantis „<ph name="BNPL_ISSUER_NAME" />“ paslaugomis?</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7030164307377592766">keisti mokėjimo metodų pildymo nustatymus</translation>
 <translation id="7031646650991750659">Kurias „Google Play“ programas įdiegėte</translation>
@@ -3619,6 +3627,7 @@ Papildoma išsami informacija:
 <translation id="741204030948306876">Taip, sutinku</translation>
 <translation id="7416351320495623771">Tvarkyti slaptažodžius…</translation>
 <translation id="7416898721136759658">Dotacijos, stipendijos ir finansinė pagalba</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programavimas</translation>
 <translation id="7419091773564635591">Kompiuteriai ir elektronika</translation>
 <translation id="7419106976560586862">Profilio kelias</translation>
@@ -3665,6 +3674,7 @@ Papildoma išsami informacija:
 <translation id="7485085230273446323">Verslas ir pramonė</translation>
 <translation id="7485870689360869515">Nerasta jokių duomenų.</translation>
 <translation id="7486880426035242089">„OneDrive“</translation>
+<translation id="7489255442002627311">„<ph name="BNPL_ISSUER_NAME" />“ patikrins, ar atitinkate reikalavimus (tai neturės įtakos jūsų kreditingumo balui). Jei paraiška bus patvirtinta, „<ph name="BNPL_ISSUER_NAME" />“ pasiūlys rinktis iš mokėjimo planų ir užbaigti pirkimą.</translation>
 <translation id="7489392576326061356">Šampūnai ir kondicionieriai</translation>
 <translation id="7495528107193238112">Šis turinys užblokuotas. Susisiekite su svetainės savininku, kad išspręstų problemą.</translation>
 <translation id="749865518782565832">Santechnikos darbai</translation>
@@ -3907,6 +3917,7 @@ Papildoma išsami informacija:
 <translation id="791107458486222637">Grąžinamas rezultatas</translation>
 <translation id="791551905239004656">Piešimas ir spalvinimas</translation>
 <translation id="7916162853251942238">Lankstusis pagrindas</translation>
+<translation id="791698251820376781">Jūsų organizacija neleidžia jums prisijungti</translation>
 <translation id="7926503317156566022">Aviacijos pramonė</translation>
 <translation id="793209273132572360">Atnaujinti adresą?</translation>
 <translation id="7932579305932748336">Danga</translation>
@@ -4620,6 +4631,7 @@ Papildoma išsami informacija:
 <translation id="9191834167571392248">Skylė apačioje kairėje</translation>
 <translation id="9192361865877479444">Metalas (matinis)</translation>
 <translation id="9192947025498305328">Švarieji grožio produktai</translation>
+<translation id="9195969368671142407">Kai organizacija riboja išsaugojimą „Google“ paskyroje, negalite bendrinti skirtukų grupių ar prie jų prisijungti</translation>
 <translation id="9199905725844810519">Spausdinimas užblokuotas</translation>
 <translation id="9201904868909900493">Atidaroma apklausa…</translation>
 <translation id="9204089334327209740">Kai įkėlimas bus baigtas, galėsite keisti failus „<ph name="CLOUD_PROVIDER" />“. Vietinė saugykla, įskaitant visus šiukšliadėžėje esančius failus, bus automatiškai pašalinta.</translation>

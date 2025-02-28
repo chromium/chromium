@@ -246,7 +246,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="17722141032474077">Berekeningen</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, momenteel is <ph name="DATE" /> geselecteerd.</translation>
 <translation id="178347895271755507">De weergave van recente foto's, media en meldingen van je telefoon instellen</translation>
-<translation id="1785317913592722944">Item verwijderen uit voorgestelde groep</translation>
 <translation id="1786487376942610288">Schakelen tussen het maximale of huidige formaat van het scherm-in-scherm-venster</translation>
 <translation id="1787955149152357925">Uit</translation>
 <translation id="1796561540704213354">Websites, waaronder pagina's die je hebt bezocht en geopende pagina's</translation>
@@ -853,6 +852,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3859364108019690">Kan geen apps streamen</translation>
 <translation id="3861651314799684201">Druk op Enter om het volledige scherm op te nemen</translation>
 <translation id="3870197372373144624">Probeer je apparaat uit te zetten.</translation>
+<translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3886872229787704059">Vandaag geopend</translation>
 <translation id="3891340733213178823">Druk twee keer op Ctrl+Shift+Q om uit te loggen.</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
@@ -878,6 +878,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3958714870339660776">Hele dag</translation>
 <translation id="3962859241508114581">Vorig nummer</translation>
 <translation id="3963124517343721543">Ga makkelijk verder waar je gebleven was door je vorige vensters en tabbladen te openen. Je ziet ook gepersonaliseerde suggesties voor wat je daarna kunt doen.</translation>
+<translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3969043077941541451">Uit</translation>
 <translation id="3970324493235864154">Meldingen van je telefoon bekijken</translation>
 <translation id="397105322502079400">Berekenen...</translation>
@@ -1619,6 +1620,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6319058840130157106">Terugschakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
 <translation id="6319503618073410818">Details in browser bekijken</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
+<translation id="6325525973963619867">Mislukt</translation>
 <translation id="6330012934079202188">Er worden vensters van alle bureaus getoond, druk op de pijl-omhoog om vensters van het huidige bureau te bekijken</translation>
 <translation id="6337159624125741244">Vergrootglas voor volledig scherm staat aan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>

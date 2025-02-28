@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya NFC. Kikizimwa, tovuti haziwezi kutumia vifaa vya NFC.</translation>
 <translation id="1660204651932907780">Ruhusu tovuti kucheza sauti (inapendekezwa)</translation>
 <translation id="1677097821151855053">Vidakuzi na data nyingine ya tovuti hutumika kukukumbuka, kwa mfano kukuingiza katika akaunti au kuweka mapendeleo kwenye matangazo. Ili udhibiti vidakuzi vya tovuti zote, angalia <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Kwa kawaida tovuti hutuma arifa kukufahamisha kuhusu habari zinazojiri au ujumbe wa gumzo.</translation>
 <translation id="169515064810179024">Zuia tovuti zisifikie vitambuzi vya mwendo</translation>
 <translation id="1717218214683051432">Vitambuzi vya mwendo</translation>
 <translation id="1743802530341753419">Iulize kabla ya kuruhusu tovuti ziunganishe kwenye kifaa (inapendekezwa)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Sauti</translation>
 <translation id="2096716221239095980">Futa data yote</translation>
 <translation id="2117655453726830283">Slaidi inayofuata</translation>
+<translation id="2146263598007866206">Tovuti zinaweza kupakua kiotomatiki faili zinazohusiana kwa pamoja ili kuokoa muda wako</translation>
 <translation id="2148716181193084225">Leo</translation>
 <translation id="216989819110952009">Licha ya kuwa walivaa miwani ya kijani machoni Dorothy pamoja na marafiki zake kwanza kabisa walishangazwa na uzuri wa jiji la ajabu.</translation>
 <translation id="2176704795966505152">Onyesha chaguo la kukuza kwenye menyu kuu</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Tovuti inaweza kuonyesha vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>
 <translation id="2787357173144933081">Anzisha Sanduku kuu</translation>
 <translation id="2790501146643349491">Kikiwashwa, tovuti zilizofungwa hivi karibuni zinaweza kumaliza kutuma na kupokea data. Kikizimwa, tovuti zilizofungwa hivi karibuni haziwezi kumaliza kutuma au kupokea data.</translation>
+<translation id="2795716239552913152">Tovuti hutumia maelezo ya mahali ulipo kwa ajili ya vipengele au taarifa zinazohusiana, kama vile habari za mahali ulipo au maduka yaliyo karibu nawe</translation>
 <translation id="2814830417943086299">Chrome sasa inaonyesha vichupo vyako vya hivi majuzi katika orodha ya programu na matokeo ya utafutaji kwenye kifaa chako. Unaweza kuzima hali hii wakati wowote kwenye mipangilio ya Chrome.</translation>
 <translation id="2822354292072154809">Una uhakika ungependa kubadilisha ruhusa zote za tovuti ya <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Omba mwonekano wa kifaa cha mkononi</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953">Asilimia <ph name="ZOOM_LEVEL" /></translation>
 <translation id="344449859752187052">Vidakuzi vya mshirika mwingine vimezuiwa</translation>
 <translation id="3448554387819310837">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia kamera yako. Kikizimwa, tovuti haziwezi kutumia kamera yako.</translation>
+<translation id="3491678231052507920">Tovuti hutumia data na vifaa vyako vya uhalisia pepe ili kukuwezesha kuingia katika vipindi vya VR</translation>
+<translation id="3496995426334945408">Tovuti hutumia JavaScript kuonyesha vipengele shirikishi, kama vile michezo ya video au fomu za wavuti</translation>
 <translation id="3521663503435878242">Tovuti zenye kikoa cha <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Usiruhusu tovuti kufuatilia mijongeo ya mikono yako</translation>
 <translation id="3532312529397438268">Tovuti haziwezi kutumia kiboreshaji cha V8</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Fungua Mipangilio ya Mahali</translation>
 <translation id="4226663524361240545">Arifa huenda zitatetemesha kifaa</translation>
 <translation id="4259722352634471385">Kudurusu kumezuiwa: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Ukifunga tovuti, inaweza kuendelea kusawazisha ili kukamilisha majukumu, kama vile kupakia picha au kutuma ujumbe kwenye gumzo</translation>
 <translation id="4278390842282768270">Imeruhusiwa</translation>
 <translation id="429312253194641664">Tovuti inacheza maudhui</translation>
 <translation id="42981349822642051">Panua</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Mipangilio uliyohifadhi ya viwango vya ukuzaji wa tovuti</translation>
 <translation id="4836046166855586901">Tovuti ikuombe ruhusa inapotaka kujua wakati unatumia kifaa hiki</translation>
 <translation id="483914009762354899">Inajumuisha tovuti zote zenye kikoa hiki</translation>
+<translation id="4882919381756638075">Tovuti hutumia maikrofoni yako kwa ajili ya vipengele vya mawasiliano kama vile kupiga gumzo la video</translation>
 <translation id="4883854917563148705">Huwezi kubadilisha mipangilio inayodhibitiwa</translation>
 <translation id="4887024562049524730">Uliza kabla ya kuruhusu tovuti zitumie data na kifaa chako cha uhalisia pepe (inapendekezwa)</translation>
 <translation id="4936863036653376783">Utavipata vikundi vyako katika sehemu ya vikundi vya vichupo kwenye vifaa vyako vyote</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Chagua vipengee</translation>
 <translation id="6838525730752203626">Tumia Chrome kwa chaguomsingi</translation>
 <translation id="6840760312327750441">Ili upange vichupo katika makundi, gusa na ushikilie kichupo. Kisha, kiburute kwenye kichupo kingine.</translation>
+<translation id="6842868554183332230">Tovuti hutambua wakati unatumia kifaa chako ili ziweze kuweka hali ya upatikanaji wako kwenye programu za gumzo</translation>
 <translation id="6851981911629679515">Washa ulinzi wa ziada katika mtambo wa JavaScript na WebAssembly wa Chrome</translation>
 <translation id="6864395892908308021">Kifaa hiki kimeshindwa kusoma NFC</translation>
 <translation id="6870169401250095575">Ficha kadi ya Ukaguzi wa Usalama</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Mipangilio ya <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Angalizo la Usalama</translation>
 <translation id="7406113532070524618">Mipangilio hii hufanya kazi bila kukutambulisha au kuruhusu tovuti zione historia yako ya kuvinjari, ingawa tovuti zinaweza kushiriki kiasi kidogo cha maelezo kama sehemu ya uthibitishaji</translation>
+<translation id="7409735910987429903">Tovuti zinaweza kutuma madirisha ibukizi yakuonyeshe matangazo, au kukuelekeza kwenye tovuti ambazo hutaki kuzitembelea</translation>
 <translation id="7423098979219808738">Uliza kwanza</translation>
 <translation id="7423538860840206698">Imezuiwa kusoma ubao wa kunakili</translation>
 <translation id="7425915948813553151">Mandhari meusi ya tovuti</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Kuondoka kwenye utafutaji wa kituo</translation>
 <translation id="7554752735887601236">Tovuti inatumia maikrofoni yako</translation>
 <translation id="7561196759112975576">Kila wakati</translation>
+<translation id="7573594921350120855">Tovuti hutumia kamera yako ya video kwa ajili ya vipengele vya mawasiliano kama vile kupiga gumzo la video</translation>
 <translation id="757524316907819857">Zuia tovuti zisicheze maudhui yanayolindwa</translation>
 <translation id="7594634374516752650">Imeunganishwa kwenye Kifaa chenye Bluetooth</translation>
 <translation id="7617547684249261169">Unaweza kufuta historia, vidakuzi, data yako yote ya tovuti au sehemu yake na mengineyo</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
+<translation id="7681597159868843240">Tovuti hutumia vitambuzi vya mwendo vya kifaa chako kwa ajili ya vipengele kama vile uhalisia pepe au ufuatiliaji wa siha</translation>
 <translation id="7688240020069572972">Ficha kadi ya vidokezo vya Chrome</translation>
 <translation id="7719367874908701697">Kuza ukurasa</translation>
 <translation id="7759147511335618829">Dhibiti na usanidi upya kifaa cha MIDI</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Peleka nyuma</translation>
 <translation id="8444433999583714703">Ili uruhusu <ph name="APP_NAME" /> ifikie data ya mahali ulipo, washa pia huduma ya mahali katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Batilisha ruhusa ya kifaa</translation>
+<translation id="8471525937465764768">Tovuti huunganisha kwenye vifaa vya USB kwa ajili ya vipengele kama vile kuchapisha hati au kuweka faili kwenye kifaa cha kuhifadhi</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' imepitwa na wakati. Tafadhali weka upya programu hiyo kwenye kifaa.</translation>
 <translation id="8487700953926739672">Kinapatikana nje ya mtandao</translation>
 <translation id="848952951823693243">Omba tovuti katika mwonekano wa kifaa cha mkononi kila wakati</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Kikiwashwa, tovuti zinaweza kuhifadhi data kwenye kifaa chako. Kikizimwa, tovuti haziwezi kuhifadhi data kwenye kifaa chako.</translation>
 <translation id="9011903857143958461">Umeruhusu <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Inadhibitiwa na wazazi wako</translation>
+<translation id="902236149563113779">Tovuti hufuatilia mkao wa kamera yako kwa ajili ya vipengele vya Uhalisia Ulioboreshwa, kama vile michezo au ariza za maelekezo</translation>
 <translation id="9039697262778250930">Huenda ukaondolewa kwenye akaunti katika tovuti hizi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Ungependa kufuta vidakuzi?</translation>

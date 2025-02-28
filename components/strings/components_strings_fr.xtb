@@ -837,6 +837,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2451607499823206582">Suivi</translation>
 <translation id="2452098632681057184">Écologie et environnement</translation>
 <translation id="2452837234288608067">Impossible de répondre à cette requête. Réessayez.</translation>
+<translation id="2453045048779611513">Votre organisation limite ce que vous pouvez enregistrer</translation>
 <translation id="2456755709261364512">La batterie doit être chargée à plus de <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vous offre un outil centralisé pour configurer les règles de navigateur depuis le cloud</translation>
 <translation id="2461822463642141190">Actuelle</translation>
@@ -1086,6 +1087,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2942492342931589800">Informel</translation>
 <translation id="2942515540157583425">Emplois dans le domaine technique et informatique</translation>
 <translation id="2943895734390379394">Heure de l'importation :</translation>
+<translation id="2947281105969315778">Pour rejoindre ou partager des groupes d'onglets, vous devez pouvoir vous connecter à Chrome</translation>
 <translation id="2948083400971632585">Vous pouvez désactiver tout proxy configuré pour une connexion à partir de la page des paramètres.</translation>
 <translation id="2949183777371959169">Ignorée, car la machine n'a pas été enregistrée avec la gestion cloud du navigateur Chrome.</translation>
 <translation id="2951588413176968965">Ma boîte aux lettres</translation>
@@ -3905,6 +3907,7 @@ Informations supplémentaires :
 <translation id="791107458486222637">Rétablissement du résultat…</translation>
 <translation id="791551905239004656">Dessin et coloriage</translation>
 <translation id="7916162853251942238">Base pour flexographie</translation>
+<translation id="791698251820376781">Votre organisation ne vous autorise pas à vous connecter</translation>
 <translation id="7926503317156566022">Secteur aéronautique</translation>
 <translation id="793209273132572360">Mettre à jour l'adresse ?</translation>
 <translation id="7932579305932748336">Revêtement</translation>
@@ -4616,6 +4619,7 @@ Informations supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Beauté éthique</translation>
+<translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement dans votre compte Google, vous ne pouvez pas rejoindre ni partager de groupes d'onglets</translation>
 <translation id="9199905725844810519">Impression bloquée</translation>
 <translation id="9201904868909900493">Ouverture de l'enquête...</translation>
 <translation id="9204089334327209740">Une fois l'importation terminée, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. L'espace de stockage local, y compris les fichiers dans la corbeille, sera automatiquement supprimé.</translation>

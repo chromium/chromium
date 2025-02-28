@@ -276,6 +276,7 @@
 <translation id="4720851490453439956">Google 更新程序内部服务</translation>
 <translation id="4724676981607797757">出现协议不受支持错误，因此安装失败。</translation>
 <translation id="4728575227883772061">未知错误导致安装失败。如果 Google Chrome 浏览器正在运行，请将其关闭，然后重试。</translation>
+<translation id="4737281654364167024">如需继续操作，请以 <ph name="EMAIL" /> 的身份登录 Chrome。这样可以确保应用所属组织的政策。</translation>
 <translation id="4741235124132242877">已固定！可通过工具栏再次使用 Google 智能镜头</translation>
 <translation id="4747730611090640388">Chrome 可以推测出您的兴趣。之后，您访问的网站可向 Chrome 请求查看您的兴趣，以便向您展示个性化广告。</translation>
 <translation id="475321580758063259">请更新 Chrome，以便继续使用 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中的 Chrome 数据</translation>
@@ -579,6 +580,7 @@
 <translation id="8781673607513845160">如需使用摄像头，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="878572486461146056">安装时出错：您的网络管理员所应用的一项群组政策阻止了安装进程：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号，包括 <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">您的组织可以查看和管理浏览数据，例如您的书签、历史记录和密码，但无法查看其他 Chrome 资料中的浏览数据</translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
 <translation id="8821043148920470810">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome版本太旧</translation>
