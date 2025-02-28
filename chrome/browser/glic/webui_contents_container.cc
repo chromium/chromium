@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/webui_contents_container.h"
 
+#include "base/check.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
@@ -37,8 +38,8 @@ class WebUIContentsContainer::WCObserver : public content::WebContentsObserver {
     container_->RendererCrashed(this);
   }
 
-  // Owns this.
-  raw_ptr<WebUIContentsContainer> container_;
+  // The container that owns this.
+  const raw_ptr<WebUIContentsContainer> container_;
 };
 
 WebUIContentsContainer::WebUIContentsContainer(
@@ -48,7 +49,7 @@ WebUIContentsContainer::WebUIContentsContainer(
       web_contents_(content::WebContents::Create(
           content::WebContents::CreateParams(profile))),
       glic_window_controller_(glic_window_controller) {
-  DCHECK(web_contents_);
+  CHECK(web_contents_);
   web_contents_->SetDelegate(this);
   web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
 
@@ -66,11 +67,8 @@ bool WebUIContentsContainer::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
   GlicView* glic_view = glic_window_controller_->GetGlicView();
-  if (!glic_view) {
-    return false;
-  }
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, glic_view->web_view()->GetFocusManager());
+  return glic_view && unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+                          event, glic_view->web_view()->GetFocusManager());
 }
 
 void WebUIContentsContainer::RequestMediaAccessPermission(
@@ -84,7 +82,7 @@ void WebUIContentsContainer::RequestMediaAccessPermission(
 void WebUIContentsContainer::InnerWebContentsAttached(
     content::WebContents* contents,
     WCObserver* observer) {
-  if (observer == outer_wc_observer_.get()) {
+  if (outer_wc_observer_.get() == observer) {
     inner_wc_observer_ = std::make_unique<WCObserver>(contents, this);
   }
 }
