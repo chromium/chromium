@@ -171,7 +171,7 @@ class DeviceFailure(Exception):
 class TestURIMapper:
 
     def __init__(self, port):
-        self.WPT_DIRS = port.WPT_DIRS
+        self._wpt_dirs = port.wpt_dirs()
         self._port = port
 
     # The *_HOST_AND_PORTS tuples are (hostname, insecure_port, secure_port),
@@ -204,8 +204,8 @@ class TestURIMapper:
                                        self._port.abspath_for_test(test_name))
 
         if using_wptserve:
-            for wpt_path, url_prefix in self.WPT_DIRS.items():
-                # The keys of WPT_DIRS do not have trailing slashes.
+            for wpt_path, url_prefix in self._wpt_dirs.items():
+                # The keys of _wpt_dirs do not have trailing slashes.
                 wpt_path += '/'
                 if test_name.startswith(wpt_path):
                     test_dir_prefix = wpt_path
@@ -264,7 +264,7 @@ class TestURIMapper:
         for prefix in self._get_uri_prefixes(*self.WPT_HOST_AND_PORTS):
             if uri.startswith(prefix):
                 url_path = '/' + uri[len(prefix):]
-                for wpt_path, url_prefix in self.WPT_DIRS.items():
+                for wpt_path, url_prefix in self._wpt_dirs.items():
                     if url_path.startswith(url_prefix):
                         return wpt_path + '/' + url_path[len(url_prefix):]
         raise NotImplementedError('unknown url type: %s' % uri)
