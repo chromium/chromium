@@ -35,3 +35,7 @@
 ::scroll-button(*):active:disabled {
   border-style: outset;
 }
+
+::scroll-button(*):focus-visible {
+  outline: auto 1px -webkit-focus-ring-color;
+}

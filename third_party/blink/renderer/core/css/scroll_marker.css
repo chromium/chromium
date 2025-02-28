@@ -9,3 +9,9 @@
 ::column::scroll-marker:active {
   color: -webkit-activelink
 }
+
+::scroll-marker:focus-visible,
+::column::scroll-marker:focus-visible {
+  outline: auto 1px -webkit-focus-ring-color;
+  outline-offset: 1px;
+}

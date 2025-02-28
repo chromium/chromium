@@ -429,6 +429,10 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       default_pseudo_element_style_->AddRulesFromSheet(ScrollButtonStyleSheet(),
                                                        ScreenEval());
       default_pseudo_element_style_->CompactRulesIfNeeded();
+      // We just added a new :focus-visible rule to the UA stylesheet, and
+      // RuleSetGroup caches whether we have any such rules or not, so we need
+      // to clear the cache.
+      rule_set_group_cache_.clear();
       return true;
     }
     case kPseudoIdScrollMarker: {
@@ -443,6 +447,10 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       default_pseudo_element_style_->AddRulesFromSheet(ScrollMarkerStyleSheet(),
                                                        ScreenEval());
       default_pseudo_element_style_->CompactRulesIfNeeded();
+      // We just added a new :focus-visible rule to the UA stylesheet, and
+      // RuleSetGroup caches whether we have any such rules or not, so we need
+      // to clear the cache.
+      rule_set_group_cache_.clear();
       return true;
     }
     case kPseudoIdMarker: {
