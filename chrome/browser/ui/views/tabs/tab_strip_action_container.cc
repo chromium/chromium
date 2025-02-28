@@ -68,7 +68,10 @@ constexpr char kDeclutterTriggerOutcomeName[] =
     "Tab.Organization.Declutter.Trigger.Outcome";
 constexpr char kDeclutterTriggerBucketedCTRName[] =
     "Tab.Organization.Declutter.Trigger.BucketedCTR";
+
+#if BUILDFLAG(ENABLE_GLIC)
 constexpr int kLargeSpaceBetweenButtons = 4;
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace
 
@@ -537,6 +540,17 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
 
   button->SetIsShowingNudge(true);
 
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_button_ && glic_button_->GetVisible() && button != glic_button_) {
+    const int space_between_buttons = kLargeSpaceBetweenButtons;
+    gfx::Insets margin;
+    margin.set_right(space_between_buttons);
+    button->SetProperty(views::kMarginsKey, margin);
+  } else {
+    // Reset the margins.
+    button->SetProperty(views::kMarginsKey, gfx::Insets());
+  }
+#endif
   scoped_tab_strip_modal_ui_.reset();
   scoped_tab_strip_modal_ui_ = tab_strip_controller_->ShowModalUI();
 
@@ -646,12 +660,6 @@ void TabStripActionContainer::OnTabStripNudgeButtonTimeout(
 
 void TabStripActionContainer::SetupButtonProperties(
     TabStripNudgeButton* button) {
-  // Set the margins for the button
-  const int space_between_buttons = kLargeSpaceBetweenButtons;
-  gfx::Insets margin;
-  margin.set_right(space_between_buttons);
-  button->SetProperty(views::kMarginsKey, margin);
-
   // Set opacity for the button. The glic button beings opaque
   button->SetOpacity(
 
@@ -708,6 +716,12 @@ void TabStripActionContainer::UpdateButtonBorders(
   if (product_specifications_button_) {
     product_specifications_button_->SetBorder(
         views::CreateEmptyBorder(border_insets));
+  }
+  if (glic_button_) {
+    gfx::Insets glic_border = gfx::Insets().set_left_right(
+                                  border_insets.top(), border_insets.bottom()) +
+                              border_insets;
+    glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
   }
 }
 BEGIN_METADATA(TabStripActionContainer)

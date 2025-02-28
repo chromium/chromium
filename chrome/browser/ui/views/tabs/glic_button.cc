@@ -89,7 +89,9 @@ gfx::Size GlicButton::CalculatePreferredSize(
   const int height = TabStripControlButton::CalculatePreferredSize(
                          views::SizeBounds(full_width, available_size.height()))
                          .height();
-  const int width = (full_width - height) * GetWidthFactor() + height;
+  // Set collapsed size to a square.
+  const int collapsed_width = height;
+  const int width = std::lerp(collapsed_width, full_width, GetWidthFactor());
 
   return gfx::Size(width, height);
 }
