@@ -7328,7 +7328,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
 
   <!-- Lobster -->
   <message name="IDS_LOBSTER_OS_SETTINGS_ENABLE" desc="The label of the toggle to enable/disable Image Generation in ChromeOS settings.">
-    Generate image
+    Create image
   </message>
   <message name="IDS_LOBSTER_OS_SETTINGS_ENABLE_DESCRIPTION" desc="The description of the toggle to enable/disable Image Generation in ChromeOS settings.">
     Enter a custom prompt or highlight text to create an image.
