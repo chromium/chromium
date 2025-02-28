@@ -6,7 +6,7 @@ import json
 import socket
 import time
 import traceback
-from typing import NamedTuple, Sequence
+from typing import Sequence
 
 from absl import app, flags
 from selenium import webdriver
@@ -15,8 +15,7 @@ from selenium.webdriver.remote.shadowroot import ShadowRoot
 
 from test_util import (
     create_chrome_webdriver,
-    getElementsFromShadowRoot,
-    getElementFromShadowRoot,
+    fetch_policies,
     sign_in,
 )
 
@@ -32,14 +31,6 @@ flags.DEFINE_string('password', None, 'Account password')
 # own logs, making the combined output not easily machine-readable.
 flags.DEFINE_string('results', r'c:\temp\results.json',
                     'Path to write results to.')
-
-
-class Policy(NamedTuple):
-  name: str
-  value: str
-  source: str
-  scope: str
-  messages: str
 
 
 def wait_for_connectivity(host: str, port: int, timeout: float = 2 * 60):
@@ -85,8 +76,8 @@ def main(argv):
       sign_in(driver, FLAGS.account, FLAGS.password)
 
     policies_by_name, fingerprints = {}, {}
-    for policy in fetch_latest_policies(driver):
-      policies_by_name[policy.name] = {
+    for name, policy in fetch_policies(driver).items():
+      policies_by_name[name] = {
           'value': policy.value,
           'source': policy.source,
           'scope': policy.scope,
@@ -109,27 +100,6 @@ def main(argv):
       json.dump(results, results_file)
   finally:
     driver.quit()
-
-
-def fetch_latest_policies(driver: webdriver.Chrome) -> list[Policy]:
-  driver.get('chrome://policy')
-  driver.find_element(By.ID, 'reload-policies').click()
-  # Wait for DOM to settle.
-  time.sleep(10)
-
-  policy_table = driver.find_element(By.CSS_SELECTOR, 'policy-table')
-  rows = getElementsFromShadowRoot(driver, policy_table, '.policy-data')
-  policies = []
-  for row in rows:
-    name = getElementFromShadowRoot(driver, row, '#name').text
-    if not name:
-      continue
-    policy_attrs = {}
-    for attr in ['value', 'source', 'scope', 'messages']:
-      policy_attrs[attr] = getElementFromShadowRoot(
-          driver, row, f'div.policy.row > div.{attr}').text
-    policies.append(Policy(name, **policy_attrs))
-  return policies
 
 
 def get_fingerprint_from_connector_internals(driver: webdriver.Chrome) -> str:
