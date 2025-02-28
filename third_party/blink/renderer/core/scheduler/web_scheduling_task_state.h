@@ -15,27 +15,25 @@ class TaskAttributionInfo;
 }  // namespace blink::scheduler
 
 namespace blink {
-class AbortSignal;
-class DOMTaskSignal;
+class ExecutionContext;
+class SchedulerTaskContext;
 
 class CORE_EXPORT WebSchedulingTaskState final
     : public GarbageCollected<WebSchedulingTaskState>,
       public WrappableTaskState {
  public:
   WebSchedulingTaskState(scheduler::TaskAttributionInfo*,
-                         AbortSignal* abort_source,
-                         DOMTaskSignal* priority_source);
+                         SchedulerTaskContext*);
 
   // `WrappableTaskState` implementation:
-  AbortSignal* AbortSource() override;
-  DOMTaskSignal* PrioritySource() override;
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
+  SchedulerTaskContext* GetSchedulerTaskContextFor(
+      const ExecutionContext&) override;
   void Trace(Visitor*) const override;
 
  private:
   const Member<scheduler::TaskAttributionInfo> subtask_propagatable_task_state_;
-  const Member<AbortSignal> abort_source_;
-  const Member<DOMTaskSignal> priority_source_;
+  const Member<SchedulerTaskContext> scheduler_task_context_;
 };
 
 }  // namespace blink

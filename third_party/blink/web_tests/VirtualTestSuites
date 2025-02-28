@@ -672,6 +672,7 @@
       "external/wpt/html/infrastructure/urls/terminology-0",
       "external/wpt/html/semantics/embedded-content/the-iframe-element",
       "external/wpt/navigation-api/navigate-event/cross-window",
+      "external/wpt/scheduler/tentative/yield/yield-cross-origin-propagation.html",
       "http/tests/security/cross-frame-access-callback-explicit-domain-ALLOW.html",
       "http/tests/security/cross-frame-access-callback-explicit-domain-DENY.html",
       "http/tests/security/cross-frame-access-child-explicit-domain.html",

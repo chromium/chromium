@@ -3777,6 +3777,10 @@
       status: "stable",
     },
     {
+      name: "SchedulerYieldCrossOriginFix",
+      status: "stable",
+    },
+    {
       // See crbug.com/41321247
       name: "ScheduleSelectionChangeOnBackspace",
       status: "stable",

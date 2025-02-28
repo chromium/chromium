@@ -18,11 +18,8 @@ void TaskAttributionInfoImpl::Trace(Visitor* visitor) const {
   visitor->Trace(soft_navigation_context_);
 }
 
-AbortSignal* TaskAttributionInfoImpl::AbortSource() {
-  return nullptr;
-}
-
-DOMTaskSignal* TaskAttributionInfoImpl::PrioritySource() {
+SchedulerTaskContext* TaskAttributionInfoImpl::GetSchedulerTaskContextFor(
+    const ExecutionContext&) {
   return nullptr;
 }
 
