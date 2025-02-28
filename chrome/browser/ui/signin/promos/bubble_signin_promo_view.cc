@@ -173,7 +173,6 @@ BubbleSignInPromoView::BubbleSignInPromoView(
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetOriginalProfile();
   DCHECK(!profile->IsGuestSession());
-  CHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile));
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -192,8 +191,9 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   bool is_signin_promo = is_autofill_promo || is_extension_signin_promo;
 
   AccountInfo account;
-  // Signin promos can be shown in incognito, they use an empty account list.
-  if (!profile->IsOffTheRecord()) {
+  // Sync promos can be shown in incognito, they use an empty account list.
+  if (!Profile::FromBrowserContext(web_contents->GetBrowserContext())
+           ->IsOffTheRecord()) {
     account = signin_ui_util::GetSingleAccountForPromos(identity_manager);
   }
 

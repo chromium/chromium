@@ -301,6 +301,7 @@ SignInPromoType GetSignInPromoTypeFromAccessPoint(
 void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
                             Profile* profile) {
   CHECK(profile);
+  CHECK(!profile->IsOffTheRecord());
 
   AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
       IdentityManagerFactory::GetForProfile(profile));
