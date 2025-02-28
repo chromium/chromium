@@ -9724,6 +9724,32 @@
             ]
         }
     ],
+    "FedCmIntrusionMitigation": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "UpdatedCooldownPeriod",
+                    "params": {
+                        "FirstDismissal": "24",
+                        "FourthDismissal": "28",
+                        "SecondDismissal": "5",
+                        "ThirdDismissal": "14"
+                    },
+                    "enable_features": [
+                        "FedCmUpdatedCooldownPeriod"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedLoadingPlaceholder": [
         {
             "platforms": [

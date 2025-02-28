@@ -75,6 +75,9 @@ BASE_DECLARE_FEATURE(kCpssQuietChipTextUpdate);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kCpssUseTfliteSignatureRunner);
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kFedCmUpdatedCooldownPeriod);
+
 }  // namespace features
 namespace feature_params {
 

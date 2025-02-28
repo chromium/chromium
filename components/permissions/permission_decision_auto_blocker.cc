@@ -49,14 +49,6 @@ constexpr int kDefaultEmbargoDays = 7;
 // automatically blocked.
 constexpr int kFederatedIdentityApiDismissalsBeforeBlock = 1;
 
-// The durations that an origin will stay under embargo for the
-// FEDERATED_IDENTITY_API permission due to the user explicitly dismissing the
-// permission prompt.
-constexpr auto kFederatedIdentityApiEmbargoDurationDismiss =
-    std::to_array<base::TimeDelta>({base::Hours(2) /* 1st dismissal */,
-                                    base::Days(1) /* 2nd dismissal */,
-                                    base::Days(7), base::Days(28)});
-
 // The duration that an origin will stay under embargo for the
 // FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION permission due to an auto re-authn
 // prompt being displayed recently.
@@ -154,12 +146,26 @@ int GetDismissalsBeforeBlockForContentSettingsType(
 base::TimeDelta GetEmbargoDurationForContentSettingsType(
     ContentSettingsType permission,
     int dismiss_count) {
+  // The durations that an origin will stay under embargo for the
+  // FEDERATED_IDENTITY_API permission due to the user explicitly dismissing the
+  // permission prompt.
+  auto FederatedIdentityApiEmbargoDurationDismiss =
+      std::to_array<base::TimeDelta>(
+          {base::Hours(base::GetFieldTrialParamByFeatureAsInt(
+               features::kFedCmUpdatedCooldownPeriod, "FirstDismissal", 2)),
+           base::Days(base::GetFieldTrialParamByFeatureAsInt(
+               features::kFedCmUpdatedCooldownPeriod, "SecondDismissal", 1)),
+           base::Days(base::GetFieldTrialParamByFeatureAsInt(
+               features::kFedCmUpdatedCooldownPeriod, "ThirdDismissal", 7)),
+           base::Days(base::GetFieldTrialParamByFeatureAsInt(
+               features::kFedCmUpdatedCooldownPeriod, "FourthDismissal", 28))});
+
   if (permission == ContentSettingsType::FEDERATED_IDENTITY_API) {
     int duration_index =
         std::clamp(dismiss_count - 1, 0,
                    static_cast<int>(
-                       kFederatedIdentityApiEmbargoDurationDismiss.size() - 1));
-    return kFederatedIdentityApiEmbargoDurationDismiss[duration_index];
+                       FederatedIdentityApiEmbargoDurationDismiss.size() - 1));
+    return FederatedIdentityApiEmbargoDurationDismiss[duration_index];
   }
 
   if (permission ==

@@ -863,6 +863,9 @@ void CheckFederatedIdentityAutoReauthnEmbargoLiftedAfterTimeElapsing(
 
 TEST_F(PermissionDecisionAutoBlockerUnitTest,
        TestDismissFederatedIdentityApiBackoff) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUpdatedCooldownPeriod);
+
   GURL url("https://www.google.com");
   clock()->SetNow(base::Time::Now());
 
@@ -875,30 +878,40 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
   EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
       url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
   CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
-      autoblocker(), clock(), url, base::Hours(2));
+      autoblocker(), clock(), url,
+      base::Hours(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "FirstDismissal", 2)));
 
   // 1 day embargo for 2nd dismissal
   EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
       url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
   CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
-      autoblocker(), clock(), url, base::Days(1));
+      autoblocker(), clock(), url,
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "SecondDismissal", 1)));
 
   // 7 day embargo for 3rd dismissal
   EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
       url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
   CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
-      autoblocker(), clock(), url, base::Days(7));
+      autoblocker(), clock(), url,
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "ThirdDismissal", 7)));
 
   // 28 day embargo for 4th dismissal (and all additional dismissals)
   EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
       url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
   CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
-      autoblocker(), clock(), url, base::Days(28));
+      autoblocker(), clock(), url,
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "FourthDismissal", 28)));
 
   EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
       url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
   CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
-      autoblocker(), clock(), url, base::Days(28));
+      autoblocker(), clock(), url,
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "FourthDismissal", 28)));
 
   // Return to 2 hour embargo after
   // PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts()
@@ -911,7 +924,9 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
   EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
       url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
   CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
-      autoblocker(), clock(), url, base::Hours(2));
+      autoblocker(), clock(), url,
+      base::Hours(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "FourthDismissal", 2)));
 }
 
 TEST_F(PermissionDecisionAutoBlockerUnitTest,

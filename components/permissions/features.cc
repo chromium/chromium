@@ -120,6 +120,12 @@ BASE_FEATURE(kCpssQuietChipTextUpdate,
 BASE_FEATURE(kCpssUseTfliteSignatureRunner,
              "CpssUseTfliteSignatureRunner",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, FederatedIdentityApiEmbargoDurationDismiss will use values from
+// a field trial.
+BASE_FEATURE(kFedCmUpdatedCooldownPeriod,
+             "FedCmUpdatedCooldownPeriod",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 namespace feature_params {
 
