@@ -25,6 +25,7 @@ class WebContents;
 
 namespace extensions {
 class Extension;
+class ExtensionRegistrar;
 class ExtensionRegistry;
 
 // A cross-platform base class for extensions-related browser tests.
@@ -52,6 +53,7 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
 
   // Lower-case to match ExtensionBrowserTest.
   ExtensionRegistry* extension_registry();
+  ExtensionRegistrar* extension_registrar();
 
   // Returns the path of the directory from which to serve resources when they
   // are prefixed with "_test_resources/".

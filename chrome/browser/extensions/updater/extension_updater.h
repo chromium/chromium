@@ -40,6 +40,7 @@ class CrxInstallError;
 class CrxInstaller;
 class ExtensionCache;
 class ExtensionPrefs;
+class ExtensionRegistrar;
 class ExtensionRegistry;
 class ExtensionServiceInterface;
 class ExtensionSet;
@@ -338,6 +339,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_ = nullptr;
+  raw_ptr<ExtensionRegistrar, DanglingUntriaged> registrar_ = nullptr;
 
   std::map<int, InProgressCheck> requests_in_progress_;
   int next_request_id_ = 0;

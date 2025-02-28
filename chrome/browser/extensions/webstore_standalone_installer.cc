@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -201,6 +202,7 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
     std::string install_message;
     webstore_install::Result install_result = webstore_install::SUCCESS;
 
+    auto* extension_registrar = ExtensionRegistrar::Get(profile_);
     ExtensionService* extension_service =
         ExtensionSystem::Get(profile_)->extension_service();
     if (blocklist_prefs::IsExtensionBlocklisted(
@@ -208,7 +210,7 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
       // Don't install a blocklisted extension.
       install_result = webstore_install::BLOCKLISTED;
       install_message = webstore_install::kExtensionIsBlocklisted;
-    } else if (!extension_service->IsExtensionEnabled(id_)) {
+    } else if (!extension_registrar->IsExtensionEnabled(id_)) {
       // If the extension is installed but disabled, and not blocklisted,
       // enable it.
       extension_service->EnableExtension(id_);

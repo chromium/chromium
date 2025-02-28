@@ -34,6 +34,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
@@ -259,7 +261,7 @@ TEST_F(ExternalProviderImplTest, InAppPayments) {
   AwaitCheckForExternalUpdates();
 
   EXPECT_TRUE(registry()->GetInstalledExtension(kInAppPaymentsApp.app_id));
-  EXPECT_TRUE(service_->IsExtensionEnabled(kInAppPaymentsApp.app_id));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(kInAppPaymentsApp.app_id));
 }
 
 TEST_F(ExternalProviderImplTest, BlockedExternalUserProviders) {

@@ -15,6 +15,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -236,6 +237,10 @@ void ExtensionPlatformBrowserTest::TearDownOnMainThread() {
 
 ExtensionRegistry* ExtensionPlatformBrowserTest::extension_registry() {
   return ExtensionRegistry::Get(profile());
+}
+
+ExtensionRegistrar* ExtensionPlatformBrowserTest::extension_registrar() {
+  return ExtensionRegistrar::Get(profile());
 }
 
 base::FilePath ExtensionPlatformBrowserTest::GetTestResourcesParentDir() {

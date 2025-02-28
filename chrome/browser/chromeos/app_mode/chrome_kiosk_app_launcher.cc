@@ -21,6 +21,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
@@ -198,10 +199,11 @@ void ChromeKioskAppLauncher::SetAppEnabledState(
     bool new_enabled_state) {
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(profile_)->extension_service();
+  auto* registrar = extensions::ExtensionRegistrar::Get(profile_);
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
 
   // If the app is already enabled, and we want it to be enabled, nothing to do.
-  if (service->IsExtensionEnabled(id) && new_enabled_state) {
+  if (registrar->IsExtensionEnabled(id) && new_enabled_state) {
     return;
   }
 

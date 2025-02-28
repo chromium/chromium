@@ -624,8 +624,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   SafeBrowsingVerdictHandler safe_browsing_verdict_handler_;
 
-  OmahaAttributesHandler omaha_attributes_handler_;
-
   ExtensionTelemetryServiceVerdictHandler
       extension_telemetry_service_verdict_handler_;
 
@@ -716,6 +714,9 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Helper to register and unregister extensions.
   raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
+
+  // Needs `extension_registrar_` during construction.
+  OmahaAttributesHandler omaha_attributes_handler_;
 
   // Tracker of enterprise policy forced installation.
   ForceInstalledTracker force_installed_tracker_;

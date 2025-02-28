@@ -96,7 +96,7 @@
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/pref_names.h"
@@ -710,8 +710,7 @@ std::string ChromeExtensionsBrowserClient::GetApplicationLocale() {
 bool ChromeExtensionsBrowserClient::IsExtensionEnabled(
     const ExtensionId& extension_id,
     content::BrowserContext* context) const {
-  return ExtensionSystem::Get(context)->extension_service()->IsExtensionEnabled(
-      extension_id);
+  return ExtensionRegistrar::Get(context)->IsExtensionEnabled(extension_id);
 }
 
 bool ChromeExtensionsBrowserClient::IsWebUIAllowedToMakeNetworkRequests(

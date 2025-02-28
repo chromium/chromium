@@ -2201,14 +2201,14 @@ TEST_F(ExtensionServiceTest, GrantedAPIAndHostPermissions) {
   extension = registry()->disabled_extensions().begin()->get();
 
   ASSERT_TRUE(prefs->IsExtensionDisabled(extension_id));
-  ASSERT_FALSE(service()->IsExtensionEnabled(extension_id));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(extension_id));
   ASSERT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
 
   // Now grant and re-enable the extension, making sure the prefs are updated.
   registrar()->GrantPermissionsAndEnableExtension(*extension);
 
   ASSERT_FALSE(prefs->IsExtensionDisabled(extension_id));
-  ASSERT_TRUE(service()->IsExtensionEnabled(extension_id));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(extension_id));
   ASSERT_FALSE(prefs->DidExtensionEscalatePermissions(extension_id));
 
   std::unique_ptr<const PermissionSet> current_perms =
@@ -2241,13 +2241,13 @@ TEST_F(ExtensionServiceTest, GrantedAPIAndHostPermissions) {
   extension = registry()->disabled_extensions().begin()->get();
 
   ASSERT_TRUE(prefs->IsExtensionDisabled(extension_id));
-  ASSERT_FALSE(service()->IsExtensionEnabled(extension_id));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(extension_id));
   ASSERT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
 
   // Now grant and re-enable the extension, making sure the prefs are updated.
   registrar()->GrantPermissionsAndEnableExtension(*extension);
 
-  ASSERT_TRUE(service()->IsExtensionEnabled(extension_id));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(extension_id));
   ASSERT_FALSE(prefs->DidExtensionEscalatePermissions(extension_id));
 
   current_perms = prefs->GetGrantedPermissions(extension_id);
@@ -3536,7 +3536,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingTheme) {
 
   EXPECT_FALSE(
       ExtensionPrefs::Get(profile())->IsExtensionDisabled(extension->id()));
-  EXPECT_TRUE(service()->IsExtensionEnabled(theme_crx));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(theme_crx));
 }
 
 // Test updating a pending CRX as if the source is an external extension
@@ -3561,7 +3561,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingExternalCrx) {
 
   EXPECT_FALSE(
       ExtensionPrefs::Get(profile())->IsExtensionDisabled(extension->id()));
-  EXPECT_TRUE(service()->IsExtensionEnabled(extension->id()));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(extension->id()));
   EXPECT_FALSE(util::IsIncognitoEnabled(extension->id(), profile()));
 }
 
@@ -3940,9 +3940,9 @@ TEST_F(ExtensionServiceTest, BlocklistedInPrefsFromStartup) {
 
   // Extension service hasn't loaded yet, but IsExtensionEnabled reads out of
   // prefs. Ensure it takes into account the blocklist state (crbug.com/373842).
-  EXPECT_FALSE(service()->IsExtensionEnabled(good0));
-  EXPECT_FALSE(service()->IsExtensionEnabled(good1));
-  EXPECT_TRUE(service()->IsExtensionEnabled(good2));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(good0));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(good1));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(good2));
 
   service()->Init();
 
@@ -4148,7 +4148,7 @@ TEST_F(ExtensionServiceTest, IsEnabledExtensionBlockedAndNotInstalled) {
 
   service()->BlockAllExtensions();
 
-  service()->IsExtensionEnabled(theme_crx);
+  registrar()->IsExtensionEnabled(theme_crx);
 }
 
 // Will not install extension blocklisted by policy.
@@ -5515,7 +5515,7 @@ TEST_F(ExtensionServiceTest, UpgradingRequirementsEnabled) {
                                                     pem_path,
                                                     INSTALL_NEW);
   std::string id = extension_v1->id();
-  EXPECT_TRUE(service()->IsExtensionEnabled(id));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(id));
 
   base::FilePath v2_bad_requirements_crx = GetTemporaryFile();
 
@@ -5523,13 +5523,13 @@ TEST_F(ExtensionServiceTest, UpgradingRequirementsEnabled) {
           pem_path,
           v2_bad_requirements_crx);
   UpdateExtension(id, v2_bad_requirements_crx, INSTALLED);
-  EXPECT_FALSE(service()->IsExtensionEnabled(id));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(id));
 
   base::FilePath v3_good_crx = GetTemporaryFile();
 
   PackCRX(path.AppendASCII("v3_good"), pem_path, v3_good_crx);
   UpdateExtension(id, v3_good_crx, ENABLED);
-  EXPECT_TRUE(service()->IsExtensionEnabled(id));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(id));
 }
 
 // Extensions disabled through user action should stay disabled.
@@ -5545,7 +5545,7 @@ TEST_F(ExtensionServiceTest, UpgradingRequirementsDisabled) {
                                                     INSTALL_NEW);
   std::string id = extension_v1->id();
   service()->DisableExtension(id, disable_reason::DISABLE_USER_ACTION);
-  EXPECT_FALSE(service()->IsExtensionEnabled(id));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(id));
 
   base::FilePath v2_bad_requirements_crx = GetTemporaryFile();
 
@@ -5553,13 +5553,13 @@ TEST_F(ExtensionServiceTest, UpgradingRequirementsDisabled) {
           pem_path,
           v2_bad_requirements_crx);
   UpdateExtension(id, v2_bad_requirements_crx, INSTALLED);
-  EXPECT_FALSE(service()->IsExtensionEnabled(id));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(id));
 
   base::FilePath v3_good_crx = GetTemporaryFile();
 
   PackCRX(path.AppendASCII("v3_good"), pem_path, v3_good_crx);
   UpdateExtension(id, v3_good_crx, INSTALLED);
-  EXPECT_FALSE(service()->IsExtensionEnabled(id));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(id));
 }
 
 // The extension should not re-enabled because it was disabled from a
@@ -5575,7 +5575,7 @@ TEST_F(ExtensionServiceTest, UpgradingRequirementsPermissions) {
                                                     pem_path,
                                                     INSTALL_NEW);
   std::string id = extension_v1->id();
-  EXPECT_TRUE(service()->IsExtensionEnabled(id));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(id));
 
   base::FilePath v2_bad_requirements_and_permissions_crx = GetTemporaryFile();
 
@@ -5583,7 +5583,7 @@ TEST_F(ExtensionServiceTest, UpgradingRequirementsPermissions) {
           pem_path,
           v2_bad_requirements_and_permissions_crx);
   UpdateExtension(id, v2_bad_requirements_and_permissions_crx, INSTALLED);
-  EXPECT_FALSE(service()->IsExtensionEnabled(id));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(id));
 
   base::FilePath v3_bad_permissions_crx = GetTemporaryFile();
 
@@ -5591,7 +5591,7 @@ TEST_F(ExtensionServiceTest, UpgradingRequirementsPermissions) {
           pem_path,
           v3_bad_permissions_crx);
   UpdateExtension(id, v3_bad_permissions_crx, INSTALLED);
-  EXPECT_FALSE(service()->IsExtensionEnabled(id));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(id));
 }
 
 // Unpacked extensions are not allowed to be installed if they have unsupported
@@ -7499,7 +7499,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallInitiallyDisabled) {
   WaitForInstallationAttemptToComplete(page_action);
 
   EXPECT_TRUE(HasExternalInstallErrors(service()));
-  EXPECT_FALSE(service()->IsExtensionEnabled(page_action));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(page_action));
 
   const Extension* extension =
       registry()->disabled_extensions().GetByID(page_action);
@@ -7508,7 +7508,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallInitiallyDisabled) {
 
   service()->EnableExtension(page_action);
   EXPECT_FALSE(HasExternalInstallErrors(service()));
-  EXPECT_TRUE(service()->IsExtensionEnabled(page_action));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(page_action));
 }
 
 // As for components, only external component extensions can be disabled.
@@ -7578,9 +7578,9 @@ TEST_F(ExtensionServiceTest, MAYBE_ExternalInstallMultiple) {
     theme_crx_observer.WaitForRemoval();
 
     EXPECT_TRUE(HasExternalInstallErrors(service()));
-    EXPECT_FALSE(service()->IsExtensionEnabled(page_action));
-    EXPECT_FALSE(service()->IsExtensionEnabled(good_crx));
-    EXPECT_FALSE(service()->IsExtensionEnabled(theme_crx));
+    EXPECT_FALSE(registrar()->IsExtensionEnabled(page_action));
+    EXPECT_FALSE(registrar()->IsExtensionEnabled(good_crx));
+    EXPECT_FALSE(registrar()->IsExtensionEnabled(theme_crx));
   }
 
   service()->EnableExtension(page_action);
@@ -7629,7 +7629,7 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallErrors) {
     EXPECT_EQ(
         expected_error_count,
         service()->external_install_manager()->GetErrorsForTesting().size());
-    EXPECT_FALSE(service()->IsExtensionEnabled(extension_info[i][0]));
+    EXPECT_FALSE(registrar()->IsExtensionEnabled(extension_info[i][0]));
   }
 
   auto extension_ids = std::to_array<std::string>({
@@ -7684,7 +7684,7 @@ TEST_F(ExtensionServiceTest, InstallPromptAborted) {
   WaitForInstallationAttemptToComplete(good_crx);
   EXPECT_EQ(
       1u, service()->external_install_manager()->GetErrorsForTesting().size());
-  EXPECT_FALSE(service()->IsExtensionEnabled(good_crx));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(good_crx));
   EXPECT_TRUE(GetError(good_crx));
 
   // Abort the extension install prompt. This should cause the
@@ -7751,7 +7751,7 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallBubbleErrors) {
     EXPECT_EQ(errors[0], service()
                              ->external_install_manager()
                              ->currently_visible_install_alert_for_testing());
-    EXPECT_FALSE(service()->IsExtensionEnabled(data[i].id));
+    EXPECT_FALSE(registrar()->IsExtensionEnabled(data[i].id));
   }
 
   // Cancel all the install prompts.
@@ -7798,7 +7798,7 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallBubbleErrors) {
     EXPECT_EQ(errors[0], service()
                              ->external_install_manager()
                              ->currently_visible_install_alert_for_testing());
-    EXPECT_FALSE(service()->IsExtensionEnabled(updates_from_webstore3));
+    EXPECT_FALSE(registrar()->IsExtensionEnabled(updates_from_webstore3));
   }
 }
 
@@ -7911,7 +7911,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallUpdatesFromWebstoreOldProfile) {
   ASSERT_TRUE(GetError(updates_from_webstore));
   EXPECT_EQ(ExternalInstallError::BUBBLE_ALERT,
             GetError(updates_from_webstore)->alert_type());
-  EXPECT_FALSE(service()->IsExtensionEnabled(updates_from_webstore));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(updates_from_webstore));
 }
 
 // Test that there is no bubble for external extensions if the profile is new.
@@ -7935,7 +7935,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallUpdatesFromWebstoreNewProfile) {
   ASSERT_TRUE(GetError(updates_from_webstore));
   EXPECT_NE(ExternalInstallError::BUBBLE_ALERT,
             GetError(updates_from_webstore)->alert_type());
-  EXPECT_FALSE(service()->IsExtensionEnabled(updates_from_webstore));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(updates_from_webstore));
 }
 
 // Test that clicking to remove the extension on an external install warning

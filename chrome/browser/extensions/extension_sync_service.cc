@@ -478,7 +478,8 @@ void ExtensionSyncService::ApplySyncData(
   // Enable/disable the extension.
   bool should_be_enabled = disable_reasons.empty();
   bool reenable_after_update = false;
-  if (should_be_enabled && !extension_service()->IsExtensionEnabled(id)) {
+  auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile_);
+  if (should_be_enabled && !extension_registrar->IsExtensionEnabled(id)) {
     if (extension) {
       // Only grant permissions if the sync data explicitly sets the disable
       // reasons to extensions::disable_reason::DISABLE_NONE (as opposed to the
@@ -512,7 +513,7 @@ void ExtensionSyncService::ApplySyncData(
   } else if (!should_be_enabled) {
     // Note that |disable_reasons| includes any pre-existing reasons that
     // weren't explicitly removed above.
-    if (extension_service()->IsExtensionEnabled(id)) {
+    if (extension_registrar->IsExtensionEnabled(id)) {
       extension_service()->DisableExtensionWithRawReasons(passkey, id,
                                                           disable_reasons);
     } else {
