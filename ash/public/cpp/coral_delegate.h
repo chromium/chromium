@@ -15,6 +15,8 @@ namespace ash {
 // `CoralClient` in chrome/ for browser operations.
 class ASH_PUBLIC_EXPORT CoralDelegate {
  public:
+  using GenAIInquiryCallback = base::OnceCallback<void(bool)>;
+
   virtual ~CoralDelegate() = default;
 
   // Creates up to one browser with tabs from `group`. Launches the apps given
@@ -38,11 +40,18 @@ class ASH_PUBLIC_EXPORT CoralDelegate {
       const std::string& group_description,
       ScannerDelegate::SendFeedbackCallback send_feedback_callback) = 0;
 
-  // Check whether the current profile is not under age / location restrictions
-  // for Generative AI. It is not guaranteed that calling this multiple times in
-  // the same user session would return the same result, but in general the
-  // result is OK to be persisted for the whole session.
-  virtual bool CanUseGenerativeAiForCurrentProfile() = 0;
+  // Checks whether the current profile is not under age restriction for
+  // Generative AI. It is not guaranteed that calling this multiple times in the
+  // same user session would return the same result, but in general the result
+  // is OK to be persisted for the whole session.The `callback` will be dropped
+  // when there is a pending callback.
+  virtual void CheckGenAIAgeAvailability(GenAIInquiryCallback callback) = 0;
+
+  // Checks whether the current profile is not under location restriction for
+  // Generative AI. It is not guaranteed that calling this multiple times in the
+  // same user session would return the same result, but in general the result
+  // is OK to be persisted for the whole session.
+  virtual bool GetGenAILocationAvailability() = 0;
 };
 
 }  // namespace ash

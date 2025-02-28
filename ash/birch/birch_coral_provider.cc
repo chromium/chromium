@@ -14,6 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
@@ -34,6 +35,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -342,6 +344,11 @@ BirchCoralProvider* BirchCoralProvider::Get() {
   return g_instance;
 }
 
+// static
+void BirchCoralProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kCoralGenAIAgeAllowed, false);
+}
+
 const coral::mojom::GroupPtr& BirchCoralProvider::GetGroupById(
     const base::Token& group_id) const {
   // Add crash keys here to track the crash of crbug.com/395130742.
@@ -427,6 +434,38 @@ void BirchCoralProvider::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool BirchCoralProvider::GetGenAIAvailability() {
+  // Return true, if using a fake backend or group.
+  auto* current_process = base::CommandLine::ForCurrentProcess();
+  if (current_process->HasSwitch(switches::kForceBirchFakeCoralBackend) ||
+      current_process->HasSwitch(switches::kForceBirchFakeCoralGroup)) {
+    return true;
+  }
+
+  auto* coral_delegate = Shell::Get()->coral_delegate();
+  if (!is_gen_ai_location_allow_.has_value()) {
+    is_gen_ai_location_allow_ = coral_delegate->GetGenAILocationAvailability();
+    if (!(*is_gen_ai_location_allow_)) {
+      VLOG(1) << "Coral: location is restricted by GenAI";
+    }
+  }
+
+  if (!(*is_gen_ai_location_allow_)) {
+    return false;
+  }
+
+  // If age availability is not checked and the checking result will be returned
+  // asynchronously, use the pref value.
+  if (!is_gen_ai_age_availability_checked_) {
+    coral_delegate->CheckGenAIAgeAvailability(
+        base::BindOnce(&BirchCoralProvider::OnGenAIAgeAvailabilityReceived,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  return (*is_gen_ai_location_allow_) &&
+         GetPrefService()->GetBoolean(prefs::kCoralGenAIAgeAllowed);
+}
+
 void BirchCoralProvider::RequestBirchDataFetch() {
   if (!coral_util::IsCoralAllowedByPolicy(GetPrefService())) {
     // Coral is disabled by policy.
@@ -471,6 +510,11 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     }
     fake_response_copy->set_groups(std::move(groups));
     HandleCoralResponse(std::move(fake_response_copy));
+    return;
+  }
+
+  if (!GetGenAIAvailability()) {
+    HandleCoralResponse(nullptr);
     return;
   }
 
@@ -578,7 +622,16 @@ void BirchCoralProvider::OnSessionStateChanged(
   // Clear stale items on login.
   if (state == session_manager::SessionState::ACTIVE) {
     Reset();
+    is_gen_ai_age_availability_checked_ = false;
+    is_gen_ai_location_allow_.reset();
   }
+}
+
+void BirchCoralProvider::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  Reset();
+  is_gen_ai_age_availability_checked_ = false;
+  is_gen_ai_location_allow_.reset();
 }
 
 void BirchCoralProvider::OverrideCoralResponseForTest(
@@ -764,7 +817,8 @@ void BirchCoralProvider::MaybeCacheTabEmbedding(TabClusterUIItem* tab_item) {
       session_controller->GetPrimaryUserPrefService()->GetBoolean(
           prefs::kBirchUseCoral) &&
       coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
-      IsValidTab(tab_item) && ShouldCreateEmbedding(tab_item)) {
+      GetGenAIAvailability() && IsValidTab(tab_item) &&
+      ShouldCreateEmbedding(tab_item)) {
     CacheTabEmbedding(tab_item);
   }
 }
@@ -782,14 +836,7 @@ void BirchCoralProvider::CacheTabEmbedding(TabClusterUIItem* tab_item) {
       coral::mojom::Entity::NewTab(std::move(tab_mojom)));
   CoralRequest request;
   request.set_content(std::move(active_tab_app_data));
-  Shell::Get()->coral_controller()->CacheEmbeddings(
-      std::move(request),
-      base::BindOnce(&BirchCoralProvider::HandleEmbeddingResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BirchCoralProvider::HandleEmbeddingResult(bool success) {
-  // TODO(conniekxu) Add metrics.
+  Shell::Get()->coral_controller()->CacheEmbeddings(std::move(request));
 }
 
 void BirchCoralProvider::ObserveAllWindowsInResponse() {
@@ -918,6 +965,14 @@ void BirchCoralProvider::Reset() {
   }
   in_session_source_desk_ = nullptr;
   windows_observation_.RemoveAllObservations();
+}
+
+void BirchCoralProvider::OnGenAIAgeAvailabilityReceived(bool allow) {
+  if (!allow) {
+    VLOG(1) << "Coral: age is restricted by GenAI";
+  }
+  is_gen_ai_age_availability_checked_ = true;
+  GetPrefService()->SetBoolean(prefs::kCoralGenAIAgeAllowed, allow);
 }
 
 }  // namespace ash

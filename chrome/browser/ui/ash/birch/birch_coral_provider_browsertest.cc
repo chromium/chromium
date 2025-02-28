@@ -10,6 +10,7 @@
 #include "ash/birch/coral_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -45,6 +46,11 @@ class BirchCoralProviderTest : public extensions::PlatformAppBrowserTest {
         ->InstallSystemAppsForTesting();
 
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForceBirchFakeCoralBackend);
   }
 
  protected:
