@@ -635,6 +635,14 @@ chromium-metrics-reviews@google.com.
   <int value="131" label="Navigation.hasCommitted"/>
   <int value="132" label="Navigation.didCommitErrorPage"/>
   <int value="133" label="Navigation.getStatusCode"/>
+  <int value="134" label="WebViewCompat.clearAsyncShouldInterceptRequest"/>
+  <int value="135" label="WebViewCompat.setAsyncShouldInterceptRequest"/>
+  <int value="136"
+      label="ServiceWorkerControllerCompat.clearAsyncShouldInterceptRequest"/>
+  <int value="137"
+      label="ServiceWorkerControllerCompat.setAsyncShouldInterceptRequest"/>
+  <int value="138" label="WebViewCompat.WebResponseCallback.doNotIntercept"/>
+  <int value="139" label="WebViewCompat.WebResponseCallback.intercept"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

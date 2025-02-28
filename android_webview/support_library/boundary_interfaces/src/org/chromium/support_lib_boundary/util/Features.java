@@ -337,4 +337,18 @@ public class Features {
     // WebViewNavigation.getStatusCode()
     public static final String WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE =
             "WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE";
+
+    // WebViewCompat.setAsyncShouldInterceptRequestCallback
+    // WebViewCompat.clearAsyncShouldInterceptRequestCallback
+    // ServiceWorkerControllerCompat.setAsyncShouldInterceptRequestCallback
+    // ServiceWorkerControllerCompat.clearAsyncShouldInterceptRequestCallback
+    // AsyncShouldInterceptRequestCallback.shouldInterceptRequestAsync
+    // WebResponseCallback.intercept
+    // WebResponseCallback.doNotIntercept
+    // WebResourceRequest#getRequestHeadersMultiMap
+    // WebResourceResponse#setResponseHeaders
+    // WebResourceResponse#getResponseHeaders
+    // WebResourceResponse#setResponseHeadersMultiMap
+    // WebResourceResponse#getResponseHeadersMultiMap
+    public static final String ASYNC_SHOULD_INTERCEPT_REQUEST = "ASYNC_SHOULD_INTERCEPT_REQUEST";
 }

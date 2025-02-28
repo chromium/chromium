@@ -110,6 +110,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.SPECULATIVE_LOADING_CONFIG,
                 Features.SAVE_STATE + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE + Features.DEV_SUFFIX,
+                Features.ASYNC_SHOULD_INTERCEPT_REQUEST + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -252,6 +253,12 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.NAVIGATION_HAS_COMMITTED,
         ApiCall.NAVIGATION_DID_COMMIT_ERROR_PAGE,
         ApiCall.NAVIGATION_GET_STATUS_CODE,
+        ApiCall.CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST,
+        ApiCall.SET_ASYNC_SHOULD_INTERCEPT_REQUEST,
+        ApiCall.SERVICE_WORKER_CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST,
+        ApiCall.SERVICE_WORKER_SET_ASYNC_SHOULD_INTERCEPT_REQUEST,
+        ApiCall.WEB_RESPONSE_CALLBACK_DO_NOT_INTERCEPT,
+        ApiCall.WEB_RESPONSE_CALLBACK_INTERCEPT,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -392,9 +399,15 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int NAVIGATION_HAS_COMMITTED = 131;
         int NAVIGATION_DID_COMMIT_ERROR_PAGE = 132;
         int NAVIGATION_GET_STATUS_CODE = 133;
+        int CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST = 134;
+        int SET_ASYNC_SHOULD_INTERCEPT_REQUEST = 135;
+        int SERVICE_WORKER_CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST = 136;
+        int SERVICE_WORKER_SET_ASYNC_SHOULD_INTERCEPT_REQUEST = 137;
+        int WEB_RESPONSE_CALLBACK_DO_NOT_INTERCEPT = 138;
+        int WEB_RESPONSE_CALLBACK_INTERCEPT = 139;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 134;
+        int COUNT = 140;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
