@@ -25,6 +25,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -163,6 +164,21 @@ class MockCrxDownloaderFactory : public CrxDownloaderFactory {
   scoped_refptr<CrxDownloader> crx_downloader_;
 };
 
+// Mocks the completion callback.
+auto ExpectError(Error expected_error) {
+  return base::BindLambdaForTesting(
+      [=](Error actual_error) { EXPECT_EQ(expected_error, actual_error); });
+}
+
+auto ExpectErrorThenQuit(base::RunLoop& runloop, Error expected_error) {
+  return ExpectError(expected_error)
+      .Then(base::BindLambdaForTesting([&runloop]() { runloop.Quit(); }));
+}
+
+auto ExpectErrorThenQuit(auto quit, Error expected_error) {
+  return ExpectError(expected_error).Then(std::move(quit));
+}
+
 }  // namespace
 
 using ::testing::_;
@@ -275,17 +291,17 @@ const std::vector<base::Value::Dict>& MockPingManagerImpl::events() const {
 }
 
 class UpdateClientTest : public testing::Test {
- protected:
-  UpdateClientTest();
+ private:
+  // Must be initialized before `runloop_`.
+  base::test::TaskEnvironment task_environment_;
 
-  void RunThreads();
+ protected:
+  UpdateClientTest() {
+    RegisterPersistedDataPrefs(pref_->registry());
+    config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
+  }
 
   scoped_refptr<update_client::TestConfigurator> config() { return config_; }
-  update_client::PersistedData* metadata() { return metadata_.get(); }
-
-  [[nodiscard]] base::OnceClosure quit_closure() {
-    return runloop_.QuitClosure();
-  }
 
   // Injects the CrxDownloaderFactory in the test fixture.
   template <typename MockCrxDownloaderT>
@@ -295,28 +311,13 @@ class UpdateClientTest : public testing::Test {
             base::MakeRefCounted<MockCrxDownloaderT>()));
   }
 
- private:
-  base::test::TaskEnvironment task_environment_;
   base::RunLoop runloop_;
 
+ private:
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
       std::make_unique<TestingPrefServiceSimple>();
   scoped_refptr<update_client::TestConfigurator> config_;
-  std::unique_ptr<update_client::PersistedData> metadata_;
 };
-
-UpdateClientTest::UpdateClientTest() {
-  RegisterPersistedDataPrefs(pref_->registry());
-  config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
-  metadata_ = CreatePersistedData(
-      base::BindRepeating([](PrefService* pref) { return pref; }, pref_.get()),
-      nullptr);
-}
-
-void UpdateClientTest::RunThreads() {
-  runloop_.Run();
-  task_environment_.RunUntilIdle();
-}
 
 // Tests the scenario where one update check is done for one CRX. The CRX
 // has no update.
@@ -336,14 +337,6 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::vector<std::optional<CrxComponent>> component = {crx};
       std::move(callback).Run({component});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -427,12 +420,12 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
           [&items](const CrxUpdateItem& item) { items.push_back(item); });
 
   update_client->AddObserver(&observer);
-  const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
   update_client->Update(
-      ids, base::BindOnce(&DataCallbackMock::Callback),
+      {"jebgalgnebhfojomionfpkfelancnnkf"},
+      base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver), true,
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(2u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -469,14 +462,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       std::move(callback).Run({crx1, crx2});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -681,8 +666,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(9u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -743,14 +728,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       std::move(callback).Run({crx1, crx2});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -939,8 +916,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(8u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -983,14 +960,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::move(callback).Run({crx, std::nullopt});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -1172,8 +1141,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(7u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -1205,14 +1174,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
         base::OnceCallback<
             void(const std::vector<std::optional<CrxComponent>>&)> callback) {
       std::move(callback).Run({std::nullopt, std::nullopt});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -1286,8 +1247,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(2u, items.size());
   EXPECT_EQ(ComponentState::kUpdateError, items[0].state);
@@ -1325,14 +1286,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       std::move(callback).Run({crx1, crx2});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -1585,8 +1538,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(11u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -1658,14 +1611,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         base::MakeRefCounted<VersionedTestInstaller>();
   };
   auto data_callback_mock = MakeMockCallback<DataCallbackMock>();
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
-    }
-  };
 
   class MockUpdateChecker : public UpdateChecker {
    public:
@@ -1956,11 +1901,8 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
-
     EXPECT_EQ(10u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
@@ -1983,7 +1925,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     EXPECT_EQ(ComponentState::kUpdated, items[9].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id.c_str());
 
-    std::vector<int> samples = {-1, -1, -1, -1, -1, -1, -1, 50, 100, 100};
+    std::vector samples = {-1, -1, -1, -1, -1, -1, -1, 50, 100, 100};
     EXPECT_EQ(items.size(), samples.size());
     for (size_t i = 0; i != items.size(); ++i) {
       EXPECT_EQ(items[i].install_progress, samples[i]);
@@ -2001,9 +1943,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
 
     EXPECT_EQ(10u, items.size());
@@ -2107,14 +2047,6 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       std::move(callback).Run({crx});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -2278,8 +2210,8 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(6u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -2336,14 +2268,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         base::MakeRefCounted<VersionedTestInstaller>();
   };
   auto data_callback_mock = MakeMockCallback<DataCallbackMock>();
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
-    }
-  };
 
   class MockUpdateChecker : public UpdateChecker {
    public:
@@ -2632,9 +2556,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
     EXPECT_EQ(6u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -2662,9 +2584,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
 
     EXPECT_EQ(8u, items.size());
@@ -2729,14 +2649,6 @@ TEST_F(UpdateClientTest,
         base::MakeRefCounted<VersionedTestInstaller>();
   };
   auto data_callback_mock = MakeMockCallback<DataCallbackMock>();
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
-    }
-  };
 
   class MockUpdateChecker : public UpdateChecker {
    public:
@@ -3018,9 +2930,7 @@ TEST_F(UpdateClientTest,
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
     EXPECT_EQ(6u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -3048,9 +2958,7 @@ TEST_F(UpdateClientTest,
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
 
     EXPECT_EQ(8u, items.size());
@@ -3095,27 +3003,6 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
       std::move(callback).Run({crx});
     }
   };
-
-  class CompletionCallbackMock
-      : public base::RefCountedThreadSafe<CompletionCallbackMock> {
-   public:
-    void Callback(base::OnceClosure quit_closure, Error error) {
-      ++num_calls_;
-
-      EXPECT_EQ(Error::NONE, error);
-
-      if (num_calls_ == 2) {
-        std::move(quit_closure).Run();
-      }
-    }
-
-   private:
-    friend class base::RefCountedThreadSafe<CompletionCallbackMock>;
-    ~CompletionCallbackMock() = default;
-
-    int num_calls_ = 0;
-  };
-  auto completion_callback_mock = MakeMockCallback<CompletionCallbackMock>();
 
   class MockUpdateChecker : public UpdateChecker {
    public:
@@ -3218,12 +3105,12 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver1),
-      false, base::BindOnce(completion_callback_mock, quit_closure()));
+      false, ExpectError(Error::NONE));
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver2),
-      false, base::BindOnce(completion_callback_mock, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(2u, items1.size());
   EXPECT_EQ(ComponentState::kChecking, items1[0].state);
@@ -3258,14 +3145,6 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::move(callback).Run({crx});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -3455,8 +3334,8 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(6u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -3496,14 +3375,6 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
         base::OnceCallback<
             void(const std::vector<std::optional<CrxComponent>>&)> callback) {
       std::move(callback).Run({std::nullopt});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -3582,8 +3453,8 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(1u, items.size());
   EXPECT_EQ(ComponentState::kUpdateError, items[0].state);
@@ -3610,30 +3481,6 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
       std::move(callback).Run({crx});
     }
   };
-
-  class CompletionCallbackMock
-      : public base::RefCountedThreadSafe<CompletionCallbackMock> {
-   public:
-    void Callback(base::OnceClosure quit_closure, Error error) {
-      ++num_calls_;
-      EXPECT_LE(num_calls_, 2);
-      if (num_calls_ == 1) {
-        EXPECT_EQ(Error::UPDATE_IN_PROGRESS, error);
-        return;
-      }
-      if (num_calls_ == 2) {
-        EXPECT_EQ(Error::NONE, error);
-        std::move(quit_closure).Run();
-      }
-    }
-
-   private:
-    friend class base::RefCountedThreadSafe<CompletionCallbackMock>;
-    ~CompletionCallbackMock() = default;
-
-    int num_calls_ = 0;
-  };
-  auto completion_callback_mock = MakeMockCallback<CompletionCallbackMock>();
 
   class MockUpdateChecker : public UpdateChecker {
    public:
@@ -3718,18 +3565,21 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
       .WillRepeatedly(
           [&items2](const CrxUpdateItem& item) { items2.push_back(item); });
 
+  base::RepeatingClosure barrier_quit_closure =
+      BarrierClosure(2, runloop_.QuitClosure());
+
   update_client->AddObserver(&observer);
   update_client->Install(
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver1),
-      base::BindOnce(completion_callback_mock, quit_closure()));
+      ExpectErrorThenQuit(barrier_quit_closure, Error::NONE));
   update_client->Install(
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver2),
-      base::BindOnce(completion_callback_mock, quit_closure()));
-  RunThreads();
+      ExpectErrorThenQuit(barrier_quit_closure, Error::UPDATE_IN_PROGRESS));
+  runloop_.Run();
 
   EXPECT_EQ(2u, items1.size());
   EXPECT_EQ(ComponentState::kChecking, items1[0].state);
@@ -3752,14 +3602,6 @@ TEST_F(UpdateClientTest, EmptyIdList) {
         base::OnceCallback<
             void(const std::vector<std::optional<CrxComponent>>&)> callback) {
       std::move(callback).Run({});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::INVALID_ARGUMENT, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -3805,10 +3647,10 @@ TEST_F(UpdateClientTest, EmptyIdList) {
           mock_update_checker_factory.GetFactory());
 
   const std::vector<std::string> empty_id_list;
-  update_client->Update(
-      empty_id_list, base::BindOnce(&DataCallbackMock::Callback), {}, false,
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+  update_client->Update(empty_id_list,
+                        base::BindOnce(&DataCallbackMock::Callback), {}, false,
+                        ExpectErrorThenQuit(runloop_, Error::INVALID_ARGUMENT));
+  runloop_.Run();
 }
 
 TEST_F(UpdateClientTest, DiskFull) {
@@ -3827,14 +3669,6 @@ TEST_F(UpdateClientTest, DiskFull) {
       crx1.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       std::move(callback).Run({crx1});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -3977,8 +3811,8 @@ TEST_F(UpdateClientTest, DiskFull) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(4u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -4034,14 +3868,6 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
         base::MakeRefCounted<VersionedTestInstaller>();
   };
   auto data_callback_mock = MakeMockCallback<DataCallbackMock>();
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
-    }
-  };
 
   class MockUpdateChecker : public UpdateChecker {
    public:
@@ -4307,9 +4133,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
 
     EXPECT_EQ(10u, items.size());
@@ -4334,7 +4158,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     EXPECT_EQ(ComponentState::kUpdated, items[9].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[9].id.c_str());
 
-    std::vector<int> samples = {-1, -1, -1, -1, -1, -1, -1, 50, 100, 100};
+    std::vector samples = {-1, -1, -1, -1, -1, -1, -1, 50, 100, 100};
     EXPECT_EQ(items.size(), samples.size());
     for (size_t i = 0; i != items.size(); ++i) {
       EXPECT_EQ(items[i].install_progress, samples[i]);
@@ -4352,9 +4176,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
 
     EXPECT_EQ(5u, items.size());
@@ -4399,14 +4221,7 @@ INSTANTIATE_TEST_SUITE_P(SendPingTestCases,
                               base::Version("1.2.3.4")},
                          }));
 
-TEST_P(SendPingTest, TestCases) {
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      std::move(quit_closure).Run();
-    }
-  };
-
+TEST_P(SendPingTest, SendPingTestCases) {
   class MockUpdateChecker : public UpdateChecker {
    public:
     MockUpdateChecker() = default;
@@ -4474,15 +4289,13 @@ TEST_P(SendPingTest, TestCases) {
   crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
   crx.name = "test_jebg";
   crx.version = GetParam().previous_version.value_or(base::Version("1.2.3.4"));
-  update_client->SendPing(
-      crx,
-      {.event_type = GetParam().event_type,
-       .result = GetParam().result,
-       .error_code = GetParam().error_code.value_or(0),
-       .extra_code1 = GetParam().extra_code1},
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-
-  RunThreads();
+  update_client->SendPing(crx,
+                          {.event_type = GetParam().event_type,
+                           .result = GetParam().result,
+                           .error_code = GetParam().error_code.value_or(0),
+                           .extra_code1 = GetParam().extra_code1},
+                          ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 }
 
 TEST_F(UpdateClientTest, RetryAfter) {
@@ -4502,38 +4315,6 @@ TEST_F(UpdateClientTest, RetryAfter) {
       std::move(callback).Run({crx});
     }
   };
-
-  class CompletionCallbackMock
-      : public base::RefCountedThreadSafe<CompletionCallbackMock> {
-   public:
-    void Callback(base::OnceClosure quit_closure, Error error) {
-      ++num_calls_;
-      EXPECT_LE(num_calls_, 4);
-      if (num_calls_ == 1) {
-        EXPECT_EQ(Error::NONE, error);
-      } else if (num_calls_ == 2) {
-        // This request is throttled since the update engine received a
-        // positive |retry_after_sec| value in the update check response.
-        EXPECT_EQ(Error::RETRY_LATER, error);
-      } else if (num_calls_ == 3) {
-        // This request is a foreground Install, which is never throttled.
-        // The update engine received a |retry_after_sec| value of 0, which
-        // resets the throttling.
-        EXPECT_EQ(Error::NONE, error);
-      } else if (num_calls_ == 4) {
-        // This request succeeds since there is no throttling in effect.
-        EXPECT_EQ(Error::NONE, error);
-      }
-      std::move(quit_closure).Run();
-    }
-
-   private:
-    friend class base::RefCountedThreadSafe<CompletionCallbackMock>;
-    ~CompletionCallbackMock() = default;
-
-    int num_calls_ = 0;
-  };
-  auto completion_callback_mock = MakeMockCallback<CompletionCallbackMock>();
 
   class MockUpdateChecker : public UpdateChecker {
    public:
@@ -4604,38 +4385,39 @@ TEST_F(UpdateClientTest, RetryAfter) {
           mock_update_checker_factory.GetFactory());
 
   MockObserver observer;
-
-  InSequence seq;
-  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
-                       item.state == ComponentState::kChecking;
-              })))
-      .Times(1);
-  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
-                       item.state == ComponentState::kUpToDate;
-              })))
-      .Times(1);
-  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
-                       item.state == ComponentState::kChecking;
-              })))
-      .Times(1);
-  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
-                       item.state == ComponentState::kUpToDate;
-              })))
-      .Times(1);
-  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
-                       item.state == ComponentState::kChecking;
-              })))
-      .Times(1);
-  EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
-                       item.state == ComponentState::kUpToDate;
-              })))
-      .Times(1);
+  {
+    InSequence seq;
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
+        .Times(1);
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
+        .Times(1);
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
+        .Times(1);
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
+        .Times(1);
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kChecking;
+                })))
+        .Times(1);
+    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
+                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
+                         item.state == ComponentState::kUpToDate;
+                })))
+        .Times(1);
+  }
 
   update_client->AddObserver(&observer);
 
@@ -4644,39 +4426,33 @@ TEST_F(UpdateClientTest, RetryAfter) {
     // The engine handles this Update call but responds with a valid
     // |retry_after_sec|, which causes subsequent calls to fail.
     base::RunLoop runloop;
-    update_client->Update(
-        ids, base::BindOnce(&DataCallbackMock::Callback), {}, false,
-        base::BindOnce(completion_callback_mock, runloop.QuitClosure()));
+    update_client->Update(ids, base::BindOnce(&DataCallbackMock::Callback), {},
+                          false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
   }
-
   {
     // This call will result in a completion callback invoked with
     // Error::ERROR_UPDATE_RETRY_LATER.
     base::RunLoop runloop;
-    update_client->Update(
-        ids, base::BindOnce(&DataCallbackMock::Callback), {}, false,
-        base::BindOnce(completion_callback_mock, runloop.QuitClosure()));
+    update_client->Update(ids, base::BindOnce(&DataCallbackMock::Callback), {},
+                          false,
+                          ExpectErrorThenQuit(runloop, Error::RETRY_LATER));
     runloop.Run();
   }
-
   {
     // The Install call is handled, and the throttling is reset due to
     // the value of |retry_after_sec| in the completion callback.
     base::RunLoop runloop;
-    update_client->Install(
-        std::string("jebgalgnebhfojomionfpkfelancnnkf"),
-        base::BindOnce(&DataCallbackMock::Callback), {},
-        base::BindOnce(completion_callback_mock, runloop.QuitClosure()));
+    update_client->Install(std::string("jebgalgnebhfojomionfpkfelancnnkf"),
+                           base::BindOnce(&DataCallbackMock::Callback), {},
+                           ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
   }
-
   {
     // This call succeeds.
     base::RunLoop runloop;
-    update_client->Update(
-        ids, base::BindOnce(&DataCallbackMock::Callback), {}, false,
-        base::BindOnce(completion_callback_mock, runloop.QuitClosure()));
+    update_client->Update(ids, base::BindOnce(&DataCallbackMock::Callback), {},
+                          false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
   }
 
@@ -4714,14 +4490,6 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       std::move(callback).Run({crx1, crx2});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -4953,8 +4721,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(9u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -4997,14 +4765,6 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::vector<std::optional<CrxComponent>> component = {crx};
       std::move(callback).Run({component});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -5187,8 +4947,8 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(5u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -5220,14 +4980,6 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::move(callback).Run({crx});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::UPDATE_CHECK_ERROR, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -5312,8 +5064,8 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
   update_client->Update(
       ids, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::UPDATE_CHECK_ERROR));
+  runloop_.Run();
 
   EXPECT_EQ(2u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -5375,14 +5127,6 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         component.push_back(crx);
       }
       std::move(callback).Run(component);
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -5530,15 +5274,13 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
   }
 
   update_client->AddObserver(&observer);
-
   const std::vector<std::string> ids = {
       "jebgalgnebhfojomionfpkfelancnnkf", "abagagagagagagagagagagagagagagag",
       "ihfokbkgjpifnbbojhneepfflplebdkc", "gjpmebpgbhcamgdgjcmnjfhggjpgcimm"};
-  update_client->Update(
-      ids, base::BindOnce(&DataCallbackMock::Callback), {}, true,
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
+  update_client->Update(ids, base::BindOnce(&DataCallbackMock::Callback), {},
+                        true, ExpectErrorThenQuit(runloop_, Error::NONE));
 
-  RunThreads();
+  runloop_.Run();
 
   update_client->RemoveObserver(&observer);
 }
@@ -5721,15 +5463,8 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
             crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
             std::move(callback).Run({crx});
           }),
-      {},
-      base::BindOnce(
-          [](base::OnceClosure quit_closure, Error error) {
-            EXPECT_EQ(Error::NONE, error);
-            std::move(quit_closure).Run();
-          },
-          quit_closure()));
-
-  RunThreads();
+      {}, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 }
 
 // Tests that a run action is invoked in an update scenario when there was
@@ -5886,15 +5621,9 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
             std::move(callback).Run({crx});
           },
           unpack_path),
-      {}, false,
-      base::BindOnce(
-          [](base::OnceClosure quit_closure, Error error) {
-            EXPECT_EQ(Error::NONE, error);
-            std::move(quit_closure).Run();
-          },
-          quit_closure()));
+      {}, false, ExpectErrorThenQuit(runloop_, Error::NONE));
 
-  RunThreads();
+  runloop_.Run();
 }
 
 // Tests that custom response attributes are visible to observers.
@@ -5914,14 +5643,6 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::vector<std::optional<CrxComponent>> component = {crx};
       std::move(callback).Run(component);
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -6008,14 +5729,10 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
 
   Observer observer(update_client);
   update_client->AddObserver(&observer);
-
   const std::vector<std::string> ids = {"jebgalgnebhfojomionfpkfelancnnkf"};
-  update_client->Update(
-      ids, base::BindOnce(&DataCallbackMock::Callback), {}, true,
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-
-  RunThreads();
-
+  update_client->Update(ids, base::BindOnce(&DataCallbackMock::Callback), {},
+                        true, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
   update_client->RemoveObserver(&observer);
 
   EXPECT_EQ(1, observer.calls);
@@ -6027,14 +5744,6 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
 // callback to include a specific error, and no other events and pings be
 // generated, since the update engine rejects the UpdateClient::Update call.
 TEST_F(UpdateClientTest, BadCrxDataCallback) {
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::BAD_CRX_DATA_CALLBACK, error);
-      std::move(quit_closure).Run();
-    }
-  };
-
   class MockPingManager : public MockPingManagerImpl {
    public:
     explicit MockPingManager(scoped_refptr<Configurator> config)
@@ -6073,8 +5782,8 @@ TEST_F(UpdateClientTest, BadCrxDataCallback) {
             std::move(callback).Run({std::nullopt});
           }),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver), true,
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      ExpectErrorThenQuit(runloop_, Error::BAD_CRX_DATA_CALLBACK));
+  runloop_.Run();
 
   EXPECT_TRUE(items.empty());
   update_client->RemoveObserver(&observer);
@@ -6096,14 +5805,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::move(callback).Run({crx});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::UPDATE_CANCELED, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -6217,9 +5918,9 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
           std::string("jebgalgnebhfojomionfpkfelancnnkf"),
           base::BindOnce(&DataCallbackMock::Callback),
           base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-          base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()))
+          ExpectErrorThenQuit(runloop_, Error::UPDATE_CANCELED))
       .Run();
-  RunThreads();
+  runloop_.Run();
   EXPECT_EQ(0u, items.size());
 }
 
@@ -6239,14 +5940,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::move(callback).Run({crx});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -6394,8 +6087,8 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(5u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -6428,14 +6121,6 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::move(callback).Run({crx});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -6578,8 +6263,8 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
       std::string("jebgalgnebhfojomionfpkfelancnnkf"),
       base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
 
   EXPECT_EQ(3u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
@@ -6695,11 +6380,8 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
-        EXPECT_EQ(error, Error::NONE);
-        quit_closure().Run();
-      }));
-  RunThreads();
+      /*is_foreground=*/true, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
   EXPECT_EQ(items.size(), 2u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
@@ -6849,11 +6531,8 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      /*is_foreground=*/false, base::BindLambdaForTesting([&](Error error) {
-        EXPECT_EQ(error, Error::NONE);
-        quit_closure().Run();
-      }));
-  RunThreads();
+      /*is_foreground=*/false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
   EXPECT_EQ(items.size(), 2u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
@@ -6972,25 +6651,21 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
 
   // Do two `CheckForUpdate` calls, expect the calls to be done in sequence.
   base::RepeatingClosure barrier_quit_closure =
-      BarrierClosure(2, quit_closure());
+      BarrierClosure(2, runloop_.QuitClosure());
   update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
-        EXPECT_EQ(error, Error::NONE);
-        barrier_quit_closure.Run();
-      }));
+      /*is_foreground=*/true,
+      ExpectErrorThenQuit(barrier_quit_closure, Error::NONE));
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
-        EXPECT_EQ(error, Error::NONE);
-        barrier_quit_closure.Run();
-      }));
+      /*is_foreground=*/true,
+      ExpectErrorThenQuit(barrier_quit_closure, Error::NONE));
   EXPECT_TRUE(update_client->IsUpdating(id));
-  RunThreads();
+  runloop_.Run();
   EXPECT_EQ(items.size(), 4u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
@@ -7105,26 +6780,22 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
   // Do two `CheckForUpdate` calls, expect the second call to be cancelled,
   // because `Stop` cancels the queued up subsequent call.
   base::RepeatingClosure barrier_quit_closure =
-      BarrierClosure(2, quit_closure());
+      BarrierClosure(2, runloop_.QuitClosure());
   update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
-        EXPECT_EQ(error, Error::NONE);
-        barrier_quit_closure.Run();
-      }));
+      /*is_foreground=*/true,
+      ExpectErrorThenQuit(barrier_quit_closure, Error::NONE));
   update_client->CheckForUpdate(
       id, base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
-        EXPECT_EQ(error, Error::UPDATE_CANCELED);
-        barrier_quit_closure.Run();
-      }));
+      /*is_foreground=*/true,
+      ExpectErrorThenQuit(barrier_quit_closure, Error::UPDATE_CANCELED));
   update_client->Stop();
   EXPECT_TRUE(update_client->IsUpdating(id));
-  RunThreads();
+  runloop_.Run();
   EXPECT_EQ(items.size(), 2u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
@@ -7190,7 +6861,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
 
   // Tests some error cases when arguments are incorrect.
   base::RepeatingClosure barrier_quit_closure =
-      BarrierClosure(2, quit_closure());
+      BarrierClosure(2, runloop_.QuitClosure());
   update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
@@ -7202,10 +6873,8 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
             std::move(callback).Run({});
           }),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
-        EXPECT_EQ(error, Error::BAD_CRX_DATA_CALLBACK);
-        barrier_quit_closure.Run();
-      }));
+      /*is_foreground=*/true,
+      ExpectErrorThenQuit(barrier_quit_closure, Error::BAD_CRX_DATA_CALLBACK));
   update_client->CheckForUpdate(
       id,
       base::BindLambdaForTesting(
@@ -7218,12 +6887,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
             std::move(callback).Run({std::nullopt});
           }),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
-        EXPECT_EQ(error, Error::NONE);
-        barrier_quit_closure.Run();
-      }));
+      /*is_foreground=*/true,
+      ExpectErrorThenQuit(barrier_quit_closure, Error::NONE));
   EXPECT_TRUE(update_client->IsUpdating(id));
-  RunThreads();
+  runloop_.Run();
   EXPECT_EQ(items.size(), 1u);
   EXPECT_EQ(items[0].state, ComponentState::kUpdateError);
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
@@ -7250,14 +6917,6 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       crx.updates_enabled = false;
       std::move(callback).Run({crx});
-    }
-  };
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
     }
   };
 
@@ -7388,8 +7047,8 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
       "jebgalgnebhfojomionfpkfelancnnkf",
       base::BindOnce(&DataCallbackMock::Callback),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-      false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-  RunThreads();
+      false, ExpectErrorThenQuit(runloop_, Error::NONE));
+  runloop_.Run();
   EXPECT_EQ(items.size(), 3u);
   EXPECT_EQ(items[0].state, ComponentState::kChecking);
   EXPECT_STREQ(items[0].id.c_str(), "jebgalgnebhfojomionfpkfelancnnkf");
@@ -7440,14 +7099,6 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     int num_calls_ = 0;
   };
   auto data_callback_mock = MakeMockCallback<DataCallbackMock>();
-
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      EXPECT_EQ(Error::NONE, error);
-      std::move(quit_closure).Run();
-    }
-  };
 
   class MockUpdateChecker : public UpdateChecker {
    public:
@@ -7650,9 +7301,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
 
     EXPECT_EQ(8u, items.size());
@@ -7673,7 +7322,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     EXPECT_EQ(ComponentState::kUpdateError, items[7].state);
     EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[7].id.c_str());
 
-    std::vector<int> samples = {-1, -1, -1, -1, -1, -1, 25, 25};
+    std::vector samples = {-1, -1, -1, -1, -1, -1, 25, 25};
     EXPECT_EQ(items.size(), samples.size());
     for (size_t i = 0; i != items.size(); ++i) {
       EXPECT_EQ(items[i].install_progress, samples[i]);
@@ -7691,9 +7340,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     update_client->Update(
         ids, data_callback_mock,
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false,
-        base::BindOnce(&CompletionCallbackMock::Callback,
-                       runloop.QuitClosure()));
+        false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
 
     EXPECT_EQ(7u, items.size());
@@ -7712,7 +7359,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     EXPECT_EQ(ComponentState::kUpdated, items[6].state);
     EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[6].id.c_str());
 
-    std::vector<int> samples = {-1, -1, -1, -1, 50, 100, 100};
+    std::vector samples = {-1, -1, -1, -1, 50, 100, 100};
     EXPECT_EQ(items.size(), samples.size());
     for (size_t i = 0; i != items.size(); ++i) {
       EXPECT_EQ(items[i].install_progress, samples[i]);
