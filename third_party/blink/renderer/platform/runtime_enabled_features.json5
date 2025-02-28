@@ -1363,7 +1363,7 @@
     },
     {
       name: "CSSSignRelatedFunctions",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSSnapContainerQueries",
