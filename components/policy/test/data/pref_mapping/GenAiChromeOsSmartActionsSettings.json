@@ -1,0 +1,180 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users via GenAiDefaultSettings",
+        "policies": {},
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      },
+
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 0
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 1
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 2
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 2
+          }
+        }
+      },
+
+      {
+        "policies": {
+          "GenAiDefaultSettings": 0
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 1
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 2
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 2
+          }
+        }
+      },
+
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 0,
+          "GenAiDefaultSettings": 0
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 0,
+          "GenAiDefaultSettings": 1
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 0,
+          "GenAiDefaultSettings": 2
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 1,
+          "GenAiDefaultSettings": 0
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 1,
+          "GenAiDefaultSettings": 1
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 1,
+          "GenAiDefaultSettings": 2
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 2,
+          "GenAiDefaultSettings": 0
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 2,
+          "GenAiDefaultSettings": 1
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiChromeOsSmartActionsSettings": 2,
+          "GenAiDefaultSettings": 2
+        },
+        "prefs": {
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

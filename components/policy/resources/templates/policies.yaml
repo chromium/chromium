@@ -1335,6 +1335,7 @@ policies:
   1334: ProvisionManagedClientCertificateForBrowser
   1335: GeminiSettings
   1336: GenAISmartGroupingSettings
+  1337: GenAiChromeOsSmartActionsSettings
 
 atomic_groups:
   1: Homepage

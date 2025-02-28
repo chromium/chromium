@@ -1820,6 +1820,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGenAISmartGroupingSettings,
     ash::prefs::kGenAISmartGroupingSettings,
     base::Value::Type::INTEGER},
+  { key::kGenAiChromeOsSmartActionsSettings,
+    ash::prefs::kScannerEnterprisePolicyAllowed,
+    base::Value::Type::INTEGER},
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
@@ -3334,6 +3337,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                        ash::prefs::kGenAIPhotoEditingSettings);
   gen_ai_default_policies.emplace_back(key::kGenAISmartGroupingSettings,
                                        ash::prefs::kGenAISmartGroupingSettings);
+  gen_ai_default_policies.emplace_back(
+      key::kGenAiChromeOsSmartActionsSettings,
+      ash::prefs::kScannerEnterprisePolicyAllowed);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));
