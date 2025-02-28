@@ -60,6 +60,10 @@ class AutofillAiClient {
   // Returns the AutofillClient that is scoped to the same object (e.g., tab) as
   // this AutofillAiClient.
   virtual autofill::AutofillClient& GetAutofillClient() = 0;
+  const autofill::AutofillClient& GetAutofillClient() const {
+    return const_cast<const autofill::AutofillClient&>(
+        const_cast<AutofillAiClient*>(this)->GetAutofillClient());
+  }
 
   // Calls `callback` with the accessibility tree snapshot.
   virtual void GetAXTree(AXTreeCallback callback) = 0;

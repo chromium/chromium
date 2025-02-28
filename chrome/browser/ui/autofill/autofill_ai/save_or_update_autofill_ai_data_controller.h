@@ -74,7 +74,8 @@ class SaveOrUpdateAutofillAiDataController {
   virtual ~SaveOrUpdateAutofillAiDataController() = default;
 
   static SaveOrUpdateAutofillAiDataController* GetOrCreate(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      const std::string& app_locale);
 
   // Shows a save or update Autofill AI data bubble which the user can accept or
   // decline. `old_entity` is used in the update case to give users an overview

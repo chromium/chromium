@@ -52,19 +52,6 @@ AttributeInstance::AttributeInstance(AttributeInstance&&) = default;
 AttributeInstance& AttributeInstance::operator=(AttributeInstance&&) = default;
 AttributeInstance::~AttributeInstance() = default;
 
-std::u16string AttributeInstance::value() const {
-  return absl::visit(
-      base::Overloaded{[&](const NameInfo& name) {
-                         return name.GetRawInfo(GetTopLevelType());
-                       },
-                       [](const std::u16string& value) { return value; }},
-      info_);
-}
-
-std::u16string AttributeInstance::NormalizedValue() const {
-  return AutofillProfileComparator::NormalizeForComparison(value());
-}
-
 std::u16string AttributeInstance::GetInfo(FieldType type,
                                           const std::string& app_locale) const {
   type = GetNormalizedType(type);
@@ -242,7 +229,8 @@ bool EntityInstance::ImportOrder(const EntityInstance& lhs,
 }
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
-  os << a.type() << ": " << '"' << a.value() << '"';
+  os << a.type() << ": " << '"'
+     << a.GetInfo(a.GetTopLevelType(), /*app_locale=*/"en-US") << '"';
   return os;
 }
 
@@ -299,6 +287,11 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
     kNewAndOldEntitiesHaveDifferentAttribute,
   };
 
+  auto normalized_value = [](const AttributeInstance& attribute) {
+    return AutofillProfileComparator::NormalizeForComparison(
+        attribute.GetRawInfo(/*pass_key=*/{}, attribute.GetTopLevelType()));
+  };
+
   auto get_attribute_mergeability = [&](AttributeType attribute_type) {
     base::optional_ref<const AttributeInstance> attribute_1 =
         attribute(attribute_type);
@@ -306,9 +299,9 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
         newer.attribute(attribute_type);
 
     auto is_attribute_empty =
-        [](base::optional_ref<const AttributeInstance> attribute_instance) {
+        [&](base::optional_ref<const AttributeInstance> attribute_instance) {
           return !attribute_instance ||
-                 attribute_instance->NormalizedValue().empty();
+                 normalized_value(*attribute_instance).empty();
         };
     const bool is_attribute_1_empty = is_attribute_empty(attribute_1);
     const bool is_attribute_2_empty = is_attribute_empty(attribute_2);
@@ -328,8 +321,8 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
       return AttributeMergeabilityResult::kNewEntityHasNewAttribute;
     }
 
-    const std::u16string attribute_value_1 = attribute_1->NormalizedValue();
-    const std::u16string attribute_value_2 = attribute_2->NormalizedValue();
+    const std::u16string attribute_value_1 = normalized_value(*attribute_1);
+    const std::u16string attribute_value_2 = normalized_value(*attribute_2);
     // Returns 1 if the attributes are different, which ultimately means no
     // merge should happen.
     return attribute_value_1 == attribute_value_2
@@ -355,8 +348,8 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
             base::optional_ref<const AttributeInstance> attribute_2 =
                 newer.attribute(type);
             return attribute_1 && attribute_2 &&
-                   (attribute_1->NormalizedValue() ==
-                    attribute_2->NormalizedValue());
+                   normalized_value(*attribute_1) ==
+                       normalized_value(*attribute_2);
           });
         });
   }();

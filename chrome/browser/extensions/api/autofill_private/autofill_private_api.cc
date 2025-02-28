@@ -1235,8 +1235,11 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
   }
   std::vector<autofill_private::EntityInstanceWithLabels> result =
       base::ToVector(entity_data_manager->GetEntityInstances(),
-                     &autofill_ai_util::
-                         EntityInstanceToPrivateApiEntityInstanceWithLabels);
+                     [&](const EntityInstance& entity) {
+                       return autofill_ai_util::
+                           EntityInstanceToPrivateApiEntityInstanceWithLabels(
+                               entity, autofill_client()->GetAppLocale());
+                     });
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
 }
@@ -1271,7 +1274,7 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
   return RespondNow(ArgumentList(
       api::autofill_private::GetEntityInstanceByGuid::Results::Create(
           autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-              entity_instance.value()))));
+              entity_instance.value(), autofill_client()->GetAppLocale()))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

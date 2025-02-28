@@ -89,16 +89,6 @@ class AttributeInstance final {
 
   const AttributeType& type() const { return type_; }
 
-  // Returns the full value stored in the attribute, formatted according to
-  // `app_locale`.
-  std::u16string value() const;
-
-  // Returns the normalized version of `this` attribute instance value. This
-  // normalization removes extra spaces, converts the value to lowercase and
-  // removes some special characters. Its underlying implementation is
-  // `AutofillProfileComparator::NormalizeForComparison()`.
-  std::u16string NormalizedValue() const;
-
   // In the functions below, `type` refers to the type of data we want to fetch
   // from the attribute, and not the type of the attribute itself. The two might
   // coincide for unstructured types but they are different for structured
@@ -115,6 +105,7 @@ class AttributeInstance final {
   class GetRawInfoPassKey {
     constexpr GetRawInfoPassKey() = default;
     friend class AttributeInstance;
+    friend class EntityInstance;
     friend class EntityTable;
   };
   // Same as `GetInfo` but returns the value as stored with no formatting

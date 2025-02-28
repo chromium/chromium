@@ -316,7 +316,8 @@ Suggestion::Icon GetSuggestionIcon(
 std::vector<Suggestion> CreateFillingSuggestions(
     const autofill::FormStructure& form,
     FieldGlobalId field_global_id,
-    base::span<const autofill::EntityInstance> entities) {
+    base::span<const autofill::EntityInstance> entities,
+    const std::string& app_locale) {
   const AutofillField* autofill_field = form.GetFieldById(field_global_id);
   CHECK(autofill_field);
 
@@ -352,7 +353,8 @@ std::vector<Suggestion> CreateFillingSuggestions(
     if (!triggering_field_attribute_type->is_obfuscated()) {
       const std::u16string normalized_attribute =
           autofill::AutofillProfileComparator::NormalizeForComparison(
-              attribute_for_triggering_field->value());
+              attribute_for_triggering_field->GetInfo(
+                  autofill_field->Type().GetStorableType(), app_locale));
       const std::u16string normalized_field_content =
           autofill::AutofillProfileComparator::NormalizeForComparison(
               autofill_field->value(autofill::ValueSemantics::kCurrent));
@@ -386,17 +388,23 @@ std::vector<Suggestion> CreateFillingSuggestions(
 
       base::optional_ref<const AttributeInstance> attribute =
           entity.attribute(*attribute_type);
-      if (!attribute || attribute->value().empty()) {
+      const std::u16string attribute_value =
+          attribute
+              ? attribute->GetInfo(attribute->GetTopLevelType(), app_locale)
+              : u"";
+      if (attribute_value.empty()) {
         continue;
       }
 
-      attribute_type_to_value.emplace_back(*attribute_type, attribute->value());
-      field_to_value.emplace_back(field->global_id(), attribute->value());
+      attribute_type_to_value.emplace_back(*attribute_type, attribute_value);
+      field_to_value.emplace_back(field->global_id(), attribute_value);
     }
 
     SuggestionWithMetadata& s = suggestions_with_metadata.emplace_back();
-    s.suggestion = Suggestion(attribute_for_triggering_field->value(),
-                              SuggestionType::kFillAutofillAi);
+    s.suggestion =
+        Suggestion(attribute_for_triggering_field->GetInfo(
+                       autofill_field->Type().GetStorableType(), app_locale),
+                   SuggestionType::kFillAutofillAi);
     s.suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
     s.suggestion.icon =
         GetSuggestionIcon(triggering_field_attribute_type->entity_type());

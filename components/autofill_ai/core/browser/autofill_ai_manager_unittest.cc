@@ -94,26 +94,30 @@ auto HasAutofillAiPayload(auto expected_payload) {
                VariantWith<AutofillAiPayload>(expected_payload));
 }
 
-auto HasAttributeWithValue(AttributeType attribute_type, std::u16string value) {
+auto HasAttributeWithValue(AttributeType attribute_type,
+                           std::u16string value,
+                           const std::string& app_locale) {
   return Truly([=](const EntityInstance& entity) {
     if (entity.type() != attribute_type.entity_type()) {
       return false;
     }
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(attribute_type);
-    return attribute && attribute->value() == value;
+    return attribute && attribute->GetInfo(attribute->GetTopLevelType(),
+                                           app_locale) == value;
   });
 }
 
 auto PassportWithNumber(std::u16string number) {
   return HasAttributeWithValue(
-      AttributeType(AttributeTypeName::kPassportNumber), std::move(number));
+      AttributeType(AttributeTypeName::kPassportNumber), std::move(number),
+      /*app_locale=*/"");
 }
 
 auto VehicleWithLicensePlate(std::u16string license_plate) {
   return HasAttributeWithValue(
       AttributeType(AttributeTypeName::kVehicleLicensePlate),
-      std::move(license_plate));
+      std::move(license_plate), /*app_locale=*/"");
 }
 
 class BaseAutofillAiManagerTest : public testing::Test {
@@ -264,23 +268,26 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
   }
 
   std::u16string GetValueFromEntityForFieldType(const EntityInstance entity,
-                                                autofill::FieldType type) {
+                                                autofill::FieldType type,
+                                                const std::string& app_locale) {
     std::optional<autofill::AttributeType> attribute =
         autofill::AttributeType::FromFieldType(type);
     CHECK(attribute);
     base::optional_ref<const autofill::AttributeInstance> instance =
         entity.attribute(*attribute);
     CHECK(instance);
-    return instance->value();
+    return instance->GetInfo(type, app_locale);
   }
 
   std::u16string GetValueFromEntityForAttributeTypeName(
       const EntityInstance entity,
-      AttributeTypeName type) {
+      AttributeTypeName type,
+      const std::string& app_locale) {
+    autofill::AttributeType attribute_type = autofill::AttributeType(type);
     base::optional_ref<const autofill::AttributeInstance> instance =
-        entity.attribute(autofill::AttributeType(type));
+        entity.attribute(attribute_type);
     CHECK(instance);
-    return instance->value();
+    return instance->GetInfo(attribute_type.field_type(), app_locale);
   }
 };
 
@@ -560,12 +567,14 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(saved_entities.size(), 1u);
   const EntityInstance& saved_entity = *saved_entities.begin();
   EXPECT_EQ(saved_entity, *new_entity);
-  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entity, AttributeTypeName::kPassportName),
-            u"Jon Doe");
-  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entity, AttributeTypeName::kPassportNumber),
-            u"1234321");
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entity, AttributeTypeName::kPassportName, /*app_locale=*/""),
+      u"Jon Doe");
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""),
+      u"1234321");
 }
 
 TEST_F(AutofillAiManagerImportFormTest,
@@ -622,10 +631,10 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
       {autofill::LOYALTY_MEMBERSHIP_ID, autofill::LOYALTY_MEMBERSHIP_PROGRAM});
   EntityInstance entity = autofill::test::GetLoyaltyCardEntityInstance();
   // Set the filled values to be the same as the ones already stored.
-  form->field(0)->set_value(
-      GetValueFromEntityForFieldType(entity, autofill::LOYALTY_MEMBERSHIP_ID));
+  form->field(0)->set_value(GetValueFromEntityForFieldType(
+      entity, autofill::LOYALTY_MEMBERSHIP_ID, /*app_locale=*/""));
   form->field(1)->set_value(GetValueFromEntityForFieldType(
-      entity, autofill::LOYALTY_MEMBERSHIP_PROGRAM));
+      entity, autofill::LOYALTY_MEMBERSHIP_PROGRAM, /*app_locale=*/""));
   AddOrUpdateEntityInstance(entity);
 
   base::test::TestFuture<std::unique_ptr<FormStructure>, bool>
@@ -680,12 +689,14 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
     saved_entity = *(saved_entities.begin() + 1);
   }
   EXPECT_EQ(saved_entity, *entity);
-  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entity, AttributeTypeName::kPassportName),
-            u"Jon Doe");
-  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entity, AttributeTypeName::kPassportNumber),
-            u"1234321");
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entity, AttributeTypeName::kPassportName, /*app_locale=*/""),
+      u"Jon Doe");
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""),
+      u"1234321");
 }
 
 TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
@@ -704,10 +715,10 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   // existing entity, also fill the issue and expiry dates.
   form->field(0)->set_value(GetValueFromEntityForFieldType(
       existing_entity_without_issue_and_expiry_dates,
-      autofill::PASSPORT_NAME_TAG));
+      autofill::PASSPORT_NAME_TAG, /*app_locale=*/""));
   form->field(1)->set_value(GetValueFromEntityForFieldType(
-      existing_entity_without_issue_and_expiry_dates,
-      autofill::PASSPORT_NUMBER));
+      existing_entity_without_issue_and_expiry_dates, autofill::PASSPORT_NUMBER,
+      /*app_locale=*/""));
   // Issue date
   form->field(2)->set_value(u"01/02/2016");
   // Expirty date
@@ -745,10 +756,12 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   EXPECT_EQ(saved_entity.guid(),
             existing_entity_without_issue_and_expiry_dates.guid());
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entity, AttributeTypeName::kPassportIssueDate),
+                saved_entity, AttributeTypeName::kPassportIssueDate,
+                /*app_locale=*/""),
             u"01/02/2016");
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
-                saved_entity, AttributeTypeName::kPassportExpiryDate),
+                saved_entity, AttributeTypeName::kPassportExpiryDate,
+                /*app_locale=*/""),
             u"01/02/2020");
 }
 

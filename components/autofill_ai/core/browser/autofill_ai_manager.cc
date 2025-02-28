@@ -204,7 +204,8 @@ std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
 
 // Given an `entity`, returns the string to use as a strike key for each entry
 // in `entity.type().strike_keys()`.
-std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity) {
+std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
+                                                const std::string& app_locale) {
   auto value_for_strike_key = [&](DenseSet<AttributeType> types) {
     // A list of (attribute_type_name, attribute_value) pairs.
     std::vector<std::pair<std::string, std::string>> key_value_pairs =
@@ -212,8 +213,10 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity) {
           base::optional_ref<const AttributeInstance> attribute =
               entity.attribute(attribute_type);
           return std::pair(std::string(attribute_type.name_as_string()),
-                           attribute ? base::UTF16ToUTF8(attribute->value())
-                                     : std::string());
+                           attribute
+                               ? base::UTF16ToUTF8(attribute->GetInfo(
+                                     attribute->GetTopLevelType(), app_locale))
+                               : std::string());
         });
 
     // We sort the keys to ensure they remain stable even if the ordering in
@@ -440,7 +443,8 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
   }
 
   CHECK(autofill_field->GetAutofillAiServerTypePredictions());
-  return CreateFillingSuggestions(*form_structure, field_global_id, entities);
+  return CreateFillingSuggestions(*form_structure, field_global_id, entities,
+                                  client_->GetAutofillClient().GetAppLocale());
 }
 
 bool AutofillAiManager::ShouldDisplayIph(
@@ -465,7 +469,8 @@ void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,
             entity.type().name_as_string(), url.host()));
   }
   if (save_strike_db_by_attribute_) {
-    for (const std::string& key : GetAttributeStrikeKeys(entity)) {
+    for (const std::string& key : GetAttributeStrikeKeys(
+             entity, client_->GetAutofillClient().GetAppLocale())) {
       save_strike_db_by_attribute_->AddStrike(key);
     }
   }
@@ -487,7 +492,8 @@ void AutofillAiManager::ClearStrikesForSave(
             entity.type().name_as_string(), url.host()));
   }
   if (save_strike_db_by_attribute_) {
-    for (const std::string& key : GetAttributeStrikeKeys(entity)) {
+    for (const std::string& key : GetAttributeStrikeKeys(
+             entity, client_->GetAutofillClient().GetAppLocale())) {
       save_strike_db_by_attribute_->ClearStrikes(key);
     }
   }
@@ -511,7 +517,9 @@ bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
 
   if (!save_strike_db_by_attribute_ ||
       std::ranges::any_of(
-          GetAttributeStrikeKeys(entity), [&](const std::string& key) {
+          GetAttributeStrikeKeys(entity,
+                                 client_->GetAutofillClient().GetAppLocale()),
+          [&](const std::string& key) {
             return save_strike_db_by_attribute_->ShouldBlockFeature(key);
           })) {
     return true;

@@ -13,6 +13,8 @@
 namespace autofill {
 namespace {
 
+constexpr char kAppLocaleUS[] = "en-US";
+
 TEST(AutofillEntityInstanceTest, Attributes) {
   const char16_t kName[] = u"Pippi";
   EntityInstance pp =
@@ -26,7 +28,8 @@ TEST(AutofillEntityInstanceTest, Attributes) {
         pp.attribute(AttributeType(kPassportName));
     ASSERT_TRUE(a);
     EXPECT_THAT(a->type(), AttributeType(kPassportName));
-    EXPECT_THAT(a->value(), std::u16string_view(kName));
+    EXPECT_THAT(a->GetInfo(NAME_FULL, /*app_locale=*/""),
+                std::u16string_view(kName));
   }
 }
 
@@ -94,11 +97,15 @@ TEST(
   EXPECT_EQ(result.mergeable_attributes.size(), 1u);
   EXPECT_EQ(result.mergeable_attributes[0].type().name(),
             AttributeTypeName::kPassportExpiryDate);
+
+  const AttributeInstance& old_attribute = result.mergeable_attributes[0];
+  base::optional_ref<const AttributeInstance> new_attribute =
+      new_entity.attribute(
+          AttributeType(AttributeTypeName::kPassportExpiryDate));
   EXPECT_EQ(
-      result.mergeable_attributes[0].value(),
-      new_entity
-          .attribute(AttributeType(AttributeTypeName::kPassportExpiryDate))
-          ->value());
+      old_attribute.GetInfo(old_attribute.GetTopLevelType(), /*app_locale=*/""),
+      new_attribute->GetInfo(new_attribute->GetTopLevelType(),
+                             /*app_locale=*/""));
   EXPECT_FALSE(result.is_subset);
 }
 
@@ -118,10 +125,13 @@ TEST(
   EXPECT_EQ(result.mergeable_attributes.size(), 1u);
   EXPECT_EQ(result.mergeable_attributes[0].type().name(),
             AttributeTypeName::kPassportCountry);
+
+  const AttributeInstance& old_attribute = result.mergeable_attributes[0];
+  base::optional_ref<const AttributeInstance> new_attribute =
+      new_entity.attribute(AttributeType(AttributeTypeName::kPassportCountry));
   EXPECT_EQ(
-      result.mergeable_attributes[0].value(),
-      new_entity.attribute(AttributeType(AttributeTypeName::kPassportCountry))
-          ->value());
+      old_attribute.GetInfo(old_attribute.GetTopLevelType(), kAppLocaleUS),
+      new_attribute->GetInfo(new_attribute->GetTopLevelType(), kAppLocaleUS));
   EXPECT_FALSE(result.is_subset);
 }
 
