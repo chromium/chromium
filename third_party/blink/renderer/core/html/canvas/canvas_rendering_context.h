@@ -97,6 +97,11 @@ class CORE_EXPORT CanvasRenderingContext
   CanvasRenderingContext& operator=(const CanvasRenderingContext&) = delete;
   ~CanvasRenderingContext() override = default;
 
+  // TODO(crbug.com/40280152): Remove these methods once killswitch-guarded
+  // behavior has shipped.
+  static bool CheckProviderInCanCreateCanvas2dResourceProvider();
+  static bool CheckProviderInCanvas2DRenderingContextIsPaintable();
+
   // Correspond to CanvasRenderingAPI defined in
   // tools/metrics/histograms/enums.xml
   enum class CanvasRenderingAPI {
