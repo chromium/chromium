@@ -179,6 +179,7 @@ void GlicKeyedService::OpenGlicSettingsPage() {
 void GlicKeyedService::ClosePanel() {
   window_controller_->Close();
   SetContextAccessIndicator(false);
+  screenshot_capturer_->CloseScreenPicker();
 }
 
 void GlicKeyedService::AttachPanel() {
