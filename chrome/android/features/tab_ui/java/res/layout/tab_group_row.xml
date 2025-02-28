@@ -93,7 +93,7 @@ found in the LICENSE file.
 
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/more"
-        android:layout_width="24dp"
+        android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="match_parent"
         android:background="@null"
         android:src="@drawable/ic_more_vert_24dp"

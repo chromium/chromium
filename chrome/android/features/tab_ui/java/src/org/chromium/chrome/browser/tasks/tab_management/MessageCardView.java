@@ -191,44 +191,44 @@ class MessageCardView extends LinearLayout {
     /**
      * Set left margin of the message card.
      *
-     * @param leftMarginDp Left margin of the card in dp.
+     * @param leftMarginPx Left margin of the card in px.
      */
-    void setLeftMargin(int leftMarginDp) {
+    void setLeftMargin(int leftMarginPx) {
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
-        params.leftMargin = leftMarginDp;
+        params.leftMargin = leftMarginPx;
         setLayoutParams(params);
     }
 
     /**
      * Set top margin of the message card.
      *
-     * @param topMarginDp Top margin of the card in dp.
+     * @param topMarginPx Top margin of the card in px.
      */
-    void setTopMargin(int topMarginDp) {
+    void setTopMargin(int topMarginPx) {
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
-        params.topMargin = topMarginDp;
+        params.topMargin = topMarginPx;
         setLayoutParams(params);
     }
 
     /**
      * Set right margin of the message card.
      *
-     * @param rightMarginDp Right margin of the card in dp.
+     * @param rightMarginPx Right margin of the card in px.
      */
-    void setRightMargin(int rightMarginDp) {
+    void setRightMargin(int rightMarginPx) {
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
-        params.rightMargin = rightMarginDp;
+        params.rightMargin = rightMarginPx;
         setLayoutParams(params);
     }
 
     /**
      * Set bottom margin of the message card.
      *
-     * @param bottomMarginDp Bottom margin of the card in dp.
+     * @param bottomMarginPx Bottom margin of the card in px.
      */
-    void setBottomMargin(int bottomMarginDp) {
+    void setBottomMargin(int bottomMarginPx) {
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
-        params.bottomMargin = bottomMarginDp;
+        params.bottomMargin = bottomMarginPx;
         setLayoutParams(params);
     }
 }
