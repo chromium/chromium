@@ -49,11 +49,11 @@ class RenderProcessHostTaskProvider
   void StartUpdating() override;
   void StopUpdating() override;
 
-  // Creates a RenderProcessHostTask from the given |data| and notifies the
+  // Creates a RenderProcessHostTask from the given `host` and notifies the
   // observer of its addition.
-  void CreateTask(const int render_process_host_id);
+  void CreateTask(content::RenderProcessHost* host);
 
-  // Deletes a RenderProcessHostTask whose |render_process_host_id| is provided
+  // Deletes a RenderProcessHostTask whose `render_process_host_id` is provided
   // after notifying the observer of its deletion.
   void DeleteTask(const int render_process_host_id);
 
