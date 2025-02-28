@@ -224,9 +224,6 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
 #endif
 }
 
-// TODO(crbug.com/356905053): Enable more extension util functions on
-// desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow) {
@@ -242,6 +239,9 @@ void SetAllowFileAccess(const std::string& extension_id,
   ReloadExtension(extension_id, context);
 }
 
+// TODO(crbug.com/356905053): Enable more extension util functions on
+// desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 bool IsExtensionIdle(const std::string& extension_id,
                      content::BrowserContext* context) {
   std::vector<std::string> ids_to_check;

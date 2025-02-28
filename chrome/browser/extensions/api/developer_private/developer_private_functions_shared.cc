@@ -4,18 +4,24 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions_shared.h"
 
+#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
@@ -156,6 +162,116 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   if (update.is_mv2_deprecation_notice_dismissed.value_or(false)) {
     ManifestV2ExperimentManager::Get(browser_context())
         ->MarkNoticeAsAcknowledgedGlobally();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  return RespondNow(NoArguments());
+}
+
+DeveloperPrivateUpdateExtensionConfigurationFunction::
+    ~DeveloperPrivateUpdateExtensionConfigurationFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
+  std::optional<developer::UpdateExtensionConfiguration::Params> params =
+      developer::UpdateExtensionConfiguration::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const developer::ExtensionConfigurationUpdate& update = params->update;
+
+  const Extension* extension = GetExtensionById(update.extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  // The chrome://extensions page uses toggles which, when dragged, do not
+  // invoke a user gesture. Work around this for the chrome://extensions page.
+  // TODO(dpapad): Remove this exemption when sliding a toggle counts as a
+  // gesture.
+  bool allowed =
+      source_context_type() == mojom::ContextType::kWebUi || user_gesture();
+  if (!allowed) {
+    return RespondNow(Error(kRequiresUserGestureError));
+  }
+
+  if (update.file_access) {
+    util::SetAllowFileAccess(extension->id(), browser_context(),
+                             *update.file_access);
+  }
+  if (update.incognito_access) {
+    util::SetIsIncognitoEnabled(extension->id(), browser_context(),
+                                *update.incognito_access);
+  }
+  if (update.user_scripts_access) {
+    ExtensionSystem::Get(browser_context())
+        ->user_script_manager()
+        ->SetUserScriptPrefEnabled(extension->id(),
+                                   *update.user_scripts_access);
+  }
+  if (update.error_collection) {
+    ErrorConsole::Get(browser_context())
+        ->SetReportingAllForExtension(extension->id(),
+                                      *update.error_collection);
+  }
+  if (update.host_access != developer::HostAccess::kNone) {
+    PermissionsManager* manager = PermissionsManager::Get(browser_context());
+    if (!manager->CanAffectExtension(*extension)) {
+      return RespondNow(Error(kCannotChangeHostPermissions));
+    }
+
+    ScriptingPermissionsModifier modifier(browser_context(), extension);
+    switch (update.host_access) {
+      case developer::HostAccess::kOnClick:
+        modifier.SetWithholdHostPermissions(true);
+        modifier.RemoveAllGrantedHostPermissions();
+        break;
+      case developer::HostAccess::kOnSpecificSites:
+        if (manager->HasBroadGrantedHostPermissions(*extension)) {
+          modifier.RemoveBroadGrantedHostPermissions();
+        }
+        modifier.SetWithholdHostPermissions(true);
+        break;
+      case developer::HostAccess::kOnAllSites:
+        modifier.SetWithholdHostPermissions(false);
+        break;
+      case developer::HostAccess::kNone:
+        NOTREACHED();
+    }
+  }
+  if (update.acknowledge_safety_check_warning_reason !=
+      developer_private::SafetyCheckWarningReason::kNone) {
+    ExtensionPrefs::Get(browser_context())
+        ->SetIntegerPref(
+            extension->id(), kPrefAcknowledgeSafetyCheckWarningReason,
+            static_cast<int>(update.acknowledge_safety_check_warning_reason));
+    DeveloperPrivateEventRouter* event_router =
+        DeveloperPrivateAPI::Get(browser_context())
+            ->developer_private_event_router();
+    if (event_router) {
+      event_router->OnExtensionConfigurationChanged(extension->id());
+    }
+  }
+// TODO(crbug.com/392777363): Enable this code when toolbars are supported on
+// desktop Android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (update.show_access_requests_in_toolbar) {
+    SitePermissionsHelper(Profile::FromBrowserContext(browser_context()))
+        .SetShowAccessRequestsInToolbar(
+            extension->id(), *update.show_access_requests_in_toolbar);
+  }
+  if (update.pinned_to_toolbar) {
+    ToolbarActionsModel* toolbar_actions_model = ToolbarActionsModel::Get(
+        Profile::FromBrowserContext(browser_context()));
+    if (!toolbar_actions_model->HasAction(extension->id())) {
+      return RespondNow(Error(kCannotSetPinnedWithoutAction));
+    }
+
+    bool is_action_pinned =
+        toolbar_actions_model->IsActionPinned(extension->id());
+    if (is_action_pinned != *update.pinned_to_toolbar) {
+      toolbar_actions_model->SetActionVisibility(extension->id(),
+                                                 !is_action_pinned);
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

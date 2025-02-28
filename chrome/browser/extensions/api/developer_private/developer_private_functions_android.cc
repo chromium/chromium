@@ -18,8 +18,6 @@ DEFINE_EMPTY_FUNC(DeveloperPrivateGetExtensionSizeFunction,
                   "developerPrivate.getExtensionSize")
 DEFINE_EMPTY_FUNC(DeveloperPrivateGetProfileConfigurationFunction,
                   "developerPrivate.getProfileConfiguration")
-DEFINE_EMPTY_FUNC(DeveloperPrivateUpdateExtensionConfigurationFunction,
-                  "developerPrivate.updateExtensionConfiguration")
 DEFINE_EMPTY_FUNC(DeveloperPrivateReloadFunction, "developerPrivate.reload")
 DEFINE_EMPTY_FUNC(DeveloperPrivateLoadUnpackedFunction,
                   "developerPrivate.loadUnpacked")

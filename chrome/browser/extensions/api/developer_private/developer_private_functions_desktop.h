@@ -82,17 +82,6 @@ class DeveloperPrivateGetProfileConfigurationFunction
   ResponseAction Run() override;
 };
 
-class DeveloperPrivateUpdateExtensionConfigurationFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.updateExtensionConfiguration",
-                             DEVELOPERPRIVATE_UPDATEEXTENSIONCONFIGURATION)
-
- protected:
-  ~DeveloperPrivateUpdateExtensionConfigurationFunction() override;
-  ResponseAction Run() override;
-};
-
 class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
                                        public ExtensionRegistryObserver,
                                        public LoadErrorReporter::Observer {
