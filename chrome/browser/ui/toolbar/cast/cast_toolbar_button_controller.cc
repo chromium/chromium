@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -27,7 +28,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/actions/action_id.h"
 
 CastToolbarButtonController::CastToolbarButtonController(Profile* profile)
     : CastToolbarButtonController(
