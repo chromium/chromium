@@ -3242,7 +3242,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // popin and this host is not within a fenced frame (as this prevents the
   // popin from impacting partitioning).
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  bool ShouldPartitionAsPopin() const override;
+  bool ShouldPartitionAsPopin() const;
 
   void SimulateDiscardShutdownKeepAliveTimeoutForTesting();
 

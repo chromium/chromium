@@ -899,33 +899,6 @@ WebContents* WebContentsImpl::GetOpenedPartitionedPopin() const {
   return opened_partitioned_popin_.get();
 }
 
-GURL WebContentsImpl::GetPartitionedPopinEmbedderOrigin(
-    base::PassKey<StorageAccessGrantPermissionContext>) const {
-  return GetPartitionedPopinEmbedderOriginImpl();
-}
-
-GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginForTesting() const {
-  return GetPartitionedPopinEmbedderOriginImpl();
-}
-
-GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginImpl() const {
-  // This should only be checked for popins.
-  CHECK(IsPartitionedPopin());
-
-  // If the opener is still around and has not navigated then we want to use the
-  // embedder origin it would have used for its own iframe.
-  if (partitioned_popin_opener_ &&
-      partitioned_popin_opener_->GetMainFrame()->GetLastCommittedOrigin() ==
-          partitioned_popin_opener_properties_->top_frame_origin) {
-    return PermissionUtil::GetLastCommittedOriginAsURL(
-        partitioned_popin_opener_->GetMainFrame());
-  }
-  // If we end up here there was a race condition between a permissions check
-  // and this popin being closed or navigated, so we should fallback to using
-  // the origin we partitioned by.
-  return partitioned_popin_opener_properties_->top_frame_origin.GetURL();
-}
-
 void WebContents::SetScreenOrientationDelegate(
     ScreenOrientationDelegate* delegate) {
   ScreenOrientationProvider::SetDelegate(delegate);

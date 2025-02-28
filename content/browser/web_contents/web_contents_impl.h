@@ -1595,17 +1595,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   WebContents* GetOpenedPartitionedPopin() const override;
 
-  // Returns the origin of the popin's opener if this is a partitioned popin.
-  // CHECKS if this is not a partitioned popin, as it should never be called
-  // in that case. This is used in permissions checks.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  GURL GetPartitionedPopinEmbedderOrigin(
-      base::PassKey<StorageAccessGrantPermissionContext>) const override;
-
-  // Same as GetPartitionedPopinEmbedderOrigin but for testing to bypass
-  // PassKey requirements.
-  GURL GetPartitionedPopinEmbedderOriginForTesting() const;
-
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
@@ -2184,9 +2173,6 @@ class CONTENT_EXPORT WebContentsImpl
   // Sets up RenderInputRouterDelegate mojo connections with InputManager on
   // the VizCompositorThread for input handling with InputVizard.
   void SetupRenderInputRouterDelegateConnection();
-
-  // See GetPartitionedPopinEmbedderOrigin for details.
-  GURL GetPartitionedPopinEmbedderOriginImpl() const;
 
   // Data for core operation ---------------------------------------------------
 

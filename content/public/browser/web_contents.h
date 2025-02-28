@@ -67,8 +67,6 @@
 #include "third_party/jni_zero/jni_zero.h"
 #endif
 
-class StorageAccessGrantPermissionContext;
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -1641,13 +1639,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // `kInvalidNetworkHandle` indicates that the current default network will
   // be bound.
   virtual net::handles::NetworkHandle GetTargetNetwork() = 0;
-
-  // Returns the origin of the popin's opener if this is a partitioned popin.
-  // CHECKS if this is not a partitioned popin, as it should never be called
-  // in that case. This is used in permissions checks.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual GURL GetPartitionedPopinEmbedderOrigin(
-      base::PassKey<StorageAccessGrantPermissionContext>) const = 0;
 
  private:
   // This interface should only be implemented inside content.
