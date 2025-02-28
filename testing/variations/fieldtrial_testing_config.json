@@ -11744,6 +11744,21 @@
             ]
         }
     ],
+    "IOSDownloadNoUIUpdateInBackground": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSDownloadNoUIUpdateInBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExplicitUITraitRegistration": [
         {
             "platforms": [
