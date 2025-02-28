@@ -166,6 +166,15 @@ TEST_F(ShowPromoTest, DoNotShowAddressSignInPromoWithoutImprovedBrowserSignin) {
                                             autofill::test::StandardProfile()));
 }
 
+TEST_F(ShowPromoTest, DoNotShowBookmarkSignInPromoWithoutExplicitSignIn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{switches::kSyncEnableBookmarksInTransportMode});
+
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class ShowSyncPromoTest : public ShowPromoTest {
  protected:
@@ -213,7 +222,8 @@ class ShowSigninPromoTestExplicitBrowserSignin : public ShowPromoTest {
   void SetUp() override {
     ShowPromoTest::SetUp();
     feature_list.InitWithFeatures(
-        /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
+        /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop,
+                              switches::kSyncEnableBookmarksInTransportMode},
         /*disabled_features=*/{});
     ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
         .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
@@ -429,6 +439,22 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
 }
 
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       RecordSignInPromoShownWithoutAccount_BookmarkPromoAlwaysShown) {
+  // Add an account without cookies. The per-profile pref will be recorded.
+  MakeAccountAvailable(identity_manager(), "test@email.com");
+  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+
+  // Show the bookmark promo five times. This does not influence whether it is
+  // shown again or not.
+  for (int i = 0; i < 5; i++) {
+    RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
+                           profile());
+  }
+
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
        RecordSignInPromoShownWithAccount) {
   // Test setup for adding an account with cookies.
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
@@ -526,6 +552,57 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
 
   EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile.get(), CreateAddress()));
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile.get()));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       RecordSignInPromoShownWithAccount_BookmarkPromoAlwaysShown) {
+  // Test setup for adding an account with cookies.
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                   ChromeSigninClientFactory::GetInstance(),
+                   base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                       &url_loader_factory)},
+               TestingProfile::TestingFactory{
+                   SyncServiceFactory::GetInstance(),
+                   base::BindRepeating([](content::BrowserContext* context) {
+                     return static_cast<std::unique_ptr<KeyedService>>(
+                         std::make_unique<syncer::MockSyncService>());
+                   })}}));
+
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
+
+  ON_CALL(*static_cast<syncer::MockSyncService*>(
+              SyncServiceFactory::GetForProfile(profile.get())),
+          GetDataTypesForTransportOnlyMode())
+      .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
+
+  // Add an account with cookies, which will record the per-account prefs.
+  identity_test_env->MakeAccountAvailable(
+      identity_test_env->CreateAccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
+          .WithCookie(true)
+          .Build("test@email.com"));
+  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));
+
+  // Show the bookmark promo five times. This does not influence whether it is
+  // shown again or not.
+  for (int i = 0; i < 5; i++) {
+    RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
+                           profile.get());
+  }
+
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
