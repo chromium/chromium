@@ -20,3 +20,5 @@ Local Modifications:
 * Created local override in sdk/sensors/android gyroscope and accelerometer classes, to use
   ALooper_pollOnce instead of ALooper_pollAll. This should be removed once the Cardboard SDK is
   upgraded to version v1.26.0 (b/354725659).
+* Created local override of QrCodeCaptureActivity in preperation for edge-to-edge rendering
+  This should be removed once the Cardboard SDK is upgraded to version v1.29.0
