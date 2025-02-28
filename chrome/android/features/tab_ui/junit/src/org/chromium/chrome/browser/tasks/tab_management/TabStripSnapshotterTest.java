@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.graphics.Color;
-
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
@@ -22,7 +20,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -54,8 +51,6 @@ public class TabStripSnapshotterTest {
     @Mock private TabFaviconFetcher mTabFaviconFetcherC;
 
     private final List<Object> mTokenList = new ArrayList<>();
-    private final ObservableSupplierImpl<Integer> mBackgroundColorSupplier =
-            new ObservableSupplierImpl<>(Color.TRANSPARENT);
 
     @Before
     public void setUp() {}
@@ -80,11 +75,7 @@ public class TabStripSnapshotterTest {
         PropertyModel propertyModel1 = makePropertyModel(mTabFaviconFetcherA, false, false);
         modelList.add(new ListItem(/* type= */ 0, propertyModel1));
         TabStripSnapshotter tabStripSnapshotter =
-                new TabStripSnapshotter(
-                        this::onModelTokenChange,
-                        modelList,
-                        mRecyclerView,
-                        mBackgroundColorSupplier);
+                new TabStripSnapshotter(this::onModelTokenChange, modelList, mRecyclerView);
 
         Mockito.verify(mRecyclerView, Mockito.times(1))
                 .addOnScrollListener(mOnScrollListenerCaptor.capture());
@@ -131,18 +122,5 @@ public class TabStripSnapshotterTest {
         Mockito.verify(mRecyclerView, Mockito.times(1)).removeOnScrollListener(onScrollListener);
         propertyModel1.set(TabProperties.FAVICON_FETCHER, mTabFaviconFetcherB);
         Assert.assertEquals(8, mTokenList.size());
-    }
-
-    @Test
-    public void testColor() {
-        ModelList modelList = new ModelList();
-        PropertyModel propertyModel1 = makePropertyModel(mTabFaviconFetcherA, false, false);
-        modelList.add(new ListItem(/* type= */ 0, propertyModel1));
-        new TabStripSnapshotter(
-                this::onModelTokenChange, modelList, mRecyclerView, mBackgroundColorSupplier);
-
-        mBackgroundColorSupplier.set(Color.RED);
-        Assert.assertEquals(2, mTokenList.size());
-        Assert.assertNotEquals(mTokenList.get(0), mTokenList.get(1));
     }
 }

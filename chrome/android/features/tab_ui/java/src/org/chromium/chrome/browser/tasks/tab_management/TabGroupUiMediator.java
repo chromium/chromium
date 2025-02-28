@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -87,8 +87,32 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         void resetGridWithListOfTabs(List<Tab> tabs);
     }
 
+    /** Wraps a child component's token with information from this component. */
+    private static class NestedSnapshot {
+        private final Object mChildSnapshot;
+        private final @ColorInt int mBackgroundColor;
+
+        /* package */ NestedSnapshot(Object childSnapshot, @ColorInt int backgroundColor) {
+            mChildSnapshot = childSnapshot;
+            mBackgroundColor = backgroundColor;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            return (obj instanceof NestedSnapshot other)
+                    && Objects.equals(mChildSnapshot, other.mChildSnapshot)
+                    && mBackgroundColor == other.mBackgroundColor;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mChildSnapshot, mBackgroundColor);
+        }
+    }
+
     private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
     private final Callback<List<GroupMember>> mOnGroupMembersChanged = this::onGroupMembersChanged;
+    private final Callback<Object> mOnChildTokenChange = this::onChildTokenChange;
     private final PropertyModel mModel;
     private final TabModelObserver mTabModelObserver;
     private final ResetHandler mResetHandler;
@@ -102,24 +126,24 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
     private final ThemeColorProvider mThemeColorProvider;
-    private final ObservableSupplierImpl<Integer> mBackgroundColorSupplier;
+    private final Callback<Object> mOnSnapshotTokenChange;
+    private final ObservableSupplier<Object> mChildTokenSupplier;
 
     // These should only be used when regular (non-incognito) tabs are set in the model.
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
 
-    private CallbackController mCallbackController = new CallbackController();
     private final LayoutStateObserver mLayoutStateObserver;
-    private LayoutStateProvider mLayoutStateProvider;
+    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
+    private final Callback<Boolean> mOmniboxFocusObserver;
 
-    private TabGroupModelFilterObserver mTabGroupModelFilterObserver;
+    private CallbackController mCallbackController = new CallbackController();
+    private LayoutStateProvider mLayoutStateProvider;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-    private Callback<Boolean> mOmniboxFocusObserver;
     private @Nullable Token mCurrentTabGroupId;
     private boolean mIsShowingHub;
 
     TabGroupUiMediator(
-            Context context,
             BottomControlsVisibilityController visibilityController,
             ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier,
             ResetHandler resetHandler,
@@ -134,7 +158,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             SharedImageTilesCoordinator sharedImageTilesCoordinator,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplierImpl<Integer> backgroundColorSupplier) {
+            Callback<Object> onSnapshotTokenChange,
+            ObservableSupplierImpl<Object> childTokenSupplier) {
         mResetHandler = resetHandler;
         mModel = model;
         mTabModelSelector = tabModelSelector;
@@ -145,10 +170,13 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
         mThemeColorProvider = themeColorProvider;
-        mBackgroundColorSupplier = backgroundColorSupplier;
 
         mThemeColorProvider.addThemeColorObserver(this);
         mThemeColorProvider.addTintObserver(this);
+        mOnSnapshotTokenChange = onSnapshotTokenChange;
+        mChildTokenSupplier = childTokenSupplier;
+        mChildTokenSupplier.addObserver(mOnChildTokenChange);
+
         onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
         onTintChanged(
                 mThemeColorProvider.getTint(),
@@ -183,7 +211,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
             mIsShowingHub = true;
         }
 
-        // register for tab model
+        // Register for tab model.
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -202,10 +230,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                                 && Objects.equals(tab.getTabGroupId(), mCurrentTabGroupId)
                                 && type == TabLaunchType.FROM_TAB_GROUP_UI) {
                             postUpdateInitialScrollIndex(
-                                    () -> {
-                                        return Math.max(
-                                                0, getTabsToShowForId(tab.getId()).size() - 1);
-                                    });
+                                    () -> Math.max(0, getTabsToShowForId(tab.getId()).size() - 1));
                         }
                     }
 
@@ -268,10 +293,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                     }
                 };
 
-        mCurrentTabModelObserver =
-                (tabModel) -> {
-                    resetTabStrip();
-                };
+        mCurrentTabModelObserver = (tabModel) -> resetTabStrip();
 
         mTabGroupModelFilterObserver =
                 new TabGroupModelFilterObserver() {
@@ -289,10 +311,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                 .getTabGroupModelFilter(true)
                 .addTabGroupObserver(mTabGroupModelFilterObserver);
 
-        mOmniboxFocusObserver =
-                isFocus -> {
-                    resetTabStrip();
-                };
+        mOmniboxFocusObserver = isFocus -> resetTabStrip();
         mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
 
         filterProvider.addTabGroupModelFilterObserver(mTabModelObserver);
@@ -327,9 +346,9 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
     }
 
     @Override
-    public void onThemeColorChanged(int color, boolean shouldAnimate) {
+    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
         mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, color);
-        mBackgroundColorSupplier.set(color);
+        publishSnapshotToken();
     }
 
     @Override
@@ -489,6 +508,16 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         return mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
     }
 
+    private void onChildTokenChange(Object ignored) {
+        publishSnapshotToken();
+    }
+
+    private void publishSnapshotToken() {
+        Object token =
+                new NestedSnapshot(mChildTokenSupplier.get(), mThemeColorProvider.getThemeColor());
+        mOnSnapshotTokenChange.onResult(token);
+    }
+
     public boolean onBackPressed() {
         // TODO(crbug.com/40099884): add a regression test to make sure that the back button closes
         // the dialog when the dialog is showing.
@@ -548,6 +577,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                     .removeObserver(mOnGroupMembersChanged);
             mTransitiveSharedGroupObserver.destroy();
         }
+        mChildTokenSupplier.removeObserver(mOnChildTokenChange);
     }
 
     private @Nullable DialogController getTabGridDialogControllerIfExists() {
