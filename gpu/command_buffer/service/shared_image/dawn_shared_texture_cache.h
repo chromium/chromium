@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_SHARED_TEXTURE_HOLDER_H_
-#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_SHARED_TEXTURE_HOLDER_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_SHARED_TEXTURE_CACHE_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_SHARED_TEXTURE_CACHE_H_
 
 #include <dawn/webgpu_cpp.h>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/ref_counted.h"
 
 namespace gpu {
 
-class DawnSharedTextureHolder {
+class DawnSharedTextureCache
+    : public base::RefCountedThreadSafe<DawnSharedTextureCache> {
  public:
   using WGPUTextureCache = base::flat_map<wgpu::TextureUsage, wgpu::Texture>;
 
@@ -25,10 +27,7 @@ class DawnSharedTextureHolder {
     WGPUTextureCache texture_cache;
   };
 
-  DawnSharedTextureHolder();
-  ~DawnSharedTextureHolder();
-  DawnSharedTextureHolder(DawnSharedTextureHolder&&);
-  DawnSharedTextureHolder& operator=(DawnSharedTextureHolder&&);
+  DawnSharedTextureCache();
 
   // Returns a SharedTextureMemory for this device, or nullptr if there is no
   // instance.
@@ -54,6 +53,10 @@ class DawnSharedTextureHolder {
   void EraseDataIfDeviceLost();
 
  private:
+  friend class base::RefCountedThreadSafe<DawnSharedTextureCache>;
+
+  ~DawnSharedTextureCache();
+
   // Returns a pointer to the WGPUTextureCache instance for this device, or
   // nullptr if there is no instance.
   WGPUTextureCache* GetWGPUTextureCache(const wgpu::Device& device);
@@ -72,4 +75,4 @@ class DawnSharedTextureHolder {
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_SHARED_TEXTURE_HOLDER_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_SHARED_TEXTURE_CACHE_H_

@@ -62,7 +62,6 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
                             wgpu::TextureUsage internal_usage) override;
   void EndAccess() override;
-  bool SupportsMultipleConcurrentReadAccess() override;
 
  private:
   const wgpu::Device device_;
@@ -169,28 +168,17 @@ class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
 class D3DSkiaGraphiteDawnImageRepresentation
     : public SkiaGraphiteDawnImageRepresentation {
  public:
-  static std::unique_ptr<D3DSkiaGraphiteDawnImageRepresentation> Create(
-      std::unique_ptr<DawnImageRepresentation> dawn_representation,
-      scoped_refptr<SharedContextState> context_state,
-      skgpu::graphite::Recorder* recorder,
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      int array_slice = 0);
-
+  using SkiaGraphiteDawnImageRepresentation::
+      SkiaGraphiteDawnImageRepresentation;
   ~D3DSkiaGraphiteDawnImageRepresentation() override;
 
+  bool SupportsMultipleConcurrentReadAccess() override;
   bool NeedGraphiteContextSubmitBeforeEndAccess() override;
 
  private:
-  D3DSkiaGraphiteDawnImageRepresentation(
-      std::unique_ptr<DawnImageRepresentation> dawn_representation,
-      skgpu::graphite::Recorder* recorder,
-      scoped_refptr<SharedContextState> context_state,
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      int array_slice);
+  std::vector<scoped_refptr<GraphiteTextureHolder>> WrapBackendTextures(
+      wgpu::Texture texture,
+      std::vector<skgpu::graphite::BackendTexture> backend_textures) override;
 };
 
 }  // namespace gpu

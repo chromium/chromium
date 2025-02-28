@@ -2,39 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image/dawn_shared_texture_holder.h"
+#include "gpu/command_buffer/service/shared_image/dawn_shared_texture_cache.h"
 
 #include "base/check_op.h"
 
 namespace gpu {
 
-DawnSharedTextureHolder::SharedTextureData::SharedTextureData() = default;
+DawnSharedTextureCache::SharedTextureData::SharedTextureData() = default;
 
-DawnSharedTextureHolder::SharedTextureData::~SharedTextureData() {
+DawnSharedTextureCache::SharedTextureData::~SharedTextureData() {
   for (auto [texture_usage, texture] : texture_cache) {
     texture.Destroy();
   }
 }
 
-DawnSharedTextureHolder::SharedTextureData::SharedTextureData(
+DawnSharedTextureCache::SharedTextureData::SharedTextureData(
     SharedTextureData&&) = default;
 
-DawnSharedTextureHolder::SharedTextureData&
-DawnSharedTextureHolder::SharedTextureData::operator=(SharedTextureData&&) =
+DawnSharedTextureCache::SharedTextureData&
+DawnSharedTextureCache::SharedTextureData::operator=(SharedTextureData&&) =
     default;
 
-DawnSharedTextureHolder::DawnSharedTextureHolder() = default;
+DawnSharedTextureCache::DawnSharedTextureCache() = default;
 
-DawnSharedTextureHolder::~DawnSharedTextureHolder() {}
+DawnSharedTextureCache::~DawnSharedTextureCache() = default;
 
-DawnSharedTextureHolder::DawnSharedTextureHolder(DawnSharedTextureHolder&&) =
-    default;
-
-DawnSharedTextureHolder& DawnSharedTextureHolder::operator=(
-    DawnSharedTextureHolder&&) = default;
-
-DawnSharedTextureHolder::WGPUTextureCache*
-DawnSharedTextureHolder::GetWGPUTextureCache(const wgpu::Device& device) {
+DawnSharedTextureCache::WGPUTextureCache*
+DawnSharedTextureCache::GetWGPUTextureCache(const wgpu::Device& device) {
   auto iter = shared_texture_data_cache_.find(device.Get());
   if (iter == shared_texture_data_cache_.end()) {
     return nullptr;
@@ -42,7 +36,7 @@ DawnSharedTextureHolder::GetWGPUTextureCache(const wgpu::Device& device) {
   return &iter->second.texture_cache;
 }
 
-wgpu::SharedTextureMemory DawnSharedTextureHolder::GetSharedTextureMemory(
+wgpu::SharedTextureMemory DawnSharedTextureCache::GetSharedTextureMemory(
     const wgpu::Device& device) {
   auto iter = shared_texture_data_cache_.find(device.Get());
   if (iter == shared_texture_data_cache_.end()) {
@@ -51,7 +45,7 @@ wgpu::SharedTextureMemory DawnSharedTextureHolder::GetSharedTextureMemory(
   return iter->second.memory;
 }
 
-void DawnSharedTextureHolder::MaybeCacheSharedTextureMemory(
+void DawnSharedTextureCache::MaybeCacheSharedTextureMemory(
     const wgpu::Device& device,
     const wgpu::SharedTextureMemory& memory) {
   if (!memory) {
@@ -70,7 +64,7 @@ void DawnSharedTextureHolder::MaybeCacheSharedTextureMemory(
                                      std::move(shared_texture_data));
 }
 
-wgpu::Texture DawnSharedTextureHolder::GetCachedWGPUTexture(
+wgpu::Texture DawnSharedTextureCache::GetCachedWGPUTexture(
     const wgpu::Device& device,
     wgpu::TextureUsage texture_usage) {
   auto* texture_cache = GetWGPUTextureCache(device);
@@ -86,7 +80,7 @@ wgpu::Texture DawnSharedTextureHolder::GetCachedWGPUTexture(
   return iter->second;
 }
 
-void DawnSharedTextureHolder::RemoveWGPUTextureFromCache(
+void DawnSharedTextureCache::RemoveWGPUTextureFromCache(
     const wgpu::Device& device,
     const wgpu::Texture& texture) {
   auto* texture_cache = GetWGPUTextureCache(device);
@@ -97,7 +91,7 @@ void DawnSharedTextureHolder::RemoveWGPUTextureFromCache(
   texture_cache->erase(texture.GetUsage());
 }
 
-void DawnSharedTextureHolder::MaybeCacheWGPUTexture(
+void DawnSharedTextureCache::MaybeCacheWGPUTexture(
     const wgpu::Device& device,
     const wgpu::Texture& texture) {
   if (!texture) {
@@ -115,7 +109,7 @@ void DawnSharedTextureHolder::MaybeCacheWGPUTexture(
   CHECK_EQ(texture.Get(), iter->second.Get());
 }
 
-void DawnSharedTextureHolder::DestroyWGPUTextureIfNotCached(
+void DawnSharedTextureCache::DestroyWGPUTextureIfNotCached(
     const wgpu::Device& device,
     const wgpu::Texture& texture) {
   if (auto cached_texture = GetCachedWGPUTexture(device, texture.GetUsage())) {
@@ -126,7 +120,7 @@ void DawnSharedTextureHolder::DestroyWGPUTextureIfNotCached(
   texture.Destroy();
 }
 
-void DawnSharedTextureHolder::EraseDataIfDeviceLost() {
+void DawnSharedTextureCache::EraseDataIfDeviceLost() {
   // Clear out any cached SharedTextureMemory instances for which the
   // associated Device has been lost. This both saves memory and more
   // importantly ensures that a new SharedTextureMemory instance will be

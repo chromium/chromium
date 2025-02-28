@@ -525,8 +525,8 @@ target(link_target_type, "gles2_sources") {
     sources += [
       "dawn_context_provider.cc",
       "dawn_context_provider.h",
-      "shared_image/dawn_shared_texture_holder.cc",
-      "shared_image/dawn_shared_texture_holder.h",
+      "shared_image/dawn_shared_texture_cache.cc",
+      "shared_image/dawn_shared_texture_cache.h",
       "shared_image/skia_graphite_dawn_image_representation.cc",
       "shared_image/skia_graphite_dawn_image_representation.h",
     ]
