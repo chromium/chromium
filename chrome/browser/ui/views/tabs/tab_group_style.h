@@ -62,7 +62,7 @@ class TabGroupStyle {
   virtual float GetSyncIconWidth() const;
 
   // Returns the attention indicator icon width.
-  virtual float GetAttentionIndicatorWidth(bool needs_attention) const;
+  virtual float GetAttentionIndicatorWidth() const;
 
   // The radius of the tab group header chip
   virtual int GetChipCornerRadius() const;
