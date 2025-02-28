@@ -4384,7 +4384,7 @@ deps = {
 
   'src/chrome/elevation_service/internal': {
     'url': Var('chrome_git') + '/chrome/elevation_service/internal.git' + '@' +
-        'c13ff6fa7c879977a9c92e1d753164f4119e41e1',
+        'dbffd67b918c1d5b5657e8a4dfd10ee66b57bf48',
     'condition': 'checkout_src_internal and checkout_win',
   },
 
