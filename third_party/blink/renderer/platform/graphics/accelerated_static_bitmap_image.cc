@@ -65,7 +65,7 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
     const gfx::Size& size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
@@ -74,7 +74,7 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id, size,
-      sk_color_type, alpha_type, std::move(sk_color_space),
+      viz::ToClosestSkColorType(format), alpha_type, std::move(sk_color_space),
       ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
       context_thread_ref, std::move(context_task_runner),
       std::move(release_callback)));

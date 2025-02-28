@@ -312,7 +312,7 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
   }
   DCHECK(release_callback);
 
-  auto sk_color_type = viz::ToClosestSkColorType(client_si->format());
+  auto format = client_si->format();
 
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
@@ -320,8 +320,8 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
           /* shared_image_texture_id = */ 0,
           gfx::Size(texture_descriptor_.size.width,
                     texture_descriptor_.size.height),
-          sk_color_type, kPremul_SkAlphaType, nullptr,
-          GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
+          format, kPremul_SkAlphaType, nullptr, GetContextProviderWeakPtr(),
+          base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback)));
 }

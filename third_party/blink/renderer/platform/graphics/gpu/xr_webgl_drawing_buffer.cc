@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -658,7 +659,7 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       buffer->shared_image, buffer->produce_sync_token,
-      /* shared_image_texture_id = */ 0, size_, kN32_SkColorType,
+      /* shared_image_texture_id = */ 0, size_, GetN32FormatForCanvas(),
       kPremul_SkAlphaType, nullptr, drawing_buffer_->ContextProviderWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),

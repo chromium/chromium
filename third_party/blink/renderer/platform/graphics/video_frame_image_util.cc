@@ -171,7 +171,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
         frame->shared_image(), frame->acquire_sync_token(), 0u,
-        frame->coded_size(), kN32_SkColorType, kUnpremul_SkAlphaType,
+        frame->coded_size(), GetN32FormatForCanvas(), kUnpremul_SkAlphaType,
         frame_sk_color_space,
         // Pass nullptr for |context_provider_wrapper|, because we don't
         // know which context the mailbox came from. It is used only to
