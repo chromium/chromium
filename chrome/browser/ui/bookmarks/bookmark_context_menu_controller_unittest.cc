@@ -30,7 +30,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/saved_tab_groups/public/features.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +59,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
  public:
   BookmarkContextMenuControllerTest() : model_(nullptr) {
     feature_list_.InitWithFeatures(
-        {syncer::kSyncEnableBookmarksInTransportMode}, {});
+        {switches::kSyncEnableBookmarksInTransportMode}, {});
   }
 
   void SetUp() override {

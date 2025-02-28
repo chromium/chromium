@@ -17,7 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -138,7 +138,7 @@ TEST_F(BookmarksApiUnittest, Create_NoParentLocalOnly) {
 // with bookmarks in transport mode.
 TEST_F(BookmarksApiUnittest, Create_NoParentAccount) {
   base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   model()->CreateAccountPermanentFolders();
 
   auto create_function = base::MakeRefCounted<BookmarksCreateFunction>();
@@ -178,7 +178,7 @@ TEST_F(BookmarksApiUnittest, Create_ValidParent) {
 TEST_F(BookmarksApiUnittest,
        Create_SucceedsInLocalParentWhenBothLocalAndAccountBookmarksExist) {
   base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   model()->CreateAccountPermanentFolders();
 
   auto create_function = base::MakeRefCounted<BookmarksCreateFunction>();
@@ -280,7 +280,7 @@ TEST_F(BookmarksApiUnittest,
 TEST_F(BookmarksApiUnittest,
        Get_SucceedsForNonEmptyLocalPermanentFolderWhenAccountFolders) {
   base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   model()->CreateAccountPermanentFolders();
 
   auto get_function = base::MakeRefCounted<BookmarksGetFunction>();
@@ -472,7 +472,7 @@ TEST_F(BookmarksApiUnittest,
 
 TEST_F(BookmarksApiUnittest, GetTree_SucceedsWhenLocalAndAccountFolders) {
   base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   model()->CreateAccountPermanentFolders();
 
   auto get_tree_function = base::MakeRefCounted<BookmarksGetTreeFunction>();
@@ -518,7 +518,7 @@ TEST_F(BookmarksApiUnittest, GetTree_SucceedsWhenLocalAndAccountFolders) {
 // Tests that moving from local to account storage is allowed.
 TEST_F(BookmarksApiUnittest, Move_LocalToAccount) {
   base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   model()->CreateAccountPermanentFolders();
 
   ASSERT_TRUE(model()->IsLocalOnlyNode(*folder_node()));

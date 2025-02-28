@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 
@@ -48,7 +48,7 @@ std::unique_ptr<KeyedService>
 AccountBookmarkSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBookmarksInTransportMode)) {
+          switches::kSyncEnableBookmarksInTransportMode)) {
     return nullptr;
   }
 

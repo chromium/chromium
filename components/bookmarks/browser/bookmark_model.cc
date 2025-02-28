@@ -42,8 +42,8 @@
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
 
@@ -55,7 +55,7 @@ namespace {
 
 bool AreFoldersForAccountStorageAllowed() {
   return base::FeatureList::IsEnabled(
-      syncer::kSyncEnableBookmarksInTransportMode);
+      switches::kSyncEnableBookmarksInTransportMode);
 }
 
 // Helper to get a mutable bookmark node.

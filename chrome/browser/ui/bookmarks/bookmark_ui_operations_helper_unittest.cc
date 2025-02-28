@@ -30,7 +30,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -433,7 +433,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
 TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
      GetDefaultParentForNonMergedSurfacesWithAccountPermanentNodes) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   bookmarks::BookmarkModel model(
       std::make_unique<bookmarks::TestBookmarkClient>());
   BookmarkMergedSurfaceService service(&model,
@@ -465,7 +465,7 @@ TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
 TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
      GetDefaultParentForNonMergedSurfacesNonPermanentFolder) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   bookmarks::BookmarkModel model(
       std::make_unique<bookmarks::TestBookmarkClient>());
   BookmarkMergedSurfaceService service(&model,

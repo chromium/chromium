@@ -500,7 +500,7 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
          // This feature would not be needed on mobile, but on desktop it is a
          // prerequisite to account storage for preferences.
          syncer::kSeparateLocalAndAccountSearchEngines,
-         syncer::kSyncEnableBookmarksInTransportMode},
+         switches::kSyncEnableBookmarksInTransportMode},
         /*disabled_features=*/{});
 
     // The Sync-to-Signin feature is only enabled in non-PRE_ tests.

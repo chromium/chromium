@@ -27,6 +27,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kUnoForAuto,
     &switches::kUseHostedDomainForManagementCheckOnSignin,
+    &switches::kSyncEnableBookmarksInTransportMode,
 };
 
 // static

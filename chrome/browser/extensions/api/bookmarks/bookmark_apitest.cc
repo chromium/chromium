@@ -22,7 +22,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_router.h"
@@ -166,7 +166,7 @@ class BookmarksApiEventsTest : public ExtensionApiTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<TestEventRouterObserver> event_observer_;
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   scoped_refptr<const Extension> extension_;

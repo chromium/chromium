@@ -22,7 +22,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -203,7 +203,7 @@ TEST_F(ExtensionBookmarksTest, GetLocalPermanentAndManagedFolders) {
 
 TEST_F(ExtensionBookmarksTest, GetAccountPermanentNodes) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   model_->CreateAccountPermanentFolders();
   // Add a URL to the mobile node so that it is not hidden.
   model_->AddURL(model_->account_mobile_node(), 0, u"Mobile bookmark",
@@ -262,7 +262,7 @@ TEST_F(ExtensionBookmarksTest,
 TEST_F(ExtensionBookmarksTest,
        GetTreePopulatesSyncingProperty_AccountNodesEnabled) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   model_->CreateAccountPermanentFolders();
   // Add a URL to the mobile node so that it is not hidden.
   model_->AddURL(model_->account_mobile_node(), 0, u"Mobile bookmark",

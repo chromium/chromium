@@ -27,7 +27,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -117,7 +116,7 @@ TEST(SigninPromoTest, IsSignInPromo_BookmarksWithoutExplicitSignin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{syncer::kSyncEnableBookmarksInTransportMode});
+      /*disabled_features=*/{switches::kSyncEnableBookmarksInTransportMode});
 
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
 }

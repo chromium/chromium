@@ -10750,7 +10750,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncEnableBookmarksInTransportModeName,
      flag_descriptions::kSyncEnableBookmarksInTransportModeDescription,
      kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(syncer::kSyncEnableBookmarksInTransportMode)},
+     FEATURE_VALUE_TYPE(switches::kSyncEnableBookmarksInTransportMode)},
 #endif
 
     {"visited-url-ranking-service-domain-deduplication",

@@ -43,6 +43,7 @@
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -128,7 +129,7 @@ class ShoppingServiceTest : public ShoppingServiceTestBase,
       // order to use account bookmarks.
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                                syncer::kSyncEnableBookmarksInTransportMode},
+                                switches::kSyncEnableBookmarksInTransportMode},
           /*disabled_features=*/{});
       bookmark_model_->CreateAccountPermanentFolders();
       identity_test_env_->MakePrimaryAccountAvailable(

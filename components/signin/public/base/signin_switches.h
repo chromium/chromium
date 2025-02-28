@@ -165,6 +165,13 @@ BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableExtensionsExplicitBrowserSignin);
 
+// This gates the new single-model approach where account bookmarks are stored
+// in separate permanent folders in BookmarkModel. The flag controls whether
+// BOOKMARKS datatype is enabled in the transport mode.
+// TODO(crbug.com/40943550): Remove this.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
+
 // Returns if the current browser supports an explicit sign in (signs the user
 // into transport mode, as defined above) for extension access points (e.g. the
 // `ExtensionInstalledBubbleView`).

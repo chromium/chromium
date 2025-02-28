@@ -27,7 +27,7 @@ BASE_DECLARE_FEATURE(kSyncFastDeletionsDuringBookmarkBatchUpload);
 // Batch Upload of all items is supported regardless of this feature flag.
 //
 // On Windows/Mac/Linux: this flag only affects behavior if the
-// `syncer::kSyncEnableBookmarksInTransportMode` feature is also enabled.
+// `switches::kSyncEnableBookmarksInTransportMode` feature is also enabled.
 //
 // On Android: this flag does not affect user-visiable behavior, but does enable
 // new code paths.

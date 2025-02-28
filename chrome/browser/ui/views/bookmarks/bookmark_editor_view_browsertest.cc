@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 
 // Test harness for integration tests using BookmarkEditorView.
@@ -54,7 +54,7 @@ class BookmarkEditorViewBrowserTestWithAccountBookmarks
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 };
 
 // TODO(crbug.com/354892429): Add test coverage for:
