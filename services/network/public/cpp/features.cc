@@ -203,6 +203,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "reduce-accept-language-cache-duration",
                    base::Days(30));
 
+// Enables support for the `Variants` response header and reduce
+// Accept-Language HTTP header only.
+BASE_FEATURE(kReduceAcceptLanguageHTTP,
+             "ReduceAcceptLanguageHTTP",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Reduce PNA preflight response waiting time to 200ms.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
 BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,

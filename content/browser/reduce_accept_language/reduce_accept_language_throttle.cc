@@ -48,7 +48,9 @@ ReduceAcceptLanguageThrottle::ReduceAcceptLanguageThrottle(
       origin_trials_delegate_(origin_trials_delegate),
       frame_tree_node_id_(frame_tree_node_id) {
   DCHECK(
-      base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage));
+      base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+      base::FeatureList::IsEnabled(
+          network::features::kReduceAcceptLanguageHTTP));
   LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart::kNavigationStarted);
 }
 

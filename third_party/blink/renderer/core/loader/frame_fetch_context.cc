@@ -786,7 +786,10 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
     ResourceRequest& request) {
   // If the feature is enabled, then reduce accept language are allowed only on
   // http and https.
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+  if (!(base::FeatureList::IsEnabled(
+            network::features::kReduceAcceptLanguage) ||
+        base::FeatureList::IsEnabled(
+            network::features::kReduceAcceptLanguageHTTP))) {
     return;
   }
 

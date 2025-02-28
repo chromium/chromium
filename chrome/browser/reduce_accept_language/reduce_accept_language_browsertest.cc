@@ -573,16 +573,28 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
 
 // Tests same origin requests with the ReduceAcceptLanguage feature enabled.
 class SameOriginReduceAcceptLanguageBrowserTest
-    : public ReduceAcceptLanguageBrowserTest {
+    : public ReduceAcceptLanguageBrowserTest,
+      public testing::WithParamInterface<bool> {
  protected:
   void EnabledFeatures() override {
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitFromCommandLine("ReduceAcceptLanguage", "");
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    // True: Enable the general feature for Reduce Accept-Language.
+    // False: Only enable reduction for HTTP header.
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {network::features::kReduceAcceptLanguage}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {network::features::kReduceAcceptLanguageHTTP},
+          {network::features::kReduceAcceptLanguage});
+    }
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         SameOriginReduceAcceptLanguageBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        LargeLanguageListAndScriptDisable) {
   base::HistogramTester histograms;
 
@@ -617,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                                                "en-US,en;q=0.9");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        EmptyUserAcceptLanguage) {
   base::HistogramTester histograms;
 
@@ -640,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        NoAvailLanguageHeader) {
   base::HistogramTester histograms;
 
@@ -658,12 +670,17 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 
-  // Verify navigator.languages only returns an array length 1 if
-  // ReduceAcceptLanguage enabled.
-  VerifyNavigatorLanguages({"zh"});
+  // Verify that navigator.languages only returns an array of length 1 if
+  // ReduceAcceptLanguage is enabled. For the HTTP-only feature, it should
+  // be no change and return the full list of languages.
+  if (GetParam()) {
+    VerifyNavigatorLanguages({"zh"});
+  } else {
+    VerifyNavigatorLanguages({"zh", "en"});
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        NoContentLanguageHeader) {
   base::HistogramTester histograms;
 
@@ -686,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        EmptyAvailLanguageAcceptLanguages) {
   base::HistogramTester histograms;
 
@@ -706,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        AvailLanguageAcceptLanguagesWhiteSpace) {
   base::HistogramTester histograms;
 
@@ -730,7 +747,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageMatchNonPrimaryLanguage) {
   base::HistogramTester histograms;
 
@@ -780,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
 // Verify no endless resend requests for the service worker navigation preload
 // requests.
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        ServiceWorkerNavigationPreload) {
   SetTestOptions(
       {.content_language_in_parent = "es",
@@ -857,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms3.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageMatchPrimaryLanguage) {
   base::HistogramTester histograms;
 
@@ -885,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SubresourceRequestNoRestart) {
   base::HistogramTester histograms;
   SetTestOptions({.content_language_in_parent = "es",
@@ -910,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageMatchMultipleLanguage) {
   base::HistogramTester histograms;
 
@@ -958,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms_after.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        SiteLanguageDontMatchAnyPreferredLanguage) {
   base::HistogramTester histograms;
 
@@ -987,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        PersistedAcceptLanguageNotAvailable) {
   SetTestOptions({.content_language_in_parent = "es",
                   .avail_language_in_parent = "es, ja, en-US",
@@ -1013,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeReduceAcceptLanguage) {
   base::HistogramTester histograms;
 
@@ -1060,7 +1077,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        ImgSubresourceReduceAcceptLanguage) {
   base::HistogramTester histograms;
 
@@ -1094,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeNoContentLanguageInChild) {
   base::HistogramTester histograms;
 
@@ -1128,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeNoAvailLanguageAcceptLanguageInChild) {
   base::HistogramTester histograms;
 
@@ -1162,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeSameContentLanguage) {
   base::HistogramTester histograms;
 
@@ -1196,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }
 
-IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
                        IframeDifferentContentLanguage) {
   base::HistogramTester histograms;
 
@@ -1231,7 +1248,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 }
 
 class ThirdPartyReduceAcceptLanguageBrowserTest
-    : public ReduceAcceptLanguageBrowserTest {
+    : public ReduceAcceptLanguageBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   static constexpr char kOtherSiteOriginUrl[] = "https://other-site.com:44445";
   static constexpr char kOtherSiteBOriginUrl[] =
@@ -1279,13 +1297,24 @@ class ThirdPartyReduceAcceptLanguageBrowserTest
 
  protected:
   void EnabledFeatures() override {
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitFromCommandLine("ReduceAcceptLanguage", "");
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    // True: Enable the general feature for Reduce Accept-Language.
+    // False: Only enable reduction for HTTP header.
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {network::features::kReduceAcceptLanguage}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {network::features::kReduceAcceptLanguageHTTP},
+          {network::features::kReduceAcceptLanguage});
+    }
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ThirdPartyReduceAcceptLanguageBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
                        IframeDifferentContentLanguage) {
   base::HistogramTester histograms;
 
@@ -1320,7 +1349,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
 }
 
-IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
                        ThirdPartyIframeWithSubresourceRequests) {
   base::HistogramTester histograms;
 
@@ -1363,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
                                      OtherSiteBasicRequestUrl()}));
 }
 
-IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
                        ThirdPartyIframeWithSubresourceRedirectRequests) {
   base::HistogramTester histograms;
 

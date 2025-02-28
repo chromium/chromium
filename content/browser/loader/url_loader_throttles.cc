@@ -69,7 +69,9 @@ CreateContentBrowserURLLoaderThrottles(
   // Creating a throttle only for outermost main frames to persist the reduced
   // accept language for an origin and to restart requests if needed, due to
   // language negotiation.
-  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+      base::FeatureList::IsEnabled(
+          network::features::kReduceAcceptLanguageHTTP)) {
     ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
         browser_context->GetReduceAcceptLanguageControllerDelegate();
     OriginTrialsControllerDelegate* origin_trials_delegate =

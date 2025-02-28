@@ -7552,7 +7552,12 @@
   },
   {
     "name": "reduce-accept-language",
-    "owners": [ "miketaylr@chromium.org", "victortan@chromium.org"],
+    "owners": [ "victortan@chromium.org", "miketaylr@chromium.org"],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "reduce-accept-language-http",
+    "owners": [ "victortan@chromium.org", "miketaylr@chromium.org"],
     "expiry_milestone": 145
   },
   {
