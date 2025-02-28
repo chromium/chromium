@@ -29,10 +29,12 @@ message ReadGroupsParams {
     optional string group_id = 1;
     // Might be empty if the client needs the most fresh data.
     optional string consistency_token = 2;
+    // Only set for reading new group user is not part of.
+    optional string access_token = 3;
   }
   repeated GroupParams group_params = 2;
 
-  // Only set for reading new group user is not part of.
+  // DEPRECTAED: Set this in group params.
   optional string access_token = 3;
 }
 
