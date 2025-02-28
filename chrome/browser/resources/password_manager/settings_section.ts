@@ -39,12 +39,13 @@ import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface SettingsSectionElement {
   $: {
+    accountStorageToggle: PrefToggleButtonElement,
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
+    passkeyUpgradeToggle: PrefToggleButtonElement,
     passwordToggle: PrefToggleButtonElement,
-    trustedVaultBanner: CrLinkRowElement,
-    accountStorageToggle: PrefToggleButtonElement,
     toast: CrToastElement,
+    trustedVaultBanner: CrLinkRowElement,
   };
 }
 
@@ -84,6 +85,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         },
       },
       // </if>
+
+      isPasskeyUpgradeSettingsToggleVisible_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('passkeyUpgradeSettingsToggleVisible');
+        },
+      },
 
       hasPasswordsToExport_: {
         type: Boolean,
@@ -158,6 +166,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private blockedSites_: BlockedSite[];
   private hasPasskeys_: boolean;
   private hasPasswordsToExport_: boolean;
+  private isPasskeyUpgradeSettingsToggleVisible_: boolean;
   private showPasswordsImporter_: boolean;
   private showMovePasswordsDialog_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;

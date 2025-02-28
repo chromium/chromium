@@ -18,9 +18,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 // clang-format off
-// <if expr="is_win or is_macosx or is_chromeos">
 import type { PrefToggleButtonElement } from 'chrome://password-manager/password_manager.js';
-// </if>
 
 // <if expr="is_win or is_macosx">
 import { PasskeysBrowserProxyImpl } from 'chrome://password-manager/password_manager.js';
@@ -800,4 +798,61 @@ suite('SettingsSectionTest', function() {
 
     assertTrue(isVisible($$(section, 'full-data-reset')));
   });
+
+  test('passkey upgrade toggle not shown with feature disabled', async () => {
+    loadTimeData.overrideValues({passkeyUpgradeSettingsToggleVisible: false});
+    const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
+    document.body.appendChild(settings);
+    await flushTasks();
+
+    const passkeyUpgradeToggle =
+        settings.shadowRoot!.querySelector('#passkeyUpgradeToggle');
+    assertFalse(!!passkeyUpgradeToggle);
+  });
+
+  test('passkey upgrade toggle changes pref value', async () => {
+    loadTimeData.overrideValues({passkeyUpgradeSettingsToggleVisible: true});
+    const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
+    document.body.appendChild(settings);
+    await flushTasks();
+
+    const passkeyUpgradeToggle =
+        settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
+            '#passkeyUpgradeToggle');
+    assertTrue(!!passkeyUpgradeToggle);
+
+    assertTrue(
+        settings.getPref('password_manager.automatic_passkey_upgrades').value);
+    assertTrue(passkeyUpgradeToggle.checked);
+
+    passkeyUpgradeToggle.click();
+    assertFalse(
+        settings.getPref('password_manager.automatic_passkey_upgrades').value);
+    assertFalse(passkeyUpgradeToggle.checked);
+  });
+
+  test(
+      'passkey upgrade toggle hides with password toggle unchecked',
+      async () => {
+        loadTimeData.overrideValues(
+            {passkeyUpgradeSettingsToggleVisible: true});
+        const settings = document.createElement('settings-section');
+        settings.prefs = makePasswordManagerPrefs();
+        document.body.appendChild(settings);
+        await flushTasks();
+
+        const passkeyUpgradeToggle =
+            settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
+                '#passkeyUpgradeToggle');
+        assertTrue(!!passkeyUpgradeToggle);
+
+        assertTrue(settings.$.passwordToggle.checked);
+        assertTrue(isVisible(passkeyUpgradeToggle));
+
+        settings.$.passwordToggle.click();
+        assertFalse(settings.$.passwordToggle.checked);
+        assertFalse(isVisible(passkeyUpgradeToggle));
+      });
 });

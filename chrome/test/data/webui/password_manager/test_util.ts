@@ -159,6 +159,11 @@ export function makePasswordManagerPrefs() {
       },
     },
     password_manager: {
+      automatic_passkey_upgrades: {
+        key: 'password_manager.automatic_passkey_upgrades',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
       // <if expr="is_win or is_macosx or is_chromeos">
       biometric_authentication_filling: {
         key: 'password_manager.biometric_authentication_filling',

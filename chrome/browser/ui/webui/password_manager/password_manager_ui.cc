@@ -42,6 +42,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "device/fido/features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -333,6 +334,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_PASSKEY_DETAILS_CARD_DELETE_BUTTON_NO_USERNAME_ARIA_LABEL},
       {"passkeyManagementInfoLabel",
        IDS_PASSWORD_MANAGER_UI_PASSKEY_MANAGEMENT_INFO_LABEL},
+      {"passkeyUpgradeSettingsToggleLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_UPGRADE_TOGGLE_LABEL},
+      {"passkeyUpgradeSettingsToggleSubLabel",
+       IDS_PASSWORD_MANAGER_UI_PASSKEY_UPGRADE_TOGGLE_SUBLABEL},
       {"passwordChangeSettingLabel", IDS_SETTINGS_PASSWORD_CHANGE_LABEL},
       {"passwordChangeSettingSubLabel", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
       {"passwordChangeSettingDataBreach",
@@ -617,6 +622,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddBoolean("isBatchUploadDesktopEnabled",
                      switches::IsBatchUploadDesktopEnabled());
+
+  source->AddBoolean(
+      "passkeyUpgradeSettingsToggleVisible",
+      base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade));
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
