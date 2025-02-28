@@ -39,17 +39,21 @@ public interface ProcessScopeDependencyProvider {
         return new int[0];
     }
 
+    /** Returns the server-provided feed launch CUI metadata. */
+    default byte[] getFeedLaunchCuiMetadata() {
+        return new byte[0];
+    }
+
     /**
      * Provides experimental feature state to xsurface implementations.
      *
-     * Must be called on the UI thread.
+     * <p>Must be called on the UI thread.
      *
-     * WARNING: These methods can crash Chrome!
+     * <p>WARNING: These methods can crash Chrome!
      *
-     * You must add the feature to kFeaturesExposedToJava in
-     * chrome/browser/flags/android/chrome_feature_list.cc before
-     * querying for the feature with these methods. Chrome will
-     * crash if it doesn't find the feature.
+     * <p>You must add the feature to kFeaturesExposedToJava in
+     * chrome/browser/flags/android/chrome_feature_list.cc before querying for the feature with
+     * these methods. Chrome will crash if it doesn't find the feature.
      */
     public interface FeatureStateProvider {
         boolean isFeatureActive(String featureName);
