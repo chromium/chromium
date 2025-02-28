@@ -743,15 +743,15 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   DCHECK_EQ(size_.width(), shared_image->size().width());
   DCHECK_EQ(size_.height(), shared_image->size().height());
 
-  auto sk_color_type = viz::ToClosestSkColorType(shared_image->format());
+  auto format = shared_image->format();
 
   // TODO(xidachen): Create a small pool of recycled textures from
   // ImageBitmapRenderingContext's transferFromImageBitmap, and try to use them
   // in DrawingBuffer.
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(shared_image), sync_token,
-      /* shared_image_texture_id = */ 0, size_, sk_color_type,
-      kPremul_SkAlphaType, nullptr, context_provider_->GetWeakPtr(),
+      /* shared_image_texture_id = */ 0, size_, format, kPremul_SkAlphaType,
+      nullptr, context_provider_->GetWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback));

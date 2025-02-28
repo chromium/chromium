@@ -640,9 +640,11 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillSupportPhoneticNameForJP,
       features::kAutofillEnableExpirationDateImprovements,
       features::kAutofillSupportLastNamePrefix,
+      features::kAutofillEnableLoyaltyCardsFilling,
       // Other improvements.
       features::kAutofillEnableCacheForRegexMatching,
       features::kAutofillEnableSupportForParsingWithSharedLabels,
+      features::kAutofillImproveCityFieldClassification,
       features::kAutofillUseNegativePatternForAllAttributes,
   };
   std::vector<base::test::FeatureRef> disabled_features = {

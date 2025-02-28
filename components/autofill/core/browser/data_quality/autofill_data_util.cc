@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <string_view>
@@ -503,9 +504,7 @@ bool IsValidCountryCode(const std::string& country_code) {
   if (country_code.size() != 2) {
     return false;
   }
-
-  static const base::NoDestructor<re2::RE2> country_code_regex("^[A-Z]{2}$");
-  return re2::RE2::FullMatch(country_code, *country_code_regex.get());
+  return std::ranges::all_of(country_code, base::IsAsciiUpper<char>);
 }
 
 bool IsValidCountryCode(const std::u16string& country_code) {

@@ -448,7 +448,7 @@ class CORE_EXPORT StyleCascade {
     // Arguments are resolved eagerly at the call site, and locals are resolved
     // through the process described in "Application of Local Variables"
     // near `ApplyLocalVariables` in this file.
-    HeapHashMap<String, Member<const CSSValue>> arguments;
+    const HeapHashMap<String, Member<const CSSValue>>& arguments;
     HeapHashMap<String, Member<const CSSValue>> locals;
 
     // Contains the *specified* locals, with any var() (etc) intact.
@@ -462,7 +462,7 @@ class CORE_EXPORT StyleCascade {
     //
     // When resolving some local (an entry in `unresolved_locals`),
     // the corresponding type in this map (if any) will be applied.
-    const HashMap<String, const CSSSyntaxDefinition*> local_types;
+    const HashMap<String, const CSSSyntaxDefinition*>& local_types;
 
     // Parent stack frame (for dynamic scoping).
     FunctionContext* parent = nullptr;

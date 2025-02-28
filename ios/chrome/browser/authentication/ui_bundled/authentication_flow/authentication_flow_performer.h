@@ -19,6 +19,10 @@ class ProfileIOS;
 @class SceneState;
 @protocol SystemIdentity;
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 // Callback called the profile switching succeeded (`success` is true) or failed
 // (`success` is false).
 // If `success is true:
@@ -42,6 +46,25 @@ using OnProfileSwitchCompletion =
 // animation if `animated` is true. Calls `completion` synchronously.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
+
+// Fetches the list of data types with unsync data in the primary account.
+// `-[id<AuthenticationFlowPerformerDelegate>
+// didFetchUnsyncedDataWithUnsyncedDataTypes:]` is called once the data are
+// fetched.
+- (void)fetchUnsyncedDataWithSyncService:(syncer::SyncService*)syncService;
+
+// Shows the unsynced data confirmation dialog.
+// `baseViewController` is used to display the confirmation diolog.
+// `anchorView` and `anchorRect` is the position that triggered sign-in. It is
+// used to attach the popover dialog with a regular window size (like iPad).
+// `-[id<AuthenticationFlowPerformerDelegate>
+// didAcceptToContinueWithUnsyncedData:]` is called once the user accepts or
+// refuses the confirmation dialog.
+- (void)showUnsyncedDataConfirmationWithBaseViewController:
+            (UIViewController*)baseViewController
+                                                   browser:(Browser*)browser
+                                                anchorView:(UIView*)anchorView
+                                                anchorRect:(CGRect)anchorView;
 
 // Fetches the managed status for `identity`.
 - (void)fetchManagedStatus:(ProfileIOS*)profile

@@ -96,14 +96,7 @@ void WebGpuDevice::OnRequestAdapter(wgpu::RequestAdapterStatus status,
   adapter_ = std::move(adapter);
 
   // TODO(bialpio): Determine the limits based on the incoming video frames.
-#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
   wgpu::Limits limits = {};
-#else
-  wgpu::RequiredLimits limits = {
-      .limits = {},
-  };
-#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
-
   auto* device_lost_callback = gpu::webgpu::BindWGPUOnceCallback(
       [](base::WeakPtr<WebGpuDevice> self, const wgpu::Device& device,
          wgpu::DeviceLostReason reason, wgpu::StringView message) {

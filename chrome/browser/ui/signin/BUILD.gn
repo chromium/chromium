@@ -37,6 +37,7 @@ source_set("signin") {
     sources += [
       "chrome_signout_confirmation_prompt.h",
       "dice_web_signin_interceptor_delegate.h",
+      "promos/bubble_signin_promo_delegate.h",
       "promos/bubble_signin_promo_signin_button_view.h",
       "promos/bubble_signin_promo_view.h",
       "promos/signin_promo_tab_helper.h",
@@ -81,14 +82,11 @@ source_set("impl") {
     "//url",
   ]
 
-  if (toolkit_views) {
-    sources += [ "promos/bubble_signin_promo_delegate.cc" ]
-  }
-
   if (enable_dice_support) {
     sources += [
       "chrome_signout_confirmation_prompt.cc",
       "dice_web_signin_interceptor_delegate.cc",
+      "promos/bubble_signin_promo_delegate.cc",
       "promos/bubble_signin_promo_signin_button_view.cc",
       "promos/bubble_signin_promo_view.cc",
       "promos/signin_promo_tab_helper.cc",
@@ -97,20 +95,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/extensions:extensions",
       "//chrome/browser/profiles:profile_util",
-      "//chrome/browser/ui/signin:bubble_signin_promo_delegate",
-    ]
-  }
-}
-
-if (enable_dice_support) {
-  # Extracted to a separate target to avoid circular deps in //c/b/ui/bookmarks.
-  source_set("bubble_signin_promo_delegate") {
-    sources = [ "promos/bubble_signin_promo_delegate.h" ]
-
-    public_deps = [
-      "//base:base",
-      "//components/signin/public/base",
-      "//components/sync/service:service",
     ]
   }
 }
@@ -183,6 +167,7 @@ if (!is_android) {
 
     if (enable_dice_support) {
       sources += [
+        "promos/bubble_sign_in_promo_delegate_browsertest.cc",
         "promos/signin_promo_tab_helper_browsertest.cc",
         "signin_view_controller_browsertest.cc",
       ]

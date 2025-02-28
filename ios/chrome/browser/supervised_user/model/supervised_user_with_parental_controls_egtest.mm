@@ -61,7 +61,7 @@ static const char* kInterstitialDetails = "Details";
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kIOSQuickDelete);
+  config.features_enabled_and_params.push_back({kIOSQuickDelete, {}});
 
   if ([self isRunningTest:@selector
             (testSupervisedUserInterstitialCanRequestLocalWebApproval)] ||
@@ -69,7 +69,15 @@ static const char* kInterstitialDetails = "Details";
           isRunningTest:@selector
           (testSupervisedUserInterstitialCanRequestLocalWebApprovalWithOrientationChanges
               )]) {
-    config.features_enabled.push_back(supervised_user::kLocalWebApprovals);
+    config.features_enabled_and_params.push_back(
+        {supervised_user::kLocalWebApprovals, {}});
+  } else if ([self isRunningTest:@selector
+                   (testSupervisedUserLocalWebApprovalDismissedAfterTimeout)]) {
+    // Sets the local web approval (LWA) load timeout to 0 to simulate a LWA
+    // load error.
+    config.features_enabled_and_params.push_back(
+        {supervised_user::kLocalWebApprovals,
+         {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "0"}}}});
   }
 
   // Makes sure the MVT is the top ranking magic stack module.
@@ -805,6 +813,75 @@ static const char* kInterstitialDetails = "Details";
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
+}
+
+// Tests that the local web approval bottom sheet dismisses after timeout upon
+// unresponsive network.
+- (void)testSupervisedUserLocalWebApprovalDismissedAfterTimeout {
+  // Set up histogram tracking.
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
+
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
+  [ChromeEarlGrey loadURL:blockedURL];
+
+  [self checkInterstitalIsShown];
+
+  // On clicking "Ask in person" button, the local web approval bottom sheet is
+  // displayed and immediately dismissed.
+  [ChromeEarlGrey tapWebStateElementWithID:@"local-approvals-button"];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
+
+  // Wait for the error snackbar message to be visible and tap to dismiss it.
+  id<GREYMatcher> snackbarCloseButton =
+      grey_accessibilityID(kParentAccessSnackbarClose);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:snackbarCloseButton];
+  [[EarlGrey selectElementWithMatcher:snackbarCloseButton]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:snackbarCloseButton];
+
+  // Verify that metrics are recorded on bottom sheet dismissal.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          supervised_user::LocalApprovalResult::
+                                              kError)
+                         forHistogram:@"FamilyLinkUser.LocalWebApprovalResult"],
+      @"Unexpected value for local web approval result histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"FamilyLinkUser.LocalWebApprovalResult"],
+      @"Unexpected total count for local web approval result histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:
+                                static_cast<int>(
+                                    supervised_user::LocalWebApprovalErrorType::
+                                        kPacpTimeoutExceeded)
+                         forHistogram:
+                             @"FamilyLinkUser.LocalWebApprovalErrorType"],
+      @"Unexpected value for local web approval error histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"FamilyLinkUser.LocalWebApprovalErrorType"],
+      @"Unexpected total count for local web approval error histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"FamilyLinkUser."
+                           @"LocalWebApprovalCompleteRequestTotalDuration"],
+      @"Unexpected total count for local web approval duration histogram.");
 }
 
 #pragma mark - Clear Content Behaviour

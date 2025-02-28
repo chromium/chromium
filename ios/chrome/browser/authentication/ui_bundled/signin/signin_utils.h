@@ -10,6 +10,7 @@
 #import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "components/signin/public/identity_manager/tribool.h"
+#import "components/sync/base/data_type.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -28,9 +29,16 @@ class TimeDelta;
 class Version;
 }  // namespace base
 
+namespace syncer {
+class SyncService;
+}
+
 namespace signin {
 
 class IdentityManager;
+
+using UnsyncedDataForSignoutOrProfileSwitchingCallback =
+    base::OnceCallback<void(syncer::DataTypeSet data_type_set)>;
 
 // Returns the maximum allowed waiting time for the Account Capabilities API.
 base::TimeDelta GetWaitThresholdForCapabilities();
@@ -100,6 +108,12 @@ bool IsFullscreenSigninPromoManagerMigrationDone();
 // Log to UserDefaults when the sign-in fullscreen promo impressions migration
 // is done.
 void LogFullscreenSigninPromoManagerMigrationDone();
+
+// Fetches asynchronously the unsynced data types for a sign-out or a profile
+// switching. And calls `callback`.
+void FetchUnsyncedDataForSignOutOrProfileSwitching(
+    syncer::SyncService* sync_service,
+    UnsyncedDataForSignoutOrProfileSwitchingCallback callback);
 
 }  // namespace signin
 

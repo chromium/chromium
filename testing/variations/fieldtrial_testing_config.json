@@ -9724,6 +9724,32 @@
             ]
         }
     ],
+    "FedCmIntrusionMitigation": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "UpdatedCooldownPeriod",
+                    "params": {
+                        "FirstDismissal": "24",
+                        "FourthDismissal": "28",
+                        "SecondDismissal": "5",
+                        "ThirdDismissal": "14"
+                    },
+                    "enable_features": [
+                        "FedCmUpdatedCooldownPeriod"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedLoadingPlaceholder": [
         {
             "platforms": [
@@ -11739,6 +11765,21 @@
                     },
                     "enable_features": [
                         "IOSDockingPromo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSDownloadNoUIUpdateInBackground": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSDownloadNoUIUpdateInBackground"
                     ]
                 }
             ]
@@ -24616,55 +24657,7 @@
             ],
             "experiments": [
                 {
-                    "name": "FlushCodeBasedOnTime60",
-                    "params": {
-                        "V8FlushCodeOldTime": "60"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime10",
-                    "params": {
-                        "V8FlushCodeOldTime": "10"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime30",
-                    "params": {
-                        "V8FlushCodeOldTime": "30"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime45",
-                    "params": {
-                        "V8FlushCodeOldTime": "45"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime180",
+                    "name": "Time180",
                     "params": {
                         "V8FlushCodeOldTime": "180"
                     },
@@ -24673,15 +24666,6 @@
                     ],
                     "disable_features": [
                         "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTabVisibility",
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTime"
                     ]
                 }
             ]

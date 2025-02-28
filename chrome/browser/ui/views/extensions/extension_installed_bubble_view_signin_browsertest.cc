@@ -14,16 +14,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/gaia_id_hash.h"
-#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/service/local_data_description.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,7 +99,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
   // Simulate a user signing in from the promo. This should open up a new tab
   // with the sign in page.
   int starting_tab_count = browser()->tab_strip_model()->count();
-  view_delegate->SignInForTesting(AccountInfo());
+  BubbleSignInPromoDelegate delegate(
+      *browser()->tab_strip_model()->GetActiveWebContents(),
+      signin_metrics::AccessPoint::kExtensionInstallBubble,
+      syncer::LocalDataItemModel::DataId(extension->id()));
+  delegate.OnSignIn(AccountInfo());
 
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
 }
@@ -143,7 +147,11 @@ class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
     EXPECT_TRUE(view_delegate->model()->show_sign_in_promo());
 
     // Initiate a sign in from the promo.
-    view_delegate->SignInForTesting(AccountInfo());
+    BubbleSignInPromoDelegate delegate(
+        *browser()->tab_strip_model()->GetActiveWebContents(),
+        signin_metrics::AccessPoint::kExtensionInstallBubble,
+        syncer::LocalDataItemModel::DataId(extension->id()));
+    delegate.OnSignIn(AccountInfo());
   }
 
  private:

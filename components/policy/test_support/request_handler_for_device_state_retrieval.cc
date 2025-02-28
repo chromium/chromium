@@ -72,6 +72,11 @@ RequestHandlerForDeviceStateRetrieval::HandleRequest(
     }
     device_state_retrieval_response->set_restore_mode(
         device_state.restore_mode);
+  } else {
+    em::DeviceStateRetrievalResponse* device_state_retrieval_response =
+        device_management_response.mutable_device_state_retrieval_response();
+    device_state_retrieval_response->set_restore_mode(
+        em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE);
   }
   return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }

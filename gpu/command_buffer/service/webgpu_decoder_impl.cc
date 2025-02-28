@@ -1580,11 +1580,7 @@ struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
   std::optional<std::string> device_label_;
   std::optional<std::string> queue_label_;
   std::vector<WGPUFeatureName> required_features_;
-#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
   WGPULimits required_limits_;
-#else
-  WGPURequiredLimits required_limits_;
-#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
 };
 
 }  // namespace

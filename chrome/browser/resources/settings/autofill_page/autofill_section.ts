@@ -123,7 +123,8 @@ export class SettingsAutofillSectionElement extends
           this.accountInfo_ = accountInfo || null;
         };
     const setPersonalDataListener: PersonalDataChangedListener =
-        (addressList, _cardList, _ibans, accountInfo?) => {
+        (addressList, _cardList, _ibans, _payOverTimeIssuerList,
+         accountInfo?) => {
           this.addresses = addressList;
           this.accountInfo_ = accountInfo || null;
         };

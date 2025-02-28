@@ -8,6 +8,7 @@
 #import "base/format_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/browser_sync/sync_to_signin_migration.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -202,4 +204,23 @@ BOOL ShouldShowManagedConfirmationForHostedDomain(
 
   // Show the dialog if User Policy is enabled.
   return policy::IsAnyUserPolicyFeatureEnabled();
+}
+
+SignedInUserState GetSignedInUserState(
+    AuthenticationService* authentication_service,
+    signin::IdentityManager* identity_manager,
+    PrefService* profile_pref_service) {
+  const bool is_managed_account_migrated_from_syncing =
+      browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
+          identity_manager, profile_pref_service) &&
+      authentication_service->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin);
+
+  if (is_managed_account_migrated_from_syncing) {
+    return SignedInUserState::kManagedAccountAndMigratedFromSyncing;
+  }
+  if (authentication_service->ShouldClearDataForSignedInPeriodOnSignOut()) {
+    return SignedInUserState::kManagedAccountClearsDataOnSignout;
+  }
+  return SignedInUserState::kNotSyncingAndReplaceSyncWithSignin;
 }

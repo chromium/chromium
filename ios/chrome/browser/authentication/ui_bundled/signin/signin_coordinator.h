@@ -189,7 +189,9 @@ class PrefRegistrySyncable;
 // Returns a coordinator to switch account.
 + (instancetype)accountMenuCoordinatorWithBaseViewController:
                     (UIViewController*)viewController
-                                                     browser:(Browser*)browser;
+                                                     browser:(Browser*)browser
+                                                  anchorView:
+                                                      (UIView*)anchorView;
 
 // Returns a coordinator to show the history sync.
 + (instancetype)

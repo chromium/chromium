@@ -415,7 +415,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
             page_info::kMerchantTrustEvaluationControlSurvey)) {
       ui_delegate_->GetMerchantTrustInfo(
           base::BindOnce(&PageInfoMainView::OnMerchantTrustDataFetched,
-                        weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr()));
     }
   } else {
     security_content_view_ = security_container_view_->AddChildView(
@@ -697,17 +697,16 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
 
 std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(
     page_info::MerchantData value) {
-  auto merchant_trust_button = std::make_unique<RichHoverButton>(
-      base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
-                          base::Unretained(navigation_handler_),
-                          page_info::MerchantBubbleOpenReferrer::kPageInfo),
-      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontIcon),
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
-      std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
+  auto merchant_trust_button =
+      value.reviews_summary.empty()
+          ? CreateMerchantTrustLaunchButton(value.page_url)
+          : CreateMerchantTrustSubpageButton(value);
+
   merchant_trust_button->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
   merchant_trust_button->SetProperty(views::kElementIdentifierKey,
                                      kMerchantTrustElementId);
+
   auto* star_rating_view =
       merchant_trust_button->SetCustomView(std::make_unique<StarRatingView>());
   star_rating_view->SetRating(value.star_rating);
@@ -717,6 +716,36 @@ std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(
               IDS_PAGE_INFO_MERCHANT_TRUST_STAR_RATING_A11Y_DESCRIPTION),
           value.star_rating));
   return merchant_trust_button;
+}
+
+std::unique_ptr<RichHoverButton>
+PageInfoMainView::CreateMerchantTrustSubpageButton(
+    page_info::MerchantData value) {
+  auto button = std::make_unique<RichHoverButton>(
+      base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
+                          base::Unretained(navigation_handler_),
+                          page_info::MerchantBubbleOpenReferrer::kPageInfo),
+      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontIcon),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
+      std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
+
+  return button;
+}
+
+std::unique_ptr<RichHoverButton>
+PageInfoMainView::CreateMerchantTrustLaunchButton(GURL page_url) {
+  auto button = std::make_unique<RichHoverButton>(
+      base::BindRepeating(&PageInfoMainView::OpenMerchantTrustSidePanel,
+                          weak_factory_.GetWeakPtr(), page_url),
+      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontIcon),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
+      std::u16string(), PageInfoViewFactory::GetLaunchIcon());
+  return button;
+}
+
+void PageInfoMainView::OpenMerchantTrustSidePanel(const GURL& url) {
+  ui_delegate_->OpenMerchantTrustSidePanel(url);
+  ui_delegate_->RecordMerchantTrustSidePanelOpened();
 }
 
 BEGIN_METADATA(PageInfoMainView)

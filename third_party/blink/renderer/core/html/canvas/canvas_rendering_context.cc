@@ -36,6 +36,47 @@
 
 namespace blink {
 
+namespace {
+
+// Serves as killswitch for changing CanCreateCanvasResourceProvider() to
+// create resource provider internally rather than Canvas2DLayerBridge.
+// TODO(crbug.com/40280152): Eliminate post safe-rollout.
+BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
+             "AdjustCanCreateCanvas2dResourceProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Serves as killswitch for migrating CanvasRenderingContext2D::IsPaintable()
+// from checking the existence of the canvas' Canvas2DLayerBridge to checking
+// for the existence of its resource provider.
+// NOTE: Do not check this feature directly: Check
+// CheckProviderInCanvas2DRenderingContextIsPaintable() instead.
+// TODO(crbug.com/40280152): Eliminate post safe-rollout.
+BASE_FEATURE(kIsPaintableChecksResourceProviderInsteadOfBridge,
+             "IsPaintableChecksResourceProviderInsteadOfBridge",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
+
+bool CanvasRenderingContext::
+    CheckProviderInCanCreateCanvas2dResourceProvider() {
+  return base::FeatureList::IsEnabled(kAdjustCanCreateCanvas2dResourceProvider);
+}
+
+// static
+bool CanvasRenderingContext::
+    CheckProviderInCanvas2DRenderingContextIsPaintable() {
+  // The change to IsPaintable() is safe only if the below feature is enabled,
+  // as (a) our reasoning about the IsPaintable() change is built on the
+  // behavior enabled by this feature, and (b) if we were to ever disable this
+  // feature but leave the IsPaintable() change in place we would be putting
+  // the codebase in an untested state.
+  if (!CheckProviderInCanCreateCanvas2dResourceProvider()) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      kIsPaintableChecksResourceProviderInsteadOfBridge);
+}
+
 CanvasRenderingContext::CanvasRenderingContext(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs,

@@ -312,15 +312,15 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   }
 
   // If either of the other modes failed and / or it was not possible to do, we
-  // will backup with a SharedBitmap, and if that was not possible with a Bitmap
-  // provider.
-  bool use_shared_bitmap_provider =
+  // will backup with a software SharedImage, and if that was not possible with
+  // a Bitmap provider.
+  bool use_software_shared_image_provider =
       base::FeatureList::IsEnabled(
           kUseSharedBitmapProviderForSoftwareCompositing)
           ? !SharedGpuContext::IsGpuCompositingEnabled()
           : !!dispatcher;
 
-  if (!provider && use_shared_bitmap_provider) {
+  if (!provider && use_software_shared_image_provider) {
     provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
         Size(), format, alpha_type, color_space, kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);

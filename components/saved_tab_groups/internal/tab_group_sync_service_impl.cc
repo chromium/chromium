@@ -1022,11 +1022,20 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
     return;
   }
 
+  for (const SavedTabGroup* shared_group : model_->GetSharedTabGroupsOnly()) {
+    if (shared_group->originating_tab_group_guid() ==
+        saved_tab_group->saved_guid()) {
+      // This group is the originating saved tab group of a shared tab group.
+      // Mark it as hidden and ignore it.
+      model_->SetGroupHidden(saved_tab_group->saved_guid());
+      return;
+    }
+  }
+
   if (saved_tab_group->collaboration_id()) {
     const CollaborationId& collaboration_id =
         saved_tab_group->collaboration_id().value();
-    if (!collaboration_finder_->IsCollaborationAvailable(
-            collaboration_id.value())) {
+    if (!collaboration_finder_->IsCollaborationAvailable(collaboration_id)) {
       shared_tab_groups_waiting_for_collaboration_.emplace_back(
           collaboration_id, guid, source);
       return;
@@ -1078,10 +1087,7 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     empty_groups_.erase(group_guid);
     // This is the first time we are notifying the observers about the group as
     // it was empty before.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TabGroupSyncServiceImpl::NotifyTabGroupAdded,
-                       weak_ptr_factory_.GetWeakPtr(), group_guid, source));
+    HandleTabGroupAdded(group_guid, source);
     return;
   }
 
@@ -1371,7 +1377,7 @@ void TabGroupSyncServiceImpl::NotifyOnSyncBridgeUpdateTypeChanged(
 }
 
 void TabGroupSyncServiceImpl::OnCollaborationAvailable(
-    const std::string& collaboration_id) {
+    const syncer::CollaborationId& collaboration_id) {
   // If there was a shared tab group waiting for the corresponding people group,
   // proceed now to notify the UI.
   auto iter = std::find_if(shared_tab_groups_waiting_for_collaboration_.begin(),

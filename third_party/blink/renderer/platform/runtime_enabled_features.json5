@@ -1169,7 +1169,7 @@
     },
     {
       name: "CSSMarkerNestedPseudoElement",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSMasonryLayout",
@@ -1181,7 +1181,7 @@
     },
     {
       name: "CSSNestedPseudoElements",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPaintAPIArguments",
@@ -1204,7 +1204,7 @@
     // progress(), media-progress(), container-progress()
     {
       name: "CSSProgressNotation",
-      status: "experimental",
+      status: "stable",
     },
     {
       // For ::column pseudo element for fragment styling.
@@ -1363,7 +1363,7 @@
     },
     {
       name: "CSSSignRelatedFunctions",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSSnapContainerQueries",
@@ -3423,12 +3423,6 @@
       public: true,
       status: "stable",
       base_feature: "none",
-    },
-    {
-      // When enabled, styling for the content within heading will be
-      // preserved after merge.
-      name: "PreserveFollowingBlockStylesDuringBlockMerge",
-      status: "stable",
     },
     {
       // When enabled, prevents undo to be applied if the enclosing block

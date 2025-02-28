@@ -40,6 +40,7 @@
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,12 +134,12 @@ class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
        PredictionsReceivedCallback callback),
       (override));
   MOCK_METHOD(
-      const std::optional<optimization_guide::proto::FormsPredictionsRequest>&,
+      const std::optional<optimization_guide::proto::AutofillAiTypeRequest>&,
       GetLatestRequest,
       (),
       (const override));
   MOCK_METHOD(
-      const std::optional<optimization_guide::proto::FormsPredictionsResponse>&,
+      const std::optional<optimization_guide::proto::AutofillAiTypeResponse>&,
       GetLatestResponse,
       (),
       (const override));

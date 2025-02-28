@@ -7440,4 +7440,116 @@ TEST_F(StyleEngineTest, ScrollStateUseCounter) {
   ClearWebDXFeatureCounter(WebDXFeature::kContainerScrollStateQueries);
 }
 
+TEST_F(StyleEngineTest, CSSVarFallbackCycleCounter) {
+  // No fallback.
+  ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        --x: var(--invalid);
+      }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSVarFallbackCycle));
+
+  // Invalid var() in a fallback that's used.
+  ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        --x: var(--invalid, var(--invalid2));
+      }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSVarFallbackCycle));
+
+  // Cycle in used fallback.
+  ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        --x: var(--invalid, var(--x));
+      }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSVarFallbackCycle));
+
+  // Cycle in unused fallback.
+  ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        --x: var(--y, var(--x));
+        --y: 10px;
+      }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSVarFallbackCycle));
+}
+
+TEST_F(StyleEngineTest, CSSAttrFallbackCycleCounter) {
+  // No fallback.
+  ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        --x: attr(data-foo type(*));
+      }
+    </style>
+    <div data-foo="attr(data-invalid type(*))"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAttrFallbackCycle));
+
+  // Invalid var() in a fallback that's used.
+  ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        --x: attr(data-foo type(*));
+      }
+    </style>
+    <div
+      data-foo="attr(data-invalid type(*), attr(data-invalid2 type(*)))"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAttrFallbackCycle));
+
+  // Cycle in used fallback.
+  ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        --x: attr(data-foo type(*));
+      }
+    </style>
+    <div data-foo="attr(data-invalid type(*), attr(data-foo type(*)))"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAttrFallbackCycle));
+
+  // Cycle in unused fallback.
+  ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        --x: attr(data-foo type(*));
+      }
+    </style>
+    <div
+      data-foo="attr(data-bar type(*), attr(data-foo type(*)))"
+      data-bar="10px"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAttrFallbackCycle));
+}
+
 }  // namespace blink

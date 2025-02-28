@@ -1081,10 +1081,11 @@ bool PrerenderHostRegistry::CancelHostInternal(
   // that this new-tab host belongs to. This will eventually destroy `this`, so
   // it should be performed asynchronously.
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
-    CHECK(prerender_host->initiator_web_contents());
     WebContentsImpl* initiator_web_contents = static_cast<WebContentsImpl*>(
         prerender_host->initiator_web_contents().get());
-    if (web_contents() != initiator_web_contents &&
+    // The initiator WebContents may not be alive.
+    // See crrev.com/c/6286546/comment/1adfe28c_4f769aa7 for more details.
+    if (initiator_web_contents && web_contents() != initiator_web_contents &&
         !initiator_web_contents->IsBeingDestroyed()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,

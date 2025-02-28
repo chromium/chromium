@@ -1713,7 +1713,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // From recent tabs, the tab grid might not be visible. As such, the animation
   // should never run in this flow.
   // TODO(crbug.com/335387869): Reenable animation for when tab groups sync is
-  // enabled for iPads. To trigger the animation, the HistoryCoordiantor owned
+  // enabled for iPads. To trigger the animation, the HistoryCoordinator owned
   // by this TabGridCoordinator needs to be stoped before the animation is ran.
   self.historyCoordinator.canPerformTabsClosureAnimation = NO;
   [self.historyCoordinator start];

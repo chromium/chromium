@@ -27,7 +27,7 @@ def __win_sdk_version(ctx):
 def __target_cpu(ctx):
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
-        target = gn_args.get("target_cpu")
+        target = gn_args.get("target_cpu", "").strip('"')
         if target:
             return target
     return "x64"

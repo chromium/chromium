@@ -99,7 +99,7 @@ static FlushForImageListener* GetFlushForImageListener() {
 namespace {
 
 // Serves as reverse-killswitch while we roll out the change for
-// CanvasResourceProviderSharedBitmap creation to require SW compositing.
+// CanvasResourceProviderSoftwareSharedImage creation to require SW compositing.
 // TODO(crbug.com/379996128): Eliminet post-safe rollout.
 BASE_FEATURE(kCanvasAllowCRPSharedBitmapWithGPUCompositing,
              "CanvasAllowCRPSharedBitmapWithGPUCompositing",
@@ -1073,7 +1073,7 @@ CanvasResourceProvider::CreateSoftwareSharedImageProvider(
     CanvasResourceHost* resource_host) {
   if (!base::FeatureList::IsEnabled(
           kCanvasAllowCRPSharedBitmapWithGPUCompositing)) {
-    // CanvasResourceProviderSharedBitmap works only with the software
+    // CanvasResourceProviderSoftwareSharedImage works only with the software
     // compositor. However, this was not historically enforced. We are rolling
     // out this enforcement with a reverse killswitch.
     if (SharedGpuContext::IsGpuCompositingEnabled()) {

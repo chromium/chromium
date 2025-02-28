@@ -125,6 +125,8 @@ class PLATFORM_EXPORT CanvasResource
   // The bounds for this resource.
   gfx::Size Size() const { return size_; }
 
+  viz::SharedImageFormat GetFormat() const { return format_; }
+
   // The ClientSharedImage containing information on the SharedImage
   // attached to the resource.
   virtual scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() = 0;

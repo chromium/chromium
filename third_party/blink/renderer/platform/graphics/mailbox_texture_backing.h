@@ -21,13 +21,19 @@ class MailboxTextureBacking : public TextureBacking {
   explicit MailboxTextureBacking(
       sk_sp<SkImage> sk_image,
       scoped_refptr<MailboxRef> mailbox_ref,
-      const SkImageInfo& info,
+      const gfx::Size& size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
   explicit MailboxTextureBacking(
       const gpu::Mailbox& mailbox,
       scoped_refptr<MailboxRef> mailbox_ref,
-      const SkImageInfo& info,
+      const gfx::Size& size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
   ~MailboxTextureBacking() override;
@@ -53,4 +59,4 @@ class MailboxTextureBacking : public TextureBacking {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MAILBOX_TEXTURE_BACKING_H__
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MAILBOX_TEXTURE_BACKING_H_

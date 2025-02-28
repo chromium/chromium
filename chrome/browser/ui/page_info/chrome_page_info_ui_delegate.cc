@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -320,6 +321,13 @@ ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
       ->GetEmbargoResult(site_url_, type);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void ChromePageInfoUiDelegate::OpenMerchantTrustSidePanel(const GURL& url) {
+  DCHECK(page_info::IsMerchantTrustFeatureEnabled());
+  ShowMerchantTrustSidePanel(web_contents_, url);
+}
+#endif
+
 void ChromePageInfoUiDelegate::GetMerchantTrustInfo(
     page_info::MerchantDataCallback callback) {
   if (auto* service =
@@ -340,6 +348,15 @@ void ChromePageInfoUiDelegate::RecordMerchantTrustButtonShown() {
     service->RecordMerchantTrustInteraction(
         web_contents_->GetVisibleURL(),
         page_info::MerchantTrustInteraction::kPageInfoRowShown);
+  }
+}
+
+void ChromePageInfoUiDelegate::RecordMerchantTrustSidePanelOpened() {
+  if (auto* service =
+          MerchantTrustServiceFactory::GetForProfile(GetProfile())) {
+    service->RecordMerchantTrustInteraction(
+        web_contents_->GetVisibleURL(),
+        page_info::MerchantTrustInteraction::kSidePanelOpened);
   }
 }
 

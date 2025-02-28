@@ -359,6 +359,13 @@ class CORE_EXPORT BlockLayoutAlgorithm
       InlineChildLayoutContext*,
       const InlineBreakToken** previous_inline_break_token);
 
+  // Update text box trim state after child layout.
+  void UpdateTextBoxTrim(LayoutInputNode child,
+                         const BreakToken* incoming_child_break_token,
+                         const InlineBreakToken* outgoing_inline_break_token,
+                         const LayoutResult*,
+                         PreviousInflowPosition*);
+
   // Consume all remaining fragmentainer space. This happens when we decide to
   // break before a child.
   //
@@ -517,24 +524,6 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const LogicalFragment& fragment,
       const LogicalOffset& logical_offset);
 
-  bool ShouldTextBoxTrimStart() const {
-    return should_text_box_trim_node_start_ ||
-           should_text_box_trim_fragmentainer_start_;
-  }
-  bool ShouldTextBoxTrimEnd() const {
-    return should_text_box_trim_node_end_ ||
-           should_text_box_trim_fragmentainer_end_;
-  }
-
-  bool ShouldTextBoxTrim() const {
-    return ShouldTextBoxTrimStart() || ShouldTextBoxTrimEnd();
-  }
-
-  void ClearShouldTextBoxTrimEnd() {
-    should_text_box_trim_node_end_ = false;
-    should_text_box_trim_fragmentainer_end_ = false;
-  }
-
   LogicalSize child_percentage_size_;
   LogicalSize replaced_child_percentage_size_;
 
@@ -585,15 +574,6 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // this). It is used to check if we're at a valid class A or B breakpoint
   // (between block-level siblings or line box siblings).
   bool has_break_opportunity_before_next_child_ : 1;
-
-  // If the `text-box-trim` is effective for block-start/end edges of a node.
-  bool should_text_box_trim_node_start_ : 1;
-  bool should_text_box_trim_node_end_ : 1;
-
-  // If the `text-box-trim` is effective for block-start/end edges of a
-  // fragmentainer.
-  bool should_text_box_trim_fragmentainer_start_ : 1;
-  bool should_text_box_trim_fragmentainer_end_ : 1;
 };
 
 }  // namespace blink

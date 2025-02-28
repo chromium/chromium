@@ -270,6 +270,53 @@ if ({{variable}} != null) {
 {%-   endfor %}
 {%- endfor %}
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof {{struct|name}})) {
+            return false;
+        }
+{%- if struct.fields %}
+        {{struct|name}} other = ({{struct|name}}) o;
+{%- endif %}
+{%- for field in struct.fields %}
+{#-   Covers the case for Object[] (for which we want to check deepEquals). #}
+{#-   We also want to box and use deepEquals for float arrays due to NaN logic. #}
+{%-   if field.kind|is_pointer_array_kind or field.kind|is_union_array_kind or (field.kind|is_array_kind and field.kind.kind|is_nullable_kind) %}
+        if (!Arrays.deepEquals(this.{{field|name}}, other.{{field|name}})) {
+            return false;
+        }
+{#-   Covers the case for primitive arrays (equals suffices). #}
+{%-   elif field.kind|is_array_kind %}
+        if (!Arrays.equals(this.{{field|name}}, other.{{field|name}})) {
+            return false;
+        }
+{#-   Covers the case for object fields and floats (which we box for NaN logic). #}
+{%-   elif field.kind|is_object_kind or field.kind|is_float_kind %}
+        if (!Objects.equals(this.{{field|name}}, other.{{field|name}})) {
+            return false;
+        }
+{#-   Covers the case for primitive fields. #}
+{%-   else %}
+        if (this.{{field|name}} != other.{{field|name}}) {
+          return false;
+        }
+{%-   endif %}
+{% endfor %}
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(new Object[] {
+{%- for field in struct.fields %}
+            this.{{field|name}},
+{%- endfor %}
+        });
+    }
 }
 {%- endmacro %}
 
@@ -359,6 +406,52 @@ public final class {{union|name}} extends org.chromium.mojo.bindings.Union {
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof {{union|name}})) {
+            return false;
+        }
+        {{union|name}} other = ({{union|name}}) o;
+        if (mTag != other.mTag) {
+            return false;
+        }
+        switch (mTag) {
+{%-   for field in union.fields %}
+            case Tag.{{field|ucc}}: {
+{#-     Covers the case for Object[] (for which we want to check deepEquals). #}
+{%-     if field.kind|is_pointer_array_kind or field.kind|is_union_array_kind or (field.kind|is_array_kind and field.kind.kind|is_nullable_kind) %}
+                return Arrays.deepEquals(this.m{{field|ucc}}, other.m{{field|ucc}});
+{#-     Covers the case for primitive arrays (equals suffices). #}
+{%-     elif field.kind|is_array_kind %}
+                return Arrays.equals(this.m{{field|ucc}}, other.m{{field|ucc}});
+{#-     Covers the case for object fields and floats (which we box for NaN logic). #}
+{%-     elif field.kind|is_object_kind or field.kind|is_float_kind %}
+                return Objects.equals(this.m{{field|ucc}}, other.m{{field|ucc}});
+{#-     Covers the case for primitive fields. #}
+{%-     else %}
+                return this.m{{field|ucc}} == other.m{{field|ucc}};
+{%-     endif %}
+            }
+{%-   endfor %}
+        }
+        throw new RuntimeException("Could not find tagged field on union.");
+    }
+
+    @Override
+    public int hashCode() {
+        switch (mTag) {
+{%-   for field in union.fields %}
+            case Tag.{{field|ucc}}: {
+                return Arrays.deepHashCode(new Object[] {this.mTag, this.m{{field|ucc}}});
+            }
+{%-   endfor %}
+        }
+        throw new RuntimeException("Could not find tagged field on union.");
     }
 }
 {%- endmacro %}

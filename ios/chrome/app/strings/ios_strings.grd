@@ -3938,6 +3938,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PARCEL_TRACKING_UNTRACK_SNACKBAR_TITLE" desc="Title for the snackbar indicating a parcel has been untracked. ">
           Stopped tracking this package
       </message>
+      <message name="IDS_IOS_PARENT_ACCESS_SNACKBAR_ACTION" desc="Snackbar action for local web approval errors." translateable="false">
+        Close
+      </message>
+      <message name="IDS_IOS_PARENT_ACCESS_SNACKBAR_MESSAGE" desc="Snackbar message for local web approval errors." translateable="false">
+        Something went wrong. Try again later.
+      </message>
       <message name="IDS_IOS_PARENT_MANAGED_POPOVER_TEXT" desc="This text is shown when parental controls are enabled for a supervised user which affects settings.">
       Managed by your parent
       </message>

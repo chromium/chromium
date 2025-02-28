@@ -37,9 +37,9 @@ class NameInfo : public FormGroup {
   NameInfo(const NameInfo& info);
   NameInfo(std::unique_ptr<NameFull> name,
            std::unique_ptr<AlternativeFullName> alternative_name);
+  NameInfo& operator=(const NameInfo& info);
   ~NameInfo() override;
 
-  NameInfo& operator=(const NameInfo& info);
   bool operator==(const NameInfo& other) const;
 
   // FormGroup:
@@ -114,9 +114,9 @@ class EmailInfo : public FormGroup {
   static constexpr FieldTypeSet kDatabaseStoredTypes{EMAIL_ADDRESS};
   EmailInfo();
   EmailInfo(const EmailInfo& info);
+  EmailInfo& operator=(const EmailInfo& info);
   ~EmailInfo() override;
 
-  EmailInfo& operator=(const EmailInfo& info);
   bool operator==(const EmailInfo& other) const;
   bool operator!=(const EmailInfo& other) const { return !operator==(other); }
 

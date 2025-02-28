@@ -561,11 +561,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // data.
   void ClearSessionToken();
 
-  // Explicitly converts from ActiveStatus enum in sync protos to enum in
-  // TemplateURLData.
-  static TemplateURLData::ActiveStatus ActiveStatusFromSync(
-      sync_pb::SearchEngineSpecifics_ActiveStatus is_active);
-
   // Explicitly converts from ActiveStatus enum in TemplateURLData to enum in
   // sync protos.
   static sync_pb::SearchEngineSpecifics_ActiveStatus ActiveStatusToSync(

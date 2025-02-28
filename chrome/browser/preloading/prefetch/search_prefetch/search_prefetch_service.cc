@@ -681,18 +681,8 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
       continue;
     }
 
-    if (prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
-      CoordinatePrefetchWithPrerender(match, web_contents, template_url_service,
-                                      canonical_search_url);
-      continue;
-    }
-
-    if (BaseSearchProvider::ShouldPrefetch(match)) {
-      MaybePrefetchURL(
-          GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
-                                 kSuggestPrefetchParam.Get()),
-          web_contents);
-    }
+    CoordinatePrefetchWithPrerender(match, web_contents, template_url_service,
+                                    canonical_search_url);
   }
 }
 

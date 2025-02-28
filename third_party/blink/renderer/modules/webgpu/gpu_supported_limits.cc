@@ -71,7 +71,6 @@ constexpr uint64_t UndefinedLimitValue<uint64_t>() {
 }
 }  // namespace
 
-#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
 GPUSupportedLimits::GPUSupportedLimits(const wgpu::Limits& limits)
     : limits_(limits) {
   DCHECK_EQ(limits.nextInChain, nullptr);
@@ -162,98 +161,5 @@ bool GPUSupportedLimits::Populate(
   }
 SUPPORTED_LIMITS(X)
 #undef X
-#else
-GPUSupportedLimits::GPUSupportedLimits(const wgpu::SupportedLimits& limits)
-    : limits_(limits.limits) {
-  DCHECK_EQ(limits.nextInChain, nullptr);
-}
-
-// static
-void GPUSupportedLimits::MakeUndefined(wgpu::RequiredLimits* out) {
-#define X(name) \
-  out->limits.name = UndefinedLimitValue<decltype(wgpu::Limits::name)>();
-  SUPPORTED_LIMITS(X)
-#undef X
-}
-
-// static
-bool GPUSupportedLimits::Populate(
-    wgpu::RequiredLimits* out,
-    const HeapVector<
-        std::pair<String,
-                  Member<V8UnionUndefinedOrUnsignedLongLongEnforceRange>>>& in,
-    ScriptPromiseResolverBase* resolver) {
-  auto* context = resolver->GetExecutionContext();
-  // TODO(crbug.com/dawn/685): This loop is O(n^2) if the developer
-  // passes all of the limits. It could be O(n) with a mapping of
-  // String -> wgpu::Limits::*member.
-  for (const auto& [limitName, limitRawValue] : in) {
-    if (limitName == "maxInterStageShaderComponents") {
-      if (RuntimeEnabledFeatures::DeprecateMaxInterStageShaderComponentsEnabled(
-              context)) {
-        UseCounter::CountDeprecation(
-            context, WebFeature::kMaxInterStageShaderComponentsRequiredLimit);
-      } else {
-        if (limitRawValue->IsUndefined()) {
-          auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kRendering,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "The limit \"" + limitName + "\" is not recognized.");
-          context->AddConsoleMessage(console_message);
-        } else {
-          resolver->RejectWithDOMException(
-              DOMExceptionCode::kOperationError,
-              "The limit \"" + limitName +
-                  "\" with a non-undefined value is not recognized.");
-          return false;
-        }
-      }
-    }
-#define X(name)                                                               \
-  if (limitName == #name) {                                                   \
-    using T = decltype(wgpu::Limits::name);                                   \
-    if (limitRawValue->IsUndefined()) {                                       \
-      continue;                                                               \
-    }                                                                         \
-    uint64_t limitRawIntegerValue =                                           \
-        limitRawValue->GetAsUnsignedLongLongEnforceRange();                   \
-    base::CheckedNumeric<T> value{limitRawIntegerValue};                      \
-    if (!value.IsValid() || value.ValueOrDie() == UndefinedLimitValue<T>()) { \
-      resolver->RejectWithDOMException(                                       \
-          DOMExceptionCode::kOperationError,                                  \
-          "Required " #name " limit (" +                                      \
-              String::Number(limitRawIntegerValue) +                          \
-              ") exceeds the maximum representable value for its type.");     \
-      return false;                                                           \
-    }                                                                         \
-    out->limits.name = value.ValueOrDie();                                    \
-    continue;                                                                 \
-  }
-    SUPPORTED_LIMITS(X)
-#undef X
-    if (limitRawValue->IsUndefined()) {
-      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "The limit \"" + limitName + "\" is not recognized.");
-      context->AddConsoleMessage(console_message);
-    } else {
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "The limit \"" + limitName +
-              "\" with a non-undefined value is not recognized.");
-      return false;
-    }
-  }
-  return true;
-}
-
-#define X(name)                                                   \
-  decltype(wgpu::Limits::name) GPUSupportedLimits::name() const { \
-    return limits_.name;                                          \
-  }
-SUPPORTED_LIMITS(X)
-#undef X
-#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
 
 }  // namespace blink

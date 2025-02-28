@@ -1389,17 +1389,10 @@ int32_t SharedContextState::GetMaxTextureSize() {
   } else {
 #if BUILDFLAG(SKIA_USE_DAWN)
     if (dawn_context_provider()) {
-#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
       wgpu::Limits limits = {};
       auto succeded = dawn_context_provider()->GetDevice().GetLimits(&limits);
       CHECK(succeded);
       max_texture_size = limits.maxTextureDimension2D;
-#else
-      wgpu::SupportedLimits limits = {};
-      auto succeded = dawn_context_provider()->GetDevice().GetLimits(&limits);
-      CHECK(succeded);
-      max_texture_size = limits.limits.maxTextureDimension2D;
-#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 #if BUILDFLAG(SKIA_USE_METAL)

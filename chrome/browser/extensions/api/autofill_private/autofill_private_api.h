@@ -341,6 +341,24 @@ class AutofillPrivateRemoveVirtualCardFunction
   ResponseAction Run() override;
 };
 
+class AutofillPrivateGetPayOverTimeIssuerListFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateGetPayOverTimeIssuerListFunction() = default;
+  AutofillPrivateGetPayOverTimeIssuerListFunction(
+      const AutofillPrivateGetPayOverTimeIssuerListFunction&) = delete;
+  AutofillPrivateGetPayOverTimeIssuerListFunction& operator=(
+      const AutofillPrivateGetPayOverTimeIssuerListFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getPayOverTimeIssuerList",
+                             AUTOFILLPRIVATE_GETPAYOVERTIMEISSUERLIST)
+
+ protected:
+  ~AutofillPrivateGetPayOverTimeIssuerListFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
     : public AutofillPrivateExtensionFunction {
  public:

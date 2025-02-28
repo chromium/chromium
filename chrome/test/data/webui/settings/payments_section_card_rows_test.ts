@@ -76,7 +76,7 @@ suite('PaymentsSectionCardRows', function() {
         (creditCard: chrome.autofillPrivate.CreditCardEntry) => {
           (PaymentsManagerImpl.getInstance() as TestPaymentsManager)
               .lastCallback.setPersonalDataManagerListener!
-              ([], [creditCard], [], {
+              ([], [creditCard], [], [], {
                 ...STUB_USER_ACCOUNT_INFO,
                 isSyncEnabledForAutofillProfiles: true,
               });

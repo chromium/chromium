@@ -5,20 +5,23 @@
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/extension_id.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace {
 
 syncer::DataType GetDataTypeFromAccessPoint(
@@ -42,19 +45,34 @@ BubbleSignInPromoDelegate::BubbleSignInPromoDelegate(
     : data_id_(std::move(data_id)),
       web_contents_(web_contents.GetWeakPtr()),
       access_point_(access_point) {}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-BubbleSignInPromoDelegate::BubbleSignInPromoDelegate() = default;
 BubbleSignInPromoDelegate::~BubbleSignInPromoDelegate() = default;
 
 void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   // Signing in is triggered by the user interacting with the sign-in promo.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
-
   Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+          ->GetOriginalProfile();
+
+  if (!signin::IsSignInPromo(access_point_)) {
+    signin_ui_util::EnableSyncFromSingleAccountPromo(profile, account,
+                                                     access_point_);
+    return;
+  }
+
+  base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
   signin_ui_util::SignInFromSingleAccountPromo(profile, account, access_point_);
+
+  if (access_point_ == signin_metrics::AccessPoint::kExtensionInstallBubble) {
+    // Make sure the `data_id_` is of the correct type.
+    CHECK(std::holds_alternative<extensions::ExtensionId>(data_id_));
+    const extensions::ExtensionId extension_id =
+        std::move(std::get<extensions::ExtensionId>(data_id_));
+
+    extensions::AccountExtensionTracker::Get(profile)
+        ->OnSignInInitiatedFromExtensionPromo(extension_id);
+    return;
+  }
 
   signin_util::SignedInState signed_in_state = signin_util::GetSignedInState(
       IdentityManagerFactory::GetForProfile(profile));
@@ -96,6 +114,4 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   SigninPromoTabHelper::GetForWebContents(*sign_in_tab_contents)
       ->InitializeDataMoveAfterSignIn(std::move(maybe_move_data),
                                       access_point_);
-
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }

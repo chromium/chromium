@@ -259,7 +259,10 @@ INSTANTIATE_TEST_SUITE_P(
         // Lowercase is invalid.
         ValidCountryCodeTestCase{"us", false},
         ValidCountryCodeTestCase{"Ca", false},
-        ValidCountryCodeTestCase{"cN", false}));
+        ValidCountryCodeTestCase{"cN", false},
+
+        // Non Ascii is invalid.
+        ValidCountryCodeTestCase{"CÄ", false}));
 
 }  // namespace
 }  // namespace data_util

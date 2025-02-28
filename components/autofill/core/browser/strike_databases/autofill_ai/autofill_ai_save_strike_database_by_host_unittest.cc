@@ -16,18 +16,17 @@ TEST(GetIdForSaveStrikeDatabaseByHostTest, GetHostFromId) {
   constexpr char kOtherHost[] = "www.whoareyou.com";
 
   EXPECT_EQ(
-      AutofillAiSaveStrikeDatabaseByHostTraits::OriginFromId(
+      AutofillAiSaveStrikeDatabaseByHostTraits::HostFromId(
           AutofillAiSaveStrikeDatabaseByHost::GetId("passport", kSomeHost)),
       kSomeHost);
   EXPECT_EQ(
-      AutofillAiSaveStrikeDatabaseByHostTraits::OriginFromId(
+      AutofillAiSaveStrikeDatabaseByHostTraits::HostFromId(
           AutofillAiSaveStrikeDatabaseByHost::GetId("passport", kOtherHost)),
       kOtherHost);
 
   // Invalid id:
   EXPECT_EQ(
-      AutofillAiSaveStrikeDatabaseByHostTraits::OriginFromId("no-separator"),
-      "");
+      AutofillAiSaveStrikeDatabaseByHostTraits::HostFromId("no-separator"), "");
 }
 
 // Tests that different hosts lead to different keys.

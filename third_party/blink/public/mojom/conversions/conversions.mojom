@@ -15,6 +15,10 @@ struct Impression {
   // API parameters will be used from the the `AttributionDataHost`
   // that is associated with `attribution_src_token`.
   AttributionSrcToken attribution_src_token;
+
+  // Whether there were any impression string associated with the attributionsrc
+  // tag. This is only used for internal metric collection purpose.
+  bool is_empty_attribution_src_tag;
 };
 
 // Sent from renderer to browser process when a resource request matching the

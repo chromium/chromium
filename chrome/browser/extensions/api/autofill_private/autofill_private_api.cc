@@ -803,6 +803,23 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetPayOverTimeIssuerListFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetPayOverTimeIssuerListFunction::Run() {
+  PaymentsDataManager* paydm = payments_data_manager();
+  if (!paydm || !paydm->is_payments_data_loaded()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  autofill_util::PayOverTimeIssuerEntryList pay_over_time_issuer_list =
+      autofill_util::GeneratePayOverTimeIssuerList(*paydm);
+  return RespondNow(ArgumentList(
+      api::autofill_private::GetPayOverTimeIssuerList::Results::Create(
+          pay_over_time_issuer_list)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
 
 ExtensionFunction::ResponseAction

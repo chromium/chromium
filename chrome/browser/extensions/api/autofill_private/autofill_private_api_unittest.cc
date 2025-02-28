@@ -197,6 +197,7 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     payments_data_manager().SetSyncingForTest(/*is_syncing_for_test=*/true);
+    payments_data_manager().SetPrefService(autofill_client()->GetPrefs());
     UserAnnotationsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindLambdaForTesting([](content::BrowserContext* context)
@@ -416,6 +417,11 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
   // Test that retrieving general entity information works.
   ASSERT_TRUE(RunAutofillSubtest("getAllEntityTypes"));
   ASSERT_TRUE(RunAutofillSubtest("getAllAttributeTypesForEntity"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
+                       GetEmptyPayOverTimeIssuerList) {
+  ASSERT_TRUE(RunAutofillSubtest("getEmptyPayOverTimeIssuerList"));
 }
 
 }  // namespace

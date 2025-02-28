@@ -16,10 +16,23 @@
 #include "ash/public/cpp/lobster/lobster_client_factory.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
+#include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 
 namespace ash {
+
+namespace {
+
+bool HasOpportunityToShow(
+    const ash::LobsterSystemState::SystemChecks& system_checks) {
+  return (!system_checks.Has(ash::LobsterSystemCheck::kInvalidFeatureFlags) &&
+      !system_checks.Has(ash::LobsterSystemCheck::kUnsupportedHardware) &&
+      !system_checks.Has(ash::LobsterSystemCheck::kUnsupportedInKioskMode) &&
+      !system_checks.Has(ash::LobsterSystemCheck::kInvalidInputField));
+}
+
+}  // namespace
 
 LobsterController::Trigger::Trigger(
     std::unique_ptr<LobsterClient> client,
@@ -85,11 +98,22 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
       /*caret_bounds=*/text_input_client->GetCaretBounds(),
       /*support_image_insertion=*/text_input_client->CanInsertImage());
 
-  if (client->GetSystemState(text_input_context).status ==
-      LobsterStatus::kBlocked) {
+  LobsterSystemState system_state = client->GetSystemState(text_input_context);
+
+  // Records the Opportunity metric. This metric is recorded in the following
+  // cases:
+  // * Lobster is shown.
+  // * Lobster is being blocked, but is likely to be shown for the current
+  // context in the future.
+  if (HasOpportunityToShow(system_state.failed_checks)) {
+    RecordLobsterState(LobsterMetricState::kShownOpportunity);
+  }
+
+  if (system_state.status == LobsterStatus::kBlocked) {
     RecordLobsterState(LobsterMetricState::kBlocked);
     return nullptr;
   }
+
   return std::make_unique<Trigger>(std::move(client), entry_point,
                                    text_input_context.support_image_insertion
                                        ? LobsterMode::kInsert

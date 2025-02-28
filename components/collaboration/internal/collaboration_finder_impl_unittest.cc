@@ -10,6 +10,7 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
+#include "components/sync/base/collaboration_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,7 +28,7 @@ class MockCollaborationFinderClient
   MockCollaborationFinderClient() = default;
   ~MockCollaborationFinderClient() override = default;
 
-  MOCK_METHOD(void, OnCollaborationAvailable, (const std::string&));
+  MOCK_METHOD(void, OnCollaborationAvailable, (const syncer::CollaborationId&));
 };
 
 class CollaborationFinderImplTest : public testing::Test {
@@ -62,11 +63,13 @@ TEST_F(CollaborationFinderImplTest, IsCollaborationAvailable) {
 
   ON_CALL(data_sharing_service_, ReadGroup(group_id))
       .WillByDefault(testing::Return(std::make_optional<>(group_data)));
-  EXPECT_EQ(true, collaboration_finder_->IsCollaborationAvailable(*group_id));
+  EXPECT_EQ(true, collaboration_finder_->IsCollaborationAvailable(
+                      syncer::CollaborationId(*group_id)));
 
   ON_CALL(data_sharing_service_, ReadGroup(group_id))
       .WillByDefault(testing::Return(std::nullopt));
-  EXPECT_EQ(false, collaboration_finder_->IsCollaborationAvailable(*group_id));
+  EXPECT_EQ(false, collaboration_finder_->IsCollaborationAvailable(
+                       syncer::CollaborationId(*group_id)));
 }
 
 TEST_F(CollaborationFinderImplTest, OnGroupAdded) {
@@ -77,7 +80,9 @@ TEST_F(CollaborationFinderImplTest, OnGroupAdded) {
   data_sharing::GroupData group_data;
   group_data.group_token.group_id = group_id;
 
-  EXPECT_CALL(client_, OnCollaborationAvailable(Eq(*group_id))).Times(1);
+  EXPECT_CALL(client_,
+              OnCollaborationAvailable(Eq(syncer::CollaborationId(*group_id))))
+      .Times(1);
   collaboration_finder_->OnGroupAdded(group_data, base::Time());
 }
 

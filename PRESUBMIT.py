@@ -2132,12 +2132,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=False,
     ),
     BanRule(
-        pattern=(r'/IS_CHROMEOS_ASH|'
-                 r'IS_CHROMEOS_LACROS'),
+        pattern='IS_CHROMEOS_ASH',
         explanation=
-        ('Lacros is deprecated. Please do not use IS_CHROMEOS_ASH and '
-         'IS_CHROMEOS_LACROS anymore. Instead, remove the code section under '
-         'IS_CHROMEOS_LACROS and use IS_CHROMEOS for ChromeOS-only code.',
+        ('IS_CHROMEOS_ASH is deprecated. Please use the equivalent IS_CHROMEOS '
+         'instead (Lacros is gone).',
         ),
         treat_as_error=False,
     ),

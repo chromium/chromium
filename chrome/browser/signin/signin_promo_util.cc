@@ -14,6 +14,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/features.h"
@@ -265,6 +266,19 @@ bool ShouldShowAddressSignInPromo(Profile& profile,
 bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point) {
   return access_point == signin_metrics::AccessPoint::kPasswordBubble ||
          access_point == signin_metrics::AccessPoint::kAddressBubble;
+}
+
+bool IsSignInPromo(signin_metrics::AccessPoint access_point) {
+  if (IsAutofillSigninPromo(access_point)) {
+    return true;
+  }
+
+  if (access_point == signin_metrics::AccessPoint::kExtensionInstallBubble) {
+    return base::FeatureList::IsEnabled(
+        switches::kEnableExtensionsExplicitBrowserSignin);
+  }
+
+  return false;
 }
 
 SignInPromoType GetSignInPromoTypeFromAccessPoint(

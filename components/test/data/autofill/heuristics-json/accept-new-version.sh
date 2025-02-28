@@ -8,7 +8,7 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-for FILE in "${SCRIPT_DIR}"/**/*.json; do
+for FILE in "${SCRIPT_DIR}"/**/**/*.json; do
   if [[ -f "${FILE}.new" ]]; then
     mv "${FILE}.new" "${FILE}"
   fi

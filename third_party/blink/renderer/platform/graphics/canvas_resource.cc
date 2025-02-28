@@ -615,9 +615,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_shared_image), GetSyncToken(), texture_id_for_image,
-      Size(), image_info.colorType(), image_info.alphaType(),
-      image_info.refColorSpace(), context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback));
+      Size(), GetFormat(), image_info.alphaType(), image_info.refColorSpace(),
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      std::move(release_callback));
 
   DCHECK(image);
   return image;
@@ -794,9 +794,9 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
   auto image_info = CreateSkImageInfo();
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u, Size(),
-      image_info.colorType(), image_info.alphaType(),
-      image_info.refColorSpace(), context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback));
+      GetFormat(), image_info.alphaType(), image_info.refColorSpace(),
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      std::move(release_callback));
 }
 
 const gpu::SyncToken
@@ -924,9 +924,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, Size(),
-      image_info.colorType(), image_info.alphaType(),
-      image_info.refColorSpace(), context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback));
+      GetFormat(), image_info.alphaType(), image_info.refColorSpace(),
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      std::move(release_callback));
 }
 
 scoped_refptr<gpu::ClientSharedImage>

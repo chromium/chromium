@@ -902,6 +902,21 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PWM_DISABLED_UPDATE_DIALOG_CANCEL" desc="Button used to dimsiss the dialog shown to users without saved passwords who need to update Google Play services to regain access to the password manager.">
        Cancel
       </message>
+      <message name="IDS_KEEP_ACCESS_TO_YOUR_PASSWORDS_DIALOG_TITLE" desc="Title for a dialog shown to users when they have unmigrated passwords left over in Chrome after Chrome's storage has been deprecated">
+        Keep access to you passwords
+      </message>
+      <message name="IDS_CSV_DOWNLOAD_DIALOG_WITH_GMS_PARAGRAPH1" desc="First paragraph of the description in the dialog shown to users when they have unmigrated passwords left over in Chrome after Chrome's storage has been deprecated. This text is shown to users who have Google Play Services on the device.">
+        To keep access to your passwords, export them now, update Google Play Services, and then import them back to Google Password Manager. <ph name="BEGIN_LINK">&lt;link&gt;</ph>See full instructions<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_CSV_DOWNLOAD_DIALOG_PARAGRAPH2" desc="Second paragraph of the description in the dialog shown to users when they have unmigrated passwords left over in Chrome after Chrome's storage has been deprecated">
+        The exported file may be accessible to others, including apps. Once you export, your passwords are deleted from Chrome.
+      </message>
+      <message name="IDS_CSV_DOWNLOAD_DIALOG_NO_GMS_PARAGRAPH1" desc="First paragraph of the description in the dialog shown to users when they have unmigrated passwords left over in Chrome after Chrome's storage has been deprecated. This text is shown to users who don't have Google Play Services.">
+        To keep access to your passwords, export them now and then import them to your preferred password manager. Google Password Manager stopped working because Google Play services isn’t available.
+      </message>
+      <message name="IDS_CSV_DOWNLOAD_DIALOG_POSITIVE_BUTTON_TEXT" desc="The text for the dialog button through which users can initiate password export. The dilog is shown to users who have unmigrated passwords left over in Chrome after Chrome's storage has been deprecated.">
+        Export passwords
+      </message>
       <message name="IDS_POST_PASSWORD_MIGRATION_SHEET_TITLE" desc="The title of the post password migration sheet that informs the user that the migration happened." formatter_data="android_java">
         We changed how passwords are saved on this device
       </message>

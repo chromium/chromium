@@ -28,11 +28,13 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -162,6 +164,36 @@ autofill_private::IbanEntry IbanToIbanEntry(const autofill::Iban& iban) {
   return iban_entry;
 }
 
+std::string PayOverTimeIssuerToIconResourceIdString(const std::string& issuer) {
+  static constexpr auto kPayOverTimeIssuerToResourceIdStringMap =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>(
+          {{autofill::kBnplAffirmIssuerId,
+            "chrome://theme/IDR_AUTOFILL_AFFIRM_LINKED"},
+           {autofill::kBnplZipIssuerId,
+            "chrome://theme/IDR_AUTOFILL_ZIP_LINKED"}});
+
+  auto it = kPayOverTimeIssuerToResourceIdStringMap.find(issuer);
+  return it != kPayOverTimeIssuerToResourceIdStringMap.end()
+             ? std::string(it->second)
+             : "chrome://theme/IDR_AUTOFILL_METADATA_BNPL_GENERIC";
+}
+
+autofill_private::PayOverTimeIssuerEntry BnplIssuerToPayOverTimeIssuerEntry(
+    const autofill::BnplIssuer& issuer) {
+  CHECK(issuer.payment_instrument());
+
+  autofill_private::PayOverTimeIssuerEntry issuer_entry;
+
+  issuer_entry.issuer_id = issuer.issuer_id();
+  issuer_entry.instrument_id =
+      base::NumberToString(issuer.payment_instrument()->instrument_id());
+  issuer_entry.display_name = base::UTF16ToUTF8(issuer.GetDisplayName());
+  issuer_entry.image_src =
+      PayOverTimeIssuerToIconResourceIdString(issuer.issuer_id());
+
+  return issuer_entry;
+}
+
 }  // namespace
 
 namespace extensions::autofill_util {
@@ -227,6 +259,12 @@ IbanEntryList GenerateIbanList(const autofill::PaymentsDataManager& paydm) {
   return base::ToVector(paydm.GetIbans(), [](const autofill::Iban* iban) {
     return IbanToIbanEntry(*iban);
   });
+}
+
+PayOverTimeIssuerEntryList GeneratePayOverTimeIssuerList(
+    const autofill::PaymentsDataManager& paydm) {
+  return base::ToVector(paydm.GetLinkedBnplIssuers(),
+                        &BnplIssuerToPayOverTimeIssuerEntry);
 }
 
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(

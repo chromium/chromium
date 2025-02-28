@@ -119,9 +119,6 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   }
 
   if (is_prerender_main_frame_navigation) {
-    if (!prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
-      return {};
-    }
     return service->MaybeCreateResponseReader(tentative_resource_request);
   }
 

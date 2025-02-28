@@ -45,6 +45,14 @@ extern const base::FeatureParam<bool> kMerchantTrustForceShowUIForTesting;
 extern const char kMerchantTrustEnableOmniboxChipName[];
 extern const base::FeatureParam<bool> kMerchantTrustEnableOmniboxChip;
 
+// Enables the merchant trust UI even when the shopper voice summary is missing.
+extern const char kMerchantTrustWithoutSummaryName[];
+extern const base::FeatureParam<bool> kMerchantTrustWithoutSummary;
+
+// Whether the merchant trust UI should be shown even when the shopper voice
+// summary is missing.
+extern bool IsMerchantTrustWithoutSummaryEnabled();
+
 // Whether the merchant trust section for Page Info based on country and locale.
 extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
                                           const std::string& locale);

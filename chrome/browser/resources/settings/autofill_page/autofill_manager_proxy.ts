@@ -6,6 +6,7 @@ export type PersonalDataChangedListener =
     (addresses: chrome.autofillPrivate.AddressEntry[],
      creditCards: chrome.autofillPrivate.CreditCardEntry[],
      ibans: chrome.autofillPrivate.IbanEntry[],
+     payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
      accountInfo?: chrome.autofillPrivate.AccountInfo) => void;
 
 /**

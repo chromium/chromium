@@ -131,6 +131,10 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     return prerender_helper_;
   }
 
+  // Gets the currently used test server. This is used to switch between the
+  // http / https servers depending on the test.
+  virtual net::EmbeddedTestServer* current_test_server();
+
  private:
   std::vector<NavigationMilestone> all_milestones_with_performance_mark();
   content::test::PrerenderTestHelper prerender_helper_;

@@ -25,6 +25,8 @@ using AddressEntryList = std::vector<api::autofill_private::AddressEntry>;
 using CountryEntryList = std::vector<api::autofill_private::CountryEntry>;
 using CreditCardEntryList = std::vector<api::autofill_private::CreditCardEntry>;
 using IbanEntryList = std::vector<api::autofill_private::IbanEntry>;
+using PayOverTimeIssuerEntryList =
+    std::vector<api::autofill_private::PayOverTimeIssuerEntry>;
 using CallbackAfterSuccessfulUserAuth = base::OnceCallback<void(bool)>;
 
 // Uses `adm` to generate a list of up-to-date AddressEntry objects.
@@ -45,6 +47,11 @@ CreditCardEntryList GenerateCreditCardList(
 // Uses `paydm` to generate a list of up-to-date IbanEntry
 // objects.
 IbanEntryList GenerateIbanList(const autofill::PaymentsDataManager& paydm);
+
+// Uses `paydm` to generate a list of up-to-date PayOverTimeIssuerEntry
+// objects.
+PayOverTimeIssuerEntryList GeneratePayOverTimeIssuerList(
+    const autofill::PaymentsDataManager& paydm);
 
 // Uses `adm` to get primary account info.
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(

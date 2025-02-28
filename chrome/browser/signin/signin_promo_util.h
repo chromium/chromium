@@ -34,6 +34,9 @@ bool ShouldShowAddressSignInPromo(Profile& profile,
 // Returns whether `access_point` has an equivalent autofill signin promo.
 bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point);
 
+// Returns whether `access_point` has an equivalent signin promo.
+bool IsSignInPromo(signin_metrics::AccessPoint access_point);
+
 SignInPromoType GetSignInPromoTypeFromAccessPoint(
     signin_metrics::AccessPoint access_point);
 

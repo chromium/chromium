@@ -19,6 +19,7 @@
 #include <set>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -318,8 +319,8 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
   }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   if (command_line->HasSwitch(switches::kVariationsTestSeedJsonPath)) {
-    LoadSeedFromJsonFile(
-        command_line->GetSwitchValuePath(switches::kVariationsTestSeedJsonPath));
+    LoadSeedFromJsonFile(command_line->GetSwitchValuePath(
+        switches::kVariationsTestSeedJsonPath));
   }
 
   // Get client filterable state to be used by CreateTrialsFromSeed()
@@ -799,13 +800,19 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
   local_state()->SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 0);
 
   // Override Local State seed prefs.
-  // TODO(crbug.com/369080917): Use SeedReaderWriter to store a seed.
-  local_state()->SetString(prefs::kVariationsCompressedSeed,
-                           seed_data->GetString());
-  local_state()->SetString(prefs::kVariationsSeedSignature,
-                           seed_signature->GetString());
-
-  local_state()->CommitPendingWrite();  // Schedule a write to Local State.
+  std::string decoded_seed;
+  if (!base::Base64Decode(seed_data->GetString(), &decoded_seed)) {
+    ExitWithMessage(
+        base::StringPrintf("Failed to decode seed data in contents of \"%s\"",
+                           json_seed_path.AsUTF8Unsafe().c_str()));
+  }
+  seed_store_->StoreSeedData(decoded_seed, seed_signature->GetString(),
+                             /*country_code=*/"",
+                             /*date_fetched=*/base::Time(),
+                             /*is_delta_compressed=*/false,
+                             /*is_gzip_compressed=*/true,
+                             /*done_callback=*/base::DoNothing(),
+                             /*require_synchronous=*/true);
 }
 
 VariationsSeedStore* VariationsFieldTrialCreatorBase::GetSeedStore() {

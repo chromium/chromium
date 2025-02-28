@@ -516,7 +516,7 @@ enum class ToolbarKind {
 
 // Coordinator for the price notifications UI presentation.
 @property(nonatomic, strong)
-    PriceNotificationsViewCoordinator* priceNotificationsViewCoordiantor;
+    PriceNotificationsViewCoordinator* priceNotificationsViewCoordinator;
 
 // Used to display the Print UI. Nil if not visible.
 @property(nonatomic, strong) PrintCoordinator* printCoordinator;
@@ -636,7 +636,7 @@ enum class ToolbarKind {
   QuickDeleteCoordinator* _quickDeleteCoordinator;
   LensPromoCoordinator* _lensPromoCoordinator;
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
-  AutoDeletionCoordinator* _autoDeletionCoordiantor;
+  AutoDeletionCoordinator* _autoDeletionCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -1828,20 +1828,20 @@ enum class ToolbarKind {
 - (void)presentAutoDeletionActionSheetWithDownloadTask:
     (web::DownloadTask*)task {
   // Do not present the action sheet if it is already being presented.
-  if (_autoDeletionCoordiantor) {
+  if (_autoDeletionCoordinator) {
     return;
   }
 
-  _autoDeletionCoordiantor = [[AutoDeletionCoordinator alloc]
+  _autoDeletionCoordinator = [[AutoDeletionCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                     downloadTask:task];
-  [_autoDeletionCoordiantor start];
+  [_autoDeletionCoordinator start];
 }
 
 - (void)dismissAutoDeletionActionSheet {
-  [_autoDeletionCoordiantor stop];
-  _autoDeletionCoordiantor = nil;
+  [_autoDeletionCoordinator stop];
+  _autoDeletionCoordinator = nil;
 }
 
 #pragma mark - AutofillBottomSheetCommands
@@ -3102,16 +3102,16 @@ enum class ToolbarKind {
 #pragma mark - PriceNotificationsCommands
 
 - (void)showPriceNotifications {
-  self.priceNotificationsViewCoordiantor =
+  self.priceNotificationsViewCoordinator =
       [[PriceNotificationsViewCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser];
-  [self.priceNotificationsViewCoordiantor start];
+  [self.priceNotificationsViewCoordinator start];
 }
 
 - (void)hidePriceNotifications {
-  [self.priceNotificationsViewCoordiantor stop];
-  self.priceNotificationsViewCoordiantor = nil;
+  [self.priceNotificationsViewCoordinator stop];
+  self.priceNotificationsViewCoordinator = nil;
 }
 
 - (void)presentPriceNotificationsWhileBrowsingIPH {

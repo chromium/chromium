@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
+#include "components/sync/base/collaboration_id.h"
 
 namespace collaboration {
 
@@ -28,9 +29,10 @@ class CollaborationFinderImpl
 
   // tab_groups::CollaborationFinder overrides.
   void SetClient(Client* client) override;
-  bool IsCollaborationAvailable(const std::string& collaboration_id) override;
+  bool IsCollaborationAvailable(
+      const syncer::CollaborationId& collaboration_id) override;
   void SetCollaborationAvailableForTesting(
-      const std::string& collaboration_id) override;
+      const syncer::CollaborationId& collaboration_id) override;
 
   // data_sharing::DataSharingService::Observer overrides.
   void OnGroupAdded(const data_sharing::GroupData& group_data,
@@ -39,7 +41,7 @@ class CollaborationFinderImpl
  private:
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   raw_ptr<Client> client_;
-  std::set<std::string> collaborations_available_for_testing_;
+  std::set<syncer::CollaborationId> collaborations_available_for_testing_;
 };
 
 }  // namespace collaboration

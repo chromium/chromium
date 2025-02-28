@@ -202,6 +202,9 @@
           },
           "ash.gen_ai_smart_grouping_settings": {
             "value": 0
+          },
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 0
           }
         }
       },
@@ -246,6 +249,9 @@
           },
           "ash.gen_ai_smart_grouping_settings": {
             "value": 1
+          },
+          "ash.scanner.enterprise_policy_allowed": {
+            "value": 1
           }
         }
       },
@@ -264,7 +270,8 @@
           "HelpMeReadSettings": 2,
           "HelpMeWriteSettings": 2,
           "GenAIPhotoEditingSettings": 2,
-	  "GenAISmartGroupingSettings": 2
+          "GenAISmartGroupingSettings": 2,
+          "GenAiChromeOsSmartActionsSettings": 2
         },
         "prefs": {
           "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
@@ -304,6 +311,9 @@
             "value": 2
           },
           "ash.gen_ai_smart_grouping_settings": {
+            "value": 2
+          },
+          "ash.scanner.enterprise_policy_allowed": {
             "value": 2
           }
         }

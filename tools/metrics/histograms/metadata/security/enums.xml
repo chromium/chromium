@@ -203,12 +203,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_info/core/merchant_trust_service.h:MerchantTrustInteraction) -->
 
+<!-- LINT.IfChange(MerchantTrustStatus) -->
+
 <enum name="MerchantTrustStatus">
   <int value="0" label="kValid">A valid response.</int>
   <int value="1" label="kNoResult">No result received.</int>
   <int value="2" label="kMissingRatingCount">Rating count is missing.</int>
   <int value="3" label="kMissingRatingValue">Rating value is missing.</int>
-  <int value="4" label="kMissingReviewsSummary">
+  <int value="4" label="DEPRECATED kMissingReviewsSummary">
     Reviews summary is missing.
   </int>
   <int value="5" label="kMissingReviewsPageUrl">
@@ -217,7 +219,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kInvalidReviewsPageUrl">
     Reviews page URL is invalid.
   </int>
+  <int value="7" label="kValidWithMissingReviewsSummary">
+    A valid response with missing reviews summary.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/page_info/core/merchant_trust_validation.h:MerchantTrustStatus) -->
 
 <enum name="NavigationRequestSecurityLevel">
   <int value="0" label="Unknown; request was ignored"/>

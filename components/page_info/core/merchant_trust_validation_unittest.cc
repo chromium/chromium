@@ -10,7 +10,6 @@
 
 namespace page_info::merchant_trust_validation {
 
-
 commerce::MerchantTrustSignalsV2 GetSampleProto() {
   commerce::MerchantTrustSignalsV2 proto;
   proto.set_merchant_star_rating(4.5);
@@ -41,7 +40,8 @@ TEST(MerchantTrustValidation, MissingCountRating) {
 TEST(MerchantTrustValidation, MissingReviewsSummary) {
   auto proto = GetSampleProto();
   proto.clear_shopper_voice_summary();
-  EXPECT_EQ(ValidateProto(proto), MerchantTrustStatus::kMissingReviewsSummary);
+  EXPECT_EQ(ValidateProto(proto),
+            MerchantTrustStatus::kValidWithMissingReviewsSummary);
 }
 
 TEST(MerchantTrustValidation, MissingReviewsPageUrl) {

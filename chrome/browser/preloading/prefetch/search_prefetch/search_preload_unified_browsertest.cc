@@ -91,7 +91,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
             base::Unretained(this))) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2, {}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "1"},
@@ -1141,7 +1140,6 @@ class HoldbackSearchPreloadUnifiedBrowserTest
   HoldbackSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2, {{}}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},
@@ -1255,7 +1253,6 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
   HTTPCacheSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2, {{}}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},

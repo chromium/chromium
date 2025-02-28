@@ -295,7 +295,6 @@ bool AutofillAiManager::IsUserEligibleForFillingAndImporting() const {
 
 void AutofillAiManager::OnReceivedAXTree(
     const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   client_->GetModelExecutor()->GetPredictions(
       form, /*field_eligibility_map*/ {}, GetFieldValueSensitivityMap(form),

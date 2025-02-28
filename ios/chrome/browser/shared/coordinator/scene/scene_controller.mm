@@ -53,7 +53,6 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -2007,11 +2006,10 @@ using UserFeedbackDataCallback =
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* browser = self.mainInterface.browser;
   UIViewController* baseViewController = self.mainInterface.viewController;
-  AccountMenuCoordinator* accountMenuCoordinator =
-      [[AccountMenuCoordinator alloc]
-          initWithBaseViewController:baseViewController
-                             browser:browser];
-  accountMenuCoordinator.anchorView = anchorView;
+  SigninCoordinator* accountMenuCoordinator = [SigninCoordinator
+      accountMenuCoordinatorWithBaseViewController:baseViewController
+                                           browser:browser
+                                        anchorView:anchorView];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.

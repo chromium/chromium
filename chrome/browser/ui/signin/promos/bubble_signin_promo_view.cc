@@ -163,14 +163,12 @@ BubbleSignInPromoView::BubbleSignInPromoView(
     content::WebContents* web_contents,
     signin_metrics::AccessPoint access_point,
     syncer::LocalDataItemModel::DataId data_id,
-    BubbleSignInPromoDelegate* delegate,
     ui::ButtonStyle button_style)
     : access_point_(access_point),
       delegate_(
           std::make_unique<BubbleSignInPromoDelegate>(*web_contents,
                                                       access_point,
-                                                      std::move(data_id))),
-      delegate_ptr_(delegate ? delegate : delegate_.get()) {
+                                                      std::move(data_id))) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetOriginalProfile();
@@ -311,7 +309,7 @@ views::View* BubbleSignInPromoView::GetSignInButton() const {
 
 void BubbleSignInPromoView::SignIn() {
   std::optional<AccountInfo> account = signin_button_view_->account();
-  delegate_ptr_->OnSignIn(account.value_or(AccountInfo()));
+  delegate_->OnSignIn(account.value_or(AccountInfo()));
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
 }

@@ -34,8 +34,8 @@ namespace autofill {
 //       base::Days(180);
 //   static constexpr bool kUniqueIdRequired = true;
 //
-//   static std::string OriginFromId(const std::string& id) {
-//     // Add logic here to retrieve the origin from the ID od the strike entry.
+//   static std::string HostFromId(const std::string& id) {
+//     // Add logic here to retrieve the host from the ID od the strike entry.
 //   }
 // };
 //  using MyStrikeDatabase =
@@ -75,11 +75,11 @@ class HistoryClearableStrikeDatabase
                                    base::Time delete_begin,
                                    base::Time delete_end) {
     ClearStrikesByIdMatchingAndTime(hosts_to_delete, delete_begin, delete_end,
-                                    &Traits::OriginFromId);
+                                    &Traits::HostFromId);
   }
 
   void ClearStrikesByOrigin(const std::set<std::string>& hosts_to_delete) {
-    ClearStrikesByIdMatching(hosts_to_delete, &Traits::OriginFromId);
+    ClearStrikesByIdMatching(hosts_to_delete, &Traits::HostFromId);
   }
 };
 

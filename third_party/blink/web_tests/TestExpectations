@@ -2411,27 +2411,18 @@ crbug.com/1365604 external/wpt/custom-elements/form-associated/ElementInternals-
 
 # `wdspec` tests
 external/wpt/webdriver/tests/classic/element_send_keys/interactability.py [ Failure ]  # Flaky output
-external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/classic/element_click/navigate.py [ Failure ]  # Flaky output
-external/wpt/webdriver/tests/bidi/input/perform_actions/wheel.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/bidi/network/add_intercept/invalid.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/network/add_intercept/phases.py [ Failure Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/network/response_started/response_started.py [ Failure Timeout ]
 crbug.com/381127883 external/wpt/webdriver/tests/bidi/network/response_started/response_started_cached.py [ Failure Timeout ]
 crbug.com/1502331 external/wpt/webdriver/tests/classic/perform_actions/pointer_pen.py [ Failure Pass ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/add_intercept/phase_auth_required.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/auth_required/auth_required.py [ Failure Timeout ]
 external/wpt/webdriver/tests/bidi/network/add_intercept/url_patterns.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame.py [ Failure ]  # Flaky output
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_started.py [ Failure Timeout ]
 external/wpt/webdriver/tests/bidi/browsing_context/print/invalid.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/user_prompt_opened.py [ Failure Pass Timeout ]
-external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/format.py [ Failure ]
-external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/origin.py [ Failure ]
-external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/context.py [ Failure ]
-external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/delta.py [ Failure ]
-external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/invalid.py [ Failure ]
-crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/create/user_context.py [ Failure ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browser/remove_user_context/user_context.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/bidi/script/call_function/remote_values.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_element_from_element/find.py [ Failure Pass Timeout ]
@@ -3818,18 +3809,8 @@ crbug.com/626703 external/wpt/fetch/content-type/response.window.html [ Timeout 
 crbug.com/357931030 external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Timeout ]
 crbug.com/356498699 external/wpt/webdriver/tests/bidi/browsing_context/navigation_failed/navigation_failed.py [ Failure Timeout ]
 crbug.com/626703 [ Release ] external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_closed/user_prompt_closed.py [ Failure ]  # Flaky output
-crbug.com/626703 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_closed/beforeunload.py [ Failure ]  # Flaky output
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/provide_response/request.py [ Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/credentials.py [ Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/request.py [ Timeout ]
-crbug.com/343338108 external/wpt/webdriver/tests/bidi/input/perform_actions/invalid.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.py [ Failure Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/classic/perform_actions/invalid.py [ Timeout ]
-crbug.com/385032709 external/wpt/webdriver/tests/bidi/network/continue_response/invalid.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_with_auth/action.py [ Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/invalid.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_send_keys/send_keys.py [ Failure ]
 
 # Some WebXR tests that have become flaky
@@ -7671,8 +7652,6 @@ crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/script/get_realm
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/script/realm_created/realm_created.py [ Failure Timeout ]
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/script/realm_destroyed/realm_destroyed.py [ Failure Timeout ]
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/storage/set_cookie/partition.py [ Failure Timeout ]
-crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/classic/execute_script/user_prompts.py [ Failure Timeout ]
-crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/classic/new_window/new_window.py [ Failure Timeout ]
 
 crbug.com/1467464 http/tests/devtools/a11y-axe-core/sources/event-listener-breakpoints-a11y-test.js [ Failure Pass ]
 
@@ -8532,9 +8511,6 @@ crbug.com/40279192 external/wpt/event-timing/mouseleave.html [ Failure Pass ]
 crbug.com/350075019 external/wpt/svg/struct/reftests/use-external-html-resource-with-doctype.html [ Failure ]
 crbug.com/350075019 external/wpt/svg/struct/reftests/use-external-html-resource.html [ Failure ]
 
-# Gardener 2024-06-05
-crbug.com/345118873 external/wpt/webdriver/tests/classic/get_active_element/get.py [ Failure ]
-
 # Not working tests at the timing of adding virtual/prerender2-fallback-prefetch-spec-rules
 crbug.com/346751886 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Failure ]
 
@@ -8551,10 +8527,6 @@ crbug.com/346387874 [ Win11 ] fast/backgrounds/size/contain-and-cover.html [ Fai
 
 # Gardener 2024-06-12
 crbug.com/346706682 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
-crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/input/perform_actions/key_events.py [ Failure Timeout ]
-crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/network/continue_request/invalid.py [ Failure Timeout ]
-crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/network/provide_response/invalid.py [ Failure Timeout ]
-crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Timeout ]
 
 # Temporarily skipped to land crrev.com/c/5718130
 crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-animations.js [ Failure Skip ]

@@ -910,18 +910,8 @@ static bool FollowBlockElementStyle(const Node* node) {
   // TODO(https://crbug.com/352038138): Investigate preserving styles within
   // pre elements in block merge scenarios.
       element->HasTagName(html_names::kPreTag);
-  if (RuntimeEnabledFeatures::
-          PreserveFollowingBlockStylesDuringBlockMergeEnabled()) {
-    return should_follow_block_element_style;
-  } else {
-    return should_follow_block_element_style ||
-           element->HasTagName(html_names::kH1Tag) ||
-           element->HasTagName(html_names::kH2Tag) ||
-           element->HasTagName(html_names::kH3Tag) ||
-           element->HasTagName(html_names::kH4Tag) ||
-           element->HasTagName(html_names::kH5Tag) ||
-           element->HasTagName(html_names::kH6Tag);
-  }
+
+  return should_follow_block_element_style;
 }
 
 // Remove style spans before insertion if they are unnecessary.  It's faster

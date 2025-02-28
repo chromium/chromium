@@ -106,16 +106,16 @@ struct FetchAndLaunchTimeTestParams {
   const base::TimeDelta launch_time;
 };
 
-std::unique_ptr<VariationsSeedStore> CreateSeedStore(PrefService* local_state) {
+std::unique_ptr<VariationsSeedStore> CreateSeedStore(
+    PrefService* local_state,
+    const base::FilePath& seed_file_dir) {
   return std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,
       /*signature_verification_enabled=*/true,
       std::make_unique<VariationsSafeSeedStoreLocalState>(
-          local_state,
-          /*seed_file_dir=*/base::FilePath(), version_info::Channel::UNKNOWN,
+          local_state, seed_file_dir, version_info::Channel::UNKNOWN,
           /*entropy_providers=*/nullptr),
-      version_info::Channel::UNKNOWN,
-      /*seed_file_dir=*/base::FilePath());
+      version_info::Channel::UNKNOWN, seed_file_dir);
 }
 
 // Returns a seed with simple test data. The seed has a single study,
@@ -334,8 +334,9 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return nullptr;
   }
   bool OverridesRestrictParameter(std::string* parameter) override {
-    if (restrict_parameter_.empty())
+    if (restrict_parameter_.empty()) {
       return false;
+    }
     *parameter = restrict_parameter_;
     return true;
   }
@@ -408,8 +409,9 @@ class TestVariationsSeedStore : public VariationsSeedStore {
 
   bool LoadSafeSeed(VariationsSeed* seed,
                     ClientFilterableState* client_state) override {
-    if (has_unloadable_safe_seed_)
+    if (has_unloadable_safe_seed_) {
       return false;
+    }
 
     *seed = CreateTestSafeSeed();
     return true;
@@ -437,7 +439,8 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
       : VariationsFieldTrialCreator(
             client,
             // Pass a VariationsSeedStore to base class.
-            CreateSeedStore(local_state),
+            CreateSeedStore(local_state,
+                            user_data_dir.AppendASCII("VariationsSeedV1")),
             UIStringOverrider(),
             /*limited_entropy_synthetic_trial=*/nullptr),
         enabled_state_provider_(/*consent=*/true, /*enabled=*/true),
@@ -534,6 +537,10 @@ class FieldTrialCreatorTest : public ::testing::Test {
 
   const base::FilePath user_data_dir_path() const {
     return temp_dir_.GetPath();
+  }
+
+  const base::FilePath seed_file_path() const {
+    return user_data_dir_path().AppendASCII("TestSeedFile");
   }
 
  private:
@@ -960,7 +967,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   // Use a real VariationsFieldTrialCreator and VariationsSeedStore to exercise
   // the VariationsSeedStore::LoadSeed() logic.
   TestVariationsServiceClient variations_service_client;
-  auto seed_store = CreateSeedStore(local_state());
+  auto seed_store = CreateSeedStore(local_state(), seed_file_path());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),
       /*limited_entropy_synthetic_trial=*/nullptr);
@@ -1088,7 +1095,7 @@ TEST_F(FieldTrialCreatorTest, LoadPermanentConsistencyCountry) {
     }
 
     TestVariationsServiceClient variations_service_client;
-    auto seed_store = CreateSeedStore(local_state());
+    auto seed_store = CreateSeedStore(local_state(), seed_file_path());
     VariationsFieldTrialCreator field_trial_creator(
         &variations_service_client, std::move(seed_store), UIStringOverrider(),
         /*limited_entropy_synthetic_trial=*/nullptr);
@@ -1919,7 +1926,7 @@ TEST_P(LimitedEntropyProcessingTest,
 
   // Sets up dependencies and mocks.
   TestVariationsServiceClient variations_service_client;
-  auto seed_store = CreateSeedStore(local_state());
+  auto seed_store = CreateSeedStore(local_state(), seed_file_path());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),
       test_case.trial);
@@ -2050,8 +2057,9 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
 
   // Set up the field trials.
   VariationsFieldTrialCreator field_trial_creator{
-      &variations_service_client, CreateSeedStore(local_state()),
-      UIStringOverrider(), /*limited_entropy_synthetic_trial=*/nullptr};
+      &variations_service_client,
+      CreateSeedStore(local_state(), seed_file_path()), UIStringOverrider(),
+      /*limited_entropy_synthetic_trial=*/nullptr};
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
       /*command_line_variation_ids=*/std::string(),

@@ -493,7 +493,7 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
       /*expect_suggestions_are_updated=*/true,
       /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
 
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
 
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
@@ -501,7 +501,7 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
                              features::kAutofillEnableBuyNowPayLater});
 
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
 }
 
 // Tests that BNPL settings toggle should not be shown if BNPL
@@ -522,14 +522,14 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
       /*expect_suggestions_are_updated=*/true,
       /*extracted_amount=*/std::optional<uint64_t>{1'234'560'000ULL});
 
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
 
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
       /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
 
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
 }
 
 // Tests that BNPL settings toggle should be shown only after BNPL suggestions
@@ -548,7 +548,7 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_HasSeenBnpl) {
   EXPECT_FALSE(autofill_client_->GetPersonalDataManager()
                    .payments_data_manager()
                    .IsAutofillHasSeenBnplPrefEnabled());
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
 
   // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
   TriggerBnplUpdateSuggestionsFlow(
@@ -558,7 +558,7 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_HasSeenBnpl) {
   EXPECT_TRUE(autofill_client_->GetPersonalDataManager()
                   .payments_data_manager()
                   .IsAutofillHasSeenBnplPrefEnabled());
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettingsToggle());
+  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

@@ -57,7 +57,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       const gfx::Size& size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,

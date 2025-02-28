@@ -21,8 +21,12 @@ class CountryInfo : public FormGroup {
   // Types whose info should be stored in the database for a `CountryInfo`
   // object, to ensure correct reconstruction while reading from the database.
   static constexpr FieldTypeSet kDatabaseStoredTypes{ADDRESS_HOME_COUNTRY};
+
   CountryInfo();
   CountryInfo(const CountryInfo& info);
+  CountryInfo& operator=(const CountryInfo& info);
+  CountryInfo(CountryInfo&& info);
+  CountryInfo& operator=(CountryInfo&& info);
   ~CountryInfo() override;
 
   // FormGroup:

@@ -1047,6 +1047,58 @@ TEST_P(RulesetManagerTest, CrossExtensionRequestBlocking) {
   EXPECT_TRUE(request_6.dnr_actions->empty());
 }
 
+// Tests that queryTransform rules do not leave a trailing "?" after removing
+// the last parameter from a URL.
+TEST_P(RulesetManagerTest, QueryTransformRemoveParamsTrailingQuestionMark) {
+  const Extension* extension = nullptr;
+  {
+    std::unique_ptr<CompositeMatcher> matcher;
+    TestRule rule = CreateGenericRule();
+    rule.condition->url_filter = std::string("example.com");
+    rule.action->type = std::string("redirect");
+    rule.action->redirect.emplace();
+    rule.action->redirect->transform.emplace();
+    rule.action->redirect->transform->query_transform.emplace();
+    rule.action->redirect->transform->query_transform->remove_params =
+        std::vector<std::string>({"remove"});
+
+    ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
+        {rule}, "test extension_1", &matcher,
+        std::vector<std::string>({URLPattern::kAllUrlsPattern}),
+        true /* has_background_script */));
+    extension = last_loaded_extension();
+    manager()->AddRuleset(extension->id(), std::move(matcher));
+  }
+
+  EXPECT_EQ(1u, manager()->GetMatcherCountForTest());
+
+  struct TestCase {
+    std::string url;
+    std::string expected_redirected_url;
+  } test_cases[] = {
+      {"https://example.com", "https://example.com"},
+      {"https://example.com?", "https://example.com?"},
+      {"https://example.com?keep=1", "https://example.com?keep=1"},
+      {"https://example.com?keep=1&remove=2", "https://example.com?keep=1"},
+      {"https://example.com?remove=1", "https://example.com"},
+      {"https://example.com?remove", "https://example.com"}};
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE("Testing " + test_case.url + " -> " +
+                 test_case.expected_redirected_url);
+    WebRequestInfo request(GetRequestParamsForURL(test_case.url));
+    manager()->EvaluateBeforeRequest(request, false /*is_incognito_context*/);
+
+    if (request.dnr_actions->empty()) {
+      EXPECT_EQ(test_case.expected_redirected_url, test_case.url);
+    } else {
+      ASSERT_EQ(1u, request.dnr_actions->size());
+      EXPECT_EQ(GURL(test_case.expected_redirected_url),
+                (*request.dnr_actions)[0].redirect_url);
+    }
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RulesetManagerTest,
                          ::testing::Values(ExtensionLoadType::PACKED,

@@ -1014,6 +1014,13 @@ var availableTests = [
     chrome.test.assertEq(expectedAttributeTypesList, attributeTypesList);
     chrome.test.succeed();
   },
+
+  async function getEmptyPayOverTimeIssuerList() {
+    const payOverTimeIssuerList =
+        await chrome.autofillPrivate.getPayOverTimeIssuerList();
+    chrome.test.assertEq([], payOverTimeIssuerList);
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -1078,6 +1085,7 @@ var TESTS_FOR_CONFIG = {
   'getEntityInstanceByGuid': ['getEntityInstanceByGuid'],
   'getAllEntityTypes': ['getAllEntityTypes'],
   'getAllAttributeTypesForEntity': ['getAllAttributeTypesForEntity'],
+  'getEmptyPayOverTimeIssuerList': ['getEmptyPayOverTimeIssuerList'],
 };
 
 var testConfig = window.location.search.substring(1);

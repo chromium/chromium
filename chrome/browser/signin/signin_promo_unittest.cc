@@ -27,6 +27,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -86,6 +87,39 @@ TEST(SigninPromoTest, SigninURLForDice) {
       "Email=email%40gmail.com&continue=https%3A%2F%2Fcontinue_url%2F",
       GetAddAccountURLForDice("email@gmail.com",
                               GURL("https://continue_url/")));
+}
+
+TEST(SigninPromoTest, IsSignInPromo_AutofillTypes) {
+  EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
+  EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
+}
+TEST(SigninPromoTest, IsSignInPromo_ExtensionsWithExplicitSignin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin},
+      /*disabled_features=*/{});
+
+  EXPECT_TRUE(
+      IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
+}
+
+TEST(SigninPromoTest, IsSignInPromo_ExtensionsWithoutExplicitSignin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin});
+
+  EXPECT_FALSE(
+      IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
+}
+
+TEST(SigninPromoTest, IsSignInPromo_BookmarksWithoutExplicitSignin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{syncer::kSyncEnableBookmarksInTransportMode});
+
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
 }
 
 class ShowPromoTest : public testing::Test {

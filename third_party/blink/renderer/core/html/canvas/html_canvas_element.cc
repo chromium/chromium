@@ -2051,9 +2051,14 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
   ResetLayer();
   ReplaceResourceProvider(nullptr);
 
+  // Bail out if the context is lost.
+  if (context_lost()) {
+    return;
+  }
+
   // Bail out if it's not possible to create a new provider.
   CanvasResourceProvider* new_provider =
-      GetOrCreateCanvasResourceProviderFor2DContext(
+      RecreateCanvasResourceProviderFor2DContext(
           canvas2d_bridge_->GetHibernationHandler());
   if (!new_provider) {
     return;
@@ -2089,7 +2094,18 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     if (bridge == nullptr) {
       return nullptr;
     }
-    return GetOrCreateCanvasResourceProviderFor2DContext(
+
+    CanvasResourceProvider* resource_provider = ResourceProvider();
+    if (context_lost()) {
+      DCHECK(!resource_provider);
+      return nullptr;
+    }
+
+    if (resource_provider && resource_provider->IsValid()) {
+      return resource_provider;
+    }
+
+    return RecreateCanvasResourceProviderFor2DContext(
         canvas2d_bridge_->GetHibernationHandler());
   }
 
@@ -2097,19 +2113,8 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
 }
 
 CanvasResourceProvider*
-HTMLCanvasElement::GetOrCreateCanvasResourceProviderFor2DContext(
+HTMLCanvasElement::RecreateCanvasResourceProviderFor2DContext(
     CanvasHibernationHandler& hibernation_handler) {
-  CanvasResourceProvider* resource_provider = ResourceProvider();
-
-  if (context_lost()) {
-    DCHECK(!resource_provider);
-    return nullptr;
-  }
-
-  if (resource_provider && resource_provider->IsValid()) {
-    return resource_provider;
-  }
-
   // Restore() is tried at most four times in two seconds to recreate the
   // ResourceProvider before the final attempt, in which a new
   // Canvas2DLayerBridge is created along with its resource provider.
@@ -2129,7 +2134,8 @@ HTMLCanvasElement::GetOrCreateCanvasResourceProviderFor2DContext(
 
   // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
   // circular callstack.
-  resource_provider = GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
+  CanvasResourceProvider* resource_provider =
+      GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
   if (!resource_provider || !resource_provider->IsValid()) {
     return nullptr;
   }
