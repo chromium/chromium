@@ -4611,8 +4611,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
          "`NavigationRequest` starts to select the RFH.";
   ScopedCrashKeys crash_keys(*this);
 
-  std::string rfh_selected_reason;
-
   // Select an appropriate renderer to commit the navigation.
   if (IsServedFromBackForwardCache()) {
     NavigationControllerImpl* controller = GetNavigationController();
@@ -4646,8 +4644,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
                 this, &browsing_context_group_swap_,
                 ProcessAllocationContext::CreateForNavigationRequest(
                     ProcessAllocationNavigationStage::kAfterResponse,
-                    navigation_id_),
-                &rfh_selected_reason);
+                    navigation_id_));
         result.has_value()) {
       render_frame_host_ = result.value()->GetSafeRef();
     } else {
@@ -4867,13 +4864,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // has destroyed the NavigationRequest.
     return;
   }
-
-  // TODO(crbug.com/40065692): Remove.
-  SCOPED_CRASH_KEY_STRING256(
-      "Bug1454273", "base_host_for_data_url",
-      common_params_->base_url_for_data_url.host_piece());
-  SCOPED_CRASH_KEY_STRING1024("Bug1454273", "rfh_selected_reason",
-                              rfh_selected_reason);
 
   if (HasRenderFrameHost() &&
       !CheckPermissionsPoliciesForFencedFrames(GetOriginToCommit().value())) {
