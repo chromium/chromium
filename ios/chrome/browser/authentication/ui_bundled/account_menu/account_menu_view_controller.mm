@@ -61,6 +61,9 @@ constexpr CGFloat kMinimumTouchTargetSize = 44.0;
 // The corner radius of the half sheet.
 constexpr CGFloat kHalfSheetCornerRadius = 10.0;
 
+// The margin of the Settings icon.
+constexpr CGFloat kSettingsIconSideMargin = 20.0;
+
 // Sections used in the account menu.
 typedef NS_ENUM(NSUInteger, SectionIdentifier) {
   // Sync errors.
@@ -422,6 +425,26 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   cell.textLabel.textColor = textColor;
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = accessibilityIdentifier;
+
+  if (rowIdentifier == RowIdentifierSettings) {
+    UIImage* trailingImage = DefaultSymbolTemplateWithPointSize(
+        kSettingsSymbol, kSettingsRootSymbolImagePointSize);
+
+    UIImageView* trailingImageView =
+        [[UIImageView alloc] initWithImage:trailingImage];
+    trailingImageView.contentMode = UIViewContentModeScaleAspectFit;
+    trailingImageView.tintColor = [UIColor colorNamed:kSolidBlackColor];
+    trailingImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [cell.contentView addSubview:trailingImageView];
+    [NSLayoutConstraint activateConstraints:@[
+      [trailingImageView.centerYAnchor
+          constraintEqualToAnchor:cell.contentView.centerYAnchor],
+      [trailingImageView.trailingAnchor
+          constraintEqualToAnchor:cell.contentView.trailingAnchor
+                         constant:-kSettingsIconSideMargin]
+    ]];
+  }
+
   return cell;
 }
 
