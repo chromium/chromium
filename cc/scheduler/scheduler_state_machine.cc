@@ -652,7 +652,7 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
   // This comes last, because we only want to throttle main frame that would
   // otherwise actually be sent, and we do not want to throttle forced redraws.
   if (main_frame_throttled_interval_.is_positive() &&
-      Now() - last_sent_begin_main_frame_time_ <
+      last_begin_impl_frame_time_ - last_sent_begin_main_frame_time_ <
           main_frame_throttled_interval_) {
     TRACE_EVENT0("cc", "ThrottleMainFrame");
     return false;
@@ -914,7 +914,10 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
   did_send_begin_main_frame_for_current_frame_ = true;
   // TODO(szager): Make sure this doesn't break perfetto
   last_frame_number_begin_main_frame_sent_ = current_frame_number_;
-  last_sent_begin_main_frame_time_ = Now();
+  // Not setting this to Now(), as we align everything on the last impl frame,
+  // in order to avoid the effects of delay in-between BeginImplFrame and
+  // SendBeginMainFrame(), that might lead to frame pacing issues.
+  last_sent_begin_main_frame_time_ = last_begin_impl_frame_time_;
 }
 
 void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedUntil() {
@@ -1305,10 +1308,15 @@ bool SchedulerStateMachine::ProactiveBeginFrameWanted() const {
 }
 
 void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameId& frame_id,
-                                             bool animate_only) {
+                                             bool animate_only,
+                                             base::TimeTicks frame_time) {
   begin_impl_frame_state_ = BeginImplFrameState::INSIDE_BEGIN_FRAME;
   current_frame_number_++;
   begin_frame_is_animate_only_ = animate_only;
+  // Pin the timestamp as passed from the caller. This makes timestamps more
+  // consistent, and insensitive to e.g. descheduling between receiving a
+  // BeginFrame() call, and actually getting to BeginImplFrame().
+  last_begin_impl_frame_time_ = frame_time;
 
   // Cache the values from the previous impl frame before reseting them for this
   // frame.
@@ -1791,10 +1799,6 @@ bool SchedulerStateMachine::HasInitializedLayerTreeFrameSink() const {
       return true;
   }
   NOTREACHED();
-}
-
-base::TimeTicks SchedulerStateMachine::Now() const {
-  return base::TimeTicks::Now();
 }
 
 }  // namespace cc
