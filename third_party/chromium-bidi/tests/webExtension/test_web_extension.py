@@ -157,7 +157,7 @@ async def test_extensions_no_such_exension(websocket, test_headless_mode):
         return
     with pytest.raises(Exception,
                        match=str({
-                           'error': 'invalid web extension',
+                           'error': 'no such web extension',
                            'message': 'no such web extension'
                        })):
         await uninstall(websocket, "wrong_id")

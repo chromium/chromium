@@ -21,6 +21,7 @@ import {
   type WebExtension,
   UnsupportedOperationException,
   type EmptyResult,
+  NoSuchWebExtensionException,
 } from '../../../protocol/protocol.js';
 
 /**
@@ -72,7 +73,7 @@ export class WebExtensionProcessor {
         (err as Error).message ===
         'Uninstall failed. Reason: could not find extension.'
       ) {
-        throw new InvalidWebExtensionException('no such web extension');
+        throw new NoSuchWebExtensionException('no such web extension');
       }
       throw err;
     }
