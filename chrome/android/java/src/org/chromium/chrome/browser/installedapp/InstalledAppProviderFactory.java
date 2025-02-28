@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.installedapp;
 
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.installedapp.InstalledAppProviderImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -24,7 +23,6 @@ public class InstalledAppProviderFactory implements InterfaceFactory<InstalledAp
     public InstalledAppProvider createImpl() {
         return new InstalledAppProviderImpl(
                 Profile.fromWebContents(WebContentsStatics.fromRenderFrameHost(mRenderFrameHost)),
-                mRenderFrameHost,
-                InstantAppsHandler.getInstance()::isInstantAppAvailable);
+                mRenderFrameHost);
     }
 }

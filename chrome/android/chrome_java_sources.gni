@@ -686,7 +686,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
   "java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java",
   "java/src/org/chromium/chrome/browser/installedapp/InstalledAppProviderFactory.java",
-  "java/src/org/chromium/chrome/browser/instantapps/InstantAppsHandler.java",
   "java/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunner.java",
   "java/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManager.java",
   "java/src/org/chromium/chrome/browser/latency_injection/StartupLatencyInjector.java",
