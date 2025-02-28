@@ -79,10 +79,12 @@ export class BrowserInstance {
       '--no-default-browser-check',
       '--no-first-run',
       '--password-store=basic',
-      '--remote-debugging-port=9222',
       '--use-mock-keychain',
       `--user-data-dir=${profileDir}`,
       // keep-sorted end
+      ...(chromeOptions.chromeArgs.includes('--remote-debugging-pipe')
+        ? []
+        : ['--remote-debugging-port=9222']),
       ...chromeOptions.chromeArgs,
       'about:blank',
     ];
