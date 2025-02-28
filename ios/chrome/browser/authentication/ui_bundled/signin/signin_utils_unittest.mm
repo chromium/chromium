@@ -10,7 +10,13 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/version.h"
+#import "components/feature_engagement/public/configuration.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
+#import "components/feature_engagement/test/test_tracker.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -20,6 +26,8 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -41,6 +49,11 @@
 
 namespace {
 
+std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
+    web::BrowserState* context) {
+  return std::make_unique<feature_engagement::test::MockTracker>();
+}
+
 class SigninUtilsTest : public PlatformTest {
  public:
   SigninUtilsTest() = default;
@@ -53,10 +66,15 @@ class SigninUtilsTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(&BuildFeatureEngagementMockTracker));
     profile_ = std::move(builder).Build();
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
     account_manager_service_ =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+    mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
   }
 
   void TearDown() override {
@@ -92,7 +110,9 @@ class SigninUtilsTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
@@ -180,6 +200,30 @@ TEST_F(SigninUtilsTest, TestWillDisplayTwoMajorVersions) {
 // Show the sign-in upgrade on version 1.0.
 // Show the sign-in upgrade on version 3.0.
 // Move to version 5.0.
+// Expected: should not show the sign-in upgrade when the fullscreen sign-in
+// promo manager migration is disabled.
+TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnlyLegacy) {
+  // Disable the fullscreen sign-in promo manager migration.
+  feature_list_.InitWithFeatureState(kFullscreenSigninPromoManagerMigration,
+                                     false);
+  FakeSystemIdentity* fake_identity1 = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(fake_identity1);
+  FakeSystemIdentity* fake_identity2 = [FakeSystemIdentity fakeIdentity2];
+  fake_system_identity_manager()->AddIdentity(fake_identity2);
+  const base::Version version_1_0("1.0");
+  const base::Version version_3_0("3.0");
+  const base::Version version_5_0("5.0");
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_3_0);
+  EXPECT_FALSE(
+      signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
+}
+
+// Show the sign-in upgrade on version 1.0.
+// Show the sign-in upgrade on version 3.0.
+// Move to version 5.0.
 // Expected: should not show the sign-in upgrade.
 TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnly) {
   FakeSystemIdentity* fake_identity1 = [FakeSystemIdentity fakeIdentity1];
@@ -189,6 +233,22 @@ TEST_F(SigninUtilsTest, TestWillShowTwoTimesOnly) {
   const base::Version version_1_0("1.0");
   const base::Version version_3_0("3.0");
   const base::Version version_5_0("5.0");
+
+  // Mock sign-in fullscreen promo FET feature with 2 triggers.
+  int interaction_count = 2;
+  std::vector<std::pair<feature_engagement::EventConfig, int>> event_list;
+  event_list.emplace_back(
+      feature_engagement::EventConfig(
+          feature_engagement::events::kIOSSigninFullscreenPromoTrigger,
+          feature_engagement::Comparator(feature_engagement::ANY, 0),
+          feature_engagement::kMaxStoragePeriod,
+          feature_engagement::kMaxStoragePeriod),
+      interaction_count);
+  EXPECT_CALL(*mock_tracker_,
+              ListEvents(testing::Ref(
+                  feature_engagement::kIPHiOSPromoSigninFullscreenFeature)))
+      .WillRepeatedly(testing::Return(event_list));
+
   signin::RecordUpgradePromoSigninStarted(
       identity_manager_, account_manager_service_, version_1_0);
   signin::RecordUpgradePromoSigninStarted(
@@ -221,6 +281,32 @@ TEST_F(SigninUtilsTest, TestWillShowForNewAccountAdded) {
 // Show the sign-in upgrade on version 3.0.
 // Move to version 5.0.
 // Remove previous account.
+// Expected: should not show the sign-in upgrade when the fullscreen sign-in
+// promo manager migration is disabled.
+TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemovedLegacy) {
+  // Disable the fullscreen sign-in promo manager migration.
+  feature_list_.InitWithFeatureState(kFullscreenSigninPromoManagerMigration,
+                                     false);
+  const base::Version version_1_0("1.0");
+  const base::Version version_3_0("3.0");
+  const base::Version version_5_0("5.0");
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(fake_identity);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_3_0);
+  fake_system_identity_manager()->ForgetIdentity(fake_identity,
+                                                 base::DoNothing());
+  EXPECT_FALSE(
+      signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
+}
+
+// Add new account.
+// Show the sign-in upgrade on version 1.0.
+// Show the sign-in upgrade on version 3.0.
+// Move to version 5.0.
+// Remove previous account.
 // Expected: should not show the sign-in upgrade.
 TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
   const base::Version version_1_0("1.0");
@@ -234,6 +320,22 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
       identity_manager_, account_manager_service_, version_3_0);
   fake_system_identity_manager()->ForgetIdentity(fake_identity,
                                                  base::DoNothing());
+
+  // Mock sign-in fullscreen promo FET feature with 2 triggers.
+  int interaction_count = 2;
+  std::vector<std::pair<feature_engagement::EventConfig, int>> event_list;
+  event_list.emplace_back(
+      feature_engagement::EventConfig(
+          feature_engagement::events::kIOSSigninFullscreenPromoTrigger,
+          feature_engagement::Comparator(feature_engagement::ANY, 0),
+          feature_engagement::kMaxStoragePeriod,
+          feature_engagement::kMaxStoragePeriod),
+      interaction_count);
+  EXPECT_CALL(*mock_tracker_,
+              ListEvents(testing::Ref(
+                  feature_engagement::kIPHiOSPromoSigninFullscreenFeature)))
+      .WillRepeatedly(testing::Return(event_list));
+
   EXPECT_FALSE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_5_0));
 }

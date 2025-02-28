@@ -51,9 +51,6 @@
 // don’t test the whole activation level life cycle.
 - (void)teardownUI;
 
-// Returns YES if the sign-in upgrade promo should be presented.
-- (BOOL)shouldPresentSigninUpgradePromo;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_CONTROLLER_H_

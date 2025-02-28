@@ -213,6 +213,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin:unit_tests",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/promo:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signin/trusted_vault_reauthentication:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:unit_tests",
