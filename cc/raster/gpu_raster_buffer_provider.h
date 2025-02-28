@@ -123,7 +123,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
         const gfx::AxisTransform2d& transform,
         const RasterSource::PlaybackSettings& playback_settings);
 
-    // These fields may only be used on the compositor thread.
+    // These fields are safe to access on both the compositor and worker thread.
     const raw_ptr<GpuRasterBufferProvider> client_;
     raw_ptr<ResourcePool::Backing> backing_;
 
