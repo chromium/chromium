@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.pwm_disabled;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Mediator for the dialog displayed when the password manager is permanently unavailable for a
  * user. It handles interactions with the UI.
  */
+@NullMarked
 class PasswordManagerUnavailableDialogMediator implements ModalDialogProperties.Controller {
     private final ModalDialogManager mModalDialogManager;
     private final Runnable mLaunchGmsUpdate;

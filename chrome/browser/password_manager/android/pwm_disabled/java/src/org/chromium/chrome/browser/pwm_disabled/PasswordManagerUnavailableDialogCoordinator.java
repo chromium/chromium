@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.pwm_disabled;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,15 +19,17 @@ import org.chromium.ui.modelutil.PropertyModel;
  * can update GMS Core to regain access, it displays an update button. For all other users it only
  * displays information.
  */
+@NullMarked
 public class PasswordManagerUnavailableDialogCoordinator {
     private Context mContext;
     private Callback<Context> mLaunchGmsUpdateCallback;
     private ModalDialogManager mModalDialogManager;
     private PasswordManagerUnavailableDialogMediator mMediator;
 
+    @Initializer
     public void showDialog(
             Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+            ModalDialogManager modalDialogManager,
             Callback<Context> launchGmsUpdate) {
         mContext = context;
         mLaunchGmsUpdateCallback = launchGmsUpdate;
@@ -76,7 +79,7 @@ public class PasswordManagerUnavailableDialogCoordinator {
                 : mContext.getString(R.string.pwm_disabled_no_gms_dialog_description_paragraph1);
     }
 
-    private String getMessageParagraph2(boolean isUpdateDialog) {
+    private @Nullable String getMessageParagraph2(boolean isUpdateDialog) {
         return isUpdateDialog
                 ? null
                 : mContext.getString(R.string.pwm_disabled_no_gms_dialog_description_paragraph2);
@@ -88,7 +91,7 @@ public class PasswordManagerUnavailableDialogCoordinator {
                 : mContext.getString(R.string.pwm_disabled_no_gms_dialog_button_text);
     }
 
-    private String getNegativeButtonText(boolean isUpdateDialog) {
+    private @Nullable String getNegativeButtonText(boolean isUpdateDialog) {
         return isUpdateDialog
                 ? mContext.getString(R.string.pwm_disabled_update_dialog_cancel)
                 : null;
