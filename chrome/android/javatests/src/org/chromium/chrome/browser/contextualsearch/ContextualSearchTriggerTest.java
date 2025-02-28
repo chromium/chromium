@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewConfiguration;
 
@@ -20,6 +21,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -338,6 +340,9 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    // https://crbug.com/399388784: Causes Espresso clicks to stop working in subsequent tests in
+    // Android 10 (Q).
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q)
     // Previously flaky, disabled 4/2021.  https://crbug.com/1192285, https://crbug.com/1291558
     public void testPreventHandlingCurrentSelectionModification() throws Exception {
         longPressNode("search");
