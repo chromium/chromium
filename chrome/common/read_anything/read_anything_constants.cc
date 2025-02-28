@@ -15,6 +15,4 @@ const char kReadAnythingPlaceholderFontName[] = "Poppins";
 // invalid.
 const char kReadAnythingDefaultFont[] = "sans-serif";
 
-const char kEmptyStateHistogramName[] = "Accessibility.ReadAnything.EmptyState";
-
 }  // namespace string_constants

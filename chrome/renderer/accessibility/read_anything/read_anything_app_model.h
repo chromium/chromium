@@ -42,10 +42,17 @@ class ReadAnythingAppModel {
     virtual void OnTreeRemoved(ui::AXTree* tree) = 0;
   };
 
-  ReadAnythingAppModel();
-  ~ReadAnythingAppModel();
-  ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
-  ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
+  // Enum for logging when we show the empty state.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ReadAnythingEmptyState)
+  enum class EmptyState {
+    kShown = 0,
+    kShownWithSelectionAfter = 1,
+    kMaxValue = kShownWithSelectionAfter,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingEmptyState)
 
   struct AXTreeInfo {
     explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> other);
@@ -79,6 +86,14 @@ class ReadAnythingAppModel {
     // active ax tree id changes; instead, it should be set once when a new tree
     // is added.
   };
+
+  static constexpr char kEmptyStateHistogramName[] =
+      "Accessibility.ReadAnything.EmptyState";
+
+  ReadAnythingAppModel();
+  ~ReadAnythingAppModel();
+  ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
+  ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
 
   bool requires_distillation() const { return requires_distillation_; }
   void set_requires_distillation(bool value) { requires_distillation_ = value; }
