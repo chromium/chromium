@@ -197,6 +197,7 @@ class AbandonedPageLoadMetricsObserver
   virtual ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle);
   bool IsResponseFromCache() const { return was_cached_; }
+  int64_t navigation_id() const { return navigation_id_; }
 
   // Adds the abandonment related metrics to UKM Builder `T`.
   template <typename T>
