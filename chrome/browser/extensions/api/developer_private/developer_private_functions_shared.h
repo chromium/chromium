@@ -126,6 +126,17 @@ class DeveloperPrivateGetExtensionInfoFunction
   std::unique_ptr<ExtensionInfoGenerator> info_generator_;
 };
 
+class DeveloperPrivateGetProfileConfigurationFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getProfileConfiguration",
+                             DEVELOPERPRIVATE_GETPROFILECONFIGURATION)
+
+ private:
+  ~DeveloperPrivateGetProfileConfigurationFunction() override;
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateUpdateProfileConfigurationFunction
     : public DeveloperPrivateAPIFunction {
  public:

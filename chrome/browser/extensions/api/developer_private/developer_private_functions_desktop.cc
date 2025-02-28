@@ -30,7 +30,6 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
@@ -39,7 +38,6 @@
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -173,29 +171,6 @@ void GetManifestError(const std::string& error,
       base::BindOnce(&ReadFileToString,
                      extension_path.Append(kManifestFilename)),
       base::BindOnce(std::move(callback), extension_path, error, line));
-}
-
-// Runs the install verifier for all extensions that are enabled, disabled, or
-// terminated.
-void PerformVerificationCheck(content::BrowserContext* context) {
-  const ExtensionSet extensions =
-      ExtensionRegistry::Get(context)->GenerateInstalledExtensionsSet(
-          ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
-          ExtensionRegistry::TERMINATED);
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
-  bool should_do_verification_check = false;
-  for (const scoped_refptr<const Extension>& extension : extensions) {
-    if (ui_util::ShouldDisplayInExtensionSettings(*extension) &&
-        prefs->HasDisableReason(extension->id(),
-                                disable_reason::DISABLE_NOT_VERIFIED)) {
-      should_do_verification_check = true;
-      break;
-    }
-  }
-
-  if (should_do_verification_check) {
-    InstallVerifier::Get(context)->VerifyAllExtensions();
-  }
 }
 
 // Creates a developer::LoadError from the provided data.
@@ -384,25 +359,6 @@ DeveloperPrivateGetExtensionSizeFunction::Run() {
 void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
     const std::u16string& size) {
   Respond(WithArguments(size));
-}
-
-DeveloperPrivateGetProfileConfigurationFunction::
-    ~DeveloperPrivateGetProfileConfigurationFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateGetProfileConfigurationFunction::Run() {
-  std::unique_ptr<developer::ProfileInfo> info =
-      CreateProfileInfo(Profile::FromBrowserContext(browser_context()));
-
-  // If this is called from the chrome://extensions page, we use this as a
-  // heuristic that it's a good time to verify installs. We do this on startup,
-  // but there's a chance that it failed erroneously, so it's good to double-
-  // check.
-  if (source_context_type() == mojom::ContextType::kWebUi) {
-    PerformVerificationCheck(browser_context());
-  }
-
-  return RespondNow(WithArguments(info->ToValue()));
 }
 
 DeveloperPrivateReloadFunction::DeveloperPrivateReloadFunction() = default;

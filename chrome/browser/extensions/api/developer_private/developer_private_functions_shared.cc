@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
+#include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -20,8 +21,10 @@
 #include "extensions/common/permissions/permissions_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "extensions/browser/ui_util.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
@@ -50,6 +53,31 @@ std::optional<URLPattern> ParseRuntimePermissionsPattern(
 
   return pattern;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Runs the install verifier for all extensions that are enabled, disabled, or
+// terminated.
+void PerformVerificationCheck(content::BrowserContext* context) {
+  const ExtensionSet extensions =
+      ExtensionRegistry::Get(context)->GenerateInstalledExtensionsSet(
+          ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
+          ExtensionRegistry::TERMINATED);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
+  bool should_do_verification_check = false;
+  for (const scoped_refptr<const Extension>& extension : extensions) {
+    if (ui_util::ShouldDisplayInExtensionSettings(*extension) &&
+        prefs->HasDisableReason(extension->id(),
+                                disable_reason::DISABLE_NOT_VERIFIED)) {
+      should_do_verification_check = true;
+      break;
+    }
+  }
+
+  if (should_do_verification_check) {
+    InstallVerifier::Get(context)->VerifyAllExtensions();
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -135,6 +163,27 @@ void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
   DCHECK_LE(1u, list.size());
   Respond(list.empty() ? Error(kNoSuchExtensionError)
                        : WithArguments(list[0].ToValue()));
+}
+
+DeveloperPrivateGetProfileConfigurationFunction::
+    ~DeveloperPrivateGetProfileConfigurationFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetProfileConfigurationFunction::Run() {
+  std::unique_ptr<developer::ProfileInfo> info =
+      CreateProfileInfo(Profile::FromBrowserContext(browser_context()));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If this is called from the chrome://extensions page, we use this as a
+  // heuristic that it's a good time to verify installs. We do this on startup,
+  // but there's a chance that it failed erroneously, so it's good to double-
+  // check.
+  if (source_context_type() == mojom::ContextType::kWebUi) {
+    PerformVerificationCheck(browser_context());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  return RespondNow(WithArguments(info->ToValue()));
 }
 
 DeveloperPrivateUpdateProfileConfigurationFunction::

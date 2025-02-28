@@ -23,9 +23,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateAutoUpdateFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivateGetExtensionSizeFunction,
                    "developerPrivate.getExtensionSize",
                    DEVELOPERPRIVATE_GETEXTENSIONSIZE);
-DECLARE_EMPTY_FUNC(DeveloperPrivateGetProfileConfigurationFunction,
-                   "developerPrivate.getProfileConfiguration",
-                   DEVELOPERPRIVATE_GETPROFILECONFIGURATION);
 DECLARE_EMPTY_FUNC(DeveloperPrivateReloadFunction,
                    "developerPrivate.reload",
                    DEVELOPERPRIVATE_RELOAD);

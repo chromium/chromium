@@ -71,17 +71,6 @@ class DeveloperPrivateGetExtensionSizeFunction
   void OnSizeCalculated(const std::u16string& size);
 };
 
-class DeveloperPrivateGetProfileConfigurationFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.getProfileConfiguration",
-                             DEVELOPERPRIVATE_GETPROFILECONFIGURATION)
-
- private:
-  ~DeveloperPrivateGetProfileConfigurationFunction() override;
-  ResponseAction Run() override;
-};
-
 class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
                                        public ExtensionRegistryObserver,
                                        public LoadErrorReporter::Observer {
