@@ -1130,18 +1130,12 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
         FROM_HERE, std::move(pending_interaction_callback_));
   }
 
-  // If simplified selection is enabled, then text will not be parsed from the
-  // objects server response but the interaction response.
-  lens::mojom::TextPtr text_from_response =
-      lens::features::IsSimplifiedSelectionEnabled()
-          ? lens::mojom::TextPtr()
-          : lens::CreateTextMojomFromServerResponse(server_response,
-                                                    resized_bitmap_size_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(full_image_callback_,
                                 lens::CreateObjectsMojomArrayFromServerResponse(
                                     server_response),
-                                std::move(text_from_response),
+                                lens::CreateTextMojomFromServerResponse(
+                                    server_response, resized_bitmap_size_),
                                 /*is_error=*/false));
 }
 
