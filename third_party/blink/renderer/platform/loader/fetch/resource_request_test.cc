@@ -8,11 +8,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -24,12 +24,12 @@ namespace blink {
 
 namespace {
 
-std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
-    const PermissionsPolicy* parent,
+std::unique_ptr<network::PermissionsPolicy> CreateFromParentPolicy(
+    const network::PermissionsPolicy* parent,
     network::ParsedPermissionsPolicy header_policy,
     const url::Origin& origin) {
   network::ParsedPermissionsPolicy empty_container_policy;
-  return PermissionsPolicy::CreateFromParentPolicy(
+  return network::PermissionsPolicy::CreateFromParentPolicy(
       parent, header_policy, empty_container_policy, origin);
 }
 
@@ -112,7 +112,7 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy =
+    std::unique_ptr<network::PermissionsPolicy> policy =
         CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a);
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
@@ -188,7 +188,7 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
+    std::unique_ptr<network::PermissionsPolicy> policy = CreateFromParentPolicy(
         nullptr,
         {{{network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
@@ -275,7 +275,7 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
+    std::unique_ptr<network::PermissionsPolicy> policy = CreateFromParentPolicy(
         nullptr,
         {{{network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
@@ -362,7 +362,7 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
+    std::unique_ptr<network::PermissionsPolicy> policy = CreateFromParentPolicy(
         nullptr,
         {{{network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
@@ -453,7 +453,7 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
+    std::unique_ptr<network::PermissionsPolicy> policy = CreateFromParentPolicy(
         nullptr,
         {{{network::mojom::PermissionsPolicyFeature::
                kBrowsingTopics, /*allowed_origins=*/

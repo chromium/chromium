@@ -39,8 +39,9 @@ class PolicyTest : public testing::Test {
         "https://example.com https://example.net",
         "gyroscope=(self \"https://*.example.com\" \"https://example.net\")",
         origin.get(), dummy_logger, dummy_logger);
-    auto permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
-        nullptr, header, {}, origin->ToUrlOrigin());
+    auto permissions_policy =
+        network::PermissionsPolicy::CreateFromParentPolicy(
+            nullptr, header, {}, origin->ToUrlOrigin());
 
     auto& security_context =
         page_holder_->GetFrame().DomWindow()->GetSecurityContext();

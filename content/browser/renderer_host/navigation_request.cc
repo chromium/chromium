@@ -898,7 +898,7 @@ TopicsHeaderValueResult GetTopicsHeaderValueForNavigationRequest(
     return {};
   }
 
-  const blink::PermissionsPolicy* parent_policy =
+  const network::PermissionsPolicy* parent_policy =
       rfh->GetParent()->GetPermissionsPolicy();
 
   DCHECK(parent_policy);
@@ -1008,7 +1008,7 @@ bool IsSharedStorageWritableEligibleForNavigationRequest(
   }
 
   CHECK(frame_tree_node->parent());
-  const blink::PermissionsPolicy* parent_policy =
+  const network::PermissionsPolicy* parent_policy =
       frame_tree_node->parent()->GetPermissionsPolicy();
 
   DCHECK(parent_policy);
@@ -9551,10 +9551,10 @@ bool NavigationRequest::IsFencedFrameRequiredPolicyFeatureAllowed(
 
   // Check if the outer document's permissions policies allow all of the
   // required policies.
-  std::optional<const blink::PermissionsPolicy::Allowlist> embedder_allowlist =
-      GetParentFrameOrOuterDocument()
-          ->GetPermissionsPolicy()
-          ->GetAllowlistForFeatureIfExists(feature);
+  std::optional<const network::PermissionsPolicy::Allowlist>
+      embedder_allowlist = GetParentFrameOrOuterDocument()
+                               ->GetPermissionsPolicy()
+                               ->GetAllowlistForFeatureIfExists(feature);
   if (embedder_allowlist && !embedder_allowlist->MatchesAll()) {
     return false;
   }

@@ -678,7 +678,7 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
 
     if (auto* permissions_policy = security_context.GetPermissionsPolicy();
         permissions_policy &&
-        !PermissionsPolicy::InheritedValueForFeature(
+        !network::PermissionsPolicy::InheritedValueForFeature(
             src, permissions_policy, feature_desc, container_policy)) {
       auto endpoint = std::optional<String>(
           permissions_policy->GetEndpointForFeature(feature));
@@ -688,7 +688,7 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
     } else if (auto* report_only_permissions_policy =
                    security_context.GetReportOnlyPermissionsPolicy();
                report_only_permissions_policy &&
-               !PermissionsPolicy::InheritedValueForFeature(
+               !network::PermissionsPolicy::InheritedValueForFeature(
                    src, report_only_permissions_policy, feature_desc,
                    container_policy)) {
       auto endpoint = std::optional<String>(

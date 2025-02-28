@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 
 #include <optional>
 #include <unordered_set>
@@ -21,12 +21,10 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace blink {
+namespace network {
 
 namespace {
 
@@ -3696,4 +3694,4 @@ TEST_F(DeprecateUnloadTest, Headerless) {
   EXPECT_TRUE(PermissionsPolicy::IsHeaderlessUrl(GURL("blob:abc")));
 }
 
-}  // namespace blink
+}  // namespace network

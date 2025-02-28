@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
@@ -15,11 +15,11 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "url/gurl.h"
 
-namespace blink {
+namespace network {
 
 PermissionsPolicy::Allowlist::Allowlist() = default;
 
@@ -94,6 +94,24 @@ void PermissionsPolicy::Allowlist::RemoveMatchesAll() {
 bool PermissionsPolicy::Allowlist::MatchesOpaqueSrc() const {
   return matches_opaque_src_;
 }
+
+PermissionsPolicy::AllowlistsAndReportingEndpoints::
+    AllowlistsAndReportingEndpoints() = default;
+PermissionsPolicy::AllowlistsAndReportingEndpoints::
+    ~AllowlistsAndReportingEndpoints() = default;
+PermissionsPolicy::AllowlistsAndReportingEndpoints::
+    AllowlistsAndReportingEndpoints(
+        const AllowlistsAndReportingEndpoints& other) = default;
+PermissionsPolicy::AllowlistsAndReportingEndpoints::
+    AllowlistsAndReportingEndpoints(AllowlistsAndReportingEndpoints&& other) =
+        default;
+PermissionsPolicy::AllowlistsAndReportingEndpoints::
+    AllowlistsAndReportingEndpoints(
+        std::map<network::mojom::PermissionsPolicyFeature, Allowlist>
+            allowlists,
+        std::map<network::mojom::PermissionsPolicyFeature, std::string>
+            reporting_endpoints)
+    : allowlists_(allowlists), reporting_endpoints_(reporting_endpoints) {}
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
@@ -289,7 +307,7 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
   return default_allowlist;
 }
 
-// TODO(crbug.com/937131): Use |PermissionsPolicy::GetAllowlistForDevTools|
+// TODO(crbug.com/40094174): Use |PermissionsPolicy::GetAllowlistForDevTools|
 // to replace this method. This method uses legacy |default_allowlist|
 // calculation method.
 const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
@@ -690,4 +708,4 @@ const network::PermissionsPolicyFeatureList& PermissionsPolicy::GetFeatureList()
   return *feature_list_;
 }
 
-}  // namespace blink
+}  // namespace network

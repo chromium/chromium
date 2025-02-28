@@ -930,7 +930,7 @@ bool RemoteFrame::DetachChildren() {
 }
 
 void RemoteFrame::ApplyReplicatedPermissionsPolicyHeader() {
-  const PermissionsPolicy* parent_permissions_policy = nullptr;
+  const network::PermissionsPolicy* parent_permissions_policy = nullptr;
   if (Frame* parent_frame = Parent()) {
     parent_permissions_policy =
         parent_frame->GetSecurityContext()->GetPermissionsPolicy();

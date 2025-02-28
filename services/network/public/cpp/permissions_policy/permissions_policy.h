@@ -2,32 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_H_
 
 #include <map>
 #include <optional>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "url/origin.h"
 
 class GURL;
 
-namespace network {
-struct ResourceRequest;
-}  // namespace network
-
 namespace blink {
-
 class ResourceRequest;
+}  // namespace blink
+
+namespace network {
+
+struct ResourceRequest;
 
 // Permissions Policy is a mechanism for controlling the availability of web
 // platform features in a frame, including all embedded frames. It can be used
@@ -101,13 +100,13 @@ class ResourceRequest;
 // |PermissionsPolicyFeatureDefault| in permissions_policy_features.h for
 // details)
 
-class BLINK_COMMON_EXPORT PermissionsPolicy {
+class COMPONENT_EXPORT(NETWORK_CPP) PermissionsPolicy {
  public:
   // Represents a collection of origins which make up an allowlist in a
   // permissions policy. This collection may be set to match every origin
   // (corresponding to the "*" syntax in the policy string, in which case the
   // Contains() method will always return true.
-  class BLINK_COMMON_EXPORT Allowlist final {
+  class COMPONENT_EXPORT(NETWORK_CPP) Allowlist final {
    public:
     Allowlist();
     Allowlist(const Allowlist& rhs);
@@ -243,7 +242,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       network::mojom::PermissionsPolicyFeature feature) const;
 
   // Returns the allowlist of a given feature by this policy.
-  // TODO(crbug.com/937131): Use |PermissionsPolicy::GetAllowlistForDevTools|
+  // TODO(crbug.com/40094174): Use |PermissionsPolicy::GetAllowlistForDevTools|
   // to replace this method. This method uses legacy |default_allowlist|
   // calculation method.
   const Allowlist GetAllowlistForFeature(
@@ -278,7 +277,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       network::mojom::PermissionsPolicyFeature feature) const;
 
  private:
-  friend class ResourceRequest;
+  friend class blink::ResourceRequest;
   friend class PermissionsPolicyTest;
 
   // List of features that have an explicit opt-in mechanism.
@@ -289,6 +288,17 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     std::map<network::mojom::PermissionsPolicyFeature, Allowlist> allowlists_;
     std::map<network::mojom::PermissionsPolicyFeature, std::string>
         reporting_endpoints_;
+
+    AllowlistsAndReportingEndpoints();
+    ~AllowlistsAndReportingEndpoints();
+    AllowlistsAndReportingEndpoints(
+        const AllowlistsAndReportingEndpoints& other);
+    AllowlistsAndReportingEndpoints(AllowlistsAndReportingEndpoints&& other);
+    AllowlistsAndReportingEndpoints(
+        std::map<network::mojom::PermissionsPolicyFeature, Allowlist>
+            allowlists,
+        std::map<network::mojom::PermissionsPolicyFeature, std::string>
+            reporting_endpoints);
   };
 
   // Creates the allowlists and and reporting endpoints from the parsed
@@ -391,6 +401,6 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   const raw_ref<const network::PermissionsPolicyFeatureList> feature_list_;
 };
 
-}  // namespace blink
+}  // namespace network
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_PERMISSIONS_POLICY_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_H_

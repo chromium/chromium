@@ -8,6 +8,7 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

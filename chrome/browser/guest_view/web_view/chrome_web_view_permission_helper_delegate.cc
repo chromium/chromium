@@ -26,9 +26,9 @@
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -53,7 +53,7 @@ bool IsFeatureEnabledByEmbedderPermissionsPolicy(
   content::RenderFrameHost* embedder_rfh = web_view_guest->embedder_rfh();
   CHECK(embedder_rfh);
 
-  const blink::PermissionsPolicy* permissions_policy =
+  const network::PermissionsPolicy* permissions_policy =
       embedder_rfh->GetPermissionsPolicy();
   CHECK(permissions_policy);
   if (!permissions_policy->IsFeatureEnabledForOrigin(feature,

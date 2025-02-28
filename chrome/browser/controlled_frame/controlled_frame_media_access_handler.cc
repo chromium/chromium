@@ -14,8 +14,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -207,7 +207,7 @@ bool ControlledFrameMediaAccessHandler::IsAllowedByPermissionsPolicy(
   content::RenderFrameHost* embedder_rfh = web_view->embedder_rfh();
   CHECK(embedder_rfh);
 
-  const blink::PermissionsPolicy* permissions_policy =
+  const network::PermissionsPolicy* permissions_policy =
       embedder_rfh->GetPermissionsPolicy();
   CHECK(permissions_policy);
   if (!permissions_policy->IsFeatureEnabledForOrigin(

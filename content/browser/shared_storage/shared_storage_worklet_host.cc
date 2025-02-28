@@ -245,7 +245,7 @@ blink::mojom::SharedStorageWorkletPermissionsPolicyStatePtr
 GetSharedStorageWorkletPermissionsPolicyState(
     RenderFrameHostImpl& creator_document,
     const url::Origin& shared_storage_origin) {
-  const blink::PermissionsPolicy* permissions_policy =
+  const network::PermissionsPolicy* permissions_policy =
       creator_document.GetPermissionsPolicy();
 
   return blink::mojom::SharedStorageWorkletPermissionsPolicyState::New(

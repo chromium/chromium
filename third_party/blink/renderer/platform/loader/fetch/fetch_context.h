@@ -52,10 +52,13 @@
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+namespace network {
+class PermissionsPolicy;
+}  // namespace network
+
 namespace blink {
 
 enum class ResourceType : uint8_t;
-class PermissionsPolicy;
 class KURL;
 class Resource;
 struct ResourceLoaderOptions;
@@ -195,7 +198,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return MakeGarbageCollected<FetchContext>();
   }
 
-  virtual const PermissionsPolicy* GetPermissionsPolicy() const {
+  virtual const network::PermissionsPolicy* GetPermissionsPolicy() const {
     return nullptr;
   }
 

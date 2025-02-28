@@ -52,6 +52,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
@@ -60,7 +61,6 @@
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -558,13 +558,14 @@ struct ClientHintsExtendedData {
       if (fenced_frame_properties) {
         permissions = fenced_frame_properties->effective_enabled_permissions();
       }
-      permissions_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          resource_origin, /*header_policy=*/{}, permissions);
+      permissions_policy =
+          network::PermissionsPolicy::CreateFixedForFencedFrame(
+              resource_origin, /*header_policy=*/{}, permissions);
     } else {
       RenderFrameHostImpl* main_frame =
           frame_tree_node->frame_tree().GetMainFrame();
       main_frame_origin = main_frame->GetLastCommittedOrigin();
-      permissions_policy = blink::PermissionsPolicy::CopyStateFrom(
+      permissions_policy = network::PermissionsPolicy::CopyStateFrom(
           main_frame->GetPermissionsPolicy());
     }
 
@@ -596,7 +597,7 @@ struct ClientHintsExtendedData {
   url::Origin resource_origin;
   bool is_outermost_main_frame = false;
   url::Origin main_frame_origin;
-  std::unique_ptr<blink::PermissionsPolicy> permissions_policy;
+  std::unique_ptr<network::PermissionsPolicy> permissions_policy;
 };
 
 bool IsClientHintEnabled(const ClientHintsExtendedData& data,

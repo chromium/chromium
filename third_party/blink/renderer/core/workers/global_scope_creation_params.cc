@@ -43,7 +43,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     mojo::PendingRemote<mojom::blink::CodeCacheHost> code_cache_host_interface,
     mojo::PendingRemote<mojom::blink::BlobURLStore> blob_url_store,
     BeginFrameProviderParams begin_frame_provider_params,
-    const PermissionsPolicy* parent_permissions_policy,
+    const network::PermissionsPolicy* parent_permissions_policy,
     base::UnguessableToken agent_cluster_id,
     ukm::SourceId ukm_source_id,
     const std::optional<ExecutionContextToken>& parent_context_token,
@@ -92,11 +92,12 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       // TODO(crbug.com/1419253): Pass non-null `parent_permissions_policy` and
       // `starter_origin`. Also, we could ensure `starter_origin` is never null
       // after that.
-      worker_permissions_policy(PermissionsPolicy::CreateFromParentPolicy(
-          parent_permissions_policy,
-          /*header_policy=*/{},
-          network::ParsedPermissionsPolicy() /* container_policy */,
-          starter_origin ? starter_origin->ToUrlOrigin() : url::Origin())),
+      worker_permissions_policy(
+          network::PermissionsPolicy::CreateFromParentPolicy(
+              parent_permissions_policy,
+              /*header_policy=*/{},
+              network::ParsedPermissionsPolicy() /* container_policy */,
+              starter_origin ? starter_origin->ToUrlOrigin() : url::Origin())),
       agent_cluster_id(agent_cluster_id),
       ukm_source_id(ukm_source_id),
       parent_context_token(parent_context_token),

@@ -54,18 +54,19 @@
 
 class GURL;
 
+namespace network {
+class PermissionsPolicy;
+}  // namespace network
 namespace base {
 class UnguessableToken;
 }  // namespace base
 
 namespace blink {
 class AssociatedInterfaceProvider;
-class PermissionsPolicy;
 class StorageKey;
 
 namespace mojom {
 enum class AuthenticatorStatus;
-enum class PermissionsPolicyFeature;
 class MediaPlayerAction;
 }  // namespace mojom
 }  // namespace blink
@@ -872,7 +873,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       blink::mojom::SuddenTerminationDisablerType disabler_type) = 0;
 
   // Returns the permission policy for this frame.
-  virtual const blink::PermissionsPolicy* GetPermissionsPolicy() = 0;
+  virtual const network::PermissionsPolicy* GetPermissionsPolicy() = 0;
 
   // Returns the parsed permissions policy header for this frame.
   virtual const network::ParsedPermissionsPolicy&

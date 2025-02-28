@@ -1847,7 +1847,7 @@ fuzzer_test("svg_path_parser_fuzzer") {
   seed_corpus = "//third_party/blink/renderer/core/svg/svg_path_parser_corpus"
 }
 
-# Fuzzers for blink::PermissionsPolicy.
+# Fuzzers for blink::PermissionsPolicyParser.
 fuzzer_test("feature_policy_fuzzer") {
   sources = [ "permissions_policy/feature_policy_fuzzer.cc" ]
   deps = [

@@ -1402,7 +1402,7 @@ TEST_F(NavigatorTest, PermissionsPolicySameSiteNavigation) {
   contents()->NavigateAndCommit(kUrl1);
 
   // Check the permissions policy before navigation.
-  const blink::PermissionsPolicy* original_permissions_policy =
+  const network::PermissionsPolicy* original_permissions_policy =
       main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(original_permissions_policy);
 
@@ -1410,7 +1410,7 @@ TEST_F(NavigatorTest, PermissionsPolicySameSiteNavigation) {
   contents()->NavigateAndCommit(kUrl2);
 
   // Check the permissions policy after navigation.
-  const blink::PermissionsPolicy* final_permissions_policy =
+  const network::PermissionsPolicy* final_permissions_policy =
       main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(final_permissions_policy);
   ASSERT_NE(original_permissions_policy, final_permissions_policy);
@@ -1425,7 +1425,7 @@ TEST_F(NavigatorTest, PermissionsPolicyFragmentNavigation) {
   contents()->NavigateAndCommit(kUrl1);
 
   // Check the permissions policy before navigation.
-  const blink::PermissionsPolicy* original_permissions_policy =
+  const network::PermissionsPolicy* original_permissions_policy =
       main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(original_permissions_policy);
 
@@ -1433,7 +1433,7 @@ TEST_F(NavigatorTest, PermissionsPolicyFragmentNavigation) {
   contents()->NavigateAndCommit(kUrl2);
 
   // Check the permissions policy after navigation.
-  const blink::PermissionsPolicy* final_permissions_policy =
+  const network::PermissionsPolicy* final_permissions_policy =
       main_test_rfh()->GetPermissionsPolicy();
   ASSERT_EQ(original_permissions_policy, final_permissions_policy);
 }
@@ -1451,7 +1451,7 @@ TEST_F(NavigatorTest, PermissionsPolicyNewChild) {
       contents()->GetPrimaryMainFrame()->AppendChild("child");
   NavigationSimulator::NavigateAndCommitFromDocument(kUrl2, subframe_rfh);
 
-  const blink::PermissionsPolicy* subframe_permissions_policy =
+  const network::PermissionsPolicy* subframe_permissions_policy =
       subframe_rfh->GetPermissionsPolicy();
   ASSERT_TRUE(subframe_permissions_policy);
   ASSERT_FALSE(subframe_permissions_policy->GetOriginForTest().opaque());

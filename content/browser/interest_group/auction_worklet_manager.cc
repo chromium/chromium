@@ -66,7 +66,7 @@ using HandleKey = std::pair<uint64_t, AuctionWorkletManager::WorkletHandle*>;
 auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
 GetAuctionWorkletPermissionsPolicyState(RenderFrameHostImpl* auction_runner_rfh,
                                         const GURL& worklet_script_url) {
-  const blink::PermissionsPolicy* permissions_policy =
+  const network::PermissionsPolicy* permissions_policy =
       auction_runner_rfh->GetPermissionsPolicy();
 
   url::Origin worklet_origin = url::Origin::Create(worklet_script_url);
@@ -1158,7 +1158,7 @@ AuctionWorkletManager::MaybeBindAuctionSharedStorageHost(
     const url::Origin& worklet_origin) {
   mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost> remote;
 
-  const blink::PermissionsPolicy* permissions_policy =
+  const network::PermissionsPolicy* permissions_policy =
       auction_runner_rfh->GetPermissionsPolicy();
 
   if (auction_shared_storage_host_ &&

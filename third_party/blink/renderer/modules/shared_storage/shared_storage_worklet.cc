@@ -9,8 +9,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
@@ -195,7 +195,7 @@ void SharedStorageWorklet::AddModuleHelper(
   url::Origin shared_storage_origin =
       shared_storage_security_origin->ToUrlOrigin();
 
-  const PermissionsPolicy* policy =
+  const network::PermissionsPolicy* policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   if (!policy || !policy->IsFeatureEnabledForOrigin(
                      network::mojom::PermissionsPolicyFeature::kSharedStorage,
@@ -348,7 +348,7 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
 
   // The `kSharedStorage` permissions policy should have been checked in
   // addModule() already.
-  const PermissionsPolicy* policy =
+  const network::PermissionsPolicy* policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   CHECK(policy);
   CHECK(policy->IsFeatureEnabledForOrigin(
@@ -637,7 +637,7 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
 
   // The `kSharedStorage` permissions policy should have been checked in
   // addModule() already.
-  const PermissionsPolicy* policy =
+  const network::PermissionsPolicy* policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   CHECK(policy);
   CHECK(policy->IsFeatureEnabledForOrigin(

@@ -58,11 +58,14 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
+namespace network {
+class PermissionsPolicy;
+}  // namespace network
+
 namespace blink {
 
 class FeatureContext;
 class EncodedFormData;
-class PermissionsPolicy;
 
 // ResourceRequestHead represents request without request body.
 // See ResourceRequest below to see what request is.
@@ -904,7 +907,7 @@ class PLATFORM_EXPORT ResourceRequest final : public ResourceRequestHead {
   // `PermissionsPolicy::IsFeatureEnabledForSubresourceRequestAssumingOptIn()`
   // private for safety.
   bool IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-      const PermissionsPolicy* policy,
+      const network::PermissionsPolicy* policy,
       network::mojom::PermissionsPolicyFeature feature,
       const url::Origin& origin);
 

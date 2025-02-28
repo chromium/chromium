@@ -922,7 +922,7 @@ protocol::Response InspectorPageAgent::getPermissionsPolicyState(
         "No frame for given id found in this target");
   }
 
-  const blink::PermissionsPolicy* permissions_policy =
+  const network::PermissionsPolicy* permissions_policy =
       frame->GetSecurityContext()->GetPermissionsPolicy();
 
   if (!permissions_policy) {

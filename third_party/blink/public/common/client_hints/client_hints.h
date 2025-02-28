@@ -18,9 +18,11 @@
 
 class GURL;
 
-namespace blink {
-
+namespace network {
 class PermissionsPolicy;
+}  // namespace network
+
+namespace blink {
 
 // Indicates that a hint is sent by default, regardless of an opt-in.
 BLINK_COMMON_EXPORT
@@ -29,7 +31,7 @@ bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type);
 // Add a list of Client Hints headers to be removed to the output vector, based
 // on Permissions Policy and the url's origin.
 BLINK_COMMON_EXPORT void FindClientHintsToRemove(
-    const PermissionsPolicy* permissions_policy,
+    const network::PermissionsPolicy* permissions_policy,
     const GURL& url,
     std::vector<std::string>* removed_headers);
 

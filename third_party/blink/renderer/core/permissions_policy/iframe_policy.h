@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_IFRAME_POLICY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_IFRAME_POLICY_H_
 
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/permissions_policy/dom_feature_policy.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -34,18 +34,20 @@ class IFramePolicy final : public DOMFeaturePolicy {
   void UpdateContainerPolicy(
       const network::ParsedPermissionsPolicy& container_policy,
       scoped_refptr<const SecurityOrigin> src_origin) override {
-    policy_ = PermissionsPolicy::CreateFromParentPolicy(
+    policy_ = network::PermissionsPolicy::CreateFromParentPolicy(
         context_->GetSecurityContext().GetPermissionsPolicy(),
         /*header_policy=*/{}, container_policy, src_origin->ToUrlOrigin());
   }
 
  protected:
-  const PermissionsPolicy* GetPolicy() const override { return policy_.get(); }
+  const network::PermissionsPolicy* GetPolicy() const override {
+    return policy_.get();
+  }
 
   bool IsIFramePolicy() const override { return true; }
 
  private:
-  std::unique_ptr<PermissionsPolicy> policy_;
+  std::unique_ptr<network::PermissionsPolicy> policy_;
 };
 
 }  // namespace blink
