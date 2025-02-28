@@ -24631,55 +24631,7 @@
             ],
             "experiments": [
                 {
-                    "name": "FlushCodeBasedOnTime60",
-                    "params": {
-                        "V8FlushCodeOldTime": "60"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime10",
-                    "params": {
-                        "V8FlushCodeOldTime": "10"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime30",
-                    "params": {
-                        "V8FlushCodeOldTime": "30"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime45",
-                    "params": {
-                        "V8FlushCodeOldTime": "45"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime180",
+                    "name": "Time180",
                     "params": {
                         "V8FlushCodeOldTime": "180"
                     },
@@ -24688,15 +24640,6 @@
                     ],
                     "disable_features": [
                         "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTabVisibility",
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ],
-                    "disable_features": [
-                        "V8FlushCodeBasedOnTime"
                     ]
                 }
             ]
