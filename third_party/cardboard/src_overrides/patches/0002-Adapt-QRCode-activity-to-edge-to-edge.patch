@@ -1,7 +1,7 @@
-From 31fecddd302033f017b4c3874d15f85c4e5494a7 Mon Sep 17 00:00:00 2001
+From 9a23096f9364d9a423323238e3f4548c4d3b6d68 Mon Sep 17 00:00:00 2001
 From: Alexander Cooper <alcooper@chromium.org>
 Date: Thu, 27 Feb 2025 13:01:46 -0800
-Subject: [PATCH 3/3] Adapt QRCode activity to edge-to-edge
+Subject: [PATCH 2/2] Adapt QRCode activity to edge-to-edge
 
 ---
  .../cardboard/sdk/QrCodeCaptureActivity.java  | 20 +++++++++++++++++++
@@ -9,7 +9,7 @@ Subject: [PATCH 3/3] Adapt QRCode activity to edge-to-edge
  2 files changed, 21 insertions(+)
 
 diff --git a/third_party/cardboard/src_overrides/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java b/third_party/cardboard/src_overrides/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java
-index 0e51134060e28..e461e72eec5d1 100755
+index 0e51134060e28..e461e72eec5d1 100644
 --- a/third_party/cardboard/src_overrides/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java
 +++ b/third_party/cardboard/src_overrides/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java
 @@ -27,11 +27,15 @@ import android.os.Bundle;
