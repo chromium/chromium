@@ -41,8 +41,6 @@ AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
 void AutofillAiModelExecutorImpl::GetPredictions(
     autofill::FormData form_data,
-    base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
-    base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     PredictionsReceivedCallback callback) {
   // Construct request.
@@ -57,9 +55,7 @@ void AutofillAiModelExecutorImpl::GetPredictions(
   }
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
 
-  // TODO(crbug.com/389631477): Remove eligibility and sensitivity.
-  *request.mutable_form_data() =
-      ToFormDataProto(form_data, field_eligibility_map, field_sensitivity_map);
+  *request.mutable_form_data() = ToFormDataProto(form_data);
 
   SetLatestRequestForDebugging(request);
   optimization_guide::ModelExecutionCallbackWithLogging<

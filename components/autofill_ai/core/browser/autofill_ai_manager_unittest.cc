@@ -128,8 +128,6 @@ class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
       void,
       GetPredictions,
       (autofill::FormData form_data,
-       (base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map),
-       (base::flat_map<autofill::FieldGlobalId, bool> sensitivity_map),
        optimization_guide::proto::AXTreeUpdate ax_tree_update,
        PredictionsReceivedCallback callback),
       (override));

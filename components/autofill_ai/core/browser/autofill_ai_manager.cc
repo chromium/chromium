@@ -55,7 +55,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
 #include "components/autofill_ai/core/browser/autofill_ai_utils.h"
-#include "components/autofill_ai/core/browser/autofill_ai_value_filter.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -250,26 +249,6 @@ AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
   }
 }
 
-base::flat_map<autofill::FieldGlobalId, bool>
-AutofillAiManager::GetFieldValueSensitivityMap(
-    const autofill::FormData& form_data) {
-  autofill::FormStructure* form_structure =
-      client_->GetCachedFormStructure(form_data.global_id());
-
-  if (!form_structure) {
-    return base::flat_map<autofill::FieldGlobalId, bool>();
-  }
-
-  FilterSensitiveValues(*form_structure);
-
-  return base::MakeFlatMap<autofill::FieldGlobalId, bool>(
-      form_structure->fields(), {}, [](const auto& field) {
-        return std::make_pair(
-            field->global_id(),
-            field->value_identified_as_potentially_sensitive());
-      });
-}
-
 AutofillAiManager::~AutofillAiManager() = default;
 
 bool AutofillAiManager::IsFormAndFieldEligibleForAutofillAi(
@@ -296,9 +275,8 @@ bool AutofillAiManager::IsUserEligibleForFillingAndImporting() const {
 void AutofillAiManager::OnReceivedAXTree(
     const autofill::FormData& form,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
-  client_->GetModelExecutor()->GetPredictions(
-      form, /*field_eligibility_map*/ {}, GetFieldValueSensitivityMap(form),
-      std::move(ax_tree_update), base::DoNothing());
+  client_->GetModelExecutor()->GetPredictions(form, std::move(ax_tree_update),
+                                              base::DoNothing());
 }
 
 void AutofillAiManager::OnSuggestionsShown(

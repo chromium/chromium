@@ -36,8 +36,6 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   // AutofillAiModelExecutor:
   void GetPredictions(
       autofill::FormData form_data,
-      base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
-      base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
       PredictionsReceivedCallback callback) override;
   const std::optional<optimization_guide::proto::AutofillAiTypeRequest>&

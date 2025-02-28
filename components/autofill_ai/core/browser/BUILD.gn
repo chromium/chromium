@@ -28,8 +28,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_manager.h",
       "autofill_ai_utils.cc",
       "autofill_ai_utils.h",
-      "autofill_ai_value_filter.cc",
-      "autofill_ai_value_filter.h",
       "suggestion/autofill_ai_model_executor.cc",
       "suggestion/autofill_ai_model_executor.h",
       "suggestion/autofill_ai_model_executor_impl.cc",
@@ -76,7 +74,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_features_unittest.cc",
       "autofill_ai_logger_unittest.cc",
       "autofill_ai_manager_unittest.cc",
-      "autofill_ai_value_filter_unittest.cc",
       "suggestion/autofill_ai_model_executor_impl_unittest.cc",
       "suggestion/autofill_ai_suggestions_unittest.cc",
     ]

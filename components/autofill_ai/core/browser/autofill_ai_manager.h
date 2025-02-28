@@ -63,9 +63,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   void OnDidFillSuggestion(autofill::FormGlobalId form_id) override;
   void OnEditedAutofilledField(autofill::FormGlobalId form_id) override;
 
-  base::flat_map<autofill::FieldGlobalId, bool> GetFieldValueSensitivityMap(
-      const autofill::FormData& form_data);
-
   base::WeakPtr<AutofillAiManager> GetWeakPtr();
 
  private:
