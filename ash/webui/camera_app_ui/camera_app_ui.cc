@@ -255,20 +255,14 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
   auto* allowlist = WebUIAllowlist::GetOrCreate(browser_context);
   const url::Origin host_origin =
       url::Origin::Create(GURL(kChromeUICameraAppURL));
-  allowlist->RegisterAutoGrantedPermission(
-      host_origin, ContentSettingsType::MEDIASTREAM_MIC);
-  allowlist->RegisterAutoGrantedPermission(
-      host_origin, ContentSettingsType::MEDIASTREAM_CAMERA);
-  allowlist->RegisterAutoGrantedPermission(
-      host_origin, ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
-  allowlist->RegisterAutoGrantedPermission(
-      host_origin, ContentSettingsType::FILE_SYSTEM_READ_GUARD);
-  allowlist->RegisterAutoGrantedPermission(
-      host_origin, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
-  allowlist->RegisterAutoGrantedPermission(host_origin,
-                                           ContentSettingsType::COOKIES);
-  allowlist->RegisterAutoGrantedPermission(host_origin,
-                                           ContentSettingsType::IDLE_DETECTION);
+  allowlist->RegisterAutoGrantedPermissions(
+      host_origin,
+      {ContentSettingsType::MEDIASTREAM_MIC,
+       ContentSettingsType::MEDIASTREAM_CAMERA,
+       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+       ContentSettingsType::FILE_SYSTEM_READ_GUARD,
+       ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+       ContentSettingsType::COOKIES, ContentSettingsType::IDLE_DETECTION});
 
   window()->SetProperty(kMinimizeOnBackKey, false);
 
