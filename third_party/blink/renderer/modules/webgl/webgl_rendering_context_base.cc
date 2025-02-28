@@ -681,11 +681,14 @@ void WebGLRenderingContextBase::ForceNextWebGLContextCreationToFail() {
 }
 
 ImageBitmap* WebGLRenderingContextBase::TransferToImageBitmapBase(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   WebFeature feature = WebFeature::kOffscreenCanvasTransferToImageBitmapWebGL;
   UseCounter::Count(ExecutionContext::From(script_state), feature);
   if (!GetDrawingBuffer()) {
-    // Context is lost.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot transfer to ImageBitmap because WebGL context is lost.");
     return nullptr;
   }
 

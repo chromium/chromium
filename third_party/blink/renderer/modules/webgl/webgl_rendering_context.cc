@@ -177,7 +177,7 @@ WebGLRenderingContext::AsV8OffscreenRenderingContext() {
 ImageBitmap* WebGLRenderingContext::TransferToImageBitmap(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return TransferToImageBitmapBase(script_state);
+  return TransferToImageBitmapBase(script_state, exception_state);
 }
 
 void WebGLRenderingContext::RegisterContextExtensions() {

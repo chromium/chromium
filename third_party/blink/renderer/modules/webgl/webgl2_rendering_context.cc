@@ -162,7 +162,7 @@ WebGL2RenderingContext::AsV8OffscreenRenderingContext() {
 ImageBitmap* WebGL2RenderingContext::TransferToImageBitmap(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return TransferToImageBitmapBase(script_state);
+  return TransferToImageBitmapBase(script_state, exception_state);
 }
 
 void WebGL2RenderingContext::RegisterContextExtensions() {
