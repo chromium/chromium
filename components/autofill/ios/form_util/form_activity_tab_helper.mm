@@ -286,7 +286,6 @@ void FormActivityTabHelper::FormSubmissionHandler(
     return;
   }
   const std::string* maybe_form_name = message_body.FindString("formName");
-  const std::string* maybe_form_data = message_body.FindString("formData");
 
   // We decide the form is user-submitted if the user has interacted with
   // the main page (using logic from the popup blocker), or if the keyboard
@@ -298,9 +297,10 @@ void FormActivityTabHelper::FormSubmissionHandler(
   if (maybe_form_name) {
     form_name = *maybe_form_name;
   }
-  std::string form_data;
-  if (maybe_form_data) {
-    form_data = *maybe_form_data;
+
+  const base::Value::Dict* form_data = message_body.FindDict("formData");
+  if (!form_data) {
+    return;
   }
 
   FieldDataManager* fieldDataManager =
@@ -310,11 +310,11 @@ void FormActivityTabHelper::FormSubmissionHandler(
   // the id of the frame that contains the forms. For page world forms, we set
   // FormData::host_frame with the corresponding isolated world frame in
   // `local_frame_token`.
-  std::optional<std::vector<FormData>> forms = autofill::ExtractFormsData(
-      base::SysUTF8ToNSString(form_data), true, base::UTF8ToUTF16(form_name),
+  std::optional<FormData> form = autofill::ExtractFormData(
+      *form_data, true, base::UTF8ToUTF16(form_name),
       web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
       *fieldDataManager, *frame_id, local_frame_token);
-  if (!forms || forms->size() != 1) {
+  if (!form) {
     return;
   }
 
@@ -323,10 +323,9 @@ void FormActivityTabHelper::FormSubmissionHandler(
     base::UmaHistogramBoolean(kProgrammaticFormSubmissionHistogram,
                               *programmatic_submission);
   }
-  FormData form = forms.value()[0];
 
   for (auto& observer : observers_) {
-    observer.DocumentSubmitted(web_state, sender_frame, form,
+    observer.DocumentSubmitted(web_state, sender_frame, *form,
                                submitted_by_user);
   }
 }
