@@ -410,7 +410,7 @@ ExtensionService::ExtensionService(
           ExtensionRegistry::Get(profile),
           this),
       registry_(ExtensionRegistry::Get(profile)),
-      pending_extension_manager_(profile),
+      pending_extension_manager_(PendingExtensionManager::Get(profile)),
       install_directory_(install_directory),
       unpacked_install_directory_(unpacked_install_directory),
       extensions_enabled_(extensions_enabled),
@@ -500,7 +500,7 @@ ExtensionService::ExtensionService(
 }
 
 PendingExtensionManager* ExtensionService::pending_extension_manager() {
-  return &pending_extension_manager_;
+  return pending_extension_manager_;
 }
 
 CorruptedExtensionReinstaller*
@@ -538,6 +538,7 @@ void ExtensionService::Shutdown() {
   extension_prefs_ = nullptr;
   blocklist_ = nullptr;
   registry_ = nullptr;
+  pending_extension_manager_ = nullptr;
 }
 
 void ExtensionService::Init() {

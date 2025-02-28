@@ -29,6 +29,7 @@ include_rules = [
   "+chrome/browser/extensions/install_observer.h",
   "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/install_tracker.h",
+  "+chrome/browser/extensions/pending_extension_manager.h",
   "+chrome/browser/extensions/updater",
   "+chrome/browser/lacros/app_mode",
   "+chrome/browser/lifetime",

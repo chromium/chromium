@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/pending_extension_info.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -47,7 +48,7 @@ void SetupPendingExtensionManagerForTest(
 // the same extension.
 // The ExtensionService creates an instance of this class, and manages its
 // lifetime. This class should only be used from the UI thread.
-class PendingExtensionManager {
+class PendingExtensionManager : public KeyedService {
  public:
   // Observer of changes in the PendingExtensionManager state
   class Observer : public base::CheckedObserver {
@@ -72,7 +73,10 @@ class PendingExtensionManager {
   PendingExtensionManager(const PendingExtensionManager&) = delete;
   PendingExtensionManager& operator=(const PendingExtensionManager&) = delete;
 
-  ~PendingExtensionManager();
+  ~PendingExtensionManager() override;
+
+  // Returns the instance for the given |browser_context|.
+  static PendingExtensionManager* Get(content::BrowserContext* browser_context);
 
   // TODO(skerner): Many of these methods can be private once code in
   // ExtensionService is moved into methods of this class.
