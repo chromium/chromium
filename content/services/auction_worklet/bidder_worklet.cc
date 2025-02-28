@@ -2435,7 +2435,7 @@ void BidderWorklet::MaybePrepareContexts() {
   bool frozen_mode_tasks = false;
   for (auto generate_bid_task = generate_bid_tasks_.begin();
        generate_bid_task != generate_bid_tasks_.end(); ++generate_bid_task) {
-    if (IsReadyToGenerateBid(*generate_bid_task)) {
+    if (GenerateBidTaskHasInputs(*generate_bid_task)) {
       return;
     }
     switch (
@@ -2629,16 +2629,35 @@ void BidderWorklet::OnDirectFromSellerAuctionSignalsDownloadedGenerateBid(
   GenerateBidIfReady(task);
 }
 
-bool BidderWorklet::IsReadyToGenerateBid(const GenerateBidTask& task) const {
+bool BidderWorklet::GenerateBidTaskHasInputs(
+    const GenerateBidTask& task) const {
   return task.signals_received_callback_invoked &&
          task.finalize_generate_bid_called &&
          !task.direct_from_seller_request_per_buyer_signals &&
-         !task.direct_from_seller_request_auction_signals && IsCodeReady();
+         !task.direct_from_seller_request_auction_signals;
+}
+
+bool BidderWorklet::IsReadyToGenerateBid(const GenerateBidTask& task) const {
+  return GenerateBidTaskHasInputs(task) && IsCodeReady();
+}
+
+void BidderWorklet::DisableEagerJsCompilationIfOnlyWaitingOnJs(
+    const GenerateBidTask& task) {
+  if (GenerateBidTaskHasInputs(task) && worklet_loader_ && !wasm_loader_) {
+    for (size_t thread_index = 0; thread_index < v8_runners_.size();
+         ++thread_index) {
+      v8_runners_[thread_index]->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AuctionV8Helper::DisableEagerJsCompilation,
+                         base::Unretained(v8_helpers_[thread_index].get())));
+    }
+  }
 }
 
 void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   if (!IsReadyToGenerateBid(*task)) {
+    DisableEagerJsCompilationIfOnlyWaitingOnJs(*task);
     return;
   }
 

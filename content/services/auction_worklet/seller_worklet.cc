@@ -2302,19 +2302,38 @@ void SellerWorklet::OnDirectFromSellerAuctionSignalsDownloadedScoreAd(
   ScoreAdIfReady(task);
 }
 
+bool SellerWorklet::ScoreAdTaskHasInputs(
+    const SellerWorklet::ScoreAdTask& task) const {
+  return !task.waiting_for_signals_fetch &&
+         !task.direct_from_seller_request_seller_signals &&
+         !task.direct_from_seller_request_auction_signals;
+}
+
 bool SellerWorklet::IsReadyToScoreAd(const ScoreAdTask& task) const {
   // The first check should be implied by IsCodeReady(), but best to be safe.
   return trusted_signals_relation_ !=
              SignalsOriginRelation::kUnknownPermissionCrossOriginSignals &&
-         !task.waiting_for_signals_fetch &&
-         !task.direct_from_seller_request_seller_signals &&
-         !task.direct_from_seller_request_auction_signals && IsCodeReady();
+         ScoreAdTaskHasInputs(task) && IsCodeReady();
+}
+
+void SellerWorklet::DisableEagerJsCompilationIfOnlyWaitingOnJs(
+    const ScoreAdTask& task) {
+  if (ScoreAdTaskHasInputs(task) && worklet_loader_) {
+    for (size_t thread_index = 0; thread_index < v8_runners_.size();
+         ++thread_index) {
+      v8_runners_[thread_index]->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AuctionV8Helper::DisableEagerJsCompilation,
+                         base::Unretained(v8_helpers_[thread_index].get())));
+    }
+  }
 }
 
 void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   if (!IsReadyToScoreAd(*task)) {
+    DisableEagerJsCompilationIfOnlyWaitingOnJs(*task);
     return;
   }
 
