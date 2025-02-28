@@ -173,7 +173,8 @@ TemplateURLBuilder::TemplateURLBuilder(const std::string& keyword) {
   data_.SetKeyword(base::UTF8ToUTF16(keyword));
   data_.SetURL(base::StringPrintf("http://www.test-%s.com/", keyword.c_str()));
   data_.favicon_url = GURL("http://favicon.url");
-  data_.safe_for_autoreplace = true;
+  data_.safe_for_autoreplace = false;
+  data_.is_active = TemplateURLData::ActiveStatus::kTrue;
   data_.date_created = base::Time::FromTimeT(100);
   data_.last_modified = base::Time::FromTimeT(100);
   data_.prepopulate_id = 999999;
