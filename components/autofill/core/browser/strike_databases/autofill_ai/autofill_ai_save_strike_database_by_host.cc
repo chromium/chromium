@@ -17,7 +17,7 @@ namespace {
 constexpr char kHostSeparator = ';';
 }  // namespace
 
-std::string AutofillAiSaveStrikeDatabaseByHostTraits::OriginFromId(
+std::string AutofillAiSaveStrikeDatabaseByHostTraits::HostFromId(
     const std::string& id) {
   std::optional<std::pair<std::string_view, std::string_view>> split_string =
       base::SplitStringOnce(id, kHostSeparator);

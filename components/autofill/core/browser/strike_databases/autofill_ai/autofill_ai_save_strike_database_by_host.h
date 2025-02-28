@@ -22,7 +22,7 @@ struct AutofillAiSaveStrikeDatabaseByHostTraits {
 
   // Retrieves the host from the `id` by essentially reverting
   // `AutofillAiSaveStrikeDatabaseByHost::GetId`.
-  static std::string OriginFromId(const std::string& id);
+  static std::string HostFromId(const std::string& id);
 };
 
 class AutofillAiSaveStrikeDatabaseByHost
