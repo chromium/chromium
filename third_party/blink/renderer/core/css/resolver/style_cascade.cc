@@ -1770,10 +1770,10 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   if (!unresolved_defaults.empty()) {
     FunctionContext default_context{
         .tree_scope = function_tree_scope,
-        .arguments = std::move(function_arguments),  // Borrow them for a bit.
+        .arguments = function_arguments,
         .locals = {},  // Populated by ApplyLocalVariables.
         .unresolved_locals = unresolved_defaults,
-        .local_types = std::move(default_types),
+        .local_types = default_types,
         .parent = function_context};
 
     ApplyLocalVariables(resolver, context, default_context);
@@ -1788,7 +1788,6 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     // in `default_context.locals`. We merge all the newly resolved defaulted
     // arguments into `function_arguments`, to make the full set of arguments
     // visible to the "real" stack frame (`local_function_context`).
-    function_arguments = std::move(default_context.arguments);
     for (const auto& [name, value] : default_context.locals) {
       function_arguments.insert(name, value);
     }
@@ -1807,12 +1806,15 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
 
+  // Always empty; local variables are untyped.
+  HashMap<String, const CSSSyntaxDefinition*> local_types;
+
   FunctionContext local_function_context{
       .tree_scope = function_tree_scope,
-      .arguments = std::move(function_arguments),
+      .arguments = function_arguments,
       .locals = {},  // Populated by ApplyLocalVariables.
       .unresolved_locals = unresolved_locals,
-      .local_types = {},  // Locals variables are untyped.
+      .local_types = local_types,
       .parent = function_context};
 
   ApplyLocalVariables(resolver, context, local_function_context);
