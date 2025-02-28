@@ -26,14 +26,12 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
-
-constexpr static int kFreDefaultWidth = 512;
-constexpr static int kFreDefaultHeight = 614;
 
 GlicFreController::GlicFreController(Profile* profile,
                                      signin::IdentityManager* identity_manager)
@@ -100,7 +98,8 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   DismissFre();
 
   fre_view_ = new GlicFreDialogView(
-      profile_, gfx::Size(kFreDefaultWidth, kFreDefaultHeight));
+      profile_, gfx::Size(features::kGlicFreInitialWidth.Get(),
+                          features::kGlicFreInitialHeight.Get()));
 
   tabs::TabInterface* tab_interface = browser->GetActiveTabInterface();
   // Note that this call to `CreateShowDialogAndBlockTabInteraction` is
