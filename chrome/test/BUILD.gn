@@ -3269,6 +3269,7 @@ if (!is_android) {
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
       "../browser/ui/omnibox/alternate_nav_infobar_delegate_browsertest.cc",
+      "../browser/ui/omnibox/omnibox_search_aggregator_browsertest.cc",
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
       "../browser/ui/passwords/password_generation_popup_view_browsertest.cc",
