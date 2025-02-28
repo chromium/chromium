@@ -33,7 +33,7 @@ class SearchboxThumbnailElement extends ThumbnailElementBase {
     };
   }
 
-  private thumbnailUrl_: string;
+  declare private thumbnailUrl_: string;
 
   //============================================================================
   // Event handlers

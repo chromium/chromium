@@ -128,16 +128,16 @@ export class SearchboxDropdownElement extends PolymerElement {
     };
   }
 
-  canShowSecondarySide: boolean;
-  hadSecondarySide: boolean;
-  hasSecondarySide: boolean;
-  hasEmptyInput: boolean;
-  result: AutocompleteResult;
-  selectedMatchIndex: number;
-  showThumbnail: boolean;
-  private hiddenGroupIds_: number[];
-  private selectableMatchElements_: SearchboxMatchElement[];
-  private showSecondarySide_: boolean;
+  declare canShowSecondarySide: boolean;
+  declare hadSecondarySide: boolean;
+  declare hasSecondarySide: boolean;
+  declare hasEmptyInput: boolean;
+  declare result: AutocompleteResult;
+  declare selectedMatchIndex: number;
+  declare showThumbnail: boolean;
+  declare private hiddenGroupIds_: number[];
+  declare private selectableMatchElements_: SearchboxMatchElement[];
+  declare private showSecondarySide_: boolean;
   private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerInterface;
 

@@ -73,12 +73,12 @@ class SearchboxActionElement extends PolymerElement {
     };
   }
 
-  action: Action;
-  actionIndex: number;
-  matchIndex: number;
-  override ariaLabel: string;
-  private hintHtml_: TrustedHTML;
-  private tooltip_: string;
+  declare action: Action;
+  declare actionIndex: number;
+  declare matchIndex: number;
+  declare ariaLabel: string;
+  declare private hintHtml_: TrustedHTML;
+  declare private tooltip_: string;
 
   override ready() {
     super.ready();

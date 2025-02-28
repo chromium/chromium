@@ -78,10 +78,10 @@ export class LocalizedLinkElement extends CrLitElement {
     };
   }
 
-  localizedString: string = '';
-  linkUrl: string = '';
-  linkDisabled: boolean = false;
-  private containerInnerHTML_: string = '';
+  accessor localizedString: string = '';
+  accessor linkUrl: string = '';
+  accessor linkDisabled: boolean = false;
+  private accessor containerInnerHTML_: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
