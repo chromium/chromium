@@ -224,6 +224,26 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
     /**
      * If the merchant website supports more than one payment method in PaymentRequest API, but the
+     * user has only one matching payment app on the device, then WebView should indicate that
+     * payments are possible by returning "true" from the canMakePayment() API call.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestCanMakePaymentsWhenMerchantSupportsMultiplePaymentMethods()
+            throws Exception {
+        installPaymentApps(/* multipleApps= */ false);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+
+        Assert.assertEquals(
+                "PaymentRequest can make payments.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * If the merchant website supports more than one payment method in PaymentRequest API, but the
      * user has only one matching payment app on the device, then WebView can invoke this one
      * payment app.
      */
@@ -242,6 +262,26 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 response.contains(
                         String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
         Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+    }
+
+    /**
+     * If more than one app matches the PaymentRequest parameters from the merchant, then WebView
+     * should indicate that payments are not possible with these parameters by returning "false"
+     * from the canMakePayment() API call. This lets the merchant website gracefully fallback to
+     * different PaymentRequest parameters or to skip using PaymentRequest API altogether.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestCannotMakePaymentsWithMoreThaOneAppAtOnce() throws Exception {
+        installPaymentApps(/* multipleApps= */ true);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+
+        Assert.assertEquals(
+                "PaymentRequest cannot make payments.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 
     /**

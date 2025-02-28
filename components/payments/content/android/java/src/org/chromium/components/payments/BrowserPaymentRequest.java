@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
@@ -242,4 +243,18 @@ public interface BrowserPaymentRequest {
      * @return The launcher for Android intent-based payment app.
      */
     AndroidIntentLauncher getAndroidIntentLauncher();
+
+    /**
+     * Send the given response to the renderer process to resolve the pending JavaScript promise for
+     * the PaymentRequest.canMakePayment() API call, potentially overriding the calculated value.
+     *
+     * @param response The response to the JavaScript PaymentRequest.canMakePayment() API call. Can
+     *     be potentially overridden.
+     * @param sender The method for sending the response to the renderer process. May be invoked
+     *     either synchronously or asynchronously.
+     */
+    default void maybeOverrideCanMakePaymentResponse(boolean response, Callback<Boolean> sender) {
+        // By default, there is no override of the `response` value.
+        sender.onResult(response);
+    }
 }
