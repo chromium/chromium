@@ -27,6 +27,9 @@
 
 namespace autofill_ai {
 
+using optimization_guide::proto::AutofillAiTypeRequest;
+using optimization_guide::proto::AutofillAiTypeResponse;
+
 AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     optimization_guide::OptimizationGuideModelExecutor* model_executor,
     optimization_guide::ModelQualityLogsUploaderService* logs_uploader)
@@ -44,7 +47,7 @@ void AutofillAiModelExecutorImpl::GetPredictions(
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     PredictionsReceivedCallback callback) {
   // Construct request.
-  optimization_guide::proto::AutofillAiTypeRequest request;
+  AutofillAiTypeRequest request;
   optimization_guide::proto::PageContext* page_context =
       request.mutable_page_context();
   if (kSendTitleURL.Get()) {
@@ -57,7 +60,6 @@ void AutofillAiModelExecutorImpl::GetPredictions(
 
   *request.mutable_form_data() = ToFormDataProto(form_data);
 
-  SetLatestRequestForDebugging(request);
   optimization_guide::ModelExecutionCallbackWithLogging<
       optimization_guide::proto::FormsClassificationsLoggingData>
       wrapper_callback =
@@ -86,56 +88,27 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     return;
   }
 
-  SetLatestResponseForDebugging(
-      optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::AutofillAiTypeResponse>(
-          execution_result.response.value()));
+  std::optional<AutofillAiTypeResponse> response =
+      optimization_guide::ParsedAnyMetadata<AutofillAiTypeResponse>(
+          execution_result.response.value());
 
-  if (!GetLatestResponse()) {
+  if (!response) {
     std::move(callback).Run(base::unexpected(false), execution_id);
     return;
   }
 
-  std::move(callback).Run(ExtractPredictions(form_data, GetLatestResponse()),
-                          execution_id);
+  std::move(callback).Run(
+      ExtractPredictions(form_data, std::move(response).value()), execution_id);
 }
 
 // static
 AutofillAiModelExecutor::PredictionsByGlobalId
 AutofillAiModelExecutorImpl::ExtractPredictions(
     const autofill::FormData& form_data,
-    const std::optional<optimization_guide::proto::AutofillAiTypeResponse>&
-        model_response) {
-  if (!model_response) {
-    return {};
-  }
-
+    AutofillAiTypeResponse model_response) {
   // TODO(crbug.com/389631477): Implement, but keep it simple - maybe just
   // pass on the proto.
   return {};
-}
-
-void AutofillAiModelExecutorImpl::SetLatestRequestForDebugging(
-    optimization_guide::proto::AutofillAiTypeRequest request) {
-  // Reset `latest_response_` to ensure it always matches `latest_request_`, if
-  // it exists.
-  latest_response_.reset();
-  latest_request_ = std::move(request);
-}
-
-void AutofillAiModelExecutorImpl::SetLatestResponseForDebugging(
-    std::optional<optimization_guide::proto::AutofillAiTypeResponse> response) {
-  latest_response_ = std::move(response);
-}
-
-const std::optional<optimization_guide::proto::AutofillAiTypeRequest>&
-AutofillAiModelExecutorImpl::GetLatestRequest() const {
-  return latest_request_;
-}
-
-const std::optional<optimization_guide::proto::AutofillAiTypeResponse>&
-AutofillAiModelExecutorImpl::GetLatestResponse() const {
-  return latest_response_;
 }
 
 }  // namespace autofill_ai
