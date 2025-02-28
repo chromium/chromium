@@ -178,9 +178,9 @@ BASE_FEATURE(kWebAuthnRemoteDesktopAllowedOriginsPolicy,
              "WebAuthenticationRemoteDesktopAllowedOriginsPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Default enabled in M135. Remove in or after M138.
 BASE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider,
              "WebAuthenticationMicrosoftSoftwareUnexportableKeyProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace device

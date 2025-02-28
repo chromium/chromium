@@ -54,6 +54,9 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
 
 std::unique_ptr<UnexportableKeyProvider>
 GetMicrosoftSoftwareUnexportableKeyProvider() {
+  if (g_mock_provider) {
+    return g_mock_provider();
+  }
 #if BUILDFLAG(IS_WIN)
   return GetMicrosoftSoftwareUnexportableKeyProviderWin();
 #else
