@@ -244,24 +244,32 @@ GetContent(const V8AILanguageModelPrompt* prompt,
       }
       if (dict->content()->IsAudioBuffer()) {
         AudioBuffer* audio_buffer = dict->content()->GetAsAudioBuffer();
-        if (audio_buffer->numberOfChannels() != 1) {
-          // TODO(crbug.com/382180351): Support multichanel audio.
-          // Mix into mono, or interleave frames properly over IPC.
+        if (audio_buffer->numberOfChannels() > 2) {
+          // TODO(crbug.com/382180351): Support more than 2 channels.
           return MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kSyntaxError,
-              "Multichannel audio is not supported.");
+              "Audio with more than 2 channels is not supported.");
         }
         on_device_model::mojom::blink::AudioDataPtr audio_data =
             on_device_model::mojom::blink::AudioData::New();
         audio_data->sample_rate = audio_buffer->sampleRate();
         audio_data->frame_count = audio_buffer->length();
-        audio_data->channel_count = audio_buffer->numberOfChannels();
-        // TODO(crbug.com/382180351): Avoid copy, or make it more succinct.
-        audio_data->data = WTF::Vector<float>(
-            audio_buffer->getChannelData(0)->AsSpan().size());
-        std::copy(audio_buffer->getChannelData(0)->AsSpan().begin(),
-                  audio_buffer->getChannelData(0)->AsSpan().end(),
-                  audio_data->data.begin());
+        // TODO(crbug.com/382180351): Use other mono mixing utils like
+        // AudioBus::CreateByMixingToMono.
+        audio_data->channel_count = 1;
+        base::span<const float> channel0 =
+            audio_buffer->getChannelData(0)->AsSpan();
+        audio_data->data = WTF::Vector<float>(channel0.size());
+        for (size_t i = 0; i < channel0.size(); ++i) {
+          audio_data->data[i] = channel0[i];
+          // If second channel exists, average the two channels to produce mono.
+          if (audio_buffer->numberOfChannels() > 1) {
+            audio_data->data[i] =
+                (audio_data->data[i] +
+                 audio_buffer->getChannelData(1)->AsSpan()[i]) /
+                2.0f;
+          }
+        }
         return on_device_model::mojom::blink::InputPiece::NewAudio(
             std::move(audio_data));
       }
