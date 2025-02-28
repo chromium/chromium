@@ -224,7 +224,8 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
   autofill::AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<autofill::EntityTable>()};
   autofill::EntityDataManager entity_data_manager_{
-      webdata_helper_.autofill_webdata_service()};
+      webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
+      /*strike_database=*/nullptr};
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

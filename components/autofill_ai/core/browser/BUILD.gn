@@ -43,7 +43,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     deps = [
       "//base",
       "//components/autofill/core/browser",
-      "//components/autofill/core/browser/strike_databases/autofill_ai",
       "//components/autofill/core/common",
       "//components/keyed_service/core",
       "//components/optimization_guide/core",

@@ -58,7 +58,9 @@ class GetFieldsFillableByAutofillAiTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
-  EntityDataManager edm_{helper_.autofill_webdata_service()};
+  EntityDataManager edm_{helper_.autofill_webdata_service(),
+                         /*history_service=*/nullptr,
+                         /*strike_database=*/nullptr};
   FormStructure form_{{}};
 };
 

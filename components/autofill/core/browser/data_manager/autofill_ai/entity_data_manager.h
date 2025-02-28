@@ -7,16 +7,27 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
+namespace history {
+class DeletionInfo;
+}  // namespace history
+
 namespace autofill {
 
-// Loads, adds, updates, and removes EntityInstances.
+class AutofillAiSaveStrikeDatabaseByHost;
+class StrikeDatabaseBase;
+
+// Loads, adds, updates, and removes EntityInstances. Deletes data from
+// AutofillAI strike databases on history deletion.
 //
 // These operations are asynchronous; this is similar to
 // AutocompleteHistoryManager and unlike AddressDataManager.
@@ -25,10 +36,12 @@ namespace autofill {
 // their own EntityDataManager instance, they use the same underlying database.
 // Therefore, it is the responsibility of the callers to ensure that no data
 // from an incognito session is persisted unintentionally.
-class EntityDataManager : public KeyedService {
+class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
  public:
   explicit EntityDataManager(
-      scoped_refptr<AutofillWebDataService> profile_database);
+      scoped_refptr<AutofillWebDataService> profile_database,
+      history::HistoryService* history_service,
+      StrikeDatabaseBase* strike_database);
   EntityDataManager(const EntityDataManager&) = delete;
   EntityDataManager& operator=(const EntityDataManager&) = delete;
   ~EntityDataManager() override;
@@ -62,6 +75,10 @@ class EntityDataManager : public KeyedService {
   base::optional_ref<const EntityInstance> GetEntityInstance(
       const base::Uuid& guid) const LIFETIME_BOUND;
 
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService*,
+                          const history::DeletionInfo& deletion_info) override;
+
  private:
   void LoadEntities();
 
@@ -75,6 +92,11 @@ class EntityDataManager : public KeyedService {
   // The result of the last successful LoadEntities() query.
   // All entries are identifiable by their EntityInstance::guid().
   base::flat_set<EntityInstance, EntityInstance::CompareByGuid> entities_;
+
+  base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
+
+  std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;
 
   base::WeakPtrFactory<EntityDataManager> weak_ptr_factory_{this};
 };
