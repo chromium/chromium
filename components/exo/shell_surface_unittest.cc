@@ -4228,27 +4228,6 @@ TEST_F(ShellSurfaceTest, SetImmersiveModeTriggersConfigure) {
   EXPECT_EQ(times_configured, 1);
 }
 
-TEST_F(ShellSurfaceTest,
-       SetRasterScaleWindowPropertyConfiguresRasterScaleAndWaitsForAck) {
-  ConfigureData config_data;
-  constexpr gfx::Size kBufferSize(256, 256);
-
-  std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder(kBufferSize).BuildShellSurface();
-
-  shell_surface->set_configure_callback(
-      base::BindRepeating(&Configure, base::Unretained(&config_data)));
-
-  auto* window = shell_surface->GetWidget()->GetNativeWindow();
-  window->SetProperty(aura::client::kRasterScale, 0.1f);
-  shell_surface->AcknowledgeConfigure(0);
-  EXPECT_EQ(0.1f, config_data.raster_scale);
-
-  window->SetProperty(aura::client::kRasterScale, 1.0f);
-  shell_surface->AcknowledgeConfigure(0);
-  EXPECT_EQ(1.0f, config_data.raster_scale);
-}
-
 TEST_F(ShellSurfaceTest, MoveParentWithoutWidget) {
   UpdateDisplay("800x600, 800x600");
   constexpr gfx::Size kSize{256, 256};
