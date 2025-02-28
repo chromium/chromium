@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/browser/accessibility/scoped_mode_collection.h"
 #include "content/common/content_export.h"
@@ -179,6 +180,14 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Default is true to defer to feature flag. Value may be set to false by
   // prefs.
   bool performance_filtering_allowed_ = true;
+
+  // Tracks whether the accessibility engine has been used in any form during
+  // the current session. Toggled to true when accessibility is first enabled,
+  // and never toggled back to false.
+  bool has_enabled_accessibility_in_session_ = false;
+
+  // Timer used to track the time between start-up and engine first-use.
+  base::ElapsedTimer timer_;
 
   // The time of the first user input event; if we receive multiple
   // user input events within a 30-second period and no

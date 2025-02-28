@@ -322,6 +322,15 @@ void BrowserAccessibilityStateImpl::EnableAccessibility() {
     return;
   }
 
+  // Track the time since start-up before the kWebContents mode was enabled,
+  // ensuring we record this value only one time.
+  if (!has_enabled_accessibility_in_session_ &&
+      GetAccessibilityMode().has_mode(ui::AXMode::kWebContents)) {
+    has_enabled_accessibility_in_session_ = true;
+    UMA_HISTOGRAM_LONG_TIMES_100("Accessibility.EngineUse.TimeUntilStart",
+                                 timer_.Elapsed());
+  }
+
   // Enabling accessibility is generally the result of an accessibility API
   // call, so we should also reset the auto-disable accessibility code. The only
   // exception is in tests or when a user manually toggles accessibility flags
