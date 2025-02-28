@@ -26,6 +26,7 @@
 #include "media/parsers/h264_bit_reader.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/h265_nalu_parser.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
 struct HdrMetadataCta861_3;
@@ -483,25 +484,10 @@ struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
   gfx::HdrMetadataSmpteSt2086 ToGfx() const;
 };
 
-struct MEDIA_EXPORT H265SEIMessage {
-  H265SEIMessage();
-
-  enum Type {
-    kSEIMasteringDisplayInfo = 137,
-    kSEIContentLightLevelInfo = 144,
-    kSEIAlphaChannelInfo = 165,
-  };
-
-  int type;
-  int payload_size;
-  union {
-    // Placeholder; in future more supported types will contribute to more
-    // union members here.
-    H265SEIAlphaChannelInfo alpha_channel_info;
-    H265SEIContentLightLevelInfo content_light_level_info;
-    H265SEIMasteringDisplayInfo mastering_display_info;
-  };
-};
+using H265SEIMessage = absl::variant<absl::monostate,
+                                     H265SEIAlphaChannelInfo,
+                                     H265SEIContentLightLevelInfo,
+                                     H265SEIMasteringDisplayInfo>;
 
 struct MEDIA_EXPORT H265SEI {
   H265SEI();

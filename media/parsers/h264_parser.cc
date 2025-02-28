@@ -222,10 +222,6 @@ H264SliceHeader::H264SliceHeader() {
 H264SliceHeader::H264SliceHeader(const H264SliceHeader& t) = default;
 H264SliceHeader& H264SliceHeader::operator=(const H264SliceHeader& t) = default;
 
-H264SEIMessage::H264SEIMessage() {
-  memset(this, 0, sizeof(*this));
-}
-
 gfx::HdrMetadataCta861_3 H264SEIContentLightLevelInfo::ToGfx() const {
   return gfx::HdrMetadataCta861_3(max_content_light_level,
                                   max_picture_average_light_level);
@@ -1511,75 +1507,81 @@ H264Parser::Result H264Parser::ParseSEI(H264SEI* sei) {
   // the parsed SEI messages, so we have to set a limit here.
   constexpr int kMaxParsedSEIMessages = 64;
   do {
+    int type = 0;
+    READ_BITS_OR_RETURN(8, &byte);
+    while (byte == 0xff) {
+      type += 255;
+      READ_BITS_OR_RETURN(8, &byte);
+    }
+    type += byte;
+
+    int payload_size = 0;
+    READ_BITS_OR_RETURN(8, &byte);
+    while (byte == 0xff) {
+      payload_size += 255;
+      READ_BITS_OR_RETURN(8, &byte);
+    }
+    payload_size += byte;
+    int num_bits_remain = payload_size * 8;
+
+    DVLOG(4) << "Found SEI message type: " << type
+             << " payload size: " << payload_size;
+
+    enum Type {
+      kSEIRecoveryPoint = 6,
+      kSEIMasteringDisplayInfo = 137,
+      kSEIContentLightLevelInfo = 144,
+    };
+
     H264SEIMessage sei_msg;
-    sei_msg.type = 0;
-    READ_BITS_OR_RETURN(8, &byte);
-    while (byte == 0xff) {
-      sei_msg.type += 255;
-      READ_BITS_OR_RETURN(8, &byte);
-    }
-    sei_msg.type += byte;
-
-    sei_msg.payload_size = 0;
-    READ_BITS_OR_RETURN(8, &byte);
-    while (byte == 0xff) {
-      sei_msg.payload_size += 255;
-      READ_BITS_OR_RETURN(8, &byte);
-    }
-    sei_msg.payload_size += byte;
-    int num_bits_remain = sei_msg.payload_size * 8;
-
-    DVLOG(4) << "Found SEI message type: " << sei_msg.type
-             << " payload size: " << sei_msg.payload_size;
-
-    switch (sei_msg.type) {
-      case H264SEIMessage::kSEIRecoveryPoint:
+    switch (type) {
+      case kSEIRecoveryPoint: {
+        auto recovery_point = sei_msg.emplace<H264SEIRecoveryPoint>();
         READ_UE_AND_MINUS_BITS_READ_OR_RETURN(
-            &sei_msg.recovery_point.recovery_frame_cnt, &num_bits_remain);
+            &recovery_point.recovery_frame_cnt, &num_bits_remain);
         READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
-            &sei_msg.recovery_point.exact_match_flag, &num_bits_remain);
+            &recovery_point.exact_match_flag, &num_bits_remain);
         READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
-            &sei_msg.recovery_point.broken_link_flag, &num_bits_remain);
+            &recovery_point.broken_link_flag, &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            2, &sei_msg.recovery_point.changing_slice_group_idc,
-            &num_bits_remain);
+            2, &recovery_point.changing_slice_group_idc, &num_bits_remain);
         break;
-      case H264SEIMessage::kSEIContentLightLevelInfo:
+      }
+      case kSEIContentLightLevelInfo: {
+        auto& info = sei_msg.emplace<H264SEIContentLightLevelInfo>();
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.content_light_level_info.max_content_light_level,
-            &num_bits_remain);
+            16, &info.max_content_light_level, &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16,
-            &sei_msg.content_light_level_info.max_picture_average_light_level,
-            &num_bits_remain);
+            16, &info.max_picture_average_light_level, &num_bits_remain);
         break;
-      case H264SEIMessage::kSEIMasteringDisplayInfo:
-        for (auto& primary : sei_msg.mastering_display_info.display_primaries) {
+      }
+      case kSEIMasteringDisplayInfo: {
+        auto& info = sei_msg.emplace<H264SEIMasteringDisplayInfo>();
+        for (auto& primary : info.display_primaries) {
           for (auto& component : primary) {
             READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &component,
                                                     &num_bits_remain);
           }
         }
-        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.mastering_display_info.white_points[0],
-            &num_bits_remain);
-        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.mastering_display_info.white_points[1],
-            &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &info.white_points[0],
+                                                &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &info.white_points[1],
+                                                &num_bits_remain);
         uint32_t luminace_high_31bits, luminance_low_1bit;
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(31, &luminace_high_31bits,
                                                 &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(1, &luminance_low_1bit,
                                                 &num_bits_remain);
-        sei_msg.mastering_display_info.max_luminance =
+        info.max_luminance =
             (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(31, &luminace_high_31bits,
                                                 &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(1, &luminance_low_1bit,
                                                 &num_bits_remain);
-        sei_msg.mastering_display_info.min_luminance =
+        info.min_luminance =
             (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
         break;
+      }
       default:
         DVLOG(4) << "Unsupported SEI message";
         break;
@@ -1589,8 +1591,9 @@ H264Parser::Result H264Parser::ParseSEI(H264SEI* sei) {
     if (num_bits_remain > 0)
       SKIP_BITS_OR_RETURN(num_bits_remain);
     // Only add parsed SEI messages.
-    if (num_bits_remain < sei_msg.payload_size * 8)
+    if (num_bits_remain < payload_size * 8) {
       sei->msgs.push_back(sei_msg);
+    }
     // In case the loop endless.
     if (++num_parsed_sei_msg > kMaxParsedSEIMessages)
       return kInvalidStream;

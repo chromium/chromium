@@ -16,6 +16,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
@@ -28,6 +29,7 @@
 #else
 #include "media/parsers/h265_nalu_parser.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 namespace mp4 {
@@ -283,18 +285,18 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
           DVLOG(1) << "Could not parse SEI";
           break;
         }
-        for (auto& sei_msg : sei.msgs) {
-          switch (sei_msg.type) {
-            case H265SEIMessage::kSEIContentLightLevelInfo:
-              hdr_metadata.cta_861_3 = sei_msg.content_light_level_info.ToGfx();
-              break;
-            case H265SEIMessage::kSEIMasteringDisplayInfo:
-              hdr_metadata.smpte_st_2086 =
-                  sei_msg.mastering_display_info.ToGfx();
-              break;
-            default:
-              break;
-          }
+        for (const auto& sei_msg : sei.msgs) {
+          absl::visit(base::Overloaded{
+                          [](const H265SEIAlphaChannelInfo& info) {},
+                          [&](const H265SEIContentLightLevelInfo& info) {
+                            hdr_metadata.cta_861_3 = info.ToGfx();
+                          },
+                          [&](const H265SEIMasteringDisplayInfo& info) {
+                            hdr_metadata.smpte_st_2086 = info.ToGfx();
+                          },
+                          [](absl::monostate) {},
+                      },
+                      sei_msg);
         }
         break;
       }
