@@ -3283,9 +3283,6 @@
       base_feature: "none",
     },
     {
-      name: "PerformanceEntrySafeSort",
-    },
-    {
       name: "PerformanceManagerInstrumentation",
       base_feature: "none",
       public: true,
