@@ -23,17 +23,17 @@ MerchantTrustStatus ValidateProto(
   if (!merchant_proto->has_merchant_star_rating()) {
     return MerchantTrustStatus::kMissingRatingValue;
   }
-  if (!merchant_proto->has_shopper_voice_summary()) {
-    return MerchantTrustStatus::kMissingReviewsSummary;
-  }
   if (!merchant_proto->has_merchant_details_page_url()) {
     return MerchantTrustStatus::kMissingReviewsPageUrl;
   }
   if (!GURL(merchant_proto->merchant_details_page_url()).is_valid()) {
     return MerchantTrustStatus::kInvalidReviewsPageUrl;
   }
+  if (!merchant_proto->has_shopper_voice_summary()) {
+    return MerchantTrustStatus::kValidWithMissingReviewsSummary;
+  }
 
-  return  MerchantTrustStatus::kValid;
+  return MerchantTrustStatus::kValid;
 }
 
 }  // namespace page_info::merchant_trust_validation

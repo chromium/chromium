@@ -82,6 +82,8 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   bool IsBlockAutoPlayEnabled() override;
   bool IsMultipleTabsOpen() override;
   void OpenSiteSettingsFileSystem() override;
+
+  void OpenMerchantTrustSidePanel(const GURL& url);
 #endif  // !BUILDFLAG(IS_ANDROID)
   content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) override;
@@ -92,6 +94,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   void GetMerchantTrustInfo(page_info::MerchantDataCallback callback) override;
   void RecordPageInfoWithMerchantTrustOpenTime();
   void RecordMerchantTrustButtonShown();
+  void RecordMerchantTrustSidePanelOpened();
 
  private:
   Profile* GetProfile() const;

@@ -169,7 +169,11 @@ MerchantTrustService::GetMerchantDataFromProto(
   auto status = merchant_trust_validation::ValidateProto(metadata);
   base::UmaHistogramEnumeration("Security.PageInfo.MerchantTrustStatus",
                                 status);
-  if (status != MerchantTrustStatus::kValid) {
+  auto enabled_without_summary =
+      IsMerchantTrustWithoutSummaryEnabled() &&
+      status == MerchantTrustStatus::kValidWithMissingReviewsSummary;
+
+  if (status != MerchantTrustStatus::kValid && !enabled_without_summary) {
     return std::nullopt;
   }
 

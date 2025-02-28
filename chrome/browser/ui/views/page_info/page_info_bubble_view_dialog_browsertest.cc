@@ -76,6 +76,7 @@ constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
 constexpr char kAboutThisSiteUrl[] = "a.test";
 constexpr char kHistoryUrl[] = "b.test";
 constexpr char kMerchantTrustUrl[] = "b.test";
+constexpr char kMerchantTrustUrlWithoutSummary[] = "c.test";
 
 // Clicks the location icon to open the page info bubble.
 void OpenPageInfoBubble(Browser* browser) {
@@ -139,6 +140,18 @@ optimization_guide::OptimizationMetadata GetMerchantTrustMetadata() {
   metadata.set_merchant_count_rating(23);
   metadata.set_merchant_details_page_url("https://reviews.test");
   metadata.set_shopper_voice_summary("Test summary");
+
+  optimization_metadata.SetAnyMetadataForTesting(metadata);
+  return optimization_metadata;
+}
+
+optimization_guide::OptimizationMetadata
+GetMerchantTrustMetadataWithoutSummary() {
+  optimization_guide::OptimizationMetadata optimization_metadata;
+  commerce::MerchantTrustSignalsV2 metadata;
+  metadata.set_merchant_star_rating(4.8);
+  metadata.set_merchant_count_rating(89);
+  metadata.set_merchant_details_page_url("https://shopper-reviews.test");
 
   optimization_metadata.SetAnyMetadataForTesting(metadata);
   return optimization_metadata;
@@ -1144,6 +1157,10 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
         GetUrl(kMerchantTrustUrl),
         optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
         GetMerchantTrustMetadata());
+    optimization_guide_decider->AddHintForTesting(
+        GetUrl(kMerchantTrustUrlWithoutSummary),
+        optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
+        GetMerchantTrustMetadataWithoutSummary());
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -1160,6 +1177,9 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     if (name == "MerchantTrustMainPage" || name == "MerchantTrustSubpage") {
       ASSERT_TRUE(
           ui_test_utils::NavigateToURL(browser(), GetUrl(kMerchantTrustUrl)));
+    } else if (name == "MerchantTrustMainPageWithoutSummary") {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), GetUrl(kMerchantTrustUrlWithoutSummary)));
     } else if (name == "MerchantTrustAndAboutThisSite") {
       ASSERT_TRUE(
           ui_test_utils::NavigateToURL(browser(), GetUrl(kAboutThisSiteUrl)));
@@ -1197,6 +1217,12 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
  private:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
+                       InvokeUi_MerchantTrustMainPageWithoutSummary) {
+  set_baseline("6304742");
+  ShowAndVerifyUi();
+}
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
                        InvokeUi_MerchantTrustMainPage) {
