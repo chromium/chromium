@@ -22,7 +22,6 @@ chromium/try/android-dawn-arm-rel
 chromium/try/android-dawn-arm64-rel
 chromium/try/android-dawn-arm64-s24-rel
 chromium/try/android-desktop-15-x64-rel
-chromium/try/android-desktop-x64-compile-rel
 chromium/try/android-desktop-x64-rel
 chromium/try/android-official
 chromium/try/android-oreo-x86-rel

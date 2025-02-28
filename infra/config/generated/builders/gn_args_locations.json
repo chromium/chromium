@@ -631,7 +631,6 @@
     "android-desktop-arm64-compile-rel": "try/android-desktop-arm64-compile-rel/gn-args.json",
     "android-desktop-x64-clobber-rel": "try/android-desktop-x64-clobber-rel/gn-args.json",
     "android-desktop-x64-compile-dbg": "try/android-desktop-x64-compile-dbg/gn-args.json",
-    "android-desktop-x64-compile-rel": "try/android-desktop-x64-compile-rel/gn-args.json",
     "android-desktop-x64-rel": "try/android-desktop-x64-rel/gn-args.json",
     "android-deterministic-dbg": "try/android-deterministic-dbg/gn-args.json",
     "android-deterministic-rel": "try/android-deterministic-rel/gn-args.json",
