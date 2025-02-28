@@ -30,6 +30,7 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
@@ -391,8 +392,7 @@ DeveloperPrivateGetProfileConfigurationFunction::
 ExtensionFunction::ResponseAction
 DeveloperPrivateGetProfileConfigurationFunction::Run() {
   std::unique_ptr<developer::ProfileInfo> info =
-      DeveloperPrivateEventRouter::CreateProfileInfo(
-          Profile::FromBrowserContext(browser_context()));
+      CreateProfileInfo(Profile::FromBrowserContext(browser_context()));
 
   // If this is called from the chrome://extensions page, we use this as a
   // heuristic that it's a good time to verify installs. We do this on startup,

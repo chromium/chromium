@@ -76,6 +76,8 @@ source_set("extensions") {
     "api/developer_private/extension_info_generator.h",
     "api/developer_private/extension_info_generator_shared.cc",
     "api/developer_private/extension_info_generator_shared.h",
+    "api/developer_private/profile_info_generator.cc",
+    "api/developer_private/profile_info_generator.h",
     "api/identity/extension_token_key.cc",
     "api/identity/extension_token_key.h",
     "api/identity/identity_constants.cc",

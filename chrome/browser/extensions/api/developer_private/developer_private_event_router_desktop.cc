@@ -4,14 +4,11 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router_desktop.h"
 
+#include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_system.h"
@@ -20,31 +17,6 @@
 namespace extensions {
 
 namespace developer = api::developer_private;
-
-// static
-std::unique_ptr<developer::ProfileInfo>
-DeveloperPrivateEventRouter::CreateProfileInfo(Profile* profile) {
-  std::unique_ptr<developer::ProfileInfo> info(new developer::ProfileInfo());
-  info->is_child_account =
-      supervised_user::AreExtensionsPermissionsEnabled(profile);
-  PrefService* prefs = profile->GetPrefs();
-  const PrefService::Preference* pref =
-      prefs->FindPreference(prefs::kExtensionsUIDeveloperMode);
-  info->is_incognito_available = IncognitoModePrefs::GetAvailability(prefs) !=
-                                 policy::IncognitoModeAvailability::kDisabled;
-  info->is_developer_mode_controlled_by_policy = pref->IsManaged();
-  info->in_developer_mode =
-      !info->is_child_account &&
-      prefs->GetBoolean(prefs::kExtensionsUIDeveloperMode);
-  info->can_load_unpacked =
-      ExtensionManagementFactory::GetForBrowserContext(profile)
-          ->HasAllowlistedExtension();
-  info->is_mv2_deprecation_notice_dismissed =
-      ManifestV2ExperimentManager::Get(profile)
-          ->DidUserAcknowledgeNoticeGlobally();
-
-  return info;
-}
 
 DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : DeveloperPrivateEventRouterShared(profile) {
