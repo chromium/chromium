@@ -34,7 +34,7 @@ template <typename T>
 constexpr bool IsIomanip<T&(T&)> = true;
 
 // Function pointers implicitly convert to `bool`, so use this to avoid printing
-// function pointers as 1 or 0.
+// function pointers as "true"/"false".
 template <typename T>
 concept WillBeIncorrectlyStreamedAsBool =
     std::is_function_v<std::remove_pointer_t<T>> &&
@@ -49,6 +49,15 @@ struct ToStringHelper {
     // char-like types.
     ss << "[" << sizeof(v) << "-byte object at 0x"
        << static_cast<const void*>(std::addressof(v)) << "]";
+  }
+};
+
+// Boolean values. (Handled explicitly so as to not rely on the behavior of
+// std::boolalpha.)
+template <>
+struct ToStringHelper<bool> {
+  static void Stringify(const bool& v, std::ostringstream& ss) {
+    ss << (v ? "true" : "false");
   }
 };
 
@@ -132,7 +141,6 @@ struct ToStringHelper<std::tuple<T...>> {
 template <typename... Ts>
 std::string ToString(const Ts&... values) {
   std::ostringstream ss;
-  ss.setf(std::ios_base::boolalpha);  // Stringify bools as "true"/"false".
   (...,
    internal::ToStringHelper<std::remove_cvref_t<decltype(values)>>::Stringify(
        values, ss));
