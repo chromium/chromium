@@ -2157,31 +2157,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHiOSParcelTrackingFeature.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
-    // The IPH is shown at most once.
-    config.trigger =
-        EventConfig(feature_engagement::events::kParcelTrackingTriggered,
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    config.used =
-        EventConfig("parcel_tracking_feature_used", Comparator(EQUAL, 0),
-                    feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    // The user has tracked a parcel.
-    config.event_configs.insert(
-        EventConfig(feature_engagement::events::kParcelTracked,
-                    Comparator(GREATER_THAN_OR_EQUAL, 1),
-                    feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod));
-    config.blocked_by.type = BlockedBy::Type::NONE;
-    config.blocking.type = Blocking::Type::NONE;
-    return config;
-  }
-
   if (kIPHiOSPullToRefreshFeature.name == feature->name) {
     // The IPH of the pull-to-refresh feature for the current tab.
     return CreateNewUserGestureInProductHelpConfig(

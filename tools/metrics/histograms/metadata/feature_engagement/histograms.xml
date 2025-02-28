@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
       summary="(obsolete) showing the Page Info Revamp new badge IPH on the
                overflow menu carousel"/>
   <variant name="IPH_iOSParcelTrackingFeature"
-      summary="showing the Parcel Tracking IPH on the Magic Stack"/>
+      summary="(obsolete) showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"
       summary="showing the iOS password promo on desktop"/>
   <variant name="IPH_iOSPaymentPromoDesktop"

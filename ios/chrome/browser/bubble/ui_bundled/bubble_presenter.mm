@@ -108,7 +108,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter*
       _priceNotificationsWhileBrowsingBubbleTipPresenter;
   BubbleViewControllerPresenter* _lensKeyboardPresenter;
-  BubbleViewControllerPresenter* _parcelTrackingTipBubblePresenter;
   BubbleViewControllerPresenter* _lensOverlayEntrypointBubblePresenter;
 
   // List of existing gestural IPH views.
@@ -177,7 +176,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_whatsNewBubblePresenter dismissAnimated:NO];
   [_lensKeyboardPresenter dismissAnimated:NO];
   [_defaultPageModeTipBubblePresenter dismissAnimated:NO];
-  [_parcelTrackingTipBubblePresenter dismissAnimated:NO];
   [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
@@ -430,32 +428,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                 dismissAction:nil];
   if (presenter) {
     _lensKeyboardPresenter = presenter;
-  }
-}
-
-- (void)presentParcelTrackingTipBubble {
-  if (![self canPresentBubble]) {
-    return;
-  }
-
-  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
-  NSString* text = l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_IPH);
-
-  CGPoint magicStackAnchor = [self anchorPointToGuide:kMagicStackGuide
-                                            direction:arrowDirection];
-
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHiOSParcelTrackingFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentCenter
-                         text:text
-        voiceOverAnnouncement:text
-                  anchorPoint:magicStackAnchor
-                presentAction:nil
-                dismissAction:nil];
-
-  if (!presenter) {
-    _parcelTrackingTipBubblePresenter = presenter;
   }
 }
 

@@ -590,9 +590,6 @@ BASE_FEATURE(kIPHiOSPromoNonModalShareDefaultBrowserFeature,
 BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
              "IPH_iOSPromoPasswordManagerWidget",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSParcelTrackingFeature,
-             "IPH_iOSParcelTrackingFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPullToRefreshFeature,
              "IPH_iOSPullToRefreshFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

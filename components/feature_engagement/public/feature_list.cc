@@ -143,7 +143,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature,
     &kIPHiOSPromoNonModalShareDefaultBrowserFeature,
     &kIPHiOSPromoPasswordManagerWidgetFeature,
-    &kIPHiOSParcelTrackingFeature,
     &kIPHiOSPullToRefreshFeature,
     &kIPHiOSReplaceSyncPromosWithSignInPromos,
     &kIPHiOSTabGridSwipeRightForIncognito,
