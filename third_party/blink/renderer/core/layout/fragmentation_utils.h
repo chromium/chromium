@@ -576,7 +576,8 @@ ConstraintSpace CreateConstraintSpaceForFragmentainer(
     LogicalSize fragmentainer_size,
     LogicalSize percentage_resolution_size,
     bool balance_columns,
-    BreakAppeal min_break_appeal);
+    BreakAppeal min_break_appeal,
+    const BoxFragmentBuilder* = nullptr);
 
 // Calculate the container builder and constraint space for a multicol.
 BoxFragmentBuilder CreateContainerBuilderForMulticol(
