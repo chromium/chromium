@@ -343,9 +343,10 @@ class CORE_EXPORT HTMLCanvasElement final
   // GPU acceleration.
   void UpdatePreferred2DRasterMode();
 
+  // Recreates the resource provider.
   // TODO(crbug.com/40280152): Remove parameter once the hibernation handler is
   // an instance variable of this class.
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderFor2DContext(
+  CanvasResourceProvider* RecreateCanvasResourceProviderFor2DContext(
       CanvasHibernationHandler& hibernation_handler);
 
   void ColorSchemeMayHaveChanged();
