@@ -22302,7 +22302,7 @@
                 {
                     "name": "EnabledWithDefaultButtonPlacement",
                     "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "100",
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "90",
                         "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
                     },
                     "enable_features": [
@@ -22312,7 +22312,7 @@
                 {
                     "name": "EnabledWithButtonSwap",
                     "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "100",
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "90",
                         "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "true"
                     },
                     "enable_features": [
