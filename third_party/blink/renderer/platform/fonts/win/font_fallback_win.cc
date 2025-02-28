@@ -299,6 +299,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_LYCIAN, kLycianFonts},
       {USCRIPT_LYDIAN, kLydianFonts},
       {USCRIPT_MALAYALAM, kMalayalamFonts},
+      {USCRIPT_MEITEI_MAYEK, kSoraSompengFonts},
       {USCRIPT_MEROITIC_CURSIVE, kMeroiticCursiveFonts},
       {USCRIPT_MONGOLIAN, kMongolianFonts},
       {USCRIPT_MYANMAR, kMyanmarFonts},
