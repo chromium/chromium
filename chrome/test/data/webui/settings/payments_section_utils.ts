@@ -59,6 +59,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
   expected.requestedIbans = 1;
   expected.removedIbans = 0;
   expected.isValidIban = 0;
+  expected.requestedPayOverTimeIssuers = 0;
   expected.authenticateUserAndFlipMandatoryAuthToggle = 0;
   expected.getLocalCard = 0;
   expected.bulkDeleteAllCvcs = 0;
@@ -168,7 +169,8 @@ export async function deletePaymentMethod(
   paymentMethodItems.splice(index, 1);
   manager.data[dataProperty] = paymentMethodItems;
   manager.lastCallback.setPersonalDataManagerListener!
-      ([], manager.data.creditCards, manager.data.ibans);
+      ([], manager.data.creditCards, manager.data.ibans,
+       manager.data.payOverTimeIssuers);
 
   await flushTasks();
 }

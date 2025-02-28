@@ -414,11 +414,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(safe_browsing::kPasswordLeakToggleMove));
 
   html_source->AddBoolean(
-      "shouldShowPayOverTimeSettingsToggle",
+      "shouldShowPayOverTimeSettings",
       autofill::ContentAutofillClient::FromWebContents(web_ui->GetWebContents())
           ->GetPaymentsAutofillClient()
           ->GetPaymentsBnplManager()
-          ->ShouldShowBnplSettingsToggle());
+          ->ShouldShowBnplSettings());
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));

@@ -107,7 +107,7 @@ void BnplManager::OnAmountExtractionReturned(
   }
 }
 
-bool BnplManager::ShouldShowBnplSettingsToggle() const {
+bool BnplManager::ShouldShowBnplSettings() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   const PaymentsDataManager& payments_data_manager =

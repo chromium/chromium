@@ -683,7 +683,7 @@ suite('PaymentsSection', function() {
 
   test('verifyPayOverTimeToggleIsShown', async function() {
     loadTimeData.overrideValues({
-      shouldShowPayOverTimeSettingsToggle: true,
+      shouldShowPayOverTimeSettings: true,
     });
 
     const section = await createPaymentsSection(
@@ -704,10 +704,10 @@ suite('PaymentsSection', function() {
   });
 
   test(
-      'verifyPayOverTimeToggleIsNotShownWhenShouldShowPayOverTimeSettingsToggleIsFalse',
+      'verifyPayOverTimeToggleIsNotShownWhenShouldShowPayOverTimeSettingsIsFalse',
       async function() {
         loadTimeData.overrideValues({
-          shouldShowPayOverTimeSettingsToggle: false,
+          shouldShowPayOverTimeSettings: false,
         });
 
         const section = await createPaymentsSection(
@@ -722,7 +722,7 @@ suite('PaymentsSection', function() {
       'verifyPayOverTimeToggleIsDisabledWhenCreditCardEnabledIsOff',
       async function() {
         loadTimeData.overrideValues({
-          shouldShowPayOverTimeSettingsToggle: true,
+          shouldShowPayOverTimeSettings: true,
         });
 
         const section = await createPaymentsSection(
@@ -739,7 +739,7 @@ suite('PaymentsSection', function() {
 
   test('verifyPayOverTimeToggleSublabelLinkClickOpensUrl', async function() {
     loadTimeData.overrideValues({
-      shouldShowPayOverTimeSettingsToggle: true,
+      shouldShowPayOverTimeSettings: true,
     });
 
     const section = await createPaymentsSection(
@@ -762,7 +762,7 @@ suite('PaymentsSection', function() {
 
   test('verifyPayOverTimePrefIsFalseWhenToggleIsOff', async function() {
     loadTimeData.overrideValues({
-      shouldShowPayOverTimeSettingsToggle: true,
+      shouldShowPayOverTimeSettings: true,
     });
 
     const section = await createPaymentsSection(

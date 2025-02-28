@@ -76,7 +76,7 @@ class BnplManager {
 
   // Returns if user has seen a BNPL suggestion before and if the BNPL
   // feature is enabled. Does not check for user's locale.
-  bool ShouldShowBnplSettingsToggle() const;
+  bool ShouldShowBnplSettings() const;
 
  private:
   friend class BnplManagerTestApi;

@@ -221,7 +221,7 @@ export async function deleteAddress(
   address.splice(index, 1);
   manager.data.addresses = address;
   manager.lastCallback.setPersonalDataManagerListener!
-      (address, [], [], manager.data.accountInfo);
+      (address, [], [], [], manager.data.accountInfo);
   await flushTasks();
 }
 

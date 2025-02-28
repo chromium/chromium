@@ -109,6 +109,14 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
+       * An array of all saved pay over time issuers.
+       */
+      payOverTimeIssuers: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
        * Whether IBAN is supported in Settings page.
        */
       showIbanSettingsEnabled_: {
@@ -192,13 +200,14 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * Checks if the pay over time settings toggle should be shown.
+       * Checks if pay over time should be shown from the settings page.
        */
-      shouldShowPayOverTimeSettingsToggle_: {
+      shouldShowPayOverTimeSettings_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('shouldShowPayOverTimeSettingsToggle');
+          return loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
         },
+        readOnly: true,
       },
 
       /**
@@ -217,6 +226,7 @@ export class SettingsPaymentsSectionElement extends
   prefs: {[key: string]: any};
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
+  payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
   private showIbanSettingsEnabled_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private activeIban_: chrome.autofillPrivate.IbanEntry|null;
@@ -237,6 +247,7 @@ export class SettingsPaymentsSectionElement extends
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
   private cardBenefitsFlagEnabled_: boolean;
   private cardBenefitsSublabel_: string;
+  private shouldShowPayOverTimeSettings_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -248,9 +259,10 @@ export class SettingsPaymentsSectionElement extends
         };
 
     const setPersonalDataListener: PersonalDataChangedListener =
-        (_addressList, cardList, ibanList) => {
+        (_addressList, cardList, ibanList, payOverTimeIssuerList) => {
           this.creditCards = cardList;
           this.ibans = ibanList;
+          this.payOverTimeIssuers = payOverTimeIssuerList;
         };
 
     const setIbansListener = (ibanList: chrome.autofillPrivate.IbanEntry[]) => {
@@ -263,6 +275,12 @@ export class SettingsPaymentsSectionElement extends
     // Request initial data.
     this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
     this.paymentsManager_.getIbanList().then(setIbansListener);
+    if (this.shouldShowPayOverTimeSettings_) {
+      this.paymentsManager_.getPayOverTimeIssuerList().then(
+          (issuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[]) => {
+            this.payOverTimeIssuers = issuers;
+          });
+    }
 
     // Listen for changes.
     this.paymentsManager_.setPersonalDataManagerListener(
@@ -280,8 +298,9 @@ export class SettingsPaymentsSectionElement extends
   override disconnectedCallback() {
     super.disconnectedCallback();
 
+    assert(this.setPersonalDataListener_);
     this.paymentsManager_.removePersonalDataManagerListener(
-        this.setPersonalDataListener_!);
+        this.setPersonalDataListener_);
     this.setPersonalDataListener_ = null;
   }
 

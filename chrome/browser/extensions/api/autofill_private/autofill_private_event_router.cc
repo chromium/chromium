@@ -92,16 +92,20 @@ void AutofillPrivateEventRouter::BroadcastCurrentData() {
   if (!(personal_data_ && personal_data_->IsDataLoaded()))
     return;
 
-  autofill_util::AddressEntryList addressList =
+  autofill_util::AddressEntryList address_list =
       extensions::autofill_util::GenerateAddressList(
           personal_data_->address_data_manager());
 
-  autofill_util::CreditCardEntryList creditCardList =
+  autofill_util::CreditCardEntryList credit_card_list =
       extensions::autofill_util::GenerateCreditCardList(
           personal_data_->payments_data_manager());
 
-  autofill_util::IbanEntryList ibanList =
+  autofill_util::IbanEntryList iban_list =
       extensions::autofill_util::GenerateIbanList(
+          personal_data_->payments_data_manager());
+
+  autofill_util::PayOverTimeIssuerEntryList pay_over_time_issuer_list =
+      extensions::autofill_util::GeneratePayOverTimeIssuerList(
           personal_data_->payments_data_manager());
 
   std::optional<api::autofill_private::AccountInfo> account_info =
@@ -109,9 +113,10 @@ void AutofillPrivateEventRouter::BroadcastCurrentData() {
           personal_data_->address_data_manager());
 
   base::Value::List args;
-  args.Append(ToValueList(addressList));
-  args.Append(ToValueList(creditCardList));
-  args.Append(ToValueList(ibanList));
+  args.Append(ToValueList(address_list));
+  args.Append(ToValueList(credit_card_list));
+  args.Append(ToValueList(iban_list));
+  args.Append(ToValueList(pay_over_time_issuer_list));
   if (account_info.has_value()) {
     args.Append(account_info->ToValue());
   }

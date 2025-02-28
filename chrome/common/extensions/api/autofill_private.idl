@@ -388,6 +388,23 @@ namespace autofillPrivate {
     DOMString entitySubLabel;
   };
 
+  // A Pay Over Time Issuer entry which can be displayed in the autofill
+  // section of the settings UI.
+  dictionary PayOverTimeIssuerEntry {
+    // Unique identifier for the Pay Over Time issuer.
+    DOMString? issuerId;
+
+    // The Pay Over Time issuer's instrument ID from the GPay server,
+    // if applicable.
+    DOMString? instrumentId;
+
+    // The Pay Over Time issuer's display name.
+    DOMString? displayName;
+
+    // The Pay Over Time issuer image source.
+    DOMString? imageSrc;
+  };
+
   callback VoidCallback = void();
   callback GetAccountInfoCallback = void(optional AccountInfo accountInfo);
   callback GetCountryListCallback = void(CountryEntry[] countries);
@@ -406,6 +423,7 @@ namespace autofillPrivate {
   callback GetAllEntityTypesCallback = void(EntityType[] entities);
   callback GetAllAttributeTypesForEntityCallback =
       void(AttributeType[] attributes);
+  callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -465,12 +483,12 @@ namespace autofillPrivate {
         GetCreditCardListCallback callback);
 
     // Gets the list of IBANs.
-    // `callback`: Callback which will be called with the list of IBANs.
+    // |callback|: Callback which will be called with the list of IBANs.
     static void getIbanList(
         GetIbanListCallback callback);
 
     // Returns true if the given `ibanValue` is a valid IBAN.
-    // `callback`: Callback which will be called with the result of IBAN
+    // |callback|: Callback which will be called with the result of IBAN
     // validation.
     static void isValidIban(
         DOMString ibanValue, IsValidIbanCallback callback);
@@ -494,6 +512,12 @@ namespace autofillPrivate {
     // it refers to the legacy server id of credit cards, not the instrument
     // ids.
     static void removeVirtualCard(DOMString cardId);
+
+    // Gets the list of Pay Over Time Issuers.
+    // |callback|: Callback which will be called with the list of
+    //             Pay Over Time Issuers.
+    static void getPayOverTimeIssuerList(
+        GetPayOverTimeIssuerListCallback callback);
 
     // Authenticates the user via device authentication and if successful, it
     // will then flip the mandatory auth toggle.
@@ -573,10 +597,12 @@ namespace autofillPrivate {
     // `addressEntries`: the updated list of addresses.
     // `creditCardEntries`: the updated list of credit cards.
     // `ibans`: the updated list of IBANs.
+    // `payOverTimeIssuers`: the updated list of Pay Over Time issuers
     // `accountInfo`: account info if the user is signed-in or no value if not.
     static void onPersonalDataChanged(AddressEntry[] addressEntries,
         CreditCardEntry[] creditCardEntries,
         IbanEntry[] ibans,
+        PayOverTimeIssuerEntry[] payOverTimeIssuers,
         optional AccountInfo accountInfo);
   };
 };

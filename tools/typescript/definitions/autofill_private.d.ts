@@ -234,6 +234,13 @@ declare global {
         entitySubLabel: string;
       }
 
+      export interface PayOverTimeIssuerEntry {
+        issuerId?: string;
+        instrumentId?: string;
+        displayName?: string;
+        imageSrc?: string;
+      }
+
       export function getAccountInfo(): Promise<AccountInfo|undefined>;
       export function saveAddress(address: AddressEntry): void;
       export function removeAddress(guid: string): void;
@@ -253,6 +260,8 @@ declare global {
       export function logServerIbanLinkClicked(): void;
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;
+      export function getPayOverTimeIssuerList():
+          Promise<PayOverTimeIssuerEntry[]>;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
@@ -277,7 +286,8 @@ declare global {
           Promise<AttributeType[]>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
-           ibans: IbanEntry[], accountInfo?: AccountInfo) => void>;
+           ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
+           accountInfo?: AccountInfo) => void>;
     }
   }
 }
