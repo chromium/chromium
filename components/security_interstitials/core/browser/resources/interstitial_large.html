@@ -23,7 +23,12 @@
   <link rel="stylesheet" href="interstitial_enterprisewarn.css">
   <link rel="stylesheet" href="interstitial_superviseduserverify.css">
   <link rel="stylesheet" href="interstitial_managedprofilerequired.css">
+<if expr="not optimize_webui">
   <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/interstitial_large/interstitial_large.rollup.js"></script>
+</if>
+<if expr="optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/minified/interstitial_large/interstitial_large.rollup.js"></script>
+</if>
 </head>
 <body id="body" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
   <div class="interstitial-wrapper">

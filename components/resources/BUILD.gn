@@ -10,6 +10,7 @@ import("//components/supervised_user/buildflags.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/webui_features.gni")
 
 declare_args() {
   # Generating the credits page requires a filesystem traversal for licenses
@@ -72,6 +73,7 @@ grit("components_resources") {
     "enable_supervised_users=$enable_supervised_users",
     "safe_browsing_mode=$safe_browsing_mode",
     "is_fuchsia=$is_fuchsia",
+    "optimize_webui=$optimize_webui",
     "use_blink=$use_blink",
     "use_internal_isolated_origins=$use_internal_isolated_origins",
   ]
