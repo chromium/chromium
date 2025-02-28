@@ -108,10 +108,12 @@ class FakeDeviceBoundSessionObserver {
   std::vector<SessionAccess> notifications_;
 };
 
-class SessionServiceImplTest : public TestWithTaskEnvironment {
+class SessionServiceImplTest : public ::testing::Test,
+                               public WithTaskEnvironment {
  public:
   SessionServiceImplTest()
-      : context_(CreateTestURLRequestContextBuilder()->Build()),
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        context_(CreateTestURLRequestContextBuilder()->Build()),
         service_(*UnexportableKeyServiceFactory::GetInstance()->GetShared(),
                  context_.get(),
                  /*store=*/nullptr) {}
@@ -727,6 +729,63 @@ TEST_F(SessionServiceImplTest, NetLogRefresh) {
   EXPECT_EQ(
       observer.GetEntriesWithType(NetLogEventType::DBSC_REFRESH_REQUEST).size(),
       1u);
+}
+
+TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // The first refresh succeeds
+  {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  }
+
+  // The second refresh succeeds
+  {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  }
+
+  // The third refresh is throttled
+  {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
+  }
+
+  // After five minutes, the quota is restored and the fourth refresh
+  // succeeds.
+  FastForwardBy(base::Minutes(5));
+  {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  }
 }
 
 }  // namespace

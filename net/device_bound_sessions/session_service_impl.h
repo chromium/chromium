@@ -192,6 +192,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                               Session* session,
                               unexportable_keys::UnexportableKeyId key_id);
 
+  // Whether the site has exceeded its refresh quota.
+  bool RefreshQuotaExceeded(const SchemefulSite& site);
+
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;
   // Functions to call once initialization completes.
@@ -211,6 +214,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // All observers of sessions.
   std::map<net::SchemefulSite, ObserverSet> observers_by_site_;
+
+  // Per-site session refresh quota. In order to be robust across
+  // session parameter changes, we enforce refresh quota for a site.
+  std::map<net::SchemefulSite, std::vector<base::TimeTicks>> refresh_times_;
 
   base::WeakPtrFactory<SessionServiceImpl> weak_factory_{this};
 };
