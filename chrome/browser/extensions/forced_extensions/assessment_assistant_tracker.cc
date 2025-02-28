@@ -10,6 +10,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 
 namespace {
@@ -41,7 +42,9 @@ AssessmentAssistantTracker::AssessmentAssistantTracker(
 AssessmentAssistantTracker::~AssessmentAssistantTracker() = default;
 
 void AssessmentAssistantTracker::Shutdown() {
-  LOG(WARNING) << "AssessmentAssistantTracker shutdown.";
+  if (!extensions::ExtensionsBrowserClient::Get()->IsShuttingDown()) {
+    LOG(WARNING) << "AssessmentAssistantTracker shutdown.";
+  }
 }
 
 void AssessmentAssistantTracker::OnExtensionInstallationFailed(
@@ -160,8 +163,9 @@ void AssessmentAssistantTracker::OnExtensionUninstallationDenied(
 }
 
 void AssessmentAssistantTracker::OnShutdown(ExtensionRegistry* registry) {
-  LOG(WARNING) << "AssessmentAssistantTracker - shutting down.";
-  // Shutdown();
+  if (!extensions::ExtensionsBrowserClient::Get()->IsShuttingDown()) {
+    LOG(WARNING) << "AssessmentAssistantTracker - shutting down.";
+  }
 }
 
 AssessmentAssistantTrackerFactory::AssessmentAssistantTrackerFactory()
