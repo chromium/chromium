@@ -13,6 +13,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
+using ::testing::Sequence;
+
 namespace ash {
 namespace {
 
@@ -23,6 +25,10 @@ class MockOnTaskPodController : public OnTaskPodController {
   ~MockOnTaskPodController() override = default;
 
   MOCK_METHOD(void, ReloadCurrentPage, (), (override));
+  MOCK_METHOD(void,
+              SetSnapLocation,
+              (OnTaskPodSnapLocation snap_location),
+              (override));
 };
 
 class OnTaskPodViewTest : public AshTestBase {
@@ -54,6 +60,22 @@ TEST_F(OnTaskPodViewTest, OrientationAndAlignment) {
 TEST_F(OnTaskPodViewTest, ReloadTabButtonClickTriggersTabReload) {
   EXPECT_CALL(mock_on_task_pod_controller_, ReloadCurrentPage()).Times(1);
   LeftClickOn(on_task_pod_view_->reload_tab_button_for_testing());
+}
+
+TEST_F(OnTaskPodViewTest, SnapPodButtonClickTogglesSnapLocation) {
+  Sequence s;
+  EXPECT_CALL(mock_on_task_pod_controller_,
+              SetSnapLocation(OnTaskPodSnapLocation::kTopRight))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(mock_on_task_pod_controller_,
+              SetSnapLocation(OnTaskPodSnapLocation::kTopLeft))
+      .Times(1)
+      .InSequence(s);
+  auto* const snap_pod_button =
+      on_task_pod_view_->snap_pod_button_for_testing();
+  LeftClickOn(snap_pod_button);
+  LeftClickOn(snap_pod_button);
 }
 
 }  // namespace

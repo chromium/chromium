@@ -7029,6 +7029,9 @@
       <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
         Reload tab
       </message>
+      <message name="IDS_ON_TASK_POD_TOGGLE_SNAP_LOCATION_ACCESSIBLE_NAME" desc="Accessible name for the toggle snap location button in the OnTask pod.">
+        Toggle snap location
+      </message>
 
       <!-- Strings for School Tools -->
       <message name="IDS_SCHOOL_TOOLS_TITLE" desc="Title of the School Tools App">
