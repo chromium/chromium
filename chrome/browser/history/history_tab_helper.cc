@@ -297,7 +297,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
       // Determine if this navigation is ephemeral.
-      are_partitioned_visited_links_enabled
+      are_partitioned_visited_links_enabled &&
+              navigation_handle->GetRenderFrameHost()
           ? navigation_handle->GetRenderFrameHost()
                 ->GetStorageKey()
                 .nonce()
