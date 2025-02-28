@@ -255,10 +255,7 @@ class Port(object):
     FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
 
     # The following two constants must match. When adding a new WPT root, also
-    # remember to update configurations in:
-    #     //third_party/blink/web_tests/external/wpt/config.json
-    #     //third_party/blink/web_tests/wptrunner.blink.ini
-    #
+    # remember to add an alias rule to external/wpt/.config.json.
     # WPT_DIRS maps WPT roots on the file system to URL prefixes on wptserve.
     # The order matters: '/' MUST be the last URL prefix.
     # Consider using port.wpt_dirs() instead.

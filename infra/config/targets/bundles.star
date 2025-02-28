@@ -1061,9 +1061,6 @@ targets.bundle(
     targets = "chrome_public_wpt",
     per_test_modifications = {
         "chrome_public_wpt": targets.mixin(
-            args = [
-                "--no-wpt-internal",
-            ],
             swarming = targets.swarming(
                 shards = 36,
                 expiration_sec = 18000,
@@ -6517,9 +6514,6 @@ targets.bundle(
     targets = "system_webview_wpt",
     per_test_modifications = {
         "system_webview_wpt": targets.mixin(
-            args = [
-                "--no-wpt-internal",
-            ],
             swarming = targets.swarming(
                 shards = 25,
                 expiration_sec = 18000,
@@ -7265,9 +7259,6 @@ targets.bundle(
     ],
     per_test_modifications = {
         "wpt_tests_ios": targets.mixin(
-            args = [
-                "--no-wpt-internal",
-            ],
             swarming = targets.swarming(
                 shards = 36,
                 expiration_sec = 18000,
