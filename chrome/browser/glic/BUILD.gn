@@ -46,6 +46,7 @@ source_set("glic") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/favicon/core:core",
     "//components/optimization_guide/content/browser:browser",
     "//components/prefs",
     "//components/signin/public/identity_manager:identity_manager",
