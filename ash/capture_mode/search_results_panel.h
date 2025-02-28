@@ -88,7 +88,7 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
   void RefreshPanelBounds();
 
   // Owned by the views hierarchy.
-  raw_ptr<SunfishSearchBoxView> search_box_view_;
+  raw_ptr<SunfishSearchBoxView> search_box_view_ = nullptr;
   raw_ptr<AshWebView> search_results_view_;
   raw_ptr<views::Button> close_button_;
 

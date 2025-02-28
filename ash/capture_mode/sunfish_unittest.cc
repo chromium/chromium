@@ -1539,6 +1539,8 @@ TEST_F(SunfishTest, SendMultimodalSearch) {
   controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL("kTestUrl2"));
 }
 
+// TODO: crbug.com/398259275 - Update or remove unit test when Lens Web API
+// implementation is enabled by default.
 TEST_F(SunfishTest, SearchBoxInDefaultMode) {
   auto* controller = CaptureModeController::Get();
   auto* test_delegate =
@@ -1573,6 +1575,8 @@ TEST_F(SunfishTest, SearchBoxInDefaultMode) {
   EXPECT_EQ(1, test_delegate->num_multimodal_search_requests());
 }
 
+// TODO: crbug.com/398259275 - Update or remove unit test when Lens Web API
+// implementation is enabled by default.
 // Tests that the search box sends multimodal search requests.
 TEST_F(SunfishTest, SearchBoxTextfield) {
   base::HistogramTester histogram_tester;
@@ -1616,6 +1620,8 @@ TEST_F(SunfishTest, SearchBoxTextfield) {
   histogram_tester.ExpectTotalCount(kMultimodalSearchRequestHistogram, 1);
 }
 
+// TODO: crbug.com/398259275 - Update or remove unit test when Lens Web API
+// implementation is enabled by default.
 // Tests that the search results panel is preserved between sessions.
 TEST_F(SunfishTest, SwitchSessionsWhilePanelOpen) {
   // Open the search results panel.
@@ -2721,6 +2727,48 @@ TEST_F(SunfishTest, PanelCreationWithMenuObserved) {
       ActionButtonViewID::kSearchButton);
   ASSERT_TRUE(search_button);
   LeftClickOn(search_button);
+}
+
+// TODO: crbug.com/398259275 - Remove this class and remove or integrate each
+// test when the Lens Web API implementation is enabled by default.
+class SunfishLensWebTest : public SunfishTestBase {
+ public:
+  SunfishLensWebTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSunfishFeature,
+                              features::kSunfishLensWeb},
+        /*disabled_features=*/{{}});
+  }
+  SunfishLensWebTest(const SunfishLensWebTest&) = delete;
+  SunfishLensWebTest& operator=(const SunfishLensWebTest&) = delete;
+  ~SunfishLensWebTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the native search box is removed from the search results panel
+// when the Lens Web API implementation is enabled.
+TEST_F(SunfishLensWebTest, NoNativeSearchBox) {
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+  auto* controller = CaptureModeController::Get();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+
+  // Open the search results panel.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+  WaitForCaptureModeWidgetsVisible();
+  CaptureModeSessionTestApi session_test_api(session);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  LeftClickOn(session_test_api.GetActionButtons()[0]);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
+  auto* search_results_panel = controller->GetSearchResultsPanel();
+  ASSERT_TRUE(search_results_panel);
+
+  // The panel should not have a native textfield as it will be using the web
+  // view textfield.
+  EXPECT_FALSE(search_results_panel->GetSearchBoxTextfield());
 }
 
 using SunfishDisplayMetricsTest = SunfishTest;

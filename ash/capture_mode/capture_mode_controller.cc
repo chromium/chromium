@@ -760,7 +760,11 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
 
   // Note at this point the session may no longer be active.
   auto* search_results_panel = GetSearchResultsPanel();
-  search_results_panel->SetSearchBoxImage(image);
+  // The Lens Web API implementation has its own searchbox, so there's no need
+  // to set the thumbnail image.
+  if (!features::IsSunfishLensWebEnabled()) {
+    search_results_panel->SetSearchBoxImage(image);
+  }
   search_results_panel->Navigate(url);
   if (should_end_session) {
     Stop();
@@ -806,8 +810,11 @@ void CaptureModeController::OnLocatedEventDragged() {
   if (IsSearchResultsPanelVisible()) {
     // Clear the search box text for the next time the panel is opened. Note we
     // don't need to reset the image or URL since the panel will always be
-    // re-opened with those.
-    GetSearchResultsPanel()->SetSearchBoxText(std::u16string());
+    // re-opened with those. Only necessary if the Lens Web API implementation
+    // is not enabled and we are still using the native search box.
+    if (!features::IsSunfishLensWebEnabled()) {
+      GetSearchResultsPanel()->SetSearchBoxText(std::u16string());
+    }
     search_results_panel_widget_->Hide();
   }
 }
