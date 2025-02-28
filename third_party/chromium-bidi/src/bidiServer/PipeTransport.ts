@@ -17,16 +17,14 @@
  */
 import debug from 'debug';
 
-import {assert} from '../utils/assert.js';
 import type {Transport} from '../utils/transport.js';
 
-const debugInternal = debug('bidi:server:internal');
+const debugInternal = debug('bidi:server:pipeTranspot');
 
 export class PipeTransport implements Transport {
   #pipeWrite: NodeJS.WritableStream;
   #onMessage: ((message: string) => void) | null = null;
 
-  #isClosed = false;
   #pendingMessage = '';
 
   constructor(
@@ -55,14 +53,16 @@ export class PipeTransport implements Transport {
     this.#onMessage = onMessage;
   }
   sendMessage(message: string) {
-    assert(!this.#isClosed, '`PipeTransport` is closed.');
+    // TODO: WebSocketServer keeps sending messages after closing the transport.
+    // TODO: we should assert that the pipe was not closed.
 
     this.#pipeWrite.write(message);
     this.#pipeWrite.write('\0');
   }
 
   #dispatch(buffer: Buffer): void {
-    assert(!this.#isClosed, '`PipeTransport` is closed.');
+    // TODO: WebSocketServer keeps sending messages after closing the transport.
+    // TODO: we should assert that the pipe was not closed.
 
     let end = buffer.indexOf('\0');
     if (end === -1) {
@@ -88,6 +88,5 @@ export class PipeTransport implements Transport {
 
   close(): void {
     debugInternal('Closing pipe');
-    this.#isClosed = true;
   }
 }
