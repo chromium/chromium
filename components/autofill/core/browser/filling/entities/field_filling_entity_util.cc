@@ -15,6 +15,21 @@
 
 namespace autofill {
 
+namespace {
+std::u16string GetValueForSelectControl(const std::u16string& value,
+                                        const AutofillField& field) {
+  switch (field.Type().GetStorableType()) {
+    case ADDRESS_HOME_COUNTRY:
+      return GetCountrySelectControlValue(value, field.options(),
+                                          /*failure_to_fill=*/nullptr);
+    default:
+      return GetSelectControlValue(value, field.options(),
+                                   /*failure_to_fill=*/nullptr)
+          .value_or(u"");
+  }
+}
+}  // namespace
+
 base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const FormStructure& form,
     const EntityDataManager& edm) {
@@ -65,15 +80,18 @@ GetFillValueAndTypeForEntity(const EntityInstance& entity,
   }
   const bool should_obfuscate =
       action_persistence != mojom::ActionPersistence::kFill &&
-      attribute_instance->type().is_obfuscated();
+      !field.IsSelectElement() && attribute_instance->type().is_obfuscated();
 
   // TODO(crbug.com/389625753): Investigate whether only passing the
   // field type is the right choice here. This would for example
   // fail the fill a PASSPORT_NUMBER field that gets a
   // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
   // prediction logic.
-  const std::u16string attribute_value =
+  std::u16string attribute_value =
       attribute_instance->GetInfo(field.Type().GetStorableType(), app_locale);
+  if (!attribute_value.empty() && field.IsSelectElement()) {
+    attribute_value = GetValueForSelectControl(attribute_value, field);
+  }
   // TODO(crbug.com/397620383): Which type should we return here?
   // TODO(crbug.com/394011769): Investigate whether the obfuscation should
   // should include some of the attribute's value, e.g. the last x characters.
