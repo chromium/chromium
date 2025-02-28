@@ -192,7 +192,6 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
             &RealboxSearchPreloadBrowserTest::GetWebContents,
             base::Unretained(this))) {
     std::vector<base::test::FeatureRefAndParams> enabled_features{
-        {features::kSupportSearchSuggestionForPrerender2, {}},
         {kSearchPrefetchServicePrefetching,
          {{"max_attempts_per_caching_duration", "3"},
           {"cache_size", "1"},

@@ -4,10 +4,6 @@
 
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 
-#include "chrome/browser/browser_features.h"
-#include "third_party/blink/public/common/features.h"
-#include "ui/base/page_transition_types.h"
-
 namespace prerender_utils {
 
 // If you add a new type of prerender trigger, please refer to the internal
@@ -20,10 +16,5 @@ const char kBookmarkBarMetricSuffix[] = "BookmarkBar";
 const char kNewTabPageMetricSuffix[] = "NewTabPage";
 const char kLinkPreviewMetricsSuffix[] = "LinkPreview";
 // LINT.ThenChange()
-
-bool IsSearchSuggestionPrerenderEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kSupportSearchSuggestionForPrerender2);
-}
 
 }  // namespace prerender_utils

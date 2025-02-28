@@ -247,12 +247,6 @@ BASE_FEATURE(kUseFreedesktopSecretKeyProviderForEncryption,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
-// This flag controls whether to trigger prerendering when the default search
-// engine suggests to prerender a search result.
-BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
-             "SupportSearchSuggestionForPrerender2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables migration of the network context data from `unsandboxed_data_path` to
 // `data_path`. See the explanation in network_context.mojom.
 BASE_FEATURE(kTriggerNetworkDataMigration,

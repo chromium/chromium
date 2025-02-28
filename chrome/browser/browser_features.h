@@ -106,8 +106,6 @@ BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
 BASE_DECLARE_FEATURE(kUseFreedesktopSecretKeyProviderForEncryption);
 #endif
 
-BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
-
 BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -3066,12 +3066,6 @@ const char kSubframeProcessReuseThresholdsDescription[] =
     "unrelated tabs, process reuse will only be allowed if the process stays "
     "below predefined thresholds (e.g., below a certain memory limit).";
 
-const char kSupportSearchSuggestionForPrerender2Name[] =
-    "Prerender search suggestions";
-const char kSupportSearchSuggestionForPrerender2Description[] =
-    "Allows Prerender2 to prerender search suggestions provided by the default "
-    "search engine.";
-
 const char kPrerender2EarlyDocumentLifecycleUpdateName[] =
     "Prerender more document lifecycle phases";
 const char kPrerender2EarlyDocumentLifecycleUpdateDescription[] =

@@ -8590,12 +8590,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSpeculationRulesPrerenderingTargetHintDescription,
      kOsAll, FEATURE_VALUE_TYPE(blink::features::kPrerender2InNewTab)},
 
-    {"search-suggestion-for-prerender2",
-     flag_descriptions::kSupportSearchSuggestionForPrerender2Name,
-     flag_descriptions::kSupportSearchSuggestionForPrerender2Description,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kSupportSearchSuggestionForPrerender2)},
-
     {"prerender-early-document-lifecycle-update",
      flag_descriptions::kPrerender2EarlyDocumentLifecycleUpdateName,
      flag_descriptions::kPrerender2EarlyDocumentLifecycleUpdateDescription,

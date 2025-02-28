@@ -1777,9 +1777,6 @@ extern const char kSpeculationRulesPrerenderingTargetHintDescription[];
 extern const char kSubframeProcessReuseThresholds[];
 extern const char kSubframeProcessReuseThresholdsDescription[];
 
-extern const char kSupportSearchSuggestionForPrerender2Name[];
-extern const char kSupportSearchSuggestionForPrerender2Description[];
-
 extern const char kPrerender2EarlyDocumentLifecycleUpdateName[];
 extern const char kPrerender2EarlyDocumentLifecycleUpdateDescription[];
 

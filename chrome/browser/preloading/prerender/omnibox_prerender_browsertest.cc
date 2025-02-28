@@ -224,11 +224,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 class PrerenderOmniboxSearchSuggestionBrowserTest
     : public OmniboxPrerenderBrowserTest {
  public:
-  PrerenderOmniboxSearchSuggestionBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kSupportSearchSuggestionForPrerender2);
-  }
-
   void SetUp() override {
     prerender_helper().RegisterServerRequestMonitor(&search_engine_server_);
     PlatformBrowserTest::SetUp();
@@ -354,7 +349,6 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
   net::test_server::EmbeddedTestServer search_engine_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
   std::string prerender_page_target_ = "/title1.html";
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
@@ -362,8 +356,7 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
  public:
   PrerenderOmniboxSearchSuggestionExpiryBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2, {{}}},
-         {kSearchPrefetchServicePrefetching,
+        {{kSearchPrefetchServicePrefetching,
           {{"device_memory_threshold_MB", "0"}}}},
         {});
   }
