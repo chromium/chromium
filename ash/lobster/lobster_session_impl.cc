@@ -23,6 +23,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -36,9 +37,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 namespace ash {
 
 namespace {
@@ -53,77 +51,45 @@ constexpr char kLobsterFailedImageDownloadNotificationId[] =
     "lobster_failed_image_download_notification_id";
 
 std::u16string GetDownloadNotificationSourceLabel() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      IDS_ASH_LOBSTER_IMAGE_DOWNLOAD_NOTIFICATION_SOURCE);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_LOBSTER_IMAGE_DOWNLOAD_NOTIFICATION_SOURCE);
 }
 
 std::u16string GetSuccessfulImageDownloadNotificationTitle() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      IDS_ASH_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_TITLE);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_TITLE);
 }
 
 std::u16string GetFailedImageDownloadNotificationTitle(
     const std::string& file_name) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringFUTF16(
-      IDS_ASH_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_TITLE,
+      IDS_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_TITLE,
       base::UTF8ToUTF16(file_name));
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 std::u16string GetFailedImageDownloadNotificationMessage() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      IDS_ASH_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_MESSAGE);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_MESSAGE);
 }
 
 std::u16string GetShowInFolderButtonLabel() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      IDS_ASH_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_SHOW_IN_FOLDER_ACTION_LABEL);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_SHOW_IN_FOLDER_ACTION_LABEL);
 }
 
 std::u16string GetCopyToClipboardButtonLabel() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      IDS_ASH_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_COPY_IMAGE_TO_CLIPBOARD_ACTION_LABEL);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_COPY_IMAGE_TO_CLIPBOARD_ACTION_LABEL);
 }
 
 std::u16string GetAnnouncementForInsertionSuccess() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      IDS_ASH_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_SUCCESS);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_SUCCESS);
 }
 
 std::u16string GetAnnouncementForInsertionFailure() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      IDS_ASH_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_FAILURE);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_FAILURE);
 }
 
 std::string BuildFeedbackDescription(std::string_view query,

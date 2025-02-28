@@ -7325,5 +7325,14 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This title of the card is shown when Chrome is up to date and the user does not need to take any action. Shown above the subtitle that is the Chrome version.">
     ChromeOS is up to date
   </message>
+
+  <!-- Lobster -->
+  <message name="IDS_LOBSTER_OS_SETTINGS_ENABLE" desc="The label of the toggle to enable/disable Image Generation in ChromeOS settings.">
+    Generate image
+  </message>
+  <message name="IDS_LOBSTER_OS_SETTINGS_ENABLE_DESCRIPTION" desc="The description of the toggle to enable/disable Image Generation in ChromeOS settings.">
+    Enter a custom prompt or highlight text to create an image.
+  </message>
+
 </if>
 </grit-part>

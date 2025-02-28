@@ -7,6 +7,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
@@ -17,10 +18,6 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -66,15 +63,10 @@ bool InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
   CopyToClipboard(image_bytes);
 
   // Display a toast message.
-  ToastManager::Get()->Show(ToastData(
-      kLobsterToastId, ToastCatalogName::kCopyImageToClipboardAction,
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      l10n_util::GetStringUTF16(
-          IDS_ASH_LOBSTER_COPY_IMAGE_TO_CLIPBOARD_TOAST_MESSAGE)
-#else
-      u""
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          ));
+  ToastManager::Get()->Show(
+      ToastData(kLobsterToastId, ToastCatalogName::kCopyImageToClipboardAction,
+                l10n_util::GetStringUTF16(
+                    IDS_LOBSTER_COPY_IMAGE_TO_CLIPBOARD_TOAST_MESSAGE)));
 
   return false;
 }

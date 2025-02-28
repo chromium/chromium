@@ -37,11 +37,7 @@ std::u16string GetLabelForQuickInsertCategory(QuickInsertCategory category) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case QuickInsertCategory::kLobsterWithNoSelectedText:
     case QuickInsertCategory::kLobsterWithSelectedText:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return l10n_util::GetStringUTF16(IDS_PICKER_LOBSTER_SELECTION_LABEL);
-#else
-      return u"Lobster";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return l10n_util::GetStringUTF16(IDS_LOBSTER_SELECTION_LABEL);
     case QuickInsertCategory::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
     case QuickInsertCategory::kEmojisGifs:
