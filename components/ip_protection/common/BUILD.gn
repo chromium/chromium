@@ -1,6 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/config/features.gni")
 import("//testing/test.gni")
 
 source_set("ip_protection_core_host_remote") {
@@ -779,4 +780,39 @@ source_set("probabilistic_reveal_token_registry_unittest") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+# //content is not supported on iOS.
+if (use_blink) {
+  source_set("ip_protection_status") {
+    sources = [
+      "ip_protection_status.cc",
+      "ip_protection_status.h",
+      "ip_protection_status_observer.h",
+    ]
+    deps = [
+      "//base",
+      "//content/public/common",
+      "//net",
+      "//third_party/blink/public:blink_headers",
+    ]
+    public_deps = [ "//content/public/browser" ]
+  }
+
+  source_set("ip_protection_status_unittest") {
+    testonly = true
+    sources = [ "ip_protection_status_unittest.cc" ]
+    deps = [
+      ":ip_protection_status",
+      "//base",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public:blink_headers",
+      "//url",
+    ]
+  }
 }

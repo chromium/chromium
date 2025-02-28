@@ -115,6 +115,69 @@ Blind-signed tokens are fetched using authentication associated with the
 signed-in Chrome profile. For OTR (Incognito) profiles, uses authentication
 from the "parent" profile's signed-in user.
 
+### IP Protection Status
+
+This component provides a mechanism to determine if IP Protection is actively
+being used to proxy network requests within a given `WebContents` (i.e., a tab).
+This is primarily used to inform the User Bypass UI (specifically, the
+`CookieControlsController`) so that the appropriate indicator can be displayed
+to the user.
+
+**Key Classes:**
+
+*   **`IpProtectionStatus`:** A `WebContentsObserver` and `WebContentsUserData`
+    that tracks whether any subresource on the current primary page has been
+    proxied by IP Protection.
+    *   `CreateForWebContents(content::WebContents* web_contents)`: Creates an
+        instance of `IpProtectionStatus` for the given `WebContents`. Does
+        nothing if IP Protection is disabled via feature flag or if an instance
+        already exists.
+    *   `IsSubresourceProxiedOnCurrentPrimaryPage() const`: Returns `true` if IP
+        Protection has proxied at least one subresource on the current primary
+        page.
+    *   `PrimaryPageChanged(content::Page& page)`: Resets the internal flag.
+    *   `ResourceLoadComplete(...)`: Checks if the loaded resource used the IP
+        Protection proxy chain.
+*   **`IpProtectionStatusObserver`:** An interface that other components can
+    implement to be notified when IP Protection becomes active on a page.
+    *   `OnSubresourceProxied()`: Called when `IpProtectionStatus` detects that
+        a subresource has been proxied on the current primary page.
+
+**How it Works:**
+
+1.  **Creation:** An instance of `IpProtectionStatus` is created and attached to
+    a `WebContents` object during tab initialization. This ensures that an
+    `IpProtectionStatus` instance is associated with each tab, *if* the IP
+    Protection feature is enabled.
+2.  **Observation:** The `IpProtectionStatus` instance observes the
+    `WebContents`.
+3.  **Resource Load:** When a resource finishes loading, `ResourceLoadComplete`
+    is triggered.
+4.  **Proxy Check:** The `proxy_chain` from the `ResourceLoadInfo` is examined.
+    If `proxy_chain.is_for_ip_protection()` and `!proxy_chain.is_direct()` are
+    both true, it means the resource was loaded through the IP Protection proxy.
+5.  **Status Update:** The `is_subresource_proxied_on_current_primary_page_`
+    flag is set to `true`.
+6.  **Observer Notification:** `OnSubresourceProxied()` is called on all
+    registered `IpProtectionStatusObserver`s.
+7.  **Page Change:** When the user navigates to a new page, `PrimaryPageChanged`
+    is triggered, and `is_subresource_proxied_on_current_primary_page_` is reset
+    to `false`.
+
+**Integration with User Bypass:**
+
+The `CookieControlsController` (which manages the User Bypass UI) uses
+`IpProtectionStatus` to determine when to show the IP Protection indicator. It
+does this by:
+
+1.  Having its `TabObserver` inner class implement `IpProtectionStatusObserver`.
+2.  Registering the `TabObserver` with the `IpProtectionStatus` instance.
+3.  In the `OnSubresourceProxied()` callback, calling
+    `CookieControlsController::UpdateUserBypass()`.
+4.  Within `ShouldUserBypassIconBeVisible()`, checking
+    `GetIsSubresourceProxied()`, which in turn calls
+    `IpProtectionStatus::IsSubresourceProxiedOnCurrentPrimaryPage()`.
+
 ## TODO
 
 Note that `MaskedDomainListManager` does not yet use a fetcher.
