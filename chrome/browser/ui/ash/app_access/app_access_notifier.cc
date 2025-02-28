@@ -21,7 +21,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/account_id/account_id.h"
