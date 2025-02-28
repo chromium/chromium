@@ -909,6 +909,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Device Lock Page"/>
   <int value="4" label="Settings Batch Upload"/>
   <int value="5" label="Bookmark Batch Upload"/>
+  <int value="6" label="Passwords CSV Download"/>
 </enum>
 
 <enum name="DeviceLockDialogAction">
