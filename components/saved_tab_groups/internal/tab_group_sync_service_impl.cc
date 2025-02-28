@@ -677,6 +677,17 @@ void TabGroupSyncServiceImpl::OnCollaborationRemoved(
 
   model_->SetGroupHidden(shared_group->saved_guid());
 
+  // Inform the UI as if the tab group has been removed.
+  // TODO(crbug.com/399410173): Remove the group locally.
+  for (auto& observer : observers_) {
+    if (shared_group->local_group_id().has_value()) {
+      observer.OnTabGroupRemoved(shared_group->local_group_id().value(),
+                                 TriggerSource::REMOTE);
+    }
+    observer.OnTabGroupRemoved(shared_group->saved_guid(),
+                               TriggerSource::REMOTE);
+  }
+
   // Since we are deleting the shared group, delete the originating group if
   // it still exists.
   if (shared_group->originating_tab_group_guid().has_value()) {
