@@ -12867,21 +12867,6 @@
             ]
         }
     ],
-    "InputDeviceSettingsSplit": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled_InputDeviceSettingsSplit",
-                    "disable_features": [
-                        "InputDeviceSettingsSplit"
-                    ]
-                }
-            ]
-        }
-    ],
     "InsecureFormSubmissionInterstitial": [
         {
             "platforms": [
