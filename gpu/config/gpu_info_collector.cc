@@ -316,9 +316,7 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
       continue;
     }
 
-#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
-    wgpu::Limits limits;
-    limits.nextInChain = nullptr;
+    wgpu::Limits limits = {};
     if (adapter.GetLimits(&limits) != wgpu::Status::Success) {
       continue;
     }
@@ -329,20 +327,6 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
       max_limits = limits;
       adapter_type = info.adapterType;
     }
-#else
-    wgpu::SupportedLimits limits;
-    limits.nextInChain = nullptr;
-    if (adapter.GetLimits(&limits) != wgpu::Status::Success) {
-      continue;
-    }
-
-    // Prefer the adapter with larger buffer binding size.
-    if (limits.limits.maxStorageBufferBindingSize >
-        max_limits.maxStorageBufferBindingSize) {
-      max_limits = limits.limits;
-      adapter_type = info.adapterType;
-    }
-#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
   }
 
   bool has_gpu_adapter = adapter_type != wgpu::AdapterType::Unknown;

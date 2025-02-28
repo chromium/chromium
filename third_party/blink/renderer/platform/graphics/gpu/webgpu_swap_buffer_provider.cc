@@ -51,19 +51,11 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
       internal_usage_(internal_usage),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata) {
-#ifdef WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
   wgpu::Limits limits = {};
   auto get_limits_succeeded = device_.GetLimits(&limits);
   CHECK(get_limits_succeeded);
 
   max_texture_size_ = limits.maxTextureDimension2D;
-#else
-  wgpu::SupportedLimits limits = {};
-  auto get_limits_succeeded = device_.GetLimits(&limits);
-  CHECK(get_limits_succeeded);
-
-  max_texture_size_ = limits.limits.maxTextureDimension2D;
-#endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
 }
 
 WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
