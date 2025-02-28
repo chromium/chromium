@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/extensions/sync_helper.h"
 #include "components/sync/model/sync_change.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -758,9 +759,12 @@ bool ExtensionSyncService::ShouldReceiveSyncData(
 
 bool ExtensionSyncService::ShouldSync(const Extension& extension) const {
   // Only extensions associated with the signed in user's account should be
-  // synced for transport mode.
+  // synced for transport mode. Note that syncable component extensions are an
+  // exception to this, and may be synced even if they are not account
+  // extensions.
   if (extensions::sync_util::IsSyncingExtensionsInTransportMode(profile_) &&
-      !IsAccountExtension(profile_, extension.id())) {
+      !IsAccountExtension(profile_, extension.id()) &&
+      !extensions::sync_helper::IsSyncableComponentExtension(&extension)) {
     return false;
   }
 

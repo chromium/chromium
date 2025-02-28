@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_ACCOUNT_EXTENSION_TRACKER_H_
 #define CHROME_BROWSER_EXTENSIONS_ACCOUNT_EXTENSION_TRACKER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -97,6 +99,9 @@ class AccountExtensionTracker : public KeyedService,
 
   AccountExtensionType GetAccountExtensionType(
       const ExtensionId& extension_id) const;
+
+  // Returns all account extensions with type `kAccountInstalledSignedIn`.
+  std::vector<const Extension*> GetSignedInAccountExtensions() const;
 
   // Called when the user initiates a signin from a promo that appears after an
   // extension with the given `extension_id` is installed.

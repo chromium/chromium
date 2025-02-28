@@ -53,6 +53,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -182,6 +183,9 @@ SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
       browser, GURL(chrome::kChromeUISignoutConfirmationURL),
       /*dialog_height=*/0, kModalDialogWidth,
       InitializeSigninWebDialogUI(false));
+  web_view->SetProperty(
+      views::kElementIdentifierKey,
+      SigninViewController::kSignoutConfirmationDialogViewElementId);
 
   SignoutConfirmationUI* web_ui = web_view->GetWebContents()
                                       ->GetWebUI()

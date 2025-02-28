@@ -80,6 +80,8 @@ IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationPromptPixelTest,
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/399387412): Add a version with an extension installed which
+// will add an additional section in the dialog.
 INSTANTIATE_TEST_SUITE_P(
     ,
     ChromeSignoutConfirmationPromptPixelTest,

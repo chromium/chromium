@@ -48,6 +48,18 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/path_service.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
+#include "chrome/browser/extensions/signin_test_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+#include "extensions/common/extension.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 namespace {
 
 constexpr char kTestEmail[] = "email@gmail.com";
@@ -63,6 +75,9 @@ constexpr char kConfirmationUnsyncedReauthHistogramName[] =
 constexpr char kConfirmationSupervisedProfileHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.SupervisedProfile";
 constexpr char16_t kTestExtensionName[] = u"Test extension";
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
@@ -589,6 +604,149 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
       browser()->profile()));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
+// A browser test with interactive steps used to test the signout confirmation
+// dialog.
+class SigninViewControllerInteractiveBrowserTest
+    : public SigninBrowserTestBaseT<
+          WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
+ public:
+  SigninViewControllerInteractiveBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kEnableExtensionsExplicitBrowserSignin},
+        /*disabled_features=*/{});
+
+    base::FilePath test_data_dir;
+    if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir)) {
+      ADD_FAILURE();
+      return;
+    }
+    extension_data_dir_ = test_data_dir.AppendASCII("extensions");
+  }
+
+ protected:
+  const base::FilePath& extension_data_dir() const {
+    return extension_data_dir_;
+  }
+
+  AccountInfo SetPrimaryAccount() {
+    return identity_test_env()->MakePrimaryAccountAvailable(
+        kTestEmail, signin::ConsentLevel::kSignin);
+  }
+
+  auto WaitForElementExists(const ui::ElementIdentifier& contents_id,
+                            const DeepQuery& element) {
+    StateChange element_exists;
+    element_exists.type =
+        WebContentsInteractionTestUtil::StateChange::Type::kExists;
+    element_exists.event = kElementExists;
+    element_exists.where = element;
+    return WaitForStateChange(contents_id, element_exists);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  // chrome/test/data/extensions/
+  base::FilePath extension_data_dir_;
+};
+
+// Test that the user's installed account extensions are shown in the signout
+// confirmation prompt.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerInteractiveBrowserTest,
+                       ShowAccountExtensionsInSignoutPrompt) {
+  auto load_extension = [this](const std::string& extension_path) {
+    extensions::ChromeTestExtensionLoader extension_loader(GetProfile());
+    extension_loader.set_pack_extension(true);
+    return extension_loader.LoadExtension(
+        extension_data_dir().AppendASCII(extension_path));
+  };
+
+  // Install a local extension; it should not be shown in the list of account
+  // extensions in the dialog.
+  scoped_refptr<const extensions::Extension> local_extension =
+      load_extension("simple_with_file");
+  ASSERT_TRUE(local_extension);
+
+  // Setup a primary account.
+  extensions::signin_test_util::SimulateExplicitSignIn(
+      GetProfile(), identity_test_env(), kTestEmail);
+
+  // Verify that the user has performed an explicit signin.
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  // And that they can sync extensions while in transport mode.
+  ASSERT_TRUE(
+      extensions::sync_util::IsSyncingExtensionsInTransportMode(GetProfile()));
+
+  // Install two account extensions: both should eventually be shown in the
+  // dialog.
+  scoped_refptr<const extensions::Extension> first_account_extension =
+      load_extension("simple_with_host");
+  ASSERT_TRUE(first_account_extension);
+
+  scoped_refptr<const extensions::Extension> second_account_extension =
+      load_extension("simple_with_icon");
+  ASSERT_TRUE(second_account_extension);
+
+  const int expected_num_account_extensions = 2;
+
+  const DeepQuery kExtensionsSectionExpandButton = {
+      "signout-confirmation-app", "extensions-section", "#expandButton"};
+  const DeepQuery kExtensionsSectionCollapse = {
+      "signout-confirmation-app", "extensions-section", "#collapse"};
+  const DeepQuery kExtensionsSectionAccountExtensions = {
+      "signout-confirmation-app", "extensions-section",
+      "#account-extensions-list"};
+
+  const char* get_num_shown_account_extensions = R"((el) => {
+    if (!el.opened) { return -1; }
+    return el.querySelectorAll('.account-extension').length;
+  })";
+
+  // Test sequence setup:
+  // - User is signed in and is about to sign out via confirmation prompt.
+  // - Use has two account extensions installed while signed in.
+  RunTestSequence(
+      // Show the dialog and verify that it has shown.
+      Do([&] {
+        browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
+            kTestAccessPoint,
+            signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+            signin_metrics::SourceForRefreshTokenOperation::
+                kUserMenu_SignOutAllAccounts);
+      }),
+      WaitForShow(
+          SigninViewController::kSignoutConfirmationDialogViewElementId),
+      Check([&] {
+        return browser()->signin_view_controller()->ShowsModalDialog();
+      }),
+      InstrumentNonTabWebView(
+          kWebContentsId,
+          SigninViewController::kSignoutConfirmationDialogViewElementId),
+
+      // Within the dialog, verify that the extensions section is visible but
+      // the list of account extensions is collapsed.
+      WaitForElementExists(kWebContentsId, kExtensionsSectionExpandButton),
+      CheckJsResultAt(kWebContentsId, kExtensionsSectionCollapse,
+                      "el => el.opened", false),
+
+      // Click the expand button to open the list of account extensions.
+      ExecuteJsAt(kWebContentsId, kExtensionsSectionExpandButton,
+                  "(el) => { el.click(); }"),
+      WaitForElementExists(kWebContentsId, kExtensionsSectionAccountExtensions),
+
+      // There should be `expected_num_account_extensions` shown in the list.
+      CheckJsResultAt(kWebContentsId, kExtensionsSectionCollapse,
+                      get_num_shown_account_extensions,
+                      expected_num_account_extensions));
+}
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class SigninViewControllerBrowserCookieParamTest
     : public SigninViewControllerBrowserTest,

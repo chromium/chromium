@@ -5,6 +5,7 @@
 import("//build/config/chromeos/args.gni")
 import("//build/config/ui.gni")
 import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 assert(!is_android && !is_fuchsia)
 
@@ -92,10 +93,11 @@ source_set("impl") {
       "promos/signin_promo_tab_helper.cc",
     ]
 
-    deps += [
-      "//chrome/browser/extensions:extensions",
-      "//chrome/browser/profiles:profile_util",
-    ]
+    deps += [ "//chrome/browser/profiles:profile_util" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
   }
 }
 

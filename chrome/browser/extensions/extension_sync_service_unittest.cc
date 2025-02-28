@@ -2122,9 +2122,10 @@ class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
 
  protected:
   scoped_refptr<const Extension> LoadExtension(
-      const std::string& extension_path) {
+      const std::string& extension_path,
+      bool pack_extension) {
     extensions::ChromeTestExtensionLoader extension_loader(profile());
-    extension_loader.set_pack_extension(true);
+    extension_loader.set_pack_extension(pack_extension);
     return extension_loader.LoadExtension(
         data_dir().AppendASCII(extension_path));
   }
@@ -2157,7 +2158,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
   // `second_extension` after a user signs in. `second_extension` is associated
   // with the user's account where as `first_extension` is not.
   scoped_refptr<const Extension> first_extension =
-      LoadExtension("simple_with_file");
+      LoadExtension("simple_with_file", /*pack_extension=*/true);
   ASSERT_TRUE(first_extension);
   const std::string first_extension_id = first_extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
@@ -2168,7 +2169,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
                                                        identity_test_env());
 
   scoped_refptr<const Extension> second_extension =
-      LoadExtension("simple_with_icon");
+      LoadExtension("simple_with_icon", /*pack_extension=*/true);
   ASSERT_TRUE(second_extension);
   const std::string second_extension_id = second_extension->id();
 
@@ -2220,7 +2221,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
 TEST_F(ExtensionSyncServiceTransportModeTest,
        OnlyUpdateAccountExtensionTypeWhenLocalStateIsMoreRecent) {
   scoped_refptr<const Extension> first_extension =
-      LoadExtension("simple_with_file");
+      LoadExtension("simple_with_file", /*pack_extension=*/true);
   ASSERT_TRUE(first_extension);
   const std::string first_extension_id = first_extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
@@ -2274,7 +2275,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   // Install two extensions: `first_extension` before a user signs in, and
   // `second_extension` after a user signs in.
   scoped_refptr<const Extension> first_extension =
-      LoadExtension("simple_with_file");
+      LoadExtension("simple_with_file", /*pack_extension=*/true);
   ASSERT_TRUE(first_extension);
   const std::string first_extension_id = first_extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
@@ -2285,7 +2286,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
                                                        identity_test_env());
 
   scoped_refptr<const Extension> second_extension =
-      LoadExtension("simple_with_icon");
+      LoadExtension("simple_with_icon", /*pack_extension=*/true);
   ASSERT_TRUE(second_extension);
   const std::string second_extension_id = second_extension->id();
 
@@ -2342,4 +2343,20 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   EXPECT_EQ(
       AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
       GetAccountExtensionType(second_extension_id));
+
+  // Install a third, unsyncable extension. Should be a local extension.
+  scoped_refptr<const Extension> third_extension =
+      LoadExtension("simple_with_host", /*pack_extension=*/false);
+  ASSERT_TRUE(third_extension);
+  const std::string third_extension_id = third_extension->id();
+
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(third_extension_id));
+
+  // Verify that only the second extension counts as a signed in account
+  // extension.
+  std::vector<const Extension*> signed_in_account_extensions =
+      AccountExtensionTracker::Get(profile())->GetSignedInAccountExtensions();
+  EXPECT_THAT(signed_in_account_extensions,
+              ::testing::ElementsAre(second_extension.get()));
 }

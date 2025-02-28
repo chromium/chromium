@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_dice_support)
@@ -36,6 +37,10 @@ source_set("signout_confirmation_impl") {
     "//chrome/browser/resources/signin/signout_confirmation:resources_grit",
     "//chrome/browser/ui/webui",
   ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

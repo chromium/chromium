@@ -7,12 +7,31 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/barrier_callback.h"
+#include "base/base64.h"
+#include "base/memory/ref_counted_memory.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
+#include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_icon_placeholder.h"
+#include "extensions/browser/image_loader.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/icons/extension_icon_set.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
+#include "ui/gfx/image/image.h"
+#endif
 
 namespace {
 
@@ -80,7 +99,9 @@ int ComputeCancelButtonLabelId(ChromeSignoutConfirmationPromptVariant variant) {
 // consists of strings based on the prompt `variant`.
 signout_confirmation::mojom::SignoutConfirmationDataPtr
 ConstructSignoutConfirmationData(
-    ChromeSignoutConfirmationPromptVariant variant) {
+    ChromeSignoutConfirmationPromptVariant variant,
+    std::vector<signout_confirmation::mojom::ExtensionInfoPtr>
+        extension_infos_mojo) {
   signout_confirmation::mojom::SignoutConfirmationDataPtr
       signout_confirmation_mojo =
           signout_confirmation::mojom::SignoutConfirmationData::New();
@@ -93,12 +114,39 @@ ConstructSignoutConfirmationData(
   signout_confirmation_mojo->cancel_button_label =
       l10n_util::GetStringUTF8(ComputeCancelButtonLabelId(variant));
 
-  std::vector<signout_confirmation::mojom::ExtensionInfoPtr>
-      extensions_info_mojo;
   signout_confirmation_mojo->account_extensions =
-      std::move(extensions_info_mojo);
+      std::move(extension_infos_mojo);
   return signout_confirmation_mojo;
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+std::string GetIconUrlFromImage(const gfx::Image& image) {
+  std::string base_64 = base::Base64Encode(*image.As1xPNGBytes());
+  const char kDataUrlPrefix[] = "data:image/png;base64,";
+  return GURL(kDataUrlPrefix + base_64).spec();
+}
+
+// Creates a placeholder icon image based on the extension's `name` and returns
+// a base64 representation of it.
+std::string GetPlaceholderIconUrl(const std::string& name) {
+  return GetIconUrlFromImage(extensions::ExtensionIconPlaceholder::CreateImage(
+      extension_misc::EXTENSION_ICON_SMALLISH, name));
+}
+
+// Called when the icon for `extension_name` is loaded. Must be called for all
+// account extensions before the `SignoutConfirmationData` is sent.
+signout_confirmation::mojom::ExtensionInfoPtr OnExtensionIconLoaded(
+    const std::string& extension_name,
+    const gfx::Image& icon) {
+  auto extension_info_mojo = signout_confirmation::mojom::ExtensionInfo::New();
+  extension_info_mojo->name = extension_name;
+  extension_info_mojo->icon_url = icon.IsEmpty()
+                                      ? GetPlaceholderIconUrl(extension_name)
+                                      : GetIconUrlFromImage(icon);
+
+  return extension_info_mojo;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  //  namespace
 
@@ -113,8 +161,11 @@ SignoutConfirmationHandler::SignoutConfirmationHandler(
       completion_callback_(std::move(callback)),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
-  // Send any necessary data to the page.
-  page_->SendSignoutConfirmationData(ConstructSignoutConfirmationData(variant));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  ComputeAccountExtensions();
+#else
+  ComputeAndSendSignoutConfirmationDataWithoutExtensions();
+#endif
 }
 
 SignoutConfirmationHandler::~SignoutConfirmationHandler() = default;
@@ -156,3 +207,59 @@ void SignoutConfirmationHandler::FinishAndCloseDialog(
     browser_->signin_view_controller()->CloseModalSignin();
   }
 }
+
+void SignoutConfirmationHandler::
+    ComputeAndSendSignoutConfirmationDataWithoutExtensions() {
+  ComputeAndSendSignoutConfirmationData({});
+}
+
+void SignoutConfirmationHandler::ComputeAndSendSignoutConfirmationData(
+    std::vector<signout_confirmation::mojom::ExtensionInfoPtr>
+        account_extensions_info) {
+  page_->SendSignoutConfirmationData(ConstructSignoutConfirmationData(
+      variant_, std::move(account_extensions_info)));
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void SignoutConfirmationHandler::ComputeAccountExtensions() {
+  if (!browser_ || !extensions::sync_util::IsSyncingExtensionsInTransportMode(
+                       browser_->profile())) {
+    ComputeAndSendSignoutConfirmationDataWithoutExtensions();
+    return;
+  }
+
+  extensions::AccountExtensionTracker* tracker =
+      extensions::AccountExtensionTracker::Get(browser_->profile());
+  std::vector<const extensions::Extension*> account_extensions =
+      tracker->GetSignedInAccountExtensions();
+  if (account_extensions.empty()) {
+    ComputeAndSendSignoutConfirmationDataWithoutExtensions();
+    return;
+  }
+
+  auto barrier_callback = base::BarrierCallback<
+      signout_confirmation::mojom::ExtensionInfoPtr>(
+      account_extensions.size(),
+      base::BindOnce(
+          &SignoutConfirmationHandler::ComputeAndSendSignoutConfirmationData,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  const int icon_size = extension_misc::EXTENSION_ICON_SMALLISH;
+  auto* image_loader = extensions::ImageLoader::Get(browser_->profile());
+
+  for (const extensions::Extension* extension : account_extensions) {
+    extensions::ExtensionResource icon = extensions::IconsInfo::GetIconResource(
+        extension, icon_size, ExtensionIconSet::Match::kBigger);
+    if (icon.empty()) {
+      barrier_callback.Run(
+          ::OnExtensionIconLoaded(extension->name(), gfx::Image()));
+    } else {
+      gfx::Size max_size(icon_size, icon_size);
+      image_loader->LoadImageAsync(
+          extension, icon, max_size,
+          base::BindOnce(&::OnExtensionIconLoaded, extension->name())
+              .Then(barrier_callback));
+    }
+  }
+}
+#endif

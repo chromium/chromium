@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/extensions/sync_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/signin/public/base/consent_level.h"
@@ -116,8 +117,12 @@ void AccountExtensionTracker::SetAccountExtensionTypeOnExtensionInstalled(
   // Set to `kAccountInstalledSignedIn` if this is a syncable extension (by
   // ExtensionSyncService) that was installed when a user is signed in and has
   // sync enabled. Otherwise, set to `kLocal`.
+  // Note: Treat syncable component extensions as "local" extensions despite
+  // being syncable since they shouldn't be directly associated with users'
+  // accounts (and they're component extensions).
   AccountExtensionType type =
-      (is_syncable_extension && extension_sync_enabled)
+      (is_syncable_extension && extension_sync_enabled &&
+       !sync_helper::IsSyncableComponentExtension(&extension))
           ? AccountExtensionType::kAccountInstalledSignedIn
           : AccountExtensionType::kLocal;
   SetAccountExtensionType(extension.id(), type);
@@ -208,6 +213,23 @@ void AccountExtensionTracker::OnExtensionSyncDataReceived(
   if (type == AccountExtensionType::kLocal) {
     PromoteLocalToAccountExtension(extension_id);
   }
+}
+
+std::vector<const Extension*>
+AccountExtensionTracker::GetSignedInAccountExtensions() const {
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  const ExtensionSet extensions =
+      extension_registry->GenerateInstalledExtensionsSet();
+
+  std::vector<const Extension*> signed_in_account_extensions;
+  for (const auto& extension : extensions) {
+    if (GetAccountExtensionType(extension->id()) ==
+        AccountExtensionType::kAccountInstalledSignedIn) {
+      signed_in_account_extensions.push_back(extension.get());
+    }
+  }
+
+  return signed_in_account_extensions;
 }
 
 void AccountExtensionTracker::OnInitialExtensionsSyncDataReceived() {

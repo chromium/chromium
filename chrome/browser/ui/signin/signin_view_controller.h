@@ -19,6 +19,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/base/data_type.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -61,6 +62,9 @@ class NewTabWebContentsObserver;
 // Chrome OS has its own sign-in flow and doesn't use DICE.
 class SigninViewController {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kSignoutConfirmationDialogViewElementId);
+
   explicit SigninViewController(Browser* browser);
 
   SigninViewController(const SigninViewController&) = delete;

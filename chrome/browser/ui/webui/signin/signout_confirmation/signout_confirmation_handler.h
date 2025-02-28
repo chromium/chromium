@@ -7,8 +7,10 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation.mojom.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -42,6 +44,21 @@ class SignoutConfirmationHandler
   // there is one open.
   void FinishAndCloseDialog(ChromeSignoutConfirmationChoice choice);
 
+  // Same as the below version except there are no `ExtensionInfoPtr` to send.
+  void ComputeAndSendSignoutConfirmationDataWithoutExtensions();
+
+  // Computes the initial `SignoutConfirmationData` given the list of
+  // `account_extensions_info` and sends it to `page_` once complete.
+  void ComputeAndSendSignoutConfirmationData(
+      std::vector<signout_confirmation::mojom::ExtensionInfoPtr>
+          account_extensions_info);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Computes info for all account extensions that need to be sent to `page_`.
+  // Calls ComputeAndSendSignoutConfirmationData() once complete.
+  void ComputeAccountExtensions();
+#endif
+
   base::WeakPtr<Browser> browser_;
 
   // The variant of the signout confirmation prompt. This affects which actions
@@ -57,6 +74,8 @@ class SignoutConfirmationHandler
   mojo::Receiver<signout_confirmation::mojom::PageHandler> receiver_;
   // Interface to send information to the web ui page.
   mojo::Remote<signout_confirmation::mojom::Page> page_;
+
+  base::WeakPtrFactory<SignoutConfirmationHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNOUT_CONFIRMATION_SIGNOUT_CONFIRMATION_HANDLER_H_

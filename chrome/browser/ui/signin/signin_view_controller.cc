@@ -31,6 +31,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -39,7 +40,9 @@
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "base/strings/utf_string_conversions.h"
@@ -73,6 +76,12 @@
 #include "ui/base/models/dialog_model.h"
 #include "url/url_constants.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
+#include "extensions/common/extension.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -233,6 +242,9 @@ GURL GetSigninUrlForDiceSigninTab(
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
+                                      kSignoutConfirmationDialogViewElementId);
+
 SigninViewController::SigninViewController(Browser* browser)
     : browser_(browser) {}
 
@@ -367,9 +379,7 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
   new_tab_web_contents_observer_ = std::make_unique<NewTabWebContentsObserver>(
       web_contents, std::move(callback));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SigninViewController::ShowModalProfileCustomizationDialog(
     bool is_local_profile_creation) {
   CloseModalSignin();
@@ -644,6 +654,17 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
   if (!profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
     sign_out_immediately = true;
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Do not sign out immediately if the user has account extensions.
+  if (extensions::sync_util::IsSyncingExtensionsInTransportMode(profile)) {
+    extensions::AccountExtensionTracker* tracker =
+        extensions::AccountExtensionTracker::Get(profile);
+    if (!tracker->GetSignedInAccountExtensions().empty()) {
+      sign_out_immediately = false;
+    }
+  }
+#endif
 
   base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
       base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
