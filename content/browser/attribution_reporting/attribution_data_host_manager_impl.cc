@@ -27,6 +27,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -1647,7 +1648,7 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
 
 bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
     BackgroundRegistrationsId id,
-    const net::HttpResponseHeaders* headers,
+    scoped_refptr<net::HttpResponseHeaders> headers,
     GURL reporting_url) {
   CHECK(BackgroundRegistrationsEnabled());
 
@@ -1670,7 +1671,7 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
   }
 
   auto pending_registration_data =
-      PendingRegistrationData::Get(headers, *it, std::move(reporting_url),
+      PendingRegistrationData::Get(headers.get(), *it, std::move(reporting_url),
                                    *std::move(suitable_reporting_origin));
 
   if (!pending_registration_data.has_value()) {

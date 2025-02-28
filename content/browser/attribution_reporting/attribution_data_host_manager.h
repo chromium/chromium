@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
@@ -119,7 +120,7 @@ class AttributionDataHostManager {
   // processed.
   virtual bool NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId id,
-      const net::HttpResponseHeaders* headers,
+      scoped_refptr<net::HttpResponseHeaders> headers,
       GURL reporting_url) = 0;
 
   // Notifies the manager that a background attribution request has completed.

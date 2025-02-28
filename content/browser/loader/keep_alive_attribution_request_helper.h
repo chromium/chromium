@@ -11,10 +11,12 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -47,7 +49,8 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
       const GURL& request_url,
       const std::optional<base::UnguessableToken>& attribution_src_token,
       const std::optional<std::string>& devtools_request_id,
-      const std::optional<AttributionSuitableContext>&);
+      const std::optional<AttributionSuitableContext>&,
+      WeakDocumentPtr weak_document_ptr = WeakDocumentPtr());
 
   ~KeepAliveAttributionRequestHelper();
 
@@ -57,9 +60,9 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
   KeepAliveAttributionRequestHelper& operator=(
       const KeepAliveAttributionRequestHelper&) = delete;
 
-  void OnReceiveRedirect(const net::HttpResponseHeaders* headers,
+  void OnReceiveRedirect(scoped_refptr<net::HttpResponseHeaders> headers,
                          const GURL& redirect_url);
-  void OnReceiveResponse(const net::HttpResponseHeaders* headers);
+  void OnReceiveResponse(scoped_refptr<net::HttpResponseHeaders> headers);
   void OnError();
 
  private:
@@ -68,7 +71,8 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
   KeepAliveAttributionRequestHelper(BackgroundRegistrationsId,
                                     AttributionDataHostManager*,
                                     const GURL& reporting_url,
-                                    bool is_navigation_tied);
+                                    bool is_navigation_tied,
+                                    WeakDocumentPtr);
 
   void RecordAttributionSrcRequestStatus(
       attribution_reporting::AttributionSrcRequestStatus);
@@ -90,6 +94,12 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
   // Whether the keep alive request has been ever redirected, updated at the
   // first redirect if there's a chain of multiple redirects.
   bool redirected_ = false;
+
+  // Points to the document that initiates this request.
+  // It may become null at any moment whenever the RenderFrameHost it points to
+  // is deleted or navigates to a different document. See its classdoc for more
+  // details.
+  WeakDocumentPtr weak_document_ptr_;
 };
 
 }  // namespace content
