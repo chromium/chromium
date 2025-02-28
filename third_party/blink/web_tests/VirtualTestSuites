@@ -1428,6 +1428,26 @@
     "expires": "Jul 14, 2025"
   },
   {
+    "prefix": "fledge-devtools-with-key-value-v2",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "owners": [
+      "mmenke@chromium.org",
+      "morlovich@chromium.org",
+      "pauljensen@chromium.org"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/network/auction-network-events-handler.js"
+    ],
+    "args": [
+      "--enable-features=FledgeTrustedSignalsKVv2Support,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fa.test%22%3A%22https%3A%2F%2Fa.test%3A8443%2Finspector-protocol%2Fresources%2Fba-public-keys\"}"
+    ],
+    "expires": "July 1, 2025"
+  },
+  {
     "prefix": "low-priority-async-script-execution",
     "platforms": ["Linux", "Mac", "Win"],
     "exclusive_tests": "ALL",

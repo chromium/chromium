@@ -1,6 +1,7 @@
 <script>
 let iterLimit = 2;
 let trustedBiddingSignalsURL = undefined;
+let trustedBiddingSignalsCoordinator = undefined;
 
 if (location.search !== '') {
   let searchParams = new URLSearchParams(location.search);
@@ -8,7 +9,10 @@ if (location.search !== '') {
   if (searchParams.get("useTrustedBiddingSignals") === "true") {
     trustedBiddingSignalsURL =
         "https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.json.php";
-  };
+  }
+  if (searchParams.get("useCoordinator") === "true") {
+    trustedBiddingSignalsCoordinator = "https://a.test";
+  }
 }
 for (var i = 0; i < iterLimit; ++i) {
   navigator.joinAdInterestGroup({
@@ -16,6 +20,7 @@ for (var i = 0; i < iterLimit; ++i) {
     owner: "https://a.test:8443/",
     biddingLogicURL: "https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php",
     trustedBiddingSignalsURL,
+    trustedBiddingSignalsCoordinator,
     ads: [{
       renderURL: 'https://example.com/render' + i,
       metadata: {ad: 'metadata', here: [1, 2, 3]}
