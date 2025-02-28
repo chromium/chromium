@@ -243,6 +243,8 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
   void InitClient() {
     EXPECT_CALL(*client_.get(), IsAuthenticated()).WillRepeatedly(Return(true));
     EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
+    EXPECT_CALL(*client_.get(), SearchSuggestEnabled())
+        .WillRepeatedly(Return(true));
   }
 
   void InitFeature() { scoped_config_.Get().enabled = true; }
@@ -310,6 +312,16 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
     EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(true));
     EXPECT_FALSE(provider_->IsProviderAllowed(input));
     EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
+    EXPECT_TRUE(provider_->IsProviderAllowed(input));
+  }
+
+  {
+    // Improve Search Suggest setting should be enabled.
+    EXPECT_CALL(*client_.get(), SearchSuggestEnabled())
+        .WillRepeatedly(Return(false));
+    EXPECT_FALSE(provider_->IsProviderAllowed(input));
+    EXPECT_CALL(*client_.get(), SearchSuggestEnabled())
+        .WillRepeatedly(Return(true));
     EXPECT_TRUE(provider_->IsProviderAllowed(input));
   }
 

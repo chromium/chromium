@@ -134,6 +134,11 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
     return false;
   }
 
+  // Gate on "Improve Search Suggestions" setting.
+  if (!client_->SearchSuggestEnabled()) {
+    return false;
+  }
+
   // There can be an aggregator set either through the feature params or through
   // a policy JSON. Both require this feature to be enabled.
   if (!omnibox_feature_configs::SearchAggregatorProvider::Get().enabled) {
