@@ -574,8 +574,10 @@ void CursorWindowController::UpdateCursorVisibility() {
 }
 
 void CursorWindowController::UpdateCursorView() {
-  // Return if the container's size is not updated yet.
-  if (container_->GetBoundsInRootWindow().size() != bounds_in_screen_.size()) {
+  // Return if there is existing |cursor_view_widget_| and the container's size
+  // is not updated yet.
+  if (cursor_view_widget_ &&
+      container_->GetBoundsInRootWindow().size() != bounds_in_screen_.size()) {
     return;
   }
 
