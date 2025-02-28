@@ -4309,6 +4309,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_NEW_INCOGNITO_TAB" desc="Menu item for opening a new Incognito tab that facilitates pseudononymous browsing. [CHAR_LIMIT=27]" meaning="Android menu">
         New Incognito tab
       </message>
+      <message name="IDS_ACCESSIBILITY_INCOGNITO_TAB" desc="Content description for tabs that are in Incognito mode">
+        Incognito Tab
+      </message>
       <message name="IDS_MENU_BOOKMARKS" desc="Menu item for opening the bookmarks page that contains all the user's bookmarks. [CHAR_LIMIT=27]">
         Bookmarks
       </message>
@@ -4954,9 +4957,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_INCOGNITO_SELECTED" desc="Content description for the tab that is selected in Incognito mode">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Selected Incognito Tab
-      </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_INCOGNITO_IDENTIFIER" desc="Content description for tabs that are not selected in Incognito mode">
-        Incognito Tab
       </message>
 
       <!-- Accessibility strings used in both tablet and phone tab strips -->

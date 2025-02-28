@@ -109,9 +109,7 @@ public class LauncherShortcutActivity extends Activity {
 
         ShortcutInfo shortcut =
                 new ShortcutInfo.Builder(context, DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID)
-                        .setShortLabel(
-                                context.getString(
-                                        R.string.accessibility_tabstrip_incognito_identifier))
+                        .setShortLabel(context.getString(R.string.accessibility_incognito_tab))
                         .setLongLabel(
                                 sLabelForTesting != null
                                         ? sLabelForTesting
