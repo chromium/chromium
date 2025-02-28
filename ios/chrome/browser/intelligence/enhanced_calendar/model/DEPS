@@ -1,7 +1,6 @@
 include_rules = [
-  "+ios/chrome/browser/ai_prototyping/model",
   "+ios/chrome/browser/intelligence/proto_wrappers",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/optimization_guide/mojom",
-  "+ios/chrome/browser/intelligence/enhanced_calendar/model",
+  "+mojo/public/cpp/base/proto_wrapper.h",
 ]

@@ -13,9 +13,10 @@
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation AIPrototypingCalendarViewController {
-  UITextView* _responseContainer;
-  UIButton* _submitButton;
+  UITextField* _selectedTextField;
   UITextField* _promptField;
+  UIButton* _submitButton;
+  UITextView* _responseContainer;
 }
 
 // Synthesized from `AIPrototypingViewControllerProtocol`.
@@ -46,19 +47,20 @@
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
   label.text = l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_CALENDAR_HEADER);
 
+  // Selected date/time text field.
+  _selectedTextField = [[UITextField alloc] init];
+  _selectedTextField.translatesAutoresizingMaskIntoConstraints = NO;
+  _selectedTextField.placeholder = l10n_util::GetNSString(
+      IDS_IOS_AI_PROTOTYPING_CALENDAR_SELECTED_TEXT_PLACEHOLDER);
+  UIView* selectedTextFieldContainer = [self textFieldContainer];
+  [selectedTextFieldContainer addSubview:_selectedTextField];
+
   // Optional user query.
   _promptField = [[UITextField alloc] init];
   _promptField.translatesAutoresizingMaskIntoConstraints = NO;
   _promptField.placeholder = l10n_util::GetNSString(
       IDS_IOS_AI_PROTOTYPING_CALENDAR_PROMPT_PLACEHOLDER);
-
-  UIView* promptFieldContainer = [[UIView alloc] init];
-  promptFieldContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  promptFieldContainer.layer.cornerRadius = kCornerRadius;
-  promptFieldContainer.layer.masksToBounds = YES;
-  promptFieldContainer.layer.borderColor =
-      [[UIColor colorNamed:kTextPrimaryColor] CGColor];
-  promptFieldContainer.layer.borderWidth = kBorderWidth;
+  UIView* promptFieldContainer = [self textFieldContainer];
   [promptFieldContainer addSubview:_promptField];
 
   // Submit button.
@@ -84,7 +86,8 @@
   _responseContainer.textContainer.lineBreakMode = NSLineBreakByWordWrapping;
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    label, promptFieldContainer, _submitButton, _responseContainer
+    label, selectedTextFieldContainer, promptFieldContainer, _submitButton,
+    _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -103,6 +106,17 @@
         constraintGreaterThanOrEqualToAnchor:self.view.heightAnchor
                                   multiplier:
                                       kResponseContainerHeightMultiplier],
+
+    [selectedTextFieldContainer.heightAnchor
+        constraintEqualToAnchor:_selectedTextField.heightAnchor
+                       constant:kVerticalInset],
+    [selectedTextFieldContainer.widthAnchor
+        constraintEqualToAnchor:_selectedTextField.widthAnchor
+                       constant:kHorizontalInset],
+    [selectedTextFieldContainer.centerXAnchor
+        constraintEqualToAnchor:_selectedTextField.centerXAnchor],
+    [selectedTextFieldContainer.centerYAnchor
+        constraintEqualToAnchor:_selectedTextField.centerYAnchor],
 
     [promptFieldContainer.heightAnchor
         constraintEqualToAnchor:_promptField.heightAnchor
@@ -141,6 +155,18 @@
 - (void)disableSubmitButton {
   _submitButton.enabled = NO;
   _submitButton.backgroundColor = [UIColor colorNamed:kDisabledTintColor];
+}
+
+// Creates a text field container.
+- (UIView*)textFieldContainer {
+  UIView* container = [[UIView alloc] init];
+  container.layer.masksToBounds = YES;
+  container.layer.cornerRadius = kCornerRadius;
+  container.layer.borderColor =
+      [[UIColor colorNamed:kTextPrimaryColor] CGColor];
+  container.layer.borderWidth = kBorderWidth;
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  return container;
 }
 
 @end
