@@ -35,7 +35,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
@@ -653,7 +652,7 @@ void RecordEncoderStatusUMA(const media::EncoderStatus& status,
 bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
   if (content_type == webrtc::VideoContentType::SCREENSHARE) {
     // Zero copy screen capture.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // The zero-copy capture is available for all sources in ChromeOS
     // Ash-chrome.
     return base::FeatureList::IsEnabled(blink::features::kZeroCopyTabCapture);

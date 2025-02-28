@@ -38,7 +38,7 @@
     // shipped stable can have its runtime flag removed soon after.
     status: {
       valid_values: ["stable", "experimental", "test"],
-      valid_keys: ["Android", "Win", "ChromeOS_Ash", "Mac", "Linux", "iOS"]
+      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Linux", "iOS"]
     },
 
     // "implied_by" or "depends_on" specifies relationship to other features:
@@ -567,7 +567,7 @@
         // Built-in barcode detection APIs are only available from some
         // platforms. See //services/shape_detection.
         "Android": "stable",
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         "Mac": "stable",
         "default": "test",
       },
@@ -1498,7 +1498,7 @@
     {
       name: "DeviceAttributes",
       status: {
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         "default": "experimental",
       },
     },
@@ -1536,7 +1536,7 @@
       public: true,
       status: {
         "Android": "stable",
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         // crbug.com/1143079: Web tests cannot differentiate ChromeOS and Linux,
         // so enable the API on all platforms for testing.
         "default": "test"
@@ -1547,7 +1547,7 @@
       name: "DigitalGoodsV2_1",
       status: {
         "Android": "stable",
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         // crbug.com/1143079: Web tests cannot differentiate ChromeOS and Linux,
         // so enable the API on all platforms for testing.
         "default": "test"
@@ -1859,7 +1859,7 @@
         // EyeDropper UI is available on ChromeOS, Linux (x11), Mac, and Win.
         // This list should match the supported operating systems for the
         // kEyeDropper base::Feature.
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         "Linux": "stable",
         "Mac": "stable",
         "Win": "stable",
@@ -2025,7 +2025,7 @@
       // crbug.com/1443354).
       name: "FileSystemAccessGetCloudIdentifiers",
       status: {
-        "ChromeOS_Ash": "experimental",
+        "ChromeOS": "experimental",
         "default": "",
       }
     },
@@ -2241,7 +2241,7 @@
     },
     {
       name: "ForceTallerSelectPopup",
-      status: {"ChromeOS_Ash": "stable"},
+      status: {"ChromeOS": "stable"},
     },
     {
       // TODO(crbug.com/1419161): Remove this feature after M113 has been stable
@@ -2310,7 +2310,7 @@
     {
       name: "HandwritingRecognition",
       status: {
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         "default": "experimental",
       },
     },
@@ -2956,7 +2956,7 @@
       // Only Android, ChromeOS support NetInfo downlinkMax, type and ontypechange now
       status: {
         "Android": "stable",
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         "default": "experimental",
       },
       base_feature: "none",
@@ -4627,7 +4627,7 @@
     {
       name: "UseBeginFramePresentationFeedback",
       status: {
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
       },
     },
     {
@@ -4774,7 +4774,7 @@
     {
       name: "WebAppTabStrip",
       status: {
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         "default": "experimental"
       },
       base_feature: "DesktopPWAsTabStrip",
@@ -4784,7 +4784,7 @@
     {
       name: "WebAppTabStripCustomizations",
       status: {
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         "default": "experimental"
       },
       base_feature: "DesktopPWAsTabStripCustomizations",
@@ -4920,7 +4920,7 @@
       public: true,
       status: {
         "Android": "stable",
-        "ChromeOS_Ash": "stable",
+        "ChromeOS": "stable",
         "Mac": "stable",
         "Win": "stable",
         "default": "experimental",

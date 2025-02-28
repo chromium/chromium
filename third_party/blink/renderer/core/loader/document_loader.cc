@@ -46,7 +46,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/types/optional_util.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"

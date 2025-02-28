@@ -1617,16 +1617,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/modules/mediasource/',
-        ],
-        'allowed': [
-            'base::CommandLine',
-            'media::.+',
-            'switches::kLacrosEnablePlatformEncryptedHevc',
-        ]
-    },
-    {
-        'paths': [
             'third_party/blink/renderer/modules/encryptedmedia/',
             'third_party/blink/renderer/modules/media/',
             'third_party/blink/renderer/modules/video_rvfc/',

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ink_overflow.h"
 
-#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"

@@ -15,7 +15,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_input_device.h"
 #include "media/audio/audio_output_device.h"
 #include "third_party/blink/public/platform/platform.h"

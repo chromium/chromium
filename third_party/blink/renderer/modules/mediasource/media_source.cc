@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_switches.h"

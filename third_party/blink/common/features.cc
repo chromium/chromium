@@ -11,7 +11,6 @@
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -1624,7 +1623,7 @@ BASE_FEATURE(kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
 // (Canvas2DImageChromium is disabled).
 BASE_FEATURE(kLowLatencyCanvas2dImageChromium,
              "LowLatencyCanvas2dImageChromium",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

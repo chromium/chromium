@@ -378,7 +378,6 @@ component("core") {
     ":generate_eventhandler_names",
     ":make_deprecation_info",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/attribution_reporting",
     "//components/attribution_reporting:mojom_blink",
     "//components/paint_preview/common",
@@ -478,7 +477,6 @@ blink_core_sources("core_hot") {
 
   deps = [
     ":buildflags",
-    "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public:image_resources_grit",
@@ -514,7 +512,6 @@ source_set("testing") {
     ":core",
     ":element_locator_proto",
     ":generated_testing_idls",
-    "//build:chromeos_buildflags",
     "//components/ukm:test_support",
     "//third_party/blink/renderer/bindings/core/v8:testing",
     "//third_party/blink/renderer/platform:test_support",
@@ -1493,7 +1490,6 @@ source_set("unit_tests") {
     ":core",
     ":element_locator_proto",
     ":unit_test_support",
-    "//build:chromeos_buildflags",
     "//cc",
     "//components/autofill/core/common:features",
     "//components/page_load_metrics/browser:browser",
