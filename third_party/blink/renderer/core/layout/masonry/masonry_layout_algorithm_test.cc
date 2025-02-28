@@ -91,13 +91,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
-    <style>
-    #masonry {
-      display: masonry;
-      masonry-template-tracks: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
-    }
-    </style>
-    <div id="masonry">
+    <div id="masonry" style="display: masonry">
       <div>1</div>
       <div style="masonry-track: 3 / span 2">2</div>
       <div style="masonry-track: span 2">3</div>
@@ -141,7 +135,10 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
       masonry-template-tracks: 5% repeat(3, 10px auto) repeat(1, auto 5px 1fr);
     }
     </style>
-    <div id="masonry"></div>
+    <div id="masonry">
+      <div style="masonry-track: span 2 / 1"></div>
+      <div style="masonry-track: 9 / span 5"></div>
+    </div>
   )HTML");
 
   BlockNode node(GetLayoutBoxByElementId("masonry"));
@@ -158,11 +155,17 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
   MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
-  const auto& ranges = Ranges();
-  EXPECT_EQ(ranges.size(), 3u);
+  // The first item spans 2 tracks before the explicit grid, creating the first
+  // range of 2 tracks. Then follows the template track ranges: one range of a
+  // single track for the `5%`, then a range for the `repeat(3, ...)` which
+  // spans 6 tracks. The last repeat creates a range of 3 tracks, but it's split
+  // by the second item, creating one range of 1 track and another of 2 tracks.
+  // Finally, the second item spans a range of 3 track past the explicit grid.
+  const Vector<wtf_size_t> expected_start_lines = {0, 2, 3, 9, 10, 12};
+  const Vector<wtf_size_t> expected_track_counts = {2, 1, 6, 1, 2, 3};
 
-  const Vector<wtf_size_t> expected_start_lines = {0, 1, 7};
-  const Vector<wtf_size_t> expected_track_counts = {1, 6, 3};
+  const auto& ranges = Ranges();
+  EXPECT_EQ(ranges.size(), expected_start_lines.size());
 
   for (wtf_size_t i = 0; i < ranges.size(); ++i) {
     EXPECT_EQ(ranges[i].start_line, expected_start_lines[i]);
