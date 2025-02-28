@@ -226,11 +226,12 @@ class ScopedMapNoFactoryTester {
   scoped_refptr<HostContentSettingsMap> map;
 
   explicit ScopedMapNoFactoryTester(TestingProfile& profile) {
-    map = new HostContentSettingsMap(profile.GetPrefs(),
-                                     /*is_off_the_record=*/false,
-                                     /*store_last_modified=*/false,
-                                     /*restore_session=*/false,
-                                     /*should_record_metrics=*/false);
+    map = base::MakeRefCounted<HostContentSettingsMap>(
+        profile.GetPrefs(),
+        /*is_off_the_record=*/false,
+        /*store_last_modified=*/false,
+        /*restore_session=*/false,
+        /*should_record_metrics=*/false);
   }
 
   ~ScopedMapNoFactoryTester() { map->ShutdownOnUIThread(); }
@@ -1220,11 +1221,74 @@ TEST_F(HostContentSettingsMapTest, GetUserModifiableContentSetting) {
                                        url, url, ContentSettingsType::COOKIES));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             map->GetContentSetting(url, url, ContentSettingsType::COOKIES));
+}
 
-  // TODO(crbug.com/399110601) Add test that
-  // HostContentSettingsMapTest::GetUserModifiableContentSetting() ignores the
-  // relative int value of the providers when determining whether a provider is
-  // user-modifiable.
+/**
+ * Test that HostContentSettingsMap::GetUserModifiableContentSetting() ignores
+ * the relative int value of the providers when determining whether a provider
+ * is user-modifiable.
+ */
+TEST_F(HostContentSettingsMapTest,
+       GetUserModifiableContentSetting_IndependentOfProviderEnumValues) {
+  EXPECT_LT(content_settings::ProviderType::kPolicyProvider,
+            content_settings::ProviderType::kPrefProvider);
+  EXPECT_LT(content_settings::ProviderType::kPrefProvider,
+            content_settings::ProviderType::kProviderForTests);
+
+  // Arbitrarily using cookies as content type to test.
+  GURL url("http://user_exception_allow.com");
+  {
+    TestingProfile profile;
+    ScopedMapNoFactoryTester map_tester(profile);
+
+    profile.GetTestingPrefService()->SetManagedPref(
+        prefs::kManagedDefaultCookiesSetting,
+        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+
+    scoped_refptr<HostContentSettingsMap> map = map_tester.map;
+    map->SetContentSettingDefaultScope(url, url, ContentSettingsType::COOKIES,
+                                       CONTENT_SETTING_ALLOW);
+
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map->GetUserModifiableContentSetting(
+                  url, url, ContentSettingsType::COOKIES));
+    content_settings::SettingInfo info;
+    EXPECT_EQ(
+        CONTENT_SETTING_BLOCK,
+        map->GetContentSetting(url, url, ContentSettingsType::COOKIES, &info));
+    // Check that the setting came from ProviderType::kPolicyProvider.
+    EXPECT_EQ(content_settings::SettingSource::kPolicy, info.source);
+  }
+
+  {
+    TestingProfile profile;
+
+    // Use ScopedMapNoFactoryTester so that
+    // HostContentSettingsMap::RegisterProvider() is called immediately after
+    // building the HostContentSettingsMap and avoid any calls on
+    // HostContentSettingsMap from TestingProfile initializing. This is required
+    // due to the thread assertions in
+    // HostContentSettingsMap::RegisterProvider().
+    ScopedMapNoFactoryTester map_tester(profile);
+    auto mock_provider = std::make_unique<content_settings::MockProvider>(
+        /*read_only=*/false);
+    mock_provider->SetWebsiteSetting(
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+        ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
+    map_tester.map->RegisterProvider(
+        content_settings::ProviderType::kProviderForTests,
+        std::move(mock_provider));
+
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map_tester.map->GetUserModifiableContentSetting(
+                  url, url, ContentSettingsType::COOKIES));
+    content_settings::SettingInfo info;
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              map_tester.map->GetContentSetting(
+                  url, url, ContentSettingsType::COOKIES, &info));
+    // Check that the setting came from ProviderType::kProviderForTests.
+    EXPECT_EQ(content_settings::SettingSource::kTest, info.source);
+  }
 }
 
 // For a single Unicode encoded pattern, check if it gets converted to punycode
