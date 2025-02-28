@@ -19,8 +19,13 @@ namespace autofill {
 
 CountryInfo::CountryInfo() = default;
 
-CountryInfo::CountryInfo(const CountryInfo& info)
-    : country_code_(info.country_code_) {}
+CountryInfo::CountryInfo(const CountryInfo& info) = default;
+
+CountryInfo& CountryInfo::operator=(const CountryInfo& info) = default;
+
+CountryInfo::CountryInfo(CountryInfo&& info) = default;
+
+CountryInfo& CountryInfo::operator=(CountryInfo&& info) = default;
 
 CountryInfo::~CountryInfo() = default;
 

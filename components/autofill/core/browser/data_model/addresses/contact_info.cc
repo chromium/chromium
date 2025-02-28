@@ -65,8 +65,6 @@ NameInfo::NameInfo(const NameInfo& info) : NameInfo() {
   *this = info;
 }
 
-NameInfo::~NameInfo() = default;
-
 NameInfo::NameInfo(std::unique_ptr<NameFull> name,
                    std::unique_ptr<AlternativeFullName> alternative_name)
     : name_(std::move(name)), alternative_name_(std::move(alternative_name)) {}
@@ -80,6 +78,8 @@ NameInfo& NameInfo::operator=(const NameInfo& info) {
 
   return *this;
 }
+
+NameInfo::~NameInfo() = default;
 
 bool NameInfo::MergeStructuredName(const NameInfo& newer) {
   if (name_->MergeWithComponent(newer.GetStructuredName())) {
@@ -204,19 +204,11 @@ const AddressComponent* NameInfo::GetRootForType(FieldType field_type) const {
 
 EmailInfo::EmailInfo() = default;
 
-EmailInfo::EmailInfo(const EmailInfo& info) {
-  *this = info;
-}
+EmailInfo::EmailInfo(const EmailInfo& info) = default;
+
+EmailInfo& EmailInfo::operator=(const EmailInfo& info) = default;
 
 EmailInfo::~EmailInfo() = default;
-
-EmailInfo& EmailInfo::operator=(const EmailInfo& info) {
-  if (this == &info)
-    return *this;
-
-  email_ = info.email_;
-  return *this;
-}
 
 bool EmailInfo::operator==(const EmailInfo& other) const {
   return this == &other || email_ == other.email_;
