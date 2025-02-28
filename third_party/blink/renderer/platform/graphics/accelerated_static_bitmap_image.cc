@@ -432,7 +432,8 @@ void AcceleratedStaticBitmapImage::Transfer() {
 }
 
 bool AcceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
-  return sk_image_info_.isOpaque();
+  return SkAlphaTypeIsOpaque(GetAlphaType()) ||
+         SkColorTypeIsAlwaysOpaque(GetSkColorType());
 }
 
 }  // namespace blink
