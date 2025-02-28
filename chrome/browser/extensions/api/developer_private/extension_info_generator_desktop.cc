@@ -114,12 +114,12 @@ void ExtensionInfoGenerator::OnProfileWillBeDestroyed(Profile* profile) {
 void ExtensionInfoGenerator::FillExtensionInfo(
     const Extension& extension,
     api::developer_private::ExtensionState state,
-    std::unique_ptr<api::developer_private::ExtensionInfo> info) {
+    api::developer_private::ExtensionInfo info) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
   if (extension_system_->extension_service()->allowlist()->ShouldDisplayWarning(
           extension.id())) {
-    info->show_safe_browsing_allowlist_warning = true;
+    info.show_safe_browsing_allowlist_warning = true;
   }
 
   ExtensionManagement* extension_management =
@@ -128,8 +128,8 @@ void ExtensionInfoGenerator::FillExtensionInfo(
   // ControlledInfo.
   bool is_policy_location = Manifest::IsPolicyLocation(extension.location());
   if (is_policy_location) {
-    info->controlled_info.emplace();
-    info->controlled_info->text =
+    info.controlled_info.emplace();
+    info.controlled_info->text =
         l10n_util::GetStringUTF8(IDS_EXTENSIONS_INSTALL_LOCATION_ENTERPRISE);
   } else {
     // Create Safety Hub information for any non-enterprise extension.
@@ -137,8 +137,8 @@ void ExtensionInfoGenerator::FillExtensionInfo(
         ExtensionSafetyCheckUtils::GetSafetyCheckWarningReason(extension,
                                                                profile);
     if (warning_reason != developer::SafetyCheckWarningReason::kNone) {
-      info->safety_check_warning_reason = warning_reason;
-      info->safety_check_text =
+      info.safety_check_warning_reason = warning_reason;
+      info.safety_check_text =
           ExtensionSafetyCheckUtils::GetSafetyCheckWarningStrings(
               warning_reason, state);
     }
@@ -148,9 +148,9 @@ void ExtensionInfoGenerator::FillExtensionInfo(
 
   // Commands.
   if (is_enabled) {
-    ConstructCommands(command_service_, extension.id(), &info->commands);
+    ConstructCommands(command_service_, extension.id(), &info.commands);
   }
-  info->is_command_registration_handled_externally =
+  info.is_command_registration_handled_externally =
       ui::GlobalAcceleratorListener::GetInstance() &&
       ui::GlobalAcceleratorListener::GetInstance()
           ->IsRegistrationHandledExternally();
@@ -166,7 +166,7 @@ void ExtensionInfoGenerator::FillExtensionInfo(
       developer::DependentExtension dependent_extension;
       dependent_extension.id = dependent->id();
       dependent_extension.name = dependent->name();
-      info->dependent_extensions.push_back(std::move(dependent_extension));
+      info.dependent_extensions.push_back(std::move(dependent_extension));
     }
   }
 
@@ -176,7 +176,7 @@ void ExtensionInfoGenerator::FillExtensionInfo(
       disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
   bool permissions_increase =
       disable_reasons.contains(disable_reason::DISABLE_PERMISSIONS_INCREASE);
-  info->disable_reasons.parent_disabled_permissions =
+  info.disable_reasons.parent_disabled_permissions =
       supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::
           IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
@@ -189,35 +189,35 @@ void ExtensionInfoGenerator::FillExtensionInfo(
       extension_management->UpdatesFromWebstore(extension);
   if (extension.location() == mojom::ManifestLocation::kInternal &&
       updates_from_web_store) {
-    info->location = developer::Location::kFromStore;
+    info.location = developer::Location::kFromStore;
   } else if (Manifest::IsUnpackedLocation(extension.location())) {
-    info->location = developer::Location::kUnpacked;
+    info.location = developer::Location::kUnpacked;
   } else if (extension.was_installed_by_default() &&
              !extension.was_installed_by_oem() && updates_from_web_store) {
-    info->location = developer::Location::kInstalledByDefault;
+    info.location = developer::Location::kInstalledByDefault;
   } else if (Manifest::IsExternalLocation(extension.location()) &&
              updates_from_web_store) {
-    info->location = developer::Location::kThirdParty;
+    info.location = developer::Location::kThirdParty;
   } else {
-    info->location = developer::Location::kUnknown;
+    info.location = developer::Location::kUnknown;
   }
 
   ManagementPolicy* management_policy = extension_system_->management_policy();
-  info->must_remain_installed =
+  info.must_remain_installed =
       management_policy->MustRemainInstalled(&extension, nullptr);
-  info->user_may_modify =
+  info.user_may_modify =
       management_policy->UserMayModifySettings(&extension, nullptr);
 
-  info->update_url =
+  info.update_url =
       extension_management->GetEffectiveUpdateURL(extension).spec();
 
   if (state != developer::ExtensionState::kTerminated) {
-    info->views = InspectableViewsFinder(profile).GetViewsForExtension(
+    info.views = InspectableViewsFinder(profile).GetViewsForExtension(
         extension, is_enabled);
   }
 
   // Show access requests in toolbar.
-  info->show_access_requests_in_toolbar =
+  info.show_access_requests_in_toolbar =
       SitePermissionsHelper(profile).ShowAccessRequestsInToolbar(
           extension.id());
 
@@ -229,7 +229,7 @@ void ExtensionInfoGenerator::FillExtensionInfo(
   ToolbarActionsModel* toolbar_actions_model =
       ToolbarActionsModel::Get(profile);
   if (toolbar_actions_model->HasAction(extension.id())) {
-    info->pinned_to_toolbar =
+    info.pinned_to_toolbar =
         toolbar_actions_model->IsActionPinned(extension.id());
   }
 
@@ -237,12 +237,12 @@ void ExtensionInfoGenerator::FillExtensionInfo(
   ManifestV2ExperimentManager* mv2_experiment_manager =
       ManifestV2ExperimentManager::Get(profile);
   CHECK(mv2_experiment_manager);
-  info->is_affected_by_mv2_deprecation =
+  info.is_affected_by_mv2_deprecation =
       mv2_experiment_manager->IsExtensionAffected(extension);
-  info->did_acknowledge_mv2_deprecation_notice =
+  info.did_acknowledge_mv2_deprecation_notice =
       mv2_experiment_manager->DidUserAcknowledgeNotice(extension.id());
-  if (info->web_store_url.length() > 0) {
-    info->recommendations_url =
+  if (info.web_store_url.length() > 0) {
+    info.recommendations_url =
         extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())
             .spec();
   }
@@ -250,7 +250,7 @@ void ExtensionInfoGenerator::FillExtensionInfo(
   // Whether the extension can be uploaded as an account extension.
   // `CanUploadAsAccountExtension` should already check for the feature flag
   // somewhere but add another guard for it here just in case.
-  info->can_upload_as_account_extension =
+  info.can_upload_as_account_extension =
       switches::IsExtensionsExplicitBrowserSigninEnabled() &&
       AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
           extension);

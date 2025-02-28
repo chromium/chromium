@@ -37,10 +37,9 @@ class ExtensionInfoGenerator : public ExtensionInfoGeneratorShared {
  protected:
   // Fills an ExtensionInfo for the given `extension` and `state`, and
   // asynchronously adds it to the `list`.
-  void FillExtensionInfo(
-      const Extension& extension,
-      api::developer_private::ExtensionState state,
-      std::unique_ptr<api::developer_private::ExtensionInfo> info) override;
+  void FillExtensionInfo(const Extension& extension,
+                         api::developer_private::ExtensionState state,
+                         api::developer_private::ExtensionInfo info) override;
 
  private:
   raw_ptr<CommandService> command_service_;

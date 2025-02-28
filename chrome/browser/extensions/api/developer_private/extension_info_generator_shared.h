@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -92,10 +90,9 @@ class ExtensionInfoGeneratorShared : public ProfileObserver {
   //
   // This function fills only a portion of ExtensionInfo that is common to all
   // platforms. Subclasses may override this function to fill more members.
-  virtual void FillExtensionInfo(
-      const Extension& extension,
-      api::developer_private::ExtensionState state,
-      std::unique_ptr<api::developer_private::ExtensionInfo> info);
+  virtual void FillExtensionInfo(const Extension& extension,
+                                 api::developer_private::ExtensionState state,
+                                 api::developer_private::ExtensionInfo info);
 
   // Various systems, cached for convenience.
   raw_ptr<content::BrowserContext> browser_context_;
@@ -107,9 +104,8 @@ class ExtensionInfoGeneratorShared : public ProfileObserver {
 
  private:
   // Callback for the asynchronous image loading.
-  void OnImageLoaded(
-      std::unique_ptr<api::developer_private::ExtensionInfo> info,
-      const gfx::Image& image);
+  void OnImageLoaded(api::developer_private::ExtensionInfo info,
+                     const gfx::Image& image);
 
   // Returns the icon url for the default icon to use.
   std::string GetDefaultIconUrl(const std::string& name);
