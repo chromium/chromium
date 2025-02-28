@@ -50,13 +50,6 @@ ResourcePool::Backing::~Backing() {
   }
 
   shared_image_.reset();
-
-  // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
-  // itself. We need a flush here to trigger IPC. Without the flush, there
-  // will be memory regressions in tiles.
-  if (shared_image_interface) {
-    shared_image_interface->Flush();
-  }
 }
 
 void ResourcePool::InUsePoolResource::InstallGpuBacking(
@@ -86,7 +79,6 @@ void ResourcePool::InUsePoolResource::InstallSoftwareBacking(
     std::string_view debug_label) const {
   CHECK(!backing());
   auto backing = std::make_unique<ResourcePool::Backing>();
-  backing->shared_image_interface = sii;
   backing->set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
       {format(), size(), color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
        debug_label}));
