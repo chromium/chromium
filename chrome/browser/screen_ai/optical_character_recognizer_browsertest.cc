@@ -379,7 +379,10 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
   // PDF Specific metrics should not be recorded as the client type is test.
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.LinesCount.PDF", 0);
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Time.PDF", 0);
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize.PDF", 0);
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.OCR.ImageSize.PDF.WithText", 0);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize.PDF.NoText",
+                              0);
   histograms.ExpectTotalCount(
       "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF", 0);
 }
@@ -430,8 +433,16 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_PdfMetrics) {
   // So we just check the total count of the expected bucket.
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Time.PDF",
                               expected_calls);
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize.PDF",
-                              expected_calls);
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.OCR.ImageSize.PDF.WithText",
+      expected_lines_count);
+
+  // If OCR is not available, the metric is not recorded at all. But when it is
+  // available, the expectation is the opposite of the above metrics.
+  unsigned expected_no_text_calls =
+      IsOcrAvailable() ? (1 - expected_lines_count) : 0;
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.ImageSize.PDF.NoText",
+                              expected_no_text_calls);
 }
 
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
