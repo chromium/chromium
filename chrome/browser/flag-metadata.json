@@ -5766,6 +5766,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "lens-unary-api-salient-text-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-unary-apis-with-http-transport-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 140
