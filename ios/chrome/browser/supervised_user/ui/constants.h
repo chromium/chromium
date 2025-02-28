@@ -7,7 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-// A11y identifier for the parent access bottom sheet view.
+// Accessibility identifier for the parent access bottom sheet view.
 extern NSString* const kParentAccessViewAccessibilityIdentifier;
+
+// Accessibility identifier for the 'Close' button in the parent access
+// snackbar.
+extern NSString* const kParentAccessSnackbarClose;
+
+// Category for the parent access snackbar.
+extern NSString* const kParentAccessSnackbarCategory;
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_UI_CONSTANTS_H_
