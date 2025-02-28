@@ -28,7 +28,8 @@ base::TimeDelta TimeClamper::ClampTimeResolution(
   // that.
   if (time_microseconds < 0) {
     was_negative = true;
-    time_microseconds = -time_microseconds;
+    time_microseconds =
+        -std::max(-std::numeric_limits<int64_t>::max(), time_microseconds);
   }
 
   // Split the time_microseconds to lower and upper digits to prevent uniformity
