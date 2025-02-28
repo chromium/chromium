@@ -9,7 +9,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/forced_signin/forced_signin_coordinator.h"
@@ -202,10 +202,13 @@ using signin_metrics::PromoAction;
 
 + (instancetype)accountMenuCoordinatorWithBaseViewController:
                     (UIViewController*)viewController
-                                                     browser:(Browser*)browser {
+                                                     browser:(Browser*)browser
+                                                  anchorView:
+                                                      (UIView*)anchorView {
   return
       [[AccountMenuCoordinator alloc] initWithBaseViewController:viewController
-                                                         browser:browser];
+                                                         browser:browser
+                                                      anchorView:anchorView];
 }
 
 + (instancetype)

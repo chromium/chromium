@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -11,11 +11,11 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_data_source.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mutator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_data_source.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mutator.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -296,19 +296,19 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   manageYourAccountAction.subtitle = [self.dataSource primaryAccountEmail];
 
   UIMenu* ellipsisMenu;
-    UIAction* editAccountListAction = [UIAction
-        actionWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)
-                  image:DefaultSymbolWithConfiguration(@"pencil",
-                                                       symbolConfiguration)
-             identifier:base::SysUTF8ToNSString(kEditAccountListIdentifier)
-                handler:^(UIAction* action) {
-                  base::RecordAction(base::UserMetricsAction(
-                      "Signin_AccountMenu_EditAccountList"));
-                  [self.mutator didTapManageAccounts];
-                }];
-    ellipsisMenu = [UIMenu
-        menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
+  UIAction* editAccountListAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)
+                image:DefaultSymbolWithConfiguration(@"pencil",
+                                                     symbolConfiguration)
+           identifier:base::SysUTF8ToNSString(kEditAccountListIdentifier)
+              handler:^(UIAction* action) {
+                base::RecordAction(base::UserMetricsAction(
+                    "Signin_AccountMenu_EditAccountList"));
+                [self.mutator didTapManageAccounts];
+              }];
+  ellipsisMenu = [UIMenu
+      menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
 
   _ellipsisButton =
       [self addTopButtonWithSymbolName:kEllipsisCircleFillSymbol

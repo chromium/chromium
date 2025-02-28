@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_data_source.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mutator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_data_source.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mutator.h"
 
 @protocol AccountMenuConsumer;
 @protocol AccountMenuMediatorDelegate;
@@ -56,4 +56,4 @@ class SyncService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_

@@ -111,7 +111,6 @@ source_set("coordinator") {
     "//components/supervised_user/core/common:features",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled/account_menu",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/context_menu/ui_bundled/link_preview",

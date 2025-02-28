@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_coordinator.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -20,11 +20,11 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -99,14 +99,22 @@
   // The child signin coordinator if it’s open. It may be presented by the
   // Manage Account’s coordinator view controller.
   SigninCoordinator* _signinCoordinator;
+  // Clicked view, used to anchor the menu to it when using
+  // UIModalPresentationPopover mode
+  UIView* _anchorView;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
-  return [super
+                                   browser:(Browser*)browser
+                                anchorView:(UIView*)anchorView {
+  self = [super
       initWithBaseViewController:viewController
                          browser:browser
                      accessPoint:signin_metrics::AccessPoint::kAccountMenu];
+  if (self) {
+    _anchorView = anchorView;
+  }
+  return self;
 }
 
 - (void)dealloc {
@@ -130,10 +138,10 @@
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
 
-  if (self.anchorView) {
+  if (_anchorView) {
     _navigationController.modalPresentationStyle = UIModalPresentationPopover;
     _navigationController.popoverPresentationController.sourceView =
-        self.anchorView;
+        _anchorView;
     _navigationController.popoverPresentationController
         .permittedArrowDirections = UIPopoverArrowDirectionUp;
   } else {
