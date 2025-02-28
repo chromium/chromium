@@ -9,10 +9,9 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -36,6 +35,9 @@ class FakeCwsMixin : InProcessBrowserTestMixin {
   FakeCWS& fake_cws() { return fake_cws_; }
 
   // Returns the update URL configured for the `fake_cws_` instance.
+  //
+  // Note the URL returned is always valid but the underlying server only starts
+  // accepting connections in `SetUpOnMainThread`.
   GURL UpdateUrl() const;
 
   // InProcessBrowserTestMixin overrides:
@@ -47,8 +49,7 @@ class FakeCwsMixin : InProcessBrowserTestMixin {
 
   std::optional<base::AutoReset<bool>> disable_crx_publisher_verification_;
 
-  net::EmbeddedTestServer test_server_;
-  EmbeddedTestServerSetupMixin test_server_setup_mixin_;
+  FakeOriginTestServerMixin fake_origin_mixin_;
 
   FakeCWS fake_cws_;
 };

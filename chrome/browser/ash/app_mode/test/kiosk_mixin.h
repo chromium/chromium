@@ -88,6 +88,24 @@ class KioskMixin : public InProcessBrowserTestMixin {
     std::string crx_version;
   };
 
+  // Option for a Chrome app hosted outside CWS. Tests should make sure the app
+  // is actually hosted in `update_url`, for example using `FakeCwsMixin`.
+  struct SelfHostedChromeAppOption {
+    SelfHostedChromeAppOption(std::string_view account_id,
+                              std::string_view app_id,
+                              const GURL& update_url);
+
+    SelfHostedChromeAppOption(const SelfHostedChromeAppOption&);
+    SelfHostedChromeAppOption(SelfHostedChromeAppOption&&);
+    SelfHostedChromeAppOption& operator=(const SelfHostedChromeAppOption&);
+    SelfHostedChromeAppOption& operator=(SelfHostedChromeAppOption&&);
+    ~SelfHostedChromeAppOption();
+
+    std::string account_id;
+    std::string app_id;
+    GURL update_url;
+  };
+
   // Option for an Isolated Web App served at the given `update_manifest_url`.
   // When using this option make sure to also create the actual server before
   // launching the app.
@@ -116,6 +134,7 @@ class KioskMixin : public InProcessBrowserTestMixin {
   using Option = std::variant<DefaultServerWebAppOption,
                               WebAppOption,
                               CwsChromeAppOption,
+                              SelfHostedChromeAppOption,
                               IsolatedWebAppOption>;
 
   // Encapsulates the data used to configure Kiosk.

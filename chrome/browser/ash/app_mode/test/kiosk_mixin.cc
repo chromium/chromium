@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 
+#include <algorithm>
 #include <functional>
 #include <optional>
 #include <string>
@@ -14,13 +15,11 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/callback_list.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/overloaded.h"
-#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
@@ -80,6 +79,9 @@ std::string_view GetAccountId(const KioskMixin::Option& option) {
           [](const KioskMixin::CwsChromeAppOption& option) {
             return std::string_view(option.account_id);
           },
+          [](const KioskMixin::SelfHostedChromeAppOption& option) {
+            return std::string_view(option.account_id);
+          },
           [](const KioskMixin::IsolatedWebAppOption& option) {
             return std::string_view(option.account_id);
           },
@@ -97,6 +99,9 @@ GURL GetWebAppUrl(const KioskMixin::Option& option) {
           },
           [](const KioskMixin::WebAppOption& option) { return option.url; },
           [](const KioskMixin::CwsChromeAppOption& option) { return GURL(); },
+          [](const KioskMixin::SelfHostedChromeAppOption& option) {
+            return GURL();
+          },
           [](const KioskMixin::IsolatedWebAppOption& option) { return GURL(); },
       },
       option);
@@ -114,6 +119,9 @@ std::string_view GetChromeAppId(const KioskMixin::Option& option) {
             return std::string_view();
           },
           [](const KioskMixin::CwsChromeAppOption& option) {
+            return std::string_view(option.app_id);
+          },
+          [](const KioskMixin::SelfHostedChromeAppOption& option) {
             return std::string_view(option.app_id);
           },
           [](const KioskMixin::IsolatedWebAppOption& option) {
@@ -166,6 +174,19 @@ void ConfigureCwsChromeApp(ScopedDevicePolicyUpdate& update,
 
   account->set_account_id(std::string(account_id));
   account->set_type(DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
+  account->mutable_kiosk_app()->set_app_id(std::string(app_id));
+}
+
+void ConfigureSelfHostedChromeApp(ScopedDevicePolicyUpdate& update,
+                                  std::string_view app_id,
+                                  std::string_view account_id,
+                                  const GURL& update_url) {
+  DeviceLocalAccountInfoProto* account =
+      update.policy_payload()->mutable_device_local_accounts()->add_account();
+
+  account->set_account_id(std::string(account_id));
+  account->set_type(DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
+  account->mutable_kiosk_app()->set_update_url(update_url.spec());
   account->mutable_kiosk_app()->set_app_id(std::string(app_id));
 }
 
@@ -259,6 +280,11 @@ void KioskMixin::Configure(ScopedDevicePolicyUpdate& scoped_update,
                                       option.crx_version);
               ConfigureCwsChromeApp(scoped_update, option.app_id,
                                     option.account_id);
+            },
+            [&scoped_update](const SelfHostedChromeAppOption& option) {
+              ConfigureSelfHostedChromeApp(scoped_update, option.app_id,
+                                           option.account_id,
+                                           option.update_url);
             },
             [&scoped_update](const IsolatedWebAppOption& option) {
               ConfigureIsolatedWebApp(scoped_update, option);
@@ -413,6 +439,26 @@ KioskMixin::CwsChromeAppOption& KioskMixin::CwsChromeAppOption::operator=(
 KioskMixin::CwsChromeAppOption& KioskMixin::CwsChromeAppOption::operator=(
     KioskMixin::CwsChromeAppOption&&) = default;
 KioskMixin::CwsChromeAppOption::~CwsChromeAppOption() = default;
+
+KioskMixin::SelfHostedChromeAppOption::SelfHostedChromeAppOption(
+    std::string_view account_id,
+    std::string_view app_id,
+    const GURL& update_url)
+    : account_id(std::string(account_id)),
+      app_id(std::string(app_id)),
+      update_url(update_url) {}
+
+KioskMixin::SelfHostedChromeAppOption::SelfHostedChromeAppOption(
+    const KioskMixin::SelfHostedChromeAppOption&) = default;
+KioskMixin::SelfHostedChromeAppOption::SelfHostedChromeAppOption(
+    KioskMixin::SelfHostedChromeAppOption&&) = default;
+KioskMixin::SelfHostedChromeAppOption&
+KioskMixin::SelfHostedChromeAppOption::operator=(
+    const KioskMixin::SelfHostedChromeAppOption&) = default;
+KioskMixin::SelfHostedChromeAppOption&
+KioskMixin::SelfHostedChromeAppOption::operator=(
+    KioskMixin::SelfHostedChromeAppOption&&) = default;
+KioskMixin::SelfHostedChromeAppOption::~SelfHostedChromeAppOption() = default;
 
 KioskMixin::IsolatedWebAppOption::IsolatedWebAppOption(
     std::string_view account_id,
