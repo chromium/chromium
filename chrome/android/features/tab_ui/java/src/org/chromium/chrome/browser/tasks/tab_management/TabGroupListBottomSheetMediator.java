@@ -11,6 +11,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupParityBottomSheetCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -38,7 +39,7 @@ public class TabGroupListBottomSheetMediator {
     private final PropertyModel mModel;
     private final ModelList mModelList;
     private final TabGroupModelFilter mFilter;
-    private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
+    private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final FaviconResolver mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final DataSharingService mDataSharingService;
@@ -64,7 +65,7 @@ public class TabGroupListBottomSheetMediator {
     /**
      * @param modelList Side effect is adding items to this list.
      * @param filter Used to read current tab groups.
-     * @param tabGroupCreationDialogManager Used to show the tab group creation dialog.
+     * @param tabGroupCreationCallback Used to follow up on tab group creation.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param dataSharingService Used to fetch shared group data.
@@ -76,7 +77,7 @@ public class TabGroupListBottomSheetMediator {
     public TabGroupListBottomSheetMediator(
             ModelList modelList,
             TabGroupModelFilter filter,
-            TabGroupCreationDialogManager tabGroupCreationDialogManager,
+            TabGroupCreationCallback tabGroupCreationCallback,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
             DataSharingService dataSharingService,
@@ -86,7 +87,7 @@ public class TabGroupListBottomSheetMediator {
             TabGroupParityBottomSheetCoordinatorDelegate delegate) {
         mModelList = modelList;
         mFilter = filter;
-        mTabGroupCreationDialogManager = tabGroupCreationDialogManager;
+        mTabGroupCreationCallback = tabGroupCreationCallback;
         mFaviconResolver = faviconResolver;
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
@@ -171,6 +172,8 @@ public class TabGroupListBottomSheetMediator {
 
         mFilter.mergeListOfTabsToGroup(tabs, tab, true);
         hide(StateChangeReason.INTERACTION_COMPLETE);
-        mTabGroupCreationDialogManager.showDialog(tab.getRootId(), mFilter);
+        var tabGroupId = tab.getTabGroupId();
+        if (tabGroupId == null) return;
+        mTabGroupCreationCallback.onTabGroupCreated(tabGroupId);
     }
 }
