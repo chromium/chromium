@@ -710,7 +710,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sEdgeToEdgeEverywhere =
-            newCachedFlag(EDGE_TO_EDGE_EVERYWHERE, false);
+            newCachedFlag(
+                    EDGE_TO_EDGE_EVERYWHERE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sEdgeToEdgeWebOptIn =
             newCachedFlag(EDGE_TO_EDGE_WEB_OPT_IN, true);
     public static final CachedFlag sEducationalTipDefaultBrowserPromoCard =

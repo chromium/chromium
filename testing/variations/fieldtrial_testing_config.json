@@ -8785,6 +8785,21 @@
             ]
         }
     ],
+    "EdgeToEdgeEverywhere": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_134",
+                    "enable_features": [
+                        "EdgeToEdgeEverywhere"
+                    ]
+                }
+            ]
+        }
+    ],
     "EducationalTipModule": [
         {
             "platforms": [

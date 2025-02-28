@@ -111,6 +111,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+@Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public final class SafetyHubTest {

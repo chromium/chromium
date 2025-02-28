@@ -164,7 +164,10 @@ import java.util.concurrent.TimeoutException;
     "ignore-certificate-errors"
 })
 // TODO(crbug.com/370008370): Update individual tests after launch.
-@DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+@DisableFeatures({
+    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+    ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
+})
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
 public class SiteSettingsTest {
     public static final String SITE_SETTINGS_BATCH_NAME = "site_settings";

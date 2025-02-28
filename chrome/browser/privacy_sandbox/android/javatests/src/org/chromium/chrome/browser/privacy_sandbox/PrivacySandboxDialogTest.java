@@ -49,6 +49,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -72,6 +73,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Need to evaluate these tests for batching; some test startup behavior.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public final class PrivacySandboxDialogTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =

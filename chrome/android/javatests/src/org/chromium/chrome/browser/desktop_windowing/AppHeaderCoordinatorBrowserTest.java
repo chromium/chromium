@@ -42,6 +42,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -83,6 +84,7 @@ import java.util.concurrent.TimeoutException;
 @RequiresApi(Build.VERSION_CODES.R)
 @Restriction(DeviceFormFactor.TABLET)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AppHeaderCoordinatorBrowserTest {
