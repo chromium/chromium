@@ -240,8 +240,7 @@ bool AppendAuctionConfig(
           ? *auction_ad_config_non_shared_params.reporting_timeout
           : AuctionV8Helper::kScriptTimeout;
 
-  if (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
-      !auction_config_dict.Set("reportingTimeout",
+  if (!auction_config_dict.Set("reportingTimeout",
                                reporting_timeout.InMilliseconds())) {
     return false;
   }

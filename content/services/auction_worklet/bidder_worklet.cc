@@ -935,8 +935,7 @@ bool BidderWorklet::V8State::SetBrowserSignals(
                                  bidding_signals_data_version.value())) ||
       (!kanon_status.empty() &&
        !browser_signals_dict.Set("kAnonStatus", kanon_status)) ||
-      (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
-       !browser_signals_dict.Set("reportingTimeout",
+      (!browser_signals_dict.Set("reportingTimeout",
                                  reporting_timeout.InMilliseconds()))) {
     return false;
   }

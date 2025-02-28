@@ -2128,12 +2128,6 @@
       status: "stable",
     },
     {
-      // Enables using a 'reportingTimeout' field within the Protected Audience
-      // ad auction config.
-      name: "FledgeReportingTimeout",
-      status: "stable",
-    },
-    {
       // Enables the ability to set seller nonces on the header response and
       // use bidNonce in bids.
       name: "FledgeSellerNonce",
