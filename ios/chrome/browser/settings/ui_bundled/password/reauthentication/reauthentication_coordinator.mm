@@ -287,7 +287,7 @@ bool IsPasscodeSettingsAvailable() {
     return;
   }
   CHECK_EQ(_baseNavigationController.topViewController, _reauthViewController,
-           base::NotFatalUntil::M135);
+           base::NotFatalUntil::M136);
 
   [_baseNavigationController popViewControllerAnimated:NO];
   _reauthViewController.delegate = nil;
