@@ -1,5 +1,4 @@
-thomasanderson@chromium.org
-msisov@igalia.com
+file://ui/ozone/platform/x11/OWNERS
 
 # Prefer top-level X OWNERS for subtle changes involving deeper X magic.
 per-file *selection*=file://ui/base/dragdrop/OWNERS
