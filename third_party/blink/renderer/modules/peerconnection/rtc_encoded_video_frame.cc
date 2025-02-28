@@ -12,9 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -96,15 +94,12 @@ base::expected<void, String> ValidateMetadata(
 }  // namespace
 
 RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
-    ExecutionContext* context,
     RTCEncodedVideoFrame* original_frame,
     ExceptionState& exception_state) {
-  return RTCEncodedVideoFrame::Create(context, original_frame, nullptr,
-                                      exception_state);
+  return RTCEncodedVideoFrame::Create(original_frame, nullptr, exception_state);
 }
 
 RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
-    ExecutionContext* context,
     RTCEncodedVideoFrame* original_frame,
     const RTCEncodedVideoFrameOptions* options_dict,
     ExceptionState& exception_state) {
@@ -120,7 +115,7 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
   }
   if (options_dict && options_dict->hasMetadata()) {
     base::expected<void, String> set_metadata =
-        new_frame->SetMetadata(context, options_dict->metadata());
+        new_frame->SetMetadata(options_dict->metadata());
     if (!set_metadata.has_value()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
@@ -165,8 +160,7 @@ DOMArrayBuffer* RTCEncodedVideoFrame::data(ExecutionContext* context) const {
   return frame_data_.Get();
 }
 
-RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata(
-    ExecutionContext* context) const {
+RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   RTCEncodedVideoFrameMetadata* metadata =
       RTCEncodedVideoFrameMetadata::Create();
   if (delegate_->PayloadType()) {
@@ -210,24 +204,6 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata(
   metadata->setTemporalIndex(webrtc_metadata->GetTemporalIndex());
   metadata->setRtpTimestamp(delegate_->RtpTimestamp());
 
-  if (RuntimeEnabledFeatures::RTCEncodedFrameTimestampsEnabled()) {
-    if (std::optional<base::TimeTicks> receive_time =
-            delegate_->ReceiveTime()) {
-      metadata->setReceiveTime(
-          CalculateRTCEncodedFrameTimestamp(context, *receive_time));
-    }
-    if (std::optional<base::TimeTicks> capture_time =
-            delegate_->CaptureTime()) {
-      metadata->setCaptureTime(
-          CalculateRTCEncodedFrameTimestamp(context, *capture_time));
-    }
-    if (std::optional<base::TimeDelta> sender_capture_time_offset =
-            delegate_->SenderCaptureTimeOffset()) {
-      metadata->setSenderCaptureTimeOffset(CalculateRTCEncodedFrameTimestamp(
-          context, base::TimeTicks() + *sender_capture_time_offset));
-    }
-  }
-
   return metadata;
 }
 
@@ -239,7 +215,6 @@ int64_t RTCEncodedVideoFrame::Counter() {
 }
 
 base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
-    ExecutionContext* context,
     const RTCEncodedVideoFrameMetadata* metadata) {
   const std::optional<webrtc::VideoFrameMetadata> original_webrtc_metadata =
       delegate_->GetMetadata();
@@ -252,7 +227,7 @@ base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
     return validate_metadata;
   }
 
-  RTCEncodedVideoFrameMetadata* original_metadata = getMetadata(context);
+  RTCEncodedVideoFrameMetadata* original_metadata = getMetadata();
   if (!original_metadata) {
     return base::unexpected("internal error when calling getMetadata().");
   }
@@ -296,10 +271,9 @@ base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
   return delegate_->SetMetadata(webrtc_metadata, metadata->rtpTimestamp());
 }
 
-void RTCEncodedVideoFrame::setMetadata(ExecutionContext* context,
-                                       RTCEncodedVideoFrameMetadata* metadata,
+void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
                                        ExceptionState& exception_state) {
-  base::expected<void, String> set_metadata = SetMetadata(context, metadata);
+  base::expected<void, String> set_metadata = SetMetadata(metadata);
   if (!set_metadata.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,

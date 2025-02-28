@@ -36,7 +36,4 @@ dictionary RTCEncodedVideoFrameMetadata {
     [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
     long long timestamp;     // Presentation timestamp, microseconds.
     unsigned long rtpTimestamp;
-    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp receiveTime;
-    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp captureTime;
-    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp senderCaptureTimeOffset;
 };
