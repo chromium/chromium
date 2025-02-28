@@ -613,20 +613,10 @@ void BocaAppHandler::OpenFeedbackDialog(OpenFeedbackDialogCallback callback) {
 
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
-  if (!test_activity_callback_.is_null()) {
-    CHECK_IS_TEST();
-    std::move(test_activity_callback_).Run(std::move(activities));
-    return;
-  }
   remote_->OnStudentActivityUpdated(std::move(activities));
 }
 
 void BocaAppHandler::OnSessionConfigUpdated(mojom::ConfigResultPtr config) {
-  if (!test_config_callback_.is_null()) {
-    CHECK_IS_TEST();
-    std::move(test_config_callback_).Run(std::move(config));
-    return;
-  }
   remote_->OnSessionConfigUpdated(std::move(config));
 }
 
@@ -705,16 +695,6 @@ void BocaAppHandler::SetFloatModeAndBoundsForWindow(
   window_state->OnWMEvent(&float_event);
   window_state->OnWMEvent(&set_bound_event);
   std::move(callback).Run(true);
-}
-
-void BocaAppHandler::SetActivityInterceptorCallbackForTesting(
-    ActivityInterceptorCallback callback) {
-  test_activity_callback_ = std::move(callback);
-}
-
-void BocaAppHandler::SetSessionConfigInterceptorCallbackForTesting(
-    SessionConfigInterceptorCallback callback) {
-  test_config_callback_ = std::move(callback);
 }
 
 void BocaAppHandler::UpdateSessionConfig() {
