@@ -913,7 +913,8 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHost) {
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
   preconnect_manager_->StartPreresolveHost(
       url, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
   mock_network_context_->CompleteHostLookup(origin.host(),
                                             network_anonymization_key, net::OK);
 
@@ -921,7 +922,8 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHost) {
   GURL non_http_url("file:///tmp/index.html");
   preconnect_manager_->StartPreresolveHost(
       non_http_url, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreresolveHostDisabledViaUI) {
@@ -936,7 +938,8 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHostDisabledViaUI) {
   // will raise an error if it happens.
   preconnect_manager_->StartPreresolveHost(
       url, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
@@ -949,7 +952,8 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.host()));
   preconnect_manager_->StartPreresolveHosts(
       {cdn, fonts}, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
   mock_network_context_->CompleteHostLookup(cdn.host(),
                                             network_anonymization_key, net::OK);
   mock_network_context_->CompleteHostLookup(fonts.host(),
@@ -968,7 +972,8 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHostsDisabledViaUI) {
   // will raise an error if it happens.
   preconnect_manager_->StartPreresolveHosts(
       {cdn, fonts}, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
@@ -981,7 +986,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
 
   EXPECT_CALL(
       *mock_network_context_,
@@ -996,7 +1002,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
   GURL non_http_url("file:///tmp/index.html");
   preconnect_manager_->StartPreconnectUrl(
       non_http_url, allow_credentials, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrlDisabledViaUI) {
@@ -1012,7 +1019,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrlDisabledViaUI) {
   // will raise an error if it happens.
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrlWithNetworkIsolationKey) {
@@ -1027,7 +1035,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrlWithNetworkIsolationKey) {
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
 
   EXPECT_CALL(
       *mock_network_context_,
@@ -1065,7 +1074,8 @@ TEST_F(PreconnectManagerTest, TestDetachedRequestHasHigherPriority) {
   GURL detached_preresolve("http://ads.google.com");
   preconnect_manager_->StartPreresolveHost(
       detached_preresolve, network_anonymization_key,
-      kLoadingPredictorPreconnectTrafficAnnotation);
+      kLoadingPredictorPreconnectTrafficAnnotation,
+      /*storage_partition_config=*/nullptr);
   Mock::VerifyAndClearExpectations(preconnect_manager_.get());
 
   EXPECT_CALL(*mock_network_context_,

@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/glic/fre_util.h"
 #include "chrome/common/chrome_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
@@ -44,20 +45,10 @@ content::StoragePartitionConfig GetGlicMainStoragePartitionConfig(
                                                  /*in_memory=*/false);
 }
 
-content::StoragePartitionConfig GetGlicFreStoragePartitionConfig(
-    content::BrowserContext* browser_context) {
-  // This storage partition must match the partition attribute in
-  // chrome/browser/resources/glic_fre/fre.html: "glicfrepart".
-  return content::StoragePartitionConfig::Create(
-      browser_context, "glic-fre",
-      /*partition_name=*/"glicfrepart",
-      /*in_memory=*/true);
-}
-
 content::StoragePartitionConfig GetGlicStoragePartitionConfig(
     content::BrowserContext* browser_context,
     bool use_for_fre) {
-  return use_for_fre ? GetGlicFreStoragePartitionConfig(browser_context)
+  return use_for_fre ? GetFreStoragePartitionConfig(browser_context)
                      : GetGlicMainStoragePartitionConfig(browser_context);
 }
 

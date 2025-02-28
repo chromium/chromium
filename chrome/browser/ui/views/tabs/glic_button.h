@@ -27,6 +27,7 @@ class GlicButton : public TabStripNudgeButton,
   explicit GlicButton(TabStripController* tab_strip_controller,
                       PressedCallback pressed_callback,
                       PressedCallback close_pressed_callback,
+                      base::RepeatingClosure hovered_callback,
                       const gfx::VectorIcon& icon,
                       const std::u16string& tooltip);
   GlicButton(const GlicButton&) = delete;
@@ -48,6 +49,7 @@ class GlicButton : public TabStripNudgeButton,
   // TabStripControlButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  void StateChanged(ButtonState old_state) override;
 
  private:
   // Tab strip that contains this button.
@@ -60,6 +62,10 @@ class GlicButton : public TabStripNudgeButton,
   // Represents if a nudge is currently showing. The button is not visible
   // while the nudge is showing.
   bool is_showing_nudge_ = false;
+
+  // Callback which is invoked when the button is hovered (i.e., the user is
+  // more likely to interact with it soon).
+  base::RepeatingClosure hovered_callback_;
 };
 
 }  // namespace glic
