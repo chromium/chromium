@@ -8,11 +8,6 @@
 
 namespace ash::metrics_utils {
 
-void LogArcNotificationInlineReplyEnabled(bool inline_reply_enabled) {
-  base::UmaHistogramBoolean("Arc.Notifications.InlineReplyEnabled",
-                            inline_reply_enabled);
-}
-
 void LogArcNotificationIsCustomNotification(bool is_custom_notification) {
   base::UmaHistogramBoolean("Arc.Notifications.IsCustomNotification",
                             is_custom_notification);
