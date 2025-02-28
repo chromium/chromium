@@ -381,7 +381,7 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
   CHECK(font);
   if (font->StillNeedsLoad()) {
     TRACE_EVENT("devtools.timeline", "BeginRemoteFontLoad", "id",
-                font->InspectorId(), "display",
+                font->InspectorId(), "url", font->Url(), "display",
                 face_->GetFontFace()->display());
     if (font->IsLowPriorityLoadingAllowedForRemoteFont()) {
       execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

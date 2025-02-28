@@ -92,6 +92,8 @@ class PLATFORM_EXPORT FontCustomPlatformData
 
   String FamilyNameForInspector() const;
 
+  String GetPostScriptNameOrFamilyNameForInspector() const;
+
   Vector<VariationAxis> GetVariationAxes() const;
 
   size_t DataSize() const { return data_size_; }
