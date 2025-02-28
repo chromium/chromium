@@ -827,13 +827,6 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
     return;
   }
 
-  if (Platform::Current()->IsGpuCompositingDisabled()) {
-    // GPU compositing was disabled after the check in
-    // WidgetBase::RequestNewLayerTreeFrameSink(). Fail and let it retry.
-    std::move(callback).Run(nullptr, nullptr);
-    return;
-  }
-
   scoped_refptr<cc::RasterContextProviderWrapper>
       worker_context_provider_wrapper =
           Platform::Current()->SharedCompositorWorkerContextProvider(
