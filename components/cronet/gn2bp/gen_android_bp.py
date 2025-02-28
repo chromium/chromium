@@ -323,6 +323,10 @@ def add_androidx_annotation_java_deps(module, arch):
   module.libs.add("androidx.annotation_annotation")
 
 def add_protobuf_lite_runtime_java_deps(module, arch):
+  # TODO: this seems wrong - we are using Chromium's protoc, not AOSP's, so we
+  # should use the Chromium Java protobuf library as well. Otherwise protoc
+  # may generate Java code that is not compatible with AOSP's protobuf Java
+  # runtime library.
   module.static_libs.add("libprotobuf-java-lite")
 
 def add_androidx_core_java_deps(module, arch):
@@ -1022,6 +1026,17 @@ def _set_rust_flags(module: Module.Target, rust_flags: List[str],
 
 
 def get_protoc_module_name(gn):
+  # Note we use Chromium's protoc, not AOSP's. AOSP protoc does not work for us
+  # because that would require us to link against AOSP's protobuf C++ runtime
+  # library as well (libprotobuf-cpp-lite) as the generated code is coupled to
+  # the runtime library. Problem is, the protobuf C++ runtime library uses the
+  # C++ STL extensively in its public API (e.g. public functions taking
+  # std::string). Because libc++ does not guarantee ABI compatibility, this in
+  # turn means that both the producer (libprotobuf-cpp-lite) and the consumer
+  # (Cronet) of the API must link against the same libc++. Unfortunately that is
+  # not currently the case - libprotobuf-cpp-lite links against AOSP libc++,
+  # while Cronet links against its own libc++ from Chromium. Therefore we cannot
+  # use the AOSP protobuf library - we have to use the Chromium one.
   protoc_gn_target_name = gn.get_target('//third_party/protobuf:protoc').name
   return label_to_module_name(protoc_gn_target_name)
 
