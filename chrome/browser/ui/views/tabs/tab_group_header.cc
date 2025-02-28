@@ -552,8 +552,7 @@ void TabGroupHeader::UpdateAttentionIndicatorView() {
     attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
         kDefaultTouchFaviconMaskIcon,
         color_utils::GetColorWithMaxContrast(color_),
-        group_style_->GetAttentionIndicatorWidth(
-            should_show_attention_indicator)));
+        group_style_->GetAttentionIndicatorWidth()));
   }
 }
 
@@ -575,16 +574,13 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
           group_style_->GetInsetsForHeaderChip();
       const int title_chip_vertical_inset = 0;
       gfx::Rect title_chip_bounds = group_style_->GetEmptyTitleChipBounds(this);
-      int attention_indicator_width = group_style_->GetAttentionIndicatorWidth(
-          should_show_attention_indicator);
-      if (attention_indicator_width) {
-        // Only add padding if the attention indicator is showing;
-        attention_indicator_width += kSyncIconPaddingFromLabel;
-      }
+      const int attention_indicator_width =
+          group_style_->GetAttentionIndicatorWidth();
 
       // The total width of the title chip includes the horizontal
       // insets, the sync icon, and the attention indicator + its padding.
       title_chip_bounds.set_width(sync_icon_width + attention_indicator_width +
+                                  kSyncIconPaddingFromLabel +
                                   title_chip_insets.width());
       title_chip_->SetBoundsRect(title_chip_bounds);
 
@@ -623,12 +619,13 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   // attention indicator is enabled.
   const bool should_show_attention_indicator =
       should_show_header_icon_ && GetShowingAttentionIndicator();
-  int attention_indicator_width =
-      group_style_->GetAttentionIndicatorWidth(should_show_attention_indicator);
-  if (attention_indicator_width) {
-    // Only add padding if the attention indicator is showing;
-    attention_indicator_width += kSyncIconPaddingFromLabel;
-  }
+  const int attention_indicator_width =
+      should_show_attention_indicator
+          ? group_style_->GetAttentionIndicatorWidth() +
+                kSyncIconPaddingFromLabel
+          : 0;
+  const int attention_indicator_padding =
+      should_show_attention_indicator ? kSyncIconPaddingFromLabel : 0;
 
   // The max width of the content should be half the standard tab width (not
   // counting overlap).
@@ -642,9 +639,9 @@ void TabGroupHeader::CreateHeaderWithTitle() {
       title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
 
   // Width of title chip should at least be the width of an empty title chip.
-  const int total_content_width = sync_icon_width +
-                                  padding_between_label_sync_icon + text_width +
-                                  attention_indicator_width;
+  const int total_content_width =
+      sync_icon_width + padding_between_label_sync_icon + text_width +
+      attention_indicator_width + attention_indicator_padding;
   const gfx::Insets title_chip_insets = group_style_->GetInsetsForHeaderChip();
   const int title_chip_width =
       std::max(group_style_->GetEmptyTitleChipBounds(this).width(),

@@ -38,6 +38,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 
@@ -248,7 +249,7 @@ class AdjustableAuction : public ContentBrowserTest {
   AdjustableAuction() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kInterestGroupStorage,
+        {network::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kAllowURNsInIframes,
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot},

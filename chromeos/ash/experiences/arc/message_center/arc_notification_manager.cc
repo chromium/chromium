@@ -238,8 +238,6 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     DCHECK(result.second);
     it = result.first;
 
-    metrics_utils::LogArcNotificationInlineReplyEnabled(
-        data->is_inline_reply_enabled);
     metrics_utils::LogArcNotificationIsCustomNotification(
         data->is_custom_notification);
   }

@@ -91,6 +91,14 @@ void GlicScreenshotCapturer::CaptureScreenshot(
                            std::move(source_selected_callback));
 }
 
+void GlicScreenshotCapturer::CloseScreenPicker() {
+  picker_controller_.reset();
+  if (capture_callback_) {
+    SignalError(glic::mojom::CaptureScreenshotErrorReason::
+                    kUserCancelledScreenPickerDialog);
+  }
+}
+
 void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
                                               content::DesktopMediaID id) {
   picker_controller_ = nullptr;

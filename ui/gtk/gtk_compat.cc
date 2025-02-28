@@ -10,6 +10,8 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
+#include "base/environment.h"
+#include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/gfx/color_palette.h"
@@ -123,7 +125,17 @@ bool LoadGtkImpl() {
                           &gtk_version)) {
     gtk_version = 0;
   }
-  // Prefer GTK3 for now as the GTK4 ecosystem is still immature.
+  auto env = base::Environment::Create();
+  const auto desktop = base::nix::GetDesktopEnvironment(env.get());
+  if (desktop == base::nix::DESKTOP_ENVIRONMENT_GNOME) {
+    // GNOME is currently the only desktop to support GTK4 starting with version
+    // 42+. Try to match the loaded GTK version with the GNOME GTK version.
+    // Checking the GNOME version is not necessary since GTK4 is available iff
+    // GNOME is version 42+. This is the case for Debian, Ubuntu, and the RPM-based
+    // distributions that are supported.
+    gtk_version = 4;
+  }
+  // Prefer GTK3 for non-GNOME desktops as the GTK4 ecosystem is still immature.
   return gtk_version == 4 ? LoadGtk4() || LoadGtk3() : LoadGtk3() || LoadGtk4();
 }
 

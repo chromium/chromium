@@ -166,11 +166,6 @@
         25
       </message>
 
-      <!-- The URL for the themes gallery. -->
-      <message name="IDS_THEMES_GALLERY_URL" translateable="false">
-        https://chrome.google.com/webstore?hl=[GRITLANGCODE]&amp;category=theme
-      </message>
-
       <!-- The URL for the webstore. -->
       <message name="IDS_WEBSTORE_URL" translateable="false">
         https://chrome.google.com/webstore?hl=[GRITLANGCODE]

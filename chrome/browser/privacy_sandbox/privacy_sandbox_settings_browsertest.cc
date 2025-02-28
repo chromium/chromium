@@ -40,6 +40,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 
@@ -873,7 +874,7 @@ class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
   PrivacySandboxSettingsAttestProtectedAudienceBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kInterestGroupStorage,
+        {network::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFledgeBiddingAndAuctionServer,
          blink::features::kFencedFrames,

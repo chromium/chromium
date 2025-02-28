@@ -1039,4 +1039,16 @@ HeapVector<Member<Resource>> Frame::AllResourcesUnderFrame() {
   return resources;
 }
 
+void Frame::AdjustOffsetByAncestorFrames(gfx::Point* origin_point) {
+  CHECK(origin_point);
+  Frame* current_frame = this;
+  while (current_frame->Owner()) {
+    if (auto* frame_view = current_frame->View()) {
+      gfx::Point location = frame_view->Location();
+      origin_point->Offset(-location.x(), -location.y());
+    }
+    current_frame = current_frame->Parent();
+  }
+}
+
 }  // namespace blink

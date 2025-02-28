@@ -59,7 +59,11 @@ luci.bucket(
     name = "try.shadow",
     shadows = "try",
     constraints = luci.bucket_constraints(
-        pools = ["luci.chromium.try", "luci.chromium.try.orchestrator"],
+        pools = [
+            "luci.chromium.gpu.try",
+            "luci.chromium.try",
+            "luci.chromium.try.orchestrator",
+        ],
         service_accounts = [
             "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
             "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",

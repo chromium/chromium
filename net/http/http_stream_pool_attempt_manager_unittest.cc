@@ -2401,6 +2401,50 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreLimitsExceedsPoolDefaultLimit) {
   }
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       IgnoreLimitsExceedsPoolLimitCloseIdleStreams) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 6;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  const HttpStreamKey stream_key_a =
+      StreamKeyBuilder().set_destination("http://a.test").Build();
+  const HttpStreamKey stream_key_b =
+      StreamKeyBuilder().set_destination("http://b.test").Build();
+
+  // Add some idle streams for b.test.
+  Group& group_b = pool().GetOrCreateGroupForTesting(stream_key_b);
+  for (size_t i = 0; i < kMaxPerGroup; ++i) {
+    group_b.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  }
+
+  // Request streams ignoring limits. This should close idle streams.
+  std::list<std::unique_ptr<SequencedSocketData>> data_providers;
+  std::list<std::unique_ptr<StreamRequester>> requesters;
+  for (size_t i = 0; i < kMaxPerPool + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+    auto requester = std::make_unique<StreamRequester>(stream_key_a);
+    requester->set_load_flags(LOAD_IGNORE_LIMITS).RequestStream(pool());
+    requesters.emplace_back(std::move(requester));
+  }
+  ASSERT_EQ(group_b.IdleStreamSocketCount(), 0u);
+
+  // Complete requests.
+  while (!requesters.empty()) {
+    requesters.front()->WaitForResult();
+    EXPECT_THAT(requesters.front()->result(), Optional(IsOk()));
+    requesters.pop_front();
+  }
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, UseIdleStreamSocketAfterRelease) {
   StreamRequester requester;
   Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());

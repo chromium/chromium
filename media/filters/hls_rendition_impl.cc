@@ -15,6 +15,15 @@
 
 namespace media {
 
+namespace {
+
+bool KeyIsValidSize(const std::vector<uint8_t>& key) {
+  // HLS allows 128- and 256-bit keys, but not 192-bit.
+  return key.size() == 16 || key.size() == 32;
+}
+
+}  // namespace
+
 constexpr base::TimeDelta kBufferDuration = base::Seconds(10);
 
 HlsRenditionImpl::~HlsRenditionImpl() {
@@ -280,7 +289,7 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
     return ManifestDemuxer::SeekState::kIsReady;
   }
 
-  decryptor_ = nullptr;
+  key_.clear();
   last_discontinuity_sequence_num_ = std::nullopt;
 
   if (IsLive()) {
@@ -418,38 +427,45 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
     switch (enc_data->GetMethod()) {
       case hls::XKeyTagMethod::kAES128:
       case hls::XKeyTagMethod::kAES256: {
-        if (!decryptor_ || segment->HasNewEncryptionData() || fetched_new_key) {
-          // Create a new decryptor any time we get a new uri.
-          decryptor_ = std::make_unique<crypto::Encryptor>();
-
+        if (key_.empty() || !segment->HasNewEncryptionData() ||
+            fetched_new_key) {
           // Hold on to the segment - this is likely the last reference to it,
           // and it contains our aes key.
           segment_with_key_ = segment;
 
-          auto mode = crypto::Encryptor::Mode::CBC;
-
           auto maybe_iv = enc_data->GetIVStr(segment->GetMediaSequenceNumber());
           if (!maybe_iv.has_value()) {
+            // TODO: if no key is present in enc_data, it seems like
+            // kInsufficientCryptoMetadata is a better error code than
+            // kFailedToDecryptSegment. Maybe the check for maybe_key below
+            // should be moved to this block?
             rendition_host_->Quit(
                 HlsDemuxerStatus::Codes::kInsufficientCryptoMetadata);
             return;
           }
-          auto iv = std::move(maybe_iv).value();
-          if (!decryptor_->Init(enc_data->GetKey(), mode, iv)) {
+
+          auto key = enc_data->GetKey();
+          if (maybe_iv->size() != std::size(iv_) || !KeyIsValidSize(key)) {
             rendition_host_->Quit(
                 HlsDemuxerStatus::Codes::kFailedToDecryptSegment);
             return;
           }
+
+          base::span(iv_).copy_from(base::as_byte_span(*maybe_iv));
+          key_ = key;
         }
 
         // Decrypt the ciphertext, and re-assign the data span to point to the
         // cleartext memory in `plaintext`.
-        if (!decryptor_->Decrypt(stream_data, &plaintext)) {
+        auto maybe_plaintext = crypto::aes_cbc::Decrypt(key_, iv_, stream_data);
+        if (!maybe_plaintext) {
           rendition_host_->Quit(
               HlsDemuxerStatus::Codes::kFailedToDecryptSegment);
           return;
         }
-        stream_data = base::span(plaintext.data(), plaintext.size());
+
+        plaintext = std::move(maybe_plaintext).value();
+        stream_data = plaintext;
         if (plaintext.size() == 0) {
           FetchNext(std::move(cb), required_time);
           return;

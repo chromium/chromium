@@ -82,10 +82,9 @@ CastDialogView::~CastDialogView() {
   if (controller_) {
     controller_->RemoveObserver(this);
   }
-  if (features::IsToolbarPinningEnabled()) {
-    if (action_item_) {
-      action_item_->SetIsShowingBubble(false);
-    }
+
+  if (action_item_) {
+    action_item_->SetIsShowingBubble(false);
   }
 }
 

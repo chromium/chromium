@@ -322,6 +322,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void NotifyTabGroupSharingResult(const base::Uuid& group_guid,
                                    TabGroupSharingResult result);
 
+  // Find tab group by collaboration Id.
+  std::optional<SavedTabGroup> FindGroupWithCollaborationId(
+      const syncer::CollaborationId& collaboration_id);
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 

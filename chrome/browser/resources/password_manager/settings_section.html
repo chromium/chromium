@@ -59,6 +59,14 @@
       </extension-controlled-indicator>
     </div>
   </template>
+  <template is="dom-if" if="[[isPasskeyUpgradeSettingsToggleVisible_]]">
+    <pref-toggle-button id="passkeyUpgradeToggle"
+        label="$i18n{passkeyUpgradeSettingsToggleLabel}"
+        sub-label="$i18n{passkeyUpgradeSettingsToggleSubLabel}"
+        pref="{{prefs.password_manager.automatic_passkey_upgrades}}"
+        hidden="[[!prefs.credentials_enable_service.value]]">
+    </pref-toggle-button>
+  </template>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
       sub-label="$i18n{autosigninDescription}"

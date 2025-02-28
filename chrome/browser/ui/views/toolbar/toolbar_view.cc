@@ -70,7 +70,7 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -290,8 +290,7 @@ void ToolbarView::Init() {
 
   std::unique_ptr<DownloadToolbarButtonView> download_button;
   if (download::IsDownloadBubbleEnabled() &&
-      (!features::IsToolbarPinningEnabled() ||
-       !base::FeatureList::IsEnabled(features::kPinnableDownloadsButton))) {
+      !base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
     download_button =
         std::make_unique<DownloadToolbarButtonView>(browser_view_);
   }
@@ -371,8 +370,7 @@ void ToolbarView::Init() {
     toolbar_divider = std::make_unique<views::View>();
   }
   std::unique_ptr<media_router::CastToolbarButton> cast;
-  if (!(features::IsToolbarPinningEnabled() &&
-        base::FeatureList::IsEnabled(features::kPinnedCastButton))) {
+  if (!base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     if (media_router::MediaRouterEnabled(browser_->profile())) {
       cast = media_router::CastToolbarButton::Create(browser_);
     }
@@ -425,12 +423,9 @@ void ToolbarView::Init() {
     UpdateChromeLabsNewBadgePrefs(browser_->profile(),
                                   chrome_labs_model_.get());
 
-    if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile())) {
-      if (!features::IsToolbarPinningEnabled()) {
-        chrome_labs_button_ =
-            container_view_->AddChildView(std::make_unique<ChromeLabsButton>(
-                browser_view_, chrome_labs_model_.get()));
-      }
+    const bool should_show_chrome_labs_ui =
+        ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile());
+    if (should_show_chrome_labs_ui) {
       show_chrome_labs_button_.Init(
           chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, prefs,
           base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
@@ -438,15 +433,9 @@ void ToolbarView::Init() {
       // Set the visibility for the button based on initial enterprise policy
       // value. Only call OnChromeLabsPrefChanged if there is a change from
       // the initial value.
-      if (features::IsToolbarPinningEnabled()) {
-        pinned_toolbar_actions_container_
-            ->GetActionItemFor(kActionShowChromeLabs)
-            ->SetVisible(show_chrome_labs_button_.GetValue() &&
-                         ShouldShowChromeLabsUI(chrome_labs_model_.get(),
-                                                browser_->profile()));
-      } else {
-        chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
-      }
+      pinned_toolbar_actions_container_->GetActionItemFor(kActionShowChromeLabs)
+          ->SetVisible(show_chrome_labs_button_.GetValue() &&
+                       should_show_chrome_labs_ui);
     }
   }
 
@@ -722,8 +711,7 @@ ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
 }
 
 ToolbarButton* ToolbarView::GetCastButton() const {
-  if (features::IsToolbarPinningEnabled() &&
-      base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     return pinned_toolbar_actions_container()
                ? pinned_toolbar_actions_container()->GetButtonFor(
                      kActionRouteMedia)
@@ -1182,8 +1170,7 @@ views::AccessiblePaneView* ToolbarView::GetAsAccessiblePaneView() {
 
 views::View* ToolbarView::GetAnchorView(
     std::optional<actions::ActionId> action_id) {
-  if (features::IsToolbarPinningEnabled() &&
-      pinned_toolbar_actions_container_ && action_id.has_value() &&
+  if (pinned_toolbar_actions_container_ && action_id.has_value() &&
       pinned_toolbar_actions_container_->IsActionPinnedOrPoppedOut(
           action_id.value())) {
     return pinned_toolbar_actions_container_->GetButtonFor(action_id.value());
@@ -1242,24 +1229,16 @@ views::View* ToolbarView::GetViewForDrop() {
 }
 
 void ToolbarView::OnChromeLabsPrefChanged() {
-  if (features::IsToolbarPinningEnabled()) {
-    actions::ActionItem* chrome_labs_action =
-        pinned_toolbar_actions_container_->GetActionItemFor(
-            kActionShowChromeLabs);
-    chrome_labs_action->SetVisible(
-        show_chrome_labs_button_.GetValue() &&
-        ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile()));
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-        chrome_labs_action->GetVisible()
-            ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
-            : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
-  } else {
-    chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-        chrome_labs_button_->GetVisible()
-            ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
-            : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
-  }
+  actions::ActionItem* chrome_labs_action =
+      pinned_toolbar_actions_container_->GetActionItemFor(
+          kActionShowChromeLabs);
+  chrome_labs_action->SetVisible(
+      show_chrome_labs_button_.GetValue() &&
+      ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile()));
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      chrome_labs_action->GetVisible()
+          ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
+          : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
 }
 
 void ToolbarView::LoadImages() {

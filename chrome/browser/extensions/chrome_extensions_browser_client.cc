@@ -735,10 +735,6 @@ void ChromeExtensionsBrowserClient::SignalContentScriptsLoaded(
   user_script_listener_.OnScriptsLoaded(context);
 }
 
-std::string ChromeExtensionsBrowserClient::GetUserAgent() const {
-  return embedder_support::GetUserAgent();
-}
-
 bool ChromeExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
     const std::string& scheme) const {
   if (scheme == chrome::kChromeSearchScheme) {

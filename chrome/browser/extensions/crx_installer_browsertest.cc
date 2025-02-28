@@ -1000,73 +1000,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, KioskOnlyUninstallableTest) {
   EXPECT_FALSE(InstallExtension(crx_path, 0));
 }
 
-class ExtensionCrxInstallerKioskTest : public ExtensionCrxInstallerTest {
+class ExtensionCrxInstallerKioskTest
+    : public InProcessBrowserTestMixinHostSupport<ExtensionCrxInstallerTest> {
  public:
   ExtensionCrxInstallerKioskTest() { set_chromeos_user_ = false; }
-
-  void SetUp() override {
-    mixin_host_.SetUp();
-    ExtensionCrxInstallerTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    mixin_host_.SetUpCommandLine(command_line);
-    ExtensionCrxInstallerTest::SetUpCommandLine(command_line);
-  }
-
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    mixin_host_.SetUpDefaultCommandLine(command_line);
-    ExtensionCrxInstallerTest::SetUpDefaultCommandLine(command_line);
-  }
-
-  bool SetUpUserDataDirectory() override {
-    return mixin_host_.SetUpUserDataDirectory() &&
-           ExtensionCrxInstallerTest::SetUpUserDataDirectory();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    mixin_host_.SetUpInProcessBrowserTestFixture();
-    ExtensionCrxInstallerTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpLocalStatePrefService(PrefService* local_state) override {
-    mixin_host_.SetUpLocalStatePrefService(local_state);
-    ExtensionCrxInstallerTest::SetUpLocalStatePrefService(local_state);
-  }
-
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    mixin_host_.CreatedBrowserMainParts(browser_main_parts);
-    ExtensionCrxInstallerTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-
-  void SetUpOnMainThread() override {
-    mixin_host_.SetUpOnMainThread();
-    ExtensionCrxInstallerTest::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    mixin_host_.TearDownOnMainThread();
-    ExtensionCrxInstallerTest::TearDownOnMainThread();
-  }
-
-  void PostRunTestOnMainThread() override {
-    mixin_host_.PostRunTestOnMainThread();
-    ExtensionCrxInstallerTest::PostRunTestOnMainThread();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    mixin_host_.TearDownInProcessBrowserTestFixture();
-    ExtensionCrxInstallerTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  void TearDown() override {
-    mixin_host_.TearDown();
-    ExtensionCrxInstallerTest::TearDown();
-  }
-
- protected:
-  InProcessBrowserTestMixinHost mixin_host_;
 
  private:
   ash::KioskLoggedInBrowserTestMixin kiosk_mixin_{

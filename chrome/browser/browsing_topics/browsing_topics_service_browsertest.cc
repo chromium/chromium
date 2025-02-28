@@ -49,6 +49,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
@@ -264,7 +265,7 @@ class BrowsingTopicsDisabledBrowserTest : public BrowsingTopicsBrowserTestBase {
   BrowsingTopicsDisabledBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{blink::features::kBrowsingTopics});
+        /*disabled_features=*/{network::features::kBrowsingTopics});
   }
 
  protected:
@@ -294,7 +295,7 @@ class BrowsingTopicsAnnotationGoldenDataBrowserTest
   BrowsingTopicsAnnotationGoldenDataBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kBrowsingTopics,
+        {network::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{
@@ -386,7 +387,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
     // during tests where expiration is irrelevant.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kBrowsingTopics, {}},
+        {{network::features::kBrowsingTopics, {}},
          {blink::features::kBrowsingTopicsParameters,
           {{"epoch_retention_duration", "3650000d"}}},
          {blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck, {}},

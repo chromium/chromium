@@ -596,6 +596,8 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwKeyboardShortcuts.java",
     "java/src/org/chromium/android_webview/AwLayoutSizer.java",
     "java/src/org/chromium/android_webview/AwMediaIntegrityApiStatusConfig.java",
+    "java/src/org/chromium/android_webview/AwNavigation.java",
+    "java/src/org/chromium/android_webview/AwNavigationClient.java",
     "java/src/org/chromium/android_webview/AwNetLogsConnection.java",
     "java/src/org/chromium/android_webview/AwNetworkChangeNotifierRegistrationPolicy.java",
     "java/src/org/chromium/android_webview/AwNoVarySearchData.java",

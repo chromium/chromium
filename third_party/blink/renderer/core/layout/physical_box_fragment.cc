@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -569,7 +569,7 @@ const PhysicalBoxFragment* PhysicalBoxFragment::PostLayout() const {
 
 // TODO(crbug.com/1241721): Revert https://crrev.com/c/3108806 to re-enable this
 // DCHECK on CrOS.
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
   DCHECK(AllowPostLayoutScope::IsAllowed());
 #endif
   return post_layout;

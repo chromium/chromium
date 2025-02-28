@@ -18,11 +18,6 @@ GlicWidget::GlicWidget(InitParams params) : views::Widget(std::move(params)) {}
 
 GlicWidget::~GlicWidget() = default;
 
-gfx::Size GlicWidget::GetInitialSize() {
-  return {features::kGlicInitialWidth.Get(),
-          features::kGlicInitialHeight.Get()};
-}
-
 std::unique_ptr<GlicWidget> GlicWidget::Create(
     Profile* profile,
     const gfx::Rect& initial_bounds) {

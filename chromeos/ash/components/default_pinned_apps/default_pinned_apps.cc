@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/webui/mall/app_id.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
@@ -22,29 +23,29 @@ bool ShouldAddHelpApp(content::BrowserContext* browser_context) {
 
 std::vector<StaticAppId> GetDefaultPinnedApps(
     content::BrowserContext* browser_context) {
-  std::vector<StaticAppId> app_ids{
-      ash::kGmailAppId,
-
-      ash::kGoogleCalendarAppId,
-
-      file_manager::kFileManagerSwaAppId,
-
-      ash::kMessagesAppId,
-
-      ash::kGoogleMeetAppId,
-
-      arc::kPlayStoreAppId,
-
-      ash::kYoutubeAppId,
-
-      arc::kGooglePhotosAppId,
-  };
+  std::vector<StaticAppId> app_ids;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
-    app_ids.insert(app_ids.begin(), ash::kGeminiAppId);
+    app_ids.push_back(ash::kGeminiAppId);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  // Pin Mall after Gemini, when both are enabled.
+  if (chromeos::features::IsCrosMallSwaEnabled()) {
+    app_ids.push_back(ash::kMallSystemAppId);
+  }
+
+  app_ids.insert(app_ids.end(), {
+                                    ash::kGmailAppId,
+                                    ash::kGoogleCalendarAppId,
+                                    file_manager::kFileManagerSwaAppId,
+                                    ash::kMessagesAppId,
+                                    ash::kGoogleMeetAppId,
+                                    arc::kPlayStoreAppId,
+                                    ash::kYoutubeAppId,
+                                    arc::kGooglePhotosAppId,
+                                });
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
     app_ids.push_back(ash::kNvidiaGeForceNowAppId);

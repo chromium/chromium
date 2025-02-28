@@ -763,14 +763,8 @@ void InternalPopupMenu::SetMenuListOptionsBoundsInAXTree(
   // We need to make sure we take into account any iframes. Since OOPIF and
   // srcdoc iframes aren't allowed to access the root viewport, we need to
   // iterate through the frame owner's parent nodes and accumulate the offsets.
-  Frame* frame = owner_element_->GetDocument().GetFrame();
-  while (frame->Owner()) {
-    if (auto* frame_view = frame->View()) {
-      gfx::Point frame_point = frame_view->Location();
-      popup_origin.Offset(-frame_point.x(), -frame_point.y());
-    }
-    frame = frame->Parent();
-  }
+  owner_element_->GetDocument().GetFrame()->AdjustOffsetByAncestorFrames(
+      &popup_origin);
 
   for (auto& option_bounds : options_bounds) {
     option_bounds.Offset(popup_origin.x(), popup_origin.y());

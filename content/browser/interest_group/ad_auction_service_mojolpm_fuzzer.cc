@@ -50,6 +50,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-mojolpm.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
@@ -250,7 +251,7 @@ AdAuctionServiceTestcase::AdAuctionServiceTestcase(
     : Testcase<ProtoTestcase, ProtoAction>(testcase) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/
-      {blink::features::kInterestGroupStorage,
+      {network::features::kInterestGroupStorage,
        blink::features::kAdInterestGroupAPI, blink::features::kFledge},
       /*disabled_features=*/{});
   fenced_frame_feature_list_.InitAndEnableFeatureWithParameters(

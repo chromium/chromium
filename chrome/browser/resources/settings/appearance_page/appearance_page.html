@@ -82,21 +82,19 @@
           </div>
 </if>
         </div>
-        <template is="dom-if" if="[[toolbarPinningEnabled_]]">
-          <div id="toolbarRow" class="settings-row">
-            <cr-link-row id="customizeToolbar"
-                label="$i18n{customizeToolbar}"
-                on-click="onCustomizeToolbarClick_" external>
-            </cr-link-row>
-            <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
-              <div class="separator"></div>
-              <cr-button id="resetPinnedToolbarActions"
-                  on-click="onResetPinnedToolbarActionsClick_">
-                $i18n{resetToDefault}
-              </cr-button>
-            </template>
-          </div>
-        </template>
+        <div id="toolbarRow" class="settings-row">
+          <cr-link-row id="customizeToolbar"
+              label="$i18n{customizeToolbar}"
+              on-click="onCustomizeToolbarClick_" external>
+          </cr-link-row>
+          <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
+            <div class="separator"></div>
+            <cr-button id="resetPinnedToolbarActions"
+                on-click="onResetPinnedToolbarActionsClick_">
+              $i18n{resetToDefault}
+            </cr-button>
+          </template>
+        </div>
         <div id="colorSchemeModeRow" class="cr-row"
 <if expr="is_linux">
             hidden="[[!showColorSchemeMode_(prefs.extensions.theme.id.value,

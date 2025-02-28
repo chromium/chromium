@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/api/tasks",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",

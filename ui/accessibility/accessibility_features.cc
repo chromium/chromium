@@ -229,7 +229,7 @@ bool IsAccessibilityMagnifierFollowsChromeVoxEnabled() {
 
 BASE_FEATURE(kAccessibilityMouseKeys,
              "AccessibilityMouseKeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityMouseKeysEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityMouseKeys);
 }

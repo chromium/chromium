@@ -28,7 +28,7 @@ import org.chromium.ui.util.XrUtils;
 @NullMarked
 public class XrLayoutStateObserver {
     private static final String TAG = "XrLayoutObserver";
-    private static final int XR_SYSUI_FADING_TIME_MS = 30;
+    private static final int XR_SYSUI_FADING_TIME_MS = 300;
 
     private final Activity mActivity;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;

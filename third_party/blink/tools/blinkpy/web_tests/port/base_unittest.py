@@ -67,13 +67,14 @@ class PortTest(LoggingTestCase):
         return port
 
     def test_validate_wpt_dirs(self):
+        port = self.make_port()
         # Keys should not have trailing slashes.
-        for wpt_path in Port.WPT_DIRS.keys():
+        for wpt_path in port.wpt_dirs().keys():
             self.assertFalse(wpt_path.endswith('/'))
         # Values should not be empty (except the last one).
-        for url_prefix in list(Port.WPT_DIRS.values())[:-1]:
+        for url_prefix in list(port.wpt_dirs().values())[:-1]:
             self.assertNotEqual(url_prefix, '/')
-        self.assertEqual(list(Port.WPT_DIRS.values())[-1], '/')
+        self.assertEqual(list(port.wpt_dirs().values())[-1], '/')
 
     def test_validate_wpt_regex(self):
         self.assertEquals(

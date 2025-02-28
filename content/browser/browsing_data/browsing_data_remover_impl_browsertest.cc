@@ -887,7 +887,7 @@ class BrowsingDataRemoverImplSharedStorageBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {
  public:
   BrowsingDataRemoverImplSharedStorageBrowserTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
   }
 
   StoragePartition* storage_partition() {

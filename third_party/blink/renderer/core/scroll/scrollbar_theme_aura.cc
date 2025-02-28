@@ -32,7 +32,6 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"

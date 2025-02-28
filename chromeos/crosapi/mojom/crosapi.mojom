@@ -38,7 +38,6 @@ import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
-import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
@@ -305,10 +304,7 @@ interface Crosapi {
   [MinVersion=16]
   BindIdleService@21(pending_receiver<IdleService> receiver);
 
-  // Binds the ImageWriter interface for managing removable storage devices.
-  // Added in M93.
-  [MinVersion=37]
-  BindImageWriter@42(pending_receiver<ImageWriter> receiver);
+  // BindImageWriter@42 was removed.
 
   // Binds the InSessionAuth interface for authenticating users in session
   // on ChromeOS
@@ -499,10 +495,7 @@ interface Crosapi {
   [MinVersion=141] BindPrintPreviewCrosDelegate@143(
       pending_receiver<PrintPreviewCrosDelegate> receiver);
 
-  // Binds the Resource Manager interface for querying resource status.
-  // Added in M93.
-  [MinVersion=36] BindResourceManager@41(
-      pending_receiver<ResourceManager> receiver);
+  // BindResourceManager@41 was removed.
 
   // REMOVED_29@29 was removed.
   // BindSearchControllerFactory@138 was removed.

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.xr.scenecore.PanelEntity;
+import androidx.xr.scenecore.PixelDimensions;
 import androidx.xr.scenecore.Session;
 import androidx.xr.scenecore.impl.JxrPlatformAdapterAxr;
 
@@ -27,6 +28,9 @@ import java.util.concurrent.Executors;
 public class XrUtils {
     private static final String TAG = "XrUtils";
 
+    public static final int OVERVIEW_WIDTH_IN_PIXELS = 2048;
+    public static final int OVERVIEW_HEIGHT_IN_PIXELS = 1536;
+
     private static XrUtils sInstance = new XrUtils();
     private static @Nullable Boolean sXrDeviceOverrideForTesting;
 
@@ -34,7 +38,6 @@ public class XrUtils {
     private @Nullable Session mXrSession;
     private boolean mModeSwitchInProgress;
     private boolean mInFullSpaceMode;
-    private boolean mCompletedSwitchToFSM;
 
     /** Returns the singleton instance of XRUtils. */
     public static XrUtils getInstance() {
@@ -81,14 +84,13 @@ public class XrUtils {
                         dimensions -> {
                             if (mXrSession == null) return;
 
-                            PanelEntity mainPanelEntity = mXrSession.getMainPanelEntity();
                             if (mModeSwitchInProgress) {
                                 mModeSwitchInProgress = false;
-                                if (dimensions.getWidth() == Float.POSITIVE_INFINITY
-                                        && mainPanelEntity != null) {
-                                    Log.i(TAG, "SPA completed switch to FSM,");
-                                    mCompletedSwitchToFSM = true;
+                                Log.i(TAG, "SPA completed switch to FSM/HSM");
+                                if (dimensions.getWidth() == Float.POSITIVE_INFINITY) {
+                                    resizeMainPanel();
                                 }
+                                mXrSession.getMainPanelEntity().setHidden(false);
                             }
                         });
     }
@@ -120,10 +122,8 @@ public class XrUtils {
         mModeSwitchInProgress = true;
         Log.i(TAG, "SPA requesting FullSpaceMode");
         mInFullSpaceMode = true;
-        // Tracks the asynchronous requests to switch to full space mode and will be used to decide
-        // when to resize the main panel on completion.
-        mCompletedSwitchToFSM = false;
         mXrSession.getSpatialEnvironment().requestFullSpaceMode();
+        mXrSession.getMainPanelEntity().setHidden(true);
     }
 
     /**
@@ -139,7 +139,7 @@ public class XrUtils {
         Log.i(TAG, "SPA requesting HomeSpaceMode");
         mXrSession.getSpatialEnvironment().requestHomeSpaceMode();
         mInFullSpaceMode = false;
-        mCompletedSwitchToFSM = false;
+        mXrSession.getMainPanelEntity().setHidden(true);
     }
 
     /**
@@ -148,6 +148,17 @@ public class XrUtils {
      */
     public boolean isFsmOnXrDevice() {
         return isXrDevice() && mInFullSpaceMode;
+    }
+
+    /** Resize the main panel if the immersive environment is in full space mode. */
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private void resizeMainPanel() {
+        if (mXrSession == null || !mInFullSpaceMode) return;
+
+        PanelEntity mainPanelEntity = mXrSession.getMainPanelEntity();
+        PixelDimensions fsmPixelDimensions =
+                new PixelDimensions(OVERVIEW_WIDTH_IN_PIXELS, OVERVIEW_HEIGHT_IN_PIXELS);
+        mainPanelEntity.setPixelDimensions(fsmPixelDimensions);
     }
 
     boolean isXrInitializedForTesting() {

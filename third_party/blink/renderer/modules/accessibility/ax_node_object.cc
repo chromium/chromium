@@ -6751,7 +6751,6 @@ String AXNodeObject::TextAlternativeFromTooltip(
     }
     popover_ax_object = AXObjectCache().Get(popover_target.popover);
     name_from = ax::mojom::blink::NameFrom::kPopoverTarget;
-    DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
   }
 
   if (name_sources) {
@@ -7755,7 +7754,6 @@ String AXNodeObject::Description(
       auto popover_target = form_control->popoverTargetElement();
       if (popover_target.popover &&
           popover_target.popover->PopoverType() == PopoverValueType::kHint) {
-        DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
         description_from = ax::mojom::blink::DescriptionFrom::kPopoverTarget;
         if (description_sources) {
           description_sources->push_back(DescriptionSource(

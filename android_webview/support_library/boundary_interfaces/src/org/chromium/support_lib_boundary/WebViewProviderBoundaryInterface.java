@@ -72,4 +72,9 @@ public interface WebViewProviderBoundaryInterface {
             ValueCallback<Throwable> errorCallback);
 
     void saveState(Bundle outState, int maxSize, boolean includeForwardState);
+
+    /* WebViewNavigationClient */ @Nullable InvocationHandler getWebViewNavigationClient();
+
+    void setWebViewNavigationClient(
+            /* WebViewNavigationClient */ @Nullable InvocationHandler webViewNavigationClient);
 }

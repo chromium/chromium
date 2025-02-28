@@ -531,6 +531,17 @@
         Send
       </message>
 
+      <!-- Lobster -->
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_TAB_LABEL" desc="The label for Image Generation tab in the Editor menu card.">
+        Create image
+      </message>
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_CHIP_LABEL" desc="The label for Image Generation chip in the Editor menu card.">
+        Create image
+      </message>
+      <message name="IDS_LOBSTER_EDITOR_MENU_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu Card when the Image Generation tab is selected.">
+        Enter a prompt like "draw a misty forest"
+      </message>
+
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu." meaning="Splits the associated window into half snapped state.">
         Split
@@ -7017,6 +7028,9 @@
       </message>
       <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
         Reload tab
+      </message>
+      <message name="IDS_ON_TASK_POD_TOGGLE_SNAP_LOCATION_ACCESSIBLE_NAME" desc="Accessible name for the toggle snap location button in the OnTask pod.">
+        Toggle snap location
       </message>
 
       <!-- Strings for School Tools -->

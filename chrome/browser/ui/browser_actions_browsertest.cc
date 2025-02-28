@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/browser_actions.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -12,7 +11,6 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -34,9 +32,6 @@ class BrowserActionsBrowserTest : public InProcessBrowserTest {
   raw_ptr<content::WebContents> GetActiveWebContents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{features::kToolbarPinning};
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowAddressesBubbleOrPage) {

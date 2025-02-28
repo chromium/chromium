@@ -32,6 +32,7 @@
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/shared_storage/shared_storage_test_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -405,7 +406,7 @@ class SharedStorageManagerTest : public testing::Test {
 
   virtual void InitSharedStorageFeature() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
+        {network::features::kSharedStorageAPI},
         // Set these intervals to be long enough not to interfere with the
         // basic tests.
         {{"SharedStorageStalePurgeInitialInterval",

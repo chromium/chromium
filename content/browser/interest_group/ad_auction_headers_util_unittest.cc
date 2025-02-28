@@ -27,6 +27,7 @@
 #include "net/http/http_version.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -106,7 +107,7 @@ class IsAdAuctionHeadersEligibleTest
  public:
   IsAdAuctionHeadersEligibleTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kInterestGroupStorage},
+        /*enabled_features=*/{network::features::kInterestGroupStorage},
         /*disabled_features=*/{});
   }
 
@@ -226,7 +227,7 @@ class IsAdAuctionHeadersEligibleForNavigationTest
  public:
   IsAdAuctionHeadersEligibleForNavigationTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kInterestGroupStorage},
+        /*enabled_features=*/{network::features::kInterestGroupStorage},
         /*disabled_features=*/{});
   }
 

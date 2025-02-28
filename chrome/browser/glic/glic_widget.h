@@ -23,9 +23,6 @@ class GlicWidget : public views::Widget {
   GlicWidget& operator=(const Widget&) = delete;
   ~GlicWidget() override;
 
-  // Get the param-configured initial size, also used as the minimum size.
-  static gfx::Size GetInitialSize();
-
   // Create a widget with the given bounds.
   static std::unique_ptr<GlicWidget> Create(Profile* profile,
                                             const gfx::Rect& initial_bounds);

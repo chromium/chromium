@@ -24,8 +24,5 @@ blink_modules_sources("media") {
     "audio/mojo_audio_output_ipc.h",
   ]
 
-  deps = [
-    "//build:chromeos_buildflags",
-    "//media/mojo/common",
-  ]
+  deps = [ "//media/mojo/common" ]
 }

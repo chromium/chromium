@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -70,10 +69,7 @@ class BrowserCommandHandlerTest : public InProcessBrowserTest {
   BrowserCommandHandlerTest() = default;
   ~BrowserCommandHandlerTest() override = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kToolbarPinning);
-    InProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     command_handler_ = std::make_unique<BrowserCommandHandler>(
@@ -104,7 +100,6 @@ class BrowserCommandHandlerTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<BrowserCommandHandler> command_handler_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandHandlerTest,

@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './side_panel_ghost_loader.js';
 import '/strings.m.js';
 import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_components/searchbox/searchbox.js';
-import './side_panel_ghost_loader.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -40,6 +42,7 @@ export interface LensSidePanelAppElement {
     searchbox: SearchboxElement,
     searchboxContainer: HTMLElement,
     searchboxGhostLoader: SearchboxGhostLoaderElement,
+    toast: CrToastElement,
     uploadProgressBar: HTMLElement,
     uploadProgressBarContainer: HTMLElement,
   };
@@ -134,6 +137,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
             `computeShowUploadProgress(uploadProgressPercentage)`,
         reflectToAttribute: true,
       },
+      toastMessage: String,
     };
   }
 
@@ -173,6 +177,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private listenerIds: number[];
   private pageHandler: LensSidePanelPageHandlerInterface;
   private wasBackArrowAvailable: boolean;
+  private toastMessage: string = '';
   private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
@@ -213,6 +218,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.suppressGhostLoader_.bind(this)),
       this.browserProxy.callbackRouter.pageContentTypeChanged.addListener(
           this.pageContentTypeChanged.bind(this)),
+      this.browserProxy.callbackRouter.showToast.addListener(
+          this.showToast.bind(this)),
     ];
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
@@ -402,6 +409,25 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private pageContentTypeChanged(newPageContentType: PageContentType) {
     this.pageContentType = newPageContentType;
+  }
+
+  private async showToast(message: string) {
+    if (this.$.toast.open) {
+      // If toast already open, wait after hiding so that animation is
+      // smoother.
+      await this.$.toast.hide();
+      setTimeout(() => {
+        this.toastMessage = message;
+        this.$.toast.show();
+      }, 100);
+    } else {
+      this.toastMessage = message;
+      this.$.toast.show();
+    }
+  }
+
+  private onHideToastClick() {
+    this.$.toast.hide();
   }
 
   makeGhostLoaderVisibleForTesting() {

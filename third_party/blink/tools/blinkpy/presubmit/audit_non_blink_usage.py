@@ -1617,16 +1617,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/modules/mediasource/',
-        ],
-        'allowed': [
-            'base::CommandLine',
-            'media::.+',
-            'switches::kLacrosEnablePlatformEncryptedHevc',
-        ]
-    },
-    {
-        'paths': [
             'third_party/blink/renderer/modules/encryptedmedia/',
             'third_party/blink/renderer/modules/media/',
             'third_party/blink/renderer/modules/video_rvfc/',
@@ -2391,9 +2381,13 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/permissions_policy/permissions_policy.cc',
             'third_party/blink/public/common/permissions_policy/permissions_policy.h',
         ],
         'allowed': [
+            'network::features::kBrowsingTopics',
+            'network::features::kInterestGroupStorage',
+            'network::features::kSharedStorageAPI',
             'url::Origin',
         ]
     },
@@ -2471,6 +2465,16 @@ _CONFIG = [
         ],
         'allowed': [
             'gfx::SkPixmapToWritableSpan',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/common/features.cc',
+        ],
+        'allowed': [
+            'network::features::kBrowsingTopics',
+            'network::features::kInterestGroupStorage',
+            'network::features::kSharedStorageAPI',
         ]
     },
     {

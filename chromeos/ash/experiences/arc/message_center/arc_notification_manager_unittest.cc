@@ -31,8 +31,6 @@ namespace ash {
 namespace {
 
 constexpr char kDummyNotificationKey[] = "DUMMY_NOTIFICATION_KEY";
-constexpr char kHistogramNameInlineReplyEnabled[] =
-    "Arc.Notifications.InlineReplyEnabled";
 constexpr char kHistogramNameIsCustomNotification[] =
     "Arc.Notifications.IsCustomNotification";
 
@@ -361,17 +359,14 @@ TEST_F(ArcNotificationManagerTest, DoNotDisturbSyncInitialEnabledState) {
 TEST_F(ArcNotificationManagerTest,
        UmaMeticsPublishedOnlyWhenNotificationCreated) {
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 0);
   histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 0);
 
   // Create notification
   std::string key = CreateNotification();
-  histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 1);
 
   // Update notification
   CreateNotificationWithKey(key);
-  histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 1);
   histogram_tester.ExpectTotalCount(kHistogramNameIsCustomNotification, 1);
 }
 

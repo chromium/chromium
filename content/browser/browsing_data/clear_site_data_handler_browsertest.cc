@@ -54,6 +54,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/features.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -1153,7 +1154,7 @@ class ClearSiteDataHandlerSharedStorageBrowserTest
     : public ClearSiteDataHandlerBrowserTest {
  public:
   ClearSiteDataHandlerSharedStorageBrowserTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
   }
 
  private:

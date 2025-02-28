@@ -4,18 +4,27 @@
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions_shared.h"
 
+#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
+#include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "extensions/browser/ui_util.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
@@ -45,6 +54,31 @@ std::optional<URLPattern> ParseRuntimePermissionsPattern(
   return pattern;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Runs the install verifier for all extensions that are enabled, disabled, or
+// terminated.
+void PerformVerificationCheck(content::BrowserContext* context) {
+  const ExtensionSet extensions =
+      ExtensionRegistry::Get(context)->GenerateInstalledExtensionsSet(
+          ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
+          ExtensionRegistry::TERMINATED);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
+  bool should_do_verification_check = false;
+  for (const scoped_refptr<const Extension>& extension : extensions) {
+    if (ui_util::ShouldDisplayInExtensionSettings(*extension) &&
+        prefs->HasDisableReason(extension->id(),
+                                disable_reason::DISABLE_NOT_VERIFIED)) {
+      should_do_verification_check = true;
+      break;
+    }
+  }
+
+  if (should_do_verification_check) {
+    InstallVerifier::Get(context)->VerifyAllExtensions();
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 namespace developer = api::developer_private;
@@ -64,6 +98,92 @@ const Extension* DeveloperPrivateAPIFunction::GetEnabledExtensionById(
   return ExtensionRegistry::Get(browser_context())
       ->enabled_extensions()
       .GetByID(id);
+}
+
+DeveloperPrivateGetExtensionsInfoFunction::
+    DeveloperPrivateGetExtensionsInfoFunction() = default;
+
+DeveloperPrivateGetExtensionsInfoFunction::
+    ~DeveloperPrivateGetExtensionsInfoFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetExtensionsInfoFunction::Run() {
+  std::optional<developer::GetExtensionsInfo::Params> params =
+      developer::GetExtensionsInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  bool include_disabled = true;
+  bool include_terminated = true;
+  if (params->options) {
+    if (params->options->include_disabled) {
+      include_disabled = *params->options->include_disabled;
+    }
+    if (params->options->include_terminated) {
+      include_terminated = *params->options->include_terminated;
+    }
+  }
+
+  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
+  info_generator_->CreateExtensionsInfo(
+      include_disabled, include_terminated,
+      base::BindOnce(
+          &DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated, this));
+
+  return RespondLater();
+}
+
+void DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated(
+    ExtensionInfoGenerator::ExtensionInfoList list) {
+  Respond(ArgumentList(developer::GetExtensionsInfo::Results::Create(list)));
+}
+
+DeveloperPrivateGetExtensionInfoFunction::
+    DeveloperPrivateGetExtensionInfoFunction() = default;
+
+DeveloperPrivateGetExtensionInfoFunction::
+    ~DeveloperPrivateGetExtensionInfoFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetExtensionInfoFunction::Run() {
+  std::optional<developer::GetExtensionInfo::Params> params =
+      developer::GetExtensionInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
+  info_generator_->CreateExtensionInfo(
+      params->id,
+      base::BindOnce(
+          &DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated, this));
+
+  return RespondLater();
+}
+
+void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
+    ExtensionInfoGenerator::ExtensionInfoList list) {
+  DCHECK_LE(1u, list.size());
+  Respond(list.empty() ? Error(kNoSuchExtensionError)
+                       : WithArguments(list[0].ToValue()));
+}
+
+DeveloperPrivateGetProfileConfigurationFunction::
+    ~DeveloperPrivateGetProfileConfigurationFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetProfileConfigurationFunction::Run() {
+  developer::ProfileInfo info =
+      CreateProfileInfo(Profile::FromBrowserContext(browser_context()));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If this is called from the chrome://extensions page, we use this as a
+  // heuristic that it's a good time to verify installs. We do this on startup,
+  // but there's a chance that it failed erroneously, so it's good to double-
+  // check.
+  if (source_context_type() == mojom::ContextType::kWebUi) {
+    PerformVerificationCheck(browser_context());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  return RespondNow(WithArguments(info.ToValue()));
 }
 
 DeveloperPrivateUpdateProfileConfigurationFunction::
@@ -91,6 +211,116 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   if (update.is_mv2_deprecation_notice_dismissed.value_or(false)) {
     ManifestV2ExperimentManager::Get(browser_context())
         ->MarkNoticeAsAcknowledgedGlobally();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  return RespondNow(NoArguments());
+}
+
+DeveloperPrivateUpdateExtensionConfigurationFunction::
+    ~DeveloperPrivateUpdateExtensionConfigurationFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
+  std::optional<developer::UpdateExtensionConfiguration::Params> params =
+      developer::UpdateExtensionConfiguration::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const developer::ExtensionConfigurationUpdate& update = params->update;
+
+  const Extension* extension = GetExtensionById(update.extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  // The chrome://extensions page uses toggles which, when dragged, do not
+  // invoke a user gesture. Work around this for the chrome://extensions page.
+  // TODO(dpapad): Remove this exemption when sliding a toggle counts as a
+  // gesture.
+  bool allowed =
+      source_context_type() == mojom::ContextType::kWebUi || user_gesture();
+  if (!allowed) {
+    return RespondNow(Error(kRequiresUserGestureError));
+  }
+
+  if (update.file_access) {
+    util::SetAllowFileAccess(extension->id(), browser_context(),
+                             *update.file_access);
+  }
+  if (update.incognito_access) {
+    util::SetIsIncognitoEnabled(extension->id(), browser_context(),
+                                *update.incognito_access);
+  }
+  if (update.user_scripts_access) {
+    ExtensionSystem::Get(browser_context())
+        ->user_script_manager()
+        ->SetUserScriptPrefEnabled(extension->id(),
+                                   *update.user_scripts_access);
+  }
+  if (update.error_collection) {
+    ErrorConsole::Get(browser_context())
+        ->SetReportingAllForExtension(extension->id(),
+                                      *update.error_collection);
+  }
+  if (update.host_access != developer::HostAccess::kNone) {
+    PermissionsManager* manager = PermissionsManager::Get(browser_context());
+    if (!manager->CanAffectExtension(*extension)) {
+      return RespondNow(Error(kCannotChangeHostPermissions));
+    }
+
+    ScriptingPermissionsModifier modifier(browser_context(), extension);
+    switch (update.host_access) {
+      case developer::HostAccess::kOnClick:
+        modifier.SetWithholdHostPermissions(true);
+        modifier.RemoveAllGrantedHostPermissions();
+        break;
+      case developer::HostAccess::kOnSpecificSites:
+        if (manager->HasBroadGrantedHostPermissions(*extension)) {
+          modifier.RemoveBroadGrantedHostPermissions();
+        }
+        modifier.SetWithholdHostPermissions(true);
+        break;
+      case developer::HostAccess::kOnAllSites:
+        modifier.SetWithholdHostPermissions(false);
+        break;
+      case developer::HostAccess::kNone:
+        NOTREACHED();
+    }
+  }
+  if (update.acknowledge_safety_check_warning_reason !=
+      developer_private::SafetyCheckWarningReason::kNone) {
+    ExtensionPrefs::Get(browser_context())
+        ->SetIntegerPref(
+            extension->id(), kPrefAcknowledgeSafetyCheckWarningReason,
+            static_cast<int>(update.acknowledge_safety_check_warning_reason));
+    DeveloperPrivateEventRouter* event_router =
+        DeveloperPrivateAPI::Get(browser_context())
+            ->developer_private_event_router();
+    if (event_router) {
+      event_router->OnExtensionConfigurationChanged(extension->id());
+    }
+  }
+// TODO(crbug.com/392777363): Enable this code when toolbars are supported on
+// desktop Android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (update.show_access_requests_in_toolbar) {
+    SitePermissionsHelper(Profile::FromBrowserContext(browser_context()))
+        .SetShowAccessRequestsInToolbar(
+            extension->id(), *update.show_access_requests_in_toolbar);
+  }
+  if (update.pinned_to_toolbar) {
+    ToolbarActionsModel* toolbar_actions_model = ToolbarActionsModel::Get(
+        Profile::FromBrowserContext(browser_context()));
+    if (!toolbar_actions_model->HasAction(extension->id())) {
+      return RespondNow(Error(kCannotSetPinnedWithoutAction));
+    }
+
+    bool is_action_pinned =
+        toolbar_actions_model->IsActionPinned(extension->id());
+    if (is_action_pinned != *update.pinned_to_toolbar) {
+      toolbar_actions_model->SetActionVisibility(extension->id(),
+                                                 !is_action_pinned);
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

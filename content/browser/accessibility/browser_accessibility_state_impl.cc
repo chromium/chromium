@@ -192,7 +192,7 @@ BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
 
 // On Android, Mac, Windows and Linux there are platform-specific subclasses.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && \
-    !BUILDFLAG(IS_LINUX)
+    !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 // static
 std::unique_ptr<BrowserAccessibilityStateImpl>
 BrowserAccessibilityStateImpl::Create() {
@@ -306,7 +306,8 @@ void BrowserAccessibilityStateImpl::OnScreenReaderStopped() {
 
 void BrowserAccessibilityStateImpl::SetKnownScreenReaderAppActive(
     bool is_active) {
-  // Currently only meaningful on macOS, for VoiceOver detection.
+  // Currently only meaningful on macOS, for VoiceOver detection,
+  // and ChromeOS for ChromeVox detection.
   // Other platforms detect specific, known screen reader apps in the
   // OS-specific subclass.
   NOTREACHED();

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,9 +80,9 @@ TEST(ResourceRequestTest, UpgradeIfInsecureAcrossRedirects) {
 // feature's default state.
 TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kBrowsingTopics, blink::features::kSharedStorageAPI},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitWithFeatures({network::features::kBrowsingTopics,
+                                        network::features::kSharedStorageAPI},
+                                       /*disabled_features=*/{});
 
   ResourceRequest request_with_topics_opt_in;
   request_with_topics_opt_in.SetBrowsingTopics(true);

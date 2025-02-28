@@ -782,6 +782,10 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       prefs::kAccessibilitySpokenFeedbackEnabled);
 
+  content::BrowserAccessibilityState* browser_ax_state =
+      content::BrowserAccessibilityState::GetInstance();
+  browser_ax_state->SetKnownScreenReaderAppActive(enabled);
+
   if (IsUserBrowserContext(profile_)) {
     user_manager::KnownUser known_user(g_browser_process->local_state());
     known_user.SetBooleanPref(

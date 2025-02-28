@@ -177,6 +177,7 @@
 #include "partition_alloc/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -1311,7 +1312,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
           &WebContentsImpl::OnScreensChange, base::Unretained(this)));
 
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
     SharedStorageBudgetCharger::CreateForWebContents(this);
   }
 

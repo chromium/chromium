@@ -44,7 +44,7 @@ void CreateSubresourceLoaderFactoryForProviderContext(
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
     std::optional<blink::ServiceWorkerRouterRules> router_rules,
-    blink::EmbeddedWorkerStatus initial_running_status,
+    std::optional<blink::EmbeddedWorkerStatus> initial_running_status,
     mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
         running_status_receiver,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>

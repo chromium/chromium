@@ -57,6 +57,13 @@ void NavigationHandleProxy::DidStart() {
       cpp_navigation_handle_->GetNavigationId(),
       cpp_navigation_handle_->IsPageActivation(),
       cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE,
+      cpp_navigation_handle_->IsHistory(),
+      cpp_navigation_handle_->IsHistory() &&
+          cpp_navigation_handle_->GetNavigationEntryOffset() < 0,
+      cpp_navigation_handle_->IsHistory() &&
+          cpp_navigation_handle_->GetNavigationEntryOffset() > 0,
+      cpp_navigation_handle_->GetRestoreType() ==
+          content::RestoreType::kRestored,
       cpp_navigation_handle_->IsPdf(),
       base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
       GetContentClient()->browser()->IsSaveableNavigation(

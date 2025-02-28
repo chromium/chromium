@@ -278,16 +278,6 @@ interface AnimationTrigger
     setter rangeStart
     setter timeline
     setter type
-interface AsyncDisposableStack
-    attribute @@toStringTag
-    getter disposed
-    method Symbol(Symbol.asyncDispose)
-    method adopt
-    method constructor
-    method defer
-    method disposeAsync
-    method move
-    method use
 interface Attr : Node
     attribute @@toStringTag
     getter localName
@@ -1968,16 +1958,6 @@ interface Directive
     getter type
     method constructor
     method toString
-interface DisposableStack
-    attribute @@toStringTag
-    getter disposed
-    method Symbol(Symbol.dispose)
-    method adopt
-    method constructor
-    method defer
-    method dispose
-    method move
-    method use
 interface Document : Node
     static method parseHTML
     static method parseHTMLUnsafe
@@ -9306,10 +9286,6 @@ interface SubtleCrypto
     method unwrapKey
     method verify
     method wrapKey
-interface SuppressedError : Error
-    attribute message
-    attribute name
-    method constructor
 interface SyncManager
     attribute @@toStringTag
     method constructor

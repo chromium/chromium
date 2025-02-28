@@ -1491,7 +1491,7 @@ void StoragePartitionImpl::Initialize(
         this, path, special_storage_policy_);
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
+  if (base::FeatureList::IsEnabled(network::features::kInterestGroupStorage)) {
     // Auction worklets on non-Android use dedicated processes; on Android due
     // to high cost of process launch they try to reuse renderers.
     interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
@@ -1510,7 +1510,7 @@ void StoragePartitionImpl::Initialize(
 
   // The Topics API is not available in Incognito mode.
   if (!is_in_memory() &&
-      base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+      base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
     browsing_topics_site_data_manager_ =
         std::make_unique<BrowsingTopicsSiteDataManagerImpl>(path);
   }
@@ -1557,7 +1557,7 @@ void StoragePartitionImpl::Initialize(
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
     base::FilePath shared_storage_path =
         is_in_memory() ? base::FilePath()
                        : path.Append(storage::kSharedStoragePath);
@@ -3039,7 +3039,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
             CreateTaskCompletionClosure(TracingDataType::kPrivateAggregation)));
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
+  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI) &&
       shared_storage_manager &&
       (remove_mask_ & REMOVE_DATA_MASK_SHARED_STORAGE)) {
     auto shared_storage_purge_callback = base::BindOnce(

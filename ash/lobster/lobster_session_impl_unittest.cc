@@ -271,7 +271,7 @@ TEST_F(LobsterSessionImplTest, CanPreviewFeedbackForACandidateIfItIsInCache) {
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->preview_image_bytes, "d4e5f6");
   std::map<std::string, std::string> expected_feedback_preview_fields = {
-      {"model_version", "dummy_version"}, {"model_input", "a nice raspberry"}};
+      {"Query and image", "a nice raspberry"}};
   EXPECT_EQ(future.Get()->fields, expected_feedback_preview_fields);
 }
 

@@ -1377,6 +1377,14 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
 bool HttpStreamPool::AttemptManager::IsConnectionAttemptReady() {
   switch (CanAttemptConnection()) {
     case CanAttemptResult::kAttempt:
+      // If we ignore stream limits and the pool's limit has already reached,
+      // try to close as much as possible.
+      while (pool()->ReachedMaxStreamLimit()) {
+        CHECK(!ShouldRespectLimits());
+        if (!pool()->CloseOneIdleStreamSocket()) {
+          break;
+        }
+      }
       return true;
     case CanAttemptResult::kNoPendingJob:
       return false;

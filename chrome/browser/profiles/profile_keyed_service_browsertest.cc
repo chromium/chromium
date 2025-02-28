@@ -195,7 +195,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           features::kEnableCertManagementUIV2Write,
 #endif
           autofill::features::kAutofillAiWithDataSchema,
-          blink::features::kBrowsingTopics,
+          network::features::kBrowsingTopics,
           blink::features::kBuiltInAIAPI,
           extensions_features::kForceWebRequestProxyForTest,
           net::features::kTopLevelTpcdOriginTrial,

@@ -440,8 +440,8 @@ void PermissionsUpdater::RevokeRuntimePermissions(
 void PermissionsUpdater::ApplyPolicyHostRestrictions(
     const Extension& extension) {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/JAMES): Port to desktop Android when ExtensionManagement is
-  // supported.
+  // TODO(crbug.com/394876083): Port to desktop Android when ExtensionManagement
+  // is supported.
   NOTIMPLEMENTED() << "ApplyPolicyHostRestrictions is not yet supported";
 #else
   ExtensionManagement* management =

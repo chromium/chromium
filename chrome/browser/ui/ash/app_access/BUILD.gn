@@ -21,7 +21,6 @@ static_library("app_access") {
   deps = [
     "//ash",
     "//ash/constants",
-    "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/privacy_hub",

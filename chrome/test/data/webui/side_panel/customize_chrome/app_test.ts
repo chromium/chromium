@@ -269,9 +269,6 @@ suite('AppTest', () => {
     let toolbarCustomizationHandler: TestMock<CustomizeToolbarHandlerInterface>;
 
     suiteSetup(() => {
-      loadTimeData.overrideValues({
-        'toolbarCustomizationEnabled': true,
-      });
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       toolbarCustomizationHandler = installMock(
           CustomizeToolbarHandlerRemote,

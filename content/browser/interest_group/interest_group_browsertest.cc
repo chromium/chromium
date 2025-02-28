@@ -744,7 +744,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   InterestGroupBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kInterestGroupStorage, {}},
+        {{network::features::kInterestGroupStorage, {}},
          {blink::features::kFledgeBiddingAndAuctionServer, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {blink::features::kAdInterestGroupAPI, {}},
@@ -20700,7 +20700,7 @@ class BiddingAndAuctionServerAPIsOriginTrialBrowserTest
   BiddingAndAuctionServerAPIsOriginTrialBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kFledge,
-                              blink::features::kInterestGroupStorage,
+                              network::features::kInterestGroupStorage,
                               blink::features::kFledgeBiddingAndAuctionServer},
         {});
   }

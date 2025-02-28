@@ -35,7 +35,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -215,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest, PinAndUnpinToolbarIcon) {
-  if (features::IsToolbarPinningEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     GTEST_SKIP() << "This test is not relevant for toolbar pinning as pinning "
                     "will now be handled by PinnedActionToolbarButton.";
   }

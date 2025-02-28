@@ -775,8 +775,8 @@ class StoragePartitionImplTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         browser_context_(new TestBrowserContext()) {
-    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage,
-                                    blink::features::kSharedStorageAPI},
+    feature_list_.InitWithFeatures({network::features::kInterestGroupStorage,
+                                    network::features::kSharedStorageAPI},
                                    {});
   }
 
@@ -2339,8 +2339,8 @@ class StoragePartitionImplSharedStorageTest : public StoragePartitionImplTest {
         shared_storage_manager_(
             static_cast<StoragePartitionImpl*>(storage_partition_)
                 ->GetSharedStorageManager()) {
-    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage,
-                                    blink::features::kSharedStorageAPI},
+    feature_list_.InitWithFeatures({network::features::kInterestGroupStorage,
+                                    network::features::kSharedStorageAPI},
                                    {});
   }
 

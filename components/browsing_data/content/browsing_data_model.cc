@@ -999,11 +999,11 @@ bool BrowsingDataModel::IsBlockedByThirdPartyCookieBlocking(
 void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool is_shared_storage_enabled =
-      base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI);
+      base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
   bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
       network::features::kCompressionDictionaryTransportBackend);
   bool is_interest_group_enabled =
-      base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage);
+      base::FeatureList::IsEnabled(network::features::kInterestGroupStorage);
   bool is_attribution_reporting_enabled = base::FeatureList::IsEnabled(
       attribution_reporting::features::kConversionMeasurement);
   bool is_private_aggregation_enabled =

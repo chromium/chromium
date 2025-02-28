@@ -49,6 +49,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -1008,7 +1009,7 @@ AuctionWorkletManager::AuctionWorkletManager(
       delegate_(delegate),
       auction_network_events_proxy_(
           std::make_unique<AuctionNetworkEventsProxy>(GetFrameTreeNodeID())) {
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
     auction_shared_storage_host_ = std::make_unique<AuctionSharedStorageHost>(
         static_cast<StoragePartitionImpl*>(
             delegate_->GetFrame()->GetProcess()->GetStoragePartition()));

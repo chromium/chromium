@@ -83,6 +83,7 @@
 #include "net/dns/public/util.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_doh_server.h"
+#include "services/network/public/cpp/features.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -4313,7 +4314,7 @@ class SharedStorageDevToolsProtocolTest : public DevToolsProtocolTest {
   SharedStorageDevToolsProtocolTest() {
     feature_list_
         .InitWithFeaturesAndParameters(/*enabled_features=*/
-                                       {{blink::features::kSharedStorageAPI,
+                                       {{network::features::kSharedStorageAPI,
                                          {{"SharedStorageBitBudget",
                                            base::NumberToString(
                                                kBudgetAllowed)}}},

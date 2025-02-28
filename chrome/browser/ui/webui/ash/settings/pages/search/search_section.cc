@@ -44,10 +44,6 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace ash::settings {
 
 namespace mojom {
@@ -395,10 +391,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableHelpMeWrite", IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE},
       {"enableHelpMeWriteDesc",
        IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE_DESCRIPTION},
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"enableLobster", IDS_OS_SETTINGS_ENABLE_LOBSTER},
-      {"enableLobsterDesc", IDS_OS_SETTINGS_ENABLE_LOBSTER_DESCRIPTION},
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"enableLobster", IDS_LOBSTER_OS_SETTINGS_ENABLE},
+      {"enableLobsterDesc", IDS_LOBSTER_OS_SETTINGS_ENABLE_DESCRIPTION},
       {"osSearchEngineLabel", IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
       {"searchSubpageTitle", IDS_SETTINGS_SEARCH_SUBPAGE_TITLE},
       {"searchGoogleAssistant", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT},

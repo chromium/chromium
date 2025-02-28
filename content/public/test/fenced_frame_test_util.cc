@@ -18,6 +18,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -54,7 +55,7 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {{blink::features::kFencedFrames, {}},
        {features::kPrivacySandboxAdsAPIsOverride, {}},
-       {blink::features::kInterestGroupStorage, {}},
+       {network::features::kInterestGroupStorage, {}},
        {blink::features::kAdInterestGroupAPI, {}},
        {blink::features::kFledge, {}},
        {blink::features::kFencedFramesAPIChanges, {}},

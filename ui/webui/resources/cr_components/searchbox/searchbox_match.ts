@@ -177,22 +177,22 @@ export class SearchboxMatchElement extends PolymerElement {
     };
   }
 
-  override ariaLabel: string;
-  hasAction: boolean;
-  hasImage: boolean;
-  isEntitySuggestion: boolean;
-  isRichSuggestion: boolean;
-  match: AutocompleteMatch;
-  matchIndex: number;
-  sideType: SideType;
-  showThumbnail: boolean;
-  private isLensSearchbox_: boolean;
-  private contentsHtml_: TrustedHTML;
-  private descriptionHtml_: TrustedHTML;
-  private removeButtonAriaLabel_: string;
-  private removeButtonTitle_: string;
-  private separatorText_: string;
-  private tailSuggestPrefix_: string;
+  declare ariaLabel: string;
+  declare hasAction: boolean;
+  declare hasImage: boolean;
+  declare isEntitySuggestion: boolean;
+  declare isRichSuggestion: boolean;
+  declare match: AutocompleteMatch;
+  declare matchIndex: number;
+  declare sideType: SideType;
+  declare showThumbnail: boolean;
+  declare private isLensSearchbox_: boolean;
+  declare private contentsHtml_: TrustedHTML;
+  declare private descriptionHtml_: TrustedHTML;
+  declare private removeButtonAriaLabel_: string;
+  declare private removeButtonTitle_: string;
+  declare private separatorText_: string;
+  declare private tailSuggestPrefix_: string;
 
   private pageHandler_: PageHandlerInterface;
 

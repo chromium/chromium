@@ -100,20 +100,17 @@ class WPTAdapterTest(unittest.TestCase):
                     },
                 },
             }))
-        self.fs.write_text_file(
-            self.finder.path_from_web_tests('VirtualTestSuites'),
-            json.dumps([]))
 
         self._mocks = contextlib.ExitStack()
         self._mocks.enter_context(self.fs.patch_builtins())
         vts1 = VirtualTestSuite(prefix='fake-vts-1',
                                 platforms=['Linux', 'Mac'],
                                 bases=['wpt_internal/variant.html?xyz'],
-                                args=['--enable-features=FakeFeature'])
+                                args=['--enable-features=FeatureA'])
         vts2 = VirtualTestSuite(prefix='fake-vts-2',
                                 platforms=['Linux'],
-                                bases=['wpt_internal/'],
-                                args=['--enable-features=FakeFeature'])
+                                bases=['external/wpt/dir/'],
+                                args=['--enable-features=FeatureB'])
         self._mocks.enter_context(
             mock.patch(
                 'blinkpy.web_tests.port.test.TestPort.virtual_test_suites',
@@ -253,12 +250,11 @@ class WPTAdapterTest(unittest.TestCase):
             self.host, ['--zero-tests-executed-ok', '--no-manifest-update'],
             'test-linux-trusty')
         with adapter.test_env() as options:
-            self.assertEqual(sorted(options.include), ([
-                'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
-                'wpt_internal/variant.html?foo=baz',
-                'wpt_internal/variant.html?xyz'
-            ]))
+            self.assertEqual(sorted(options.include), (['dir/reftest.html']))
             self.assertTrue(options.default_exclude)
+            # Virtual tests should be included through the subsuites option, but
+            # that is already tested in test_run_virtual_tests, so do not
+            # duplicate the code here.
 
     def test_binary_args_propagation(self):
         adapter = WPTAdapter.from_args(self.host, [
@@ -279,62 +275,41 @@ class WPTAdapterTest(unittest.TestCase):
             'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertIn('--enable-features=FakeFeature', options.binary_args)
-            self.assertEqual(sorted(options.include), ([
-                'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
-                'wpt_internal/variant.html?foo=baz',
-                'wpt_internal/variant.html?xyz'
-            ]))
+            self.assertEqual(sorted(options.include), (['dir/reftest.html']))
             run_info = self._read_run_info(options)
             self.assertEqual(run_info['flag_specific'], 'fake-flag')
 
-    @unittest.skip("unskipping this when enable virtual tests")
     def test_run_virtual_tests(self):
-        self.fs.write_text_file(
-            self.finder.path_from_web_tests('VirtualTestSuites'),
-            json.dumps([{
-                "prefix":
-                "fake",
-                "platforms": ["Linux", "Mac", "Win"],
-                "bases": [
-                    "external/wpt/dir/reftest.html",
-                    "wpt_internal/variant.html?xyz",
-                ],
-                "args": ["--features=a"],
-                "owners": ["x@google.com"],
-                "expires":
-                "Jan 1, 2024"
-            }]))
         adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'],
                                        'test-linux-trusty')
         with adapter.test_env() as options:
-            self.assertEqual(sorted(options.include), ([
-                'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
-                'wpt_internal/variant.html?foo=baz',
-                'wpt_internal/variant.html?xyz'
-            ]))
-            self.assertEqual(options.subsuites, ['fake'])
+            self.assertEqual(options.product, 'headless_shell')
+            self.assertEqual(sorted(options.include), (['dir/reftest.html']))
+            self.assertEqual(options.subsuites, ['fake-vts-2'])
             with open(options.subsuite_file) as fp:
                 subsuite_config = json.load(fp)
                 self.assertEqual(len(subsuite_config), 1)
-                self.assertIn('fake', subsuite_config)
-                self.assertEqual(subsuite_config['fake']['name'], 'fake')
-                self.assertEqual(subsuite_config['fake']['config'],
-                                 {'binary_args': ['--features=a']})
-                self.assertEqual(subsuite_config['fake']['run_info'],
-                                 {'virtual_suite': 'fake'})
+                self.assertIn('fake-vts-2', subsuite_config)
+                self.assertEqual(subsuite_config['fake-vts-2']['name'],
+                                 'fake-vts-2')
                 self.assertEqual(
-                    sorted(subsuite_config['fake']['include']),
-                    ['dir/reftest.html', 'wpt_internal/variant.html?xyz'])
+                    subsuite_config['fake-vts-2']['config'],
+                    {'binary_args': ['--enable-features=FeatureB']})
+                self.assertEqual(subsuite_config['fake-vts-2']['run_info'],
+                                 {'virtual_suite': 'fake-vts-2'})
+                self.assertEqual(
+                    sorted(subsuite_config['fake-vts-2']['include']),
+                    ['dir/reftest.html'])
 
         adapter = WPTAdapter.from_args(self.host, [
             '--no-manifest-update',
-            'virtual/fake/external/wpt/dir/reftest.html',
+            'virtual/fake-vts-2/external/wpt/dir/reftest.html',
         ], 'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertEqual(sorted(options.include), [])
-            self.assertEqual(options.subsuites, ['fake'])
+            self.assertEqual(options.subsuites, ['fake-vts-2'])
             with open(options.subsuite_file) as fp:
-                self.assertEqual(subsuite_config['fake']['include'],
+                self.assertEqual(subsuite_config['fake-vts-2']['include'],
                                  ['dir/reftest.html'])
 
     def test_sanitizer_enabled(self):

@@ -24,6 +24,7 @@
 #include "content/test/test_render_view_host.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
@@ -35,7 +36,7 @@ class BrowsingTopicsPageLoadDataTrackerTest
  public:
   BrowsingTopicsPageLoadDataTrackerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kBrowsingTopics},
+        /*enabled_features=*/{network::features::kBrowsingTopics},
         /*disabled_features=*/{});
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());

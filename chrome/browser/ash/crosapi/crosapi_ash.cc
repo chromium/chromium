@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/image_writer_ash.h"
 #include "chrome/browser/ash/crosapi/input_methods_ash.h"
 #include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
@@ -62,7 +61,6 @@
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
 #include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
-#include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
@@ -94,7 +92,6 @@
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
-#include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -186,7 +183,6 @@ CrosapiAsh::CrosapiAsh()
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       input_methods_ash_(std::make_unique<InputMethodsAsh>()),
-      image_writer_ash_(std::make_unique<ImageWriterAsh>()),
       kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
@@ -220,7 +216,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ash::TelemetryManagementServiceAsh>()),
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
-      resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
@@ -430,11 +425,6 @@ void CrosapiAsh::BindIdleService(
   idle_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindImageWriter(
-    mojo::PendingReceiver<mojom::ImageWriter> receiver) {
-  image_writer_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindInputMethods(
     mojo::PendingReceiver<mojom::InputMethods> receiver) {
   input_methods_ash_->BindReceiver(std::move(receiver));
@@ -615,11 +605,6 @@ void CrosapiAsh::BindRemoteAppsLacrosBridge(
 
 void CrosapiAsh::BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) {
   remoting_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindResourceManager(
-    mojo::PendingReceiver<mojom::ResourceManager> receiver) {
-  resource_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindScreenAIDownloader(

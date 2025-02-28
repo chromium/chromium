@@ -264,6 +264,11 @@ class LensOverlayController : public LensSearchboxClient,
   // reference to that web contents.
   void ResetSidePanelSearchboxHandler();
 
+  // Shows a toast in the side panel with the string provided in `message`. If
+  // the side panel connection has not been established or was reset this is a
+  // no-op.
+  void ShowToastInSidePanel(std::string message);
+
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
     // This is the default state. There should be no performance overhead as

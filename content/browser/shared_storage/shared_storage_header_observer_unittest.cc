@@ -28,6 +28,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
 #include "content/test/test_web_contents.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
@@ -128,7 +129,7 @@ class SharedStorageHeaderObserverTest
       public testing::WithParamInterface<TestCaseType> {
  public:
   SharedStorageHeaderObserverTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
   }
 
   ~SharedStorageHeaderObserverTest() override = default;

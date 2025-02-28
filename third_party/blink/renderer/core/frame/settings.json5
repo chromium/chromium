@@ -43,7 +43,7 @@
     // platforms that has not been explicitly specified and should always be
     // present.
     initial: {
-      valid_keys: ["Android", "Win", "ChromeOS_Ash", "ChromeOS_Lacros", "Mac", "Linux"],
+      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Linux"],
     },
     invalidate: {
       default: [],
@@ -126,8 +126,7 @@
         "Mac": "mojom::blink::EditingBehavior::kEditingMacBehavior",
         "Win": "mojom::blink::EditingBehavior::kEditingWindowsBehavior",
         "Android": "mojom::blink::EditingBehavior::kEditingAndroidBehavior",
-        "ChromeOS_Ash": "mojom::blink::EditingBehavior::kEditingChromeOSBehavior",
-        "ChromeOS_Lacros": "mojom::blink::EditingBehavior::kEditingChromeOSBehavior",
+        "ChromeOS": "mojom::blink::EditingBehavior::kEditingChromeOSBehavior",
         "default": "mojom::blink::EditingBehavior::kEditingUnixBehavior",
       },
       type: "mojom::EditingBehavior",

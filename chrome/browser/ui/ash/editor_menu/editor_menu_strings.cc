@@ -12,10 +12,6 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace chromeos::editor_menu {
 
 namespace {
@@ -39,19 +35,11 @@ bool ShouldUseL10nStrings() {
 }  // namespace
 
 std::u16string GetEditorMenuLobsterTitle() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_CARD_LOBSTER_TAB_LABEL);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_LOBSTER_EDITOR_MENU_CARD_TAB_LABEL);
 }
 
 std::u16string GetEditorMenuLobsterChipLabel() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_CARD_LOBSTER_CHIP_LABEL);
-#else
-  return u"Lobster";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_LOBSTER_EDITOR_MENU_CARD_CHIP_LABEL);
 }
 
 std::u16string GetEditorMenuPromoCardTitle() {
@@ -104,12 +92,8 @@ std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholderForLobster() {
     return u"Enter a prompt";
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      IDS_EDITOR_MENU_CARD_LOBSTER_FREEFORM_PLACEHOLDER);
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_LOBSTER_EDITOR_MENU_CARD_FREEFORM_PLACEHOLDER);
 }
 
 std::u16string GetEditorMenuSettingsTooltip() {

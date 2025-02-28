@@ -1198,8 +1198,7 @@ PopoverValueType GetPopoverTypeFromAttributeValue(const AtomicString& value) {
   AtomicString lower_value = value.LowerASCII();
   if (lower_value == keywords::kAuto || (!value.IsNull() && value.empty())) {
     return PopoverValueType::kAuto;
-  } else if (lower_value == keywords::kHint &&
-             RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
+  } else if (lower_value == keywords::kHint) {
     return PopoverValueType::kHint;
   } else if (lower_value == keywords::kManual) {
     return PopoverValueType::kManual;
@@ -1267,27 +1266,6 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
 
 bool HTMLElement::HasPopoverAttribute() const {
   return GetPopoverData();
-}
-
-AtomicString HTMLElement::popover() const {
-  auto attribute_value =
-      FastGetAttribute(html_names::kPopoverAttr).LowerASCII();
-  if (attribute_value.IsNull()) {
-    return attribute_value;  // Nullable
-  } else if (attribute_value.empty()) {
-    return keywords::kAuto;  // ReflectEmpty = "auto"
-  } else if (attribute_value == keywords::kAuto ||
-             attribute_value == keywords::kManual) {
-    return attribute_value;  // ReflectOnly
-  } else if (attribute_value == keywords::kHint &&
-             RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
-    return attribute_value;  // ReflectOnly (with HTMLPopoverHint enabled)
-  } else {
-    return keywords::kManual;  // ReflectInvalid = "manual"
-  }
-}
-void HTMLElement::setPopover(const AtomicString& value) {
-  setAttribute(html_names::kPopoverAttr, value);
 }
 
 PopoverValueType HTMLElement::PopoverType() const {
@@ -1749,7 +1727,6 @@ void HTMLElement::HideAllPopoversUntil(
   if (hint_stack.Contains(endpoint)) {
     // If the hint stack contains this endpoint, close the popovers above that
     // point in the stack, then return.
-    CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
     CHECK_EQ(endpoint->PopoverType(), PopoverValueType::kHint);
     hide_stack_until(endpoint, hint_stack);
     return;
@@ -1900,7 +1877,6 @@ void HTMLElement::HidePopoverInternal(
   if (PopoverType() != PopoverValueType::kManual) {
     if (!hint_stack.empty() && this == hint_stack.back()) {
       CHECK_EQ(PopoverType(), PopoverValueType::kHint);
-      CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
       hint_stack.pop_back();
     } else {
       CHECK(!auto_stack.empty());

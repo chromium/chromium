@@ -17,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/encoder_status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"

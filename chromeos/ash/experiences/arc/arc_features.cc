@@ -280,7 +280,7 @@ BASE_FEATURE(kResizeCompat,
 
 BASE_FEATURE(kRoundedWindowCompat,
              "ArcRoundedWindowCompat",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kRoundedWindowCompatStrategy[] = "RoundedWindowCompatStrategy";
 // The following values must be matched with `RoundedWindowCompatStrategy` enum

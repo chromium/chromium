@@ -9,9 +9,6 @@
 
 namespace ash::metrics_utils {
 
-// Logs if inline reply is enabled for Arc notification.
-void LogArcNotificationInlineReplyEnabled(bool inline_reply_enabled);
-
 // Logs if the notification is custom notification.
 void LogArcNotificationIsCustomNotification(bool is_custom_notification);
 

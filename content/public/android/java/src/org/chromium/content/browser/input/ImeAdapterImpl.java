@@ -888,6 +888,7 @@ public class ImeAdapterImpl
         mTextInputFlags = 0;
         mTextInputMode = WebTextInputMode.DEFAULT;
         mRestartInputOnNextStateUpdate = false;
+        mNodeEditable = false;
         // This will trigger unblocking if necessary.
         hideKeyboard();
     }

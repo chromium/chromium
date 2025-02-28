@@ -98,6 +98,34 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <variant name="ZeroSuggest"/>
 </variants>
 
+<!-- LINT.IfChange(RemoteRequestSuccess) -->
+
+<variants name="RemoteRequestSuccess">
+  <variant name="" summary="aggregated across all response codes"/>
+  <variant name=".Failed" summary="not HTTP 200 OK response codes"/>
+  <variant name=".Successful" summary="HTTP 200 OK response code"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/remote_suggestions_service.cc:ResponseCodeToSuccessString) -->
+
+<!-- LINT.IfChange(RemoteRequestType) -->
+
+<variants name="RemoteRequestType">
+  <variant name="" summary="aggregated across all types"/>
+  <variant name=".Deletion" summary="suggestion deletion"/>
+  <variant name=".DocumentSuggest" summary="document suggestion"/>
+  <variant name=".EnterpriseSearchAggregatorSuggest"
+      summary="enterprise search aggregator suggestion"/>
+  <variant name=".Images" summary="search suggestion for images"/>
+  <variant name=".Search" summary="search suggestion"/>
+  <variant name=".SearchWarmup" summary="search suggestion warm-up"/>
+  <variant name=".ZeroSuggest" summary="zero-prefix suggestion"/>
+  <variant name=".ZeroSuggestPrefetch"
+      summary="zero-prefix suggestion prefetching"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/remote_suggestions_service.cc:RequestTypeToString) -->
+
 <variants name="SearchPrefetch">
   <variant name="SearchPrefetch"
       summary="Search Prefetch issues results page requests in response to
@@ -2089,15 +2117,48 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SuggestRequestsSent" enum="SuggestRequestType"
+<histogram name="Omnibox.SuggestRequestsSent" enum="RemoteRequestType"
     expires_after="2025-08-10">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Counts the number and type of requests sent by the omnibox to the Suggest
-    backends. These requests are emitted as the user types or in zero-suggest
-    context (user has focused or cleared the omnibox but has not typed in yet).
+    The number of requests sent by the omnibox to its suggest backends, bucketed
+    by the request type. Recorded when the request starts, i.e., after obtaining
+    the OAuth token if applicable, at most once per omnibox autocompletion cycle
+    as the user types or has focused or cleared the omnibox but has not typed in
+    yet (aka zero-suggest); In other words, at most once per each time the user
+    changes the omnibox input. For zero-suggest prefetching requests, this may
+    be recorded on page load and on tab switch events for eligible pages.
   </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.SuggestRequestsSent.HttpResponseCode{RemoteRequestType}"
+    enum="HttpResponseCode" expires_after="2025-08-10">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of responses from the omnibox suggest backends, sliced by the
+    request type and bucketed by the HTTP response code. Recorded once per
+    response received, which is at most one time per Omnibox.SuggestRequestsSent
+    is recorded, since some requests are cancelled.
+  </summary>
+  <token key="RemoteRequestType" variants="RemoteRequestType"/>
+</histogram>
+
+<histogram
+    name="Omnibox.SuggestRequestsSent.ResponseTime{RemoteRequestType}{RemoteRequestSuccess}"
+    units="ms" expires_after="2025-08-10">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    How long it took in milliseconds to receive a responses from the omnibox
+    suggest backends, sliced by the request type and response success status.
+    Recorded once per response received, which is at most one time per
+    Omnibox.SuggestRequestsSent is recorded, since some requests are cancelled.
+  </summary>
+  <token key="RemoteRequestType" variants="RemoteRequestType"/>
+  <token key="RemoteRequestSuccess" variants="RemoteRequestSuccess"/>
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileIndex" units="position"

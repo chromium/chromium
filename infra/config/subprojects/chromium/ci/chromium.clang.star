@@ -1820,7 +1820,6 @@ ci.builder(
             "ios_device",
             "arm64",
             "release",
-            "ios_chromium_cert",
             "xctest",
         ],
     ),

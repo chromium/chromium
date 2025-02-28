@@ -25,6 +25,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -233,6 +234,14 @@ constexpr char kCheckSidePanelThumbnailShownScript[] =
     "const imageSrc = thumbnailRoot.getElementById('image').src;"
     "return window.getComputedStyle(thumbContainer).display !== 'none' && "
     "       imageSrc.startsWith('data:image/jpeg');})();";
+
+constexpr char kCheckSidePanelToastShownScript[] =
+    "(function() {const appRoot = "
+    "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
+    "const toast = appRoot.getElementById('toast');"
+    "const toastStyle = window.getComputedStyle(toast);"
+    "return toastStyle.visibility !== 'hidden' && "
+    "        toastStyle.opacity !== 0;})();";
 
 constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "
@@ -693,7 +702,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
           }},
          {lens::features::kLensOverlaySurvey, {}},
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            lens::features::kLensOverlaySimplifiedSelection});
   }
 
   const SkBitmap CreateNonEmptyBitmap(int width, int height) {
@@ -1804,6 +1814,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        HandleStartQueryResponse) {
+  // TODO(crbug.com/398040980): After launching simplified selection, this can
+  // be removed as it will be replaced with the
+  // `HandleStartQueryResponse` test in the
+  // `LensOverlayControllerBrowserSimplifiedSelection` suite.
   WaitForPaint();
 
   // State should start in off.
@@ -2668,6 +2682,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // It should not open a new tab as this URL matched exactly what is loaded on
   // the page.
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  // Verify that the side panel searchbox displays a toast.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(controller->GetSidePanelWebContentsForTesting(),
+                           kCheckSidePanelToastShownScript)
+        .ExtractBool();
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2743,6 +2763,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // It should not open a new tab as this URL matched exactly what is loaded on
   // the page.
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  // Verify that the side panel searchbox displays a toast.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(controller->GetSidePanelWebContentsForTesting(),
+                           kCheckSidePanelToastShownScript)
+        .ExtractBool();
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -7961,4 +7987,70 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerIPHBrowserTest,
   EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
       GURL("https://www.d.com/path")));
 }
+
+class LensOverlayControllerBrowserSimplifiedSelectionTest
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {{"results-search-url", kResultsSearchBaseUrl},
+           {"use-dynamic-theme", "true"},
+           {"use-dynamic-theme-min-population-pct", "0.002"},
+           {"use-dynamic-theme-min-chroma", "3.0"}}},
+         {lens::features::kLensOverlayContextualSearchbox,
+          {
+              {"send-page-url-for-contextualization", "true"},
+              {"use-inner-text-as-context", "true"},
+              {"use-inner-html-as-context", "true"},
+          }},
+         {lens::features::kLensOverlaySurvey, {}},
+         {lens::features::kLensOverlaySidePanelOpenInNewTab, {}},
+         {lens::features::kLensOverlaySimplifiedSelection, {}}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserSimplifiedSelectionTest,
+                       HandleStartQueryResponse) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Before showing the UI, there should be no set objects or text as
+  // no query flow has started.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(
+      fake_controller->fake_overlay_page_.last_received_objects_.empty());
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.last_received_text_);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  // When the overlay is bound, it should start the query flow which returns a
+  // response for the full image callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Prevent flakiness by flushing the tasks.
+  fake_controller->FlushForTesting();
+
+  // After flushing the mojo calls, the data should be present.
+  EXPECT_FALSE(
+      fake_controller->fake_overlay_page_.last_received_objects_.empty());
+
+  // Only objects should have been sent to the overlay from the full image
+  // response.
+  auto* object =
+      fake_controller->fake_overlay_page_.last_received_objects_[0].get();
+  auto* text = fake_controller->fake_overlay_page_.last_received_text_.get();
+  EXPECT_TRUE(object);
+  EXPECT_FALSE(text);
+  EXPECT_TRUE(kTestOverlayObject->Equals(*object));
+}
+
 }  // namespace

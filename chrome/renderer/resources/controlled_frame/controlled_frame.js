@@ -20,6 +20,88 @@ var WebViewAttributeNames = require('webViewConstants').WebViewAttributeNames;
 var WebViewElement = require('webViewElement').WebViewElement;
 var WebViewInternal = getInternalApi('webViewInternal');
 
+// The Web naming conventions for enums are kebab-case while the WebView naming
+// conventions which are snake case. Convert from the kebab case convention to
+// the snake case convention.
+function convertRunAt(webRunAt) {
+  if (["document_start", "document_end", "document_idle"]
+      .includes(webRunAt)) {
+    throw "ERROR: Encountered incorrect naming, please see specification " +
+          "text for correct naming.";
+  }
+
+  if (webRunAt === "document-start") {
+    return "document_start";
+  } else if (webRunAt === "document-end") {
+    return "document_end";
+  } else if (webRunAt === "document-idle") {
+    return "document_idle";
+  }
+
+  return webRunAt;
+}
+
+// This is a helper function for |convertFromWebNaming()| which receives a
+// pre-filled |webViewRule| along with an array of |keyMappings|. Each mapping
+// is used to convert a key in |webViewRule| from the Web naming convention to
+// the WebView naming convention.
+function convertContentScriptDetailsKeys(webViewRule, keyMappings) {
+  for (const mapping of keyMappings) {
+    if (!('from' in mapping)) {
+      throw "ERROR: 'from' is required";
+    }
+
+    if (!('to' in mapping)) {
+      throw "ERROR: 'to' is required";
+    }
+
+    if (mapping.to in webViewRule) {
+      throw "ERROR: Encountered incorrect naming, please see specification " +
+            "text for correct naming.";
+    }
+
+    if (mapping.from in webViewRule) {
+      webViewRule[mapping.to] = webViewRule[mapping.from];
+
+      // We assume that |webViewRule| was prefilled from |webViewRule|.
+      // Delete the old key from |webViewRule|.
+      delete webViewRule[mapping.from];
+    }
+  }
+
+  return webViewRule;
+}
+
+// The Web naming conventions for JavaScript keys are camel case while the
+// WebView naming conventions are snake case. Convert from the camel case
+// convention to the snake case convention.
+function convertFromWebNaming(webRules) {
+  let webViewRules = [];
+  for (let webRule of webRules) {
+    // Convert the "runAt" key if present in each |webRule|.
+    if ('runAt' in webRule) {
+      webRule.runAt = convertRunAt(webRule.runAt);
+    }
+
+    // Prefill |webViewRule| based on |webRule|.
+    let webViewRule = webRule;
+
+    // Convert the keys in |webViewRule|.
+    webViewRule = convertContentScriptDetailsKeys(webViewRule, [
+      { from: "allFrames", to: "all_frames" },
+      { from: "excludeGlobs", to: "exclude_globs" },
+      { from: "excludeMatches", to: "exclude_matches" },
+      { from: "includeGlobs", to: "include_globs" },
+      { from: "matchAboutBlank", to: "match_about_blank" },
+      { from: "runAt", to: "run_at" },
+    ]);
+
+    webViewRules.push(webViewRule);
+  }
+
+  return webViewRules;
+}
+
 class ControlledFrameElement extends WebViewElement {
   static get observedAttributes() {
     return WebViewAttributeNames;
@@ -36,8 +118,15 @@ class ControlledFrameElement extends WebViewElement {
   // below will replace these with Promise-based versions.
   addContentScripts(rules, callback) {
     var internal = privates(this).internal;
+    // Controlled Frame uses a slightly different API convention in its |rules|
+    // that follow https://w3ctag.github.io/design-principles/#casing-rules.
+    // Adjust incoming calls to translate from the web-preferred model to the
+    // previous convention that WebView uses.
+    // Note: any incoming rules that continue to use the WebView API will
+    // trigger a synchronous failure in calls to this API.
+    let webViewRules = convertFromWebNaming(rules);
     return WebViewInternal.addContentScripts(
-        internal.viewInstanceId, rules, callback);
+        internal.viewInstanceId, webViewRules, callback);
   }
 
   removeContentScripts(names, callback) {

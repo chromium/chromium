@@ -187,8 +187,6 @@ extern const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode;
 
 BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 
-BASE_DECLARE_FEATURE(kToolbarPinning);
-
 bool IsToolbarPinningEnabled();
 
 BASE_DECLARE_FEATURE(kPinnedCastButton);

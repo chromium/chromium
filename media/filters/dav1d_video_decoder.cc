@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/dav1d_video_decoder.h"
 
 #include <memory>
@@ -179,11 +174,12 @@ static int AllocPicture(Dav1dPicture* p, void* frame_pool_opaque) {
   p->allocator_data = new FrameBufferData(fb_priv, frame_pool);
 
   // Safe due to over-allocation by DAV1D_PICTURE_ALIGNMENT * 2 above.
-  uint8_t* const data =
-      base::bits::AlignUp(span.data(), DAV1D_PICTURE_ALIGNMENT);
-  p->data[0] = data;
-  p->data[1] = has_chroma ? data + y_sz : nullptr;
-  p->data[2] = has_chroma ? data + y_sz + uv_sz : nullptr;
+  auto aligned_span = span.subspan(DAV1D_PICTURE_ALIGNMENT -
+                                   reinterpret_cast<uintptr_t>(span.data()) %
+                                       DAV1D_PICTURE_ALIGNMENT);
+  p->data[0] = aligned_span.data();
+  p->data[1] = has_chroma ? aligned_span.get_at(y_sz) : nullptr;
+  p->data[2] = has_chroma ? aligned_span.get_at(y_sz + uv_sz) : nullptr;
   return 0;
 }
 
@@ -214,6 +210,22 @@ struct ScopedDav1dPictureFree {
     dav1d_picture_unref(pic);
     delete pic;
   }
+};
+
+// Helper structure for storing generated 10-16bit UV planes for I400 content.
+class RefCountedUV16Data : public base::RefCountedMemory {
+ public:
+  RefCountedUV16Data(size_t count, uint16_t fill_value)
+      : uv_data_(count, fill_value) {}
+
+ private:
+  ~RefCountedUV16Data() override = default;
+
+  base::span<const uint8_t> AsSpan() const LIFETIME_BOUND override {
+    return base::as_byte_span(uv_data_);
+  }
+
+  std::vector<uint16_t> uv_data_;
 };
 
 // static
@@ -504,8 +516,8 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
     return nullptr;
 
   auto uv_plane_stride = pic->stride[1];
-  auto* u_plane = static_cast<uint8_t*>(pic->data[1]);
-  auto* v_plane = static_cast<uint8_t*>(pic->data[2]);
+  const auto* u_plane = static_cast<const uint8_t*>(pic->data[1]);
+  const auto* v_plane = static_cast<const uint8_t*>(pic->data[2]);
 
   const bool needs_fake_uv_planes = pic->p.layout == DAV1D_PIXEL_LAYOUT_I400;
   if (needs_fake_uv_planes) {
@@ -527,16 +539,11 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
         DCHECK(pic->p.bpc == 10 || pic->p.bpc == 12);
         const uint16_t kBlankUV = (1 << pic->p.bpc) / 2;
         fake_uv_data_ =
-            base::MakeRefCounted<base::RefCountedBytes>(size_needed);
-
-        uint16_t* data =
-            reinterpret_cast<uint16_t*>(fake_uv_data_->as_vector().data());
-        std::fill(data, data + size_needed / 2, kBlankUV);
+            base::MakeRefCounted<RefCountedUV16Data>(size_needed / 2, kBlankUV);
       }
     }
 
-    u_plane = v_plane =
-        reinterpret_cast<uint8_t*>(fake_uv_data_->as_vector().data());
+    u_plane = v_plane = fake_uv_data_->data();
   }
 
   auto frame = VideoFrame::WrapExternalYuvData(
@@ -551,7 +558,7 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
   // Each frame needs a ref on the fake UV data to keep it alive until done.
   if (needs_fake_uv_planes) {
     frame->AddDestructionObserver(base::BindOnce(
-        [](scoped_refptr<base::RefCountedBytes>) {}, fake_uv_data_));
+        [](scoped_refptr<base::RefCountedMemory>) {}, fake_uv_data_));
   }
 
   return frame;

@@ -7,7 +7,7 @@
  * site URL.
  */
 
-import {getFavicon, getFaviconForPageURL, getImageForUrl} from 'chrome://resources/js/icon.js';
+import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './site_favicon.html.js';
@@ -34,22 +34,17 @@ export class SiteFaviconElement extends PolymerElement {
       // The icon's local path. We don't need to fetch the icon from the url if
       // the path is not empty.
       iconPath: String,
-      iconUrl: String,
     };
   }
 
   faviconUrl: string;
   url: string;
   iconPath: string;
-  iconUrl: string;
 
   private getBackgroundImage_() {
     let backgroundImage = getFavicon('');
     if (this.iconPath) {
       backgroundImage = 'url(' + this.iconPath + ')';
-    } else if (this.iconUrl) {
-      const url = this.ensureUrlHasScheme_(this.iconUrl);
-      backgroundImage = getImageForUrl(url);
     } else if (this.faviconUrl) {
       const url = this.ensureUrlHasScheme_(this.faviconUrl);
       backgroundImage = getFavicon(url);

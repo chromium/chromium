@@ -32,9 +32,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
                                     public ToolbarActionsModel::Observer,
                                     public AccountExtensionTracker::Observer {
  public:
-  static std::unique_ptr<api::developer_private::ProfileInfo> CreateProfileInfo(
-      Profile* profile);
-
   explicit DeveloperPrivateEventRouter(Profile* profile);
 
   DeveloperPrivateEventRouter(const DeveloperPrivateEventRouter&) = delete;

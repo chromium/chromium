@@ -206,8 +206,6 @@
 #undef pow
 #include <cmath>  // for std::pow
 
-#include "build/chromeos_buildflags.h"
-
 // The following constants control parameters for automated scaling of webpages
 // (such as due to a double tap gesture or find in page etc.). These are
 // experimentally determined.

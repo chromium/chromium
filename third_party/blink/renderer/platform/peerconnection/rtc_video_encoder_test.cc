@@ -24,7 +24,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -1603,7 +1602,7 @@ TEST_F(RTCVideoEncoderEncodeTest, InitializeWithTooHighBitrateFails) {
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 //  Currently we only test spatial SVC encoding on CrOS since only CrOS platform
 //  support spatial SVC encoding.
 
@@ -2439,7 +2438,7 @@ TEST_F(RTCVideoEncoderEncodeTest,
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
 }
 
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(RTCVideoEncoderEncodeTest, MetricsProviderSetErrorIsCalledOnError) {
   const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;

@@ -53,8 +53,7 @@ OnDeviceContext::GetOrCreateSession() {
   if (session_) {
     return session_;
   }
-  opts_.model_client->GetModelRemote()->StartSession(
-      session_.BindNewPipeAndPassReceiver());
+  opts_.model_client->StartSession(session_.BindNewPipeAndPassReceiver());
   session_.reset_on_disconnect();
   if (input_ && input_->pieces.size() > 0) {
     AddContext();

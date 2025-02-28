@@ -53,6 +53,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/http/http_status_code.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -10682,7 +10683,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeaconLongUrl) {
 class BidderWorkletSharedStorageAPIDisabledTest : public BidderWorkletTest {
  public:
   BidderWorkletSharedStorageAPIDisabledTest() {
-    feature_list_.InitAndDisableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndDisableFeature(network::features::kSharedStorageAPI);
   }
 
  protected:
@@ -10723,7 +10724,7 @@ class BidderWorkletSharedStorageAPIEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletSharedStorageAPIEnabledTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kSharedStorageAPI,
+        /*enabled_features=*/{network::features::kSharedStorageAPI,
                               blink::features::kSharedStorageWebLocks},
         /*disabled_features=*/{});
 

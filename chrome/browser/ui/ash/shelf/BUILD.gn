@@ -80,7 +80,6 @@ static_library("shelf") {
     "//ash/webui/projector_app/public/cpp",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/app/vector_icons",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/accessibility",

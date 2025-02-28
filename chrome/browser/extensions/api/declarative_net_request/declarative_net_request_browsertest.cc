@@ -267,7 +267,7 @@ class DeclarativeNetRequestBrowserTest
   DeclarativeNetRequestBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kInterestGroupStorage,
+        {network::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFencedFrames,
          blink::features::kFencedFramesAPIChanges,

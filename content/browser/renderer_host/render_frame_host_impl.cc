@@ -9155,7 +9155,7 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
   }
 
   if (attributes->browsing_topics &&
-      !base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+      !base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
     bad_message::ReceivedBadMessage(
         GetProcess(),
         bad_message::RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE);
@@ -9163,7 +9163,7 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
   }
 
   if (attributes->shared_storage_writable_opted_in &&
-      (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI))) {
+      (!base::FeatureList::IsEnabled(network::features::kSharedStorageAPI))) {
     bad_message::ReceivedBadMessage(
         GetProcess(),
         bad_message::RFH_RECEIVED_INVALID_SHARED_STORAGE_WRITABLE_ATTRIBUTE);

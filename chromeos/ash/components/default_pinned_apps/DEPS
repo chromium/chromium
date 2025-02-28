@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/webui/mall",
   "+chromeos/ash/components/file_manager",
   "+chromeos/ash/components/scalable_iph",
   "+content/public/browser",

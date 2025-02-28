@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace blink {
@@ -15,8 +16,8 @@ namespace blink {
 bool IsValidSharedStorageURLsArrayLength(size_t length) {
   return length != 0 &&
          length <=
-             features::kSharedStorageURLSelectionOperationInputURLSizeLimit
-                 .Get();
+             network::features::
+                 kSharedStorageURLSelectionOperationInputURLSizeLimit.Get();
 }
 
 void LogSharedStorageWorkletError(SharedStorageWorkletErrorType error_type) {

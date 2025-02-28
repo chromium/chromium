@@ -133,7 +133,6 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::WebContents* web_contents) override;
   KioskDelegate* GetKioskDelegate() override;
   std::string GetApplicationLocale() override;
-  std::string GetUserAgent() const override;
 
   // |context| is the single BrowserContext used for IsValidContext().
   // |pref_service| is used for GetPrefServiceForContext().

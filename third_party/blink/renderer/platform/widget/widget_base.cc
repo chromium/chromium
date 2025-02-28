@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -825,13 +824,6 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
             /*context_provider=*/nullptr, /*worker_context_provider=*/nullptr,
             gpu_channel_host->CreateClientSharedImageInterface(), params.get()),
         std::move(render_frame_metadata_observer));
-    return;
-  }
-
-  if (Platform::Current()->IsGpuCompositingDisabled()) {
-    // GPU compositing was disabled after the check in
-    // WidgetBase::RequestNewLayerTreeFrameSink(). Fail and let it retry.
-    std::move(callback).Run(nullptr, nullptr);
     return;
   }
 

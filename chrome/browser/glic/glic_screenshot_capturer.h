@@ -33,6 +33,9 @@ class GlicScreenshotCapturer : public webrtc::DesktopCapturer::Callback {
   void CaptureScreenshot(
       gfx::NativeWindow parent_window,
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
+  // Called to synchronously destroy the screen picker dialog. Used when client
+  // panel is closed before the screen picker flow completes.
+  void CloseScreenPicker();
 
  private:
   // Callback triggered when user selects a source to capture.

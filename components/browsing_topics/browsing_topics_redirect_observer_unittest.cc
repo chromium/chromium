@@ -15,6 +15,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"
+#include "services/network/public/cpp/features.h"
 
 namespace browsing_topics {
 
@@ -23,7 +24,7 @@ class BrowsingTopicsRedirectObserverTest
  public:
   BrowsingTopicsRedirectObserverTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kBrowsingTopics},
+        /*enabled_features=*/{network::features::kBrowsingTopics},
         /*disabled_features=*/{});
   }
 

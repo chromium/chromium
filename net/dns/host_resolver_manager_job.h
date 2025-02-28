@@ -355,11 +355,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // All ServiceEndpointRequests waiting for the result of this Job. Some can
   // be canceled.
   base::LinkedList<ServiceEndpointRequestImpl> service_endpoint_requests_;
-  // Holds all ServiceEndpointRequests that are added to `this`, regardless of
-  // existence. Only for debugging. Must not dereference values.
-  // TODO(crbug.com/397597592): Remove once we identified the root cause of the
-  // bug.
-  std::set<ServiceEndpointRequestImpl*> added_service_endpoint_requests_;
 
   // Builds and updates intermediate service endpoints while executing
   // a DnsTransaction.

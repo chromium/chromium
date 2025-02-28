@@ -494,11 +494,12 @@ class TestImporter:
         self.project_git.commit_locally_with_message(commit_message)
 
     def _has_wpt_changes(self):
+        port = self.host.port_factory.get()
         changed_files = self.project_git.changed_files()
         test_roots = [
             self.fs.relpath(self.finder.path_from_web_tests(subdir),
                             self.finder.chromium_base())
-            for subdir in Port.WPT_DIRS
+            for subdir in port.wpt_dirs()
         ]
         for changed_file in changed_files:
             if any(changed_file.startswith(root) for root in test_roots):

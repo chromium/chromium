@@ -124,10 +124,7 @@ float TabGroupStyle::GetSyncIconWidth() const {
   return kSyncIconWidth;
 }
 
-float TabGroupStyle::GetAttentionIndicatorWidth(bool needs_attention) const {
-  if (!needs_attention) {
-    return 0;
-  }
+float TabGroupStyle::GetAttentionIndicatorWidth() const {
   return kAttentionIndicatorWidth;
 }
 

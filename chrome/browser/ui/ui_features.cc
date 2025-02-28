@@ -255,14 +255,6 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(ANDROID)
-BASE_FEATURE(kToolbarPinning,
-             "ToolbarPinning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsToolbarPinningEnabled() {
-  return base::FeatureList::IsEnabled(kToolbarPinning);
-}
-
 BASE_FEATURE(kPinnedCastButton,
              "PinnedCastButton",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -276,7 +276,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '081fa4d1f13e8002d4c40f597deedeaf1dcfc2bc',
+  'src_internal_revision': '196cb2d08748a770ff6e84a39da24c59c9e4cb6b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'ca7e88822e3944d48e969e1ee78e96435963b0d5',
+  'angle_revision': '421109ac5be0ffe422bf1ab0c7a688d8c1abbade',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -300,7 +300,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': 'ab3647c5f0419c504e534dbb6347088822407e97',
+  'boringssl_revision': 'ad62e9cab15536b1db61a7cb7b316f6fb3e9e563',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -356,7 +356,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': 'eb19d548c5debc9733534b93b7f36843c6c5e28f',
+  'crossbench_revision': 'bf8c43db45855cf8338d1e5c54cc1a67eaf76563',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '9f15bec4642e3d8ea7c1c196a55a01e3ec47791b',
+  'devtools_frontend_revision': '120b8317ae1cce9294bafc0690e4077c2bffb997',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'd3f19413bfd6fdd64d4bf79822a5d19631511487',
+  'dawn_revision': '87c9ac3a5a41032ed8fd4cb614a5bb7da1c0805b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '549fa281b817af03dd62f6da49716863ee3ceb7e',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '3ade166908726df943a4682dc8ae855b01ad3623',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'f9a9330b39cb9591f05438597017c3b31154d415',
+    '893d33f248a6a6cb281f719900493c4527fba735',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1611,7 +1611,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'Glu0R-2rm0r8X_SSe1_vx7LESEPdcVzSsydx7wuCmhEC',
+          'version': 'n0WQchPkBLFjB2184Hlvt02UFGHeSwY8fivVrFfExjAC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -1704,7 +1704,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/lint',
-               'version': '9zfe4Uaw-NwRZwOiAl-D_BvgC9wZWqTWAlRyLjUhM04C',
+               'version': 'Gj-bf0mbp-Xwrhdet_cfri4Ubb-8PgONVeBw6aXt10MC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1715,7 +1715,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': 'Zs3uzARJ77tL_Rkbn-4hU-qHip99y98mQPLSeYlAqZsC',
+               'version': 'kSLW7TCDnPXiA8K_534GKlsaIZOkGd_CSDf1sBwb-3cC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1947,7 +1947,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '3a5e3144af7fe395f9e4a569501a35ecb67248b3',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'c4e7c8717cbd057339731e8b629c2e29fcba9c42',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2118,7 +2118,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/hunspell_dictionaries.git' + '@' + '41cdffd71c9948f63c7ad36e1fb0ff519aa7a37e',
 
   'src/third_party/icu':
-    Var('chromium_git') + '/chromium/deps/icu.git' + '@' + 'bbccc2f6efc1b825de5f2c903c48be685cd0cf22',
+    Var('chromium_git') + '/chromium/deps/icu.git' + '@' + 'd30b7b0bb3829f2e220df403ed461a1ede78b774',
 
   'src/third_party/icu4j/cipd': {
       'packages': [
@@ -2807,7 +2807,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'a93cce88e508a19c39c6b575ce950568d3cfb262',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '992a4c443b21be2c99c8b19daff21bacc1cc3085',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),

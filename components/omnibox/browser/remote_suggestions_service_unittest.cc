@@ -262,12 +262,16 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestCompleted,
                      base::Unretained(this)));
 
-  base::RunLoop().RunUntilIdle();
+  // Verify request histogram was recorded.
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 1);
+  histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 1);
 
   // Verify the observer got notified of request start.
   const std::string kRequestUrl = "https://www.example.com/suggest";
   ASSERT_EQ(observer.url().spec(), kRequestUrl);
   ASSERT_FALSE(observer.response_received());
+
+  base::RunLoop().RunUntilIdle();
 
   // Verify the pending request and resolve it.
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kRequestUrl));
@@ -276,9 +280,19 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
 
   base::RunLoop().RunUntilIdle();
 
-  // Verify histogram was recorded.
-  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 1);
-  histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 1);
+  // Verify response histograms were recorded.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode.ZeroSuggest", 1);
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent.ResponseTime",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.ZeroSuggest", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.Successful", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.ZeroSuggest.Successful", 1);
 
   // Verify the observer got notified of request completion.
   ASSERT_EQ(observer.url().spec(), kRequestUrl);

@@ -316,8 +316,6 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
 }
 
 TEST_F(AppMenuModelTest, CustomizeChromeItem) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(features::kToolbarPinning);
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel tool_model(&model, browser());
@@ -330,9 +328,6 @@ TEST_F(AppMenuModelTest, CustomizeChromeItem) {
 }
 
 TEST_F(AppMenuModelTest, CustomizeChromeLogMetrics) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(features::kToolbarPinning);
-
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
   model.ExecuteCommand(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL, 0);

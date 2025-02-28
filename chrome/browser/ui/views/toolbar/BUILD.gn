@@ -17,8 +17,6 @@ source_set("toolbar") {
     "browser_app_menu_button.h",
     "chrome_labs/chrome_labs_bubble_view.cc",
     "chrome_labs/chrome_labs_bubble_view.h",
-    "chrome_labs/chrome_labs_button.cc",
-    "chrome_labs/chrome_labs_button.h",
     "chrome_labs/chrome_labs_coordinator.cc",
     "chrome_labs/chrome_labs_coordinator.h",
     "chrome_labs/chrome_labs_item_view.cc",

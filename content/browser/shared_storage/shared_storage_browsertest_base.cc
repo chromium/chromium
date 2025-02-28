@@ -48,6 +48,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -71,7 +72,7 @@ SharedStorageBrowserTestBase::SharedStorageBrowserTestBase() {
 
   shared_storage_feature_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kSharedStorageAPI,
+      {{network::features::kSharedStorageAPI,
         {
             {"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)},
             {"SharedStorageStalenessThreshold",

@@ -25,6 +25,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -87,7 +88,7 @@ class BrowsingTopicsBrowserTest : public ContentBrowserTest {
  public:
   BrowsingTopicsBrowserTest() {
     feature_list_.InitWithFeatures({features::kPrivacySandboxAdsAPIsOverride,
-                                    blink::features::kBrowsingTopics},
+                                    network::features::kBrowsingTopics},
                                    /*disabled_features=*/{});
   }
 

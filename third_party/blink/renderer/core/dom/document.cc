@@ -8106,7 +8106,6 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
 
 HTMLElement* Document::TopmostPopoverOrHint() const {
   if (!PopoverHintStack().empty()) {
-    CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
     return PopoverHintStack().back();
   }
   if (!PopoverAutoStack().empty()) {

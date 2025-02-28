@@ -7912,6 +7912,50 @@ New install
         Featured GIFs
       </message>
 
+      <!-- Lobster -->
+      <message name="IDS_LOBSTER_SELECTION_LABEL" desc="The label for the option to open Image Generation.">
+        Create image
+      </message>
+      <message name="IDS_LOBSTER_COPY_IMAGE_TO_CLIPBOARD_TOAST_MESSAGE" desc="The toast message displayed when the image from Image Generation is copied into the clipboard history.">
+        Copied to clipboard.
+      </message>
+      <message name="IDS_LOBSTER_IMAGE_DOWNLOAD_NOTIFICATION_SOURCE" desc="The source label of the successful image download notification of Image Generation.">
+        Download manager
+      </message>
+      <message name="IDS_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_SUCCESS" desc="The announcement made when users insert image successfully from Image Generation.">
+        Image inserted
+      </message>
+      <message name="IDS_LOBSTER_IMAGE_INSERTION_ANNOUNCEMENT_FAILURE" desc="The announcement made when users failed to insert image from Image Generation">
+        Image insertion failed
+      </message>
+      <message name="IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_TITLE" desc="The title of the successful image download notification of Image Generation.">
+        Download complete
+      </message>
+      <message name="IDS_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_TITLE" desc="The title of the unsuccessful image download notification of Image Generation.">
+        <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph> download unsuccessful.
+      </message>
+      <message name="IDS_LOBSTER_FAILED_IMAGE_DOWNLOAD_NOTIFICATION_MESSAGE" desc="The message of the unsuccessful image download notification of Image Generation.">
+        Failed
+      </message>
+      <message name="IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_SHOW_IN_FOLDER_ACTION_LABEL" desc="The label of the button in successful image download notification of Image Generation. Clicking the button will open the Downloads folder.">
+        Show in folder
+      </message>
+      <message name="IDS_LOBSTER_SUCCESSFUL_IMAGE_DOWNLOAD_NOTIFICATION_COPY_IMAGE_TO_CLIPBOARD_ACTION_LABEL" desc="The label of the button in successful image download notification of Image Generation. Clicking the button will copy the image into the clipboard history.">
+        Copy to clipboard
+      </message>
+      <message name="IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_ONE" desc="Text shown as the first paragraph of the Magic Boost with Image Generation disclaimer view's body.">
+        You must be at least 18 years old to use Help me read, Help me write, and create images with AI.
+      </message>
+      <message name="IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO" desc="Text shown as the second paragraph of the Magic Boost with Image Generation disclaimer view's body.">
+        When you turn on these features, the input text, document content, and web page URL may be sent to Google servers. This information is used to generate writing suggestions, generate summaries, answer questions, and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Google's Terms of Service and Privacy Policy</ex></ph>. Don't include anything personal, sensitive, or confidential.
+      </message>
+      <message name="IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE" desc="Text shown as the third paragraph of the Magic Boost with Image Generation disclaimer view's body.">
+        Generative AI can make mistakes, including about people, so double-check it.
+      </message>
+      <message name="IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR" desc="Text shown as the forth paragraph of the Magic Boost with Image Generation disclaimer view's body.">
+        You can turn off these features at any time in Settings. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
         Picture-in-picture started, Alt+Shift+V to focus
@@ -9004,13 +9048,16 @@ To shut down the device, press and hold the power button on the device again.
         Items in the suggested group
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ITEM_CLOSE_BUTTON_TOOLTIP" desc="The tooltip of the close button on smart grouping expanded menu item">
-        Remove item from suggested group
+        Remove <ph name="ITEM_LABEL">$1<ex>YouTube</ex></ph> from suggested group
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN" desc="The accessible name for the birch coral button selector UI.">
         Hide items in <ph name="GROUP_NAME">$1<ex>Trip To Tokyo</ex></ph>
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN" desc="The accessible name for the birch coral button selector UI.">
         Show items in <ph name="GROUP_NAME">$1<ex>Trip To Tokyo</ex></ph>
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_ITEM_WITH_REMOVE_BUTTON" desc="The accessibile name of selector menu item with a remove button">
+        <ph name="ITEM_LABEL">$1<ex>YouTube</ex></ph> with remove button
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED" desc="Message shown to users when they attempt to save a new coral group when the maximum number of coral saved groups has been reached.">
         Maximum number of saved groups reached.

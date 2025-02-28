@@ -12,7 +12,9 @@
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
 
@@ -29,9 +31,9 @@ struct OnDeviceOptions final {
     virtual std::unique_ptr<Client> Clone() const = 0;
     // Called to check whether this client is still usable.
     virtual bool ShouldUse() = 0;
-    // Called to retrieve connection the managed model.
-    virtual mojo::Remote<on_device_model::mojom::OnDeviceModel>&
-    GetModelRemote() = 0;
+    // Called to create a new empty session.
+    virtual void StartSession(
+        mojo::PendingReceiver<on_device_model::mojom::Session> pending) = 0;
     // Called to report a successful execution of the model.
     virtual void OnResponseCompleted() = 0;
   };

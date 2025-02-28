@@ -409,6 +409,7 @@ public class AwContents implements SmartClipProvider {
     private WebContentsInternalsHolder mWebContentsInternalsHolder;
     private NavigationController mNavigationController;
     private final AwContentsClient mContentsClient;
+    private AwNavigationClient mNavigationClient;
     private AwWebContentsObserver mWebContentsObserver;
     private final AwContentsClientBridge mContentsClientBridge;
     private final AwWebContentsDelegateAdapter mWebContentsDelegate;
@@ -980,8 +981,7 @@ public class AwContents implements SmartClipProvider {
      * @param nativeDrawFunctorFactory to access the functor provided by the WebView.
      * @param contentsClient will receive API callbacks from this WebView Contents.
      * @param awSettings AwSettings instance used to configure the AwContents.
-     *
-     * This constructor uses the default view sizing policy.
+     *     <p>This constructor uses the default view sizing policy.
      */
     public AwContents(
             AwBrowserContext browserContext,
@@ -3830,6 +3830,14 @@ public class AwContents implements SmartClipProvider {
 
     public int getDisplayMode() {
         return mDisplayModeController.getDisplayMode();
+    }
+
+    public AwNavigationClient getNavigationClient() {
+        return mNavigationClient;
+    }
+
+    public void setNavigationClient(AwNavigationClient navigationClient) {
+        mNavigationClient = navigationClient;
     }
 
     // --------------------------------------------------------------------------------------------

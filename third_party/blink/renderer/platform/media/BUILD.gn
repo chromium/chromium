@@ -75,7 +75,6 @@ component("media") {
     "//url",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//components/viz/common",
     "//media:media_buildflags",
     "//media:shared_memory_support",

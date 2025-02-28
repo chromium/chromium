@@ -261,6 +261,7 @@ class Port(object):
     #
     # WPT_DIRS maps WPT roots on the file system to URL prefixes on wptserve.
     # The order matters: '/' MUST be the last URL prefix.
+    # Consider using port.wpt_dirs() instead.
     WPT_DIRS = collections.OrderedDict([
         ('wpt_internal', '/wpt_internal/'),
         ('external/wpt', '/'),
@@ -373,6 +374,14 @@ class Port(object):
             self._options.configuration.lower(), self._version, self.port_name,
             self._architecture
         ])
+
+    @memoized
+    def wpt_dirs(self):
+        """Get WPT directories of interest for current context.
+        """
+        if self.get_option('product') is None:
+            return self.WPT_DIRS
+        return collections.OrderedDict([('external/wpt', '/')])
 
     @memoized
     def flag_specific_config_name(self):
@@ -1178,19 +1187,13 @@ class Port(object):
         bases = []
         if self._options.virtual_tests:
             for suite in self.virtual_test_suites():
-                bases.extend(suite.full_prefix + base for base in suite.bases)
+                bases.extend(
+                    [suite.full_prefix + base for base in suite.bases])
         bases_by_root = self._parse_paths(bases)
         # Treat non-virtual tests like a special virtual suite that runs
         # everything.
-        for root in (None, *self.WPT_DIRS):
+        for root in (None, *self.wpt_dirs()):
             bases_by_root[None, root] = {''}
-        if not self.get_option('run_wpt_internal', True):
-            # Exclude entries, including virtual ones, for `--no-wpt-internal`.
-            bases_by_root = {
-                (virtual_suite, wpt_dir): bases
-                for (virtual_suite, wpt_dir), bases in bases_by_root.items()
-                if wpt_dir != 'wpt_internal'
-            }
         return bases_by_root
 
     def _parse_paths(self,
@@ -1211,6 +1214,9 @@ class Port(object):
         for path in map(self._as_posix_path, paths):
             virtual_suite, base_test = self.get_suite_name_and_base_test(path)
             wpt_dir, path_from_root = self.split_wpt_dir(base_test)
+            if wpt_dir and wpt_dir not in self.wpt_dirs():
+                # Skip wpt_internal tests on run_wpt_tests.py
+                continue
             virtual_suite = virtual_suite or None
             if virtual_suite and self._path_has_wildcard(path):
                 _log.warning('WARNING: Wildcards in paths are not supported '
@@ -1229,7 +1235,7 @@ class Port(object):
             # A pattern of the form `virtual/<suite>` should also encompass any
             # virtual WPT roots.
             if virtual_suite and not wpt_dir and not path_from_root:
-                for wpt_dir in self.WPT_DIRS:
+                for wpt_dir in self.wpt_dirs():
                     paths_by_root[virtual_suite, wpt_dir].add('')
         return paths_by_root
 
@@ -2057,7 +2063,7 @@ class Port(object):
             virtual_suite.exclusive_tests)
         return {
             wpt_dir: exclusive_tests_by_root[None, wpt_dir]
-            for wpt_dir in (None, *self.WPT_DIRS)
+            for wpt_dir in (None, *self.wpt_dirs())
         }
 
     @memoized

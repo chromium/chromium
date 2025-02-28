@@ -179,7 +179,8 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                               {lens::features::kLensOverlayContextualSearchbox,
                                {{"use-pdfs-as-context", "true"},
                                 {"use-inner-html-as-context", "true"}}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            lens::features::kLensOverlaySimplifiedSelection});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InteractiveFeaturePromoTest::SetUp();
   }

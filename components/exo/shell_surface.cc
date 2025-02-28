@@ -48,8 +48,7 @@ namespace exo {
 namespace {
 
 // Default maximum amount of time to wait for contents to change. For example,
-// happens during a maximize, fullscreen or pinned state change, or raster scale
-// change.
+// happens during a maximize, or fullscreen or pinned state change.
 constexpr int kDefaultCompositorLockTimeoutMs = 100;
 
 // Compositor lock timeout for slower changes (e.g. display scale change).
@@ -741,17 +740,6 @@ void ShellSurface::OnWindowPropertyChanged(aura::Window* window,
             window->GetProperty(chromeos::kIsShowingInOverviewKey));
       }
     }
-
-    if (key == aura::client::kRasterScale) {
-      float raster_scale = window->GetProperty(aura::client::kRasterScale);
-
-      if (raster_scale == pending_raster_scale_) {
-        return;
-      }
-
-      pending_raster_scale_ = raster_scale;
-      Configure();
-    }
   }
 }
 
@@ -1053,14 +1041,14 @@ void ShellSurface::Configure(bool ends_drag) {
       serial = configure_callback_.Run(
           GetClientBoundsInScreen(widget_), window_state->GetStateType(),
           IsResizing(), widget_->IsActive(), origin_offset,
-          pending_raster_scale_, occlusion_state, restore_state_type);
+          /*raster_scale=*/1.0, occlusion_state, restore_state_type);
     } else {
       auto state = chromeos::ToWindowStateType(initial_show_state_);
       auto occlusion_state =
           occlusion_observer_->GetInitialStateForConfigure(state);
       gfx::Rect bounds = GetInitialBoundsForState(state);
       serial = configure_callback_.Run(bounds, state, false, false,
-                                       origin_offset, pending_raster_scale_,
+                                       origin_offset, /*raster_scale=*/1.0,
                                        occlusion_state, std::nullopt);
     }
   }

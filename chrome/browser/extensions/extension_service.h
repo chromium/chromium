@@ -359,6 +359,8 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Updates the |extension|'s granted permissions lists to include all
   // permissions in the |extensions|'s manifest.
+  // TODO(crbug.com/399677154): Migrate callers to use PermissionsUpdater
+  // directly.
   void GrantPermissions(const Extension* extension);
 
   // Check for updates (or potentially new extensions from external providers)
@@ -638,11 +640,11 @@ class ExtensionService : public ExtensionServiceInterface,
   PendingExtensionManager pending_extension_manager_;
 
   // The full path to the directory where extensions are installed.
-  base::FilePath install_directory_;
+  const base::FilePath install_directory_;
 
   // The full path to the directory where unpacked (e.g. from .zip files)
   // extensions are installed.
-  base::FilePath unpacked_install_directory_;
+  const base::FilePath unpacked_install_directory_;
 
   // Whether or not extensions are enabled.
   bool extensions_enabled_ = true;

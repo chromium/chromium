@@ -38,6 +38,7 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
@@ -684,7 +685,7 @@ void SharedStorageWorkletHost::SelectURL(
   DCHECK_LE(shared_storage_fenced_frame_root_count, fenced_frame_depth);
 
   size_t max_allowed_fenced_frame_depth =
-      blink::features::kSharedStorageMaxAllowedFencedFrameDepthForSelectURL
+      network::features::kSharedStorageMaxAllowedFencedFrameDepthForSelectURL
           .Get();
 
   if (fenced_frame_depth > max_allowed_fenced_frame_depth) {

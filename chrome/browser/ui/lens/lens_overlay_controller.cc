@@ -767,6 +767,12 @@ void LensOverlayController::ResetSidePanelSearchboxHandler() {
   side_panel_searchbox_handler_.reset();
 }
 
+void LensOverlayController::ShowToastInSidePanel(std::string message) {
+  if (side_panel_page_) {
+    side_panel_page_->ShowToast(message);
+  }
+}
+
 uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
   return invocation_time_since_epoch_.InMillisecondsSinceUnixEpoch();
 }
@@ -2384,7 +2390,8 @@ void LensOverlayController::InitializeOverlayUI(
   if (!init_data.objects_.empty()) {
     SendObjects(CopyObjects(init_data.objects_));
   }
-  if (init_data.text_) {
+  // Do not send text to the overlay from the full image response.
+  if (init_data.text_ && !lens::features::IsSimplifiedSelectionEnabled()) {
     SendText(init_data.text_->Clone());
   }
   if (pending_region_) {
@@ -3316,7 +3323,12 @@ void LensOverlayController::HandleStartQueryResponse(
   // Text can be null if there was no text within the server response.
   if (!text.is_null()) {
     initialization_data_->text_ = text.Clone();
-    SendText(std::move(text));
+
+    // Do not send text to the overlay from the full image response when
+    // simplified selection is enabled.
+    if (!lens::features::IsSimplifiedSelectionEnabled()) {
+      SendText(std::move(text));
+    }
 
     // Try and record the OCR DOM similarity since the OCR text is now
     // available.

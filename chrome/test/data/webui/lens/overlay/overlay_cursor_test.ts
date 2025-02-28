@@ -55,6 +55,10 @@ suite('OverlayCursor', () => {
       'cursorTooltipClickMessage': 'Select object',
       'cursorTooltipDragMessage': 'Drag to search',
       'cursorTooltipLivePageMessage': 'Click to exit',
+      // TODO(crbug.com/398040980): After launching simplified selection, the
+      // tests under the SimplifiedSelection suite should instead be moved to
+      // the appropriate suite with conflicting tests removed.
+      'simplifiedSelectionEnabled': false,
     });
 
     lensOverlayElement = document.createElement('lens-overlay-app');

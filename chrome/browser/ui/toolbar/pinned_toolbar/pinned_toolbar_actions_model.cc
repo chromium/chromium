@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -237,7 +236,7 @@ bool PinnedToolbarActionsModel::IsDefault() const {
 }
 
 void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
-  if (!features::IsToolbarPinningEnabled() || !CanUpdate()) {
+  if (!CanUpdate()) {
     return;
   }
   if (!pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {

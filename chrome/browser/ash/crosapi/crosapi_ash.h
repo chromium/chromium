@@ -69,7 +69,6 @@ class FullRestoreAsh;
 class FullscreenControllerAsh;
 class IdentityManagerAsh;
 class IdleServiceAsh;
-class ImageWriterAsh;
 class InputMethodsAsh;
 class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
@@ -94,7 +93,6 @@ class NonclosableAppToastServiceAsh;
 class PrintingMetricsAsh;
 #endif  // BUILDFLAG(USE_CUPS)
 class RemotingAsh;
-class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
@@ -184,8 +182,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::IdentityManager> receiver) override;
   void BindIdleService(
       mojo::PendingReceiver<mojom::IdleService> receiver) override;
-  void BindImageWriter(
-      mojo::PendingReceiver<mojom::ImageWriter> receiver) override;
   void BindInputMethods(
       mojo::PendingReceiver<mojom::InputMethods> receiver) override;
   void BindInSessionAuth(
@@ -256,8 +252,6 @@ class CrosapiAsh : public mojom::Crosapi {
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)
       override;
   void BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) override;
-  void BindResourceManager(
-      mojo::PendingReceiver<mojom::ResourceManager> receiver) override;
   void BindScreenAIDownloader(
       mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) override;
   void BindSensorHalClient(
@@ -347,8 +341,6 @@ class CrosapiAsh : public mojom::Crosapi {
   FullscreenControllerAsh* fullscreen_controller_ash() {
     return fullscreen_controller_ash_.get();
   }
-
-  ImageWriterAsh* image_writer_ash() { return image_writer_ash_.get(); }
 
   InputMethodsAsh* input_methods_ash() { return input_methods_ash_.get(); }
 
@@ -461,7 +453,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
   std::unique_ptr<InputMethodsAsh> input_methods_ash_;
-  std::unique_ptr<ImageWriterAsh> image_writer_ash_;
   std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
@@ -494,7 +485,6 @@ class CrosapiAsh : public mojom::Crosapi {
       telemetry_management_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
-  std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
   std::unique_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;

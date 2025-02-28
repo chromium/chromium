@@ -51,52 +51,6 @@ class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {
   void OnComplete();
 };
 
-class DeveloperPrivateGetExtensionsInfoFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DeveloperPrivateGetExtensionsInfoFunction();
-
-  DeveloperPrivateGetExtensionsInfoFunction(
-      const DeveloperPrivateGetExtensionsInfoFunction&) = delete;
-  DeveloperPrivateGetExtensionsInfoFunction& operator=(
-      const DeveloperPrivateGetExtensionsInfoFunction&) = delete;
-
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.getExtensionsInfo",
-                             DEVELOPERPRIVATE_GETEXTENSIONSINFO)
-
- private:
-  ~DeveloperPrivateGetExtensionsInfoFunction() override;
-  ResponseAction Run() override;
-
-  void OnInfosGenerated(
-      std::vector<api::developer_private::ExtensionInfo> infos);
-
-  std::unique_ptr<ExtensionInfoGenerator> info_generator_;
-};
-
-class DeveloperPrivateGetExtensionInfoFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DeveloperPrivateGetExtensionInfoFunction();
-
-  DeveloperPrivateGetExtensionInfoFunction(
-      const DeveloperPrivateGetExtensionInfoFunction&) = delete;
-  DeveloperPrivateGetExtensionInfoFunction& operator=(
-      const DeveloperPrivateGetExtensionInfoFunction&) = delete;
-
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.getExtensionInfo",
-                             DEVELOPERPRIVATE_GETEXTENSIONINFO)
-
- private:
-  ~DeveloperPrivateGetExtensionInfoFunction() override;
-  ResponseAction Run() override;
-
-  void OnInfosGenerated(
-      std::vector<api::developer_private::ExtensionInfo> infos);
-
-  std::unique_ptr<ExtensionInfoGenerator> info_generator_;
-};
-
 class DeveloperPrivateGetExtensionSizeFunction
     : public DeveloperPrivateAPIFunction {
  public:
@@ -115,28 +69,6 @@ class DeveloperPrivateGetExtensionSizeFunction
   ResponseAction Run() override;
 
   void OnSizeCalculated(const std::u16string& size);
-};
-
-class DeveloperPrivateGetProfileConfigurationFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.getProfileConfiguration",
-                             DEVELOPERPRIVATE_GETPROFILECONFIGURATION)
-
- private:
-  ~DeveloperPrivateGetProfileConfigurationFunction() override;
-  ResponseAction Run() override;
-};
-
-class DeveloperPrivateUpdateExtensionConfigurationFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.updateExtensionConfiguration",
-                             DEVELOPERPRIVATE_UPDATEEXTENSIONCONFIGURATION)
-
- protected:
-  ~DeveloperPrivateUpdateExtensionConfigurationFunction() override;
-  ResponseAction Run() override;
 };
 
 class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,

@@ -150,7 +150,6 @@ class DesktopAndroidExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::WebContents* web_contents) override;
   KioskDelegate* GetKioskDelegate() override;
   std::string GetApplicationLocale() override;
-  std::string GetUserAgent() const override;
 
  private:
   std::unique_ptr<ExtensionCache> extension_cache_;

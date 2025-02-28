@@ -333,6 +333,9 @@ const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
 const base::FeatureParam<std::string> kGlicDefaultHotkey{
     &kGlic, "glic-default-hotkey", ""};
 
+const base::FeatureParam<int> kGlicMaxHeightPercentOfScreen{
+    &kGlic, "glic-max-height-percent-of-screen", 60};
+
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);

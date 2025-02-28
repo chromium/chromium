@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_SHARED_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_SHARED_H_
 
+#include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
@@ -79,6 +80,63 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   const Extension* GetEnabledExtensionById(const ExtensionId& id);
 };
 
+class DeveloperPrivateGetExtensionsInfoFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DeveloperPrivateGetExtensionsInfoFunction();
+
+  DeveloperPrivateGetExtensionsInfoFunction(
+      const DeveloperPrivateGetExtensionsInfoFunction&) = delete;
+  DeveloperPrivateGetExtensionsInfoFunction& operator=(
+      const DeveloperPrivateGetExtensionsInfoFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getExtensionsInfo",
+                             DEVELOPERPRIVATE_GETEXTENSIONSINFO)
+
+ private:
+  ~DeveloperPrivateGetExtensionsInfoFunction() override;
+  ResponseAction Run() override;
+
+  void OnInfosGenerated(
+      std::vector<api::developer_private::ExtensionInfo> infos);
+
+  std::unique_ptr<ExtensionInfoGenerator> info_generator_;
+};
+
+class DeveloperPrivateGetExtensionInfoFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DeveloperPrivateGetExtensionInfoFunction();
+
+  DeveloperPrivateGetExtensionInfoFunction(
+      const DeveloperPrivateGetExtensionInfoFunction&) = delete;
+  DeveloperPrivateGetExtensionInfoFunction& operator=(
+      const DeveloperPrivateGetExtensionInfoFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getExtensionInfo",
+                             DEVELOPERPRIVATE_GETEXTENSIONINFO)
+
+ private:
+  ~DeveloperPrivateGetExtensionInfoFunction() override;
+  ResponseAction Run() override;
+
+  void OnInfosGenerated(
+      std::vector<api::developer_private::ExtensionInfo> infos);
+
+  std::unique_ptr<ExtensionInfoGenerator> info_generator_;
+};
+
+class DeveloperPrivateGetProfileConfigurationFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getProfileConfiguration",
+                             DEVELOPERPRIVATE_GETPROFILECONFIGURATION)
+
+ private:
+  ~DeveloperPrivateGetProfileConfigurationFunction() override;
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateUpdateProfileConfigurationFunction
     : public DeveloperPrivateAPIFunction {
  public:
@@ -87,6 +145,17 @@ class DeveloperPrivateUpdateProfileConfigurationFunction
 
  private:
   ~DeveloperPrivateUpdateProfileConfigurationFunction() override;
+  ResponseAction Run() override;
+};
+
+class DeveloperPrivateUpdateExtensionConfigurationFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.updateExtensionConfiguration",
+                             DEVELOPERPRIVATE_UPDATEEXTENSIONCONFIGURATION)
+
+ protected:
+  ~DeveloperPrivateUpdateExtensionConfigurationFunction() override;
   ResponseAction Run() override;
 };
 

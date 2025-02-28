@@ -38,7 +38,7 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ modalDialogManager,
-                AppCompatResources.getDrawable(context, R.drawable.ic_mobile_friendly),
+                AppCompatResources.getDrawable(context, R.drawable.summarize_auto),
                 context.getString(R.string.sharing_create_summary),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /* supportsTinting= */ true,

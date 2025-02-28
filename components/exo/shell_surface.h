@@ -327,7 +327,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
       ui::mojom::WindowShowState::kDefault;
   bool notify_bounds_changes_ = true;
   bool window_state_is_changing_ = false;
-  float pending_raster_scale_ = 1.0;
 
   struct InflightFocusRotateRequest {
     uint32_t serial;

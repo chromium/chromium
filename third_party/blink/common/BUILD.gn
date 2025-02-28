@@ -304,7 +304,6 @@ source_set("common") {
     "//base",
     "//build:android_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//media/capture:capture_base",
     "//media/capture/mojom:video_capture_mojom_support",
     "//mojo/public/cpp/system",

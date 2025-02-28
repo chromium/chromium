@@ -291,8 +291,6 @@ void HostResolverManager::Job::AddServiceEndpointRequest(
                    request->parameters().is_speculative);
 
   service_endpoint_requests_.Append(request);
-  auto [_, inserted] = added_service_endpoint_requests_.insert(request);
-  CHECK(inserted);
 
   UpdatePriority();
 }

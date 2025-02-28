@@ -155,7 +155,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBoostNonRenderBlockingStyleLoadingTaskPriority);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopics);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBrowsingTopicsBypassIPIsPubliclyRoutableCheck);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsDocumentAPI);
@@ -694,23 +693,6 @@ BLINK_COMMON_EXPORT extern const char
 
 // Don't require FCP for the page to turn interactive. Useful for testing.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
-
-// Backend storage + kill switch for Interest Group API origin trials.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInterestGroupStorage);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                               kInterestGroupStorageMaxOwners);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kInterestGroupStorageMaxStoragePerOwner);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kInterestGroupStorageMaxGroupsPerOwner);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kInterestGroupStorageMaxNegativeGroupsPerOwner);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kInterestGroupStorageMaxOpsBeforeMaintenance);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIsolateSandboxedIframes);
 enum class IsolateSandboxedIframesGrouping {
@@ -1548,66 +1530,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerClientIdAlignedWithSpec);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSetLowPriorityForBeacon);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSetIntervalWithoutClamp);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPI);
-
-// Maximum number of URLs allowed to be included in the input parameter for
-// runURLSelectionOperation().
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    size_t,
-    kSharedStorageURLSelectionOperationInputURLSizeLimit);
-// Maximum database page size in bytes. Must be a power of two between
-// 512 and 65536, inclusive.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kMaxSharedStoragePageSize);
-// Maximum database in-memory cache size, in pages.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kMaxSharedStorageCacheSize);
-// Maximum number of tries to initialize the database.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kMaxSharedStorageInitTries);
-// Maximum number of keys or key-value pairs returned in each batch by
-// the async `keys()` and `entries()` iterators, respectively.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kMaxSharedStorageIteratorBatchSize);
-// Maximum number of bits of entropy allowed per origin to output via the Shared
-// Storage API.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSharedStorageBitBudget);
-// Interval over which `kSharedStorageBitBudget` is defined.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                                               kSharedStorageBudgetInterval);
-// Initial interval from service startup after which
-// SharedStorageManager first checks for any stale entries, purging any that it
-// finds.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kSharedStorageStalePurgeInitialInterval);
-// Second and subsequent intervals from service startup after
-// which SharedStorageManager checks for any stale entries, purging any that it
-// finds.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kSharedStorageStalePurgeRecurringInterval);
-// Length of time between last key write access and key expiration. When an
-// entry's data is older than this threshold, it will be auto-purged.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kSharedStorageStalenessThreshold);
-// Maximum depth of fenced frame where sharedStorage.selectURL() is allowed to
-// be invoked. The depth of a fenced frame is the number of the fenced frame
-// boundaries above that frame (i.e. the outermost main frame's frame tree has
-// fenced frame depth 0, a topmost fenced frame tree embedded in the outermost
-// main frame has fenced frame depth 1, etc).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    size_t,
-    kSharedStorageMaxAllowedFencedFrameDepthForSelectURL);
-// If enabled, sends additional details in the error message for the
-// rejected promise when shared storage is disabled, for local troubleshooting
-// and use in testing.
-//
-// NOTE: To preserve user privacy, this feature param MUST remain false by
-// default.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kSharedStorageExposeDebugMessageForSettingsStatus);
 
 // If enabled, the shared storage worklet threads (on the same renderer process)
 // will share the same backing thread; otherwise, each will own a dedicated

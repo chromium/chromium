@@ -154,7 +154,7 @@ TranslateBubbleView::~TranslateBubbleView() {
   advanced_done_button_source_ = nullptr;
   advanced_done_button_target_ = nullptr;
   RemoveAllChildViews();
-  if (features::IsToolbarPinningEnabled() && translate_action_item_.get()) {
+  if (translate_action_item_.get()) {
     translate_action_item_.get()->SetIsShowingBubble(false);
   }
 }
@@ -214,17 +214,15 @@ void TranslateBubbleView::Init() {
     model_->ShowError(error_type_);
   }
 
-  if (features::IsToolbarPinningEnabled()) {
-    Browser* browser = chrome::FindLastActive();
-    if (browser) {
-      translate_action_item_ =
-          actions::ActionManager::Get()
-              .FindAction(kActionShowTranslate,
-                          browser->browser_actions()->root_action_item())
-              ->GetAsWeakPtr();
-      CHECK(translate_action_item_.get());
-      translate_action_item_.get()->SetIsShowingBubble(true);
-    }
+  Browser* browser = chrome::FindLastActive();
+  if (browser) {
+    translate_action_item_ =
+        actions::ActionManager::Get()
+            .FindAction(kActionShowTranslate,
+                        browser->browser_actions()->root_action_item())
+            ->GetAsWeakPtr();
+    CHECK(translate_action_item_.get());
+    translate_action_item_.get()->SetIsShowingBubble(true);
   }
 }
 

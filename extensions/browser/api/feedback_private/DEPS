@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/public/cpp",
   "+components/account_id",
+  "+components/embedder_support",
   "+components/feedback",
   "+components/user_manager",
   "+components/variations/net",

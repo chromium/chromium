@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -140,13 +139,11 @@ void PasswordChangeIconViews::SetTooltipForToolbarPinningEnabled(
     const std::u16string& tooltip) {
   // TODO(crbug.com/353777476): Strip out pinned toolbar button code into a
   // shared controller for page action and pinned button.
-  if (features::IsToolbarPinningEnabled()) {
-    BrowserActions* browser_actions = browser()->browser_actions();
-    actions::ActionManager::Get()
-        .FindAction(kActionShowPasswordsBubbleOrPage,
-                    browser_actions->root_action_item())
-        ->SetTooltipText(tooltip);
-  }
+  BrowserActions* browser_actions = browser()->browser_actions();
+  actions::ActionManager::Get()
+      .FindAction(kActionShowPasswordsBubbleOrPage,
+                  browser_actions->root_action_item())
+      ->SetTooltipText(tooltip);
 }
 
 void PasswordChangeIconViews::UpdateIconAndLabel() {

@@ -531,13 +531,8 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsListItem) {
                        &QuickInsertSectionView::item_views_for_testing,
                        ElementsAre(AsView<QuickInsertListItemView>(Property(
                            &QuickInsertListItemView::GetPrimaryTextForTesting,
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                            l10n_util::GetStringUTF16(
-                               IDS_PICKER_LOBSTER_SELECTION_LABEL)
-#else
-                           u"Lobster"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                               )))))))));
+                               IDS_LOBSTER_SELECTION_LABEL))))))))));
 }
 
 TEST_F(QuickInsertZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {

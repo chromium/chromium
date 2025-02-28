@@ -6745,13 +6745,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-    {flag_descriptions::kToolbarPinningFlagId,
-     flag_descriptions::kToolbarPinningName,
-     flag_descriptions::kToolbarPinningDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kToolbarPinning)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kSidePanelResizingFlagId,
      flag_descriptions::kSidePanelResizingName,
      flag_descriptions::kSidePanelResizingDescription, kOsDesktop,

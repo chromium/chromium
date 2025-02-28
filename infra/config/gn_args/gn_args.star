@@ -775,13 +775,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "ios_chromium_cert",
-    args = {
-        "ios_code_signing_identity_description": "iPhone Developer",
-    },
-)
-
-gn_args.config(
     name = "ios_developer",
     configs = ["ios_simulator", "debug"],
 )

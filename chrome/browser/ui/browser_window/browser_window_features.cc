@@ -267,7 +267,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   }
 
   if (download::IsDownloadBubbleEnabled() &&
-      features::IsToolbarPinningEnabled() &&
       base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
     download_toolbar_ui_controller_ =
         std::make_unique<DownloadToolbarUIController>(browser_view);

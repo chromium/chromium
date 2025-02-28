@@ -90,6 +90,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -2338,7 +2339,7 @@ class AutofillInteractiveFencedFrameTest
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
     if (GetParam() != FrameType::kIFrame) {
-      enabled.push_back({blink::features::kBrowsingTopics, {}});
+      enabled.push_back({network::features::kBrowsingTopics, {}});
       enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
       scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
       fenced_frame_test_helper_ =

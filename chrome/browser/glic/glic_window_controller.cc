@@ -91,6 +91,20 @@ gfx::Size GetWidgetInitialSize() {
           features::kGlicInitialHeight.Get()};
 }
 
+display::Display GetDisplayForOpeningDetached() {
+  // Get the Display for the most recently active browser. If there was no
+  // recently active browser, use the primary display.
+  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
+  if (last_active_browser) {
+    std::optional<display::Display> widget_display =
+        last_active_browser->GetBrowserView().GetWidget()->GetNearestDisplay();
+    if (widget_display) {
+      return *widget_display;
+    }
+  }
+  return display::Screen::GetScreen()->GetPrimaryDisplay();
+}
+
 }  // namespace
 
 // Helper class for observing mouse and key events from native window.
@@ -503,16 +517,15 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
 }
 
 gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
-  gfx::Size widget_size = GetWidgetInitialSize();
-  if (glic_size_) {
-    widget_size = *glic_size_;
-  }
+  gfx::Rect work_area = GetDisplayForOpeningDetached().work_area();
+
+  gfx::Size widget_size = GetLastRequestedSizeClamped(work_area.height());
   gfx::Rect initial_rect;
   // Right now this only detects whether the glic widget is summoned from the
   // OS entrypoint and positions itself detached from the browser.
   // TODO(crbug.com/384061064): Add more logic for when the glic window should
   // show up in a detached state.
-  gfx::Point top_right_point = GetTopRightPositionForDetachedGlicWindow();
+  gfx::Point top_right_point = work_area.top_right();
   int padding = 50;
   initial_rect.set_x(top_right_point.x() - widget_size.width() - padding);
   initial_rect.set_y(top_right_point.y());
@@ -536,10 +549,8 @@ void GlicWindowController::OpenAttached(Browser& browser) {
   AttachToBrowser(browser);
 
   // Set target size for animation and run the open attached animation.
-  gfx::Size widget_size = GetWidgetInitialSize();
-  if (glic_size_) {
-    widget_size = *glic_size_;
-  }
+  gfx::Size widget_size = GetLastRequestedSizeClamped(
+      glic_widget_->GetWorkAreaBoundsInScreen().height());
 
   glic_window_animator_->RunOpenAttachedAnimation(
       glic_button, widget_size,
@@ -677,26 +688,6 @@ gfx::Point GlicWindowController::GetTopRightPositionForAttachedGlicWindow(
   return glic_button->GetBoundsWithInset().top_right();
 }
 
-gfx::Point GlicWindowController::GetTopRightPositionForDetachedGlicWindow() {
-  // Use the top right corner of the display of the most recently
-  // active browser. If there was no recently active browser, use the primary
-  // display.
-  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
-  std::optional<display::Display> display_to_use;
-  if (last_active_browser) {
-    std::optional<display::Display> widget_display =
-        last_active_browser->GetBrowserView().GetWidget()->GetNearestDisplay();
-    if (widget_display) {
-      display_to_use = widget_display.value();
-    }
-  }
-  if (!display_to_use) {
-    display_to_use = display::Screen::GetScreen()->GetPrimaryDisplay();
-  }
-  gfx::Point top_right_bounds = display_to_use->work_area().top_right();
-  return top_right_bounds;
-}
-
 void GlicWindowController::AttachedBrowserDidClose(
     BrowserWindowInterface* browser) {
   ForceClose();
@@ -795,7 +786,10 @@ void GlicWindowController::Resize(const gfx::Size& size,
   // animate this transition.
   if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
       state_ == State::kOpenAnimation || state_ == State::kDetaching) {
-    glic_window_animator_->AnimateSize(size, duration, std::move(callback));
+    glic_window_animator_->AnimateSize(
+        GetLastRequestedSizeClamped(
+            glic_widget_->GetWorkAreaBoundsInScreen().height()),
+        duration, std::move(callback));
   } else {
     // If the glic window is closed, or the widget isn't ready (e.g. because
     // it's currently still animating closed) immediately post the callback.
@@ -1206,6 +1200,20 @@ void GlicWindowController::EnableChanged() {
   if (!enabling_->IsReadyForProfile(profile_)) {
     CloseFinish(/*reopen_detached=*/false, std::nullopt);
   }
+}
+
+gfx::Size GlicWindowController::GetLastRequestedSizeClamped(
+    int work_area_height) const {
+  gfx::Size min = GetWidgetInitialSize();
+  gfx::Size max(
+      min.width(),
+      work_area_height * features::kGlicMaxHeightPercentOfScreen.Get() / 100);
+
+  gfx::Size result = glic_size_ ? *glic_size_ : min;
+
+  result.SetToMax(min);
+  result.SetToMin(max);
+  return result;
 }
 
 }  // namespace glic

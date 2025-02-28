@@ -1360,6 +1360,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="26" label="Commit As Insert"/>
   <int value="27" label="Commit As Insert Success"/>
   <int value="28" label="Commit As Insert Error"/>
+  <int value="29" label="Feedback Thumbs Up"/>
+  <int value="30" label="Feedback Thumbs Down"/>
 </enum>
 
 <enum name="LockScreenUserClickTarget">

@@ -14,6 +14,7 @@ static_library("default_pinned_apps") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/mall:app_id",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/experiences/arc:arc_app_constants",

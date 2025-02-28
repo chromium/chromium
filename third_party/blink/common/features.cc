@@ -11,8 +11,6 @@
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -231,12 +229,6 @@ BASE_FEATURE(kBoostRenderBlockingStyleLoadingTaskPriority,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBoostNonRenderBlockingStyleLoadingTaskPriority,
              "BoostNonRenderBlockingStyleLoadingTaskPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// https://github.com/patcg-individual-drafts/topics
-// Kill switch for the Topics API.
-BASE_FEATURE(kBrowsingTopics,
-             "BrowsingTopics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the check for whether the IP address is publicly routable will be
@@ -1155,38 +1147,6 @@ BASE_FEATURE(kInteractiveDetectorIgnoreFcp,
              "InteractiveDetectorIgnoreFcp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for the Interest Group API, i.e. if disabled, the
-// API exposure will be disabled regardless of the OT config.
-BASE_FEATURE(kInterestGroupStorage,
-             "InterestGroupStorage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// TODO(crbug.com/1197209): Adjust these limits in response to usage.
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxOwners,
-                   &kInterestGroupStorage,
-                   "max_owners",
-                   1000);
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxStoragePerOwner,
-                   &kInterestGroupStorage,
-                   "max_storage_per_owner",
-                   10 * 1024 * 1024);
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxGroupsPerOwner,
-                   &kInterestGroupStorage,
-                   "max_groups_per_owner",
-                   2000);
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxNegativeGroupsPerOwner,
-                   &kInterestGroupStorage,
-                   "max_negative_groups_per_owner",
-                   20000);
-BASE_FEATURE_PARAM(int,
-                   kInterestGroupStorageMaxOpsBeforeMaintenance,
-                   &kInterestGroupStorage,
-                   "max_ops_before_maintenance",
-                   1000);
-
 // Allow process isolation of iframes with the 'sandbox' attribute set. Whether
 // or not such an iframe will be isolated may depend on options specified with
 // the attribute. Note: At present, only iframes with origin-restricted
@@ -1663,7 +1623,7 @@ BASE_FEATURE(kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
 // (Canvas2DImageChromium is disabled).
 BASE_FEATURE(kLowLatencyCanvas2dImageChromium,
              "LowLatencyCanvas2dImageChromium",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -2312,77 +2272,6 @@ BASE_FEATURE(kSetLowPriorityForBeacon,
 BASE_FEATURE(kSetIntervalWithoutClamp,
              "SetIntervalWithoutClamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable the shared storage API. Note that enabling this feature does not
-// automatically expose this API to the web, it only allows the element to be
-// enabled by the runtime enabled feature, for origin trials.
-// https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
-BASE_FEATURE(kSharedStorageAPI,
-             "SharedStorageAPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(size_t,
-                   kSharedStorageURLSelectionOperationInputURLSizeLimit,
-                   &kSharedStorageAPI,
-                   "url_selection_operation_input_url_size_limit",
-                   8);
-BASE_FEATURE_PARAM(int,
-                   kMaxSharedStoragePageSize,
-                   &kSharedStorageAPI,
-                   "MaxSharedStoragePageSize",
-                   4096);
-BASE_FEATURE_PARAM(int,
-                   kMaxSharedStorageCacheSize,
-                   &kSharedStorageAPI,
-                   "MaxSharedStorageCacheSize",
-                   1024);
-BASE_FEATURE_PARAM(int,
-                   kMaxSharedStorageInitTries,
-                   &kSharedStorageAPI,
-                   "MaxSharedStorageInitTries",
-                   2);
-BASE_FEATURE_PARAM(int,
-                   kMaxSharedStorageIteratorBatchSize,
-                   &kSharedStorageAPI,
-                   "MaxSharedStorageIteratorBatchSize",
-                   100);
-BASE_FEATURE_PARAM(int,
-                   kSharedStorageBitBudget,
-                   &kSharedStorageAPI,
-                   "SharedStorageBitBudget",
-                   12);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSharedStorageBudgetInterval,
-                   &kSharedStorageAPI,
-                   "SharedStorageBudgetInterval",
-                   base::Hours(24));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSharedStorageStalePurgeInitialInterval,
-                   &kSharedStorageAPI,
-                   "SharedStorageStalePurgeInitialInterval",
-                   base::Minutes(2));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSharedStorageStalePurgeRecurringInterval,
-                   &kSharedStorageAPI,
-                   "SharedStorageStalePurgeRecurringInterval",
-                   base::Hours(2));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSharedStorageStalenessThreshold,
-                   &kSharedStorageAPI,
-                   "SharedStorageStalenessThreshold",
-                   base::Days(30));
-BASE_FEATURE_PARAM(size_t,
-                   kSharedStorageMaxAllowedFencedFrameDepthForSelectURL,
-                   &kSharedStorageAPI,
-                   "SharedStorageMaxAllowedFencedFrameDepthForSelectURL",
-                   1);
-// NOTE: To preserve user privacy, the
-// `kSharedStorageExposeDebugMessageForSettingsStatus` feature param MUST remain
-// false by default.
-BASE_FEATURE_PARAM(bool,
-                   kSharedStorageExposeDebugMessageForSettingsStatus,
-                   &kSharedStorageAPI,
-                   "ExposeDebugMessageForSettingsStatus",
-                   false);
 
 BASE_FEATURE(kSharedStorageWorkletSharedBackingThreadImplementation,
              "SharedStorageWorkletSharedBackingThreadImplementation",

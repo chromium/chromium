@@ -40,6 +40,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 
 namespace browsing_topics {
@@ -183,7 +184,7 @@ class BrowsingTopicsServiceImplTest
     // during tests where expiration is irrelevant.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kBrowsingTopics, {}},
+        {{network::features::kBrowsingTopics, {}},
          {blink::features::kBrowsingTopicsParameters,
           {{"time_period_per_epoch",
             base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
@@ -462,7 +463,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"epoch_retention_duration",
           base::StrCat(
@@ -1506,7 +1507,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"time_period_per_epoch",
           base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
@@ -2738,7 +2739,7 @@ TEST_F(BrowsingTopicsServiceImplTest, BlockTopicWithFinch) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"time_period_per_epoch",
           base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},

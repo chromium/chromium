@@ -244,9 +244,6 @@ class CORE_EXPORT HTMLElement : public Element {
   // Popover API related functions.
   void UpdatePopoverAttribute(const AtomicString&);
   bool HasPopoverAttribute() const;
-  // The IDL reflections:
-  AtomicString popover() const;
-  void setPopover(const AtomicString& value);
   PopoverValueType PopoverType() const;
   bool popoverOpen() const;
   // IsPopoverReady returns true if the popover is in a state where it can be

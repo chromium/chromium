@@ -15,7 +15,6 @@ virtual/isolated-context/wpt_internal/*
 virtual/isolated-context-stable/wpt_internal/*
 virtual/forced-high-contrast-colors/wpt_internal/*
 virtual/trust-tokens/wpt_internal/*
-virtual/popover-hint-disabled/wpt_internal/*
 virtual/private-aggregation-developer-mode/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
 virtual/fenced-frame-mparch-internal/wpt_internal/*
@@ -1023,7 +1022,6 @@ virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/iframe
 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html
-virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus.html
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*

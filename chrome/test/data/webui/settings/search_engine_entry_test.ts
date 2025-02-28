@@ -260,65 +260,6 @@ suite('SearchEngineEntryTest', function() {
             'searchEnginesMoreActionsAriaLabel', entry.engine.displayName),
         menuButton.ariaLabel);
   });
-
-  // Test that when a search engine has an iconPath, the favicon displays the
-  // local icon.
-  test('FaviconWithIconPath', function() {
-    flush();
-    entry.engine = createSampleSearchEngine({
-      iconPath: 'images/foo.png',
-      iconURL: 'http://www.google.com/favicon.ico',
-    });
-
-    const siteFavicon = entry.shadowRoot!.querySelector('site-favicon');
-    assertTrue(!!siteFavicon);
-
-    const favicon =
-        siteFavicon.shadowRoot!.querySelector<HTMLElement>('#favicon')!;
-    assertTrue(!!favicon);
-    assertEquals('url("images/foo.png")', favicon.style.backgroundImage);
-  });
-
-  // Test that when a search engine has an iconURL, the favicon displays the
-  // remote icon using the icon URL.
-  test('FaviconWithIconURL', function() {
-    flush();
-    entry.engine = createSampleSearchEngine(
-        {iconPath: '', iconURL: 'http://www.google.com/favicon.ico'});
-
-    const siteFavicon = entry.shadowRoot!.querySelector('site-favicon');
-    assertTrue(!!siteFavicon);
-
-    const favicon =
-        siteFavicon.shadowRoot!.querySelector<HTMLElement>('#favicon')!;
-    assertTrue(!!favicon);
-    assertEquals(
-        'url("chrome://image/?url=http%3A%2F%2Fwww.google.com%2Ffavicon.ico")',
-        favicon.style.backgroundImage);
-  });
-
-  // Test that when a search engine has neither an iconPath nor an iconURL, the
-  // favicon displays an icon based on the search engine's URL.
-  test('FaviconWithURL', function() {
-    flush();
-    entry.engine = createSampleSearchEngine({iconPath: '', iconURL: ''});
-
-    const siteFavicon = entry.shadowRoot!.querySelector('site-favicon');
-    assertTrue(!!siteFavicon);
-
-    const favicon =
-        siteFavicon.shadowRoot!.querySelector<HTMLElement>('#favicon')!;
-    assertTrue(!!favicon);
-    assertEquals(
-        'image-set(' +
-            'url("chrome://favicon2/?size=16&scaleFactor=1x&pageUrl=' +
-            'https%3A%2F%2Fsearch.foo.com%2Fsearch%3Fp%3D%25s' +
-            '&allowGoogleServerFallback=0") 1x, ' +
-            'url("chrome://favicon2/?size=16&scaleFactor=2x&pageUrl=' +
-            'https%3A%2F%2Fsearch.foo.com%2Fsearch%3Fp%3D%25s' +
-            '&allowGoogleServerFallback=0") 2x)',
-        favicon.style.backgroundImage);
-  });
 });
 
 suite('OmniboxExtensionEntryTest', function() {

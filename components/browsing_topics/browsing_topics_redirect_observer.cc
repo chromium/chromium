@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 #include "content/public/browser/navigation_handle.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
@@ -14,7 +15,7 @@ namespace browsing_topics {
 // static
 void BrowsingTopicsRedirectObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+  if (!base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
     return;
   }
 

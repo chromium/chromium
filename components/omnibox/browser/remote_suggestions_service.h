@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -33,6 +34,8 @@ struct ResourceRequest;
 // The types of requests for remote suggestions.
 // These values are written to logs. New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
+// Must be kept in sync with RemoteRequestType enum and variant.
+// LINT.IfChange(RemoteRequestType)
 enum class RemoteRequestType {
   // Search suggestion requests.
   kSearch = 0,
@@ -52,6 +55,10 @@ enum class RemoteRequestType {
   kEnterpriseSearchAggregatorSuggest = 7,
   kMaxValue = kEnterpriseSearchAggregatorSuggest,
 };
+// LINT.ThenChange(
+//     //tools/metrics/histograms/metadata/omnibox/enums.xml:RemoteRequestType,
+//     //tools/metrics/histograms/metadata/omnibox/histograms.xml:RemoteRequestType
+// )
 
 // The event types recorded by the providers for remote suggestions. Each event
 // must be logged at most once from when the provider is started until it is
@@ -247,6 +254,8 @@ class RemoteSuggestionsService : public KeyedService {
   // Called when the transfer is done. Notifies `observers_` and calls
   // `completion_callback` passing the response to the caller.
   void OnRequestCompleted(const base::UnguessableToken& request_id,
+                          RemoteRequestType request_type,
+                          base::ElapsedTimer request_timer,
                           CompletionCallback completion_callback,
                           const network::SimpleURLLoader* source,
                           std::unique_ptr<std::string> response_body);

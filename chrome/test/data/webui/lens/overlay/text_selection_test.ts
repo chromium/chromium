@@ -57,8 +57,14 @@ suite('TextSelection', function() {
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Remove the extra word margins to make testing easier.
-    loadTimeData.overrideValues(
-        {'verticalTextMarginPx': 0, 'horizontalTextMarginPx': 0});
+    loadTimeData.overrideValues({
+      'verticalTextMarginPx': 0,
+      'horizontalTextMarginPx': 0,
+      // TODO(crbug.com/398040980): After launching simplified
+      // selection, the tests in this file should be removed as text
+      // selection will no longer be supported.
+      'simplifiedSelectionEnabled': false,
+    });
 
     // Turn off the shimmer. Since the shimmer is resource intensive, turn off
     // to prevent from causing issues in the tests.

@@ -2809,6 +2809,27 @@
             ]
         }
     ],
+    "AvoidDuplicateDelayBeginFrame": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AvoidDuplicateDelayBeginFrame"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidEntryCreationForNoStore": [
         {
             "platforms": [
@@ -5255,6 +5276,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LensOverlaySidePanelOpenInNewTab"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromnientSimplifiedSelection": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "SimplifiedSelectionEnabled",
+                    "enable_features": [
+                        "LensOverlaySimplifiedSelection"
                     ]
                 }
             ]
@@ -9699,21 +9739,6 @@
             ]
         }
     ],
-    "FeedRecyclerBinderUnmountOnDetach": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FeedRecyclerBinderUnmountOnDetach"
-                    ]
-                }
-            ]
-        }
-    ],
     "FeedSignedOutViewDemotion": [
         {
             "platforms": [
@@ -11449,6 +11474,7 @@
     "HttpsFirstModeV2ForTypicallySecureUsers": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",

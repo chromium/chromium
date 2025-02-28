@@ -235,7 +235,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
     // "'Shared-Storage-Write: shared storage is disabled."
     // 2. Send a non-null `out_debug_message` param and append it to the above
     // error message if the value of
-    // `blink::features::kSharedStorageExposeDebugMessageForSettingsStatus`
+    // `network::features::kSharedStorageExposeDebugMessageForSettingsStatus`
     // is true.
     std::move(callback).Run();
     return;

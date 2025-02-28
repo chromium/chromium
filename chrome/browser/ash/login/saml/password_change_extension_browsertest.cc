@@ -133,7 +133,8 @@ class PasswordChangeWaiter : public InSessionPasswordChangeManager::Observer {
 
 // Simulates the redirects that Adfs, Azure, and Ping do in the case of
 // password change success, and ensures that we detect each one.
-class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
+class PasswordChangeExtensionTest : public InProcessBrowserTestMixinHostSupport<
+                                        extensions::ExtensionBrowserTest> {
  protected:
   PasswordChangeExtensionTest() = default;
   PasswordChangeExtensionTest& operator=(const PasswordChangeExtensionTest&) =
@@ -146,47 +147,20 @@ class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
     embedded_test_server_.RegisterRequestHandler(
         base::BindRepeating(&FakeChangePasswordIdp::HandleHttpRequest,
                             base::Unretained(&fake_idp_)));
-    mixin_host_.SetUp();
-    extensions::ExtensionBrowserTest::SetUp();
+    InProcessBrowserTestMixinHostSupport<
+        extensions::ExtensionBrowserTest>::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    mixin_host_.SetUpCommandLine(command_line);
-    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+    InProcessBrowserTestMixinHostSupport<
+        extensions::ExtensionBrowserTest>::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kSamlPasswordChangeUrl,
                                     embedded_test_server_.base_url().spec());
   }
 
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    mixin_host_.SetUpDefaultCommandLine(command_line);
-    extensions::ExtensionBrowserTest::SetUpDefaultCommandLine(command_line);
-  }
-
-  bool SetUpUserDataDirectory() override {
-    return mixin_host_.SetUpUserDataDirectory() &&
-           extensions::ExtensionBrowserTest::SetUpUserDataDirectory();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    mixin_host_.SetUpInProcessBrowserTestFixture();
-    extensions::ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpLocalStatePrefService(PrefService* local_state) override {
-    mixin_host_.SetUpLocalStatePrefService(local_state);
-    extensions::ExtensionBrowserTest::SetUpLocalStatePrefService(local_state);
-  }
-
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    mixin_host_.CreatedBrowserMainParts(browser_main_parts);
-    extensions::ExtensionBrowserTest::CreatedBrowserMainParts(
-        browser_main_parts);
-  }
-
   void SetUpOnMainThread() override {
-    mixin_host_.SetUpOnMainThread();
-    extensions::ExtensionBrowserTest::SetUpOnMainThread();
+    InProcessBrowserTestMixinHostSupport<
+        extensions::ExtensionBrowserTest>::SetUpOnMainThread();
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -207,24 +181,9 @@ class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
 
   void TearDownOnMainThread() override {
     InSessionPasswordChangeManager::ResetForTesting();
-    mixin_host_.TearDownOnMainThread();
-    extensions::ExtensionBrowserTest::TearDownOnMainThread();
+    InProcessBrowserTestMixinHostSupport<
+        extensions::ExtensionBrowserTest>::TearDownOnMainThread();
     extensions::ExtensionBrowserTest::UninstallExtension(extension->id());
-  }
-
-  void PostRunTestOnMainThread() override {
-    mixin_host_.PostRunTestOnMainThread();
-    extensions::ExtensionBrowserTest::PostRunTestOnMainThread();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    mixin_host_.TearDownInProcessBrowserTestFixture();
-    extensions::ExtensionBrowserTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  void TearDown() override {
-    mixin_host_.TearDown();
-    extensions::ExtensionBrowserTest::TearDown();
   }
 
   void WaitForPasswordChangeDetected() {
@@ -237,7 +196,6 @@ class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
  private:
   net::EmbeddedTestServer embedded_test_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
-  InProcessBrowserTestMixinHost mixin_host_;
   EmbeddedTestServerSetupMixin embedded_test_server_mixin_{
       &mixin_host_, &embedded_test_server_};
 

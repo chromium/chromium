@@ -76,6 +76,7 @@ void GlicFocusedTabManager::OnBrowserAdded(Browser* browser) {
 void GlicFocusedTabManager::OnBrowserRemoved(Browser* browser) {
   // Remove the browser if it exists in the map.
   browser_subscriptions_.erase(browser);
+  MaybeUpdateFocusedTab();
 }
 
 void GlicFocusedTabManager::OnBrowserBecameActive(

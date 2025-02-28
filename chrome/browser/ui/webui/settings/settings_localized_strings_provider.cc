@@ -557,8 +557,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"tabSearchPosition", IDS_SETTINGS_TAB_SEARCH_POSITION},
       {"homePageNtp", IDS_SETTINGS_HOME_PAGE_NTP},
       {"changeHomePage", IDS_SETTINGS_CHANGE_HOME_PAGE},
-      {"themesGalleryUrl", IDS_THEMES_GALLERY_URL},
-      {"chooseFromWebStore", IDS_SETTINGS_WEB_STORE},
       {"pageZoom", IDS_SETTINGS_PAGE_ZOOM_LABEL},
       {"fontSize", IDS_SETTINGS_FONT_SIZE_LABEL},
       {"customizeFonts", IDS_SETTINGS_CUSTOMIZE_FONTS},
@@ -602,8 +600,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
                           tabs::CanShowTabSearchPositionSetting());
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
                           tabs::GetTabSearchTrailingTabstrip(profile));
-  html_source->AddBoolean("toolbarPinningEnabled",
-                          features::IsToolbarPinningEnabled());
 
 #if BUILDFLAG(IS_LINUX)
   bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()
