@@ -663,6 +663,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Deprecated 02/2025.
   registry->RegisterIntegerPref(kNumberOfProfiles, 0);
   registry->RegisterListPref(kLastActiveProfiles);
+
+  registry->RegisterIntegerPref(
+      prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -957,6 +960,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackParcelTrackingEnabled, true);
 
+  // Deprecated, migrated to LocalState pref.
   registry->RegisterIntegerPref(
       prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
 
@@ -1227,6 +1231,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 02/2025.
   MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kNTPLensEntryPointNewBadgeShownCount, prefs);
+
+  // Added 02/2025.
+  MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kNTPHomeCustomizationNewBadgeImpressionCount, prefs);
 }
 
 void MigrateObsoleteUserDefault() {
