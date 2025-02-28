@@ -1507,9 +1507,12 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   // registered custom properties.
   // TODO(crbug.com/372475301): Remove this, if possible.
   bool has_comma = false;
+  bool fallback_caused_cycle = false;  // For use-counting.
   if (ConsumeComma(stream)) {
     has_comma = true;
     stream.ConsumeWhitespace();
+    // Note that we can enter this function while in a cycle.
+    bool in_cycle_before = resolver.InCycle();
     has_fallback = ResolveTokensInto(stream, tree_scope, resolver, context,
                                      function_context,
                                      /* stop_type */ kEOFToken, fallback);
@@ -1524,6 +1527,7 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     //
     // The properties --x and --z would be detected as cyclic as a result,
     // but we also need to discover the cycle between --x and --y.
+    fallback_caused_cycle = !in_cycle_before && resolver.InCycle();
   }
 
   // Within a function context (i.e. when resolving values within the body of
@@ -1574,12 +1578,6 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     // a reference to 'property' during that resolution.
     LookupAndApply(property, resolver);
   }
-  // Note that this check catches cycles detected by the DetectCycle call
-  // immediately above, but also any cycles detected during processing of the
-  // fallback near the start of this function.
-  if (resolver.InCycle()) {
-    return false;
-  }
 
   CSSVariableData* data = GetVariableData(property);
 
@@ -1589,6 +1587,18 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   // https://drafts.csswg.org/css-variables/#animation-tainted
   if (!resolver.AllowSubstitution(data)) {
     data = nullptr;
+  }
+
+  // Note that this check catches cycles detected by the DetectCycle call above,
+  // but also any cycles detected during processing of the fallback near the
+  // start of this function.
+  if (resolver.InCycle()) {
+    if (data && fallback_caused_cycle) {
+      // If we do have `data`, we're not actually going to use the fallback.
+      // TODO(crbug.com/397690639): Ignore cycles in unused fallbacks.
+      CountUse(WebFeature::kCSSVarFallbackCycle);
+    }
+    return false;
   }
 
   // The fallback must match the syntax of the referenced custom
@@ -2109,9 +2119,13 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     stream.ConsumeWhitespace();
 
     TokenSequence fallback;
+    DCHECK(!resolver.InCycle());
     if (!ResolveTokensInto(stream, tree_scope, resolver, context,
                            function_context,
                            /* stop_type */ kEOFToken, fallback)) {
+      if (substitution_value && resolver.InCycle()) {
+        CountUse(WebFeature::kCSSAttrFallbackCycle);
+      }
       return false;
     }
     if (!substitution_value) {
