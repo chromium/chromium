@@ -154,8 +154,8 @@ class OnDeviceModelServiceController
     ~OnDeviceModelClient() override;
     std::unique_ptr<OnDeviceOptions::Client> Clone() const override;
     bool ShouldUse() override;
-    mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
-        override;
+    void StartSession(mojo::PendingReceiver<on_device_model::mojom::Session>
+                          pending) override;
     void OnResponseCompleted() override;
 
    private:

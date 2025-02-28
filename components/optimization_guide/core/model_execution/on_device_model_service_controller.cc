@@ -463,10 +463,11 @@ bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
              OnDeviceModelEligibilityReason::kSuccess;
 }
 
-mojo::Remote<on_device_model::mojom::OnDeviceModel>&
-OnDeviceModelServiceController::OnDeviceModelClient::GetModelRemote() {
-  return controller_->GetOrCreateModelRemote(feature_, model_paths_,
-                                             adaptation_assets_);
+void OnDeviceModelServiceController::OnDeviceModelClient::StartSession(
+    mojo::PendingReceiver<on_device_model::mojom::Session> pending) {
+  controller_
+      ->GetOrCreateModelRemote(feature_, model_paths_, adaptation_assets_)
+      ->StartSession(std::move(pending));
 }
 
 void OnDeviceModelServiceController::OnDeviceModelClient::
