@@ -402,13 +402,8 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
     }
   }
 
-  if (window_component != HTNOWHERE) {
-    return window_component;
-  }
-
   // Fall back to the caption if no other component matches.
-  TabStripRegionView::ReportCaptionHitTestInReservedGrabHandleSpace(false);
-  return HTCAPTION;
+  return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
 }
 
 void BrowserFrameViewWin::UpdateWindowIcon() {

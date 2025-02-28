@@ -63,12 +63,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "base/metrics/histogram_functions.h"
-#endif
-
 namespace {
 
 class FrameGrabHandle : public views::View {
@@ -350,13 +344,6 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
     }
   }
 
-#if BUILDFLAG(IS_WIN)
-  bool rect_in_reserved_space =
-      reserved_grab_handle_space_->GetLocalBounds().Intersects(
-          get_target_rect(reserved_grab_handle_space_));
-  ReportCaptionHitTestInReservedGrabHandleSpace(rect_in_reserved_space);
-#endif
-
   return true;
 }
 
@@ -547,24 +534,6 @@ views::View* TabStripRegionView::GetDefaultFocusableChild() {
   auto* focusable_child = tab_strip_->GetDefaultFocusableChild();
   return focusable_child ? focusable_child
                          : AccessiblePaneView::GetDefaultFocusableChild();
-}
-
-// static
-void TabStripRegionView::ReportCaptionHitTestInReservedGrabHandleSpace(
-    bool in_reserved_grab_handle_space) {
-#if BUILDFLAG(IS_WIN)
-  static bool button_down_previously = false;
-  int primary_mouse_button =
-      ::GetSystemMetrics(SM_SWAPBUTTON) ? VK_RBUTTON : VK_LBUTTON;
-  bool button_down_now =
-      (::GetAsyncKeyState(primary_mouse_button) & 0x8000) != 0;
-  if (button_down_now && !button_down_previously) {
-    base::UmaHistogramBoolean(
-        "Chrome.Frame.MouseDownCaptionHitTestInReservedGrabHandleSpace",
-        in_reserved_grab_handle_space);
-  }
-  button_down_previously = button_down_now;
-#endif
 }
 
 void TabStripRegionView::UpdateButtonBorders() {
