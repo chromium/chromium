@@ -1204,7 +1204,7 @@
     // progress(), media-progress(), container-progress()
     {
       name: "CSSProgressNotation",
-      status: "experimental",
+      status: "stable",
     },
     {
       // For ::column pseudo element for fragment styling.
