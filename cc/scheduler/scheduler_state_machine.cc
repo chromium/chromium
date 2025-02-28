@@ -651,13 +651,23 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
 
   // This comes last, because we only want to throttle main frame that would
   // otherwise actually be sent, and we do not want to throttle forced redraws.
+  if (ShouldThrottleSendBeginMainFrame()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
+  bool result = false;
   if (main_frame_throttled_interval_.is_positive() &&
       last_begin_impl_frame_time_ - last_sent_begin_main_frame_time_ <
           main_frame_throttled_interval_) {
-    TRACE_EVENT0("cc", "ThrottleMainFrame");
-    return false;
+    result = true;
   }
-  return true;
+
+  TRACE_EVENT_INSTANT("cc", __PRETTY_FUNCTION__, "result", result);
+  return result;
 }
 
 bool SchedulerStateMachine::ShouldCommit() const {
@@ -1437,6 +1447,18 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   if (active_tree_needs_first_draw_)
     return true;
 
+  // We did not send a BeginMainFrame(), don't expect a commit.
+  //
+  // Order matters here: if we have !needs_redraw_ (which is typical), if we
+  // move that further down, then there is an unconditional "return false".
+  if (ShouldThrottleSendBeginMainFrame()) {
+    return true;
+  }
+
+  // TODO(XXX): This condition should not need to be there. There was an attempt
+  // to remove it, which was reverted due to regressions (see
+  // https://chromium-review.googlesource.com/c/chromium/src/+/1211664).
+  // Investigate why this is the case.
   if (!needs_redraw_)
     return false;
 

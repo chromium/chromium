@@ -419,6 +419,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool ShouldDraw() const;
   bool ShouldActivateSyncTree() const;
   bool ShouldSendBeginMainFrame() const;
+  bool ShouldThrottleSendBeginMainFrame() const;
   bool ShouldCommit() const;
   bool ShouldRunPostCommit() const;
   bool ShouldPrepareTiles() const;
