@@ -212,6 +212,14 @@ class TrackingVisitedLinkEventListener
 };
 
 class VisitedLinkTest : public testing::Test {
+ public:
+  VisitedLinkTest() {
+    // Disable any partitioning for this test suite.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {blink::features::kPartitionVisitedLinkDatabase,
+             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks});
+  }
+
  protected:
   // Initializes the visited link objects. Pass in the size that you want a
   // freshly created table to be. 0 means use the default.
@@ -307,6 +315,7 @@ class VisitedLinkTest : public testing::Test {
   base::FilePath history_dir_;
   base::FilePath visited_file_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<VisitedLinkWriter> writer_;
   TestVisitedLinkDelegate delegate_;
   content::BrowserTaskEnvironment task_environment_;
