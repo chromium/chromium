@@ -185,5 +185,34 @@ TEST(GetFillValueAndTypeForEntityTest, FillingStructuredNames) {
   }
 }
 
+TEST(GetFillValueAndTypeForEntityTest, FillingLocalizedCountries) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWithDataSchema};
+  EntityInstance passport =
+      test::GetPassportEntityInstance({.country = u"Lebanon"});
+  for (const auto& [locale, expectation] :
+       std::vector<std::pair<std::string, std::u16string>>{
+           {"en-US", u"Lebanon"},
+           {"fr-FR", u"Liban"},
+           {"de-DE", u"Libanon"},
+           {"ar-LB", u"لبنان"}}) {
+    AutofillField field;
+    FieldPrediction prediction;
+    prediction.set_type(PASSPORT_ISSUING_COUNTRY_TAG);
+    prediction.set_source(
+        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+            FieldPrediction::SOURCE_AUTOFILL_AI);
+    field.set_server_predictions({prediction});
+    field.SetTypeTo(ADDRESS_HOME_COUNTRY,
+                    AutofillPredictionSource::kServerCrowdsourcing);
+
+    EXPECT_EQ(GetFillValueAndTypeForEntity(
+                  passport, field, mojom::ActionPersistence::kFill, locale)
+                  .first,
+              expectation)
+        << locale;
+  }
+}
+
 }  // namespace
 }  // namespace autofill

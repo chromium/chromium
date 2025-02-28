@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/country_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -66,8 +67,8 @@ class EntityTable;
 // `AttributeInstance::GetNormalizedType()` and the getter/setter methods for
 // how this problem is handled.
 class AttributeInstance final {
-  // TODO(crbug.com/389625753): Also support for countries, states and dates.
-  using InfoStructure = absl::variant<NameInfo, std::u16string>;
+  // TODO(crbug.com/389625753): Also add support for states and dates.
+  using InfoStructure = absl::variant<CountryInfo, NameInfo, std::u16string>;
 
  public:
   // Transparent less-than relation based on the AttributeType.

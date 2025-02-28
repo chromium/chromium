@@ -883,7 +883,7 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   if (options.country) {
     attributes.emplace_back(AttributeType(kPassportCountry));
     attributes.back().SetInfo(PASSPORT_ISSUING_COUNTRY_TAG, options.country,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"en-US");
   }
   if (options.expiry_date) {
     attributes.emplace_back(AttributeType(kPassportExpiryDate));
