@@ -144,7 +144,7 @@
     Just now
   </message>
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_UNKNOWN_USER" desc="The user name to show on the recent activity bottom sheet row if the user info cannot be found, e.g. deleted their account.">
-    Unknown user
+    Deleted account
   </message>
   <!-- Recent Activity -->
 
