@@ -197,13 +197,6 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier);
 
-  void ExpectPasswordBreachEvent(
-      const std::string& expected_trigger,
-      const std::vector<std::pair<std::string, std::u16string>>&
-          expected_identities,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier);
-
   // Closure to run once all expected events are validated.
   void SetDoneClosure(base::RepeatingClosure closure);
 
