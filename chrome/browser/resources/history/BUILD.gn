@@ -51,6 +51,7 @@ build_webui("build") {
     "shared_style_lit.css",
     "shared_vars.css",
     "synced_device_card.css",
+    "synced_device_manager.css",
   ]
 
   icons_html_files = [ "shared_icons.html" ]
