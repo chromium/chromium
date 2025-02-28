@@ -50,7 +50,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   void GetBucketByNameUnsafe(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
-      blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 
@@ -72,7 +71,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
                             bool enabled) override {}
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override;
 
@@ -102,7 +100,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   void CreateBucketForTesting(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
-      blink::mojom::StorageType storage_type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 

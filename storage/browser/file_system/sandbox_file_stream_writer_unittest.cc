@@ -201,7 +201,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
         BucketInfo result,
         quota_manager_proxy_sync.GetBucket(
             blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-            kDefaultBucketName, blink::mojom::StorageType::kTemporary));
+            kDefaultBucketName));
     EXPECT_EQ(result.name, kDefaultBucketName);
     EXPECT_EQ(result.storage_key,
               blink::StorageKey::CreateFromStringForTesting(kURLOrigin));

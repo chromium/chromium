@@ -42,7 +42,6 @@ class MockBGFQuotaManagerProxy : public storage::MockQuotaManagerProxy {
 
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override {
     DCHECK(callback_task_runner);

@@ -90,8 +90,7 @@ void DatabaseTask::IsQuotaAvailable(const blink::StorageKey& storage_key,
   DCHECK_GT(size, 0);
 
   quota_manager_proxy()->GetUsageAndQuota(
-      storage_key, blink::mojom::StorageType::kTemporary,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      storage_key, base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), size));
 }
 

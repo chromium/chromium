@@ -178,12 +178,11 @@ class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
 
   storage::QuotaErrorOr<BucketLocator> CreateBucketForTesting(
       const blink::StorageKey& storage_key,
-      const std::string& name,
-      blink::mojom::StorageType type) {
+      const std::string& name) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
         bucket_future;
     quota_manager_->proxy()->CreateBucketForTesting(
-        storage_key, name, type, base::SequencedTaskRunner::GetCurrentDefault(),
+        storage_key, name, base::SequencedTaskRunner::GetCurrentDefault(),
         bucket_future.GetCallback());
     return bucket_future.Take().transform(
         &storage::BucketInfo::ToBucketLocator);
@@ -231,11 +230,9 @@ class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
 TEST_P(DatabaseQuotaClientTest, GetBucketUsage) {
   DatabaseQuotaClient client(*mock_tracker_);
   ASSERT_OK_AND_ASSIGN(
-      auto bucket_a,
-      CreateBucketForTesting(kStorageKeyA, kDefaultBucketName, kTemp));
+      auto bucket_a, CreateBucketForTesting(kStorageKeyA, kDefaultBucketName));
   ASSERT_OK_AND_ASSIGN(
-      auto bucket_b,
-      CreateBucketForTesting(kStorageKeyB, kDefaultBucketName, kTemp));
+      auto bucket_b, CreateBucketForTesting(kStorageKeyB, kDefaultBucketName));
 
   EXPECT_EQ(0, GetBucketUsage(client, bucket_a));
 
@@ -260,8 +257,7 @@ TEST_P(DatabaseQuotaClientTest, GetStorageKeysForType) {
 TEST_P(DatabaseQuotaClientTest, DeleteBucketData) {
   DatabaseQuotaClient client(*mock_tracker_);
   ASSERT_OK_AND_ASSIGN(
-      auto bucket_a,
-      CreateBucketForTesting(kStorageKeyA, kDefaultBucketName, kTemp));
+      auto bucket_a, CreateBucketForTesting(kStorageKeyA, kDefaultBucketName));
 
   mock_tracker_->set_async_delete(false);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
@@ -276,8 +272,8 @@ TEST_P(DatabaseQuotaClientTest, DeleteBucketData) {
 
 TEST_P(DatabaseQuotaClientTest, NonDefaultBucket) {
   DatabaseQuotaClient client(*mock_tracker_);
-  ASSERT_OK_AND_ASSIGN(
-      auto bucket, CreateBucketForTesting(kStorageKeyA, "inbox_bucket", kTemp));
+  ASSERT_OK_AND_ASSIGN(auto bucket,
+                       CreateBucketForTesting(kStorageKeyA, "inbox_bucket"));
   ASSERT_FALSE(bucket.is_default);
 
   EXPECT_EQ(0, GetBucketUsage(client, bucket));
