@@ -73,7 +73,7 @@ class {{group.type_name}} : public GarbageCollected<{{group.type_name}}> {
 {{define_field_group_class(subgroup)}}
 
 {% endfor %}
-ComputedStyleBase::{{group.type_name}}::{{group.type_name}}() {{print_if(group.fields|length > 0, ':')}}
+ComputedStyleBase::{{group.type_name}}::{{group.type_name}}() {{print_if(group.fields|length > 0 or group.subgroups|length > 0, ':')}}
   {% set comma = joiner(", ") %}
   {% for subgroup in group.subgroups %}
     {{comma()}}{{subgroup.member_name}}({{subgroup.type_name}}::Create())
