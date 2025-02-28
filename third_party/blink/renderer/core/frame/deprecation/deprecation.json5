@@ -356,7 +356,7 @@
     },
     {
       name: "ObsoleteCreateImageBitmapImageOrientationNone",
-      message: "Option `imageOrientation: 'none'` in createImageBitmap is deprecated. Please use createImageBitmap with option {imageOrientation: 'from-image'} instead.",
+      message: "Option `imageOrientation: 'none'` in createImageBitmap is deprecated. Please use createImageBitmap with option '{imageOrientation: 'from-image'}' instead.",
       translation_note: "Warning displayed to developers when CreateImageBitmap is used with the newly deprecated option imageOrientation: 'none'.",
       web_features: [
         "kObsoleteCreateImageBitmapImageOrientationNone",
