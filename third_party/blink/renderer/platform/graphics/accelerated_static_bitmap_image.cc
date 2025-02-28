@@ -321,8 +321,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     DCHECK_EQ(shared_image_texture_id, 0u);
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
-        shared_image_->mailbox(), mailbox_ref_, sk_image_info_,
-        std::move(context_provider_wrapper));
+        shared_image_->mailbox(), mailbox_ref_, GetSize(), GetSkColorType(),
+        GetAlphaType(), GetSkColorSpace(), std::move(context_provider_wrapper));
     return;
   }
 
@@ -370,8 +370,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   if (sk_image) {
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
-        std::move(sk_image), mailbox_ref_, sk_image_info_,
-        std::move(context_provider_wrapper));
+        std::move(sk_image), mailbox_ref_, GetSize(), GetSkColorType(),
+        GetAlphaType(), GetSkColorSpace(), std::move(context_provider_wrapper));
   }
 }
 

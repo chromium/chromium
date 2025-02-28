@@ -10,27 +10,40 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
 MailboxTextureBacking::MailboxTextureBacking(
     sk_sp<SkImage> sk_image,
     scoped_refptr<MailboxRef> mailbox_ref,
-    const SkImageInfo& info,
+    const gfx::Size& size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
     : sk_image_(std::move(sk_image)),
       mailbox_ref_(std::move(mailbox_ref)),
-      sk_image_info_(info),
+      sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
+                                       sk_color_type,
+                                       alpha_type,
+                                       std::move(sk_color_space))),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {}
 
 MailboxTextureBacking::MailboxTextureBacking(
     const gpu::Mailbox& mailbox,
     scoped_refptr<MailboxRef> mailbox_ref,
-    const SkImageInfo& info,
+    const gfx::Size& size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
     : mailbox_(mailbox),
       mailbox_ref_(std::move(mailbox_ref)),
-      sk_image_info_(info),
+      sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
+                                       sk_color_type,
+                                       alpha_type,
+                                       std::move(sk_color_space))),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {}
 
 MailboxTextureBacking::~MailboxTextureBacking() {
