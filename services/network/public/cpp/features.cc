@@ -411,6 +411,11 @@ BASE_FEATURE_PARAM(std::string,
                    &kDeprecateUnloadByAllowList,
                    "allowlist",
                    "");
+// When enabled, a `Sec-Fetch-Frame-Top` header will be emitted on
+// outgoing requests.
+BASE_FEATURE(kFrameAncestorHeaders,
+             "FrameAncestorHeaders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUpdateRequestForCorsRedirect,
              "UpdateRequestForCorsRedirect",

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
@@ -32,55 +33,58 @@ constexpr std::string_view kSecFetchSite = "Sec-Fetch-Site";
 constexpr std::string_view kSecFetchUser = "Sec-Fetch-User";
 constexpr std::string_view kSecFetchDest = "Sec-Fetch-Dest";
 constexpr std::string_view kSecFetchStorageAccess = "Sec-Fetch-Storage-Access";
+constexpr std::string_view kSecFetchFrameTop = "Sec-Fetch-Frame-Top";
 
 constexpr char kSecFetchStorageAccessOutcomeHistogram[] =
     "API.StorageAccessHeader.SecFetchStorageAccessOutcome";
 
-// Sec-Fetch-Site infrastructure:
+// Infrastructure for headers whose values are dependent on the relationship
+// between origins, such as Sec-Fetch-Site and Sec-Fetch-Frame-Top.
 //
 // Note that the order of enum values below is significant - it is important for
 // std::max invocations that kSameOrigin < kSameSite < kCrossSite.
-enum class SecFetchSiteValue {
+enum class OriginRelationHeaderValue {
   kNoOrigin,
   kSameOrigin,
   kSameSite,
   kCrossSite,
 };
 
-const char* GetSecFetchSiteHeaderString(const SecFetchSiteValue& value) {
+const char* GetOriginRelationString(const OriginRelationHeaderValue& value) {
   switch (value) {
-    case SecFetchSiteValue::kNoOrigin:
+    case OriginRelationHeaderValue::kNoOrigin:
       return "none";
-    case SecFetchSiteValue::kSameOrigin:
+    case OriginRelationHeaderValue::kSameOrigin:
       return "same-origin";
-    case SecFetchSiteValue::kSameSite:
+    case OriginRelationHeaderValue::kSameSite:
       return "same-site";
-    case SecFetchSiteValue::kCrossSite:
+    case OriginRelationHeaderValue::kCrossSite:
       return "cross-site";
   }
 }
 
-SecFetchSiteValue GetHeaderValueForTargetAndInitiator(
+OriginRelationHeaderValue GetRelationOfURLToOrigin(
     const GURL& target_url,
-    const url::Origin& initiator) {
+    const url::Origin& related_origin) {
   url::Origin target_origin = url::Origin::Create(target_url);
 
-  if (target_origin == initiator)
-    return SecFetchSiteValue::kSameOrigin;
-
-  // Cross-scheme initiator should be considered cross-site (even if it's host
-  // is same-site with the target).  See also https://crbug.com/979257.
-  if (initiator.scheme() == target_origin.scheme() &&
-      net::registry_controlled_domains::SameDomainOrHost(
-          initiator, target_origin,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    return SecFetchSiteValue::kSameSite;
+  if (target_origin == related_origin) {
+    return OriginRelationHeaderValue::kSameOrigin;
   }
 
-  return SecFetchSiteValue::kCrossSite;
+  // Cross-scheme origin should be considered cross-site (even if it's host
+  // is same-site with the target).  See also https://crbug.com/979257.
+  if (related_origin.scheme() == target_origin.scheme() &&
+      net::registry_controlled_domains::SameDomainOrHost(
+          related_origin, target_origin,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    return OriginRelationHeaderValue::kSameSite;
+  }
+
+  return OriginRelationHeaderValue::kCrossSite;
 }
 
-SecFetchSiteValue GetHeaderValueForRequest(
+OriginRelationHeaderValue GetHeaderValueForRequest(
     net::URLRequest* request,
     const GURL* pending_redirect_url,
     const mojom::URLLoaderFactoryParams& factory_params,
@@ -92,7 +96,7 @@ SecFetchSiteValue GetHeaderValueForRequest(
     // process may initiate requests with no request initiator.
     DCHECK_EQ(factory_params.process_id, mojom::kBrowserProcessId);
 
-    return SecFetchSiteValue::kNoOrigin;
+    return OriginRelationHeaderValue::kNoOrigin;
   }
   const url::Origin& initiator = request->initiator().value();
 
@@ -104,21 +108,21 @@ SecFetchSiteValue GetHeaderValueForRequest(
         origin_access_list.CheckAccessState(initiator, request->url());
     bool is_privileged =
         (access_state == cors::OriginAccessList::AccessState::kAllowed);
-    return is_privileged ? SecFetchSiteValue::kNoOrigin
-                         : SecFetchSiteValue::kCrossSite;
+    return is_privileged ? OriginRelationHeaderValue::kNoOrigin
+                         : OriginRelationHeaderValue::kCrossSite;
   }
 
   // Other requests default to `kSameOrigin`, and walk through the request's URL
   // chain to calculate the correct value.
-  auto header_value = SecFetchSiteValue::kSameOrigin;
+  auto header_value = OriginRelationHeaderValue::kSameOrigin;
   for (const GURL& target_url : request->url_chain()) {
-    header_value = std::max(header_value, GetHeaderValueForTargetAndInitiator(
-                                              target_url, initiator));
+    header_value =
+        std::max(header_value, GetRelationOfURLToOrigin(target_url, initiator));
   }
   if (pending_redirect_url) {
-    header_value = std::max(
-        header_value,
-        GetHeaderValueForTargetAndInitiator(*pending_redirect_url, initiator));
+    header_value =
+        std::max(header_value,
+                 GetRelationOfURLToOrigin(*pending_redirect_url, initiator));
   }
   return header_value;
 }
@@ -163,12 +167,12 @@ void SetSecFetchSiteHeader(net::URLRequest* request,
                            const GURL* pending_redirect_url,
                            const mojom::URLLoaderFactoryParams& factory_params,
                            const cors::OriginAccessList& origin_access_list) {
-  SecFetchSiteValue header_value = GetHeaderValueForRequest(
+  OriginRelationHeaderValue header_value = GetHeaderValueForRequest(
       request, pending_redirect_url, factory_params, origin_access_list);
 
-  request->SetExtraRequestHeaderByName(
-      kSecFetchSite, GetSecFetchSiteHeaderString(header_value),
-      /* overwrite = */ true);
+  request->SetExtraRequestHeaderByName(kSecFetchSite,
+                                       GetOriginRelationString(header_value),
+                                       /* overwrite = */ true);
 }
 
 // Sec-Fetch-Mode
@@ -224,6 +228,41 @@ void SetSecFetchStorageAccessHeader(net::URLRequest& request,
       /*overwrite=*/true);
 }
 
+// Sec-Fetch-Frame-Top
+void SetSecFetchFrameTop(net::URLRequest* request,
+                         const GURL* pending_redirect_url) {
+  if (!base::FeatureList::IsEnabled(features::kFrameAncestorHeaders)) {
+    return;
+  }
+
+  if (request->isolation_info().IsEmpty() ||
+      request->isolation_info().request_type() ==
+          net::IsolationInfo::RequestType::kMainFrame) {
+    return;
+  }
+
+  url::Origin target_origin = url::Origin::Create(request->url());
+  url::Origin top_frame_origin =
+      request->isolation_info().top_frame_origin().value();
+
+  auto header_value = OriginRelationHeaderValue::kSameOrigin;
+  // Walk through the request's URL chain to calculate its relationship to the
+  // top frame.
+  for (const GURL& target_url : request->url_chain()) {
+    header_value = std::max(
+        header_value, GetRelationOfURLToOrigin(target_url, top_frame_origin));
+  }
+  if (pending_redirect_url) {
+    header_value = std::max(
+        header_value,
+        GetRelationOfURLToOrigin(*pending_redirect_url, top_frame_origin));
+  }
+
+  request->SetExtraRequestHeaderByName(kSecFetchFrameTop,
+                                       GetOriginRelationString(header_value),
+                                       /*overwrite=*/true);
+}
+
 }  // namespace
 
 void SetFetchMetadataHeaders(
@@ -250,6 +289,7 @@ void SetFetchMetadataHeaders(
   SetSecFetchUserHeader(request, has_user_activation);
   SetSecFetchDestHeader(request, dest);
   SetSecFetchStorageAccessHeader(*request, credentials_mode);
+  SetSecFetchFrameTop(request, pending_redirect_url);
 }
 
 void MaybeRemoveSecHeaders(net::URLRequest* request,
