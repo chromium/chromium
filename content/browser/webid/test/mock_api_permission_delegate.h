@@ -34,6 +34,7 @@ class MockApiPermissionDelegate
               RemoveEmbargoAndResetCounts,
               (const url::Origin&),
               (override));
+  MOCK_METHOD(void, RecordIgnoreAndEmbargo, (const url::Origin&), (override));
   MOCK_METHOD(bool,
               HasThirdPartyCookiesAccess,
               (RenderFrameHost&, const GURL&, const url::Origin&),

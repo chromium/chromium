@@ -87,4 +87,7 @@ bool IsFedCmAlternativeIdentifiersEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAlternativeIdentifiers);
 }
 
+bool IsFedCmCooldownOnIgnoreEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmCooldownOnIgnore);
+}
 }  // namespace content

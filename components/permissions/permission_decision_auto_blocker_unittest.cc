@@ -17,6 +17,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/test_permissions_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 
@@ -944,6 +945,77 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
       url, ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION));
   CheckFederatedIdentityAutoReauthnEmbargoLiftedAfterTimeElapsing(
       autoblocker(), clock(), url, base::Minutes(10));
+}
+
+TEST_F(PermissionDecisionAutoBlockerUnitTest,
+       TestIgnoreFederatedIdentityApiBackoff) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(::features::kFedCmCooldownOnIgnore);
+
+  GURL url("https://www.google.com");
+  clock()->SetNow(base::Time::Now());
+
+  std::optional<content::PermissionResult> result =
+      autoblocker()->GetEmbargoResult(
+          url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_FALSE(result.has_value());
+
+  // 4 hour embargo for ignore
+  EXPECT_TRUE(autoblocker()->RecordIgnoreAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  auto time_delta = base::Hours(4);
+  clock()->Advance(time_delta - base::Minutes(1));
+  result = autoblocker()->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_EQ(PermissionStatus::DENIED, result->status);
+
+  clock()->Advance(base::Minutes(2));
+  result = autoblocker()->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(PermissionDecisionAutoBlockerUnitTest,
+       TestIgnoreFederatedIdentityApiEmbargoDoesNotAffectDismissEmbargo) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(::features::kFedCmCooldownOnIgnore);
+
+  GURL url("https://www.google.com");
+  clock()->SetNow(base::Time::Now());
+
+  std::optional<content::PermissionResult> result =
+      autoblocker()->GetEmbargoResult(
+          url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_FALSE(result.has_value());
+
+  // 2 hour embargo for 1st dismissal
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url,
+      base::Hours(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "FirstDismissal", 2)));
+
+  // 1 day embargo for 2nd dismissal
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url,
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "SecondDismissal", 1)));
+
+  // 4 hour embargo for ignore
+  EXPECT_TRUE(autoblocker()->RecordIgnoreAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+
+  // 7 day embargo for 3rd dismissal because ignore embargo does not increase
+  // the dismissal counter.
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url,
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kFedCmUpdatedCooldownPeriod, "ThirdDismissal", 7)));
 }
 
 TEST_F(PermissionDecisionAutoBlockerUnitTest,

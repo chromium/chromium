@@ -9757,6 +9757,21 @@
             ],
             "experiments": [
                 {
+                    "name": "CooldownOnIgnore",
+                    "params": {
+                        "FirstDismissal": "24",
+                        "FourthDismissal": "28",
+                        "SecondDismissal": "5",
+                        "ThirdDismissal": "14"
+                    },
+                    "enable_features": [
+                        "FedCmCooldownOnIgnore"
+                    ],
+                    "disable_features": [
+                        "FedCmUpdatedCooldownPeriod"
+                    ]
+                },
+                {
                     "name": "UpdatedCooldownPeriod",
                     "params": {
                         "FirstDismissal": "24",
@@ -9765,6 +9780,22 @@
                         "ThirdDismissal": "14"
                     },
                     "enable_features": [
+                        "FedCmUpdatedCooldownPeriod"
+                    ],
+                    "disable_features": [
+                        "FedCmCooldownOnIgnore"
+                    ]
+                },
+                {
+                    "name": "CooldownOnIgnoreAndUpdatedCooldown",
+                    "params": {
+                        "FirstDismissal": "24",
+                        "FourthDismissal": "28",
+                        "SecondDismissal": "5",
+                        "ThirdDismissal": "14"
+                    },
+                    "enable_features": [
+                        "FedCmCooldownOnIgnore",
                         "FedCmUpdatedCooldownPeriod"
                     ]
                 }
