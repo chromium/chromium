@@ -234,15 +234,9 @@ class TabAppKeyboardNavigationTest : public TabAppSelectionViewTest {
 
 // Tests the forward Tab navigation works as expected.
 TEST_F(TabAppKeyboardNavigationTest, TabForward) {
-  // The tab navigation should go through the first item, first item's close
-  // button, user feedback, thumbs up button, thumbs down button, coral
-  // chip, and coral chip add-on button in forward order.
-  PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_TRUE(IsViewFocusedOnSelector(GetItemViewAt(0)));
-
-  PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_TRUE(IsViewFocusedOnSelector(GetItemCloseButtonAt(0)));
-
+  // The tab navigation should go through the user feedback, thumbs up button,
+  // thumbs down button, first item, first item's close button, coral chip, and
+  // coral chip add-on button in forward order.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(IsViewFocusedOnSelector(
       selector_view_->GetViewByID(TabAppSelectionView::kUserFeedbackID)));
@@ -254,6 +248,11 @@ TEST_F(TabAppKeyboardNavigationTest, TabForward) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(IsViewFocusedOnSelector(
       selector_view_->GetViewByID(TabAppSelectionView::kThumbsDownID)));
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_TRUE(IsViewFocusedOnSelector(GetItemViewAt(0)));
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_TRUE(IsViewFocusedOnSelector(GetItemCloseButtonAt(0)));
 
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(IsViewFocusedOnChip(GetFirstCoralButton()));
@@ -265,6 +264,12 @@ TEST_F(TabAppKeyboardNavigationTest, TabForward) {
 // Tests the reverse Tab navigation works as expected.
 TEST_F(TabAppKeyboardNavigationTest, TabBackward) {
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(IsViewFocusedOnSelector(GetItemCloseButtonAt(0)));
+
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(IsViewFocusedOnSelector(GetItemViewAt(0)));
+
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(IsViewFocusedOnSelector(
       selector_view_->GetViewByID(TabAppSelectionView::kThumbsDownID)));
 
@@ -275,12 +280,6 @@ TEST_F(TabAppKeyboardNavigationTest, TabBackward) {
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(IsViewFocusedOnSelector(
       selector_view_->GetViewByID(TabAppSelectionView::kUserFeedbackID)));
-
-  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_TRUE(IsViewFocusedOnSelector(GetItemCloseButtonAt(0)));
-
-  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_TRUE(IsViewFocusedOnSelector(GetItemViewAt(0)));
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(IsViewFocusedOnChip(GetFirstCoralButton()->addon_view()));
