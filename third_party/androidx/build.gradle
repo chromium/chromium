@@ -281,12 +281,14 @@ versionCache['org.jsoup:jsoup'] = '1.12.2'
 versionCache['org.jspecify:jspecify'] = '1.0.0'
 versionCache['org.reactivestreams:reactive-streams'] = '1.0.3'
 
+project.ext.readmePrefix = "committed/"
+
 apply plugin: ChromiumPlugin
 
 repositories {
     google()
     maven {
-        url 'https://androidx.dev/snapshots/builds/13134976/artifacts/repository'
+        url 'https://androidx.dev/snapshots/builds/13136128/artifacts/repository'
     }
     mavenCentral()
 }
