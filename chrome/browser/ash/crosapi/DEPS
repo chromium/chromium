@@ -65,7 +65,6 @@ include_rules = [
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/component_updater",
   "+chrome/browser/device_identity",
-  "+chrome/browser/extensions/api/image_writer_private",
   "+chrome/browser/extensions/api/printing",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/forced_extensions",

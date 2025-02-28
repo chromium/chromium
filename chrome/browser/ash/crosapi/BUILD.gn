@@ -77,8 +77,6 @@ static_library("crosapi") {
     "identity_manager_ash.h",
     "idle_service_ash.cc",
     "idle_service_ash.h",
-    "image_writer_ash.cc",
-    "image_writer_ash.h",
     "input_methods_ash.cc",
     "input_methods_ash.h",
     "kerberos_in_browser_ash.cc",

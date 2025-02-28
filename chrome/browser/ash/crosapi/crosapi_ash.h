@@ -69,7 +69,6 @@ class FullRestoreAsh;
 class FullscreenControllerAsh;
 class IdentityManagerAsh;
 class IdleServiceAsh;
-class ImageWriterAsh;
 class InputMethodsAsh;
 class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
@@ -183,8 +182,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::IdentityManager> receiver) override;
   void BindIdleService(
       mojo::PendingReceiver<mojom::IdleService> receiver) override;
-  void BindImageWriter(
-      mojo::PendingReceiver<mojom::ImageWriter> receiver) override;
   void BindInputMethods(
       mojo::PendingReceiver<mojom::InputMethods> receiver) override;
   void BindInSessionAuth(
@@ -345,8 +342,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return fullscreen_controller_ash_.get();
   }
 
-  ImageWriterAsh* image_writer_ash() { return image_writer_ash_.get(); }
-
   InputMethodsAsh* input_methods_ash() { return input_methods_ash_.get(); }
 
   KeystoreServiceAsh* keystore_service_ash() {
@@ -458,7 +453,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
   std::unique_ptr<InputMethodsAsh> input_methods_ash_;
-  std::unique_ptr<ImageWriterAsh> image_writer_ash_;
   std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
