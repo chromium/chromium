@@ -1169,7 +1169,7 @@
     },
     {
       name: "CSSMarkerNestedPseudoElement",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSMasonryLayout",
@@ -1181,7 +1181,7 @@
     },
     {
       name: "CSSNestedPseudoElements",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPaintAPIArguments",
