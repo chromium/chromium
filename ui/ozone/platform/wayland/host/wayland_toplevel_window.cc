@@ -331,7 +331,6 @@ void WaylandToplevelWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
     // X11 backend.
     return;
   }
-  root_surface()->Commit(/*flush=*/true);
 }
 
 void WaylandToplevelWindow::SizeConstraintsChanged() {
