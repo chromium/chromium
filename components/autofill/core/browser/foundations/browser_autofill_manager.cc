@@ -1723,8 +1723,6 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
                              &autofill_field)) {
     return;
   }
-  metrics_->credit_card_form_event_logger.OnDidSelectCardSuggestion(
-      credit_card, *form_structure, metrics_->signin_state_for_metrics);
   bool require_card_fetching = [&] {
     if (action_persistence == mojom::ActionPersistence::kPreview) {
       return false;
@@ -1822,6 +1820,11 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     fill_or_preview(*self, mojom::ActionPersistence::kFill, form, field_id,
                     credit_card, fetched_credit_card_trigger_source);
   };
+
+  if (action_persistence == mojom::ActionPersistence::kFill) {
+    metrics_->credit_card_form_event_logger.OnDidSelectCardSuggestion(
+        credit_card, *form_structure, metrics_->signin_state_for_metrics);
+  }
 
   if (!require_card_fetching) {
     fill_or_preview(*this, action_persistence, form, field_id, credit_card,
