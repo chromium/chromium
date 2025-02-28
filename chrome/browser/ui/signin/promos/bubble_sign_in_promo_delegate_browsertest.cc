@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
-
 #include <memory>
 
 #include "base/command_line.h"
@@ -14,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -22,20 +19,21 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/service/local_data_description.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/range/range.h"
 
-class BookmarkBubbleSignInDelegateTest : public InProcessBrowserTest {
+class BubbleSignInPromoDelegateTest : public InProcessBrowserTest {
  public:
-  BookmarkBubbleSignInDelegateTest() = default;
+  BubbleSignInPromoDelegateTest() = default;
 
-  BookmarkBubbleSignInDelegateTest(const BookmarkBubbleSignInDelegateTest&) =
-      delete;
-  BookmarkBubbleSignInDelegateTest& operator=(
-      const BookmarkBubbleSignInDelegateTest&) = delete;
+  BubbleSignInPromoDelegateTest(const BubbleSignInPromoDelegateTest&) = delete;
+  BubbleSignInPromoDelegateTest& operator=(
+      const BubbleSignInPromoDelegateTest&) = delete;
 
   Profile* profile() { return browser()->profile(); }
 
@@ -48,32 +46,34 @@ class BookmarkBubbleSignInDelegateTest : public InProcessBrowserTest {
 // about:blank.  The sign-in page is a singleton that will
 // replace this tab.  This function replaces about:blank with another URL
 // so that the sign in page goes into a new tab.
-void BookmarkBubbleSignInDelegateTest::ReplaceBlank(Browser* browser) {
+void BubbleSignInPromoDelegateTest::ReplaceBlank(Browser* browser) {
   ShowSingletonTabOverwritingNTP(browser, GURL("chrome:version"),
                                  NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
-void BookmarkBubbleSignInDelegateTest::SignInBrowser(Browser* browser) {
-  auto delegate =
-      std::make_unique<BookmarkBubbleSignInDelegate>(browser->profile());
+void BubbleSignInPromoDelegateTest::SignInBrowser(Browser* browser) {
+  auto delegate = std::make_unique<BubbleSignInPromoDelegate>(
+      *browser->tab_strip_model()->GetActiveWebContents(),
+      signin_metrics::AccessPoint::kBookmarkBubble,
+      syncer::LocalDataItemModel::DataId());
   delegate->OnSignIn(AccountInfo());
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, OnSignInLinkClicked) {
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest, OnSignInLinkClicked) {
   ReplaceBlank(browser());
   int starting_tab_count = browser()->tab_strip_model()->count();
   SignInBrowser(browser());
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
                        OnSignInLinkClickedReusesBlank) {
   int starting_tab_count = browser()->tab_strip_model()->count();
   SignInBrowser(browser());
   EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
                        OnSignInLinkClickedIncognito_RegularBrowserWithTabs) {
   ReplaceBlank(browser());
   int starting_tab_count = browser()->tab_strip_model()->count();
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest,
   EXPECT_EQ(starting_tab_count_incognito, tab_count_incognito);
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest,
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
                        OnSignInLinkClickedIncognito_RegularBrowserClosed) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   int starting_tab_count_incognito =
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest,
 
 // Verifies that the sign in page can be loaded in a different browser
 // if the provided browser is invalidated.
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest, BrowserRemoved) {
   // Create an extra browser.
   Browser* extra_browser = CreateBrowser(profile());
   ReplaceBlank(extra_browser);
@@ -125,7 +125,10 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
   int starting_tab_count = extra_browser->tab_strip_model()->count();
 
   std::unique_ptr<BubbleSignInPromoDelegate> delegate =
-      std::make_unique<BookmarkBubbleSignInDelegate>(profile());
+      std::make_unique<BubbleSignInPromoDelegate>(
+          *extra_browser->tab_strip_model()->GetActiveWebContents(),
+          signin_metrics::AccessPoint::kBookmarkBubble,
+          syncer::LocalDataItemModel::DataId());
 
   BrowserList::SetLastActive(extra_browser);
 

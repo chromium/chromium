@@ -135,7 +135,7 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
     // Create a fake anchor view for the bubble.
     BookmarkBubbleView::ShowBubble(
         anchor_widget_->GetContentsView(),
-        browser()->tab_strip_model()->GetActiveWebContents(), nullptr, nullptr,
+        browser()->tab_strip_model()->GetActiveWebContents(), nullptr,
         browser(), GURL(kTestBookmarkURL), already_bookmarked);
   }
 

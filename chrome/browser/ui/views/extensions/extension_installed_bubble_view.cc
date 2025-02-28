@@ -35,6 +35,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/service/local_data_description.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -98,10 +99,10 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
 #if !BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<views::View> CreateSigninPromoView(
     content::WebContents* web_contents,
-    BubbleSignInPromoDelegate* delegate) {
+    const extensions::ExtensionId& extension_id) {
   return std::make_unique<BubbleSignInPromoView>(
       web_contents, signin_metrics::AccessPoint::kExtensionInstallBubble,
-      syncer::LocalDataItemModel::DataId(), delegate);
+      syncer::LocalDataItemModel::DataId(extension_id));
 }
 #endif
 
@@ -143,7 +144,8 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
   if (model_->show_sign_in_promo()) {
 #if !BUILDFLAG(IS_CHROMEOS)
     SetFootnoteView(CreateSigninPromoView(
-        browser->tab_strip_model()->GetActiveWebContents(), this));
+        browser->tab_strip_model()->GetActiveWebContents(),
+        model_->extension_id()));
 #endif
   }
   SetIcon(ui::ImageModel::FromImageSkia(model_->MakeIconOfSize(kMaxIconSize)));
@@ -164,11 +166,6 @@ void ExtensionInstalledBubbleView::UpdateAnchorView() {
   views::View* reference_view = AnchorViewForBrowser(model_.get(), browser_);
   DCHECK(reference_view);
   SetAnchorView(reference_view);
-}
-
-void ExtensionInstalledBubbleView::SignInForTesting(
-    const AccountInfo& account_info) {
-  OnSignIn(account_info);
 }
 
 void ExtensionInstalledBubbleView::Init() {
@@ -222,23 +219,6 @@ void ExtensionInstalledBubbleView::Init() {
     AddChildView(CreateLabel(
         l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALLED_MANAGE_INFO)));
   }
-}
-
-void ExtensionInstalledBubbleView::OnSignIn(const AccountInfo& account) {
-  // Sign the user into transport mode (sync not enabled) if extensions sync in
-  // transport mode is supported. Otherwise, sign in with sync enabled.
-  if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
-    signin_ui_util::SignInFromSingleAccountPromo(
-        browser_->profile(), account,
-        signin_metrics::AccessPoint::kExtensionInstallBubble);
-    extensions::AccountExtensionTracker::Get(browser_->profile())
-        ->OnSignInInitiatedFromExtensionPromo(model_->extension_id());
-  } else {
-    signin_ui_util::EnableSyncFromSingleAccountPromo(
-        browser_->profile(), account,
-        signin_metrics::AccessPoint::kExtensionInstallBubble);
-  }
-  GetWidget()->Close();
 }
 
 void ExtensionInstalledBubbleView::LinkClicked() {

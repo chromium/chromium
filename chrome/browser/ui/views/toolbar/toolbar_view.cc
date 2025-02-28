@@ -124,10 +124,6 @@
 #include "chrome/browser/recovery/recovery_install_global_error_factory.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
-#endif
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -690,14 +686,9 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   PageActionIconView* const bookmark_star_icon =
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
 
-  std::unique_ptr<BubbleSignInPromoDelegate> delegate;
-#if !BUILDFLAG(IS_CHROMEOS)
-  delegate =
-      std::make_unique<BookmarkBubbleSignInDelegate>(browser_->profile());
-#endif
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
-                                 bookmark_star_icon, std::move(delegate),
-                                 browser_, url, already_bookmarked);
+                                 bookmark_star_icon, browser_, url,
+                                 already_bookmarked);
 }
 
 views::Button* ToolbarView::GetChromeLabsButton() const {

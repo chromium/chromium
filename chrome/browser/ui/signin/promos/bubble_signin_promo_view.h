@@ -36,15 +36,12 @@ class BubbleSignInPromoView : public views::View, public views::WidgetObserver {
 
  public:
   // Creates a personalized sign in promo view.
-  // `delegate` is not owned by BubbleSignInPromoView.
   // `button_style` is used to style non-personalized signin button. Otherwise,
   // the button remains prominent.
   BubbleSignInPromoView(
       content::WebContents* web_contents,
       signin_metrics::AccessPoint access_point,
-      syncer::LocalDataItemModel::DataId data_id =
-          syncer::LocalDataItemModel::DataId(),
-      BubbleSignInPromoDelegate* delegate = nullptr,
+      syncer::LocalDataItemModel::DataId data_id,
       ui::ButtonStyle button_style = ui::ButtonStyle::kProminent);
   BubbleSignInPromoView(const BubbleSignInPromoView&) = delete;
   BubbleSignInPromoView& operator=(const BubbleSignInPromoView&) = delete;
@@ -53,8 +50,7 @@ class BubbleSignInPromoView : public views::View, public views::WidgetObserver {
   View* GetSignInButton() const;
 
  private:
-  // Used to sign in in the DiceAccountsMenu and when |signin_button_| is
-  // pressed.
+  // Used to sign in in when `signin_button_view_` is pressed.
   void SignIn();
 
   // views::WidgetObserver:
@@ -71,8 +67,5 @@ class BubbleSignInPromoView : public views::View, public views::WidgetObserver {
 
   // Delegate to handle clicks on the sign in button.
   std::unique_ptr<BubbleSignInPromoDelegate> delegate_;
-  // TODO (crbug.com/399326930): Remove this once the delegates are combined
-  // into `delegate_`.
-  raw_ptr<BubbleSignInPromoDelegate, DanglingUntriaged> delegate_ptr_;
 };
 #endif  // CHROME_BROWSER_UI_SIGNIN_PROMOS_BUBBLE_SIGNIN_PROMO_VIEW_H_
