@@ -311,14 +311,6 @@ Suggestion::Icon GetSuggestionIcon(
   NOTREACHED();
 }
 
-// If `attribute.is_obfuscated` is true, it returns an obfuscated version of
-// the attribute's value. Otherwise, it returns `attribute.value()`.
-std::u16string GetMaybeObfuscatedValue(const AttributeInstance& attribute) {
-  return attribute.type().is_obfuscated()
-             ? autofill::GetObfuscatedValue(attribute.value())
-             : attribute.value();
-}
-
 }  // namespace
 
 std::vector<Suggestion> CreateFillingSuggestions(
@@ -399,14 +391,12 @@ std::vector<Suggestion> CreateFillingSuggestions(
       }
 
       attribute_type_to_value.emplace_back(*attribute_type, attribute->value());
-      field_to_value.emplace_back(field->global_id(),
-                                  GetMaybeObfuscatedValue(*attribute));
+      field_to_value.emplace_back(field->global_id(), attribute->value());
     }
 
     SuggestionWithMetadata& s = suggestions_with_metadata.emplace_back();
-    s.suggestion =
-        Suggestion(GetMaybeObfuscatedValue(*attribute_for_triggering_field),
-                   SuggestionType::kFillAutofillAi);
+    s.suggestion = Suggestion(attribute_for_triggering_field->value(),
+                              SuggestionType::kFillAutofillAi);
     s.suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
     s.suggestion.icon =
         GetSuggestionIcon(triggering_field_attribute_type->entity_type());
