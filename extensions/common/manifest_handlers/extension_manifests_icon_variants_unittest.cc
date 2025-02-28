@@ -12,9 +12,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/icons/extension_icon_set.h"
-#include "extensions/common/icons/extension_icon_variant.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -290,6 +288,49 @@ TEST_F(IconVariantsManifestTest, GetIconMethods) {
                                     test_case.color_scheme.value());
     EXPECT_EQ(test_case.expected, icon_url.path().substr(1));
   }
+}
+
+// "color_scheme" is not currently supported in singular form. It only generates
+// a warning, and not an error. Because known keys are checked first, all
+// subsequent keys are assumed to be integer sizes, until a warning such as this
+// proves otherwise.
+TEST_F(IconVariantsManifestTest, ColorSchemeKeyWarning) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "Test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [
+          {
+            "128": "128.png",
+            "color_scheme": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  ASSERT_TRUE(extension->install_warnings().size() == 1);
+  ASSERT_EQ("Icon variant 'size' is not valid.",
+            extension->install_warnings().at(0).message);
+}
+
+// "color_schemes" is represented as a plural key for manifest.json.
+TEST_F(IconVariantsManifestTest, ColorSchemesKeyValid) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "Test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [
+          {
+            "128": "128.png",
+            "color_schemes": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  ASSERT_TRUE(extension->install_warnings().empty());
 }
 
 }  // namespace extensions

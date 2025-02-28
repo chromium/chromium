@@ -67,8 +67,6 @@ std::unique_ptr<ExtensionIconVariants> GetIconVariants(Extension& extension,
     return nullptr;
   }
 
-  std::vector<diagnostics::icon_variants::Diagnostic> diagnostics;
-
   std::unique_ptr<ExtensionIconVariants> icon_variants =
       std::make_unique<ExtensionIconVariants>();
   icon_variants->Parse(icon_variants_list);
