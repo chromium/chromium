@@ -17,9 +17,28 @@ SessionError::SessionError(SessionError&&) noexcept = default;
 SessionError& SessionError::operator=(SessionError&&) noexcept = default;
 
 bool SessionError::IsFatal() const {
-  // TODO(crbug.com/393263505): Mark some errors as transient and allow them to
-  // continue without cookies.
-  return true;
+  using enum ErrorType;
+
+  switch (type) {
+    case kSuccess:
+      return false;
+    case kKeyError:
+    case kSigningError:
+    case kServerRequestedTermination:
+    case kInvalidConfigJson:
+    case kInvalidSessionId:
+    case kInvalidCredentials:
+    case kInvalidChallenge:
+    case kTooManyChallenges:
+    case kInvalidFetcherUrl:
+    case kInvalidRefreshUrl:
+    case kPersistentHttpError:
+      return true;
+
+    case kNetError:
+    case kTransientHttpError:
+      return false;
+  }
 }
 
 }  // namespace net::device_bound_sessions

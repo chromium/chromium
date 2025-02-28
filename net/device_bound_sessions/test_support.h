@@ -46,6 +46,7 @@ class ScopedTestRegistrationFetcher {
 
   // Creates a `ScopedTestRegistrationFetcher` that always fails to register
   static ScopedTestRegistrationFetcher CreateWithFailure(
+      SessionError::ErrorType error_type,
       std::string_view refresh_url_string);
 
   // Creates a `ScopedTestRegistrationFetcher` that always instructs
