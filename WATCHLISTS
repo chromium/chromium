@@ -1698,6 +1698,9 @@
       'filepath': 'services/device/nfc/|'\
                   'third_party/blink/renderer/modules/nfc/'
     },
+    'notification_content_detection': {
+      'filepath': 'components/safe_browsing/content/browser/notification_content_detection/'
+    },
     'notifications': {
       'filepath': 'chrome/browser/extensions/api/notifications/|'\
         'chrome/browser/notifications/|'\
@@ -3115,6 +3118,7 @@
     'network_service': ['network-service-reviews@chromium.org'],
     'nfc': ['mattreynolds+watch@chromium.org',
             'rijubrata.bhaumik@intel.com'],
+    'notification_content_detection': ['skrakowi@chromium.org'],
     'notifications': ['peter@chromium.org'],
     'nqe': ['tbansal+watch-nqe@chromium.org'],
     'ntp_snippets': ['ntp-dev+reviews@chromium.org'],
