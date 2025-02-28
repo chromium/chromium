@@ -78,7 +78,7 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
 
   // "Zero" filled UV data for monochrome images to use since Chromium doesn't
   // have support for I400P(8|10|12) images.
-  scoped_refptr<base::RefCountedBytes> fake_uv_data_;
+  scoped_refptr<base::RefCountedMemory> fake_uv_data_;
 
   // Current decoder state. Used to ensure methods are called as expected.
   DecoderState state_ = DecoderState::kUninitialized;
