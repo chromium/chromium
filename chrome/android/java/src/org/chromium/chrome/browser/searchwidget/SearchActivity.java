@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -223,12 +225,15 @@ public class SearchActivity extends AsyncInitializationActivity
     // Incoming intent search type. See {@link SearchActivityUtils#SearchType}.
     @SearchType Integer mSearchType;
 
+    private final StartupMetricsTracker mStartupMetricsTracker;
     private LocationBarCoordinator mLocationBarCoordinator;
     private SearchActivityLocationBarLayout mSearchBox;
     private View mAnchorView;
 
     private SnackbarManager mSnackbarManager;
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
+            new ObservableSupplierImpl<>();
 
     // SearchBoxDataProvider and LocationBarEmbedderUiOverrides are passed to several child
     // components upon construction. Ensure we don't accidentally introduce disconnection by
@@ -240,6 +245,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     public SearchActivity() {
         mUmaActivityObserver = new UmaActivityObserver(this);
+        mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier);
         mLocationBarUiOverrides.setForcedPhoneStyleOmnibox();
     }
 
@@ -283,7 +289,8 @@ public class SearchActivity extends AsyncInitializationActivity
 
         var contentView = createContentView();
         setContentView(contentView);
-        mSnackbarManager = new SnackbarManager(this, getContentView(), null);
+        mStartupMetricsTracker.registerSearchActivityViewObserver(contentView);
+        mSnackbarManager = new SnackbarManager(this, contentView, null);
 
         // Build the search box.
         mSearchBox = contentView.findViewById(R.id.search_location_bar);
