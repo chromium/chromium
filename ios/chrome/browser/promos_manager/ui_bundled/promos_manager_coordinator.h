@@ -29,7 +29,7 @@
 // and any other restrictions.
 - (void)displayPromoIfAvailable;
 
-// Alerts the coordiantor that the current promo was dismissed. Should be used
+// Alerts the coordinator that the current promo was dismissed. Should be used
 // when the presentation infrastructure can't listen for the dismissal itself.
 // App store rating is one example.
 - (void)promoWasDismissed;

@@ -763,7 +763,7 @@
   [self.headerViewController setLogoVendor:self.logoVendor];
 }
 
-// Configures `self.contentSuggestionsCoordiantor`.
+// Configures `self.contentSuggestionsCoordinator`.
 - (void)configureContentSuggestionsCoordinator {
   self.contentSuggestionsCoordinator.webState = self.webState;
   self.contentSuggestionsCoordinator.delegate = self;
