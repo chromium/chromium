@@ -43,8 +43,6 @@ class DCOMPTextureMailboxResources
     return shared_image_;
   }
 
-  DCOMPTextureFactory* Factory() { return factory_.get(); }
-
  private:
   friend class base::RefCounted<DCOMPTextureMailboxResources>;
 
@@ -75,9 +73,9 @@ void OnReleaseVideoFrame(
   DVLOG(1) << __func__;
 
   dcomp_texture_resources->SetSyncToken(sync_token);
-  gpu::SharedImageInterface* sii =
-      dcomp_texture_resources->Factory()->SharedImageInterface();
-  sii->Flush();
+  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
+  // that the deferred destroy request is flushed. Thus, clients don't need to
+  // call SharedImageInterface::Flush explicitly.
 }
 
 }  // namespace
