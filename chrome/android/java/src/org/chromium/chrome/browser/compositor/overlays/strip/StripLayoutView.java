@@ -84,6 +84,9 @@ public abstract class StripLayoutView implements VirtualView {
     // Event handlers.
     private final StripLayoutViewOnClickHandler mOnClickHandler;
 
+    // Tab group share properties.
+    private boolean mShowNotificationBubble;
+
     /**
      * @param incognito The incognito state of the view.
      * @param clickHandler StripLayoutViewOnClickHandler for this view.
@@ -213,6 +216,26 @@ public abstract class StripLayoutView implements VirtualView {
         if (mVisible == visible) return;
         mVisible = visible;
         onVisibilityChanged(mVisible);
+    }
+
+    /**
+     * Sets whether the notification bubble is shown on the view. When set to true, a notification
+     * dot will appear on the view to indicate that this group has been updated by other members in
+     * the shared group.
+     *
+     * @param showBubble Whether to show the bubble.
+     */
+    public void setNotificationBubbleShown(boolean showBubble) {
+        mShowNotificationBubble = showBubble;
+    }
+
+    /**
+     * Checks whether the notification bubble is shown.
+     *
+     * @return Whether the notification bubble is shown.
+     */
+    public boolean getNotificationBubbleShown() {
+        return mShowNotificationBubble;
     }
 
     /**

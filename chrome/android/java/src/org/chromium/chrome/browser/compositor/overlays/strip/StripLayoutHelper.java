@@ -289,8 +289,8 @@ public class StripLayoutHelper
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 
-                    if (!isCollapsed && groupTitle.shouldShowBubble()) {
-                        groupTitle.setShowBubble(false);
+                    if (!isCollapsed && groupTitle.getNotificationBubbleShown()) {
+                        groupTitle.setNotificationBubbleShown(false);
                         updateGroupTextAndSharedState(rootId);
                     }
                     updateTabGroupCollapsed(groupTitle, isCollapsed, true);
@@ -2851,25 +2851,27 @@ public class StripLayoutHelper
     }
 
     private String buildGroupAccessibilityDescription(@NonNull StripLayoutGroupTitle groupTitle) {
-        final String contentDescriptionSeparator = " - ";
         Resources res = mContext.getResources();
         StringBuilder builder = new StringBuilder();
 
-        String groupDescription = groupTitle.getTitle();
-        if (TextUtils.isEmpty(groupDescription)) {
-            // TODO(crbug.com/349696415): Investigate if we can indeed remove this now that we
-            // default to showing "N tabs" for unnamed groups.
-            // "Unnamed group"
-            int titleRes = R.string.accessibility_tabstrip_group_identifier_unnamed;
-            groupDescription = res.getString(titleRes);
+        // 1. Determine and append the correct a11y string for the group depending on its shared
+        // state.
+        @StringRes int resId = R.string.accessibility_tabstrip_group;
+        if (groupTitle.isGroupShared()) {
+            resId =
+                    groupTitle.getNotificationBubbleShown()
+                            ? R.string.accessibility_tabstrip_shared_group_with_new_activity
+                            : R.string.accessibility_tabstrip_shared_group;
         }
+        String groupDescription = res.getString(resId, groupTitle.getTitle());
         builder.append(groupDescription);
 
+        // 2. Retrieve the grouped tabs and append the tab titles.
         List<Tab> relatedTabs =
                 mTabGroupModelFilter.getRelatedTabListForRootId(groupTitle.getRootId());
         int relatedTabsCount = relatedTabs.size();
         if (relatedTabsCount > 0) {
-            // " - "
+            final String contentDescriptionSeparator = " - ";
             builder.append(contentDescriptionSeparator);
 
             String firstTitle = relatedTabs.get(0).getTitle();
@@ -2879,7 +2881,7 @@ public class StripLayoutHelper
                 tabsDescription = firstTitle;
             } else {
                 // <title> and <num> other tabs
-                int descriptionRes = R.string.accessibility_tabstrip_group_identifier_multiple_tabs;
+                int descriptionRes = R.string.accessibility_tabstrip_group_multiple_tabs;
                 tabsDescription = res.getString(descriptionRes, firstTitle, relatedTabsCount - 1);
             }
             builder.append(tabsDescription);
@@ -4024,7 +4026,7 @@ public class StripLayoutHelper
             // Show bubble and iph on group title if collapsed, otherwise show iph on the updated
             // tab.
             if (groupTitle != null && groupTitle.isCollapsed() && !updateForCollapsedGroup) {
-                groupTitle.setShowBubble(hasUpdate);
+                groupTitle.setNotificationBubbleShown(hasUpdate);
                 updateGroupTextAndSharedState(rootId);
                 if (hasUpdate && showIph) {
                     mQueuedIphList.add(
@@ -4043,7 +4045,9 @@ public class StripLayoutHelper
                                             groupTitle, stripTab, IphType.TAB_NOTIFICATION_BUBBLE));
                 }
             }
-            // Update bubble on tab favicon.
+            // Update tab bubble and the related accessibility description.
+            stripTab.setNotificationBubbleShown(hasUpdate);
+            setAccessibilityDescription(stripTab, tab);
             mLayerTitleCache.updateTabBubble(tabId, hasUpdate);
         }
         mUpdateHost.requestUpdate();
@@ -4339,13 +4343,15 @@ public class StripLayoutHelper
         if (mIncognito) {
             resId =
                     isHidden
-                            ? R.string.accessibility_tabstrip_incognito_identifier
-                            : R.string.accessibility_tabstrip_incognito_identifier_selected;
-        } else {
+                            ? R.string.accessibility_tabstrip_tab_incognito
+                            : R.string.accessibility_tabstrip_tab_incognito_selected;
+        } else if (isHidden) {
             resId =
-                    isHidden
-                            ? R.string.accessibility_tabstrip_identifier
-                            : R.string.accessibility_tabstrip_identifier_selected;
+                    stripTab.getNotificationBubbleShown()
+                            ? R.string.accessibility_tabstrip_tab_notification
+                            : R.string.accessibility_tabstrip_tab;
+        } else {
+            resId = R.string.accessibility_tabstrip_tab_selected;
         }
 
         if (!stripTab.needsAccessibilityDescriptionUpdate(title, resId)) {
@@ -4354,16 +4360,8 @@ public class StripLayoutHelper
             return;
         }
 
-        // Separator used to separate the different parts of the content description.
-        // Not for sentence construction and hence not localized.
-        final String contentDescriptionSeparator = ", ";
-        final StringBuilder builder = new StringBuilder();
-        if (!TextUtils.isEmpty(title)) {
-            builder.append(title);
-            builder.append(contentDescriptionSeparator);
-        }
-        builder.append(mContext.getString(resId));
-        stripTab.setAccessibilityDescription(builder.toString(), title, resId);
+        final String description = mContext.getString(resId, title);
+        stripTab.setAccessibilityDescription(description, title, resId);
     }
 
     // ============================================================================================

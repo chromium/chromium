@@ -296,7 +296,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             gt.isIncognito(),
                             gt.isForegrounded(),
                             gt.shouldShowReorderBackground(),
-                            gt.shouldShowBubble(),
+                            gt.getNotificationBubbleShown(),
                             gt.getRootId(),
                             gt.getTint(),
                             gt.getReorderBackgroundTint(),

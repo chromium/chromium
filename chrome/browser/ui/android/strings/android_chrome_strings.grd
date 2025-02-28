@@ -2970,15 +2970,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button in the Tab Switcher Toolbar.">
         Manage open tabs
       </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
-        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab
-      </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_NOTIFICATION" desc="Content description for the tab title with a notification status.">
-        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, new or updated tab
-      </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_CLOSE_TAB" desc="Content description for the close tab button.">
-        Close <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> tab
-      </message>
       <message name="IDS_TAB_LOADING_DEFAULT_TITLE" desc="The title of a tab when we are still waiting for either the URL or the real title. This generally shows when the page is first loading.">
         Loading…
       </message>
@@ -4861,6 +4852,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <!-- Accessibility -->
 
+      <!-- Accessibility strings for toolbar -->
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU_UPDATE" desc="Content description for the menu button when it is covered by the update icon that is displayed when a newer version of Chrome is available.">
         Update available. More options
       </message>
@@ -4934,30 +4926,51 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_FIND_TOOLBAR_BTN_PREV" desc="Content description for the button to go to the previous find in page result.">
         Previous
       </message>
+
+      <!-- Accessibility strings for tablet tab strip -->
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_INCOGNITO_TOGGLE_STANDARD" desc="Content description for the Incognito tabs toggle button when viewing standard tabs.">
         Enter Incognito mode
       </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_INCOGNITO_TOGGLE_INCOGNITO" desc="Content description for the Incognito tabs toggle button when viewing Incognito tabs.">
         Leave Incognito mode
       </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_IDENTIFIER_MULTIPLE_TABS" desc="Content description for group identifiers with multiple tabs.">
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_MULTIPLE_TABS" desc="Content description for tab group with multiple tabs.">
         <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph> and <ph name="TAB_COUNT">%2$d<ex>12</ex></ph> other tabs
       </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_IDENTIFIER_UNNAMED" desc="Content description for group identifiers without a name.">
-        Unnamed group
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP" desc="Content description for tab group.">
+        <ph name="GROUP_TITLE">%1$s<ex>Wiki tabs</ex></ph> tab group
       </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_IDENTIFIER" desc="Content description for tabs that are not selected" meaning="Tab as in the UI element in the tabstrip containing a website">
-        Tab
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_SHARED_GROUP" desc="Content description for shared group.">
+        Shared <ph name="GROUP_TITLE">%1$s<ex>Wiki tabs</ex></ph> tab group
       </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_IDENTIFIER_SELECTED" desc="Content description for the tab that is selected">
-        Selected Tab
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_SHARED_GROUP_WITH_NEW_ACTIVITY" desc="Content description for shared group with new activity.">
+        Shared <ph name="GROUP_TITLE">%1$s<ex>Wiki tabs</ex></ph> tab group with new activity
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_SELECTED" desc="Content description for tabs that are selected">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Selected Tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_INCOGNITO" desc="Content description for tabs that are not selected in Incognito mode">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Incognito Tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_INCOGNITO_SELECTED" desc="Content description for the tab that is selected in Incognito mode">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Selected Incognito Tab
       </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_INCOGNITO_IDENTIFIER" desc="Content description for tabs that are not selected in Incognito mode">
         Incognito Tab
       </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_INCOGNITO_IDENTIFIER_SELECTED" desc="Content description for the tab that is selected in Incognito mode">
-        Selected Incognito Tab
+
+      <!-- Accessibility strings used in both tablet and phone tab strips -->
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Tab
       </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_NOTIFICATION" desc="Content description for the tab title with a notification status.">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, New or Updated Tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_CLOSE_TAB" desc="Content description for the close tab button.">
+        Close <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> tab
+      </message>
+
+      <!-- Accessibility strings for omnibox -->
       <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_REFINE" desc="Content description for the omnibox refine button followed with the text or URL that will be shown in the Omnibox if the user clicks the refine button, eg. User input 'The' may offer a suggestion 'The meaning of life' or 'thewirecutter.com'.">
         Refine: <ph name="REFINE_TEXT">%1$s<ex>The meaning of life</ex></ph>
       </message>
