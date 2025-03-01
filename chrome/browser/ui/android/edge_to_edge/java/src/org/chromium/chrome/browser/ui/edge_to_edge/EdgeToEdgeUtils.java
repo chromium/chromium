@@ -98,6 +98,10 @@ public class EdgeToEdgeUtils {
             return false;
         }
 
+        if (BuildInfo.getInstance().isAutomotive || BuildInfo.getInstance().isDesktop) {
+            return false;
+        }
+
         if (ChromeFeatureList.sEdgeToEdgeEverywhere.isEnabled()) {
             return true;
         }
