@@ -35,11 +35,9 @@ class CrashpadLinux {
   void LogCrashReportInfo(const crashpad::CrashReportDatabase::Report& report);
   void SortAndLogCrashReports(
       std::vector<crashpad::CrashReportDatabase::Report>& reports,
-      std::string report_type,
-      size_t max_reports);
+      std::string report_type);
   void CleanupOldCrashReports(
-      const std::vector<crashpad::CrashReportDatabase::Report>& reports,
-      size_t max_age_days);
+      std::vector<crashpad::CrashReportDatabase::Report>& sorted_reports);
 
   bool InitializeCrashpadDatabase(base::FilePath database_path);
 
