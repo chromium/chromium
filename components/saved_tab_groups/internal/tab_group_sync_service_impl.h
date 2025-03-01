@@ -261,6 +261,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // bug.
   void ForceRemoveClosedTabGroupsOnStartup();
 
+  // Called to clean up originating saved tab groups if needed.
+  void CleanUpOriginatingSavedTabGroupsIfNeeded();
+
   // Helper function to update attributions for a group and optionally a tab.
   void UpdateAttributions(
       const LocalTabGroupID& group_id,
