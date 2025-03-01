@@ -2819,6 +2819,17 @@ void RTCVideoEncoder::UpdateEncoderInfo(
        base::FeatureList::IsEnabled(
            features::kRtcVideoEncoderConvertSimulcastToSvc));
   encoder_info_.is_qp_trusted = media_enc_info.reports_average_qp;
+  if (media::VideoCodecProfileToVideoCodec(profile_) ==
+          media::VideoCodec::kHEVC &&
+      encoder_info_.is_qp_trusted) {
+    // Thresholds based on local QP and PSNR measurements.
+    constexpr int kH265QpThresholdLow = 29;
+    constexpr int kH265QpThresholdHigh = 41;
+    encoder_info_.scaling_settings = VideoEncoder::ScalingSettings(
+        kH265QpThresholdLow, kH265QpThresholdHigh);
+  } else {
+    encoder_info_.scaling_settings = VideoEncoder::ScalingSettings::kOff;
+  }
   encoder_info_.requested_resolution_alignment =
       media_enc_info.requested_resolution_alignment;
   encoder_info_.apply_alignment_to_all_simulcast_layers =
