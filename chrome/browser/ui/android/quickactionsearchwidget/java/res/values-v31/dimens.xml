@@ -6,6 +6,8 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="widget_corner_radius">@android:dimen/system_app_widget_background_radius</dimen>
+
     <!-- Dino Widget Dimensions -->
-    <dimen name="quick_action_search_widget_dino_corner_radius">@android:dimen/system_app_widget_background_radius</dimen>
+    <dimen name="quick_action_search_widget_dino_corner_radius">@dimen/widget_corner_radius</dimen>
 </resources>

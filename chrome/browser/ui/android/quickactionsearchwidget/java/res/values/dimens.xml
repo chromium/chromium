@@ -79,7 +79,10 @@ found in the LICENSE file.
     <dimen name="quick_action_search_widget_dino_min_size">110dp</dimen>
     <dimen name="quick_action_search_widget_dino_size">136dp</dimen>
     <dimen name="quick_action_search_widget_dino_text_size">13.5dp</dimen>
-    <dimen name="quick_action_search_widget_dino_corner_radius">20dp</dimen>
+    <dimen name="quick_action_search_widget_dino_corner_radius">@dimen/widget_corner_radius</dimen>
     <dimen name="quick_action_search_widget_dino_padding_start">12dp</dimen>
     <dimen name="quick_action_search_widget_dino_padding_vertical">18dp</dimen>
+
+    <!-- Widget Dimensions -->
+    <dimen name="widget_corner_radius">20dp</dimen>
 </resources>

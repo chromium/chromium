@@ -309,6 +309,7 @@ chrome_java_resources = [
   "java/res/drawable/bookmark_empty_state_illustration.xml",
   "java/res/drawable/bookmark_title_bar_shadow.xml",
   "java/res/drawable/bookmark_touch_ripple.xml",
+  "java/res/drawable/bookmark_widget_background.xml",
   "java/res/drawable/bookmark_widget_list_selector.xml",
   "java/res/drawable/btn_back.xml",
   "java/res/drawable/btn_forward.xml",
