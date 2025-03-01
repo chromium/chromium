@@ -11,11 +11,14 @@
 #define MOJO_PUBLIC_CPP_BASE_FILE_PATH_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/file_path.mojom-shared.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/containers/span.h"
+#endif
 
 namespace mojo {
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/websockets/websocket_frame.h"

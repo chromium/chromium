@@ -14,7 +14,6 @@
 
 #include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
-#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"

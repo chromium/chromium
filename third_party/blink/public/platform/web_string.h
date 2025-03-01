@@ -37,7 +37,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_common.h"
 
