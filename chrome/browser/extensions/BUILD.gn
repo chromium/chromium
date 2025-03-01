@@ -1279,6 +1279,7 @@ source_set("extensions") {
         "//chromeos/ash/components/login/login_state",
         "//chromeos/ash/components/network",
         "//chromeos/ash/components/osauth/public",
+        "//chromeos/ash/components/policy/external_storage",
         "//chromeos/ash/components/proximity_auth",
         "//chromeos/ash/components/settings",
         "//chromeos/ash/components/system",

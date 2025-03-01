@@ -155,6 +155,21 @@ bool IsActive(base::WeakPtr<content::WebContents> web_contents) {
 #endif
 }
 
+void NotifyPasswordChangeFinishedSuccessfully(
+    base::WeakPtr<content::WebContents> original_tab,
+    base::WeakPtr<content::WebContents> tab_with_password_change) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (original_tab) {
+    ManagePasswordsUIController::FromWebContents(original_tab.get())
+        ->OnPasswordChangeFinishedSuccessfully();
+  }
+  if (tab_with_password_change) {
+    ManagePasswordsUIController::FromWebContents(tab_with_password_change.get())
+        ->OnPasswordChangeFinishedSuccessfully();
+  }
+#endif
+}
+
 void DisplayChangePasswordBubbleAutomatically(
     base::WeakPtr<content::WebContents> original_tab,
     base::WeakPtr<content::WebContents> tab_with_password_change) {
@@ -387,8 +402,11 @@ void PasswordChangeDelegateImpl::UpdateState(
     case State::kWaitingForChangePasswordForm:
     case State::kChangingPassword:
       return;
-    case State::kChangePasswordFormNotFound:
     case State::kPasswordSuccessfullyChanged:
+      NotifyPasswordChangeFinishedSuccessfully(originator_, executor_);
+      // Fallthrough to trigger bubble display.
+      [[fallthrough]];
+    case State::kChangePasswordFormNotFound:
       if (executor_ && !IsActive(executor_)) {
         executor_->ClosePage();
       }

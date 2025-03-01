@@ -290,8 +290,8 @@ blink::NoVarySearchWithParseErrorPtr ConvertToBlink(
 
 // `in` is a Mojo enum type, which is type aliased to the same underlying type
 // by both the non-Blink Mojo variant and the Blink Mojo variant.
-blink::SRIMessageSignatureComponent::Parameter ConvertToBlink(
-    SRIMessageSignatureComponent::Parameter in) {
+blink::SRIMessageSignatureComponentParameter::Type ConvertToBlink(
+    SRIMessageSignatureComponentParameter::Type in) {
   return in;
 }
 
@@ -299,6 +299,13 @@ blink::SRIMessageSignatureComponent::Parameter ConvertToBlink(
 // by both the non-Blink Mojo variant and the Blink Mojo variant.
 blink::SRIMessageSignatureError ConvertToBlink(SRIMessageSignatureError in) {
   return in;
+}
+
+blink::SRIMessageSignatureComponentParameterPtr ConvertToBlink(
+    const SRIMessageSignatureComponentParameterPtr& in) {
+  CHECK(in);
+  return blink::SRIMessageSignatureComponentParameter::New(
+      ConvertToBlink(in->type), ConvertToBlink(in->value));
 }
 
 blink::SRIMessageSignatureComponentPtr ConvertToBlink(

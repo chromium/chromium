@@ -284,7 +284,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '3a5209f8a05bcd50a00cc2e955ff6336bf24adf8',
+  'v8_revision': 'fbebf443fcc17d89af2816296119ae32ae8fea0f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -312,7 +312,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling googletest
   # and whatever else without interference from each other.
-  'googletest_revision': '72189081cae8b729422860b195bf2cad625b7eb4',
+  'googletest_revision': '24a9e940d481f992ba852599c78bb2217362847b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling lighttpd
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '21d83bf0eaeafee26b240bb6f945db19326c4f3e',
+  'dawn_revision': 'fbe37c15226180b3cda9f1e8b2abbedc20949334',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '5183a7468c8e6bae58111fe3975bbc898acc2acc',
+    '938cd2cb718047df01ecb5fd0909dd6c0693e9c0',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1611,7 +1611,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'BEX2q4GmExWeVRkvbDitrV_lBUKQz8Eu4b4DaWEmOpQC',
+          'version': 'OCY6xAd-hXvEglRayPCtoxUnCjTZWsXoE4y-1pnNscIC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2932,7 +2932,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': '0By4gci0I4oAeMcEfEl8QOtnPUsbOxDDx50QA7IbmmcC',
+        'version': 'rsHBWfR-fwKq0KjjmShrc4SeC0w2zzyhxXK-n5mL8DIC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2987,7 +2987,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'H79ybK8YYKrMZog3On4rEsao9psDJwGk5G-S9oq4eY4C',
+        'version': 't_d85TgKqmq_MNlCZDTilmRc4lhRCJfMVzOII-94MIEC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4552,7 +4552,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '77407871da2e4622e713a440e158948ffdfa84d4',
+        '7320beb736e5399d9b825dbe2ad198a62f7a3b1e',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

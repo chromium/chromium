@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -1941,11 +1942,28 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
       .WillOnce(testing::Return(GURL("https://example.com/password/")));
   auto* password_change_service =
       PasswordChangeServiceFactory::GetForProfile(profile());
+
+  // Assuming, the password form was just submitted and this is a new password.
+  std::vector<PasswordForm> best_matches;
+  auto test_form_manager =
+      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  ASSERT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+
+  // Password change flow is started.
   password_change_service->OfferPasswordChangeUi(
       kUrl, u"new_username", u"new_password", web_contents());
-
   ASSERT_EQ(password_manager::ui::PASSWORD_CHANGE_STATE,
             controller()->GetState());
+
+  // Password change flow is finished successfully. The state should change to
+  // `MANAGE_STATE`.
+  controller()->OnPasswordChangeFinishedSuccessfully();
+  static_cast<PasswordChangeDelegate::Observer*>(password_change_service)
+      ->OnPasswordChangeStopped(
+          password_change_service->GetPasswordChangeDelegate(web_contents()));
+  ASSERT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

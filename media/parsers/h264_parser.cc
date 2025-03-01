@@ -67,13 +67,12 @@ void H264SPS::GetLevelConfigFromProfileLevel(VideoCodecProfile profile,
   }
 }
 
-H264SPS::H264SPS() {
-  memset(this, 0, sizeof(*this));
-}
-
+H264SPS::H264SPS() = default;
+H264SPS::H264SPS(const H264SPS&) = default;
 H264SPS& H264SPS::operator=(const H264SPS&) = default;
-
 H264SPS::H264SPS(H264SPS&&) noexcept = default;
+H264SPS& H264SPS::operator=(H264SPS&&) noexcept = default;
+bool H264SPS::operator==(const H264SPS&) const = default;
 
 // Based on T-REC-H.264 7.4.2.1.1, "Sequence parameter set data semantics",
 // available from http://www.itu.int/rec/T-REC-H.264.
@@ -209,18 +208,14 @@ bool H264SPS::CheckIndicatedLevelWithinTarget(uint8_t target_level) const {
   return level <= target_level;
 }
 
-H264PPS::H264PPS() {
-  memset(this, 0, sizeof(*this));
-}
-
+H264PPS::H264PPS() = default;
+H264PPS::H264PPS(const H264PPS&) = default;
+H264PPS& H264PPS::operator=(const H264PPS&) = default;
 H264PPS::H264PPS(H264PPS&&) noexcept = default;
+H264PPS& H264PPS::operator=(H264PPS&&) noexcept = default;
+bool H264PPS::operator==(const H264PPS&) const = default;
 
-H264SliceHeader::H264SliceHeader() {
-  memset(this, 0, sizeof(*this));
-}
-
-H264SliceHeader::H264SliceHeader(const H264SliceHeader& t) = default;
-H264SliceHeader& H264SliceHeader::operator=(const H264SliceHeader& t) = default;
+H264SliceHeader::H264SliceHeader() = default;
 
 gfx::HdrMetadataCta861_3 H264SEIContentLightLevelInfo::ToGfx() const {
   return gfx::HdrMetadataCta861_3(max_content_light_level,

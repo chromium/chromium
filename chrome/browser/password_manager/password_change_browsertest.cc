@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/password_change_info_bubble_controller.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
@@ -35,6 +36,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/elide_url.h"
@@ -458,6 +460,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
 
   auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  browser()->tab_strip_model()->ActivateTabAt(1);
   PasswordsNavigationObserver password_change_page_observer(web_contents);
   EXPECT_TRUE(password_change_page_observer.Wait());
 
@@ -482,6 +485,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
     // the metrics report.
     return delegate == nullptr;
   }));
+  ASSERT_EQ(
+      ManagePasswordsUIController::FromWebContents(web_contents)->GetState(),
+      password_manager::ui::MANAGE_STATE);
   histogram_tester.ExpectUniqueSample(
       PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
       PasswordChangeDelegate::State::kPasswordSuccessfullyChanged, 1);

@@ -60,9 +60,11 @@ TEST_F(ImageWriterPrivateApiUnittest,
   prefs->SetBoolean(disks::prefs::kExternalStorageReadOnly, true);
   auto function =
       base::MakeRefCounted<ImageWriterPrivateWriteFromFileFunction>();
-  ASSERT_TRUE(
-      base::MatchPattern(RunFunctionAndReturnError(function.get(), "[]"),
-                         image_writer::error::kDeviceWriteError));
+  ASSERT_TRUE(base::MatchPattern(
+      RunFunctionAndReturnError(
+          function.get(),
+          R"(["storage_unit_id", "filesystem_name", "filesystem_path"])"),
+      image_writer::error::kDeviceWriteError));
 }
 
 #endif  // if BUILDFLAG(IS_CHROMEOS)
