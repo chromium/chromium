@@ -253,7 +253,8 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
     TemplateURLData data;
     data.SetShortName(u"keyword");
     data.SetKeyword(u"keyword");
-    data.SetURL("http://www.yahoo.com/{searchTerms}");
+    data.SetURL("https://www.google.com/?q={searchTerms}");
+    data.suggestions_url = "https://www.google.com/complete/?q={searchTerms}";
     data.is_active = TemplateURLData::ActiveStatus::kTrue;
     data.featured_by_policy = true;
     data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
@@ -330,6 +331,24 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
     scoped_config_.Get().enabled = false;
     EXPECT_FALSE(provider_->IsProviderAllowed(input));
     scoped_config_.Get().enabled = true;
+    EXPECT_TRUE(provider_->IsProviderAllowed(input));
+  }
+
+  {
+    // The provider is only run if Google is the default search provider.
+    TemplateURLService* turl_service = client_->GetTemplateURLService();
+    TemplateURLData data;
+    data.SetShortName(u"test");
+    data.SetURL("https://www.yahoo.com/?q={searchTerms}");
+    data.suggestions_url = "https://www.yahoo.com/complete/?q={searchTerms}";
+    TemplateURL* new_default_provider =
+        turl_service->Add(std::make_unique<TemplateURL>(data));
+    turl_service->SetUserSelectedDefaultSearchProvider(new_default_provider);
+    EXPECT_FALSE(provider_->IsProviderAllowed(input));
+    TemplateURL* current_template_url =
+        const_cast<TemplateURL*>((provider_->template_url_).get());
+    turl_service->SetUserSelectedDefaultSearchProvider(current_template_url);
+    turl_service->Remove(new_default_provider);
     EXPECT_TRUE(provider_->IsProviderAllowed(input));
   }
 
@@ -450,13 +469,13 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_EQ(matches[0].contents, u"Document 1");
   EXPECT_EQ(matches[0].description, u"");
   EXPECT_EQ(matches[0].destination_url,
-            GURL("http://www.yahoo.com/Document%201"));
+            GURL("https://www.google.com/?q=Document+1"));
 
   EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
   EXPECT_EQ(matches[1].contents, u"john@example.com");
   EXPECT_EQ(matches[1].description, u"John Doe");
   EXPECT_EQ(matches[1].destination_url,
-            GURL("http://www.yahoo.com/john@example.com"));
+            GURL("https://www.google.com/?q=john%40example.com"));
   EXPECT_EQ(matches[1].image_url, GURL("https://example.com/image.png"));
 
   EXPECT_EQ(matches[2].type, AutocompleteMatchType::NAVSUGGEST);
@@ -475,10 +494,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
 
   provider_->ParseEnterpriseSearchAggregatorSearchResults(*response);
 
-  EXPECT_THAT(GetMatches(),
-              testing::ElementsAre(u"http://www.yahoo.com/Document%201",
-                                   u"http://www.yahoo.com/john@example.com",
-                                   u"www.example.com"));
+  EXPECT_THAT(GetMatches(), testing::ElementsAre(
+                                u"https://www.google.com/?q=Document+1",
+                                u"https://www.google.com/?q=john%40example.com",
+                                u"www.example.com"));
 }
 
 // Test non-dict results are skipped.
@@ -601,10 +620,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
   ASSERT_TRUE(provider_->WaitForUpdateResults());
-  EXPECT_THAT(GetMatches(),
-              testing::ElementsAre(u"http://www.yahoo.com/Document%201",
-                                   u"http://www.yahoo.com/john@example.com",
-                                   u"https://www.example.com"));
+  EXPECT_THAT(GetMatches(), testing::ElementsAre(
+                                u"https://www.google.com/?q=Document+1",
+                                u"https://www.google.com/?q=john%40example.com",
+                                u"https://www.example.com"));
 }
 
 // Test things work when using an unfeatured keyword.
@@ -650,8 +669,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
   ASSERT_TRUE(provider_->WaitForUpdateResults());
-  EXPECT_THAT(GetMatches(),
-              testing::ElementsAre(u"http://www.yahoo.com/Document%201",
-                                   u"http://www.yahoo.com/john@example.com",
-                                   u"https://www.example.com"));
+  EXPECT_THAT(GetMatches(), testing::ElementsAre(
+                                u"https://www.google.com/?q=Document+1",
+                                u"https://www.google.com/?q=john%40example.com",
+                                u"https://www.example.com"));
 }
