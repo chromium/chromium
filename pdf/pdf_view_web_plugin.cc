@@ -365,10 +365,8 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     plugin_->SetPluginCanSave(true);
   }
 
-  void UpdateInkCursorImage(SkBitmap bitmap) override {
-    gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
-    plugin_->cursor_ =
-        ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot));
+  void UpdateInkCursor(const ui::Cursor& cursor) override {
+    plugin_->cursor_ = cursor;
   }
 
   void UpdateShapeActive(int page_index,
