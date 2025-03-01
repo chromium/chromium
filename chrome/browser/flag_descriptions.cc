@@ -7825,9 +7825,13 @@ const char kPdfUseSkiaRendererDescription[] =
 const char kWebXrHandInputName[] = "WebXR Hand Input";
 const char kWebXrHandInputDescription[] =
     "Enables access to articulated hand tracking sensor input in WebXR.";
+const char kWebXrProjectionLayersName[] = "WebXR Projection Layers";
+const char kWebXrProjectionLayersDescription[] =
+    "Enables use of XRProjectionLayers.";
 const char kWebXrWebGpuBindingName[] = "WebXR/WebGPU Binding";
 const char kWebXrWebGpuBindingDescription[] =
-    "Enables rendering with WebGPU for WebXR sessions.";
+    "Enables rendering with WebGPU for WebXR sessions. WebXR Projection "
+    "Layers must be also be enabled to use this feature.";
 const char kWebXrInternalsName[] = "WebXR Internals Debugging Page";
 const char kWebXrInternalsDescription[] =
     "Enables the webxr-internals developer page which can be used to help "

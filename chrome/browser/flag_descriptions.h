@@ -2374,6 +2374,9 @@ extern const char kWebXrHandAnonymizationChoiceFallback[];
 extern const char kWebXrHandInputName[];
 extern const char kWebXrHandInputDescription[];
 
+extern const char kWebXrProjectionLayersName[];
+extern const char kWebXrProjectionLayersDescription[];
+
 extern const char kWebXrWebGpuBindingName[];
 extern const char kWebXrWebGpuBindingDescription[];
 

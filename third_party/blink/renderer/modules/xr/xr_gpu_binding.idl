@@ -16,12 +16,13 @@ dictionary XRGPUProjectionLayerInit {
 ] interface XRGPUBinding {
   [RaisesException] constructor(XRSession session, GPUDevice device);
 
+  [RuntimeEnabled=WebXRLayers]
   readonly attribute double nativeProjectionScaleFactor;
 
-  [RaisesException]
+  [RuntimeEnabled=WebXRLayers, RaisesException]
   XRProjectionLayer createProjectionLayer(XRGPUProjectionLayerInit init);
 
-  [RaisesException]
+  [RuntimeEnabled=WebXRLayers, RaisesException]
   XRGPUSubImage getViewSubImage(XRProjectionLayer layer, XRView view);
 
   GPUTextureFormat getPreferredColorFormat();

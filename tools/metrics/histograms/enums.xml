@@ -12254,6 +12254,7 @@ from previous Chrome versions.
   <int value="-780798969" label="disable-single-click-autofill"/>
   <int value="-780646596"
       label="CustomizeChromeWallpaperSearchInspirationCard:enabled"/>
+  <int value="-779220222" label="WebXRLayers:disabled"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
   <int value="-778047974" label="CrostiniUseBusterImage:disabled"/>
@@ -17863,6 +17864,7 @@ from previous Chrome versions.
   <int value="1424775876" label="ToolbarIphAndroid:enabled"/>
   <int value="1425103276" label="SharedHighlightingV2:enabled"/>
   <int value="1425425055" label="WiFiDirect:disabled"/>
+  <int value="1426588012" label="WebXRLayers:enabled"/>
   <int value="1427427985"
       label="CacheControlNoStoreEnterBackForwardCache:enabled"/>
   <int value="1427683927"
