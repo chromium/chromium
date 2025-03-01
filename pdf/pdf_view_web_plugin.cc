@@ -291,6 +291,13 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->engine_->GetPageContentsRect(page_index);
   }
 
+  gfx::SizeF GetPageSizeInPoints(int page_index) override {
+    if (page_index < 0 || page_index >= plugin_->engine_->GetNumberOfPages()) {
+      return gfx::SizeF();
+    }
+    return plugin_->engine_->GetPageSizeInPoints(page_index).value();
+  }
+
   gfx::Size GetThumbnailSize(int page_index) override {
     return plugin_->engine_->GetThumbnailSize(page_index,
                                               plugin_->device_scale_);

@@ -30,6 +30,7 @@
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/ui/thumbnail.h"
+#include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -265,6 +266,14 @@ class FakeClient : public PdfInkModuleClient {
     CHECK_GE(page_index, 0);
     CHECK_LT(static_cast<size_t>(page_index), page_layouts_.size());
     return gfx::ToEnclosedRect(page_layouts_[page_index]);
+  }
+
+  gfx::SizeF GetPageSizeInPoints(int page_index) override {
+    CHECK_GE(page_index, 0);
+    CHECK_LT(static_cast<size_t>(page_index), page_layouts_.size());
+    gfx::SizeF page_size = page_layouts_[page_index].size();
+    page_size.Scale(printing::kUnitConversionFactorPixelsToPoints);
+    return page_size;
   }
 
   float GetZoom() const override { return zoom_; }

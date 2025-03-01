@@ -2622,6 +2622,8 @@ class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
         .WillByDefault([](int page_index) -> gfx::Rect {
           return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/100, /*height=*/50);
         });
+    ON_CALL(*engine_ptr_, GetPageSizeInPoints)
+        .WillByDefault(Return(gfx::SizeF(/*width=*/75.0f, /*height=*/37.5f)));
     ON_CALL(*engine_ptr_, GetThumbnailSize)
         .WillByDefault(Return(gfx::Size(50, 25)));
     ON_CALL(*engine_ptr_, IsPageVisible)
@@ -2780,6 +2782,13 @@ TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
   cursor =
       TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
+}
+
+TEST_F(PdfViewWebPluginInkTest, GetPageSizeInPoints) {
+  SetUpWithTrivialInkStrokes();
+  EXPECT_EQ(gfx::SizeF(75.0f, 37.5f),
+            plugin_->ink_module_client_for_testing()->GetPageSizeInPoints(
+                /*page_index=*/0));
 }
 
 TEST_F(PdfViewWebPluginInkTest, GetThumbnailSize) {

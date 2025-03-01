@@ -336,7 +336,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Gets the size of the page in points for the page at `page_index`. Any
   // fractional portion of the size is retained in the result.  Returns
   // `std::nullopt` if the indicated page index is not available.
-  std::optional<gfx::SizeF> GetPageSizeInPoints(int page_index) const;
+  virtual std::optional<gfx::SizeF> GetPageSizeInPoints(int page_index) const;
 
   // Returns the uniform page size of the document in points. Returns
   // `std::nullopt` if the document has more than one page size.

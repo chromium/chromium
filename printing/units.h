@@ -31,6 +31,10 @@ constexpr int kPointsPerInch = 72;
 // http://dev.w3.org/csswg/css3-values/#the-px-unit
 constexpr int kPixelsPerInch = 96;
 
+// Factor to convert from pixels per inch to points per inch.
+inline constexpr float kUnitConversionFactorPixelsToPoints =
+    static_cast<float>(kPointsPerInch) / kPixelsPerInch;
+
 #if BUILDFLAG(IS_MAC)
 constexpr int kDefaultMacDpi = 72;
 #endif  // BUILDFLAG(IS_MAC)
