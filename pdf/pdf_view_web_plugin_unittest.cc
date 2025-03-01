@@ -45,6 +45,7 @@
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
 #include "printing/metafile_skia.h"
+#include "printing/units.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -96,6 +97,8 @@
 #include "pdf/test/test_helpers.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #endif
+
+using printing::kUnitConversionFactorPixelsToPoints;
 
 namespace chrome_pdf {
 
@@ -2964,9 +2967,14 @@ TEST_F(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
 TEST_F(PdfViewWebPluginInkTest, DrawInProgressStroke) {
   plugin_->set_in_paint_for_testing(true);
   constexpr gfx::Rect kScreenRect(kCanvasSize);
+  constexpr gfx::SizeF kPageSizeInPoints(
+      kCanvasSize.width() * kUnitConversionFactorPixelsToPoints,
+      kCanvasSize.height() * kUnitConversionFactorPixelsToPoints);
   ON_CALL(*engine_ptr_, GetPageContentsRect)
       .WillByDefault(
           [kScreenRect](int page_index) -> gfx::Rect { return kScreenRect; });
+  ON_CALL(*engine_ptr_, GetPageSizeInPoints)
+      .WillByDefault(Return(kPageSizeInPoints));
   ON_CALL(*engine_ptr_, GetThumbnailSize)
       .WillByDefault(Return(gfx::Size(50, 50)));
   ON_CALL(*engine_ptr_, IsPageVisible)

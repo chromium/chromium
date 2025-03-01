@@ -48,9 +48,7 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
                                              float scale_factor);
 
 // Generates the affine transformation for rendering a page's strokes to the
-// screen, based on the page and its position within the viewport.  Parameters
-// are the same as for `EventPositionToCanonicalPosition()`, with the addition
-// of:
+// screen, based on the page and its position within the viewport.
 // - `viewport_origin_offset`:
 //     The offset within the rendering viewport to where the page images will
 //     be drawn.  Since the offset is a location within the viewport, it must
@@ -95,11 +93,19 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
 //                       |             | |            +
 //                       +-------------+ +------------+
 //
+// - `orientation`:
+//     Same as for `EventPositionToCanonicalPosition()`.
+// - `page_content_rect`:
+//     Same as for `EventPositionToCanonicalPosition()`.
+// - `page_size_in_points`:
+//     The size of the page in points for the PDF document.  I.e., no scaling
+//     or orientation changes are applied to this size.
+//
 ink::AffineTransform GetInkRenderTransform(
     const gfx::Vector2dF& viewport_origin_offset,
     PageOrientation orientation,
     const gfx::Rect& page_content_rect,
-    float scale_factor);
+    const gfx::SizeF& page_size_in_points);
 
 // Returns the transform used when rendering a thumbnail on a canvas of
 // `canvas_size`, given the other parameters. Compared to
