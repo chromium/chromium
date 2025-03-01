@@ -6,7 +6,7 @@ async def set_simulate_preconnected_peripheral(bidi_session, context, test_page,
     await bidi_session.browsing_context.navigate(context=context['context'],
                                                  url=test_page, wait="complete")
     await bidi_session.bluetooth.simulate_adapter(context=context["context"],
-                                                  state="powered-on")
+                                                  state="powered-on", type_="create")
     await bidi_session.bluetooth.simulate_preconnected_peripheral(
         context=context["context"],
         address=address, name=name,

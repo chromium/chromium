@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] 15: "\\n<p><tt>x</tt></p><p><tt><br></tt></p><p><tt><br></tt></p>\\n" 3,0,0 delete
-  assert_equals: innerHTML expected "\\n<p><tt>x</tt></p><p><tt><br></tt></p>\\n" but got "\\n<p><tt>x</tt></p><p><br></p>\\n"
+  assert_in_array: innerHTML value "\\n<p><tt>x</tt></p><p><br></p>\\n" not in array ["\\n<p><tt>x</tt></p><p><tt><br></tt></p>\\n", "\\n<p><tt>x</tt></p><p><tt><br></tt></p>"]
 Harness: the test ran to completion.
 

@@ -1,15 +1,5 @@
 This is a testharness.js-based test.
-Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] [["forwarddelete",""]] "foo []<span>&nbsp;</span> bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo&nbsp; bar" but got "foo &nbsp;bar"
-[FAIL] [["forwarddelete",""]] "foo <span>&nbsp;</span>[] bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo&nbsp;<span> </span>bar" but got "foo <span>&nbsp;</span>bar"
-[FAIL] [["forwarddelete",""]] "<b>foo[] </b>&nbsp;bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foo</b> bar" but got "<b>foo</b>&nbsp;bar"
-[FAIL] [["forwarddelete",""]] "<b>foo[]&nbsp;</b> bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foo</b> bar" but got "<b>foo</b>&nbsp;bar"
-[FAIL] [["forwarddelete",""]] "<b>foo[]&nbsp;</b>&nbsp;bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foo</b> bar" but got "<b>foo</b>&nbsp;bar"
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["forwarddelete",""]] "foo[]<br><table><tr><td>bar</table>baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<table><tbody><tr><td>bar</td></tr></tbody></table>baz" but got "foo<br><table><tbody><tr><td>bar</td></tr></tbody></table>baz"
 [FAIL] [["forwarddelete",""]] "foo<table><tr><td>bar[]<br></table>baz" compare innerHTML

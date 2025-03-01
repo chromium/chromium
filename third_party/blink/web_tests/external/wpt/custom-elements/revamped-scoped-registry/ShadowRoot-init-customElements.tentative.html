@@ -35,8 +35,8 @@ test(() => {
 
 test(() => {
     const host = document.body.appendChild(document.createElement('div'));
-    assert_throws_js(TypeError, () => host.attachShadow({mode: 'closed', customElements: null}));
-}, 'attachShadow() should throw for a null customElements value');
+    host.attachShadow({mode: 'closed', customElements: null});
+}, 'attachShadow() should not throw for a null customElements value');
 
 </script>
 </body>
