@@ -50,7 +50,9 @@ email to chrome-atls-discuss@google.com:
    files to be checked in?
 * Build time increase
    * This refers to building `chrome` or test targets in the critical
-     development path.
+     development path. The [compile-size](speed/binary_size/compile_size_builder.md)
+     builder in CQ is a good proxy for the whether the delta is acceptable
+     (caveat that it measures just `chrome` on Linux).
    * If the increase is significant (e.g., 30+ seconds), can we consider making
    this an optional build target?
 * Binary size increase on Android ([official](https://www.chromium.org/developers/gn-build-configuration) builds)
