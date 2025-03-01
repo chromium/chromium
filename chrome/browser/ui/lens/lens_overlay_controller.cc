@@ -68,6 +68,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -1905,6 +1906,7 @@ void LensOverlayController::OnInnerTextReceived(
 void LensOverlayController::OnInnerHtmlReceived(
     PageContentRetrievedCallback callback,
     const std::optional<std::string>& result) {
+  // Exit early to prevent fetching unnecessary data if innerHTML is empty.
   if (!result.has_value() ||
       result->size() > lens::features::GetLensOverlayFileUploadLimitBytes()) {
     std::move(callback).Run(
@@ -1913,10 +1915,92 @@ void LensOverlayController::OnInnerHtmlReceived(
     return;
   }
 
-  std::move(callback).Run(
-      {lens::PageContent(std::vector<uint8_t>(result->begin(), result->end()),
-                         lens::MimeType::kHtml)},
-      lens::MimeType::kHtml, std::nullopt);
+  // If the other page content types are disabled, exit early to prevent
+  // fetching them.
+  if (!lens::features::IncludeInnerTextWithInnerHtml() &&
+      !lens::features::IncludeApcWithInnerHtml()) {
+    std::move(callback).Run(
+        {lens::PageContent(std::vector<uint8_t>(result->begin(), result->end()),
+                           lens::MimeType::kHtml)},
+        lens::MimeType::kHtml, std::nullopt);
+    return;
+  }
+
+  // Add the innerHTML to the page contents.
+  std::vector<lens::PageContent> page_contents = {
+      lens::PageContent(std::vector<uint8_t>(result->begin(), result->end()),
+                        lens::MimeType::kHtml)};
+
+  // Try and fetch the innerText which will then include the APC if that flag is
+  // enabled.
+  // TODO(crbug.com/399610478): The fetches for innerHTML, innerText, and APC,
+  // are should be parallelized to fetch all data at once. Currently fetches are
+  // sequential to prevent getting stuck in a race condition.
+  auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
+  if (lens::features::IncludeInnerTextWithInnerHtml() && render_frame_host) {
+    content_extraction::GetInnerText(
+        *render_frame_host, /*node_id=*/std::nullopt,
+        base::BindOnce(
+            &LensOverlayController::OnInnerTextForHtmlRequestReceived,
+            weak_factory_.GetWeakPtr(), page_contents, std::move(callback)));
+    return;
+  }
+
+  // If IncludeInnerTextWithInnerHtml is disabled, include the APC if needed.
+  if (lens::features::IncludeApcWithInnerHtml()) {
+    optimization_guide::GetAIPageContent(
+        tab_->GetContents(), optimization_guide::DefaultAIPageContentOptions(),
+        base::BindOnce(&LensOverlayController::
+                           OnAnnotatedPageContentForHtmlRequestReceived,
+                       weak_factory_.GetWeakPtr(), page_contents,
+                       std::move(callback)));
+    return;
+  }
+}
+
+void LensOverlayController::OnInnerTextForHtmlRequestReceived(
+    std::vector<lens::PageContent> page_contents,
+    PageContentRetrievedCallback callback,
+    std::unique_ptr<content_extraction::InnerTextResult> result) {
+  // Add the innerText to the page_contents if it exists.
+  if (result && result->inner_text.size() <=
+                    lens::features::GetLensOverlayFileUploadLimitBytes()) {
+    page_contents.emplace_back(std::vector<uint8_t>(result->inner_text.begin(),
+                                                    result->inner_text.end()),
+                               lens::MimeType::kPlainText);
+  }
+
+  // If including APC is enabled, fetch the APC, which will then run the
+  // callback.
+  if (lens::features::IncludeApcWithInnerHtml()) {
+    optimization_guide::GetAIPageContent(
+        tab_->GetContents(), optimization_guide::DefaultAIPageContentOptions(),
+        base::BindOnce(&LensOverlayController::
+                           OnAnnotatedPageContentForHtmlRequestReceived,
+                       weak_factory_.GetWeakPtr(), page_contents,
+                       std::move(callback)));
+    return;
+  }
+
+  // APC is disabled, so run the callback with the current innerHTML and
+  // innerText.
+  std::move(callback).Run(page_contents, lens::MimeType::kHtml, std::nullopt);
+}
+
+void LensOverlayController::OnAnnotatedPageContentForHtmlRequestReceived(
+    std::vector<lens::PageContent> page_contents,
+    PageContentRetrievedCallback callback,
+    std::optional<optimization_guide::proto::AnnotatedPageContent> apc) {
+  // Add the apc to the page_contents if it exists.
+  if (apc.has_value()) {
+    std::string serialized_apc;
+    apc->SerializeToString(&serialized_apc);
+    page_contents.emplace_back(
+        std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
+        lens::MimeType::kAnnotatedPageContent);
+  }
+
+  std::move(callback).Run(page_contents, lens::MimeType::kHtml, std::nullopt);
 }
 
 std::vector<lens::mojom::CenterRotatedBoxPtr>
@@ -3379,7 +3463,11 @@ void LensOverlayController::HandleStartQueryResponse(
 
   // Text can be null if there was no text within the server response.
   if (!text.is_null()) {
-    initialization_data_->text_ = text.Clone();
+    // If the initialization data is not yet ready, SendText will store the text
+    // to be attached when ready.
+    if (initialization_data_) {
+      initialization_data_->text_ = text.Clone();
+    }
 
     // Do not send text to the overlay from the full image response when
     // simplified selection is enabled.

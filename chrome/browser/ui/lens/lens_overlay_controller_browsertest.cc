@@ -7651,6 +7651,79 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
       /*expected_count=*/2);
 }
 
+class LensOverlayControllerInnerHtmlWithInnerTextAndApc
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlayContextualSearchbox,
+        {
+            {"send-page-url-for-contextualization", "true"},
+            {"use-inner-text-as-context", "false"},
+            {"use-inner-html-as-context", "true"},
+            {"use-updated-content-fields", "true"},
+            {"use-inner-text-with-inner-html", "true"},
+            {"use-apc-with-inner-html", "true"},
+        });
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
+                       AllBytesInRequest) {
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify inner HTML was included as bytes in the the query.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+
+  // Expect the old content data fields to be empty.
+  EXPECT_TRUE(fake_query_controller->last_sent_page_content_payload()
+                  .content_data()
+                  .empty());
+  EXPECT_TRUE(fake_query_controller->last_sent_page_content_payload()
+                  .content_type()
+                  .empty());
+
+  // There should be 3 fields of content data.
+  const auto last_sent_content =
+      fake_query_controller->last_sent_page_content_payload().content();
+  ASSERT_EQ(last_sent_content.content_data().size(), 3);
+
+  // Verify innerHtml is what we expect it to be.
+  EXPECT_EQ(lens::ContentData::CONTENT_TYPE_INNER_HTML,
+            last_sent_content.content_data(0).content_type());
+  const auto last_sent_html_bytes = last_sent_content.content_data(0).data();
+  ASSERT_EQ(
+      "<body>\n  <h1>The below are non-ascii characters.</h1>\n  <p>こんにちは "
+      "thêrē 🐶 ©</p>\n\n</body>",
+      std::string(last_sent_html_bytes.begin(), last_sent_html_bytes.end()));
+
+  // Verify the other content types were also sent.
+  EXPECT_EQ(lens::ContentData::CONTENT_TYPE_INNER_TEXT,
+            last_sent_content.content_data(1).content_type());
+  EXPECT_GT(last_sent_content.content_data(1).data().size(), 0u);
+  EXPECT_EQ(lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT,
+            last_sent_content.content_data(2).content_type());
+  EXPECT_GT(last_sent_content.content_data(2).data().size(), 0u);
+
+  // Verify the searchbox was shown.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_should_show_contextual_searchbox_);
+}
+
 class LensOverlayControllerContextualFeaturesDisabledTest
     : public LensOverlayControllerBrowserTest {
  protected:

@@ -243,6 +243,9 @@ constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
     &kLensOverlayLatencyOptimizations,
     "enable-early-start-query-flow-optimization", true};
 
+constexpr base::FeatureParam<bool> kUseUpdatedContentFields{
+    &kLensOverlayContextualSearchbox, "use-updated-content-fields", false};
+
 constexpr base::FeatureParam<bool> kUsePdfsAsContext{
     &kLensOverlayContextualSearchbox, "use-pdfs-as-context", true};
 
@@ -251,6 +254,12 @@ constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
 
 constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-html-as-context", true};
+
+constexpr base::FeatureParam<bool> kIncludeInnerTextWithInnerHtml{
+    &kLensOverlayContextualSearchbox, "use-inner-text-with-inner-html", false};
+
+constexpr base::FeatureParam<bool> kIncludeApcWithInnerHtml{
+    &kLensOverlayContextualSearchbox, "use-apc-with-inner-html", false};
 
 constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
     &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
@@ -594,6 +603,10 @@ int GetScannedPdfCharacterPerPageHeuristic() {
   return kScannedPdfCharacterPerPageHeuristic.Get();
 }
 
+bool UseUpdatedContextFields() {
+  return kUseUpdatedContentFields.Get();
+}
+
 bool UsePdfsAsContext() {
   return kUsePdfsAsContext.Get();
 }
@@ -608,6 +621,14 @@ int GetLensOverlayPageContentRequestTimeoutMs() {
 
 bool UseInnerHtmlAsContext() {
   return kUseInnerHtmlAsContext.Get();
+}
+
+bool IncludeInnerTextWithInnerHtml() {
+  return kIncludeInnerTextWithInnerHtml.Get();
+}
+
+bool IncludeApcWithInnerHtml() {
+  return kIncludeApcWithInnerHtml.Get();
 }
 
 bool SendPageUrlForContextualization() {
