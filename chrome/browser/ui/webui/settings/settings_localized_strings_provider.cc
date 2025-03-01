@@ -747,6 +747,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       {"glicActivityButton", IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON},
       {"glicActivityButtonSublabel",
        IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_SUBLABEL},
+      {"glicActivityButtonUrl", IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_URL},
       {"glicTabAccessWhenOn1", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_1},
       {"glicTabAccessWhenOn2", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_2},
       {"glicTabAccessConsider1", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_CONSIDER_1},

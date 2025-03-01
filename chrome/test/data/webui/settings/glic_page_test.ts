@@ -6,10 +6,11 @@ import 'chrome://settings/settings.js';
 
 import type {CrCollapseElement, CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
@@ -21,6 +22,7 @@ suite('GlicPage', function() {
   let page: SettingsGlicPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let glicBrowserProxy: TestGlicBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
 
   function $<T extends HTMLElement = HTMLElement>(id: string): T|null {
     return page.shadowRoot!.querySelector<T>(`#${id}`);
@@ -54,6 +56,10 @@ suite('GlicPage', function() {
     glicBrowserProxy = new TestGlicBrowserProxy();
     glicBrowserProxy.setGlicShortcutResponse('⌃A');
     GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
+
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
     page = document.createElement('settings-glic-page');
     page.prefs = settingsPrefs.prefs;
     Router.getInstance().navigateTo(routes.GEMINI);
@@ -370,5 +376,16 @@ suite('GlicPage', function() {
     glicRow!.click();
     assertEquals(
         routes.GEMINI.path, Router.getInstance().getCurrentRoute().path);
+  });
+
+  test('ManageActivityRow', async () => {
+    page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
+
+    const activityButton = $<HTMLElement>('activityButton');
+    assertTrue(!!activityButton);
+
+    activityButton.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(page.i18n('glicActivityButtonUrl'), url);
   });
 });

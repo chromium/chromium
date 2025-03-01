@@ -194,6 +194,9 @@ found in the LICENSE file.
       <message name="IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_SUBLABEL" translateable="false" desc="Sublabel describing the 'activity' button.">
         View and manage your activity
       </message>
+      <message name="IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_URL" translateable="false" desc="URL to navigate when clicking the 'manage your activity' button.">
+        https://example.com
+      </message>
       <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_1" translateable="false" desc="First point in the 'when on' column of the 'tab access' collapsible section.">
         [Placeholder String 1]
       </message>
