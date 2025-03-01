@@ -340,10 +340,6 @@ class SettingsGlicPageTest : public SettingsBrowserTest {
 IN_PROC_BROWSER_TEST_F(SettingsGlicPageTest, GlicSettingsPage) {
   RunTest("settings/glic_page_test.js", "mocha.run()");
 }
-
-IN_PROC_BROWSER_TEST_F(SettingsGlicPageTest, GlicDataSettingsPage) {
-  RunTest("settings/glic_data_page_test.js", "mocha.run()");
-}
 #endif
 
 class PeoplePageSyncPageTest : public SettingsBrowserTest {

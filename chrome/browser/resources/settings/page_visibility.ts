@@ -16,7 +16,6 @@ export interface PageVisibility {
   defaultBrowser?: boolean;
   downloads?: boolean;
   extensions?: boolean;
-  glic?: boolean;
   languages?: boolean;
   onStartup?: boolean;
   people?: boolean;
@@ -58,7 +57,6 @@ function createPageVisibility(): PageVisibility|undefined {
     defaultBrowser: false,
     downloads: false,
     extensions: false,
-    glic: false,
     languages: false,
     onStartup: false,
     people: false,
@@ -93,7 +91,6 @@ function createPageVisibility(): PageVisibility|undefined {
     downloads: true,
     a11y: true,
     extensions: false,
-    glic: false,
     languages: true,
     performance: false,
   };

@@ -164,7 +164,6 @@ build_webui_tests("build") {
 
   if (enable_glic) {
     files += [
-      "glic_data_page_test.ts",
       "glic_page_test.ts",
       "test_glic_browser_proxy.ts",
     ]

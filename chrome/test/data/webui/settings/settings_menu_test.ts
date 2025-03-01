@@ -109,35 +109,6 @@ suite('SettingsMenu', function() {
     assertEquals('/ai', selector.selected.toString());
   });
 
-  // <if expr="enable_glic">
-  test('noGlic', async function() {
-    loadTimeData.overrideValues({showGlicSettings: false});
-    resetRouterForTesting();
-    createSettingsMenu();
-    await flushTasks();
-
-    const entry = settingsMenu.shadowRoot!.querySelector('a[href=\'/glic\']');
-    assertTrue(!!entry);
-    assertFalse(isVisible(entry));
-  });
-
-  test('navigateToGlic', async function() {
-    loadTimeData.overrideValues({showGlicSettings: true});
-    resetRouterForTesting();
-    createSettingsMenu();
-    Router.getInstance().navigateTo(routes.GLIC);
-    await flushTasks();
-
-    const entry = settingsMenu.shadowRoot!.querySelector('a[href=\'/glic\']');
-    assertTrue(!!entry);
-    assertTrue(isVisible(entry));
-
-    const selector = settingsMenu.$.menu;
-    assertTrue(!!selector.selected);
-    assertEquals('/glic', selector.selected.toString());
-  });
-  // </if>
-
   test('pageVisibility', function() {
     function assertPagesHidden(expectedHidden: boolean) {
       const ids = [

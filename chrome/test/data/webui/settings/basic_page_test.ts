@@ -583,4 +583,38 @@ suite('ExperimentalAdvanced', () => {
     assertEquals(
         routes.AI.section, sectionElement.getAttribute('nest-under-section'));
   });
+
+  // <if expr="enable_glic">
+  test('AIPageGlicSectionVisible', function() {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      enableAiSettingsPageRefresh: true,
+      showGlicSettings: true,
+    });
+    resetRouterForTesting();
+
+    createBasicPage();
+    const sectionElement =
+        page.shadowRoot!.querySelector<SettingsSectionElement>(
+            'settings-section[section=glicSection]');
+    assertTrue(!!sectionElement);
+    assertEquals(
+        routes.AI.section, sectionElement.getAttribute('nest-under-section'));
+  });
+
+  test('AIPageGlicSectionNotVisible', function() {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      enableAiSettingsPageRefresh: true,
+      showGlicSettings: false,
+    });
+    resetRouterForTesting();
+
+    createBasicPage();
+    const sectionElement =
+        page.shadowRoot!.querySelector<SettingsSectionElement>(
+            'settings-section[section=glicSection]');
+    assertFalse(!!sectionElement);
+  });
+  // </if>
 });

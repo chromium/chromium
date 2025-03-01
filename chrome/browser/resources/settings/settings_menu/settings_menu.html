@@ -99,14 +99,6 @@
           $i18n{searchPageTitle}
           <cr-ripple></cr-ripple>
         </a>
-<if expr="enable_glic">
-        <a role="menuitem" href="/glic" class="cr-nav-menu-item"
-            hidden="[[!showGlicMenuItem_(glicEnabled_, pageVisibility.glic)]]">
-          <cr-icon icon="cr:chrome-product"></cr-icon>
-          $i18n{glicPageTitle}
-          <cr-ripple></cr-ripple>
-        </a>
-</if>
 <if expr="not is_chromeos">
         <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
           href="/defaultBrowser"

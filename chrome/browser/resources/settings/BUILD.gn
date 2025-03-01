@@ -206,10 +206,7 @@ build_webui("build") {
   ]
 
   if (enable_glic) {
-    web_component_files += [
-      "glic_page/glic_data_page.ts",
-      "glic_page/glic_page.ts",
-    ]
+    web_component_files += [ "glic_page/glic_page.ts" ]
   }
 
   if (!is_chromeos_ash) {

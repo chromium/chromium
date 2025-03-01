@@ -133,8 +133,17 @@ found in the LICENSE file.
       </message>
 
       <!-- Experimental Glic settings -->
-      <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Name of the Glic settings page.">
+      <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Title of the Glic settings subpage. Also shown as page title in tabstrip.">
         Glic
+      </message>
+      <message name="IDS_SETTINGS_GLIC_SECTION_TITLE" translateable="false" desc="Text of the Glic section header on the AI settings page.">
+        Glic
+      </message>
+      <message name="IDS_SETTINGS_GLIC_ROW_LABEL" translateable="false" desc="Label of the Glic row button on the AI settings page leading to the Glic subpage.">
+        Glic
+      </message>
+      <message name="IDS_SETTINGS_GLIC_ROW_SUBLABEL" translateable="false" desc="Sublabel of the Glic row button leading to the Glic subpage.">
+        Manage your settings
       </message>
       <message name="IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE" translateable="false" desc="Message shown when Glic is disabled by enterprise policy.">
         This feature is disabled by your organization
