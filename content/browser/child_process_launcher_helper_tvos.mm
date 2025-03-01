@@ -7,9 +7,6 @@
 #include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
 
-static_assert(BUILDFLAG(IS_TVOS),
-              "child_process_launcher_helper_tvos.mm requires is_tvos");
-
 // TODO(crbug.com/391914246): Implement the ChildProcessLauncherHelper when
 // tvOS actually requires the functionality.
 namespace content {

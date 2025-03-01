@@ -310,12 +310,11 @@ NO_STACK_PROTECTOR int RunContentProcess(
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kEnableViewport);
     command_line->AppendSwitch(embedder_support::kUseMobileUserAgent);
-#endif
 
-#if BUILDFLAG(IS_TVOS)
+#if BUILDFLAG(IS_IOS_TVOS)
     // Set tvOS to single-process mode by default.
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kSingleProcess);
+#endif
 #endif
 
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && !defined(COMPONENT_BUILD)

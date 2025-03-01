@@ -49,6 +49,10 @@ if (is_android) {
   }
 }
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
+
 source_set("browser") {
   # Only the public target should depend on this. All other targets (even
   # internal content ones) should depend on the public one.
@@ -2812,7 +2816,7 @@ source_set("browser") {
       "IOSurface.framework",
       "UniformTypeIdentifiers.framework",
     ]
-  } else if (is_ios || is_tvos) {
+  } else if (is_ios) {
     sources += [
       "date_time_chooser/ios/date_time_chooser_coordinator.h",
       "date_time_chooser/ios/date_time_chooser_coordinator.mm",
@@ -2847,11 +2851,11 @@ source_set("browser") {
       "web_contents/web_contents_view_ios.mm",
     ]
 
-    if (is_tvos) {
-      sources += [ "child_process_launcher_helper_tvos.mm" ]
-    } else {
+    if (target_platform != "tvos") {
       sources += [ "child_process_launcher_helper_ios.mm" ]
       frameworks += [ "BrowserEngineKit.framework" ]
+    } else {
+      sources += [ "child_process_launcher_helper_tvos.mm" ]
     }
 
     frameworks += [ "IOSurface.framework" ]
