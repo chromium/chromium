@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.TINT;
+
 import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.view.View;
@@ -355,14 +363,14 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
 
     @Override
     public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
-        mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, color);
+        mModel.set(BACKGROUND_COLOR, color);
         publishSnapshotToken();
     }
 
     @Override
     public void onTintChanged(
             ColorStateList tint, ColorStateList activityFocusTint, int brandedColorScheme) {
-        mModel.set(TabGroupUiProperties.TINT, mThemeColorProvider.getTint());
+        mModel.set(TINT, mThemeColorProvider.getTint());
     }
 
     private void setupToolbarButtons() {
@@ -383,9 +391,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                     mResetHandler.resetGridWithListOfTabs(getTabsToShowForId(currentTab.getId()));
                     RecordUserAction.record("TabGroup.ExpandedFromStrip.TabGridDialog");
                 };
-        mModel.set(
-                TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER,
-                showGroupDialogOnClickListener);
+        mModel.set(SHOW_GROUP_DIALOG_ON_CLICK_LISTENER, showGroupDialogOnClickListener);
 
         View.OnClickListener newTabButtonOnClickListener =
                 view -> {
@@ -404,8 +410,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                     RecordUserAction.record(
                             "MobileNewTabOpened." + TabGroupUiCoordinator.COMPONENT_NAME);
                 };
-        mModel.set(
-                TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER, newTabButtonOnClickListener);
+        mModel.set(NEW_TAB_BUTTON_ON_CLICK_LISTENER, newTabButtonOnClickListener);
     }
 
     private void hideTabStrip() {
@@ -441,8 +446,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         // This is to make sure that we can scroll to a state where the selected tab is in the
         // middle of the strip.
         Handler handler = new Handler();
-        handler.post(
-                () -> mModel.set(TabGroupUiProperties.INITIAL_SCROLL_INDEX, indexSupplier.get()));
+        handler.post(() -> mModel.set(INITIAL_SCROLL_INDEX, indexSupplier.get()));
     }
 
     private boolean isOmniboxFocused() {
@@ -494,11 +498,11 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         if (groupSharedState == null
                 || groupSharedState == GroupSharedState.NOT_SHARED
                 || groupSharedState == GroupSharedState.COLLABORATION_ONLY) {
-            mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE, true);
-            mModel.set(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE, false);
+            mModel.set(SHOW_GROUP_DIALOG_BUTTON_VISIBLE, true);
+            mModel.set(IMAGE_TILES_CONTAINER_VISIBLE, false);
         } else {
-            mModel.set(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE, false);
-            mModel.set(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE, true);
+            mModel.set(SHOW_GROUP_DIALOG_BUTTON_VISIBLE, false);
+            mModel.set(IMAGE_TILES_CONTAINER_VISIBLE, true);
         }
     }
 

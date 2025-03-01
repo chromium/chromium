@@ -12,10 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
@@ -58,11 +55,11 @@ public class TabGroupUiToolbarView extends FrameLayout {
         }
     }
 
-    void setShowGroupDialogButtonOnClickListener(OnClickListener listener) {
+    /* package */ void setShowGroupDialogButtonOnClickListener(OnClickListener listener) {
         mShowGroupDialogButton.setOnClickListener(listener);
     }
 
-    void setImageTilesContainerOnClickListener(OnClickListener listener) {
+    /* package */ void setImageTilesContainerOnClickListener(OnClickListener listener) {
         if (mImageTilesContainer == null) return;
 
         // TODO(crbug.com/362280397): Possibly attach to a child view instead for ripple and instead
@@ -70,56 +67,42 @@ public class TabGroupUiToolbarView extends FrameLayout {
         mImageTilesContainer.setOnClickListener(listener);
     }
 
-    void setNewTabButtonOnClickListener(OnClickListener listener) {
+    /* package */ void setNewTabButtonOnClickListener(OnClickListener listener) {
         mNewTabButton.setOnClickListener(listener);
     }
 
-    ViewGroup getViewContainer() {
+    /* package */ ViewGroup getViewContainer() {
         return mContainerView;
     }
 
-    void setMainContentVisibility(boolean isVisible) {
+    /* package */ void setMainContentVisibility(boolean isVisible) {
         if (mContainerView == null) {
             throw new IllegalStateException("Current Toolbar doesn't have a container view");
         }
 
-        for (int i = 0; i < ((ViewGroup) mContainerView).getChildCount(); i++) {
-            View child = ((ViewGroup) mContainerView).getChildAt(i);
+        for (int i = 0; i < mContainerView.getChildCount(); i++) {
+            View child = mContainerView.getChildAt(i);
             child.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
-    void setIsIncognito(boolean isIncognito) {
-        @ColorRes
-        int tintListRes =
-                isIncognito
-                        ? R.color.default_icon_color_light_tint_list
-                        : R.color.default_icon_color_tint_list;
-        ColorStateList tintList = ContextCompat.getColorStateList(getContext(), tintListRes);
-        setTint(tintList);
-    }
-
-    void setContentBackgroundColor(int color) {
+    /* package */ void setContentBackgroundColor(int color) {
         mMainContent.setBackgroundColor(color);
         if (mFadingEdgeStart == null || mFadingEdgeEnd == null) return;
         mFadingEdgeStart.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         mFadingEdgeEnd.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
-    void setTint(ColorStateList tint) {
+    /* package */ void setTint(ColorStateList tint) {
         ImageViewCompat.setImageTintList(mShowGroupDialogButton, tint);
         ImageViewCompat.setImageTintList(mNewTabButton, tint);
     }
 
-    void setBackgroundColorTint(int color) {
-        DrawableCompat.setTint(getBackground(), color);
-    }
-
-    void setShowGroupDialogButtonVisible(boolean visible) {
+    /* package */ void setShowGroupDialogButtonVisible(boolean visible) {
         mShowGroupDialogButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    void setImageTilesContainerVisible(boolean visible) {
+    /* package */ void setImageTilesContainerVisible(boolean visible) {
         if (mImageTilesContainer == null) return;
 
         mImageTilesContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
