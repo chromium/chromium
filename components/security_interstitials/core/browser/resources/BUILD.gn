@@ -11,10 +11,10 @@ import("//ui/webui/webui_features.gni")
 # since they are not proper WebUI pages and therefore are not backed up by any
 # WebUIDataSource.  Use `optimize_webui` only to decide whether to also minify.
 group("bundle_js") {
-  if (!optimize_webui) {
-    public_deps = [ ":bundle_js_internal" ]
-  } else {
+  if (optimize_webui) {
     public_deps = [ ":minify_js" ]
+  } else {
+    public_deps = [ ":bundle_js_internal" ]
   }
 }
 
@@ -31,17 +31,19 @@ group("bundle_js_internal") {
   ]
 }
 
-# Bundle and minify.
-minify_js("minify_js") {
-  visibility = [ ":bundle_js" ]
-  in_folder = target_gen_dir
-  out_folder = "${target_gen_dir}/minified"
-  in_files = [
-    "interstitial_large/interstitial_large.rollup.js",
-    "interstitial_webview_quiet/interstitial_webview_quiet.rollup.js",
-    "interstitial_webview_supervised_user/interstitial_webview_supervised_user.rollup.js",
-  ]
-  deps = [ ":bundle_js_internal" ]
+if (optimize_webui) {
+  # Bundle and minify.
+  minify_js("minify_js") {
+    visibility = [ ":bundle_js" ]
+    in_folder = target_gen_dir
+    out_folder = "${target_gen_dir}/minified"
+    in_files = [
+      "interstitial_large/interstitial_large.rollup.js",
+      "interstitial_webview_quiet/interstitial_webview_quiet.rollup.js",
+      "interstitial_webview_supervised_user/interstitial_webview_supervised_user.rollup.js",
+    ]
+    deps = [ ":bundle_js_internal" ]
+  }
 }
 
 shared_interstitials_path =

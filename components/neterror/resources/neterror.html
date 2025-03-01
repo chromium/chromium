@@ -10,7 +10,12 @@
   <link rel="stylesheet" href="../../../components/security_interstitials/core/common/resources/interstitial_core.css">
   <link rel="stylesheet" href="../../../components/security_interstitials/core/common/resources/interstitial_common.css">
   <link rel="stylesheet" href="neterror.css">
+<if expr="not optimize_webui">
   <script src="%ROOT_GEN_DIR%/components/neterror/resources/bundled/neterror.rollup.js"></script>
+</if>
+<if expr="optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/neterror/resources/minified/neterror.rollup.js"></script>
+</if>
 </head>
 <body class="neterror" style="font-family: $i18n{fontfamily}; font-size: $i18n{fontsize}">
   <div id="content"></div>

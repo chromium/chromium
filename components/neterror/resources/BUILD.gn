@@ -5,6 +5,8 @@
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+import("//ui/webui/webui_features.gni")
 
 js_files = [
   "constants.js",
@@ -26,6 +28,7 @@ js_files = [
 ]
 
 preprocess_if_expr("preprocess") {
+  visibility = [ ":build_ts" ]
   out_folder = "${target_gen_dir}/preprocessed"
   in_files = js_files
   if (is_ios) {
@@ -34,6 +37,7 @@ preprocess_if_expr("preprocess") {
 }
 
 webui_ts_library("build_ts") {
+  visibility = [ ":bundle_js_internal" ]
   root_dir = "${target_gen_dir}/preprocessed"
   out_dir = "$target_gen_dir/tsc"
   in_files = js_files
@@ -44,11 +48,25 @@ webui_ts_library("build_ts") {
   extra_deps = [ ":preprocess" ]
 }
 
-# Generate a JS bundle regradless of the `optimize_webui` GN arg, as this UI
-# can't load any JS modules at runtime, since it is not a proper WebUI page
-# and therefore is not backed up by any WebUIDataSource.
+# Generate JS bundles for interstitials UIs. Always bundle regardless of the
+# `optimize_webui`  GN arg, as these UIs can't load any JS modules at runtime,
+# since they are not proper WebUI pages and therefore are not backed up by any
+# WebUIDataSource.  Use `optimize_webui` only to decide whether to also minify.
+group("bundle_js") {
+  if (optimize_webui) {
+    public_deps = [ ":minify_js" ]
+  } else {
+    public_deps = [ ":bundle_js_internal" ]
+  }
+}
 
-bundle_js("bundle_js") {
+# Bundle without minifying.
+bundle_js("bundle_js_internal") {
+  visibility = [
+    ":bundle_js",
+    ":minify_js",
+  ]
+
   # Using a dummy value for`host` which is ignored anyway since the code being
   # bundled below is not served from any host.
   host = "_ignored_"
@@ -66,4 +84,15 @@ bundle_js("bundle_js") {
     "../../security_interstitials/core/common/resources:preprocess",
     "//third_party/lit/v3_0:build_min_js",
   ]
+}
+
+if (optimize_webui) {
+  # Bundle and minify.
+  minify_js("minify_js") {
+    visibility = [ ":bundle_js" ]
+    in_folder = "${target_gen_dir}/bundled"
+    out_folder = "${target_gen_dir}/minified"
+    in_files = [ "neterror.rollup.js" ]
+    deps = [ ":bundle_js_internal" ]
+  }
 }
