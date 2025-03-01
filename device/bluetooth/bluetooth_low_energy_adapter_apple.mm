@@ -262,9 +262,11 @@ void BluetoothLowEnergyAdapterApple::LazyInitialize() {
   }
   low_energy_discovery_manager_->SetCentralManager(low_energy_central_manager_);
 
-  low_energy_peripheral_manager_ = [[CBPeripheralManager alloc]
-      initWithDelegate:low_energy_peripheral_manager_delegate_
-                 queue:dispatch_get_main_queue()];
+  // Avoid using initWithDelegate:queue: directly because it is not available
+  // on tvOS, watchOS and visionOS.
+  low_energy_peripheral_manager_ = [[CBPeripheralManager alloc] init];
+  low_energy_peripheral_manager_.delegate =
+      low_energy_peripheral_manager_delegate_;
 
   lazy_initialized_ = true;
 
