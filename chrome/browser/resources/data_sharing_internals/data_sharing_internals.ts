@@ -73,6 +73,14 @@ function logSourceToString(logSource: LogSource): string {
   switch (logSource) {
     case LogSource.Unknown:
       return 'Unknown';
+    case LogSource.CollaborationService:
+      return 'CollaborationService';
+    case LogSource.DataSharingService:
+      return 'DataSharingService';
+    case LogSource.TabGroupSyncService:
+      return 'TabGroupSyncService';
+    case LogSource.UI:
+      return 'UI';
     default:
       return 'N/A';
   }

@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
 
+namespace data_sharing {
+class Logger;
+}  // namespace data_sharing
+
 namespace collaboration::metrics {
 
 // Types of join events that occur in the collaboration service.
@@ -44,7 +48,7 @@ enum class CollaborationServiceJoinEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 
-// Types of join events that occur in the collaboration service.
+// Types of share or manage events that occur in the collaboration service.
 // These values are persisted to logs. Entries should not be renumbered and
 // number values should never be reused.
 // LINT.IfChange(CollaborationServiceShareOrManageEvent)
@@ -76,8 +80,10 @@ enum class CollaborationServiceShareOrManageEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
 
-void RecordJoinEvent(CollaborationServiceJoinEvent event);
-void RecordShareOrManageEvent(CollaborationServiceShareOrManageEvent event);
+void RecordJoinEvent(data_sharing::Logger* logger,
+                     CollaborationServiceJoinEvent event);
+void RecordShareOrManageEvent(data_sharing::Logger* logger,
+                              CollaborationServiceShareOrManageEvent event);
 }  // namespace collaboration::metrics
 
 #endif  // COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_

@@ -86,7 +86,8 @@ void CollaborationServiceImpl::StartJoinFlow(
       &CollaborationServiceImpl::StartJoinFlowInternal,
       weak_ptr_factory_.GetWeakPtr(), std::move(delegate), token));
 
-  RecordJoinEvent(CollaborationServiceJoinEvent::kStarted);
+  RecordJoinEvent(data_sharing_service_->GetLogger(),
+                  CollaborationServiceJoinEvent::kStarted);
 }
 
 void CollaborationServiceImpl::StartShareOrManageFlow(
@@ -102,7 +103,8 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
       &CollaborationServiceImpl::StartShareOrManageFlowInternal,
       weak_ptr_factory_.GetWeakPtr(), std::move(delegate), group_id));
 
-  RecordShareOrManageEvent(CollaborationServiceShareOrManageEvent::kStarted);
+  RecordShareOrManageEvent(data_sharing_service_->GetLogger(),
+                           CollaborationServiceShareOrManageEvent::kStarted);
 }
 
 ServiceStatus CollaborationServiceImpl::GetServiceStatus() {

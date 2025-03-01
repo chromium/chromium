@@ -10,4 +10,8 @@ module logger_common.mojom;
 // chrome/browser/resources/data_sharing_internals/data_sharing_internals.ts.
 enum LogSource {
   Unknown,
+  CollaborationService,
+  DataSharingService,
+  TabGroupSyncService,
+  UI,
 };
