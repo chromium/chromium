@@ -9,6 +9,7 @@
 #define PDF_PDF_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "pdf/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF), "ENABLE_PDF not set to true");
@@ -32,6 +33,7 @@ BASE_DECLARE_FEATURE(kPdfXfaSupport);
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 BASE_DECLARE_FEATURE(kPdfInk2);
+extern const base::FeatureParam<bool> kPdfInk2TextHighlighting;
 #endif
 
 // Sets whether the OOPIF PDF policy enables the OOPIF PDF viewer. Otherwise,
