@@ -184,10 +184,17 @@ void SoftwareOutputDeviceWinSwapChain::ResizeDelegated() {
 }
 
 SkCanvas* SoftwareOutputDeviceWinSwapChain::BeginPaintDelegated() {
+  // It is expected that the `d3d11_device_context_` exists by the time this
+  // function is called. If it does not, it is likely that the resize failed due
+  // to a possible issue with the child window.
+  if (!d3d11_device_context_) {
+    return nullptr;
+  }
+
   CHECK(!d3d11_staging_texture_);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_staging_texture =
       output_backing_->GetOrCreateStagingTexture();
-  if (!d3d11_device_context_ || !d3d11_staging_texture) {
+  if (!d3d11_staging_texture) {
     return nullptr;
   }
 
