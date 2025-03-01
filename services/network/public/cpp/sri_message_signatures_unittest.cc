@@ -430,6 +430,12 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
       {"signature=(\"unencoded-digest\";sf \"@status\";req)",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidDerivedComponentParameter},
+      {"signature=(\"unencoded-digest\";sf \"@query-param\";req)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidDerivedComponentParameter},
+      {"signature=(\"unencoded-digest\";sf \"@query-param\";name=\"a\")",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidDerivedComponentParameter},
       {"signature=(\"unencoded-digest\";sf token;req)",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidComponentType},
@@ -834,6 +840,7 @@ TEST_F(SRIMessageSignatureBaseTest, QueryComponent) {
       {"https://url.test/", "?"},
       {"https://url.test/?a", "?a"},
       {"https://url.test/?a=b", "?a=b"},
+      {"https://url.test/?a=b&c=d", "?a=b&c=d"},
       {"https://url.test/?a=%2F", "?a=%2F"},
       {"https://url.test/?a=ü", "?a=%C3%BC"},
   };
@@ -860,6 +867,79 @@ TEST_F(SRIMessageSignatureBaseTest, QueryComponent) {
         ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
+  }
+}
+
+TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
+  struct {
+    std::string_view url;
+    std::string_view query;
+  } cases[] = {
+      {"https://url.test/?a", ""},
+      {"https://url.test/?a=b", "b"},
+      {"https://url.test/?a=b&c=d", "b"},
+      {"https://url.test/?a=/", "%2F"},
+      {"https://url.test/?a=%2F", "%2F"},
+      {"https://url.test/?a=ü", "%C3%BC"},
+      {"https://url.test/?a=percent encoded spaces",
+       "percent%20encoded%20spaces"},
+      {"https://url.test/?a=percent%20encoded%20spaces",
+       "percent%20encoded%20spaces"},
+      {"https://url.test/?a=percent+encoded+spaces",
+       "percent%20encoded%20spaces"},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.url);
+
+    // `name`, then `req`
+    {
+      std::string input_header =
+          base::StrCat({"signature=(\"unencoded-digest\";sf "
+                        "\"@query-param\";name=\"a\";req);",
+                        "keyid=\"", kPublicKey, "\";tag=\"sri\""});
+
+      std::stringstream expected_base;
+      expected_base << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
+                    << "\"@query-param\";name=\"a\";req: " << test.query << '\n'
+                    << "\"@signature-params\": (\"unencoded-digest\";sf "
+                       "\"@query-param\";name=\"a\";req);"
+                    << "keyid=\"" << kPublicKey << "\";tag=\"sri\"";
+
+      auto headers = ValidHeadersPlusInput(input_header.c_str());
+      auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+      ASSERT_EQ(1u, parsed->signatures.size()) << parsed->errors[0];
+      EXPECT_EQ(0u, parsed->errors.size());
+
+      std::optional<std::string> result = ConstructSignatureBase(
+          parsed->signatures[0], GURL(test.url), *headers);
+      ASSERT_TRUE(result.has_value());
+      EXPECT_EQ(expected_base.str(), result.value()) << GURL(test.url).query();
+    }
+
+    // `req`, then `name`
+    {
+      std::string input_header =
+          base::StrCat({"signature=(\"unencoded-digest\";sf "
+                        "\"@query-param\";req;name=\"a\");",
+                        "keyid=\"", kPublicKey, "\";tag=\"sri\""});
+
+      std::stringstream expected_base;
+      expected_base << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
+                    << "\"@query-param\";req;name=\"a\": " << test.query << '\n'
+                    << "\"@signature-params\": (\"unencoded-digest\";sf "
+                       "\"@query-param\";req;name=\"a\");"
+                    << "keyid=\"" << kPublicKey << "\";tag=\"sri\"";
+
+      auto headers = ValidHeadersPlusInput(input_header.c_str());
+      auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+      ASSERT_EQ(1u, parsed->signatures.size()) << parsed->errors[0];
+      EXPECT_EQ(0u, parsed->errors.size());
+
+      std::optional<std::string> result = ConstructSignatureBase(
+          parsed->signatures[0], GURL(test.url), *headers);
+      ASSERT_TRUE(result.has_value());
+      EXPECT_EQ(expected_base.str(), result.value()) << GURL(test.url).query();
+    }
   }
 }
 

@@ -6,8 +6,10 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/url_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/features.h"
@@ -27,7 +29,7 @@ const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignature = "accept-signature";
 
 constexpr std::array<std::string_view, 9u> kDerivedComponents = {
-    "@query", "@path", "@status"
+    "@query-param", "@query", "@path", "@status"
     // TODO(383409584): We should support the remaining derived components from
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
     //
@@ -35,12 +37,38 @@ constexpr std::array<std::string_view, 9u> kDerivedComponents = {
     // "@request-target", "@scheme", "@status",      "@target-uri",
 };
 
-bool ItemHasSingleBooleanParam(
-    const net::structured_headers::ParameterizedItem& item,
-    std::string_view param) {
-  return item.params.size() == 1u && item.params[0].first == param &&
-         item.params[0].second.is_boolean() &&
-         item.params[0].second.GetBoolean();
+ParameterType ParamNameToType(std::string_view name) {
+  if (name == "name") {
+    return ParameterType::kName;
+  }
+  if (name == "req") {
+    return ParameterType::kRequest;
+  }
+  if (name == "sf") {
+    return ParameterType::kStrictStructuredFieldSerialization;
+  }
+  NOTREACHED();
+}
+
+bool ItemHasBooleanParam(const net::structured_headers::ParameterizedItem& item,
+                         std::string_view name) {
+  for (const auto& param : item.params) {
+    if (param.first == name && param.second.is_boolean() &&
+        param.second.GetBoolean()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ItemHasStringParam(const net::structured_headers::ParameterizedItem& item,
+                        std::string_view name) {
+  for (const auto& param : item.params) {
+    if (param.first == name && param.second.is_string()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
@@ -60,7 +88,8 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
   // The "unencoded-digest" component requires a single `sf` parameter with
   // a `true` boolean value.
   if (name == "unencoded-digest") {
-    if (!ItemHasSingleBooleanParam(component, "sf")) {
+    if (!ItemHasBooleanParam(component, "sf") ||
+        component.params.size() != 1u) {
       errors.push_back(
           mojom::SRIMessageSignatureError::
               kSignatureInputHeaderInvalidHeaderComponentParameter);
@@ -82,9 +111,33 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
       return result;
     }
 
+    // The `@query-param` derived component must have only a `name` parameter
+    // with a string value, and a `req` parameter.
+    if (name == "@query-param") {
+      std::string name_value;
+      if (!ItemHasStringParam(component, "name") ||
+          !ItemHasBooleanParam(component, "req") ||
+          component.params.size() != 2u) {
+        errors.push_back(
+            mojom::SRIMessageSignatureError::
+                kSignatureInputHeaderInvalidDerivedComponentParameter);
+        return std::nullopt;
+      }
+      for (const auto& param : component.params) {
+        std::optional<std::string> value;
+        if (param.second.is_string()) {
+          value = param.second.GetString();
+        }
+        result->params.push_back(
+            ComponentParameter::New(ParamNameToType(param.first), value));
+      }
+      return result;
+    }
+
     // All other derived components we've implemented require a single `req`
     // parameter with a `true` boolean value.
-    if (!ItemHasSingleBooleanParam(component, "req")) {
+    if (!ItemHasBooleanParam(component, "req") ||
+        component.params.size() != 1u) {
       errors.push_back(
           mojom::SRIMessageSignatureError::
               kSignatureInputHeaderInvalidDerivedComponentParameter);
@@ -134,12 +187,14 @@ std::string SerializeParams(const net::structured_headers::Parameters params) {
 
 std::string SerializeComponentParams(
     const std::vector<ComponentParameterPtr>& params) {
-  // All currently-supported component params are boolean, so we serialize them
-  // by mapping each enum value to a string, and joining them with `;`.
   std::stringstream param_list;
   for (const ComponentParameterPtr& param : params) {
     param_list << ';';
     switch (param->type) {
+      case ParameterType::kName:
+        DCHECK(param->value.has_value());
+        param_list << "name=\"" << *param->value << "\"";
+        break;
       case ParameterType::kRequest:
         param_list << "req";
         break;
@@ -212,18 +267,33 @@ std::string SerializeSignatureParams(
   return signature_params.str();
 }
 
-std::string SerializeDerivedComponent(const GURL& request_url,
-                                      const int response_status_code,
-                                      const std::string& component) {
-  DCHECK(base::Contains(kDerivedComponents, component));
+std::string SerializeDerivedComponent(
+    const GURL& request_url,
+    const int response_status_code,
+    const mojom::SRIMessageSignatureComponentPtr& component) {
+  DCHECK(base::Contains(kDerivedComponents, component->name));
 
-  if (component == "@query") {
+  if (component->name == "@query") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-query
     return base::StrCat({"?", request_url.query()});
-  } else if (component == "@path") {
+  } else if (component->name == "@query-param") {
+    DCHECK(component->params.size() == 2u);
+    auto name_it =
+        std::find_if(component->params.begin(), component->params.end(),
+                     [](const ComponentParameterPtr& p) {
+                       return p->type == ParameterType::kName;
+                     });
+    DCHECK(name_it != component->params.end() && (*name_it)->value.has_value());
+    std::string param_value;
+    if (net::GetValueForKeyInQuery(request_url, *(*name_it)->value,
+                                   &param_value)) {
+      return base::EscapeAllExceptUnreserved(param_value);
+    }
+    return std::string();
+  } else if (component->name == "@path") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-path
     return request_url.path();
-  } else if (component == "@status") {
+  } else if (component->name == "@status") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-status-code
     return base::NumberToString(response_status_code);
   }
@@ -497,7 +567,7 @@ std::optional<std::string> ConstructSignatureBase(
         return std::nullopt;
       }
       component_value = SerializeDerivedComponent(
-          request_url, headers.response_code(), component->name);
+          request_url, headers.response_code(), component);
 
       //      *  If the component name does not start with an "at" (`@`)
       //         character, canonizalize the HTTP field value ... If the field
