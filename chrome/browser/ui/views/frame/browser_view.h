@@ -287,7 +287,11 @@ class BrowserView : public BrowserWindow,
   }
 
   // Accessor for the contents and devtools WebViews.
-  ContentsWebView* contents_web_view() { return contents_web_view_; }
+  // TODO(crbug.com/393451405): This accessor is used extensively, audit
+  // whether this breaks any use cases when side by side is enabled.
+  ContentsWebView* contents_web_view() {
+    return static_cast<ContentsWebView*>(GetContentsView());
+  }
   views::WebView* devtools_web_view() { return devtools_web_view_; }
 
   ScrimView* contents_scrim_view() { return contents_scrim_view_; }
@@ -1147,7 +1151,7 @@ class BrowserView : public BrowserWindow,
   // |  --------------------------------------------------------------  |
   // |  |  devtools_web_view_                                        |  |
   // |  |------------------------------------------------------------|  |
-  // |  |  contents_web_view_                                        |  |
+  // |  |  contents_web_view_ (or multi_contents_view_ if defined)   |  |
   // |  --------------------------------------------------------------  |
   // |------------------------------------------------------------------|
   // | Active downloads (download_shelf_)                               |
@@ -1230,10 +1234,9 @@ class BrowserView : public BrowserWindow,
   // The InfoBarContainerView that contains InfoBars for the current tab.
   raw_ptr<InfoBarContainerView> infobar_container_ = nullptr;
 
-  // The view that contains the active WebContents.
-  // TODO(crbug.com/393451405): Remove this direct reference when side by side
-  // is enabled, going through multi_contents_view_ for the active contents web
-  // view.
+  // The view that contains the active WebContents. Will be nullptr if the
+  // side-by-side feature is enabled; use multi_contents_view_ and its nested
+  // contents views instead.
   raw_ptr<ContentsWebView> contents_web_view_ = nullptr;
 
   // The view that contains all visible WebContents.
@@ -1244,7 +1247,7 @@ class BrowserView : public BrowserWindow,
   raw_ptr<ScrimView> contents_scrim_view_ = nullptr;
 
   // It draws a border around the web contents area, on top of the
-  // `contents_web_view_`. Null if the feature isn't enabled, or the platform
+  // WebContents. Null if the feature isn't enabled, or the platform
   // isn't supported.
   raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;
 

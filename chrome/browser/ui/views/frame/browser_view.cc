@@ -1021,20 +1021,20 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
         browser_->profile(),
         base::BindRepeating(&BrowserView::ActivateWebContents,
                             base::Unretained(this)));
-    contents_web_view_ = multi_contents_view->GetActiveContentsView();
     multi_contents_view_ =
         contents_container->AddChildView(std::move(multi_contents_view));
+    multi_contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
     contents_view = multi_contents_view_;
   } else {
     auto contents_web_view =
         std::make_unique<ContentsWebView>(browser_->profile());
     contents_web_view_ =
         contents_container->AddChildView(std::move(contents_web_view));
+    contents_web_view_->SetID(VIEW_ID_TAB_CONTAINER);
+    contents_web_view_->set_is_primary_web_contents_for_window(true);
     contents_view = contents_web_view_;
   }
 
-  contents_web_view_->SetID(VIEW_ID_TAB_CONTAINER);
-  contents_web_view_->set_is_primary_web_contents_for_window(true);
   contents_scrim_view_ =
       contents_container->AddChildView(std::make_unique<ScrimView>());
 #if BUILDFLAG(ENABLE_GLIC)
@@ -1073,8 +1073,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_separator_ =
       top_container_->AddChildView(std::make_unique<ContentsSeparator>());
 
-  web_contents_close_handler_ =
-      std::make_unique<WebContentsCloseHandler>(contents_web_view_);
+  ContentsWebView* active_contents_view =
+      static_cast<ContentsWebView*>(GetContentsWebView());
+  // TODO(crbug.com/393451405): This probably isn't sufficient, we should have
+  // one close handler for each visible WebContents.
+  web_contents_close_handler_ = std::make_unique<WebContentsCloseHandler>(
+      static_cast<ContentsWebView*>(active_contents_view));
 
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
@@ -1097,8 +1101,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   infobar_container_ =
       AddChildView(std::make_unique<InfoBarContainerView>(this));
 
-  status_bubble_ = std::make_unique<StatusBubbleViews>(contents_web_view_);
-  contents_web_view_->SetStatusBubble(status_bubble_.get());
+  // TODO(crbug.com/393451405): This probably isn't sufficient, we should have
+  // one status bubble for each visible WebContents.
+  status_bubble_ = std::make_unique<StatusBubbleViews>(active_contents_view);
+  active_contents_view->SetStatusBubble(status_bubble_.get());
 
   // Create do-nothing view for the sake of controlling the z-order of the find
   // bar widget.
@@ -1468,7 +1474,7 @@ void BrowserView::ShowSplitView() {
   CHECK(inactive_index > -1);
   int active_index = browser_->tab_strip_model()->active_index();
   const int active_position = active_index < inactive_index ? 0 : 1;
-  contents_web_view_ = multi_contents_view_->SetActivePosition(active_position);
+  multi_contents_view_->SetActivePosition(active_position);
   multi_contents_view_->SetWebContents(
       browser_->tab_strip_model()->GetWebContentsAt(inactive_index), false);
   multi_contents_view_->SetWebContents(
@@ -1860,6 +1866,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
                                      int reason) {
   DCHECK(new_contents);
   TRACE_EVENT0("ui", "BrowserView::OnActiveTabChanged");
+  views::WebView* active_contents_view = GetContentsWebView();
 
   if (old_contents && !old_contents->IsBeingDestroyed()) {
     // We do not store the focus when closing the tab to work-around bug 4633.
@@ -1879,10 +1886,13 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // Visibility API under Windows, as ChangeWebContents will briefly hide
   // the WebContents window.
   bool change_tab_contents =
-      contents_web_view_->web_contents() != new_contents &&
-      (!multi_contents_view_ ||
-       multi_contents_view_->GetInactiveContentsView()->GetWebContents() !=
-           new_contents);
+      active_contents_view->web_contents() != new_contents;
+  if (multi_contents_view_) {
+    change_tab_contents =
+        change_tab_contents &&
+        multi_contents_view_->GetInactiveContentsView()->GetWebContents() !=
+            new_contents;
+  }
 
 #if BUILDFLAG(IS_MAC)
   // Widget::IsActive is inconsistent between Mac and Aura, so don't check for
@@ -1913,7 +1923,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (loading_bar_) {
       loading_bar_->SetWebContents(nullptr);
     }
-    contents_web_view_->SetWebContents(nullptr);
+    active_contents_view->SetWebContents(nullptr);
     devtools_web_view_->SetWebContents(nullptr);
   }
 
@@ -1950,7 +1960,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       ChromeWebContentsViewFocusHelper* focus_helper =
           ChromeWebContentsViewFocusHelper::FromWebContents(new_contents);
       if (focus_helper &&
-          focus_helper->GetStoredFocus() != contents_web_view_) {
+          focus_helper->GetStoredFocus() != active_contents_view) {
         GetWidget()->UpdateAccessibleNameForRootView();
         GetWidget()->GetRootView()->NotifyAccessibilityEventDeprecated(
             ax::mojom::Event::kFocusContext, true);
@@ -1961,7 +1971,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (loading_bar_) {
       loading_bar_->SetWebContents(new_contents);
     }
-    contents_web_view_->SetWebContents(new_contents);
+    active_contents_view->SetWebContents(new_contents);
     SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(new_contents);
     if (sad_tab_helper) {
       sad_tab_helper->ReinstallInWebView();
@@ -2031,7 +2041,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   if (loading_bar_) {
     loading_bar_->SetWebContents(nullptr);
   }
-  contents_web_view_->SetWebContents(nullptr);
+  GetContentsWebView()->SetWebContents(nullptr);
   infobar_container_->ChangeInfoBarManager(nullptr);
   app_banner_manager_observation_.Reset();
   UpdateDevToolsForContents(nullptr, true);
@@ -2065,7 +2075,11 @@ gfx::Rect BrowserView::GetBounds() const {
 
 gfx::Size BrowserView::GetContentsSize() const {
   DCHECK(initialized_);
-  return contents_web_view_->size();
+  if (multi_contents_view_) {
+    return multi_contents_view_->size();
+  } else {
+    return contents_web_view_->size();
+  }
 }
 
 void BrowserView::SetContentsSize(const gfx::Size& size) {
@@ -2458,7 +2472,10 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   }
 
   if (is_animating) {
-    contents_web_view_->SetFastResize(true);
+    GetContentsWebView()->SetFastResize(true);
+    if (multi_contents_view_) {
+      multi_contents_view_->GetInactiveContentsView()->SetFastResize(true);
+    }
   }
   UpdateUIForContents(GetActiveWebContents());
 
@@ -2470,7 +2487,10 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   }
 
   if (is_animating) {
-    contents_web_view_->SetFastResize(false);
+    GetContentsWebView()->SetFastResize(false);
+    if (multi_contents_view_) {
+      multi_contents_view_->GetInactiveContentsView()->SetFastResize(false);
+    }
   }
 
   // When transitioning from animating to not animating we need to make sure the
@@ -2478,7 +2498,11 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   // haven't changed contents_container_ won't get a Layout and we'll end up
   // with a gray rect because the clip wasn't updated.
   if (!is_animating) {
-    contents_web_view_->InvalidateLayout();
+    if (multi_contents_view_) {
+      multi_contents_view_->InvalidateLayout();
+    } else {
+      contents_web_view_->InvalidateLayout();
+    }
     contents_container_->DeprecatedLayoutImmediately();
   }
 
@@ -2497,12 +2521,19 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
 
 void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
 #if !BUILDFLAG(IS_LINUX)
-  contents_web_view_->SetFastResize(is_dragging);
+  GetContentsWebView()->SetFastResize(is_dragging);
+  if (multi_contents_view_) {
+    multi_contents_view_->GetInactiveContentsView()->SetFastResize(is_dragging);
+  }
   if (!is_dragging) {
     // When tab dragging is ended, we need to make sure the web contents get
     // re-layed out. Otherwise we may see web contents get clipped to the window
     // size that was used during dragging.
-    contents_web_view_->InvalidateLayout();
+    if (multi_contents_view_) {
+      multi_contents_view_->InvalidateLayout();
+    } else {
+      contents_web_view_->InvalidateLayout();
+    }
     contents_container_->DeprecatedLayoutImmediately();
   }
 #endif
@@ -2736,7 +2767,11 @@ void BrowserView::ShowChromeLabs() {
 }
 
 views::WebView* BrowserView::GetContentsWebView() {
-  return contents_web_view_;
+  if (multi_contents_view_) {
+    return multi_contents_view_->GetActiveContentsView();
+  } else {
+    return contents_web_view_;
+  }
 }
 
 BrowserView* BrowserView::AsBrowserView() {
@@ -2820,7 +2855,11 @@ void BrowserView::RotatePaneFocus(bool forwards) {
 }
 
 void BrowserView::FocusWebContentsPane() {
-  contents_web_view_->RequestFocus();
+  if (multi_contents_view_) {
+    multi_contents_view_->RequestFocus();
+  } else {
+    contents_web_view_->RequestFocus();
+  }
 }
 
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
@@ -3296,8 +3335,13 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
-  if (contents_web_view_->HasFocus() &&
-      !GetLocationBarView()->IsMouseHovered() &&
+  views::View* contents_view;
+  if (multi_contents_view_) {
+    contents_view = multi_contents_view_;
+  } else {
+    contents_view = contents_web_view_;
+  }
+  if (contents_view->HasFocus() && !GetLocationBarView()->IsMouseHovered() &&
       web_contents->IsFocusedElementEditable()) {
     return ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE;
   }
@@ -4037,7 +4081,13 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
 std::vector<views::NativeViewHost*>
 BrowserView::GetNativeViewHostsForTopControlsSlide() const {
   std::vector<views::NativeViewHost*> results;
-  results.push_back(contents_web_view_->holder());
+  if (multi_contents_view_) {
+    results.push_back(multi_contents_view_->GetActiveContentsView()->holder());
+    results.push_back(
+        multi_contents_view_->GetInactiveContentsView()->holder());
+  } else {
+    results.push_back(contents_web_view_->holder());
+  }
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   if (webui_tab_strip_) {
@@ -4272,7 +4322,11 @@ bool BrowserView::GetSavedWindowPlacement(
 }
 
 views::View* BrowserView::GetContentsView() {
-  return contents_web_view_;
+  if (multi_contents_view_) {
+    return multi_contents_view_->GetActiveContentsView();
+  } else {
+    return contents_web_view_;
+  }
 }
 
 views::ClientView* BrowserView::CreateClientView(views::Widget* widget) {
@@ -4566,7 +4620,11 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     panes->push_back(unified_side_panel_);
   }
   // TODO(crbug.com/40119836): Implement for mac.
-  panes->push_back(contents_web_view_);
+  if (multi_contents_view_) {
+    panes->push_back(multi_contents_view_);
+  } else {
+    panes->push_back(contents_web_view_);
+  }
   if (devtools_web_view_->GetVisible()) {
     panes->push_back(devtools_web_view_);
   }
@@ -5137,21 +5195,29 @@ void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
   contents_container_->DeprecatedLayoutImmediately();
 
   if (devtools) {
-    // When strategy.hide_inspected_contents() returns true, we are hiding
-    // contents_web_view_ behind the devtools_web_view_. Otherwise,
-    // contents_web_view_ should be right above the devtools_web_view_.
+    // When strategy.hide_inspected_contents() returns true, we are hiding the
+    // WebContents behind the devtools_web_view_. Otherwise, the WebContents
+    // should be right above the devtools_web_view_.
+    views::View* contents_view;
+    if (multi_contents_view_) {
+      contents_view = multi_contents_view_;
+    } else {
+      contents_view = contents_web_view_;
+    }
     size_t devtools_index =
         contents_container_->GetIndexOf(devtools_web_view_).value();
     size_t contents_index =
-        contents_container_->GetIndexOf(contents_web_view_).value();
+        contents_container_->GetIndexOf(contents_view).value();
     bool devtools_is_on_top = devtools_index > contents_index;
     if (strategy.hide_inspected_contents() != devtools_is_on_top) {
-      contents_container_->ReorderChildView(contents_web_view_, devtools_index);
+      contents_container_->ReorderChildView(contents_view, devtools_index);
     }
   }
 
   DevToolsDockedPlacement new_placement = GetDevToolsDockedPlacement(
-      contents_web_view_->bounds(), contents_container_->GetLocalBounds());
+      multi_contents_view_ ? multi_contents_view_->bounds()
+                           : contents_web_view_->bounds(),
+      contents_container_->GetLocalBounds());
 
   // When browser window is resizing, the contents_container and web_contents
   // bounds can be out of sync, resulting in a state, where it is impossible to

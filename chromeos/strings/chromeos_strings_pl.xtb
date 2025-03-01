@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Sieć macierzysta, nie w roamingu</translation>
 <translation id="1327977588028644528">Brama</translation>
 <translation id="1328223165223065150">Kolor tapety</translation>
+<translation id="1329478709358066995">Transkrypcja:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
 <translation id="1343442362630695901">słone jezioro</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">Informacje o tle</translation>
 <translation id="6939667434404433010">Wyszukaj nazwę nagrania</translation>
 <translation id="6939766318048400022">Kawiarnia</translation>
+<translation id="6942253772720771875">Podziel się opinią lub opisz problem</translation>
 <translation id="6943893908656559156">Tożsamość zdalna (opcjonalnie)</translation>
 <translation id="6953137545147683679">złoty</translation>
 <translation id="6957231940976260713">Nazwa usługi</translation>
@@ -1596,6 +1598,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8395584934117017006">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza firma</translation>
 <translation id="8398927464629426868">Obecne tempo, w jakim urządzenie się ładuje lub rozładowuje</translation>
 <translation id="8403988360557588704">Obraz przedstawiający <ph name="ART_FEATURE" /> w stylu <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Wygenerowane podsumowanie:</translation>
 <translation id="8410244574650205435">Wykryty automatycznie</translation>
 <translation id="8420955526972171689">Uruchamianie testów i rozwiązywanie problemów ze sprzętem</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1640,6 +1643,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8626489604350149811">Więcej działań dotyczących: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Jasnofioletowy</translation>
 <translation id="8647595191512746911">Transkrypcja</translation>
+<translation id="8648578954147795914">Wygenerowane nazwy:</translation>
 <translation id="8650852232143958317">Zabierz ze sobą pliki z Gmaila i Dysku Google</translation>
 <translation id="8651481478098336970">wycisz</translation>
 <translation id="8655295600908251630">Kanał</translation>
@@ -1782,6 +1786,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="9218016617214286986">Pokaż znane punkty APN</translation>
 <translation id="932327136139879170">Strona główna</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Sprawdź, czy mikrofon jest podłączony, lub uruchom ponownie Chromebooka</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="950520315903467048">Brak klawisza dla kierunku <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">porównywać głosy w całym nagraniu i zaznaczać w transkrypcji, co mówi która osoba.</translation>

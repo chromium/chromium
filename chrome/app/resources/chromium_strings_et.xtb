@@ -318,6 +318,7 @@
 <translation id="5579324208890605088">Käivitamisel ilmnes viga: käitage installiprogrammi tavakasutajana, mitte administraatorina.</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5605834417512968703">Valige midagi, mida pildiotsinguga otsida, või vajutage pildiotsingust väljumiseks paoklahvi</translation>
+<translation id="5618818588972826921">Valige pildiotsinguga otsimiseks mis tahes tekst või pilt või vajutage pildiotsingust väljumiseks paoklahvi</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumi värskendus on saadaval}=1{Chromiumi värskendus on saadaval}other{Chromiumi värskendus on # päeva saadaval olnud}}</translation>
 <translation id="5643865575100044307">Saidiandmed kustutatakse alati seadmest, kui Chromiumi sulgete</translation>
 <translation id="5653831366781983928">Käivitage Chromium kohe uuesti</translation>
@@ -593,5 +594,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="983803489796659991">Installimine ebaõnnestus, kuna värskendusserveril pole rakenduse kohta räsiandmeid.</translation>
 <translation id="985498048907240953">Kasuta Chromiumi ilma kontota</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">Valige pildiotsinguga otsimiseks mis tahes tekst või pilt</translation>
 <translation id="992780518932311116">Asukoha kasutamiseks andke Chromiumile <ph name="BEGIN_LINK" />süsteemiseadetes<ph name="END_LINK" /> juurdepääs</translation>
 </translationbundle>

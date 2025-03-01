@@ -277,6 +277,7 @@
 <translation id="4720851490453439956">Servicio interno de Google Updater</translation>
 <translation id="4724676981607797757">No se pudo completar la instalación debido a un error de protocolo no compatible.</translation>
 <translation id="4728575227883772061">No se pudo completar la instalación debido a un error no identificado. Si Google Chrome se está ejecutando en este momento, ciérrelo e intente nuevamente.</translation>
+<translation id="4737281654364167024">Para continuar, accede a Chrome como <ph name="EMAIL" />. Esto garantiza que tienes las políticas de tu organización.</translation>
 <translation id="4741235124132242877">Se fijó. Vuelve a usar Google Lens desde la barra de herramientas.</translation>
 <translation id="4747730611090640388">Chrome puede estimar tus intereses.  Luego, los sitios que visites pueden consultar tus intereses con Chrome para personalizar los anuncios que te muestran.</translation>
 <translation id="475321580758063259">Actualiza Chrome para seguir usando los datos de Chrome en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -580,6 +581,7 @@
 <translation id="8781673607513845160">Para usar la cámara, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Error de instalación: El administrador de red aplicó una política de grupo que impide la instalación (<ph name="INSTALL_ERROR" />).</translation>
 <translation id="8796073561259064743">Chrome bloqueó esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales, incluida <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">Tu organización puede ver y administrar los datos de navegación, como tus favoritos, historial y contraseñas. No puede ver los datos de navegación en otros perfiles de Chrome.</translation>
 <translation id="8801657293260363985">V8 es el motor JavaScript y WebAssembly de Chrome que se usa para mejorar el rendimiento del sitio</translation>
 <translation id="8821043148920470810">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 7.</translation>
 <translation id="8823341990149967727">Chrome no actualizado</translation>

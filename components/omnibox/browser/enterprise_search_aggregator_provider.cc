@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -142,6 +143,12 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
   // There can be an aggregator set either through the feature params or through
   // a policy JSON. Both require this feature to be enabled.
   if (!omnibox_feature_configs::SearchAggregatorProvider::Get().enabled) {
+    return false;
+  }
+
+  // Google must be set as default search provider.
+  if (!search::DefaultSearchProviderIsGoogle(
+          client_->GetTemplateURLService())) {
     return false;
   }
 

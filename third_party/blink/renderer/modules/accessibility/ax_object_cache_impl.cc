@@ -2894,11 +2894,11 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
     return;
   }
 
-  // After the first 5 checks, only check the tree every 5000 ms.
-  tree_check_counter_++;
-  auto now = base::Time::Now();
-  if (tree_check_counter_ > 5 &&
-      last_tree_check_time_stamp_ - now < base::Milliseconds(5000)) {
+  // After the first 5 checks, only check the tree every 5 seconds.
+  auto now = base::TimeTicks::Now();
+  if (tree_check_warmup_counter_ < 5) {
+    ++tree_check_warmup_counter_;
+  } else if (now - last_tree_check_time_stamp_ < base::Seconds(5)) {
     return;
   }
   last_tree_check_time_stamp_ = now;
@@ -3083,12 +3083,12 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       return;
     }
 
-    const auto& now = base::Time::Now();
-    const auto& delay_between_serializations =
+    const auto now = base::TimeTicks::Now();
+    const auto delay_between_serializations =
         base::Milliseconds(GetDeferredEventsDelay());
-    const auto& elapsed_since_last_serialization =
+    const auto elapsed_since_last_serialization =
         now - last_serialization_timestamp_;
-    const auto& delay_until_next_serialization =
+    const auto delay_until_next_serialization =
         delay_between_serializations - elapsed_since_last_serialization;
     if (delay_until_next_serialization.is_positive()) {
       // No serialization needed yet, will serialize after a delay.
@@ -4942,7 +4942,7 @@ bool AXObjectCacheImpl::IsSerializationInFlight() const {
 
 void AXObjectCacheImpl::OnSerializationReceived() {
   serialization_in_flight_ = false;
-  last_serialization_timestamp_ = base::Time::Now();
+  last_serialization_timestamp_ = base::TimeTicks::Now();
 
   // Another serialization may be needed, in the case where the AXObjectCache is
   // dirty. In that case, make sure a visual update is scheduled so that
@@ -5392,9 +5392,9 @@ AXObjectCacheImpl::TakeLocationChangsForSerialization() {
   }
 
   changed_bounds_ids_.clear();
-  last_location_serialization_time_ =
-      base::Time::Now();  // Since this method is non-recoverable, update the
-                          // time here and assume this serializtion will arrive.
+  // Since this method is non-recoverable, update the time here and assume this
+  // serializtion will arrive.
+  last_location_serialization_time_ = base::TimeTicks::Now();
   return changes;
 }
 
@@ -5413,12 +5413,12 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
 
   // Ensure enough time has passed since last locations serialization.
   Document& document = GetDocument();
-  const auto& now = base::Time::Now();
-  const auto& delay_between_serializations =
+  const auto now = base::TimeTicks::Now();
+  const auto delay_between_serializations =
       base::Milliseconds(GetLocationSerializationDelay());
-  const auto& elapsed_since_last_serialization =
+  const auto elapsed_since_last_serialization =
       now - last_location_serialization_time_;
-  const auto& delay_until_next_serialization =
+  const auto delay_until_next_serialization =
       delay_between_serializations - elapsed_since_last_serialization;
   if (delay_until_next_serialization.is_positive()) {
     // No serialization needed yet, will serialize after a delay.

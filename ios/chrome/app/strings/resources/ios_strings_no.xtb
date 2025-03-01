@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Trykk og hold på startskjermen</translation>
 <translation id="1832848789136765277">For å sikre at du alltid har tilgang til de synkroniserte dataene dine, må du bekrefte at det er deg</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bokmerket er lagret i Google-kontoen din, {email}}other{Bokmerkene er lagret i Google-kontoen din, {email}}}</translation>
+<translation id="1838089197478136166">Vil du åpne filen i Wallet?</translation>
 <translation id="183878838231635348">Dette kortet viser eventuelle personvern- eller sikkerhetsproblemer som sikkerhetssjekken automatisk oppdager for deg.</translation>
 <translation id="1845230888742614096">Behold gruppen</translation>
 <translation id="1854463785401910334">Søk i åpne faner</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">iPaden din ble nylig gjenopprettet, noe som kan ha medført at standardnettleseren ble endret.</translation>
 <translation id="1901366738768303267">Hvordan bruker jeg denne funksjonen?</translation>
 <translation id="1901600657316773839">Behold utvalget</translation>
+<translation id="1902277226107477495">Adressegjenkjenning er av. Slå det på igjen i innstillingene.</translation>
 <translation id="1904580727789512086">Nettadressene du besøker, lagres i Google-kontoen din</translation>
 <translation id="1911619930368729126">Last opp til Google Disk</translation>
 <translation id="1923342640370224680">Den siste timen</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2240256190924001613">En konfigurasjonsprofil er tilgjengelig</translation>
+<translation id="2244080985779413662">Dette nettstedet vil laste ned en fil og åpne den i Wallet.</translation>
 <translation id="2245007488813216650">Oversetter …</translation>
 <translation id="2249119578464404734">Trykk på søkeikonet øverst på skjermen</translation>
 <translation id="2251686759395008410">Meny → Logg</translation>
@@ -321,7 +324,6 @@
 <translation id="2299218006564889602">Passordene dine krypteres på enheten før de lagres i Google Passordlagring.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Lukk fane</translation>
-<translation id="230956208401264723">Se alle pakkene du sporer, her i denne karusellen</translation>
 <translation id="2311077293164383652">Lukk festet fane</translation>
 <translation id="2316129865977710310">Nei takk</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
@@ -471,7 +473,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2931440415625410757">Vis veiledning</translation>
 <translation id="2952278131021475699">Lens-kamerasøk</translation>
 <translation id="2962516096219646456">Se alle autofylldata</translation>
-<translation id="2963044753825419640">Tillat at nettsteder og apper automatisk oppgraderer eksisterende kontoer til å bruke passnøkler når dette er tilgjengelig</translation>
 <translation id="2969979262385602596">Kunne ikke logge på. Prøv på nytt senere.</translation>
 <translation id="2989523299700148168">Nylig besøkte</translation>
 <translation id="2989805286512600854">Åpne i ny fane</translation>
@@ -1363,6 +1364,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6779455296366983087">Nettlesingsdataene dine blir slettet</translation>
 <translation id="6790502149545262384">Snart ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
+<translation id="6794476726485507147">Velg dato og klokkeslett for å motta et påminnelsesvarsel om å gå tilbake til denne siden</translation>
 <translation id="681368974849482173">Elementet er opprettet</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bokmerket er lagret i Google-kontoen din ({email})}other{{count} bokmerker er lagret i Google-kontoen din ({email})}}</translation>
 <translation id="6830728435402077660">Ikke sikker</translation>
@@ -1459,7 +1461,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7253951228444156601">Sjekker passord …</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjelper deg med å holde orden. Du kan når som helst endre dette i innstillingene.</translation>
-<translation id="7271220006028561438">Tillat automatisk oppgradering av passnøkler</translation>
 <translation id="7272437679830969316">Kan ikke bekrefte identiteten din. Passordet er ikke kopiert.</translation>
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="7300448350764260141">Legg til et ekstra lag med beskyttelse mot trusler på nettet.</translation>
@@ -1491,6 +1492,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7425053386765766120">Legg til betalingsmåte…</translation>
 <translation id="7425346204213733349">Endringer i bokmerkene, loggoppføringene, passordene og de andre innstillingene dine blir ikke synkronisert med Google-kontoen din lenger. Data som allerede er lagret i Google-kontoen din, blir imidlertid ikke fjernet.</translation>
 <translation id="742664698522525515">Vil du beholde gruppen?</translation>
+<translation id="7431851541687113774">Slå av adressegjenkjenning</translation>
 <translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
 <translation id="7435356471928173109">Slått av av administratoren din</translation>
 <translation id="7438481509621345350">Nå ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
@@ -1644,6 +1646,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8023170444051056234">Du mister umiddelbart tilgangen til fanegruppen «<ph name="GROUP_NAME" />», og den blir slettet fra alle enhetene dine</translation>
 <translation id="8023878949384262191">Utvider delen.</translation>
 <translation id="8027581147000338959">Åpne i nytt vindu</translation>
+<translation id="8029092694585014252">Angi påminnelse</translation>
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8035133914807600019">Ny mappe</translation>
 <translation id="8035412398498507358">Bilder</translation>

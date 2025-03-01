@@ -117,6 +117,7 @@
 <translation id="2583187216237139145">Toate datele Chromium generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuă să folosești Chromium</translation>
 <translation id="259935314519650377">Programul de instalare descărcat nu a putut fi stocat în memoria cache. Eroare: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2629740064077610681">Organizația ta poate să vadă și să gestioneze datele de navigare, cum ar fi marcajele, istoricul și parolele. Nu poate să vadă datele de navigare din alte profiluri Chromium</translation>
 <translation id="2635452620547538388">Confirmă-ți identitatea pentru a folosi și a salva datele Chromium în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze conform destinației lor (recomandat)</translation>
 <translation id="2648074677641340862">S-a produs o eroare de sistem de operare în timpul instalării. Descărcați din nou Chromium.</translation>
@@ -381,6 +382,7 @@
 <translation id="6366160072964553914">Chromium a blocat descărcarea, deoarece fișierul nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="6373523479360886564">Sigur doriți să dezinstalați Chromium?</translation>
 <translation id="6375219077595103062">Adaugă o comandă rapidă către Managerul de parole</translation>
+<translation id="6390800440335263989">Pentru a continua, conectează-te la Chromium ca <ph name="EMAIL" />. Astfel, te asiguri că ai politicile organizației.</translation>
 <translation id="6400112897226594999">Sigla Chromium pe un ecran de computer.</translation>
 <translation id="6403826409255603130">Chromium este un browser web care rulează pagini web și aplicații cu viteza fulgerului. Este rapid, stabil și ușor de utilizat. Navigați pe web în condiții de mai multă siguranță, beneficiind de o protecție sporită, încorporată în Chromium, împotriva programelor malware și a tentativelor de phishing.</translation>
 <translation id="6436260184216827876">Căutarea de imagini nu este disponibilă. Încearcă din nou mai târziu.</translation>

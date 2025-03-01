@@ -809,6 +809,7 @@
 <translation id="4777866634702576038">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4778653490315793244">ਹਾਲੇ ਦਿਖਾਉਣ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਹੈ</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ਦੀ ਤੁਹਾਡੇ ਡਿਜੀਟਲ ਵਾਲੇਟ ਤੋਂ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ।</translation>
 <translation id="4787736314074622408">ਕੀ ਤੁਸੀਂ <ph name="ITEM_TITLE" /> ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4793679854893018356">ਜਾਣੋ ਕਿ Chrome ਤੁਹਾਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@
 <translation id="5355191726083956201">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="5375374982898812658">ਤੁਸੀਂ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੋਗੇ ਅਤੇ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="5375577065097716013">Google Lens ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ਦੀ ਤੁਹਾਡੇ ਡਿਜੀਟਲ ਵਾਲੇਟ ਤੋਂ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਭਰੋਸਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੀ ਜਾਰੀ ਰੱਖੋ। ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਧੋਖੇ ਨਾਲ ਤੁਹਾਡੇ ਤੋਂ ਕਨੂੰਨੀ ਨਾਮ ਜਾਂ ਆਈਡੀ ਨੰਬਰ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਜ਼ਾਹਰ ਕਰਨ ਲਈ ਭਰਮਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="5394331612381306435">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="5395376160638294582">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਦੇ ਵੀ Chrome ਡਾਟਾ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
 <translation id="539881862970320163">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦਾ ਸੁਝਾਅ ਦਿੱਤਾ ਗਿਆ। ਕੀ-ਬੋਰਡ ਲੁਕਾਇਆ ਗਿਆ।</translation>
@@ -1803,6 +1805,7 @@
 <translation id="9148126808321036104">ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ ਕੋਈ ਖਾਤਾ ਚੁਣੋ</translation>
 <translation id="9158770349521403363">ਸਿਰਫ਼ ਸਮੱਗਰੀ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="9161172953291434881">ਕੀ ਤੁਸੀਂ ਆਪਣੇ ਡਾਟੇ ਲਈ ਇਸ ਸਾਈਟ 'ਤੇ ਭਰੋਸਾ ਕਰਦੇ ਹੋ?</translation>
 <translation id="9168847423516963845">ਪਤਾ ਬਾਰ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ</translation>
 <translation id="9169507124922466868">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਵਾਲੀ ਸ਼ੀਟ ਅੱਧੀ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ</translation>
 <translation id="918419812064856259">Chrome ਬੀਟਾ</translation>

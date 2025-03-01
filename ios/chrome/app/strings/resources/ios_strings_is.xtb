@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Aðgangsorðin þín eru dulkóðuð í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Loka flipa</translation>
-<translation id="230956208401264723">Sjáðu alla pakkana þína sem verið er að rekja í þessari hringekju</translation>
 <translation id="2311077293164383652">Loka festum flipa</translation>
 <translation id="2316129865977710310">Nei, takk</translation>
 <translation id="2320166752086256636">Fela lyklaborð</translation>
@@ -471,7 +470,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2931440415625410757">Sýna leiðbeiningar</translation>
 <translation id="2952278131021475699">Myndavélarleit Linsu</translation>
 <translation id="2962516096219646456">Sjá öll gögn sjálfvirkrar útfyllingar</translation>
-<translation id="2963044753825419640">Leyfðu vefsvæðum og forritum að uppfæra fyrirliggjandi reikninga sjálfkrafa og nota aðgangslykla þegar þeir bjóðast</translation>
 <translation id="2969979262385602596">Innskráning mistókst. Reyndu aftur síðar.</translation>
 <translation id="2989523299700148168">Nýlega heimsótt</translation>
 <translation id="2989805286512600854">Opna í nýjum flipa</translation>
@@ -1117,6 +1115,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5817176759448082654">Aðgangsorðatékk</translation>
 <translation id="5819208479324046259">Stjórnað af <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Samstillir…</translation>
+<translation id="583923961930319521">Nálgastu aðgangsorðin þín í öllum tækjunum þínum</translation>
 <translation id="5844284118433003733">Þegar þú ert innskráð(ur) eru þessi gögn tengd við Google-reikninginn þinn til að vernda þig í Google-þjónustum, t.d. með því að auka vernd í Gmail eftir öryggistilvik.</translation>
 <translation id="5854790677617711513">Eldra en 30 dagar</translation>
 <translation id="5857770089550859117">Aðgangsorð er nauðsynlegt til að hefja samstillingu.</translation>
@@ -1458,7 +1457,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7253951228444156601">Athugar aðgangsorð…</translation>
 <translation id="7261217796641151584">Deila hópi</translation>
 <translation id="7266578100016339897">Þetta hjálpar þér að halda skipulagi. Þú getur breytt þessu í stillingum hvenær sem er.</translation>
-<translation id="7271220006028561438">Leyfa sjálfvirkar uppfærslur á aðgangslyklum</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="7293429513719260019">Velja tungumál</translation>
 <translation id="7300448350764260141">Auktu vörn gegn netógnum.</translation>
@@ -1692,6 +1690,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8221665793629393739">Áminning þín um að skoða aftur</translation>
 <translation id="8230355548492839438">Finna fyrri</translation>
 <translation id="8232956427053453090">Halda gögnum</translation>
+<translation id="8233237502828137700">Loka borðakynningu</translation>
 <translation id="8238711781852526820">Fela „Verðvöktun“</translation>
 <translation id="8258999165172757081">Bætt við</translation>
 <translation id="8261506727792406068">Eyða</translation>

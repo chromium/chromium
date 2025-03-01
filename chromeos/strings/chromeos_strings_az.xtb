@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Ev şəbəkəsidir, rominq deyil</translation>
 <translation id="1327977588028644528">Keçid</translation>
 <translation id="1328223165223065150">Divar kağızı rəngi</translation>
+<translation id="1329478709358066995">Transkript:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanlama sahəsinə sığdırın</translation>
 <translation id="1343442362630695901">duzlu göl</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">Arxa fon haqqında</translation>
 <translation id="6939667434404433010">Səsyazma adını axtarın</translation>
 <translation id="6939766318048400022">Kafe</translation>
+<translation id="6942253772720771875">Rəy paylaşın və ya problemi təsvir edin</translation>
 <translation id="6943893908656559156">Məsafədən kimlik (istəyə görə)</translation>
 <translation id="6953137545147683679">qızılı</translation>
 <translation id="6957231940976260713">Xidmət adı</translation>
@@ -1598,6 +1600,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> müəssisə tərəfindən idarə edilir</translation>
 <translation id="8398927464629426868">Cihazın hazırda şarj və ya deşarj olma sürəti</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> üslubunda <ph name="ART_FEATURE" /> rəsmi</translation>
+<translation id="8409219750150841791">Yaradılmış xülasə:</translation>
 <translation id="8410244574650205435">Avtomatik aşkar edildi</translation>
 <translation id="8420955526972171689">Aparat problemləri üçün testlər və problem həllini icra edin</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8626489604350149811"><ph name="APN_NAME" /> üçün digər əməliyyatlar</translation>
 <translation id="86356131183441916">Açıq-bənövşəyi</translation>
 <translation id="8647595191512746911">Audio transkripsiyası</translation>
+<translation id="8648578954147795914">Yaradılmış adlar:</translation>
 <translation id="8650852232143958317">Gmail və Google Disk fayllarınızı özünüzlə aparın</translation>
 <translation id="8651481478098336970">hecmi səssiz rejimə keçirin</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -1784,6 +1788,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="9218016617214286986">Məlum APN-ləri göstərin</translation>
 <translation id="932327136139879170">Ev</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Mikrofonun qoşulduğuna əmin olun və ya Chromebook-u yenidən başladın</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> üçün düymə yoxdur. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Çəkiliş boyunca səsləri müqayisə edin ki, transkript hər spikerin nə dediyini və nə vaxt dediyini əks etdirsin</translation>

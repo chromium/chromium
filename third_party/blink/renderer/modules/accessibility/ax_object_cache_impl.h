@@ -977,8 +977,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
 #if AX_FAIL_FAST_BUILD()
   bool updating_layout_and_ax_ = false;
-  int tree_check_counter_ = 0;
-  base::Time last_tree_check_time_stamp_ = base::Time::Now();
+
+  // The number of tree checks performed during warm-up. A tree check is
+  // performed on each of the first five commits. After this period, a check is
+  // performed at most once every five seconds.
+  int tree_check_warmup_counter_ = 0;
+  base::TimeTicks last_tree_check_time_stamp_;
 
   // AXIDs of nodes that need their cached attribute values updated mapped to
   // the reason for the update. This is used to validate whether there are any
@@ -1136,17 +1140,16 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   // This stores the last time a serialization was ACK'ed after being sent to
   // the browser, so that serializations can be skipped if the time since the
-  // last serialization is less than GetDeferredEventsDelay(). Setting to
-  // "beginning of time" causes the upcoming serialization to occur at the next
-  // available opportunity.  Batching is used to reduce the number of
-  // serializations, in order to provide overall faster content updates while
-  // using less CPU, because nodes that change multiple times in a short time
-  // period only need to be serialized once, e.g. during page loads or
-  // animations.
-  base::Time last_serialization_timestamp_ = base::Time::UnixEpoch();
+  // last serialization is less than GetDeferredEventsDelay(). Setting to zero
+  // causes the upcoming serialization to occur at the next available
+  // opportunity.  Batching is used to reduce the number of serializations, in
+  // order to provide overall faster content updates while using less CPU,
+  // because nodes that change multiple times in a short time period only need
+  // to be serialized once, e.g. during page loads or animations.
+  base::TimeTicks last_serialization_timestamp_;
 
   // The last time dirty_objects_from_location_change_ were serialized and sent.
-  base::Time last_location_serialization_time_ = base::Time::UnixEpoch();
+  base::TimeTicks last_location_serialization_time_;
 
   // If true, will not attempt to batch and will serialize at the next
   // opportunity.

@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Ikke tilby å oversette disse nettstedene</translation>
 <translation id="1145536944570833626">Slett eksisterende data.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> åpnes i Chrome. Ved å fortsette samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Du har ikke passord lagret i Google Passordlagring.</translation>
 <translation id="115483310321669804">Bruk passordet <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
 <translation id="1174479719160874822">Chrome forespør mobilnettstedet når skjermen er smal</translation>
@@ -1371,10 +1372,12 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7224097611345298931">Alle passord som bare var lagret på denne enheten for Chrome og <ph name="CHROME_CHANNEL" />, ble slått sammen. Du kan autofylle alle de lagrede passordene dine i begge appene.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedlasting venter}other{# nedlastinger venter}}</translation>
 <translation id="7230064152164845085">Bytt til Inkognito</translation>
+<translation id="7237724030342645845">Google Passordlagring har sluttet å fungere</translation>
 <translation id="72415438529550637">Passordforslaget er lukket.</translation>
 <translation id="7260367682327802201">Android-enheten din kan ha en lignende innstilling. Hvis måling av annonser er slått på i Chrome og på Android-enheten din, kan et selskap måle effektiviteten til en annonse på alle nettsteder du besøker og apper du bruker.</translation>
 <translation id="727288900855680735">Vil du sende inn <ph name="ONE_TIME_CODE" /> til <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokkert nettsted</translation>
+<translation id="7276868533747677875">Hvis du har eksportert passord tidligere, kan du se etter en CSV-fil på enheten og importere passordene til passordlagringsverktøyet du vil bruke.</translation>
 <translation id="7289049772085228972">Du har den sterkeste sikkerheten i Chrome</translation>
 <translation id="7289303553784750393">Hvis du er på nett, men problemet vedvarer, kan du prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="7290209999329137901">Du kan ikke endre navn</translation>
@@ -1549,6 +1552,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8027395186860110042">Det kan hende at passord snart slutter å fungere</translation>
 <translation id="8027863900915310177">Velg hvor du vil laste ned til</translation>
 <translation id="8030852056903932865">Godkjenn</translation>
+<translation id="8031805944372049238">For å begynne å lagre og bruke passord med Google Passordlagring, oppdater Google Play-tjenester.</translation>
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dager igjen</translation>
 <translation id="8037801708772278989">Sjekket nettopp</translation>

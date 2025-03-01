@@ -323,6 +323,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2083190527011054446">Boa noite, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Abrir selecionador de emojis</translation>
 <translation id="2088116547584365419">jogos</translation>
+<translation id="2092517835716911174">Tem de ter, pelo menos, 18 anos para usar as funcionalidades Ajuda-me a ler e Ajuda-me a escrever.</translation>
 <translation id="209965399369889474">Não está ligado à rede.</translation>
 <translation id="2107581415810719320">Outro botão <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">O cabo USB-C não suporta Thunderbolt. O desempenho do dispositivo pode estar limitado.</translation>
@@ -1912,6 +1913,7 @@ Nova instalação</translation>
 <translation id="735745346212279324">VPN desligado</translation>
 <translation id="7360036564632145207">A alteração da proteção do acesso aos dados para a definição dos periféricos pode otimizar o desempenho.</translation>
 <translation id="736045644501761622">Definir imagem de fundo e estilo</translation>
+<translation id="7368041336688136012">Tem de ter, pelo menos, 18 anos para usar as funcionalidades Ajuda-me a ler, Ajuda-me a escrever e criar imagens com IA.</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de memória disponível de <ph name="TOTAL_MEMORY" /> no total</translation>
 <translation id="737315737514430195">Isto permite o acesso ao microfone para todas as apps e Websites com a autorização do microfone</translation>
@@ -2361,6 +2363,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8845001906332463065">Obter ajuda</translation>
 <translation id="8847100217801213944">Mostrar temperatura em Fahrenheit</translation>
 <translation id="8849001918648564819">Oculto</translation>
+<translation id="8855792845239861369">Este idioma não é compatível</translation>
 <translation id="8855885154700222542">Tecla de ecrã inteiro</translation>
 <translation id="8858369206579825206">Controlos de privacidade</translation>
 <translation id="8860366331836346216">Adicionar eSIM</translation>

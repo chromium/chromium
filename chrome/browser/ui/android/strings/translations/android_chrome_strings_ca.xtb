@@ -809,6 +809,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4777866634702576038">Vols suprimir el grup de pestanyes?</translation>
 <translation id="4778653490315793244">Encara no hi ha res per mostrar</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> és el teu motor de cerca predeterminat</translation>
+<translation id="4784349455504343791">El lloc web <ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital.</translation>
 <translation id="4787736314074622408">Vols suprimir <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Informació sobre com et protegeix Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5355191726083956201">La protecció millorada està activada</translation>
 <translation id="5375374982898812658">Perdràs immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els teus dispositius</translation>
 <translation id="5375577065097716013">Cerca la imatge amb Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771">El lloc web <ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital. Continua només si hi confies. Els llocs web perillosos poden enganyar-te perquè revelis dades com ara el teu nom legal o el número del document d'identitat.</translation>
 <translation id="5394331612381306435">Surt del mode d'incògnit</translation>
 <translation id="5395376160638294582">Assegura't de poder utilitzar sempre les dades de Chrome al teu Compte de Google</translation>
 <translation id="539881862970320163">S'ha suggerit una contrasenya segura. El teclat està amagat.</translation>
@@ -1803,6 +1805,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>
 <translation id="9157212632995922070">Tria un compte per continuar a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Comparteix només el contingut</translation>
+<translation id="9161172953291434881">Confies en aquest lloc web perquè accedeixi a les teves dades?</translation>
 <translation id="9168847423516963845">Mou la barra d'adreces a la part inferior</translation>
 <translation id="9169507124922466868">L'historial de navegació està obert fins a la meitat</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

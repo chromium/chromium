@@ -277,6 +277,7 @@
 <translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Nu s-a instalat, din cauza unei erori de protocol neacceptat.</translation>
 <translation id="4728575227883772061">Instalarea nu a reușit din cauza unei erori necunoscute. Dacă Google Chrome rulează în acest moment, închide-l și încearcă din nou.</translation>
+<translation id="4737281654364167024">Pentru a continua, conectează-te la Chrome ca <ph name="EMAIL" />. Astfel, te asiguri că ai politicile organizației.</translation>
 <translation id="4741235124132242877">S-a fixat! Folosește din nou Google Lens din bara de instrumente</translation>
 <translation id="4747730611090640388">Chrome îți poate estima interesele.  Ulterior, un site pe care-l accesezi poate solicita browserului Chrome să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="475321580758063259">Actualizează Chrome pentru a folosi în continuare datele Chrome din Contul Google <ph name="ACCOUNT_EMAIL" /></translation>
@@ -580,6 +581,7 @@
 <translation id="8781673607513845160">Pentru a folosi camera foto, permite accesul browserului Chrome în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Eroare la instalare: administratorul de rețea a aplicat o Politică de grup care împiedică instalarea: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome a blocat descărcarea deoarece fișierul poate dăuna conturilor tale personale și din rețelele sociale, între care <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">Organizația ta poate să vadă și să gestioneze datele de navigare, cum ar fi marcajele, istoricul și parolele. Nu poate să vadă datele de navigare din alte profiluri Chrome</translation>
 <translation id="8801657293260363985">V8 este motorul JavaScript și WebAssembly din Chrome, folosit pentru a îmbunătăți performanța site-ului</translation>
 <translation id="8821043148920470810">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 7.</translation>
 <translation id="8823341990149967727">Chrome nu este actualizat</translation>

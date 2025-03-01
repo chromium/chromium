@@ -46,7 +46,9 @@
 <translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
 <translation id="2677748264148917807">నిష్క్రమించండి</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> వారం క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_WEEKS_MANY" /> వారాల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ట్యాబ్ జోడించబడింది, <ph name="ANY_CHANGED" /> మారింది, <ph name="ANY_CLOSED" /> మూసివేయబడింది}other{<ph name="MANY_ADDED" /> ట్యాబ్‌లు జోడించబడ్డాయి, <ph name="ANY_CHANGED" /> మారాయి, <ph name="ANY_CLOSED" /> మూసివేయబడ్డాయి}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> గంట క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_HOURS_MANY" /> గంటల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="2755485474385016903">చేసిన మార్పులు గ్రూప్‌లోని అందరికీ కనిపిస్తాయి</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> గంట క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_HOURS_MANY" /> గంటల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="2801787514987684416">స్టోర్ సమాచారాన్ని చూడాలా?</translation>
@@ -83,6 +85,7 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ట్యాబ్ మారింది, <ph name="ANY_CLOSED" /> మూసివేయబడింది}other{<ph name="MANY_CHANGED" /> ట్యాబ్‌లు మారాయి, <ph name="ANY_CLOSED" /> మూసివేయబడ్డాయి}}</translation>
 <translation id="4371591986692297148">ఇన్‌యాక్టివ్</translation>
 <translation id="4431937619879060901">మీరు వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అది మీ అన్ని పరికరాల నుండి తొలగించబడుతుంది</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> రోజు క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_DAYS_MANY" /> రోజుల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="4460014764210899310">విడివిడిగా ఉంచు</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 ఇన్‌యాక్టివ్ ట్యాబ్‌ను మూసివేయాలనుకుంటున్నారా?}other{<ph name="TAB_COUNT_MANY" /> ఇన్‌యాక్టివ్ ట్యాబ్‌లను మూసివేయాలనుకుంటున్నారా?}}</translation>
 <translation id="4686942373615810936">ఇప్పుడే క్రియేట్ చేయడం జరిగింది</translation>
@@ -163,6 +166,7 @@
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7688386659311034820">ఇన్‌యాక్టివ్ ట్యాబ్‌ల డైలాగ్</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ట్యాబ్‌ను షేర్ చేయండి}other{<ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ట్యాబ్‌లను షేర్ చేయండి}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> సంవత్సరం క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_YEARS_MANY" /> సంవత్సరాల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="7773714564112603605">ట్యాబ్‌ను తీసివేయండి, గ్రూప్‌ను తొలగించండి</translation>
 <translation id="7792771145871471484">సూచనలను రివ్యూ చేయండి.</translation>
 <translation id="7792860826279960128">షేర్ చేసిన ట్యాబ్ గ్రూప్‌నకు చేసిన మార్పుల గురించి నోటీసు హాఫ్ స్క్రీన్‌లో చూపబడుతోంది</translation>
@@ -180,10 +184,12 @@
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}}</translation>
 <translation id="8205266828577616993">ట్యాబ్‌ను పైక్ తరలించండి</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> నిమిషం క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_MINS_MANY" /> నిమిషాల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8338427544764842461">మీ ట్యాబ్ గ్రూప్‌లు ఇక్కడ సేవ్ చేయబడతాయి, మీరు సైన్ ఇన్ చేసిన అన్ని పరికరాలలో అప్‌డేట్ చేయబడతాయి</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్, <ph name="COLOR_NAME" /> రంగును కలిగి ఉన్న షేర్ చేసిన ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు, <ph name="COLOR_NAME" /> రంగును కలిగి ఉన్న షేర్ చేసిన ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ఎంపిక చేసిన <ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను మూసివేయండి}other{ఎంపిక చేసిన <ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను మూసివేయండి}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> నెల క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_MONTHS_MANY" /> నెలల క్రితం అప్‌డేట్ చేయబడింది}}</translation>
 <translation id="8398929769197326728">కొత్త ఫోల్డర్ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ట్యాబ్ జోడించబడింది, <ph name="ANY_CLOSED" /> మూసివేయబడింది}other{<ph name="MANY_ADDED" /> ట్యాబ్‌లు జోడించబడ్డాయి, <ph name="ANY_CLOSED" /> మూసివేయబడ్డాయి}}</translation>

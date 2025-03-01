@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Oldal betöltése később</translation>
 <translation id="1010225406377140704">Új link kéréséhez felveheti a kapcsolatot a küldővel</translation>
 <translation id="1011206368273183593">Fájlok előkészítése…</translation>
+<translation id="1012264210825687872">A megrendelés ellenőrzését követően be kell jelentkeznie <ph name="BNPL_ISSUER_NAME" />-fiókjába, vagy létre kell hoznia egy újat. Ezt a fiókot automatikusan összekapcsoljuk a Google Pay szolgáltatással.</translation>
 <translation id="1014509239502131234">Folyamatban van az eredmény generálásának visszavonása</translation>
 <translation id="1015730422737071372">További részletek megadása</translation>
 <translation id="1019413721762100891">Ki</translation>
@@ -691,6 +692,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2187317261103489799">Észlelés (alapértelmezett)</translation>
 <translation id="2188375229972301266">Több lyuk alul</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
+<translation id="2198071643181968308">További információ a következőről: <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">„Nem tetszik” gomb. Az Enter billentyű lenyomásával megnyithatja az űrlapot, amelyen részletes visszajelzést adhat arról, hogy miért nem tetszik Önnek ez a javaslat</translation>
 <translation id="2202627062836089804">a kártya hátoldalán</translation>
 <translation id="2204482073374652408">Frissítés befejezve!</translation>
@@ -2315,6 +2317,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">A Chrome-nak hozzáférésre van szüksége az eszköz következő funkciójához: <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Karton (vége)</translation>
+<translation id="5106648964679263509">A(z) <ph name="BNPL_ISSUER_NAME" /> virtuális kártyája kitöltve</translation>
 <translation id="5108881358339761672">A webhely nem biztonságos</translation>
 <translation id="5109892411553231226">Fizetési módok kezelése</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2510,6 +2513,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
             <ph name="LIST_ITEM" />Űrlapokon megadott információk
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Fordított sorrend, felfelé fordítva</translation>
+<translation id="5445340838622821110">Részletfizetés esetén egyszeri virtuális kártyaszám kerül kitöltésre. Ez a kártyaszám csak erre a vásárlásra vonatkozik. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">A(z) <ph name="SITE" /> felhasználhatja az Önről mentett adatait</translation>
 <translation id="5452270690849572955">Ez a(z) <ph name="HOST_NAME" /> oldal nem található</translation>
 <translation id="5452923259299906094">Fizetés elektronikus pénztárca és Pix használatával</translation>
@@ -3329,6 +3333,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6917795328362592458">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Jelszókezelő a mentett jelszavak ellenőrzését javasolja.</translation>
 <translation id="6917873303492266709">Ha meg szeretne osztani lapcsoportokat, csatlakozni szeretne hozzájuk, illetve együtt szeretne dolgozni másokkal bennük, nyissa meg a beállításokat, és kapcsolja be a Chrome-bejelentkezés engedélyezése beállítást</translation>
 <translation id="6921197121276419421">Internetes alkalmazások telepítése engedélyezve</translation>
+<translation id="69238565902785824">Összekapcsolt fiók esetén gyorsabban fizethet a(z) <ph name="BNPL_ISSUER_NAME" /> segítségével, de le is választhatja a fiókját a <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> webhelyen.</translation>
 <translation id="6924013822850225188">Válassza ki, hogy megjelenjenek-e a kártyák előnyei a fizetéskor (banki feltételek vonatkoznak rá)</translation>
 <translation id="6925267999184670015">„Észak-amerikai B+” méret</translation>
 <translation id="6926216138694948720">Testművészet</translation>
@@ -3394,6 +3399,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="701757816833614688">Vizuális művészeti és design-képzés</translation>
 <translation id="702275896380648118">Ez a webhely kikövetkezteti az Ön által kedvelt dolgokat, majd hirdetéseket ajánl más webhelyeknek. Emellett lekéri az Önre vonatkozó hirdetéstémákat a Chrome-ból, hogy relevánsabb hirdetéseket jelenítsen meg Önnek.</translation>
 <translation id="7023162328967545559">Adminisztrátori figyelmeztetés</translation>
+<translation id="7023765275461720661">Összekapcsolja a fiókot, hogy fizethessen a következővel: <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Jelszavak</translation>
 <translation id="7030164307377592766">módosítani próbálja a fizetési módok kitöltési beállításait</translation>
 <translation id="7031646650991750659">Ön milyen Google Play-alkalmazásokat telepített.</translation>
@@ -3616,6 +3622,7 @@ További részletek:
 <translation id="741204030948306876">Igen, folytatom</translation>
 <translation id="7416351320495623771">Jelszavak kezelése…</translation>
 <translation id="7416898721136759658">Ösztöndíjak és pénzügyi segítségek</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programozás</translation>
 <translation id="7419091773564635591">Számítógépek és elektronika</translation>
 <translation id="7419106976560586862">Profil elérési útja</translation>
@@ -3662,6 +3669,7 @@ További részletek:
 <translation id="7485085230273446323">Üzleti és ipari termékek</translation>
 <translation id="7485870689360869515">Nem található adat.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">A(z) <ph name="BNPL_ISSUER_NAME" /> ellenőrzi az Ön jogosultságát (ez nem befolyásolja a hitelbírálati pontszámát). Jóváhagyás esetén választhat a(z) <ph name="BNPL_ISSUER_NAME" /> által felajánlott fizetési konstrukciók közül, és elvégezheti a vásárlást.</translation>
 <translation id="7489392576326061356">Samponok és hajkondicionálók</translation>
 <translation id="7495528107193238112">Ez a tartalom le van tiltva. Vegye fel a kapcsolatot a webhely tulajdonosával a probléma elhárításához.</translation>
 <translation id="749865518782565832">Vízvezeték-szerelés</translation>

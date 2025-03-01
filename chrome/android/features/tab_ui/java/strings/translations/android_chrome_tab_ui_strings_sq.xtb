@@ -46,7 +46,9 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="266935134738038806">Vizito sajtin</translation>
 <translation id="2671423594960767771">Ndaj grupin</translation>
 <translation id="2677748264148917807">Largohu</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Përditësuar <ph name="NUM_WEEKS_ONE" /> javë më parë}other{Përditësuar <ph name="NUM_WEEKS_MANY" /> javë më parë}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CHANGED" /> u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_ADDED" /> skeda u shtuan, <ph name="ANY_CHANGED" /> u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{Përditësuar <ph name="NUM_HOURS_ONE" /> orë më parë}other{Përditësuar <ph name="NUM_HOURS_MANY" /> orë më parë}}</translation>
 <translation id="2755485474385016903">Ndryshimet e bëra shikohen nga të gjithë në grup</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Krijuar <ph name="NUM_HOURS_ONE" /> orë më parë}other{Krijuar <ph name="NUM_HOURS_MANY" /> orë më parë}}</translation>
 <translation id="2801787514987684416">Të shikohen informacionet e dyqanit?</translation>
@@ -83,6 +85,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> skedë u ndryshua, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_CHANGED" /> skeda u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="4371591986692297148">Joaktiv</translation>
 <translation id="4431937619879060901">Do të humbasësh menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{Përditësuar <ph name="NUM_DAYS_ONE" /> ditë më parë}other{Përditësuar <ph name="NUM_DAYS_MANY" /> ditë më parë}}</translation>
 <translation id="4460014764210899310">Mos grupo</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Të mbyllet 1 skedë joaktive?}other{Të mbyllen <ph name="TAB_COUNT_MANY" /> skeda joaktive?}}</translation>
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
@@ -163,6 +166,7 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7688386659311034820">Dialogu i skedave joaktive</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Ndaj <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Ndaj <ph name="TABS_COUNT_MANY" /> skedat e zgjedhura}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{Përditësuar <ph name="NUM_YEARS_ONE" /> vit më parë}other{Përditësuar <ph name="NUM_YEARS_MANY" /> vjet më parë}}</translation>
 <translation id="7773714564112603605">Hiq skedën dhe fshi grupin</translation>
 <translation id="7792771145871471484">Rishiko sugjerimet.</translation>
 <translation id="7792860826279960128">Njoftim për ndryshimet në grupin e ndarë të skedave në gjysmë lartësi</translation>
@@ -180,10 +184,12 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Lëviz skedën lart</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{Përditësuar <ph name="NUM_MINS_ONE" /> minutë më parë}other{Përditësuar <ph name="NUM_MINS_MANY" /> minuta më parë}}</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8338427544764842461">Grupet e tua të skedave ruhen këtu dhe përditësohen në të gjitha pajisjet ku je identifikuar</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e ndarë të skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e ndarë të skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Mbyll <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Mbyll <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Përditësuar <ph name="NUM_MONTHS_ONE" /> muaj më parë}other{Përditësuar <ph name="NUM_MONTHS_MANY" /> muaj më parë}}</translation>
 <translation id="8398929769197326728">Dosje e re - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_ADDED" /> skeda u shtuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>

@@ -50,12 +50,12 @@ class EntityDataManagerTest : public testing::Test {
 // Tests that the constructor of EntityDataManager queries the database.
 TEST_F(EntityDataManagerTest, InitialPopulation) {
   EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
+  EntityInstance dl = test::GetDriversLicenseEntityInstance();
 
   helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
       pp, base::DoNothing());
   helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
-      lc, base::DoNothing());
+      dl, base::DoNothing());
   helper().WaitUntilIdle();
 
   EntityDataManager entity_data_manager(helper().autofill_webdata_service(),
@@ -65,7 +65,7 @@ TEST_F(EntityDataManagerTest, InitialPopulation) {
 
   helper().WaitUntilIdle();
   EXPECT_THAT(entity_data_manager.GetEntityInstances(),
-              UnorderedElementsAre(pp, lc));
+              UnorderedElementsAre(pp, dl));
 }
 
 // Test fixture that starts with an empty database.
@@ -87,10 +87,10 @@ class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
 // Tests that AddOrUpdateEntityInstance() asynchronously adds entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
+  EntityInstance dl = test::GetDriversLicenseEntityInstance();
   entity_data_manager().AddOrUpdateEntityInstance(pp);
-  entity_data_manager().AddOrUpdateEntityInstance(lc);
-  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
+  entity_data_manager().AddOrUpdateEntityInstance(dl);
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 }
 
 // Tests that AddOrUpdateEntityInstance() asynchronously updates entities.
@@ -109,27 +109,27 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, UpdateEntityInstance) {
 // Tests that RemoveEntityInstance() asynchronously removes entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, RemoveEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
+  EntityInstance dl = test::GetDriversLicenseEntityInstance();
   entity_data_manager().AddOrUpdateEntityInstance(pp);
-  entity_data_manager().AddOrUpdateEntityInstance(lc);
-  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
+  entity_data_manager().AddOrUpdateEntityInstance(dl);
+  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 
   entity_data_manager().RemoveEntityInstance(pp.guid());
-  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(lc));
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(dl));
 }
 
 // Tests that removing a non-existing entity is a no-op.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, RemoveEntityInstance_NonExisting) {
   EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
+  EntityInstance dl = test::GetDriversLicenseEntityInstance();
   entity_data_manager().AddOrUpdateEntityInstance(pp);
-  entity_data_manager().AddOrUpdateEntityInstance(lc);
-  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
+  entity_data_manager().AddOrUpdateEntityInstance(dl);
+  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 
   entity_data_manager().RemoveEntityInstance(pp.guid());
-  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(lc));
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(dl));
   entity_data_manager().RemoveEntityInstance(pp.guid());  // No-op.
-  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(lc));
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(dl));
 }
 
 // Tests that removing entities in a date range updates the cache.
@@ -137,15 +137,15 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
        RemoveEntityInstancesModifiedBetween) {
   EntityInstance pp = test::GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(1)});
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance(
+  EntityInstance dl = test::GetDriversLicenseEntityInstance(
       {.date_modified = test::kJune2017 + base::Days(1)});
   entity_data_manager().AddOrUpdateEntityInstance(pp);
-  entity_data_manager().AddOrUpdateEntityInstance(lc);
-  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
+  entity_data_manager().AddOrUpdateEntityInstance(dl);
+  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 
   entity_data_manager().RemoveEntityInstancesModifiedBetween(
       test::kJune2017 - base::Days(1), test::kJune2017);
-  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(lc));
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(dl));
 
   entity_data_manager().RemoveEntityInstancesModifiedBetween(
       test::kJune2017, test::kJune2017 + base::Days(2) + base::Seconds(1));
@@ -155,10 +155,10 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
 // Tests that entities can be retrieved by GUID.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, GetEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance();
-  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
+  EntityInstance dl = test::GetDriversLicenseEntityInstance();
   entity_data_manager().AddOrUpdateEntityInstance(pp);
-  entity_data_manager().AddOrUpdateEntityInstance(lc);
-  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, lc));
+  entity_data_manager().AddOrUpdateEntityInstance(dl);
+  ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 
   EXPECT_THAT(entity_data_manager().GetEntityInstance(pp.guid()), Optional(pp));
   EXPECT_EQ(

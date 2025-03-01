@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Matična mreža, bez roaminga</translation>
 <translation id="1327977588028644528">Pristupnik</translation>
 <translation id="1328223165223065150">Boja pozadine</translation>
+<translation id="1329478709358066995">Prijepis:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi području skeniranja</translation>
 <translation id="1343442362630695901">slano jezero</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">O pozadini</translation>
 <translation id="6939667434404433010">Pretražite naziv snimke</translation>
 <translation id="6939766318048400022">Kafić</translation>
+<translation id="6942253772720771875">Podijelite povratne informacije ili opišite svoj problem</translation>
 <translation id="6943893908656559156">Udaljeni identitet (nije obavezno)</translation>
 <translation id="6953137545147683679">zlatne boje</translation>
 <translation id="6957231940976260713">Naziv usluge</translation>
@@ -1598,6 +1600,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8395584934117017006">Uređajem <ph name="DEVICE_TYPE" /> upravlja poduzeće</translation>
 <translation id="8398927464629426868">Brzina punjenja ili pražnjenja uređaja</translation>
 <translation id="8403988360557588704">Slika <ph name="ART_FEATURE" /> u <ph name="ART_MOVEMENT" /> stilu</translation>
+<translation id="8409219750150841791">Generirani sažetak:</translation>
 <translation id="8410244574650205435">Automatski detektirano</translation>
 <translation id="8420955526972171689">Izvođenje testova i rješavanje problema s hardverom</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8626489604350149811">Više radnji za <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svijetloljubičasta</translation>
 <translation id="8647595191512746911">Prijepis audiozapisa</translation>
+<translation id="8648578954147795914">Generirani nazivi:</translation>
 <translation id="8650852232143958317">Ponesite svoje datoteke s Gmaila i Google diska sa sobom</translation>
 <translation id="8651481478098336970">isključivanje zvuka</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -1784,6 +1788,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="9218016617214286986">Pokaži poznate APN-ove</translation>
 <translation id="932327136139879170">Početna stranica</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Provjerite je li mikrofon povezan ili pokušajte ponovo pokrenuti Chromebook</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="950520315903467048">Nedostaje tipka za <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">usporedio glasove na cijeloj snimci da bi se u prijepisu naznačilo što je svaki govornik izgovorio i kada.</translation>

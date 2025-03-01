@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Səhifəni sonra yükləyin</translation>
 <translation id="1010225406377140704">Yeni keçid əldə etmək üçün göndərən şəxslə əlaqə saxlayın</translation>
 <translation id="1011206368273183593">Fayllar hazırlanır</translation>
+<translation id="1012264210825687872">Sifarişinizi nəzərdən keçirdikdən sonra <ph name="BNPL_ISSUER_NAME" /> hesabına daxil olmalı və ya hesab yaratmalısınız. Bu hesab avtomatik olaraq Google Pay ilə əlaqələndiriləcək.</translation>
 <translation id="1014509239502131234">Geri qaytarılır</translation>
 <translation id="1015730422737071372">Əlavə detallar ilə təmin edin</translation>
 <translation id="1019413721762100891">Deaktiv</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">İqtisadiyyat Xəbərləri</translation>
 <translation id="214556005048008348">Ödənişi ləğv edin</translation>
 <translation id="2147117373852943630">Musiqi alətləri</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> haqqınızda yadda saxlanılan məlumatdan istifadə etmək istəyir</translation>
 <translation id="2148613324460538318">Kart Əlavə Edin</translation>
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="2149968176347646218">Bağlantı güvənli deyil</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">Aşkarlayın (defolt)</translation>
 <translation id="2188375229972301266">Aşağıdan çoxsaylı deşik açın</translation>
 <translation id="2194856509914051091">Nəzərə alınmalı amillər</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> haqqında ətraflı məlumat əldə edin</translation>
 <translation id="2200678913752027654">Baş barmaq aşağı düyməsi, bu təklifi niyə bəyənmədiyinizə dair ətraflı rəy göndərmək üçün Enter üzərinə basaraq formanı açın</translation>
 <translation id="2202627062836089804">kartınızın arxa tərəfi</translation>
 <translation id="2204482073374652408">Güncəllənmə yekunlaşdı!</translation>
@@ -1944,6 +1947,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive-a fayl yükləməsi durduruldu</translation>
+<translation id="4389931020843542579">Tab qrupu yüklənir</translation>
 <translation id="4390472908992056574">Xətlər</translation>
 <translation id="4395550503472021297">Bu siyasət aşağıdakı siyasətlərin defolt rəftarına nəzarət edir: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Bank veb-saytında doğrulamaq üçün popap açır</translation>
@@ -2313,6 +2317,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome cihazın <ph name="PERMISSION" /> tətbiqinə daxil olmalıdır</translation>
 <translation id="510644072453496781">Karton (son)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> üçün virtual kart daxil edilib</translation>
 <translation id="5108881358339761672">Sayt güvənli deyil</translation>
 <translation id="5109892411553231226">Ödəniş Metodlarını idarə edin</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2508,6 +2513,7 @@
             <ph name="LIST_ITEM" />Formalarda daxil edilən məlumatlar
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Tərs sıra ilə üzü yuxarı</translation>
+<translation id="5445340838622821110">Tədricən ödəniş etdikdə birdəfəlik virtual kart nömrəsi daxil edilir. Bu rəqəm yalnız satınalma üçündür. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> saytına yadda saxladığı məlumatlarınızdan istifadə icazəsi verin</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> səhifəsi tapılmadı</translation>
 <translation id="5452923259299906094">e-pulqabı və Pix ilə ödəyin</translation>
@@ -3327,6 +3333,7 @@
 <translation id="6917795328362592458">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Parol Meneceri yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
 <translation id="6917873303492266709">Tab qruplarında paylaşmaq, onlara qoşulmaq və əməkdaşlıq etmək üçün ayarları açın və Chrome girişinə icazə verin funksiyasını aktiv edin</translation>
 <translation id="6921197121276419421">Veb-tətbiqlərin quraşdırılmasına icazə verildi</translation>
+<translation id="69238565902785824">Hesabınızı əlaqələndirilmiş formada saxlamaq <ph name="BNPL_ISSUER_NAME" /> ilə daha sürətli ödəniş etməyinizə kömək edir, lakin <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> bölməsinə keçərək əlaqəni ayıra bilərsiniz</translation>
 <translation id="6924013822850225188">Kassada kart imtiyazlarını görüb-görməməyi seçin (bank şərtləri tətbiq edilir)</translation>
 <translation id="6925267999184670015">Şimali Amerika B+</translation>
 <translation id="6926216138694948720">Bədənin Bəzədilməsi</translation>
@@ -3392,6 +3399,7 @@
 <translation id="701757816833614688">Vizual incəsənət və dizayn təhsili</translation>
 <translation id="702275896380648118">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir.</translation>
 <translation id="7023162328967545559">Admin xəbərdarlığı</translation>
+<translation id="7023765275461720661">Hesab əlaqələndirilsin və <ph name="BNPL_ISSUER_NAME" /> ilə ödənilsin?</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7030164307377592766">ödəniş metodlarını doldurmaq üçün ayarları dəyişməyə çalışır</translation>
 <translation id="7031646650991750659">Quraşdırdığınız Google Play tətbiqləri</translation>
@@ -3613,6 +3621,7 @@
 <translation id="741204030948306876">Bəli, razıyam</translation>
 <translation id="7416351320495623771">Parolları İdarə edin...</translation>
 <translation id="7416898721136759658">Qrantlar, təqaüdlər və maliyyə yardımı</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Proqramlaşdırma</translation>
 <translation id="7419091773564635591">Kompüter və Elektronika</translation>
 <translation id="7419106976560586862">Profil yolu</translation>
@@ -3659,6 +3668,7 @@
 <translation id="7485085230273446323">Biznes və Sənaye</translation>
 <translation id="7485870689360869515">Heç bir data tapılmadı.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> uyğunluğunuzu yoxlayacaq (kredit balınıza təsir etməyəcək). Təsdiq edilərsə, <ph name="BNPL_ISSUER_NAME" /> seçim etmək və alışınızı tamamlamaq üçün ödəniş planları təqdim edəcək.</translation>
 <translation id="7489392576326061356">Şampun və kondisionerlər</translation>
 <translation id="7495528107193238112">Bu məzmun bloklanıb. Problemi düzəltmək üçün sayt sahibi ilə əlaqə saxlayın.</translation>
 <translation id="749865518782565832">Santexnika</translation>

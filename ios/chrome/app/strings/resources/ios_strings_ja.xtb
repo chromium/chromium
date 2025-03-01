@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">タブを閉じる</translation>
-<translation id="230956208401264723">すべての追跡対象の荷物がこのカルーセルに表示されます</translation>
 <translation id="2311077293164383652">固定タブを閉じる</translation>
 <translation id="2316129865977710310">いいえ</translation>
 <translation id="2320166752086256636">キーボードを非表示</translation>
@@ -471,7 +470,6 @@
 <translation id="2931440415625410757">手順を表示</translation>
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
 <translation id="2962516096219646456">自動入力データをすべて表示</translation>
-<translation id="2963044753825419640">可能な場合にウェブサイトやアプリが既存のアカウントを自動的にアップグレードしてパスキーを使用できるようにする</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
 <translation id="2989523299700148168">最近のアクセス</translation>
 <translation id="2989805286512600854">新しいタブで開く</translation>
@@ -1459,7 +1457,6 @@
 <translation id="7253951228444156601">パスワードを確認しています…</translation>
 <translation id="7261217796641151584">グループを共有</translation>
 <translation id="7266578100016339897">タブの整理に役立つこの機能は、設定でいつでも変更できます。</translation>
-<translation id="7271220006028561438">パスキーへの自動アップグレードを許可する</translation>
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>
 <translation id="7293429513719260019">言語を選択</translation>
 <translation id="7300448350764260141">オンラインの脅威に対する保護を強化しましょう。</translation>

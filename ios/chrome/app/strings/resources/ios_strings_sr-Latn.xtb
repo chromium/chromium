@@ -225,6 +225,7 @@
 <translation id="189531189292803889">Sadržaj iPad-a je nedavno vraćen, zbog čega je podrazumevani pregledač možda promenjen.</translation>
 <translation id="1901366738768303267">Kako da koristim ovu funkciju?</translation>
 <translation id="1901600657316773839">Zadrži izbor</translation>
+<translation id="1902277226107477495">Otkrivanje adresa je isključeno. Ponovo ga uključite u Podešavanjima.</translation>
 <translation id="1904580727789512086">URL-ovi koje posećujete se čuvaju na Google nalogu</translation>
 <translation id="1911619930368729126">Otpremi u Google disk</translation>
 <translation id="1923342640370224680">Prethodni sat</translation>
@@ -321,7 +322,6 @@
 <translation id="2299218006564889602">Lozinke se šifruju na uređaju pre nego što se sačuvaju u Google menadžeru lozinki.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Zatvori karticu</translation>
-<translation id="230956208401264723">Pogledajte sve pakete koje pratite ovde u ovoj vrtešci</translation>
 <translation id="2311077293164383652">Zatvori zakačenu karticu</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="2320166752086256636">Sakrij tastaturu</translation>
@@ -471,7 +471,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2931440415625410757">Prikaži uputstva</translation>
 <translation id="2952278131021475699">Pretraga pomoću kamere Objektiva</translation>
 <translation id="2962516096219646456">Pogledajte sve podatke Automatskog popunjavanja</translation>
-<translation id="2963044753825419640">Dozvolite veb-sajtovima i aplikacijama da automatski nadograđuju postojeće naloge kako bi koristili pristupne ključeve kada su dostupni</translation>
 <translation id="2969979262385602596">Prijavljivanje nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="2989523299700148168">Nedavno posećeno</translation>
 <translation id="2989805286512600854">Otvori na novoj kartici</translation>
@@ -1459,7 +1458,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7253951228444156601">Proveravaju se lozinke…</translation>
 <translation id="7261217796641151584">Deli grupu</translation>
 <translation id="7266578100016339897">To vam pomaže da ostanete organizovani. To možete da promenite u podešavanjima u bilo kom trenutku.</translation>
-<translation id="7271220006028561438">Dozvoli automatsku nadogradnju pristupnih ključeva</translation>
 <translation id="7272437679830969316">Verifikacija identiteta nije uspela. Lozinka nije kopirana.</translation>
 <translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="7300448350764260141">Dodajte još jedan nivo zaštite od onlajn pretnji.</translation>
@@ -1491,6 +1489,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7425053386765766120">Dodaj način plaćanja…</translation>
 <translation id="7425346204213733349">Promene obeleživača, istorije, lozinki i drugih podešavanja se više neće sinhronizovati sa Google nalogom. Međutim, postojeći podaci će ostati sačuvani na Google nalogu.</translation>
 <translation id="742664698522525515">Želite da zadržite grupu?</translation>
+<translation id="7431851541687113774">Isključi otkrivanje adrese</translation>
 <translation id="7431991332293347422">Kontrolišite kako se istorija pregledanja koristi za personalizovanje Pretrage i drugih usluga</translation>
 <translation id="7435356471928173109">Isključio je administrator</translation>
 <translation id="7438481509621345350">Sada ćete videti priče sa <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>

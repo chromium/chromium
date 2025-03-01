@@ -276,6 +276,7 @@
 <translation id="4720851490453439956">Google Güncelleyici Dahili Hizmeti</translation>
 <translation id="4724676981607797757">Desteklenmeyen bir protokol hatası nedeniyle yükleme işlemi başarısız oldu.</translation>
 <translation id="4728575227883772061">Belirlenemeyen bir hata nedeniyle yükleme başarısız oldu. Google Chrome şu anda çalışır durumdaysa, kapatıp yeniden deneyin.</translation>
+<translation id="4737281654364167024">Devam etmek için Chrome'da <ph name="EMAIL" /> hesabıyla oturum açın. Böylece kuruluşunuzun politikalarına uyabilirsiniz.</translation>
 <translation id="4741235124132242877">Sabitlendi. Araç çubuğundan Google Lens'i tekrar kullanabilirsiniz.</translation>
 <translation id="4747730611090640388">Chrome, ilgi alanlarınızı tahmin edebilir.  Daha sonra ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan ilgi alanlarınızı göstermesini isteyebilir.</translation>
 <translation id="475321580758063259"><ph name="ACCOUNT_EMAIL" /> Google Hesabınızdaki Chrome verilerini kullanmaya devam etmek için Chrome'u güncelleyin</translation>
@@ -581,6 +582,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8781673607513845160">Kameranızı kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chrome'a erişim izni verin</translation>
 <translation id="878572486461146056">Yükleme hatası: Ağ yöneticiniz, yükleme işlemini engelleyen bir grup politikası uygulamış: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Dosya, <ph name="USER_EMAIL" /> dahil olmak üzere kişisel ve sosyal ağ hesaplarınıza zarar verebileceği için Chrome bu indirme işlemini engelledi</translation>
+<translation id="8798550110818026746">Kuruluşunuz; yer işaretleri, geçmiş ve şifreler gibi tarama verilerini görüp yönetebilir. Kişisel Chrome profillerindeki tarama verilerini göremez</translation>
 <translation id="8801657293260363985">Chrome'un JavaScript ve WebAssembly motoru olan V8, site performansını iyileştirmek için kullanılır</translation>
 <translation id="8821043148920470810">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 7 kullanıyor.</translation>
 <translation id="8823341990149967727">Chrome Sürümü Eski</translation>

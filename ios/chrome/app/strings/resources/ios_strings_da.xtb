@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Luk fane</translation>
-<translation id="230956208401264723">Se alle dine sporede pakker her i denne karrusel</translation>
 <translation id="2311077293164383652">Luk fastgjort fane</translation>
 <translation id="2316129865977710310">Nej tak</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
@@ -471,7 +470,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2931440415625410757">Vis vejledning</translation>
 <translation id="2952278131021475699">Lens-kamerasøgning</translation>
 <translation id="2962516096219646456">Se alle Autofyld-data</translation>
-<translation id="2963044753825419640">Tillad, at websites og apps automatisk opgraderer eksisterende konti til brug af adgangsnøgler, når dette er muligt</translation>
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
 <translation id="2989805286512600854">Åbn på ny fane</translation>
@@ -1117,6 +1115,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5817176759448082654">Adgangskodetjek</translation>
 <translation id="5819208479324046259">Administreres af <ph name="MANAGER" /> <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkroniserer…</translation>
+<translation id="583923961930319521">Brug adgangskoder på alle dine enheder</translation>
 <translation id="5844284118433003733">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="5854790677617711513">Ældre end 30 dage</translation>
 <translation id="5857770089550859117">Angiv adgangssætningen for at påbegynde synkroniseringen.</translation>
@@ -1458,7 +1457,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7253951228444156601">Tjekker adgangskoder…</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjælper dig med at bevare overblikket. Du kan til enhver tid ændre dette i indstillingerne.</translation>
-<translation id="7271220006028561438">Tillad automatisk opgradering af adgangsnøgle</translation>
 <translation id="7272437679830969316">Din identitet kunne ikke verificeres. Adgangskoden blev ikke kopieret.</translation>
 <translation id="7293429513719260019">Vælg sprog</translation>
 <translation id="7300448350764260141">Tilføj ekstra beskyttelse mod onlinetrusler.</translation>
@@ -1692,6 +1690,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8221665793629393739">Påmindelse om at besøge siden igen</translation>
 <translation id="8230355548492839438">Find forrige</translation>
 <translation id="8232956427053453090">Behold data</translation>
+<translation id="8233237502828137700">Luk bannerpromovering</translation>
 <translation id="8238711781852526820">Skjul "Prissporing"</translation>
 <translation id="8258999165172757081">Tilføjet</translation>
 <translation id="8261506727792406068">Slet</translation>

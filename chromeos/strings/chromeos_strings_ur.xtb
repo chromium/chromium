@@ -81,6 +81,7 @@
 <translation id="131461803491198646">ہوم نیٹ ورک، رومنگ نہیں</translation>
 <translation id="1327977588028644528">گیٹ وے</translation>
 <translation id="1328223165223065150">وال پیپر کا رنگ</translation>
+<translation id="1329478709358066995">ٹرانسکرپٹ:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">اسکین کرنے کی جگہ تک فٹ کریں</translation>
 <translation id="1343442362630695901">سالٹ لیک</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">پس منظر کے بارے میں</translation>
 <translation id="6939667434404433010">ریکارڈنگ کا نام تلاش کریں</translation>
 <translation id="6939766318048400022">کیفے</translation>
+<translation id="6942253772720771875">اپنے تاثرات کا اشتراک کریں یا اپنے مسئلے کی وضاحت کریں</translation>
 <translation id="6943893908656559156">ریموٹ شناخت (اختیاری)</translation>
 <translation id="6953137545147683679">سنہرا</translation>
 <translation id="6957231940976260713">سروس کا نام</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">یہ <ph name="DEVICE_TYPE" /> انٹرپرائز کے زیر انتظام ہے</translation>
 <translation id="8398927464629426868">آلے کی فی الحال چارج ہونے یا چارج ختم ہونے کی شرح</translation>
 <translation id="8403988360557588704"><ph name="ART_FEATURE" /> کے طرز میں <ph name="ART_MOVEMENT" /> کی پینٹنگ</translation>
+<translation id="8409219750150841791">تخلیق کردہ خلاصہ:</translation>
 <translation id="8410244574650205435">خودکار طور پر پتہ لگایا گيا</translation>
 <translation id="8420955526972171689">ہارڈ ویئر کے مسائل کے لیے ٹیسٹس اور ٹربل شوٹنگ چلائیں</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> کیلئے مزید کارروائیاں</translation>
 <translation id="86356131183441916">ہلکا جامنی</translation>
 <translation id="8647595191512746911">آڈیو ٹرانسکرپشن</translation>
+<translation id="8648578954147795914">تخلیق کردہ نام:</translation>
 <translation id="8650852232143958317">‏اپنی Gmail اور Google Drive فائلز اپنے ساتھ لے جائیں</translation>
 <translation id="8651481478098336970">والیوم خاموش کریں</translation>
 <translation id="8655295600908251630">چینل</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">‏معلوم APNs دکھائیں</translation>
 <translation id="932327136139879170">ھوم</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">‏یقینی بنائیں کہ آپ کا مائیک منسلک ہے یا اپنا Chromebook ری سٹارٹ کرنے کی کوشش کریں</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> کے لیے کلید موجود نہیں ہے۔ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">پوری ریکارڈنگ کے دوران آوازوں کا موازنہ کریں تاکہ ٹرانسکرپٹ میں اس بات کی عکاسی کی جا سکے کہ ہر اسپیکر نے کیا اور کب کہا</translation>

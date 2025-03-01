@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'acbb4e068a9dc969136847123a6aa757699628bf',
+  'devtools_frontend_revision': '11eb6de1d772c969654b9a6acb4aa0db94085378',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'fbe37c15226180b3cda9f1e8b2abbedc20949334',
+  'dawn_revision': 'f0096652bcbb7d6d68f162fc096e29225986f90d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '938cd2cb718047df01ecb5fd0909dd6c0693e9c0',
+    '2a10917fbf3d124349f07eea0117b4529110935b',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1611,7 +1611,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'OCY6xAd-hXvEglRayPCtoxUnCjTZWsXoE4y-1pnNscIC',
+          'version': 'rR9UC2a3MCrC3Qwq6wB9oxM_nOwVj-urr-Y-IhAY4kwC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2270,7 +2270,7 @@ deps = {
   },
 
   'src/third_party/libjpeg_turbo':
-    Var('chromium_git') + '/chromium/deps/libjpeg_turbo.git' + '@' + '927aabfcd26897abb9776ecf2a6c38ea5bb52ab6',
+    Var('chromium_git') + '/chromium/deps/libjpeg_turbo.git' + '@' + '04bc0e632138b8bf0b1964542c05e7f7fc14d0be',
 
   'src/third_party/liblouis/src': {
       'url': Var('chromium_git') + '/external/liblouis-github.git' + '@' + '9700847afb92cb35969bdfcbbfbbb74b9c7b3376',
@@ -2622,7 +2622,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'a5lzGHzibplY-YfBMiaHgYRnmll4wB1csMwXCzHMoH8C',
+              'version': '9rff5hQpCsGC_q9Yu2hODt2MGBdQV9RlZndgggJ9E3wC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2943,7 +2943,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': '9FBdjqxHUOd5_fyw6pFTden_BKuoBQXraTaSgcK3E_IC',
+        'version': 'DV-jU1Bbtz6MRHK3RVeF06UZP-1tQ3pSYYaXlkDwLBUC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2954,7 +2954,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'jg_pE0n7EUYHnKTok6YN9ApKYKfkmoOTtDu-X3SS76EC',
+        'version': 'ZiKfg_HJMw0POMpllEj0W__IqtUyvereAyzC4e5eXPEC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4552,7 +4552,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '7320beb736e5399d9b825dbe2ad198a62f7a3b1e',
+        '908b8fd5bdfd2f92d182d44fbc389f1c5e6c6f95',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

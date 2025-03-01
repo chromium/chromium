@@ -810,6 +810,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4777866634702576038">Eliminare il gruppo di schede?</translation>
 <translation id="4778653490315793244">Nessun contenuto da mostrare</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> è il tuo motore di ricerca predefinito</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vuole usare le informazioni personali del tuo portafoglio digitale.</translation>
 <translation id="4787736314074622408">Eliminare il file <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Scopri in che modo Chrome ti protegge</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -933,6 +934,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
 <translation id="5375374982898812658">Perderai immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i tuoi dispositivi</translation>
 <translation id="5375577065097716013">Cerca immagine con Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vuole usare le informazioni personali del tuo portafoglio digitale. Continua soltanto se ritieni attendibile questo sito. Siti pericolosi potrebbero indurti con l'inganno a rivelare dati come il tuo nome legale o il numero del tuo documento di identità.</translation>
 <translation id="5394331612381306435">Esci dalla modalità di navigazione in incognito</translation>
 <translation id="5395376160638294582">Assicurati di poter usare sempre i dati di Chrome nel tuo Account Google</translation>
 <translation id="539881862970320163">È stata suggerita una password efficace. Tastiera nascosta.</translation>
@@ -1807,6 +1809,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9157212632995922070">Scegli un account per continuare su <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Condividi solo contenuti</translation>
+<translation id="9161172953291434881">Ti fidi di come questo sito userà i tuoi dati?</translation>
 <translation id="9168847423516963845">Sposta la barra degli indirizzi in basso</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

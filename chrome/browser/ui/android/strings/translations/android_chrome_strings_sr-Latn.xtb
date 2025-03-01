@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Ne nudi prevod ovih sajtova</translation>
 <translation id="1145536944570833626">Izbrišite postojeće podatke</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> će se otvoriti u Chrome-u. Ako nastavite, prihvatate <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Niste sačuvali nijednu lozinku u Google menadžeru lozinki.</translation>
 <translation id="115483310321669804">Koristite lozinku <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174479719160874822">Chrome će zahtevati mobilni sajt kada je ekran uzak</translation>
@@ -1371,10 +1372,12 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7224097611345298931">Sve lozinke sačuvane samo na ovom uređaju za Chrome i <ph name="CHROME_CHANNEL" /> su objedinjene. Možete automatski da popunjavate sve sačuvane lozinke u obe aplikacije.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="7230064152164845085">Pređi u režim bez arhiviranja</translation>
+<translation id="7237724030342645845">Google menadžer lozinki je prestao da radi</translation>
 <translation id="72415438529550637">Predlog lozinke je zatvoren.</translation>
 <translation id="7260367682327802201">Android uređaj može da ima slično podešavanje. Ako je merenje oglasa uključeno u Chrome-u i na Android uređaju, kompanija možda može da meri efikasnost oglasa na veb-sajtovima koje posećujete i u aplikacijama koje koristite.</translation>
 <translation id="727288900855680735">Želite da pošaljete <ph name="ONE_TIME_CODE" /> na <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sajt je blokiran</translation>
+<translation id="7276868533747677875">Ako ste prethodno izvezli lozinke, potražite CSV fajl na uređaju i uvezite lozinke u željeni menadžer lozinki.</translation>
 <translation id="7289049772085228972">Imate najjaču Chrome zaštitu</translation>
 <translation id="7289303553784750393">Ako ste onlajn, ali ovaj problem nastavi da se javlja, možete da probate druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Promena naziva nije moguća</translation>
@@ -1549,6 +1552,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8027395186860110042">Lozinke će možda uskoro prestati da rade</translation>
 <translation id="8027863900915310177">Odaberite gde želite da preuzmete</translation>
 <translation id="8030852056903932865">Odobri</translation>
+<translation id="8031805944372049238">Da biste počeli da čuvate i koristite lozinke pomoću Google menadžera lozinki, ažurirajte Google Play usluge.</translation>
 <translation id="8032569120109842252">Pratite</translation>
 <translation id="8037750541064988519">Još <ph name="DAYS" /> dana</translation>
 <translation id="8037801708772278989">Provereno malopre</translation>

@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Ваші паролі шифруються на пристрої, перш ніж зберегтися в Менеджері паролів Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Закрити вкладку</translation>
-<translation id="230956208401264723">У цій каруселі можна переглянути всі відстежувані відправлення</translation>
 <translation id="2311077293164383652">Закрити закріплену вкладку</translation>
 <translation id="2316129865977710310">Ні, дякую</translation>
 <translation id="2320166752086256636">Сховати клавіатуру</translation>
@@ -471,7 +470,6 @@
 <translation id="2931440415625410757">Показати вказівки</translation>
 <translation id="2952278131021475699">Пошук за допомогою Об’єктива</translation>
 <translation id="2962516096219646456">Переглянути всі дані автозаповнення</translation>
-<translation id="2963044753825419640">Дозволити вебсайтам і додаткам автоматично переводити наявні облікові записи на ключі доступу (якщо доступні)</translation>
 <translation id="2969979262385602596">Не вдалося ввійти. Спробуйте пізніше.</translation>
 <translation id="2989523299700148168">Нещодавно відвідані</translation>
 <translation id="2989805286512600854">Відкрити в новій вкладці</translation>
@@ -1117,6 +1115,7 @@
 <translation id="5817176759448082654">Перевірка паролів</translation>
 <translation id="5819208479324046259">Веб-переглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Синхронізація…</translation>
+<translation id="583923961930319521">Використовуйте паролі на всіх пристроях</translation>
 <translation id="5844284118433003733">Якщо ви ввійшли у свій обліковий запис Google, ці дані зв’язуються з ним. Завдяки цьому ми можемо захищати вас у всіх сервісах Google, наприклад підвищити захист у Gmail після інциденту безпеки.</translation>
 <translation id="5854790677617711513">Понад 30 днів тому</translation>
 <translation id="5857770089550859117">Введіть парольну фразу, щоб почати синхронізацію.</translation>
@@ -1458,7 +1457,6 @@
 <translation id="7253951228444156601">Перевірка паролів…</translation>
 <translation id="7261217796641151584">Поділитися групою</translation>
 <translation id="7266578100016339897">Так ви зможете краще впорядкувати роботу. Це можна будь-коли змінити в налаштуваннях.</translation>
-<translation id="7271220006028561438">Дозволити автоматичне оновлення ключів доступу</translation>
 <translation id="7272437679830969316">Не вдалося підтвердити особу. Пароль не скопійовано.</translation>
 <translation id="7293429513719260019">Вибрати мову</translation>
 <translation id="7300448350764260141">Додайте ще один рівень захисту від загроз в Інтернеті.</translation>
@@ -1692,6 +1690,7 @@
 <translation id="8221665793629393739">Нагадування відвідати цей сайт повторно</translation>
 <translation id="8230355548492839438">Знайти попереднє</translation>
 <translation id="8232956427053453090">Зберігати дані</translation>
+<translation id="8233237502828137700">Закрити рекламний банер</translation>
 <translation id="8238711781852526820">Сховати модуль "Відстеження цін"</translation>
 <translation id="8258999165172757081">Додано</translation>
 <translation id="8261506727792406068">Видалити</translation>

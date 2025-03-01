@@ -182,44 +182,6 @@ TEST_F(AutofillAiSuggestionsTest,
   EXPECT_FALSE(suggestions.empty());
 }
 
-TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_LoyaltyCardEntity) {
-  autofill::EntityInstance loyalty_card_entity =
-      autofill::test::GetLoyaltyCardEntityInstance();
-  std::vector<autofill::EntityInstance> entities = {loyalty_card_entity};
-
-  autofill::FieldType triggering_field_type = autofill::LOYALTY_MEMBERSHIP_ID;
-  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::LOYALTY_MEMBERSHIP_PROVIDER,
-       autofill::EMAIL_ADDRESS});
-  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(), entities, kAppLocaleUS);
-
-  // There should be only one suggestion whose main text matches the entity
-  // value for the `triggering_field_type`.
-  EXPECT_THAT(suggestions, SizeIs(Ge(1)));
-  EXPECT_EQ(suggestions[0].main_text.value,
-            GetEntityInstanceValueForFieldType(loyalty_card_entity,
-                                               triggering_field_type));
-
-  const autofill::Suggestion::AutofillAiPayload* payload =
-      absl::get_if<autofill::Suggestion::AutofillAiPayload>(
-          &suggestions[0].payload);
-  ASSERT_TRUE(payload);
-  EXPECT_EQ(suggestions[0].icon, autofill::Suggestion::Icon::kLoyalty);
-
-  // The triggering/first field is of AutofillAi Type.
-  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[0]),
-            GetEntityInstanceValueForFieldType(loyalty_card_entity,
-                                               triggering_field_type));
-  // The second field in the form is also of AutofillAi.
-  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[1]),
-            GetEntityInstanceValueForFieldType(
-                loyalty_card_entity, autofill::LOYALTY_MEMBERSHIP_PROVIDER));
-  // The third field is not of AutofillAi type.
-  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[2]),
-            std::nullopt);
-}
-
 TEST_F(AutofillAiSuggestionsTest,
        GetFillingSuggestion_SkipFieldsThatDoNotMatchTheTriggeringFieldSection) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
@@ -255,9 +217,9 @@ TEST_F(AutofillAiSuggestionsTest,
 }
 
 TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
-  autofill::EntityInstance loyalty_card_entity =
-      autofill::test::GetLoyaltyCardEntityInstance();
-  std::vector<autofill::EntityInstance> entities = {loyalty_card_entity};
+  autofill::EntityInstance drivers_license_entity =
+      autofill::test::GetDriversLicenseEntityInstance();
+  std::vector<autofill::EntityInstance> entities = {drivers_license_entity};
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form =

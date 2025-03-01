@@ -809,6 +809,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4777866634702576038">Chcete odstrániť skupinu kariet?</translation>
 <translation id="4778653490315793244">Zatiaľ nie je čo zobraziť</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> je váš predvolený vyhľadávač</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> chce používať osobné údaje z vašej digitálnej peňaženky.</translation>
 <translation id="4787736314074622408">Chcete súbor <ph name="ITEM_TITLE" /> odstrániť?</translation>
 <translation id="4793679854893018356">Ako vás Chrome chráni</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5355191726083956201">Je zapnutá rozšírená ochrana</translation>
 <translation id="5375374982898812658">Okamžite stratíte prístup ku skupine kariet <ph name="GROUP_NAME" />, ktorá bude odstránená zo všetkých vašich zariadení</translation>
 <translation id="5375577065097716013">Hľadať obrázok pomocou funkcie Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> chce používať osobné údaje z vašej digitálnej peňaženky. Pokračujte iba v prípade, že tomuto webu dôverujete. Nebezpečné weby vás môžu podvodom presvedčiť, aby ste prezradili informácie, ako je vaše celé meno alebo číslo dokladu totožnosti.</translation>
 <translation id="5394331612381306435">Ukončiť inkognito</translation>
 <translation id="5395376160638294582">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť údaje Chromu</translation>
 <translation id="539881862970320163">Bolo navrhnuté silné heslo. Klávesnica je skrytá.</translation>
@@ -1803,6 +1805,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9157212632995922070">Vyberte účet, pomocou ktorého chcete pokračovať na web <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Zdieľať iba obsah</translation>
+<translation id="9161172953291434881">Dôverujete tomuto webu v súvislosti so svojimi údajmi?</translation>
 <translation id="9168847423516963845">Presunúť panel s adresou úplne nadol</translation>
 <translation id="9169507124922466868">História navigácie je dopoly otvorená</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

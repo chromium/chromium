@@ -809,6 +809,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4777866634702576038">Табын бүлгийг устгах уу?</translation>
 <translation id="4778653490315793244">Одоогоор харуулах зүйл алга</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> нь таны өгөгдмөл хайлтын систем юм</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> таны дижитал түрийвчээс хувийн мэдээллийг ашиглахыг хүсэж байна.</translation>
 <translation id="4787736314074622408">Та <ph name="ITEM_TITLE" />-г устгахыг хүсэж байна уу?</translation>
 <translation id="4793679854893018356">Chrome таныг хэрхэн аюулгүй байлгадаг болохыг мэдэж авна уу</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="5375374982898812658">Та “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
 <translation id="5375577065097716013">Google Lens-р зураг хайх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> таны дижитал түрийвчээс хувийн мэдээллийг ашиглахыг хүсэж байна. Та зөвхөн энэ сайтад итгэдэг бол үргэлжлүүлнэ үү. Аюултай сайт таныг хууль ёсны нэр, ID дугаараа ил болгох үйлдэл хийлгэхээр хуурч болзошгүй.</translation>
 <translation id="5394331612381306435">Нууцлалтай горимоос гарах</translation>
 <translation id="5395376160638294582">Та Google Бүртгэлдээ Chrome-н өгөгдлийг үргэлж ашиглах боломжтой болохоо баталгаажуулна уу</translation>
 <translation id="539881862970320163">Сайн нууц үг санал болгосон. Гарыг нуусан.</translation>
@@ -1803,6 +1805,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> дээр үргэлжлүүлэхийн тулд бүртгэл сонгоно уу</translation>
 <translation id="9158770349521403363">Зөвхөн контент хуваалцана уу</translation>
+<translation id="9161172953291434881">Та энэ сайтад өгөгдлөө даатгахдаа итгэлтэй байна уу?</translation>
 <translation id="9168847423516963845">Хаяг оруулах хэсгийг доош зөөх</translation>
 <translation id="9169507124922466868">Навигацын түүхийг хагас нээлээ</translation>
 <translation id="918419812064856259">Chrome Бета</translation>

@@ -128,7 +128,7 @@ class RecentActivityRowImageView : public views::View {
   ~RecentActivityRowImageView() override;
 
   // Returns whether there is an avatar image to show.
-  bool ShouldShowAvatar() const { return !avatar_image_.isNull(); }
+  bool ShouldShowAvatar() const { return avatar_request_complete_; }
 
   // Returns whether there is a favicon image to show.
   bool ShouldShowFavicon() const { return !resized_favicon_image_.isNull(); }
@@ -144,7 +144,14 @@ class RecentActivityRowImageView : public views::View {
   // Perform the favicon fetch, calling |SetFavicon| when complete.
   void FetchFavicon();
   void SetFavicon(const favicon_base::FaviconImageResult& favicon);
-  void PaintFavicon(gfx::Canvas* canvas, gfx::Rect avatar_bounds);
+  void PaintFavicon(gfx::Canvas* canvas, const gfx::Rect& avatar_bounds);
+  void PaintPlaceholderBackground(gfx::Canvas* canvas, const gfx::Rect& bounds);
+  void PaintFallbackIcon(gfx::Canvas* canvas, const gfx::Rect& bounds);
+
+  // When the avatar request is complete (or there is no avatar to
+  // request), this will be set to true. While the value is false, we
+  // will paint the background color as a placeholder for the avatar.
+  bool avatar_request_complete_ = false;
 
   base::CancelableTaskTracker favicon_fetching_task_tracker_;
   gfx::ImageSkia avatar_image_;

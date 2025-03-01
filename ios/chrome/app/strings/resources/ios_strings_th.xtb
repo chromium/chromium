@@ -323,7 +323,6 @@
 <translation id="2299218006564889602">ระบบจะเข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">ปิดแท็บ</translation>
-<translation id="230956208401264723">ดูแพ็กเกจที่ติดตามทั้งหมดของคุณได้ในภาพสไลด์นี้</translation>
 <translation id="2311077293164383652">ปิดแท็บที่ปักหมุด</translation>
 <translation id="2316129865977710310">ไม่เป็นไร</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
@@ -473,7 +472,6 @@
 <translation id="2931440415625410757">แสดงวิธีการ</translation>
 <translation id="2952278131021475699">การค้นหาด้วยกล้องโดยใช้ Lens</translation>
 <translation id="2962516096219646456">ดูข้อมูลการป้อนข้อความอัตโนมัติทั้งหมด</translation>
-<translation id="2963044753825419640">อนุญาตให้เว็บไซต์และแอปอัปเกรดบัญชีที่มีอยู่เพื่อใช้พาสคีย์โดยอัตโนมัติ (หากมี)</translation>
 <translation id="2969979262385602596">ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="2989523299700148168">เข้าชมล่าสุด</translation>
 <translation id="2989805286512600854">เปิดในแท็บใหม่</translation>
@@ -1462,7 +1460,6 @@
 <translation id="7253951228444156601">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="7261217796641151584">แชร์กลุ่ม</translation>
 <translation id="7266578100016339897">ซึ่งจะช่วยให้คุณจัดระเบียบข้อมูลได้ คุณสามารถเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า</translation>
-<translation id="7271220006028561438">อนุญาตให้อัปเกรดพาสคีย์อัตโนมัติ</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="7293429513719260019">เลือกภาษา</translation>
 <translation id="7300448350764260141">เพิ่มการป้องกันภัยคุกคามทางออนไลน์ขึ้นอีกชั้น</translation>

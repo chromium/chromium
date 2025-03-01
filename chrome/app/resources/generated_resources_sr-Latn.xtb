@@ -461,6 +461,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1303101771013849280">HTML datoteka sa obeleživačima</translation>
 <translation id="1303671224831497365">Nije pronađen nijedan Bluetooth uređaj</translation>
 <translation id="130491383855577612">Linux aplikacije i datoteke su zamenjene</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Uklonite 1 dodatak i podatke koje je sačuvao na ovom uređaju}one{Uklonite {ACCOUNT_EXTENSIONS_COUNT} dodatak i podatke koje su sačuvali na ovom uređaju}few{Uklonite {ACCOUNT_EXTENSIONS_COUNT} dodatka i podatke koje su sačuvali na ovom uređaju}other{Uklonite {ACCOUNT_EXTENSIONS_COUNT} dodataka i podatke koje su sačuvali na ovom uređaju}}</translation>
 <translation id="1306518237408758433">Otvorite <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Promeni podešavanja</translation>
 <translation id="1307165550267142340">Napravili ste PIN</translation>
@@ -1206,6 +1207,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1826192255355608658">Sinhronizujte obeleživače, lozinke, istoriju i drugo u Chrome pregledaču</translation>
 <translation id="1826516787628120939">Provera</translation>
 <translation id="1826657447823925402">Obrnuto skrolovanje je onemogućeno</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> boja</translation>
 <translation id="1827504459960247692">Naziv hotspota</translation>
 <translation id="1828378091493947763">Ova dodatna komponenta nije podržana na ovom uređaju</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Otvori sve}=1{&amp;Otvori obeleživač}one{&amp;Otvori sve ({COUNT})}few{&amp;Otvori sve ({COUNT})}other{&amp;Otvori sve ({COUNT})}}</translation>
@@ -6706,6 +6708,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5749214722697335450">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da vam pružimo bolji doživljaj Android-a tako što ćete automatski slati podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To doprinosi održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu. <ph name="BEGIN_LINK1" />Saznajte više o pokazateljima<ph name="BEGIN_LINK1_END" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Provera spremnosti za privezivanje</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Ovaj dodatak je sačuvan na Google nalogu, ali svi podaci koje je sačuvao samo na ovom uređaju mogu da se izbrišu}one{Ovi dodaci su sačuvani na Google nalogu, ali svi podaci koje su sačuvali samo na ovom uređaju mogu da se izbrišu}few{Ovi dodaci su sačuvani na Google nalogu, ali svi podaci koje su sačuvali samo na ovom uređaju mogu da se izbrišu}other{Ovi dodaci su sačuvani na Google nalogu, ali svi podaci koje su sačuvali samo na ovom uređaju mogu da se izbrišu}}</translation>
 <translation id="5753570386948603678">Izbriši iz istorije</translation>
 <translation id="5756163054456765343">C&amp;entar za pomoć</translation>
 <translation id="5757187557809630523">sledeća pesma</translation>

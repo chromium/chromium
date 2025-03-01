@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Tus contraseñas se cifran en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • n.º <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Cerrar pestaña</translation>
-<translation id="230956208401264723">Consulta todos los paquetes con seguimiento en este carrusel</translation>
 <translation id="2311077293164383652">Cerrar pestaña fija</translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -471,7 +470,6 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2931440415625410757">Mostrar instrucciones</translation>
 <translation id="2952278131021475699">Búsqueda mediante la cámara con Lens</translation>
 <translation id="2962516096219646456">Ver todos los datos de Autocompletar</translation>
-<translation id="2963044753825419640">Permite que los sitios web y las aplicaciones actualicen automáticamente las cuentas para usar claves de acceso cuando estén disponibles</translation>
 <translation id="2969979262385602596">Error al iniciar sesión. Inténtalo más tarde.</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
 <translation id="2989805286512600854">Abrir en una pestaña nueva</translation>
@@ -1459,7 +1457,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7253951228444156601">Comprobando contraseñas…</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Esto te ayuda a mantener el orden. Puedes cambiarlo en los ajustes en cualquier momento.</translation>
-<translation id="7271220006028561438">Permitir actualizaciones automáticas de llaves de acceso</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Añade una capa adicional de protección frente a las amenazas online.</translation>

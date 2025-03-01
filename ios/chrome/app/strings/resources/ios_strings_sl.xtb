@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Gesla se šifrirajo v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Zapri zavihek</translation>
-<translation id="230956208401264723">V tem vrtiljaku si oglejte vse spremljane pakete</translation>
 <translation id="2311077293164383652">Zapri pripeti zavihek</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="2320166752086256636">Skrij tipkovnico</translation>
@@ -471,7 +470,6 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2931440415625410757">Prikaži navodila</translation>
 <translation id="2952278131021475699">Iskanje s fotoaparatom v Googlu Lens</translation>
 <translation id="2962516096219646456">Ogled vseh podatkov samodejnega izpolnjevanja</translation>
-<translation id="2963044753825419640">Spletnim mestom in aplikacijam dovolite, da samodejno nadgradijo obstoječe račune, da bodo uporabljali ključe za dostop, ko bodo na voljo</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2989523299700148168">Nedavno obiskano</translation>
 <translation id="2989805286512600854">Odpri v novem zavihku</translation>
@@ -1459,7 +1457,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7253951228444156601">Preverjanje gesel …</translation>
 <translation id="7261217796641151584">Deli skupino</translation>
 <translation id="7266578100016339897">Tako ostanete organizirani. To lahko kadar koli spremenite v nastavitvah.</translation>
-<translation id="7271220006028561438">Dovoli samodejne nadgradnje ključev za dostop</translation>
 <translation id="7272437679830969316">Identitete ni mogoče preveriti. Geslo ni kopirano.</translation>
 <translation id="7293429513719260019">Izbira jezika</translation>
 <translation id="7300448350764260141">Dodajte še eno raven zaščite pred spletnimi grožnjami.</translation>

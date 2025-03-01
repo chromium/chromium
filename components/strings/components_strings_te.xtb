@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">పేజీని తర్వాత లోడ్ చేయి</translation>
 <translation id="1010225406377140704">కొత్త లింక్ కోసం అడగడానికి పంపినవారిని సంప్రదించండి</translation>
 <translation id="1011206368273183593">ఫైల్స్‌ను సిద్ధం చేస్తోంది</translation>
+<translation id="1012264210825687872">మీరు మీ ఆర్డర్‌ను రివ్యూ చేసిన తర్వాత, మీరు సైన్ ఇన్ చేయాలి లేదా <ph name="BNPL_ISSUER_NAME" /> ఖాతాను క్రియేట్ చేయాలి. ఈ ఖాతా ఆటోమెటిక్‌గా Google Payకు లింక్ చేయబడుతుంది.</translation>
 <translation id="1014509239502131234">ఫలితాన్ని చర్య రద్దు చేస్తోంది</translation>
 <translation id="1015730422737071372">అదనపు వివరాలను అందించండి</translation>
 <translation id="1019413721762100891">ఆఫ్ చేయబడ్డాయి</translation>
@@ -686,6 +687,7 @@
 <translation id="2187317261103489799">గుర్తించు (డిఫాల్ట్)</translation>
 <translation id="2188375229972301266">దిగువ భాగంలో అనేక రంధ్రాలు</translation>
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> గురించి మరింత తెలుసుకోండి</translation>
 <translation id="2200678913752027654">బాగా లేదు అని తెలియజేసే బటన్, మీకు ఈ సూచన ఎందుకు నచ్చలేదు అనే విషయానికి సంబంధించి వివరణాత్మక ఫీడ్‌బ్యాక్‌ను సమర్పించే ఫారమ్‌ను తెరవడానికి ఎంటర్ చేయండి</translation>
 <translation id="2202627062836089804">మీ కార్డ్ వెనుక వైపు</translation>
 <translation id="2204482073374652408">అప్‌డేట్ చేయడం పూర్తయింది!</translation>
@@ -1943,6 +1945,7 @@
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDriveకు అప్‌లోడ్ చేసిన ఫైల్ పాజ్ అయింది</translation>
+<translation id="4389931020843542579">ట్యాబ్ గ్రూప్ లోడ్ అవుతోంది</translation>
 <translation id="4390472908992056574">బ్రిమ్</translation>
 <translation id="4395550503472021297">ఈ పాలసీ, కింద పేర్కొన్న పాలసీల ఆటోమేటిక్ ప్రవర్తనను కంట్రోల్ చేస్తోంది: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">మీ బ్యాంక్ వెబ్‌సైట్‌లో వెరిఫై చేయడానికి పాప్-అప్‌ను తెరుస్తుంది</translation>
@@ -2312,6 +2315,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chromeకి మీ పరికరం <ph name="PERMISSION" /> యాక్సెస్ అవసరం</translation>
 <translation id="510644072453496781">కార్డ్‌బోర్డ్ (ఎండ్)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> కోసం వర్చువల్ కార్డ్ ఫిల్ చేయబడింది</translation>
 <translation id="5108881358339761672">సైట్ సురక్షితమైనది కాదు</translation>
 <translation id="5109892411553231226">పేమెంట్ ఆప్షన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2507,6 +2511,7 @@
             <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">వ్యతిరేక క్రమంలో ఉన్న ఫేస్ అప్</translation>
+<translation id="5445340838622821110">మీరు కాలక్రమేణా పే చేసినప్పుడు, ఒక వన్-టైమ్ వర్చువల్ కార్డ్ నంబర్ ఫిల్ చేయబడుతుంది. ఈ నంబర్ ఈ కొనుగోలుకు మాత్రమే ఉపయోగించబడుతుంది. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">పేజీలు మీ గురించి సేవ్ చేసిన సమాచారాన్ని ఉపయోగించడానికి <ph name="SITE" /> వెబ్‌సైట్‌ను అనుమతించండి</translation>
 <translation id="5452270690849572955">ఈ <ph name="HOST_NAME" /> పేజీ కనుగొనబడలేదు</translation>
 <translation id="5452923259299906094">eWallet, Pixతో పేమెంట్ చేయండి</translation>
@@ -3326,6 +3331,7 @@
 <translation id="6917795328362592458">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
 <translation id="6917873303492266709">ట్యాబ్ గ్రూప్‌లలో షేర్ చేయడానికి, వాటిలో చేరడానికి, సహకరించడానికి, సెట్టింగ్‌లను తెరిచి, 'Chrome సైన్-ఇన్‌ను అనుమతించండి' సెట్టింగ్‌ను ఆన్ చేయండి</translation>
 <translation id="6921197121276419421">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయడం వీలు అవుతుంది</translation>
+<translation id="69238565902785824">మీ ఖాతాను లింక్ చేసి ఉంచడం వలన మీరు <ph name="BNPL_ISSUER_NAME" /> ద్వారా వేగంగా పే చేయవచ్చు, కానీ మీరు <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />‌కు వెళ్లడం ద్వారా దానిని అన్‌లింక్ చేయవచ్చు</translation>
 <translation id="6924013822850225188">చెక్ అవుట్ (బ్యాంక్ నియమాలు వర్తిస్తాయి) సమయంలో మీ కార్డ్ ప్రయోజనాలు కనిపించాలో లేదో ఎంచుకోండి</translation>
 <translation id="6925267999184670015">ఉత్తర అమెరికా B+</translation>
 <translation id="6926216138694948720">టాట్టూలు</translation>
@@ -3391,6 +3397,7 @@
 <translation id="701757816833614688">విజువల్ ఆర్ట్స్ &amp; డిజైన్ సంబంధిత విద్య</translation>
 <translation id="702275896380648118">ఈ సైట్ మీకు నచ్చిన అంశాలను నిర్ణయించి, ఆపై ఇతర సైట్‌లకు యాడ్‌లను సూచిస్తుంది. మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ యాడ్ టాపిక్‌లను Chrome నుండి కూడా పొందుతుంది.</translation>
 <translation id="7023162328967545559">అడ్మిన్ హెచ్చరిక</translation>
+<translation id="7023765275461720661">ఖాతాను లింక్ చేసి, <ph name="BNPL_ISSUER_NAME" />‌తో పేమెంట్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
 <translation id="7030164307377592766">పేమెంట్ ఆప్షన్‌లను పూరించడానికి సంబంధించిన సెట్టింగ్‌లను ఎడిట్ చేయండి</translation>
 <translation id="7031646650991750659">ఏ Google Play యాప్‌లు మీరు ఇన్‌స్టాల్ చేశారు</translation>
@@ -3613,6 +3620,7 @@
 <translation id="741204030948306876">సరే, సమ్మతమే</translation>
 <translation id="7416351320495623771">పాస్‌వర్డ్‌లను నిర్వహించండి…</translation>
 <translation id="7416898721136759658">గ్రాంట్‌లు, స్కాలర్‌షిప్‌లు &amp; ఆర్ధిక సహాయం</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">ప్రోగ్రామింగ్</translation>
 <translation id="7419091773564635591">కంప్యూటర్‌లు &amp; ఎలక్ట్రానిక్స్</translation>
 <translation id="7419106976560586862">ప్రొఫైల్ మార్గం</translation>
@@ -3659,6 +3667,7 @@
 <translation id="7485085230273446323">బిజినెస్ &amp; పారిశ్రామికం</translation>
 <translation id="7485870689360869515">డేటా కనుగొనబడలేదు.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> మీ అర్హతను చెక్ చేస్తుంది (ఇది మీ క్రెడిట్ స్కోర్‌ను ప్రభావితం చేయదు). ఆమోదించబడితే, <ph name="BNPL_ISSUER_NAME" /> మీరు ఎంచుకోవడానికి, మీ కొనుగోలును పూర్తి చేయడానికి పేమెంట్ ప్లాన్‌లను అందిస్తుంది.</translation>
 <translation id="7489392576326061356">షాంపూలు &amp; కండీషనర్‌లు</translation>
 <translation id="7495528107193238112">ఈ కంటెంట్ బ్లాక్ అయింది. ఈ సమస్య పరిష్కారం కోసం సైట్ ఓనర్‌ను సంప్రదించండి.</translation>
 <translation id="749865518782565832">ప్లంబింగ్</translation>

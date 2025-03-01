@@ -276,6 +276,7 @@
 <translation id="4720851490453439956">Wewnętrzna usługa Aktualizatora Google</translation>
 <translation id="4724676981607797757">Instalacja się nie udała z powodu błędu nieobsługiwanego protokołu.</translation>
 <translation id="4728575227883772061">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Google Chrome jest aktualnie uruchomiony, zamknij aplikację i spróbuj ponownie.</translation>
+<translation id="4737281654364167024">Aby przejść dalej, zaloguj się w Chrome jako <ph name="EMAIL" />. Dzięki temu zachowasz zgodność z zasadami organizacji.</translation>
 <translation id="4741235124132242877">Przypięto. Obiektyw Google znajdziesz teraz na pasku narzędzi</translation>
 <translation id="4747730611090640388">Chrome może szacować Twoje zainteresowania.  Później odwiedzana przez Ciebie witryna może wykorzystać te informacje, żeby spersonalizować wyświetlane Ci reklamy.</translation>
 <translation id="475321580758063259">Zaktualizuj Chrome, aby nadal korzystać z danych Chrome na koncie <ph name="ACCOUNT_EMAIL" /></translation>
@@ -345,6 +346,7 @@
 <translation id="5727531838415286053">Jeśli w wyniku losowego wyboru Chrome obejmuje Cię aktywny test, historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania. Zainteresowania są odświeżane, chyba że je usuniesz.</translation>
 <translation id="5736850870166430177">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="5756509061973259733">Na tym urządzeniu istnieje już profil Chrome z tym kontem</translation>
+<translation id="5759947850379142561">Wybierz tekst lub obraz, aby wyszukać go za pomocą Obiektywu Google, lub naciśnij Escape, aby zamknąć Obiektyw</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nie udało się uruchomić Chrome. Spróbuj ponownie.</translation>
 <translation id="5809516625706423866">Nie można połączyć się z internetem. Kod HTTP 401 (Brak autoryzacji). Sprawdź konfigurację proxy.</translation>
@@ -447,6 +449,7 @@
 <translation id="7071827361006050863">Chrome usunie wkrótce dane przeglądania</translation>
 <translation id="7085332316435785646">Określ, czy chcesz uwzględniać historię Chrome w celu lepszego dostosowania usług Google</translation>
 <translation id="7088681679121566888">Masz aktualną wersję Chrome</translation>
+<translation id="7096221564931416126">Wybierz tekst lub obraz, aby wyszukać go za pomocą Obiektywu Google</translation>
 <translation id="7098166902387133879">Google Chrome używa Twojego mikrofonu.</translation>
 <translation id="7099479769133613710">Uruchom ponownie, aby zaktualizować &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Menedżer zadań – Google Chrome</translation>
@@ -579,6 +582,7 @@
 <translation id="8781673607513845160">Aby używać kamery, przyznaj Chrome dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Błąd instalacji: administrator sieci zastosował zasady grupy, które uniemożliwiają instalację: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Pobieranie zostało zablokowane przez Chrome, ponieważ plik może wyrządzić szkody na Twoich kontach osobistych i tych w sieciach społecznościowych, w tym na koncie <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">Twoja organizacja może wyświetlać dane przeglądania (np. zakładki, historię i hasła) oraz nimi zarządzać. Nie widzi danych przeglądania w innych profilach Chrome</translation>
 <translation id="8801657293260363985">V8 to mechanizm JavaScript i WebAssembly w Chrome używany do zwiększania wydajności witryny</translation>
 <translation id="8821043148920470810">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 7.</translation>
 <translation id="8823341990149967727">Chrome jest nieaktualny</translation>

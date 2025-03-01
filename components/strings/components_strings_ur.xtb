@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">صفحہ بعد میں لوڈ کریں</translation>
 <translation id="1010225406377140704">نیا لنک طلب کرنے کے لیے ارسال کنندہ سے رابطہ کریں</translation>
 <translation id="1011206368273183593">فائلز تیار ہو رہی ہیں</translation>
+<translation id="1012264210825687872">‏اپنے آرڈر کا جائزہ لینے کے بعد، آپ کو <ph name="BNPL_ISSUER_NAME" /> اکاؤنٹ میں سائن ان کرنا ہو گا یا نیا بنانا ہوگا۔ یہ اکاؤنٹ خودکار طور پر Google Pay سے لنک ہو جائے گا۔</translation>
 <translation id="1014509239502131234">نتیجہ کی آخری تبدیلی کو کالعدم کیا جا رہا ہے</translation>
 <translation id="1015730422737071372">اضافی تفصیلات فراہم کریں</translation>
 <translation id="1019413721762100891">آف</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">معیشت کی خبریں</translation>
 <translation id="214556005048008348">ادائیگی منسوخ کریں</translation>
 <translation id="2147117373852943630">موسیقی کے ساز و سامان</translation>
+<translation id="2147254250314124496">‫<ph name="EMBEDDED_URL" /> آپ کے بارے میں محفوظ کردہ معلومات کو استعمال کرنا چاہتا ہے</translation>
 <translation id="2148613324460538318">کارڈ شامل کریں</translation>
 <translation id="2148716181193084225">آج</translation>
 <translation id="2149968176347646218">کنکشن محفوظ نہیں ہے</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">پتا لگائیں (ڈیفالٹ)</translation>
 <translation id="2188375229972301266">نیچے متعدد سوراخ</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
+<translation id="2198071643181968308">‫<ph name="BNPL_ISSUER_NAME" /> کے بارے میں مزید جانیں</translation>
 <translation id="2200678913752027654">‏اظہار ناپسندیدگی کا بٹن، آپ اس تجویز کو کیوں ناپسند کرتے ہیں، اس سے متعلق مفصل تاثرات جمع کرانے کی ایک فارم کھولنے کیلئے Enter دبائیں</translation>
 <translation id="2202627062836089804">آپ کے کارڈ کے پیچھے</translation>
 <translation id="2204482073374652408">اپ ڈیٹ مکمل ہو گئی!</translation>
@@ -1949,6 +1952,7 @@
 <translation id="4378154925671717803">فون</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏‫Microsoft OneDrive پر فائل اپ لوڈ کو موقوف کر دیا گیا ہے</translation>
+<translation id="4389931020843542579">ٹیب گروپ لوڈ ہو رہا ہے</translation>
 <translation id="4390472908992056574">کنارہ</translation>
 <translation id="4395550503472021297">یہ پالیسی درج ذیل پالیسیوں کے ڈیفالٹ برتاؤ کو کنٹرول کر رہی ہے: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">آپ کے بینک کی ویب سائٹ پر تصدیق کرنے کے لیے ایک پاپ اپ کھولتا ہے</translation>
@@ -2318,6 +2322,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">‏Chrome کو آپ کے آلے کے <ph name="PERMISSION" /> تک رسائی درکار ہے</translation>
 <translation id="510644072453496781">کارڈ بورڈ (اینڈ)</translation>
+<translation id="5106648964679263509">ورچوئل کارڈ <ph name="BNPL_ISSUER_NAME" /> کے لیے پر کیا گیا</translation>
 <translation id="5108881358339761672">سائٹ محفوظ نہیں ہے</translation>
 <translation id="5109892411553231226">ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2518,7 @@
           <ph name="LIST_ITEM" />فارمز میں درج کردہ معلومات
         <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">اُلٹ ترتیب میں، صفحات کا رُخ اوپر کی جانب</translation>
+<translation id="5445340838622821110">جب آپ وقت کے ساتھ ادائیگی کرتے ہیں تو ایک یک وقتی ورچوئل کارڈ نمبر استعمال کیا جاتا ہے۔ یہ نمبر صرف اسی خریداری کے لیے ہے۔ <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> کو ان معلومات کو استعمال کرنے کی اجازت دیں جو انہوں نے آپ کے بارے میں محفوظ کی ہیں</translation>
 <translation id="5452270690849572955">یہ <ph name="HOST_NAME" /> صفحہ تلاش نہیں کیا جا سکتا ہے</translation>
 <translation id="5452923259299906094">‏‫eWallet اور Pix سے ادائیگی کریں</translation>
@@ -3333,6 +3339,7 @@
 <translation id="6917795328362592458">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، پاس ورڈ مینیجر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="6917873303492266709">‏ٹیب گروپس کا اشتراک کرنے، اس میں شامل ہونے اور تعاون کرنے کے لیے، ترتیبات کھولیں اور Chrome کو سائن ان کرنے کی اجازت دیں کو آن کریں</translation>
 <translation id="6921197121276419421">ویب ایپس کو انسٹال کرنے کی اجازت ہے</translation>
+<translation id="69238565902785824">اپنا اکاؤنٹ لنک کردہ رکھنا آپ کو فوری ادائیگی کرنے میں مدد دیتا ہے <ph name="BNPL_ISSUER_NAME" />،لیکن آپ <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> پر جا کر لنک ختم کر سکتے ہیں</translation>
 <translation id="6924013822850225188">اس بات کا انتخاب کریں کہ آپ کو چیک آؤٹ کے وقت آپ کے کارڈ کے فوائد دکھائی دیں یا نہیں (بینک کی شرائط لاگو ہوتی ہیں)</translation>
 <translation id="6925267999184670015">‏شمالی امریکی B+</translation>
 <translation id="6926216138694948720">باڈی آرٹ</translation>
@@ -3398,6 +3405,7 @@
 <translation id="701757816833614688">بصری فنون اور ڈیزائن سے متعلق تعلیم</translation>
 <translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>
 <translation id="7023162328967545559">منتظم کی وارننگ</translation>
+<translation id="7023765275461720661">اکاؤنٹ لنک کریں اور <ph name="BNPL_ISSUER_NAME" /> کے ساتھ ادائیگی کریں؟</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
 <translation id="7030164307377592766">ادائیگی کے طریقوں کو پُر کرنے کے لیے ترتیبات میں ترمیم کریں</translation>
 <translation id="7031646650991750659">‏آپ نے کن Google Play ایپس کو انسٹال کیا ہے</translation>
@@ -3619,6 +3627,7 @@
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
 <translation id="7416351320495623771">پاس ورڈز کا نظم کریں…</translation>
 <translation id="7416898721136759658">گرانٹس، اسکالرشپس اور مالی مدد</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">پروگرامنگ</translation>
 <translation id="7419091773564635591">کمپیوٹرز اور الیکٹرانکس</translation>
 <translation id="7419106976560586862">پروفائل پاتھ</translation>
@@ -3665,6 +3674,7 @@
 <translation id="7485085230273446323">کاروباری اور انڈسٹریل</translation>
 <translation id="7485870689360869515">کوئی ڈیٹا نہیں ملا۔</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">‫<ph name="BNPL_ISSUER_NAME" /> آپ کی اہلیت کی جانچ کرے گا (اس سے آپ کے کریڈٹ سکور پر کوئی اثر نہیں پڑے گا)۔ منظور ہونے کی صورت میں <ph name="BNPL_ISSUER_NAME" /> آپ کو ادائیگی کے پلانز فراہم کرے گا تاکہ آپ ان میں سے انتخاب کر کے اپنی خریداری مکمل کر سکیں۔</translation>
 <translation id="7489392576326061356">شیمپوز اور کنڈیشنرز</translation>
 <translation id="7495528107193238112">یہ مواد مسدود ہے۔ مسئلے کو حل کرنے کے لیے سائٹ کے مالک سے رابطہ کریں۔</translation>
 <translation id="749865518782565832">پلمبنگ</translation>

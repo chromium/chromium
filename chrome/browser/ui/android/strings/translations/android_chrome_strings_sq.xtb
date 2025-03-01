@@ -809,6 +809,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4777866634702576038">Të fshihet grupi i skedave?</translation>
 <translation id="4778653490315793244">Nuk shfaqet ende asgjë</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> është motori yt i parazgjedhur i kërkimit</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> kërkon të përdorë informacionet e tua personale nga portofoli yt dixhital.</translation>
 <translation id="4787736314074622408">Dëshiron të fshish <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Mëso se si të mban të sigurt Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="5375374982898812658">Do të humbasësh menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>
 <translation id="5375577065097716013">Kërko imazh me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> kërkon të përdorë informacionet e tua personale nga portofoli yt dixhital. Vazhdo vetëm nëse ke besim te ky sajt. Sajtet e rrezikshme mund të të mashtrojnë për të zbuluar gjëra të tilla si emrin tënd ligjor ose numrin e dokumentit tënd të identifikimit.</translation>
 <translation id="5394331612381306435">Dil nga modaliteti "I fshehtë"</translation>
 <translation id="5395376160638294582">Sigurohu që mund t'i përdorësh gjithmonë të dhënat e Chrome në "Llogarinë tënde të Google"</translation>
 <translation id="539881862970320163">U sugjerua një fjalëkalim i fortë. Tastiera është e fshehur.</translation>
@@ -1803,6 +1805,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9148126808321036104">Identifikohu sërish</translation>
 <translation id="9157212632995922070">Zgjidh një llogari për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Ndaj vetëm përmbajtjen</translation>
+<translation id="9161172953291434881">A ke besim te ky sajt me të dhënat e tua?</translation>
 <translation id="9168847423516963845">Zhvendose shiritin e adresave në fund</translation>
 <translation id="9169507124922466868">Historiku i navigimit është gjysmë i hapur</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

@@ -46,7 +46,9 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="266935134738038806">Visiter le site</translation>
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2677748264148917807">Quitter</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Mis à jour il y a <ph name="NUM_WEEKS_ONE" /> semaine}one{Mis à jour il y a <ph name="NUM_WEEKS_MANY" /> semaine}other{Mis à jour il y a <ph name="NUM_WEEKS_MANY" /> semaines}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> onglet ajouté, <ph name="ANY_CHANGED" /> modifiés, <ph name="ANY_CLOSED" /> fermés}one{<ph name="MANY_ADDED" /> onglet ajouté, <ph name="ANY_CHANGED" /> modifiés, <ph name="ANY_CLOSED" /> fermés}other{<ph name="MANY_ADDED" /> onglets ajoutés, <ph name="ANY_CHANGED" /> modifiés, <ph name="ANY_CLOSED" /> fermés}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{Mis à jour il y a <ph name="NUM_HOURS_ONE" /> heure}one{Mis à jour il y a <ph name="NUM_HOURS_MANY" /> heure}other{Mis à jour il y a <ph name="NUM_HOURS_MANY" /> heures}}</translation>
 <translation id="2755485474385016903">Les modifications apportées sont visibles pour tous les membres du groupe</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Créé il y a <ph name="NUM_HOURS_ONE" /> heure}one{Créé il y a <ph name="NUM_HOURS_MANY" /> heure}other{Créé il y a <ph name="NUM_HOURS_MANY" /> heures}}</translation>
 <translation id="2801787514987684416">Afficher les renseignements sur le magasin?</translation>
@@ -83,6 +85,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> onglet modifié, <ph name="ANY_CLOSED" /> fermés}one{<ph name="MANY_CHANGED" /> onglet modifié, <ph name="ANY_CLOSED" /> fermés}other{<ph name="MANY_CHANGED" /> onglets modifiés, <ph name="ANY_CLOSED" /> fermés}}</translation>
 <translation id="4371591986692297148">Inactif</translation>
 <translation id="4431937619879060901">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{Mis à jour il y a <ph name="NUM_DAYS_ONE" /> jour}one{Mis à jour il y a <ph name="NUM_DAYS_MANY" /> jour}other{Mis à jour il y a <ph name="NUM_DAYS_MANY" /> jours}}</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fermer 1 onglet inactif?}one{Fermer <ph name="TAB_COUNT_MANY" /> onglet inactif?}other{Fermer <ph name="TAB_COUNT_MANY" /> onglets inactifs?}}</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>
@@ -163,6 +166,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7688386659311034820">Boîte de dialogue des onglets inactifs</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Partager <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Partager <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Partager <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{Mis à jour il y a <ph name="NUM_YEARS_ONE" /> an}one{Mis à jour il y a <ph name="NUM_YEARS_MANY" /> an}other{Mis à jour il y a <ph name="NUM_YEARS_MANY" /> ans}}</translation>
 <translation id="7773714564112603605">Retirer l'onglet et supprimer le groupe</translation>
 <translation id="7792771145871471484">Examiner les suggestions.</translation>
 <translation id="7792860826279960128">Avis sur les modifications apportées aux groupes d'onglets partagé ouverts à mi-hauteur</translation>
@@ -180,10 +184,12 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur<ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{Mis à jour il y a <ph name="NUM_MINS_ONE" /> minute}one{Mis à jour il y a <ph name="NUM_MINS_MANY" /> minute}other{Mis à jour il y a <ph name="NUM_MINS_MANY" /> minutes}}</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8338427544764842461">Vos groupes d'onglets sont enregistrés ici et sont mis à jour sur tous les appareils sur lesquels vous êtes connecté à votre compte</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Mis à jour il y a <ph name="NUM_MONTHS_ONE" /> mois}one{Mis à jour il y a <ph name="NUM_MONTHS_MANY" /> mois}other{Mis à jour il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
 <translation id="8398929769197326728">Nouveau dossier - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> onglet ajouté, <ph name="ANY_CLOSED" /> fermés}one{<ph name="MANY_ADDED" /> onglet ajouté, <ph name="ANY_CLOSED" /> fermés}other{<ph name="MANY_ADDED" /> onglets ajoutés, <ph name="ANY_CLOSED" /> fermés}}</translation>

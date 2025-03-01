@@ -809,6 +809,7 @@
 <translation id="4777866634702576038">Удалить группу вкладок?</translation>
 <translation id="4778653490315793244">Контент отсутствует</translation>
 <translation id="4782929588435725897">Поисковая система по умолчанию – <ph name="SEARCH_ENGINE" />.</translation>
+<translation id="4784349455504343791">Сайт <ph name="WEBSITE_ORIGIN" /> запрашивает разрешение на использование вашей личной информации из электронного кошелька.</translation>
 <translation id="4787736314074622408">Удалить файл "<ph name="ITEM_TITLE" />"?</translation>
 <translation id="4793679854893018356">Как Chrome обеспечивает безопасность</translation>
 <translation id="4794291718671962615"><ph name="URL" /> (<ph name="MEGABYTES" />)</translation>
@@ -932,6 +933,7 @@
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
 <translation id="5375374982898812658">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна вам и будет удалена со всех ваших устройств.</translation>
 <translation id="5375577065097716013">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771">Сайт <ph name="WEBSITE_ORIGIN" /> запрашивает разрешение на использование вашей личной информации из электронного кошелька. Не предоставляйте к ней доступ, если не доверяете этому сайту. На нем злоумышленники могут попытаться обманом заставить вас раскрыть персональные данные, например полное имя или номер удостоверения личности.</translation>
 <translation id="5394331612381306435">Отключение режима инкогнито</translation>
 <translation id="5395376160638294582">Обеспечьте доступ к данным Chrome в аккаунте Google.</translation>
 <translation id="539881862970320163">Предложен надежный пароль. Клавиатура скрыта.</translation>
@@ -1803,6 +1805,7 @@
 <translation id="9148126808321036104">Повторите вход</translation>
 <translation id="9157212632995922070">Выберите аккаунт, который хотите использовать на сайте <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="9158770349521403363">Поделиться без ссылки</translation>
+<translation id="9161172953291434881">Вы доверяете этому сайту?</translation>
 <translation id="9168847423516963845">Разместить адресную строку внизу</translation>
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>
 <translation id="918419812064856259">Бета-версия Chrome</translation>

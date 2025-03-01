@@ -81,6 +81,7 @@
 <translation id="131461803491198646">హోమ్ నెట్‌వర్క్, రోమింగ్ కాదు</translation>
 <translation id="1327977588028644528">గేట్‌వే</translation>
 <translation id="1328223165223065150">వాల్‌పేపర్ రంగు</translation>
+<translation id="1329478709358066995">టైప్ చేసిన మాటల ఫైల్:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">స్కాన్ ఏరియాకు సెట్ చేయండి</translation>
 <translation id="1343442362630695901">ఉప్పునీటి సరస్సు</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">బ్యాక్‌గ్రౌండ్ గురించి వివరాలు</translation>
 <translation id="6939667434404433010">రికార్డింగ్ పేరును సెర్చ్ చేయండి</translation>
 <translation id="6939766318048400022">కెఫే</translation>
+<translation id="6942253772720771875">మీ ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి లేదా మీ సమస్యను వివరించండి</translation>
 <translation id="6943893908656559156">రిమోట్ గుర్తింపు (ఆప్షనల్)</translation>
 <translation id="6953137545147683679">బంగారం రంగు</translation>
 <translation id="6957231940976260713">సేవ పేరు</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">ఈ <ph name="DEVICE_TYPE" /> ఎంటర్‌ప్రైజ్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="8398927464629426868">పరికరం ప్రస్తుతం ఛార్జ్ అవుతున్న లేదా డిశ్చార్జ్ అవుతున్న రేట్</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> స్టయిల్‌లో <ph name="ART_FEATURE" /> పెయింటింగ్</translation>
+<translation id="8409219750150841791">జెనరేట్ అయిన సారాంశం:</translation>
 <translation id="8410244574650205435">ఆటోమేటిక్‌గా గుర్తించబడింది</translation>
 <translation id="8420955526972171689">హార్డ్‌వేర్ సమస్యలకు టెస్ట్‌లను రన్ చేసి, సమస్యలను పరిష్కరించండి</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="86356131183441916">లేత ఊదా రంగు</translation>
 <translation id="8647595191512746911">ఆడియో మాటల టైపింగ్</translation>
+<translation id="8648578954147795914">జెనరేట్ అయిన పేర్లు:</translation>
 <translation id="8650852232143958317">మీ Gmail, Google Drive ఫైల్స్‌ను మీతో పాటు తీసుకెళ్లండి</translation>
 <translation id="8651481478098336970">వాల్యూమ్‌ను మ్యూట్ చేస్తుంది</translation>
 <translation id="8655295600908251630">ఛానల్</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">తరచుగా ఉపయోగించే APNలను చూపండి</translation>
 <translation id="932327136139879170">హోమ్</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">మీ మైక్ కనెక్ట్ అయి ఉందని నిర్ధారించుకోండి లేదా మీ Chromebookను రీస్టార్ట్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> కోసం కీ ఏదీ నొక్కబడలేదు. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">రికార్డింగ్ అంతటా వాయిస్‌లను సరిపోల్చండి, తద్వారా టైప్ చేసిన మాటల ఫైల్ ప్రతి వాయిస్ ఏమి చెప్పింది, ఎప్పుడు చెప్పింది అనే విషయాన్ని ప్రతిబింబిస్తుంది</translation>

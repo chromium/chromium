@@ -60,9 +60,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   void SetWebContents(content::WebContents* web_contents, bool active);
 
   // Sets the index of the active contents view, as relative to the inactive
-  // contents view. A value of 0 will activate start_contents_view_. Returns
-  // the newly active ContentsWebView.
-  ContentsWebView* SetActivePosition(int position);
+  // contents view. A value of 0 will activate start_contents_view_.
+  void SetActivePosition(int position);
 
   // Handles a mouse event prior to it being passed along to the WebContents.
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event);

@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Parollaringiz Google Parollar menejeriga saqlanishidan oldin qurilmangizda shifrlangan</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Varaqni yopish</translation>
-<translation id="230956208401264723">Barcha kuzatadigan paketlaringiz shu karuselda chiqadi</translation>
 <translation id="2311077293164383652">Qadalgan varaqni yopish</translation>
 <translation id="2316129865977710310">Kerak emas</translation>
 <translation id="2320166752086256636">Klaviaturani berkitish</translation>
@@ -471,7 +470,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2931440415625410757">Koʻrsatmalarni koʻrsatish</translation>
 <translation id="2952278131021475699">Lens yordamida kamera bilan qidirish</translation>
 <translation id="2962516096219646456">Barcha avtomatik kiritish maʼlumotlari</translation>
-<translation id="2963044753825419640">Sayt va ilovalarga imkon boʻlganda mavjud hisoblarda kalitlardan avtomatik foydalanishga ruxsat berish</translation>
 <translation id="2969979262385602596">Hisobga kirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="2989523299700148168">Oxirgi ishlatilganlar</translation>
 <translation id="2989805286512600854">Yangi varaqda ochish</translation>
@@ -1117,6 +1115,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5817176759448082654">Parol tekshiruvi</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> tomonidan boshqariladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinxronlanmoqda…</translation>
+<translation id="583923961930319521">Parollarni barcha qurilmalarda ishlating</translation>
 <translation id="5844284118433003733">Hisobingizga kirsangiz, maʼlumotlar Google hisobingizga ulanadi. Bu sizni Google xizmatlarida himoya qilishda (masalan, xavfsizlik hodisasidan keyin Gmailda himoyani kuchaytirishda) yordam beradi.</translation>
 <translation id="5854790677617711513">30 kundan oldin saqlanganlar</translation>
 <translation id="5857770089550859117">Sinxronizatsiyani boshlash uchun kodli ibora zarur.</translation>
@@ -1458,7 +1457,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7253951228444156601">Parollar tekshirilmoqda…</translation>
 <translation id="7261217796641151584">Guruhni ulashish</translation>
 <translation id="7266578100016339897">Bu sizga tartibni saqlashda asqatadi. Buni istalgan payt sozlamalar orqali tahrirlash mumkin.</translation>
-<translation id="7271220006028561438">Kalitlarni avtomatik yangilashga ruxsat</translation>
 <translation id="7272437679830969316">Shaxsingiz tasdiqlanmadi. Paroldan nusxa olinmadi.</translation>
 <translation id="7293429513719260019">Til tanlash</translation>
 <translation id="7300448350764260141">Onlayn tahdidlarga qarshi qoʻshimcha himoya darajasini kiriting.</translation>
@@ -1692,6 +1690,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8221665793629393739">Qayta ochish eslatmasi</translation>
 <translation id="8230355548492839438">Avvalgisini topish</translation>
 <translation id="8232956427053453090">Maʼlumotlar joyida qolsin</translation>
+<translation id="8233237502828137700">Reklama bannerini yopish</translation>
 <translation id="8238711781852526820">“Narx kuzatuvi” chiqmasin</translation>
 <translation id="8258999165172757081">Qo‘shildi</translation>
 <translation id="8261506727792406068">O‘chirish</translation>

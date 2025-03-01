@@ -209,6 +209,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 16;
     case DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE:
       return 32;
+    case DISTANCE_RECENT_ACTIVITY_AVATAR_FALLBACK_SIZE:
+      return 24;
     case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS:
       return 9;
     case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_BORDER_WIDTH:

@@ -81,6 +81,7 @@
 <translation id="131461803491198646">ಹೋಮ್ ನೆಟ್‌ವರ್ಕ್, ರೋಮಿಂಗ್ ಇಲ್ಲ</translation>
 <translation id="1327977588028644528">ಗೇಟ್‌ವೇ</translation>
 <translation id="1328223165223065150">ವಾಲ್‌ಪೇಪರ್ ಬಣ್ಣ</translation>
+<translation id="1329478709358066995">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ಸ್ಕ್ಯಾನ್ ಪ್ರದೇಶಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="1343442362630695901">ಸಾಲ್ಟ್ ಲೇಕ್</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">ಹಿನ್ನೆಲೆ ಬಗ್ಗೆ</translation>
 <translation id="6939667434404433010">ರೆಕಾರ್ಡಿಂಗ್ ಹೆಸರನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6939766318048400022">ಕೆಫೆ</translation>
+<translation id="6942253772720771875">ನಿಮ್ಮ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ</translation>
 <translation id="6943893908656559156">ರಿಮೋಟ್ ಗುರುತು (ಐಚ್ಛಿಕ)</translation>
 <translation id="6953137545147683679">ಚಿನ್ನ</translation>
 <translation id="6957231940976260713">ಸೇವೆಯ ಹೆಸರು</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಎಂಟರ್‌ಪ್ರೈಸ್ ನಿರ್ವಹಣೆ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="8398927464629426868">ಸಾಧನವು ಪ್ರಸ್ತುತವಾಗಿ ಚಾರ್ಜ್ ಅಥವಾ ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗುತ್ತಿರುವ ದರ</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ಶೈಲಿಯಲ್ಲಿ <ph name="ART_FEATURE" /> ನ ಚಿತ್ರಕಲೆ</translation>
+<translation id="8409219750150841791">ಜನರೇಟ್ ಮಾಡಲಾದ ಸಾರಾಂಶ:</translation>
 <translation id="8410244574650205435">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="8420955526972171689">ಹಾರ್ಡ್‌ವೇರ್ ಸಮಸ್ಯೆಗಳಿಗಾಗಿ ಪರೀಕ್ಷೆಗಳು ಹಾಗೂ ಸಮಸ್ಯೆ ನಿವಾರಣೆಯನ್ನು ರನ್ ಮಾಡಿ</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="86356131183441916">ತಿಳಿ ನೇರಳೆ</translation>
 <translation id="8647595191512746911">ಆಡಿಯೋ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್</translation>
+<translation id="8648578954147795914">ಜನರೇಟ್ ಮಾಡಲಾದ ಹೆಸರುಗಳು:</translation>
 <translation id="8650852232143958317">ನಿಮ್ಮ Gmail ಮತ್ತು Google Drive ಫೈಲ್‌ಗಳನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="8651481478098336970">ವಾಲ್ಯೂಮ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="8655295600908251630">ಚಾನಲ್</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">ತಿಳಿದಿರುವ APN ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="932327136139879170">ಹೋಮ್</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">ನಿಮ್ಮ ಮೈಕ್ ಕನೆಕ್ಟ್ ಆಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> ಗಾಗಿ ಕೀ ಕಾಣಿಸುತ್ತಿಲ್ಲ. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ಇಡೀ ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿರುವ ಧ್ವನಿಗಳನ್ನು ಹೋಲಿಕೆ ಮಾಡಿ, ಇದರಿಂದ ಪ್ರತಿಯೊಬ್ಬ ಸ್ಪೀಕರ್ ಏನು ಮತ್ತು ಯಾವಾಗ ಹೇಳಿದರು ಎಂಬುದನ್ನು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ತೋರಿಸುತ್ತದೆ</translation>

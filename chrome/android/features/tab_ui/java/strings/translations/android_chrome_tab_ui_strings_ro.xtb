@@ -46,7 +46,9 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="266935134738038806">Accesează site-ul</translation>
 <translation id="2671423594960767771">Trimite grupul</translation>
 <translation id="2677748264148917807">Ieși</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{S-a actualizat acum <ph name="NUM_WEEKS_ONE" /> săptămână}few{S-a actualizat acum <ph name="NUM_WEEKS_MANY" /> săptămâni}other{S-a actualizat acum <ph name="NUM_WEEKS_MANY" /> de săptămâni}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> filă adăugată, <ph name="ANY_CHANGED" /> modificată, <ph name="ANY_CLOSED" /> închisă}few{<ph name="MANY_ADDED" /> file adăugate, <ph name="ANY_CHANGED" /> modificate, <ph name="ANY_CLOSED" /> închise}other{<ph name="MANY_ADDED" /> de file adăugate, <ph name="ANY_CHANGED" /> modificate, <ph name="ANY_CLOSED" /> închise}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{S-a actualizat acum <ph name="NUM_HOURS_ONE" /> oră}few{S-a actualizat acum <ph name="NUM_HOURS_MANY" /> ore}other{S-a actualizat acum <ph name="NUM_HOURS_MANY" /> de ore}}</translation>
 <translation id="2755485474385016903">Modificările făcute sunt văzute de toți membrii grupului</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creat acum <ph name="NUM_HOURS_ONE" /> oră}few{Creat acum <ph name="NUM_HOURS_MANY" /> ore}other{Creat acum <ph name="NUM_HOURS_MANY" /> de ore}}</translation>
 <translation id="2801787514987684416">Vrei să vezi informații despre magazin?</translation>
@@ -83,6 +85,7 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> filă modificată, <ph name="ANY_CLOSED" /> închisă}few{<ph name="MANY_CHANGED" /> file modificate, <ph name="ANY_CLOSED" /> închise}other{<ph name="MANY_CHANGED" /> de file modificate, <ph name="ANY_CLOSED" /> închise}}</translation>
 <translation id="4371591986692297148">Inactiv</translation>
 <translation id="4431937619879060901">Vei pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și acesta va fi șters de pe toate dispozitivele tale</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{S-a actualizat acum <ph name="NUM_DAYS_ONE" /> zi}few{S-a actualizat acum <ph name="NUM_DAYS_MANY" /> zile}other{S-a actualizat acum <ph name="NUM_DAYS_MANY" /> de zile}}</translation>
 <translation id="4460014764210899310">Anulați gruparea</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Închizi o filă inactivă?}few{Închizi <ph name="TAB_COUNT_MANY" /> file inactive?}other{Închizi <ph name="TAB_COUNT_MANY" /> de file inactive?}}</translation>
 <translation id="4686942373615810936">Creat chiar acum</translation>
@@ -163,6 +166,7 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7688386659311034820">Dialogul File inactive</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Trimite <ph name="TABS_COUNT_ONE" /> filă selectată}few{Trimite <ph name="TABS_COUNT_MANY" /> file selectate}other{Trimite <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{S-a actualizat acum <ph name="NUM_YEARS_ONE" /> an}few{S-a actualizat acum <ph name="NUM_YEARS_MANY" /> ani}other{S-a actualizat acum <ph name="NUM_YEARS_MANY" /> de ani}}</translation>
 <translation id="7773714564112603605">Elimină fila și șterge grupul</translation>
 <translation id="7792771145871471484">Examinează sugestiile.</translation>
 <translation id="7792860826279960128">Notificare privind modificările aduse grupului de file comun, la jumătate din înălțime</translation>
@@ -180,10 +184,12 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="8076492880354921740">File</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă, culoarea <ph name="COLOR_NAME" />.}few{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file, culoarea <ph name="COLOR_NAME" />.}other{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file, culoarea <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Mută fila mai sus</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{S-a actualizat acum <ph name="NUM_MINS_ONE" /> minut}few{S-a actualizat acum <ph name="NUM_MINS_MANY" /> minute}other{S-a actualizat acum <ph name="NUM_MINS_MANY" /> de minute}}</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8338427544764842461">Grupurile de file se salvează aici și sunt actualizate pe toate dispozitivele conectate</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file comun cu <ph name="TABS_COUNT_ONE" /> filă, de culoare <ph name="COLOR_NAME" />.}few{Extinde grupul de file comun cu <ph name="TABS_COUNT_MANY" /> file, de culoare <ph name="COLOR_NAME" />.}other{Extinde grupul de file comun cu <ph name="TABS_COUNT_MANY" /> de file, de culoare <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Închide <ph name="TABS_COUNT_ONE" /> filă selectată}few{Închide <ph name="TABS_COUNT_MANY" /> file selectate}other{Închide <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{S-a actualizat acum <ph name="NUM_MONTHS_ONE" /> lună}few{S-a actualizat acum <ph name="NUM_MONTHS_MANY" /> luni}other{S-a actualizat acum <ph name="NUM_MONTHS_MANY" /> de luni}}</translation>
 <translation id="8398929769197326728">Dosar nou – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> filă adăugată, <ph name="ANY_CLOSED" /> închisă}few{<ph name="MANY_ADDED" /> file adăugate, <ph name="ANY_CLOSED" /> închise}other{<ph name="MANY_ADDED" /> de file adăugate, <ph name="ANY_CLOSED" /> închise}}</translation>

@@ -809,6 +809,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4777866634702576038">Varaqlar guruhi oʻchirilsinmi?</translation>
 <translation id="4778653490315793244">Hech narsa topilmadi</translation>
 <translation id="4782929588435725897">Birlamchi qidiruv tizimi — <ph name="SEARCH_ENGINE" /></translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> elektron hamyoningizdagi shaxsiy maʼlumotlardan foydalanmoqchi.</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" /> oʻchirib tashlansinmi?</translation>
 <translation id="4793679854893018356">Chrome qanday qilib sizni himoya qilishi haqida batafsil</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5355191726083956201">Kengaytirilgan himoya yoniq</translation>
 <translation id="5375374982898812658">“<ph name="GROUP_NAME" />” varaqlar guruhiga ruxsat darhol yopiladi va barcha qurilmalardan oʻchiriladi</translation>
 <translation id="5375577065097716013">Google Lens orqali rasm qidiring <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> elektron hamyoningizdagi shaxsiy maʼlumotlardan foydalanmoqchi. Faqatgina bu saytga ishonsangiz davom eting. Xavfli saytlar aldov usuli bilan rasmiy ism va ID raqamingiz kabi maʼlumotlarni ochiqlashga undashi mumkin.</translation>
 <translation id="5394331612381306435">Inkognito rejimdan chiqish</translation>
 <translation id="5395376160638294582">Chrome maʼlumotlari Google hisobingizga sinxronlanishini tekshiring</translation>
 <translation id="539881862970320163">Ishonchli parol tavsiya etiladi. Klaviatura yopildi.</translation>
@@ -1803,6 +1805,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="9148126808321036104">Qaytadan kiring</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> saytiga kirish hisobini tanlang</translation>
 <translation id="9158770349521403363">Faqat kontentni ulashish</translation>
+<translation id="9161172953291434881">Bu saytga ishonasizmi?</translation>
 <translation id="9168847423516963845">Manzillar qatorini pastga olish</translation>
 <translation id="9169507124922466868">Sahifalar tarixi yarim hajmda ochildi</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

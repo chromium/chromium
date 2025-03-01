@@ -117,6 +117,7 @@
 <translation id="2583187216237139145">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuar a usar o Chromium</translation>
 <translation id="259935314519650377">Falha ao colocar o instalador transferido em cache. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2629740064077610681">A sua organização pode ver e gerir os dados de navegação, como os marcadores, o histórico e as palavras-passe. Não consegue ver dados de navegação noutros perfis do Chromium</translation>
 <translation id="2635452620547538388">Valide a sua identidade para usar e guardar dados do Chromium na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">O Chromium é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto (recomendado)</translation>
 <translation id="2648074677641340862">Ocorreu um erro no sistema operativo durante a instalação. Descarregue novamente o Chromium.</translation>
@@ -317,6 +318,7 @@
 <translation id="5579324208890605088">Erro de arranque: execute o instalador como um utilizador normal, não como administrador.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5605834417512968703">Selecione o que quer pesquisar com a pesquisa de imagens ou prima a tecla Escape para sair da pesquisa de imagens</translation>
+<translation id="5618818588972826921">Selecione qualquer texto ou imagem para pesquisar com a pesquisa de imagens ou prima a tecla Escape para sair da pesquisa de imagens</translation>
 <translation id="5623402015214259806">{0,plural, =0{Está disponível uma atualização do Chromium}=1{Está disponível uma atualização do Chromium}other{Está disponível uma atualização do Chromium há # dias}}</translation>
 <translation id="5643865575100044307">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chromium</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
@@ -381,6 +383,7 @@
 <translation id="6366160072964553914">O Chromium bloqueou esta transferência porque o ficheiro não é habitualmente transferido e pode ser perigoso</translation>
 <translation id="6373523479360886564">Tem a certeza de que quer desinstalar o Chromium?</translation>
 <translation id="6375219077595103062">Adicione um atalho ao Gestor de Palavras-passe</translation>
+<translation id="6390800440335263989">Para continuar, inicie sessão no Chromium como <ph name="EMAIL" />. Isto garante que tem as políticas da sua organização.</translation>
 <translation id="6400112897226594999">Logótipo do Chromium num ecrã de computador.</translation>
 <translation id="6403826409255603130">O Chromium é um navegador de internet que executa páginas Web e aplicações à velocidade da luz. É rápido, estável e fácil de utilizar. Navegue na Web com mais segurança, com proteção contra programas maliciosos e phishing integrada no Chromium.</translation>
 <translation id="6436260184216827876">A pesquisa de imagens não está disponível. Tente mais tarde.</translation>
@@ -509,6 +512,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="813913629614996137">A inicializar...</translation>
 <translation id="8166782796394721554">Ative a proteção adicional no motor WebAssembly e JavaScript do Chromium</translation>
 <translation id="81770708095080097">Este ficheiro é perigoso. Como tal, o Chromium bloqueou-o.</translation>
+<translation id="8177472873527554730">Não é possível encontrar conteúdo na página</translation>
 <translation id="8200109504272824693">Introduza a sua frase de acesso para usar e guardar dados do Chromium na sua conta, <ph name="USER_EMAIL" /></translation>
 <translation id="8221491193165283816">Normalmente, bloqueia as notificações. Para permitir que este site lhe apresente notificações, clique aqui.</translation>
 <translation id="8223363452568144035">Para usar a câmara, dê acesso ao Chromium nas <ph name="BEGIN_LINK" />definições do sistema<ph name="END_LINK" /></translation>
@@ -591,5 +595,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem dados hash para a aplicação.</translation>
 <translation id="985498048907240953">Usar o Chromium sem uma conta</translation>
 <translation id="985602178874221306">Os Autores do Chromium</translation>
+<translation id="989970834842471429">Selecione qualquer texto ou imagem para pesquisar com a pesquisa de imagens</translation>
 <translation id="992780518932311116">Para usar a localização, dê acesso ao Chromium nas <ph name="BEGIN_LINK" />definições do sistema<ph name="END_LINK" /></translation>
 </translationbundle>

@@ -33,9 +33,6 @@ AttributeInstance::AttributeInstance(AttributeType type) : type_(type) {
     case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kPassportExpiryDate:
     case AttributeTypeName::kPassportIssueDate:
-    case AttributeTypeName::kLoyaltyCardProgram:
-    case AttributeTypeName::kLoyaltyCardProvider:
-    case AttributeTypeName::kLoyaltyCardMemberId:
     case AttributeTypeName::kVehicleOwner:
     case AttributeTypeName::kVehicleLicensePlate:
     case AttributeTypeName::kVehicleVin:

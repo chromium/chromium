@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">關閉分頁</translation>
-<translation id="230956208401264723">使用這個輪轉介面查看你追蹤的所有包裹</translation>
 <translation id="2311077293164383652">關閉固定分頁</translation>
 <translation id="2316129865977710310">不，謝謝</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
@@ -471,7 +470,6 @@
 <translation id="2931440415625410757">顯示操作說明</translation>
 <translation id="2952278131021475699">智慧鏡頭相機搜尋功能</translation>
 <translation id="2962516096219646456">查看所有自動填入資料</translation>
-<translation id="2963044753825419640">如有可用的密碼金鑰，允許網站和應用程式自動將現有帳戶升級為使用密碼金鑰</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
 <translation id="2989523299700148168">最近造訪過</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
@@ -1459,7 +1457,6 @@
 <translation id="7253951228444156601">正在檢查密碼…</translation>
 <translation id="7261217796641151584">分享群組</translation>
 <translation id="7266578100016339897">這麼做可有效整理分頁，保持井然有序。你隨時可以前往「設定」變更這項設定。</translation>
-<translation id="7271220006028561438">允許自動升級密碼金鑰</translation>
 <translation id="7272437679830969316">無法驗證你的身分，因此未複製密碼。</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="7300448350764260141">多添一層防護，有效防範線上威脅。</translation>

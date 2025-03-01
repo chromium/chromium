@@ -324,7 +324,6 @@
 <translation id="2299218006564889602">Jūsų slaptažodžiai šifruojami įrenginyje prieš išsaugant juos „Google“ slaptažodžių tvarkytuvėje</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Uždaryti skirtuką</translation>
-<translation id="230956208401264723">Peržiūrėkite visus stebimus paketus čia, šioje karuselėje</translation>
 <translation id="2311077293164383652">Uždaryti prisegtą skirtuką</translation>
 <translation id="2316129865977710310">Ne, ačiū</translation>
 <translation id="2320166752086256636">Slėpti klaviatūrą</translation>
@@ -474,7 +473,6 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2931440415625410757">Rodyti instrukcijas</translation>
 <translation id="2952278131021475699">„Lens“ fotoaparato paieška</translation>
 <translation id="2962516096219646456">Peržiūrėti visus automatinio pildymo duomenis</translation>
-<translation id="2963044753825419640">Leiskite svetainėms ir programoms automatiškai naujovinti esamas paskyras, kad būtų galima naudoti prieigos raktus, kai pasiekiama</translation>
 <translation id="2969979262385602596">Nepavyko prisijungti. Bandykite dar kartą vėliau.</translation>
 <translation id="2989523299700148168">Neseniai lankyta</translation>
 <translation id="2989805286512600854">Atidaryti naujame skirtuke</translation>
@@ -1463,7 +1461,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7253951228444156601">Tikrinami slaptažodžiai…</translation>
 <translation id="7261217796641151584">Grupės bendrinimas</translation>
 <translation id="7266578100016339897">Tai padės išlaikyti tvarką. Galite bet kada pakeisti nustatymuose.</translation>
-<translation id="7271220006028561438">Leisti automatiškai naujovinti prieigos raktą</translation>
 <translation id="7272437679830969316">Nepavyko patvirtinti tapatybės. Slaptažodis nenukopijuotas.</translation>
 <translation id="7293429513719260019">Pasirinkti kalbą</translation>
 <translation id="7300448350764260141">Papildomai apsaugokite nuo grėsmių internete.</translation>

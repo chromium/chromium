@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Parolele tale sunt criptate pe dispozitiv înainte să se salveze în Managerul de parole Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Nr. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Închide fila</translation>
-<translation id="230956208401264723">Vezi toate pachetele urmărite aici, în acest carusel</translation>
 <translation id="2311077293164383652">Închide fila fixată</translation>
 <translation id="2316129865977710310">Nu, mulțumesc</translation>
 <translation id="2320166752086256636">Ascunde tastatura</translation>
@@ -471,7 +470,6 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2931440415625410757">Afișează instrucțiunile</translation>
 <translation id="2952278131021475699">Căutare cu camera Lens</translation>
 <translation id="2962516096219646456">Vezi toate datele de completare automată</translation>
-<translation id="2963044753825419640">Permite site-urilor și aplicațiilor să facă upgrade automat conturilor existente, astfel încât să folosească chei de acces atunci când sunt disponibile</translation>
 <translation id="2969979262385602596">Nu te-ai conectat. Încearcă din nou mai târziu.</translation>
 <translation id="2989523299700148168">Accesate recent</translation>
 <translation id="2989805286512600854">Deschide într-o filă nouă</translation>
@@ -1117,6 +1115,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5817176759448082654">Verificarea parolei</translation>
 <translation id="5819208479324046259">Gestionat de <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Se sincronizează…</translation>
+<translation id="583923961930319521">Folosește parole pe toate dispozitivele</translation>
 <translation id="5844284118433003733">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
 <translation id="5854790677617711513">Mai vechi de 30 de zile</translation>
 <translation id="5857770089550859117">Pentru a începe sincronizarea este necesară expresia de acces.</translation>
@@ -1458,7 +1457,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7253951228444156601">Se verifică parolele…</translation>
 <translation id="7261217796641151584">Trimite grupul</translation>
 <translation id="7266578100016339897">Astfel, îți vei putea menține organizarea. Poți modifica oricând opțiunea din Setări.</translation>
-<translation id="7271220006028561438">Permite upgrade-urile automate ale cheilor de acces</translation>
 <translation id="7272437679830969316">Nu ți se poate confirma identitatea. Parola nu a fost copiată.</translation>
 <translation id="7293429513719260019">Selectează limba</translation>
 <translation id="7300448350764260141">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online.</translation>
@@ -1692,6 +1690,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8221665793629393739">Mementoul tău pentru a reveni</translation>
 <translation id="8230355548492839438">Rezultatul anterior</translation>
 <translation id="8232956427053453090">Păstrează datele</translation>
+<translation id="8233237502828137700">Închide promoția din banner</translation>
 <translation id="8238711781852526820">Ascunde opțiunea Urmărirea prețurilor</translation>
 <translation id="8258999165172757081">Adăugat</translation>
 <translation id="8261506727792406068">Șterge</translation>

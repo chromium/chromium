@@ -809,6 +809,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4777866634702576038">Vil du slette fanegruppen?</translation>
 <translation id="4778653490315793244">Der er intet at vise endnu</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> er din standardsøgemaskine</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vil gerne bruge personlige oplysninger fra din digitale pung.</translation>
 <translation id="4787736314074622408">Vil du slette <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Se, hvordan Chrome beskytter dig</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5355191726083956201">Forbedret beskyttelse er aktiveret</translation>
 <translation id="5375374982898812658">Du mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle dine enheder</translation>
 <translation id="5375577065097716013">Søg efter billedet med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vil gerne bruge personlige oplysninger fra din digitale pung. Fortsæt kun, hvis du har tillid til dette website. Farlige websites kan narre dig til at afsløre ting som f.eks. dit juridiske navn eller id-nummer.</translation>
 <translation id="5394331612381306435">Skift væk fra inkognito</translation>
 <translation id="5395376160638294582">Sørg for, at du altid kan bruge Chrome-dataene på din Google-konto</translation>
 <translation id="539881862970320163">En stærk adgangskode anbefales. Tastaturet er skjult.</translation>
@@ -1803,6 +1805,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9157212632995922070">Vælg en konto for at fortsætte på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Del kun indhold</translation>
+<translation id="9161172953291434881">Har du tillid til, at dette website kan håndtere dine data?</translation>
 <translation id="9168847423516963845">Flyt adresselinjen til bunden</translation>
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

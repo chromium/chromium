@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Nemoj nuditi prevođenje ovih web-lokacija</translation>
 <translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1150263420752757504">Aplikacija <ph name="APP_NAME" /> otvorit će se u Chromeu. Nastavljanjem prihvaćate <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uvjete pružanja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Nemate zaporki u Google upravitelju zaporki.</translation>
 <translation id="115483310321669804">Upotrijebi zaporku <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174479719160874822">Chrome će zahtijevati web-lokaciju za mobilne uređaje kad je zaslon uzak</translation>
@@ -1371,10 +1372,12 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7224097611345298931">Spojene su sve zaporke spremljene samo na ovaj uređaj za Chrome i <ph name="CHROME_CHANNEL" />. Možete automatski unositi sve spremljene zaporke u obje aplikacije.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="7230064152164845085">Prijeđi na anonimni način</translation>
+<translation id="7237724030342645845">Google upravitelj zaporki više ne funkcionira</translation>
 <translation id="72415438529550637">Prijedlog zaporke je zatvoren.</translation>
 <translation id="7260367682327802201">Vaš Android uređaj možda ima sličnu postavku. Ako je mjerenje oglasa uključeno u Chromeu i na vašem Android uređaju, tvrtka će možda moći mjeriti učinkovitost oglasa na web-lokacijama koje posjećujete i u aplikacijama koje upotrebljavate.</translation>
 <translation id="727288900855680735">Poslati <ph name="ONE_TIME_CODE" /> na <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokirana web-lokacija</translation>
+<translation id="7276868533747677875">Ako ste prethodno izvezli zaporke, potražite CSV datoteku na svojem uređaju i uvezite ih u željeni upravitelj zaporki.</translation>
 <translation id="7289049772085228972">Imate najsnažniju Chromeovu zaštitu sigurnosti</translation>
 <translation id="7289303553784750393">Ako ste online, ali se taj problem i dalje pojavljuje, možete pokušati na neki drugi način nastaviti na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Promjena naziva nije dostupna</translation>
@@ -1549,6 +1552,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8027395186860110042">Zaporke bi uskoro mogle prestati funkcionirati</translation>
 <translation id="8027863900915310177">Odaberite mjesto preuzimanja</translation>
 <translation id="8030852056903932865">Odobri</translation>
+<translation id="8031805944372049238">Da biste počeli spremati i upotrebljavati zaporke putem Google upravitelja zaporki, ažurirajte usluge za Google Play.</translation>
 <translation id="8032569120109842252">Praćeno</translation>
 <translation id="8037750541064988519">Preostalo dana: <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">Provjera je upravo izvršena</translation>

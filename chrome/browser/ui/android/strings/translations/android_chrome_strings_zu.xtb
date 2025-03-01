@@ -809,6 +809,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="4777866634702576038">Sula iqembu lethebhu?</translation>
 <translation id="4778653490315793244">Akukho okuzoboniswa okwamanje</translation>
 <translation id="4782929588435725897">I-<ph name="SEARCH_ENGINE" /> iyinjini yakho sokusesha ezenzekelayo</translation>
+<translation id="4784349455504343791">I-<ph name="WEBSITE_ORIGIN" /> ifuna ukusebenzisa ulwazi lomuntu siqu oluphuma ku-wallet yakho edijithali.</translation>
 <translation id="4787736314074622408">Ingabe ufuna ukusula i-<ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Funda ukuthi i-Chrome ikugcina kanjani uphephile</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="5355191726083956201">Ukuvikelwa Okuthuthukisiwe kuvuliwe</translation>
 <translation id="5375374982898812658">Ngokushesha uzolahlekelwa ukufinyelela eqenjini lethebhu ethi "<ph name="GROUP_NAME" />", futhi lizosuswa kuwo wonke amadivayisi akho</translation>
 <translation id="5375577065097716013">Sesha isithombe Ngama-Google Lens<ph name="BEGIN_NEW" />Entsha<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771">I-<ph name="WEBSITE_ORIGIN" /> ifuna ukusebenzisa ulwazi lomuntu siqu oluphuma ku-wallet yakho edijithali. Qhubeka kuphela uma uyithemba le sayithi. Amasayithi ayingozi angase akukhohlise ukuthi uveze izinto ezifana negama lakho elisemthethweni noma inombolo ye-ID.</translation>
 <translation id="5394331612381306435">Shintsha uphume ku-Incognito</translation>
 <translation id="5395376160638294582">Qinisekisa ukuthi ungakwazi njalo ukusebenzisa idatha ye-Chrome ku-Google Account yakho</translation>
 <translation id="539881862970320163">Kuphakanyiswe iphasiwedi eqinile. Ikhibhodi ifihliwe.</translation>
@@ -1803,6 +1805,7 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="9148126808321036104">Phinda ungene ngemvume</translation>
 <translation id="9157212632995922070">Khetha i-akhawunti ukuze uqhubeke ku-<ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Yabelana ngokuqukethwe kuphela</translation>
+<translation id="9161172953291434881">Ingabe uyayithemba le sayithi ngedatha yakho?</translation>
 <translation id="9168847423516963845">Hambisa ibha yekheli iye ezansi</translation>
 <translation id="9169507124922466868">Umlando wokuzula uvuleke ngohhafu</translation>
 <translation id="918419812064856259">I-Chrome Beta</translation>

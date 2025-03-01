@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">ان سائٹس کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="1145536944570833626">موجودہ ڈیٹا کو حذف کریں۔</translation>
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔</translation>
+<translation id="1154555449933432029">‏آپ کے پاس Google پاس ورڈ مینیجر میں پاس ورڈز محفوظ نہیں ہیں۔</translation>
 <translation id="115483310321669804">پاس ورڈ <ph name="PASSWORD" /> استعمال کریں</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1174479719160874822">‏اسکرین تنگ ہونے پر Chrome موبائل سائٹ سے درخواست کرے گا۔</translation>
@@ -809,6 +810,7 @@
 <translation id="4777866634702576038">ٹیب گروپ کو حذف کریں؟</translation>
 <translation id="4778653490315793244">دکھانے کے لیے ابھی تک کچھ نہیں ہے</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> آپ کا ڈیفالٹ سرچ انجن ہے</translation>
+<translation id="4784349455504343791">‫<ph name="WEBSITE_ORIGIN" /> آپ کے ڈیجیٹل والٹ سے ذاتی معلومات استعمال کرنا چاہتی ہے۔</translation>
 <translation id="4787736314074622408">کیا آپ <ph name="ITEM_TITLE" /> کو حذف کرنا چاہتے ہیں؟</translation>
 <translation id="4793679854893018356">‏جانیں کہ Chrome آپ کو کیسے محفوظ رکھتا ہے</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +934,7 @@
 <translation id="5355191726083956201">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="5375374982898812658">آپ فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائیں گے، اور اسے آپ کے تمام آلات سے حذف کر دیا جائے گا</translation>
 <translation id="5375577065097716013">‏Google لینز سے تصویر تلاش کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771">‫<ph name="WEBSITE_ORIGIN" /> آپ کے ڈیجیٹل والٹ سے ذاتی معلومات استعمال کرنا چاہتی ہے۔ صرف اسی صورت میں جاری رکھیں جب آپ کو اس سائٹ پر بھروسہ ہو۔ خطرناک سائٹس آپ کو آپ کے قانونی نام یا شناختی نمبر جیسی چیزوں کو ظاہر کرنے کے لیے دھوکہ دے سکتی ہیں۔</translation>
 <translation id="5394331612381306435">پوشیدگی سے باہر سوئچ کریں</translation>
 <translation id="5395376160638294582">‏یقینی بنائیں کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کر سکتے ہیں</translation>
 <translation id="539881862970320163">مضبوط پاس ورڈ تجویز کیا گیا۔ کی بورڈ پوشیدہ ہے۔</translation>
@@ -1369,10 +1372,12 @@
 <translation id="7224097611345298931">‏‫Chrome اور <ph name="CHROME_CHANNEL" /> کے لیے صرف اس آلے پر محفوظ کردہ سبھی پاس ورڈز ضم کر دیے گئے۔ آپ دونوں ایپس پر اپنے تمام محفوظ کردہ پاس ورڈز کو آٹو فل کر سکتے ہیں۔</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ زير التوا ہے}other{# ڈاؤن لوڈز زير التوا ہیں}}</translation>
 <translation id="7230064152164845085">پوشیدگی میں سوئچ کریں</translation>
+<translation id="7237724030342645845">‏‫Google پاس ورڈ مینیجر نے کام کرنا بند کر دیا ہے</translation>
 <translation id="72415438529550637">پاس ورڈ کی تجویز بند ہے۔</translation>
 <translation id="7260367682327802201">‏آپ کے Android آلے میں ملتی جلتی ترتیب شامل ہو سکتی ہے۔ اگر Chrome میں اور آپ کے Android آلے پر اشتہار کی اثرپذیری کی پیمائش آن ہو تو کمپنی آپ کی ملاحظہ کردہ ویب سائٹس اور آپ کی استعمال کردہ ایپس پر اشتہار کی اثر انگیزی کی پیمائش کر سکتی ہے۔</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> میں <ph name="ONE_TIME_CODE" /> کو جمع کرائیں؟</translation>
 <translation id="7274013316676448362">مسدود سائٹ</translation>
+<translation id="7276868533747677875">‏اگر آپ نے پہلے پاس ورڈز ایکسپورٹ کیے تھے تو اپنے آلے پر CSV فائل تلاش کریں اور انہیں اپنے ترجیحی پاس ورڈ مینیجر میں امپورٹ کریں۔</translation>
 <translation id="7289049772085228972">‏آپ کے پاس Chrome کی مضبوط ترین سیکیورٹی ہے</translation>
 <translation id="7289303553784750393">اگر آپ آن لائن ہیں لیکن یہ مسئلہ جاری رہتا ہے تو آپ <ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے دوسرے طریقے آزما سکتے ہیں۔</translation>
 <translation id="7290209999329137901">'نام تبدیل کریں' دستیاب نہیں ہے</translation>
@@ -1547,6 +1552,7 @@
 <translation id="8027395186860110042">پاس ورڈز جلد ہی کام کرنا بند کر سکتے ہیں</translation>
 <translation id="8027863900915310177">منتخب کریں کہ کہاں پر ڈاؤن لوڈ کرنا ہے</translation>
 <translation id="8030852056903932865">منظوری دیں</translation>
+<translation id="8031805944372049238">‏‫Google پاس ورڈ مینیجر کے ذریعے پاس ورڈز محفوظ کرنے اور استعمال کرنے کے لیے، Google Play سروسز کو اپ ڈیٹ کریں۔</translation>
 <translation id="8032569120109842252">پیروی ہو رہی ہے</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> دن باقی</translation>
 <translation id="8037801708772278989">ابھی چیک کیا گيا</translation>
@@ -1803,6 +1809,7 @@
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے ایک اکاؤنٹ منتخب کریں</translation>
 <translation id="9158770349521403363">صرف مواد کا استعمال کریں</translation>
+<translation id="9161172953291434881">کیا آپ کو اپنے ڈیٹا کے ساتھ اس سائٹ پر بھروسہ ہے؟</translation>
 <translation id="9168847423516963845">ایڈریس بار کو نیچے منتقل کریں</translation>
 <translation id="9169507124922466868">نیویگیشن کی سرگزشت آدھی کھلی ہوئی ہے</translation>
 <translation id="918419812064856259">‏Chrome بی ٹا</translation>

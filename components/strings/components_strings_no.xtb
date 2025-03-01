@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Last inn siden senere</translation>
 <translation id="1010225406377140704">Kontakt avsenderen for å be om en ny link</translation>
 <translation id="1011206368273183593">Klargjør filer</translation>
+<translation id="1012264210825687872">Når du har gjennomgått bestillingen, må du logge på eller opprette en <ph name="BNPL_ISSUER_NAME" />-konto. Denne kontoen knyttes automatisk til Google Pay.</translation>
 <translation id="1014509239502131234">Angrer resultatet</translation>
 <translation id="1015730422737071372">Oppgi flere detaljer</translation>
 <translation id="1019413721762100891">Av</translation>
@@ -660,6 +661,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2145193671493396738">Økonominyheter</translation>
 <translation id="214556005048008348">Avbryt betalingen</translation>
 <translation id="2147117373852943630">Musikkinstrumenter</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> vil bruke informasjon de har lagret om deg</translation>
 <translation id="2148613324460538318">Legg til et kort</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2149968176347646218">Tilkoblingen er ikke sikker</translation>
@@ -691,6 +693,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2187317261103489799">Oppdag (standard)</translation>
 <translation id="2188375229972301266">Flere hull bunn</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
+<translation id="2198071643181968308">Finn ut mer om <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Tommel ned-knapp – trykk på Enter for å åpne et skjema der du kan gi en detaljert tilbakemelding om hvorfor du ikke liker dette forslaget</translation>
 <translation id="2202627062836089804">baksiden av kortet</translation>
 <translation id="2204482073374652408">Fullført oppdatering!</translation>
@@ -2318,6 +2321,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome trenger tilgang til enhetens <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Kartong (ende)</translation>
+<translation id="5106648964679263509">Virtuelt kort for <ph name="BNPL_ISSUER_NAME" /> er fylt ut</translation>
 <translation id="5108881358339761672">Nettstedet er ikke sikkert</translation>
 <translation id="5109892411553231226">Administrer betalingsmåter</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
             <ph name="LIST_ITEM" />informasjon du har lagt inn i skjemaer
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Motsatt rekkefølge – forsiden opp</translation>
+<translation id="5445340838622821110">Når du betaler over tid, fylles det ut et engangskortnummer. Dette nummeret gjelder bare for dette kjøpet. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Tillat at <ph name="SITE" /> bruker informasjon de har lagret om deg</translation>
 <translation id="5452270690849572955">Denne siden på <ph name="HOST_NAME" /> ble ikke funnet</translation>
 <translation id="5452923259299906094">Betal med e-lommebok og Pix</translation>
@@ -3332,6 +3337,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6917795328362592458">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Passordlagring at du sjekker de lagrede passordene dine.</translation>
 <translation id="6917873303492266709">For å dele, bli med i og samarbeide i fanegrupper, åpne innstillingene og slå på Tillat Chrome-pålogging</translation>
 <translation id="6921197121276419421">Installering av nettapper er tillatt</translation>
+<translation id="69238565902785824">Hvis du beholder tilknytningen til kontoen din, kan du betale raskere med <ph name="BNPL_ISSUER_NAME" />. Du kan fjerne tilknytningen ved å gå til <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />.</translation>
 <translation id="6924013822850225188">Velg om du vil se kortfordelene dine i kassen (bankens vilkår gjelder)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Kroppsutsmykning</translation>
@@ -3397,6 +3403,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="701757816833614688">Billedkunst- og designutdanning</translation>
 <translation id="702275896380648118">Dette nettstedet avgjør hva du liker, og foreslår deretter annonser til andre nettsteder. Dette nettstedet henter også annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser.</translation>
 <translation id="7023162328967545559">Advarsel fra administrator</translation>
+<translation id="7023765275461720661">Vil du tilknytte kontoen og betale med <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7030164307377592766">endre innstillingene for utfylling av betalingsmåter</translation>
 <translation id="7031646650991750659">hvilke Google Play-apper du har installert</translation>
@@ -3618,6 +3625,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="741204030948306876">Ja, jeg er med</translation>
 <translation id="7416351320495623771">Administrer passord…</translation>
 <translation id="7416898721136759658">Legater, stipender og økonomisk støtte</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programmering</translation>
 <translation id="7419091773564635591">Datamaskiner og elektronikk</translation>
 <translation id="7419106976560586862">Profilbane</translation>
@@ -3664,6 +3672,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7485085230273446323">Forretning og industri</translation>
 <translation id="7485870689360869515">Ingen data ble funnet.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> sjekker om du er kvalifisert (dette påvirker ikke kredittvurderingen din). Hvis du godkjennes, gir <ph name="BNPL_ISSUER_NAME" /> deg forslag til betalingsavtaler du kan velge mellom for å fullføre kjøpet.</translation>
 <translation id="7489392576326061356">Sjampo og balsam</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>
 <translation id="749865518782565832">Rørlegging</translation>

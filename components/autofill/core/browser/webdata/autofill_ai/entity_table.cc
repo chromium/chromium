@@ -114,22 +114,6 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
           base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
           "Passie", base::Time::Now()));
     }
-    {
-      // Add a loyalty card instance.
-      AttributeInstance program((AttributeType(kLoyaltyCardProgram)));
-      AttributeInstance provider((AttributeType(kLoyaltyCardProvider)));
-      AttributeInstance member_id((AttributeType(kLoyaltyCardMemberId)));
-      program.SetInfo(LOYALTY_MEMBERSHIP_PROGRAM, u"Asterisk Alliance",
-                      /*app_locale=*/"");
-      provider.SetInfo(LOYALTY_MEMBERSHIP_PROVIDER, u"Propeller Airways",
-                       /*app_locale=*/"");
-      program.SetInfo(LOYALTY_MEMBERSHIP_ID, u"987", /*app_locale=*/"");
-      table.AddOrUpdateEntityInstance(EntityInstance(
-          EntityType(EntityTypeName::kLoyaltyCard),
-          {program, provider, member_id},
-          base::Uuid::ParseLowercase("11111111-1111-4111-8111-111111111111"),
-          "Loyie", base::Time::Now()));
-    }
   }
 }
 

@@ -5,9 +5,6 @@
   <message name="IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME" desc="Used as a general label for the passport entity." translateable="false">
     Passport
   </message>
-  <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_ENTITY_NAME" desc="Used as a general label for the loyalty card entity." translateable="false">
-    Loyalty card
-  </message>
   <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="Used as a general label for the vehicle entity." translateable="false">
     Car
   </message>
@@ -20,9 +17,6 @@
   <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY" desc="The title of the &quot;Add passport&quot; settings UI." translateable="false">
     Add passport
   </message>
-  <message name="IDS_AUTOFILL_AI_ADD_LOYALTY_CARD_ENTITY" desc="The title of the &quot;Add loyalty card&quot; settings UI." translateable="false">
-    Add loyalty card
-  </message>
   <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY" desc="The title of the &quot;Add car&quot; settings UI." translateable="false">
     Add car
   </message>
@@ -34,9 +28,6 @@
   <!-- Edit entity strings -->
   <message name="IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY" desc="The title of the &quot;Edit passport&quot; settings UI." translateable="false">
     Edit passport
-  </message>
-  <message name="IDS_AUTOFILL_AI_EDIT_LOYALTY_CARD_ENTITY" desc="The title of the &quot;Edit loyalty card&quot; settings UI." translateable="false">
-    Edit loyalty card
   </message>
   <message name="IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY" desc="The title of the &quot;Edit car&quot; settings UI." translateable="false">
     Edit car
@@ -61,18 +52,6 @@
   </message>
   <message name="IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the passport issue date attribute." translateable="false">
     Issue date
-  </message>
-
-  <!-- TODO(crbug.com/395807244): Make loyalty card strings translateable. -->
-  <!-- Attributes of the loyalty card entity -->
-  <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_PROGRAM_ATTRIBUTE_NAME" desc="Used as a general label for the loyalty card program attribute." translateable="false">
-    Program
-  </message>
-  <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_PROVIDER_ATTRIBUTE_NAME" desc="Used as a general label for the loyalty card provider attribute." translateable="false">
-    Provider
-  </message>
-  <message name="IDS_AUTOFILL_AI_LOYALTY_CARD_MEMBER_ID_ATTRIBUTE_NAME" desc="Used as a general label for the loyalty card member ID attribute." translateable="false">
-    Member ID
   </message>
 
   <!-- TODO(crbug.com/395807244): Make vehicle strings translateable. -->
@@ -173,9 +152,6 @@
   <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a passport entity" translateable="false">
     Save passport?
   </message>
-  <message name="IDS_AUTOFILL_AI_SAVE_LOYALTY_CARD_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a loyalty card entity" translateable="false">
-    Save loyalty card?
-  </message>
 
   <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a vehicle entity" translateable="false">
     Update vehicle?
@@ -185,9 +161,6 @@
   </message>
   <message name="IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a passport entity" translateable="false">
     Update passport?
-  </message>
-  <message name="IDS_AUTOFILL_AI_UPDATE_LOYALTY_CARD_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a loyalty card entity" translateable="false">
-    Update loyalty card?
   </message>
 
 </grit-part>

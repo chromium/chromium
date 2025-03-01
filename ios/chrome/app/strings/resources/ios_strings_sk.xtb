@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Heslá sú šifrované v zariadení ešte pred ich uložením do správcu hesiel Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • č. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Zavrieť kartu</translation>
-<translation id="230956208401264723">Všetky sledované balíky nájdete v tomto posuvnom páse</translation>
 <translation id="2311077293164383652">Zavrieť pripnutú kartu</translation>
 <translation id="2316129865977710310">Nie, ďakujem</translation>
 <translation id="2320166752086256636">Skryť klávesnicu</translation>
@@ -471,7 +470,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2931440415625410757">Zobraziť pokyny</translation>
 <translation id="2952278131021475699">Vyhľadávanie kamerou pomocou funkcie Lens</translation>
 <translation id="2962516096219646456">Zobraziť všetky údaje automatického dopĺňania</translation>
-<translation id="2963044753825419640">Povoľte webom a aplikáciám automaticky inovovať existujúce účty, aby mohli používať prístupové kľúče (keď sú k dispozícii)</translation>
 <translation id="2969979262385602596">Prihlásenie zlyhalo. Skúste to neskôr.</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
 <translation id="2989805286512600854">Otvoriť na novej karte</translation>
@@ -1117,6 +1115,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5817176759448082654">Kontrola hesiel</translation>
 <translation id="5819208479324046259">Spravuje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synchronizuje sa…</translation>
+<translation id="583923961930319521">Používajte heslá vo všetkých svojich zariadeniach</translation>
 <translation id="5844284118433003733">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
 <translation id="5854790677617711513">Staršie ako 30 dní</translation>
 <translation id="5857770089550859117">Spustenie synchronizácie vyžaduje prístupovú frázu.</translation>
@@ -1458,7 +1457,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7253951228444156601">Kontrolujú sa heslá…</translation>
 <translation id="7261217796641151584">Zdieľať skupinu</translation>
 <translation id="7266578100016339897">Pomôže vám to udržať si poriadok. V nastaveniach to môžete kedykoľvek zmeniť.</translation>
-<translation id="7271220006028561438">Povoliť automatické inovácie prístupových kľúčov</translation>
 <translation id="7272437679830969316">Vašu totožnosť nie je možné overiť. Heslo sa neskopírovalo.</translation>
 <translation id="7293429513719260019">Vybrať jazyk</translation>
 <translation id="7300448350764260141">Pridajte ďalšiu úroveň ochrany pred hrozbami na internete.</translation>
@@ -1692,6 +1690,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8221665793629393739">Pripomenutie, aby ste sa vrátili</translation>
 <translation id="8230355548492839438">Vyhľadanie predchádzajúcich položiek</translation>
 <translation id="8232956427053453090">Ponechať údaje</translation>
+<translation id="8233237502828137700">Zavrieť promo banner</translation>
 <translation id="8238711781852526820">Skryť „Sledovanie cien“</translation>
 <translation id="8258999165172757081">Pridané</translation>
 <translation id="8261506727792406068">Odstrániť</translation>

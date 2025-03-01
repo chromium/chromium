@@ -276,6 +276,7 @@
 <translation id="4720851490453439956">Servizio interno di Google Updater</translation>
 <translation id="4724676981607797757">Installazione non riuscita a causa di un errore di protocollo non supportato.</translation>
 <translation id="4728575227883772061">Installazione non riuscita a causa di un errore non specificato. Se Google Chrome è attivo, chiudilo e riprova.</translation>
+<translation id="4737281654364167024">Per continuare, accedi a Chrome come <ph name="EMAIL" />. In questo modo, avrai la certezza di rispettare i criteri della tua organizzazione.</translation>
 <translation id="4741235124132242877">Riquadro bloccato. Usa di nuovo Google Lens dalla barra degli strumenti.</translation>
 <translation id="4747730611090640388">Chrome può stimare i tuoi interessi.  Dopodiché, un sito che visiti può chiedere a Chrome di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
 <translation id="475321580758063259">Aggiorna Chrome per continuare a usare i dati di Chrome nel tuo Account Google, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -581,6 +582,7 @@
 <translation id="8781673607513845160">Per usare la fotocamera, consenti l'accesso a Chrome nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Errore di installazione: l'amministratore di rete ha applicato una policy di gruppo che impedisce l'installazione: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome ha bloccato questo download perché il file può danneggiare i tuoi account personali e dei social network, tra cui <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">La tua organizzazione può vedere e gestire i dati di navigazione, ad esempio i preferiti, la cronologia e le password. Non può vedere i dati di navigazione in altri profili Chrome.</translation>
 <translation id="8801657293260363985">V8 è il motore JavaScript e WebAssembly di Chrome utilizzato per migliorare le prestazioni del sito</translation>
 <translation id="8821043148920470810">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 7.</translation>
 <translation id="8823341990149967727">Chrome non è aggiornato</translation>

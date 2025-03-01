@@ -276,6 +276,7 @@
 <translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Die Installation ist aufgrund eines Fehlers mit einem nicht unterstützten Protokoll fehlgeschlagen.</translation>
 <translation id="4728575227883772061">Installation aufgrund von unbekanntem Fehler fehlgeschlagen. Falls Google Chrome bereits ausgeführt wird, schließe es und versuche es noch einmal.</translation>
+<translation id="4737281654364167024">Melde dich mit <ph name="EMAIL" /> in Chrome an, um fortzufahren. So wird sichergestellt, dass die Richtlinien deiner Organisation eingehalten werden.</translation>
 <translation id="4741235124132242877">Angepinnt! Du kannst Google Lens wieder über die Symbolleiste verwenden.</translation>
 <translation id="4747730611090640388">Chrome kann deine Interessen schätzen.  Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren.</translation>
 <translation id="475321580758063259">Aktualisiere Chrome, um weiterhin Chrome-Daten in deinem Google-Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden</translation>
@@ -579,6 +580,7 @@
 <translation id="8781673607513845160">Wenn du deine Kamera verwenden möchtest, erlaube Chrome über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
 <translation id="878572486461146056">Installationsfehler: Dein Netzwerkadministrator hat eine Gruppenrichtlinie angewendet, die die Installation verhindert: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796073561259064743">Chrome hat diesen Download blockiert, weil die Datei deine privaten Konten sowie Konten in sozialen Netzwerken, einschließlich <ph name="USER_EMAIL" />, schädigen kann</translation>
+<translation id="8798550110818026746">Deine Organisation kann Browserdaten sehen und verwalten, wie z. B. deine Lesezeichen, deinen Verlauf und deine Passwörter. Browserdaten in anderen Chrome-Profilen sind nicht sichtbar.</translation>
 <translation id="8801657293260363985">V8 ist die JavaScript- und WebAssembly-Engine von Chrome, mit der die Websiteleistung verbessert wird</translation>
 <translation id="8821043148920470810">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 7.</translation>
 <translation id="8823341990149967727">Chrome ist veraltet.</translation>

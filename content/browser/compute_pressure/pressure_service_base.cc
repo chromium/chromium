@@ -118,6 +118,11 @@ void PressureServiceBase::BindReceiver(
     mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (manager_receiver_.is_bound()) {
+    mojo::ReportBadMessage("PressureService is already connected.");
+    return;
+  }
+
   manager_receiver_.Bind(std::move(receiver));
   // base::Unretained is safe because Mojo guarantees the callback will not
   // be called after `associated_manager_receiver_` is deallocated,

@@ -459,6 +459,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1303101771013849280">Könyvjelzők HTML-fájlja</translation>
 <translation id="1303671224831497365">Nem található Bluetooth-eszköz</translation>
 <translation id="130491383855577612">A rendszer sikeresen lecserélte a Linux-alkalmazásokat és -fájlokat.</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{1 bővítmény és az erre az eszközre mentett adatai eltávolítása}other{{ACCOUNT_EXTENSIONS_COUNT} bővítmény és az erre az eszközre mentett adataik eltávolítása}}</translation>
 <translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> megnyitása</translation>
 <translation id="1306606229401759371">Beállítások módosítása</translation>
 <translation id="1307165550267142340">Sikerült a PIN-kód létrehozása</translation>
@@ -1216,6 +1217,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1826192255355608658">Szinkronizálhatja a Chrome böngésző könyvjelzőit, jelszavait, előzményeit és még sok mást is</translation>
 <translation id="1826516787628120939">Ellenőrzés</translation>
 <translation id="1826657447823925402">Fordított görgetés kikapcsolva</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> szín</translation>
 <translation id="1827504459960247692">Hotspot neve</translation>
 <translation id="1828378091493947763">Ez a beépülő modul nem támogatott ezen az eszközön</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Összes megnyitása}=1{&amp;Könyvjelző megnyitása}other{&amp;Összes ({COUNT}) megnyitása}}</translation>
@@ -6721,6 +6723,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5749214722697335450">Használati és diagnosztikai adatok küldése. Segítsen az Android-élmény továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat mentheti az Ön Google-fiókjába. <ph name="BEGIN_LINK1" />További információ a mutatókról<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Internetmegosztási készenlét ellenőrzése</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Ez a bővítmény el van mentve az Ön Google-fiókjába, de a csak erre az eszközre mentett adatai törlődhetnek}other{Ezek a bővítmények el vannak mentve az Ön Google-fiókjába, de a csak erre az eszközre mentett adataik törlődhetnek}}</translation>
 <translation id="5753570386948603678">Törlés az előzmények közül</translation>
 <translation id="5756163054456765343">Súgó</translation>
 <translation id="5757187557809630523">következő szám</translation>

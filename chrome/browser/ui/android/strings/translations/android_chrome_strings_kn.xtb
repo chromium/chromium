@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">ಈ ಸೈಟ್‌ಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
 <translation id="1145536944570833626">ಪ್ರಸ್ತುತ ಡೇಟಾ ಅಳಿಸಿ.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
+<translation id="1154555449933432029">ನೀವು Google Password Manager ನಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್‌ ಮಾಡಲಾಗಿಲ್ಲ.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
 <translation id="1174479719160874822">ಸ್ಕ್ರೀನ್ ಕಿರಿದಾಗಿರುವಾಗ ಮೊಬೈಲ್ ಸೈಟ್‌ಗೆ ಬದಲಿಸುವಂತೆ Chrome ವಿನಂತಿಸುತ್ತದೆ</translation>
@@ -1370,10 +1371,12 @@
 <translation id="7224097611345298931">Chrome ನ ಈ ಸಾಧನ ಮತ್ತು <ph name="CHROME_CHANNEL" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿರುವ ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲಾಗಿದೆ. ನೀವು ಎರಡೂ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಎಲ್ಲಾ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಉಳಿದಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
 <translation id="7230064152164845085">ಅಜ್ಞಾತ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ</translation>
+<translation id="7237724030342645845">Google Password Manager ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿದೆ</translation>
 <translation id="72415438529550637">ಪಾಸ್‌ವರ್ಡ್ ಸಲಹೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="7260367682327802201">ನಿಮ್ಮ Android ಸಾಧನವು ಇದೇ ರೀತಿಯ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಒಳಗೊಂಡಿರಬಹುದು. Chrome ನಲ್ಲಿ ಮತ್ತು ನಿಮ್ಮ Android ಸಾಧನದಲ್ಲಿ ಜಾಹೀರಾತು ಮಾಪನವನ್ನು ಆನ್ ಮಾಡಿದ್ದರೆ, ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ನೀವು ಬಳಸುವ ಆ್ಯಪ್‌ಗಳಾದ್ಯಂತ ಜಾಹೀರಾತುಗಳ ಪರಿಣಾಮವನ್ನು ಕಂಪನಿಯು ಅಳೆಯಬಹುದು.</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> ನಲ್ಲಿ <ph name="ONE_TIME_CODE" /> ಕೋಡ್ ಅನ್ನು ಸಲ್ಲಿಸಬೇಕೆ?</translation>
 <translation id="7274013316676448362">ನಿರ್ಬಂಧಿಸಿರುವ ಸೈಟ್</translation>
+<translation id="7276868533747677875">ನೀವು ಈ ಹಿಂದೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಿದ್ದರೆ, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ CSV ಫೈಲ್‌ಗಾಗಿ ನೋಡಿ ಮತ್ತು ಅವುಗಳನ್ನು ನಿಮ್ಮ ಆದ್ಯತೆಯ ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕಕ್ಕೆ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಿ.</translation>
 <translation id="7289049772085228972">ನೀವು Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="7289303553784750393">ನೀವು ಆನ್‌ಲೈನ್‌ ಆಗಿದ್ದರೂ ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, ನೀವು <ph name="SITE_ETLD_PLUS_ONE" /> ನಲ್ಲಿ ಮುಂದುವರಿಯಲು ಇತರ ಮಾರ್ಗಗಳನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="7290209999329137901">ಮರುಹೆಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -1548,6 +1551,7 @@
 <translation id="8027395186860110042">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು</translation>
 <translation id="8027863900915310177">ಎಲ್ಲಿಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8030852056903932865">ಅನುಮೋದಿಸಿ</translation>
+<translation id="8031805944372049238">Google Password Manager ಜೊತೆಗೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್‌ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಪ್ರಾರಂಭಿಸಲು, Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ.</translation>
 <translation id="8032569120109842252">ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ದಿನಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="8037801708772278989">ಈಗಷ್ಟೇ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>

@@ -324,7 +324,6 @@
 <translation id="2299218006564889602">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Num. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Chiudi scheda</translation>
-<translation id="230956208401264723">Visualizza tutti i tuoi pacchi tracciati qui in questo carosello</translation>
 <translation id="2311077293164383652">Chiudi scheda bloccata</translation>
 <translation id="2316129865977710310">No, grazie</translation>
 <translation id="2320166752086256636">Nascondi tastiera</translation>
@@ -474,7 +473,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2931440415625410757">Mostra istruzioni</translation>
 <translation id="2952278131021475699">Ricerca con la fotocamera di Lens</translation>
 <translation id="2962516096219646456">Visualizza tutti i dati di compilazione automatica</translation>
-<translation id="2963044753825419640">Consenti a siti web e app di eseguire automaticamente l'upgrade degli account esistenti per utilizzare le passkey, quando disponibili</translation>
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>
 <translation id="2989523299700148168">Visitati di recente</translation>
 <translation id="2989805286512600854">Apri in un'altra scheda</translation>
@@ -1120,6 +1118,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5817176759448082654">Controllo password</translation>
 <translation id="5819208479324046259">Gestito da <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizzazione in corso…</translation>
+<translation id="583923961930319521">Usa le password su tutti i tuoi dispositivi</translation>
 <translation id="5844284118433003733">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
 <translation id="5854790677617711513">Oltre 30 giorni fa</translation>
 <translation id="5857770089550859117">Per avviare la sincronizzazione è obbligatoria la passphrase.</translation>
@@ -1462,7 +1461,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7253951228444156601">Controllo delle password…</translation>
 <translation id="7261217796641151584">Condividi gruppo</translation>
 <translation id="7266578100016339897">In questo modo, è più semplice organizzarsi. Puoi modificare questa opzione nelle impostazioni in qualsiasi momento.</translation>
-<translation id="7271220006028561438">Consenti upgrade automatici delle passkey</translation>
 <translation id="7272437679830969316">Impossibile verificare la tua identità. Password non copiata.</translation>
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="7300448350764260141">Aggiungi un ulteriore livello di protezione dalle minacce online.</translation>
@@ -1698,6 +1696,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8221665793629393739">Il tuo promemoria per rivedere</translation>
 <translation id="8230355548492839438">Trova precedente</translation>
 <translation id="8232956427053453090">Conserva i dati</translation>
+<translation id="8233237502828137700">Chiudi banner promozionale</translation>
 <translation id="8238711781852526820">Nascondi "Monitoraggio del prezzo"</translation>
 <translation id="8258999165172757081">Aggiunto</translation>
 <translation id="8261506727792406068">Elimina</translation>

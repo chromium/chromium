@@ -344,22 +344,19 @@ struct PassportEntityOptions {
 // base::Time in the database is seconds).
 EntityInstance GetPassportEntityInstance(PassportEntityOptions options = {});
 
-struct LoyaltyCardEntityOptions {
-  const char16_t* program = u"Asterisk Airlines";
-  const char16_t* provider = u"Propeller Airways";
-  const char16_t* member_id = u"987";
-  std::string_view guid = "11111111-1111-4111-8111-111111111111";
-  std::string_view nickname = "Loyie";
+struct DriversLicenseOptions {
+  const char16_t* name = u"Knecht Ruprecht";
+  const char16_t* region = u"California";
+  const char16_t* number = u"12312345";
+  const char16_t* expiration_date = u"01/12/2019";
+  const char16_t* issue_date = u"01/01/2010";
+  std::string_view guid = "00000000-0000-4000-8000-100000000000";
+  std::string_view nickname = "License";
   base::Time date_modified = kJune2017;
 };
 
-// Creates a test loyalty card instance with the values from `options`.
-// Attributes whose value in `options` is `nullptr` are left absent.
-// `options.date_modified` is rounded to seconds so that writing and reading the
-// entity from the database obtains the original entity (the resolution of
-// base::Time in the database is seconds).
-EntityInstance GetLoyaltyCardEntityInstance(
-    LoyaltyCardEntityOptions options = {});
+EntityInstance GetDriversLicenseEntityInstance(
+    DriversLicenseOptions options = {});
 
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,

@@ -809,6 +809,7 @@
 <translation id="4777866634702576038">Да се избрише групата картички?</translation>
 <translation id="4778653490315793244">Сѐ уште нема што да се прикаже</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> е вашиот стандарден пребарувач</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> сака да користи лични податоци од вашиот дигитален паричник.</translation>
 <translation id="4787736314074622408">Сакате да се избрише <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Дознајте како Chrome ве штити</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
 <translation id="5375374982898812658">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите ваши уреди</translation>
 <translation id="5375577065097716013">Пребарај слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> сака да користи лични податоци од вашиот дигитален паричник. Продолжете само ако му верувате на сајтов. Опасните сајтови може да ве измамат да откриете работи како полното име и презиме или бројот на документот за идентификација.</translation>
 <translation id="5394331612381306435">Излези од „Инкогнито“</translation>
 <translation id="5395376160638294582">Уверете се дека секогаш ќе може да ги користите податоците на Chrome во вашата сметка на Google</translation>
 <translation id="539881862970320163">Предложена е силна лозинка. Тастатурата е скриена.</translation>
@@ -1803,6 +1805,7 @@
 <translation id="9148126808321036104">Најави се повторно</translation>
 <translation id="9157212632995922070">Изберете сметка за да продолжите на <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Сподели само содржини</translation>
+<translation id="9161172953291434881">Дали му верувате на сајтов за да му ги доверите вашите податоци?</translation>
 <translation id="9168847423516963845">Премести ја лентата за адреса најдолу</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

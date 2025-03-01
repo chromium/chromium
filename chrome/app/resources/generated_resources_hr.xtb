@@ -461,6 +461,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1303101771013849280">HTML datoteka oznaka</translation>
 <translation id="1303671224831497365">Nije pronađen nijedan Bluetooth uređaj</translation>
 <translation id="130491383855577612">Linux aplikacije i datoteke uspješno su zamijenjene</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Uklonite 1 proširenje i podatke koje je spremilo na ovom uređaju}one{Uklonite {ACCOUNT_EXTENSIONS_COUNT} proširenje i podatke koje je spremilo na ovom uređaju}few{Uklonite {ACCOUNT_EXTENSIONS_COUNT} proširenja i podatke koje su spremila na ovom uređaju}other{Uklonite {ACCOUNT_EXTENSIONS_COUNT} proširenja i podatke koje su spremila na ovom uređaju}}</translation>
 <translation id="1306518237408758433">Otvori oznaku <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Promijeni postavke</translation>
 <translation id="1307165550267142340">Vaš je PIN izrađen</translation>
@@ -1209,6 +1210,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1826192255355608658">Sinkronizirajte svoje oznake, zaporke, povijest i ostalo u pregledniku Chrome</translation>
 <translation id="1826516787628120939">Provjera</translation>
 <translation id="1826657447823925402">Onemogućeno je obrnuto pomicanje</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> boja</translation>
 <translation id="1827504459960247692">Naziv žarišne točke</translation>
 <translation id="1828378091493947763">Ovaj dodatak nije podržan na ovom uređaju</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Otvori sve}=1{&amp;Otvori oznaku}one{&amp;Otvori sve ({COUNT})}few{&amp;Otvori sve ({COUNT})}other{&amp;Otvori sve ({COUNT})}}</translation>
@@ -6718,6 +6720,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5749214722697335450">Pošaljite podatke o upotrebi i dijagnostici. Pomognite poboljšati Android automatskim slanjem dijagnostičkih podataka te podataka o upotrebi uređaja i aplikacija Googleu. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki agregirani podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ako je uključena dodatna postavka Aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. <ph name="BEGIN_LINK1" />Saznajte više o mjernim podacima<ph name="BEGIN_LINK1_END" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Provjera spremnosti za modemsko povezivanje</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Ovo je proširenje spremljeno na vašem Google računu, ali svi podaci koje je spremilo samo na ovom uređaju mogu se izbrisati}one{Ova se proširenja spremaju na vaš Google račun, ali svi podaci koje su spremila samo na ovom uređaju mogu se izbrisati}few{Ova se proširenja spremaju na vaš Google račun, ali svi podaci koje su spremila samo na ovom uređaju mogu se izbrisati}other{Ova se proširenja spremaju na vaš Google račun, ali svi podaci koje su spremila samo na ovom uređaju mogu se izbrisati}}</translation>
 <translation id="5753570386948603678">Izbrišite iz povijesti</translation>
 <translation id="5756163054456765343">Centar za pomoć</translation>
 <translation id="5757187557809630523">sljedeća pjesma</translation>

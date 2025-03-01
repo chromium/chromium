@@ -116,6 +116,7 @@
 <translation id="2583187216237139145">Wszystkie dane Chromium wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
 <translation id="259935314519650377">Pobranego instalatora nie udało się załadować do pamięci podręcznej. Błąd: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2629740064077610681">Twoja organizacja może wyświetlać dane przeglądania (np. zakładki, historię i hasła) oraz nimi zarządzać. Nie widzi danych przeglądania w innych profilach Chromium</translation>
 <translation id="2635452620547538388">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chromium na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="264613044588233783">Chromium działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami (zalecane)</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
@@ -314,6 +315,7 @@
 <translation id="5579324208890605088">Błąd uruchamiania: uruchom instalator jako zwykły użytkownik, a nie jako administrator.</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5605834417512968703">Wybierz, co chcesz wyszukać za pomocą wyszukiwania obrazów, lub naciśnij Escape, aby zamknąć tę funkcję</translation>
+<translation id="5618818588972826921">Wybierz dowolny tekst lub obraz, aby wyszukać go za pomocą wyszukiwania obrazów, lub naciśnij Escape, aby zamknąć tę funkcję</translation>
 <translation id="5623402015214259806">{0,plural, =0{Dostępna jest aktualizacja Chromium}=1{Dostępna jest aktualizacja Chromium}few{Aktualizacja Chromium jest dostępna od # dni}many{Aktualizacja Chromium jest dostępna od # dni}other{Aktualizacja Chromium jest dostępna od # dnia}}</translation>
 <translation id="5643865575100044307">Zawsze usuwaj dane witryn z urządzenia po zamknięciu Chromium</translation>
 <translation id="5653831366781983928">Uruchom Chromium ponownie</translation>
@@ -378,6 +380,7 @@
 <translation id="6366160072964553914">Pobieranie zostało zablokowane przez Chromium, ponieważ ten plik nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="6373523479360886564">Czy na pewno chcesz odinstalować Chromium?</translation>
 <translation id="6375219077595103062">Dodaj skrót do Menedżera haseł</translation>
+<translation id="6390800440335263989">Aby przejść dalej, zaloguj się w Chromium jako <ph name="EMAIL" />. Dzięki temu zachowasz zgodność z zasadami organizacji.</translation>
 <translation id="6400112897226594999">Logo Chromium na ekranie komputera.</translation>
 <translation id="6403826409255603130">Chromium to przeglądarka obsługująca strony i aplikacje z szybkością błyskawicy. Jest szybka, stabilna i łatwa w użyciu. Bezpiecznie przeglądaj internet dzięki wbudowanej w Chromium ochronie przed złośliwym oprogramowaniem i phishingiem.</translation>
 <translation id="6436260184216827876">Wyszukiwanie obrazów jest niedostępne. Spróbuj ponownie później.</translation>
@@ -588,5 +591,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="983803489796659991">Instalacja się nie udała, ponieważ na serwerze aktualizacji nie ma żadnych danych skrótu aplikacji.</translation>
 <translation id="985498048907240953">Używaj Chromium bez konta</translation>
 <translation id="985602178874221306">Autorzy Chromium</translation>
+<translation id="989970834842471429">Wybierz dowolny tekst lub obraz, aby wyszukać go za pomocą wyszukiwania obrazów</translation>
 <translation id="992780518932311116">Aby używać lokalizacji, przyznaj Chromium dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
 </translationbundle>
