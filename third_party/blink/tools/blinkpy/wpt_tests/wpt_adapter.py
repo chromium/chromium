@@ -353,9 +353,11 @@ class WPTAdapter:
 
         if (self.options.enable_sanitizer
                 or self.options.configuration == 'Debug'):
-            runner_options.timeout_multiplier = 5
-            logger.info('Defaulting to 5x timeout multiplier because '
-                        'the build is debug or sanitized')
+            runner_options.timeout_multiplier = (
+                self.options.timeout_multiplier or 1) * 5
+            logger.info(
+                f'Using timeout multiplier of {runner_options.timeout_multiplier} '
+                + 'because the build is debug or sanitized')
         elif self.options.timeout_multiplier:
             runner_options.timeout_multiplier = self.options.timeout_multiplier
 
