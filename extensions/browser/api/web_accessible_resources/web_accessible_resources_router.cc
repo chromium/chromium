@@ -21,9 +21,7 @@ std::optional<GURL> TransformToDynamicURLIfNecessary(
     const GURL& url,
     content::BrowserContext* browser_context) {
   // Verify that the feature is enabled and the host is a valid extension id.
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDynamicURLRedirection) ||
-      !url.SchemeIs(kExtensionScheme) ||
+  if (!url.SchemeIs(kExtensionScheme) ||
       !crx_file::id_util::IdIsValid(url.host())) {
     return std::nullopt;
   }

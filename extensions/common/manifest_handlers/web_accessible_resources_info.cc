@@ -184,8 +184,6 @@ bool IsResourceWebAccessibleImpl(
   }
 
   std::string relative_path = target_url.path();
-  bool using_dynamic_url_extension_feature = base::FeatureList::IsEnabled(
-      extensions_features::kExtensionDynamicURLRedirection);
 
   // Look for the first match in the array of web accessible resources.
   for (const auto& entry : info->web_accessible_resources) {
@@ -203,7 +201,7 @@ bool IsResourceWebAccessibleImpl(
       // dynamic url should be ok to accept if it's a `host_piece` of either the
       // `upstream_url` or the `target_url` because the goal of this feature is
       // to ensure that the dynamic url was used for fetching the resource.
-      if (using_dynamic_url_extension_feature && entry.use_dynamic_url) {
+      if (entry.use_dynamic_url) {
         bool is_guid_target_url = extension.guid() == target_url.host_piece();
         if (upstream_url.is_empty()) {
           result = is_guid_target_url;

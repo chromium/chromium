@@ -25,10 +25,7 @@ namespace {
 // TODO(crbug.com/352267920): Move to web_accessible_resources_browsertest.cc?
 class DynamicOriginBrowserTest : public ExtensionBrowserTest {
  public:
-  DynamicOriginBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionDynamicURLRedirection);
-  }
+  DynamicOriginBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
