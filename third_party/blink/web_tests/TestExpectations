@@ -9080,3 +9080,5 @@ crbug.com/384954756 external/wpt/webrtc/protocol/rtx-codecs.https.html [ Failure
 
 #Gardener 2025-02-21
 crbug.com/398165466 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screenshots.js [ Failure Pass Timeout ]
+
+crbug.com/387898495 fast/mediastream/MediaStreamTrack-applyConstraints.html [ Failure Pass ]
