@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -56,11 +57,11 @@ class PasskeyUpgradeBubbleViewTest : public PasswordBubbleViewTestBase {
   raw_ptr<PasskeyUpgradeBubbleView> view_ = nullptr;
 };
 
-TEST_F(PasskeyUpgradeBubbleViewTest, HasTitleAndButtons) {
+TEST_F(PasskeyUpgradeBubbleViewTest, HasTitleAndNoStandardButtons) {
   CreateViewAndShow();
 
   EXPECT_TRUE(view().ShouldShowWindowTitle());
-  EXPECT_TRUE(view().GetOkButton());
+  EXPECT_FALSE(view().GetOkButton());
   EXPECT_FALSE(view().GetCancelButton());
 }
 
