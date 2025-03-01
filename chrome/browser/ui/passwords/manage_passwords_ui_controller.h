@@ -143,6 +143,10 @@ class ManagePasswordsUIController
   // without user interaction.
   virtual void UpdateIconAndBubbleState(ManagePasswordsIconView* icon);
 
+  // Called if the password change flow finishes successfully. It ensures the
+  // correct state after the flow.
+  void OnPasswordChangeFinishedSuccessfully();
+
   // True iff the bubble is to be opened automatically.
   bool IsAutomaticallyOpeningBubble() const {
     return bubble_status_ == BubbleStatus::SHOULD_POP_UP;
