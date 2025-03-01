@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 

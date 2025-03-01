@@ -8,6 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
