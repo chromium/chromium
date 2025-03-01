@@ -262,9 +262,9 @@ interface LensPage {
   // selected.
   ClearAllSelections();
 
-  // Copies the currently selected text to the users clipboard and displays the
-  // text copied chip.
-  TriggerCopyText();
+  // Copies the currently selected text or image to the users clipboard and
+  // displays the relevant copied toast.
+  OnCopyCommand();
 
   // Suppress the ghost loader when tab is foregrounded.
   SuppressGhostLoader();

@@ -35,11 +35,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
-#include "ui/base/clipboard/clipboard.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_change_notifier.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace {
 
@@ -172,6 +175,12 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
   ~LensOverlayControllerCUJTest() override = default;
 
   void SetUp() override {
+    SetUpFeatureList();
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveFeaturePromoTest::SetUp();
+  }
+
+  virtual void SetUpFeatureList() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{lens::features::kLensOverlay, {}},
                               {lens::features::kLensOverlayTranslateButton, {}},
@@ -182,8 +191,6 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                                 {"auto-focus-searchbox", "false"}}}},
         /*disabled_features=*/{
             lens::features::kLensOverlaySimplifiedSelection});
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InteractiveFeaturePromoTest::SetUp();
   }
 
   void WaitForTemplateURLServiceToLoad() {
@@ -315,7 +322,7 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                  WaitForStateChange(overlayId, screenshot_is_rendered));
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -1038,6 +1045,111 @@ IN_PROC_BROWSER_TEST_F(LensPreselectionBubbleInteractiveUiTest,
                   WaitForShow(kLensPreselectionBubbleExitButtonElementId),
                   PressButton(kLensPreselectionBubbleExitButtonElementId),
                   WaitForHide(LensOverlayController::kOverlayId));
+}
+
+class LensOverlayControllerSimplifedSelectionCUJTest
+    : public LensOverlayControllerCUJTest {
+ public:
+  LensOverlayControllerSimplifedSelectionCUJTest() = default;
+  ~LensOverlayControllerSimplifedSelectionCUJTest() override = default;
+  LensOverlayControllerSimplifedSelectionCUJTest(
+      const LensOverlayControllerSimplifedSelectionCUJTest&) = delete;
+  void operator=(const LensOverlayControllerSimplifedSelectionCUJTest&) =
+      delete;
+
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{lens::features::kLensOverlay, {}},
+                              {lens::features::kLensOverlaySimplifiedSelection,
+                               {}},
+                              {lens::features::kLensOverlayContextualSearchbox,
+                               {{"use-pdfs-as-context", "true"},
+                                {"use-inner-html-as-context", "true"},
+                                {"auto-focus-searchbox", "false"}}}},
+        /*disabled_features=*/{lens::features::kLensOverlayTranslateButton});
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User navigates to a website.
+//  (2) User opens lens overlay.
+//  (3) User highlights some region.
+//  (4) User presses CTRL+C.
+//  (5) Region gets copied.
+// TODO(crbug.com/399520257): Fix test failure on ChromeOS, and ASAN.
+#if BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
+// Flaky on ASAN, and on ChromeOS.
+#define MAYBE_CopyKeyCommandCopiesImage DISABLED_CopyKeyCommandCopiesImage
+#else
+#define MAYBE_CopyKeyCommandCopiesImage CopyKeyCommandCopiesImage
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerSimplifedSelectionCUJTest,
+                       MAYBE_CopyKeyCommandCopiesImage) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kRegionCopiedState);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  // Path to region selection layer.
+  const DeepQuery kPathToRegionSelection{
+      "lens-overlay-app",
+      "lens-selection-overlay",
+      "region-selection",
+  };
+
+  const ui::Accelerator ctrl_c_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
+
+  RunTestSequence(
+      OpenLensOverlay(),
+
+      // The overlay controller is an independent floating widget associated
+      // with a tab rather than a browser window, so by convention gets its own
+      // element context.
+      InAnyContext(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
+
+      // Wait for the webview to finish loading to prevent re-entrancy. Then
+      // click the center of the region selection layer to select a region.
+      // Flush tasks after click to prevent flakiness.
+      InSameContext(WaitForShow(LensOverlayController::kOverlayId),
+                    WaitForScreenshotRendered(kOverlayId),
+                    EnsurePresent(kOverlayId, kPathToRegionSelection),
+                    MoveMouseTo(kOverlayId, kPathToRegionSelection),
+                    ClickMouse()),
+
+      // Clicking the overlay should have opened the side panel with the results
+      // frame.
+      InAnyContext(InstrumentNonTabWebView(
+                       kOverlaySidePanelWebViewId,
+                       LensOverlayController::kOverlaySidePanelWebViewId),
+                   WaitForWebContentsReady(kOverlaySidePanelWebViewId),
+                   WaitForWebContentsPainted(kOverlaySidePanelWebViewId)),
+
+      // Press CTRL+C command and ensure the selected region is saved to
+      // clipboard. Send the command to the side panel web view because in
+      // actual usage, the side panel is the view with focus so it receives
+      // the event right after selecting the region.
+      InSameContext(
+          WaitForShow(kOverlaySidePanelWebViewId),
+          FocusWebContents(kOverlaySidePanelWebViewId),
+          SendAccelerator(kOverlaySidePanelWebViewId, ctrl_c_accelerator),
+          PollState(kRegionCopiedState,
+                    [&]() {
+                      ui::Clipboard* clipboard =
+                          ui::Clipboard::GetForCurrentThread();
+                      std::string clipboard_data;
+                      clipboard->ReadData(ui::ClipboardFormatType::PngType(),
+                                          /*data_dst=*/nullptr,
+                                          &clipboard_data);
+                      return !clipboard_data.empty();
+                    }),
+          WaitForState(kRegionCopiedState, true)));
 }
 
 }  // namespace

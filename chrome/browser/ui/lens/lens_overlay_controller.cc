@@ -834,7 +834,7 @@ void LensOverlayController::TriggerCopyText() {
   if (!page_) {
     return;
   }
-  page_->TriggerCopyText();
+  page_->OnCopyCommand();
 }
 
 bool LensOverlayController::IsOverlayShowing() {

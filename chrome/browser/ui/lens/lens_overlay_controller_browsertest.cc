@@ -459,7 +459,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     did_clear_text_selection_ = true;
   }
 
-  void TriggerCopyText() override { did_trigger_copy = true; }
+  void OnCopyCommand() override { did_trigger_copy = true; }
 
   void SuppressGhostLoader() override {}
 
@@ -4579,7 +4579,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
-  // Before showing the results panel, there should be no TriggerCopy sent to
+  // Before showing the results panel, there should be no OnCopyCommand sent to
   // the overlay.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
@@ -4589,7 +4589,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   SimulateCtrlCKeyPress(GetOverlayWebContents());
   fake_controller->FlushForTesting();
 
-  // Verify that TriggerCopyText was sent.
+  // Verify that OnCopyCommand was sent.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_controller->fake_overlay_page_.did_trigger_copy; }));
 
@@ -4607,7 +4607,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   SimulateCtrlCKeyPress(controller->GetSidePanelWebContentsForTesting());
   fake_controller->FlushForTesting();
 
-  // Verify that TriggerCopyText was sent.
+  // Verify that OnCopyCommand was sent.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_controller->fake_overlay_page_.did_trigger_copy; }));
 }
