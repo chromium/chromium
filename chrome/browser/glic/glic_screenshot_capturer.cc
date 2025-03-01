@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,7 +43,8 @@ std::vector<uint8_t> ConvertFrameToJpeg(
     return {};
   }
 
-  auto jpeg_data = gfx::JPEGCodec::Encode(sk_bitmap, 100);
+  auto jpeg_data = gfx::JPEGCodec::Encode(
+      sk_bitmap, features::kGlicScreenshotEncodeQuality.Get());
   if (!jpeg_data.has_value()) {
     return {};
   }
