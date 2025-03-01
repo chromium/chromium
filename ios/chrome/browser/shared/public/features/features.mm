@@ -1275,3 +1275,11 @@ BASE_FEATURE(kIPHAblation, "IPHAblation", base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsIPHAblationEnabled() {
   return base::FeatureList::IsEnabled(kIPHAblation);
 }
+
+BASE_FEATURE(kNonModalSignInPromo,
+             "NonModalSignInPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNonModalSignInPromoEnabled() {
+  return base::FeatureList::IsEnabled(kNonModalSignInPromo);
+}

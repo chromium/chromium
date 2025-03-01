@@ -2497,6 +2497,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensUnaryApiSalientTextEnabledName,
      flag_descriptions::kLensUnaryApiSalientTextEnabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensUnaryApiSalientTextEnabled)},
+    {"non-modal-sign-in-promo", flag_descriptions::kNonModalSignInPromoName,
+     flag_descriptions::kNonModalSignInPromoDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kNonModalSignInPromo)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

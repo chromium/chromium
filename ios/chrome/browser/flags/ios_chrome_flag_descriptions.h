@@ -376,6 +376,9 @@ extern const char kNewShareExtensionDescription[];
 extern const char kNewTabPageFieldTrialName[];
 extern const char kNewTabPageFieldTrialDescription[];
 
+extern const char kNonModalSignInPromoName[];
+extern const char kNonModalSignInPromoDescription[];
+
 extern const char kIOSSharedHighlightingColorChangeName[];
 extern const char kIOSSharedHighlightingColorChangeDescription[];
 
