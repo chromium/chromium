@@ -28,6 +28,7 @@ MultiContentsView::MultiContentsView(
     : inactive_view_pressed_callback_(inactive_view_pressed_callback) {
   start_contents_view_ =
       AddChildView(std::make_unique<ContentsWebView>(browser_context));
+  start_contents_view_->set_is_primary_web_contents_for_window(true);
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
   resize_area_->SetVisible(false);
@@ -65,12 +66,13 @@ void MultiContentsView::SetWebContents(content::WebContents* web_contents,
   }
 }
 
-ContentsWebView* MultiContentsView::SetActivePosition(int position) {
+void MultiContentsView::SetActivePosition(int position) {
   // Position should never be less than 0 or equal to or greater than the total
   // number of contents views.
   CHECK(position >= 0 && position < 2);
   active_position_ = position;
-  return GetActiveContentsView();
+  GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
+  GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
 }
 
 bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
