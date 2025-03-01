@@ -301,7 +301,11 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewInteractiveUiTest,
   std::vector<ActivityLogItem> activity_log;
   activity_log.emplace_back(CreateActivityForTab(group_id, tab));
   activity_log.emplace_back(CreateActivityForTab(group_id, tab));
-  activity_log.emplace_back(CreateActivityForTab(group_id, tab2));
+
+  auto activity_without_avatar = CreateActivityForTab(group_id, tab2);
+  activity_without_avatar.activity_metadata.triggering_user->avatar_url =
+      GURL("");
+  activity_log.emplace_back(activity_without_avatar);
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),

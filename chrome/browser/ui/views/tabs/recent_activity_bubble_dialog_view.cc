@@ -44,6 +44,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/styled_label.h"
@@ -613,7 +614,9 @@ RecentActivityRowImageView::~RecentActivityRowImageView() = default;
 
 void RecentActivityRowImageView::FetchAvatar() {
   auto user = GetRelevantUserForActivity(item_);
-  if (!user.has_value()) {
+  if (!user.has_value() || !user->avatar_url.is_valid()) {
+    // Unknown user. Will render fallback icon for avatar.
+    avatar_request_complete_ = true;
     return;
   }
 
@@ -643,6 +646,7 @@ void RecentActivityRowImageView::SetAvatar(const gfx::Image& avatar) {
   avatar_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
       avatar.AsImageSkia(), skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
       gfx::Size(avatar_size, avatar_size));
+  avatar_request_complete_ = true;
   SchedulePaint();
 }
 
@@ -688,7 +692,7 @@ void RecentActivityRowImageView::SetFavicon(
 }
 
 void RecentActivityRowImageView::PaintFavicon(gfx::Canvas* canvas,
-                                              gfx::Rect avatar_bounds) {
+                                              const gfx::Rect& avatar_bounds) {
   const int favicon_container_radius =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS);
@@ -757,12 +761,28 @@ void RecentActivityRowImageView::PaintFavicon(gfx::Canvas* canvas,
       resized_favicon_bounds.width(), resized_favicon_bounds.height(), false);
 }
 
-void RecentActivityRowImageView::OnPaint(gfx::Canvas* canvas) {
-  if (!ShouldShowAvatar()) {
-    // Nothing should be painted as the avatar is loading.
-    return;
-  }
+void RecentActivityRowImageView::PaintPlaceholderBackground(
+    gfx::Canvas* canvas,
+    const gfx::Rect& bounds) {
+  cc::PaintFlags indicator_flags;
+  indicator_flags.setColor(
+      GetColorProvider()->GetColor(ui::kColorSysTonalContainer));
+  canvas->DrawCircle(bounds.CenterPoint(), bounds.width() / 2.0,
+                     indicator_flags);
+}
 
+void RecentActivityRowImageView::PaintFallbackIcon(gfx::Canvas* canvas,
+                                                   const gfx::Rect& bounds) {
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RECENT_ACTIVITY_AVATAR_FALLBACK_SIZE);
+  int icon_offset = (bounds.width() - icon_size) / 2.0;
+  canvas->Translate({icon_offset, icon_offset});
+  gfx::PaintVectorIcon(
+      canvas, kPersonFilledPaddedSmallIcon, icon_size,
+      GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer));
+}
+
+void RecentActivityRowImageView::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect contents_bounds = GetContentsBounds();
   const int avatar_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE);
@@ -771,13 +791,24 @@ void RecentActivityRowImageView::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect avatar_bounds(contents_bounds.x(), contents_bounds.y(), avatar_size,
                           avatar_size);
 
+  if (!ShouldShowAvatar()) {
+    // Only the background should be painted as the avatar is loading.
+    PaintPlaceholderBackground(canvas, avatar_bounds);
+    return;
+  }
+
   // Save background layer to be used in favicon container border.
   canvas->SaveLayerAlpha(0xff);
 
   // Draw the avatar image.
-  canvas->DrawImageInt(avatar_image_, 0, 0, avatar_size, avatar_size,
-                       avatar_bounds.x(), avatar_bounds.y(),
-                       avatar_bounds.width(), avatar_bounds.height(), false);
+  if (avatar_image_.isNull()) {
+    PaintPlaceholderBackground(canvas, avatar_bounds);
+    PaintFallbackIcon(canvas, avatar_bounds);
+  } else {
+    canvas->DrawImageInt(avatar_image_, 0, 0, avatar_size, avatar_size,
+                         avatar_bounds.x(), avatar_bounds.y(),
+                         avatar_bounds.width(), avatar_bounds.height(), false);
+  }
 
   if (ShouldShowFavicon()) {
     PaintFavicon(canvas, avatar_bounds);
