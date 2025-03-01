@@ -15,19 +15,23 @@ module network.mojom;
 //
 // Signature inputs specifying invalid components or invalid parameters for
 // valid components will be ignored.
-struct SRIMessageSignatureComponent {
-  enum Parameter {
+struct SRIMessageSignatureComponentParameter {
+  enum Type {
     kRequest,                           // `req`
     kStrictStructuredFieldSerialization // `sf`
   };
 
-  string name;
+  Type type;
 
   // The `@query-param` component requires a `name` parameter with a string
-  // value. All other params are boolean: they'll be stored with an empty
-  // string value, and we'll simply evaluate their presence or absence in
-  // the map.
-  map<Parameter, string> params;
+  // value. All other params are boolean; we'll simply evaluate their
+  // presence or absence.
+  string? value;
+};
+
+struct SRIMessageSignatureComponent {
+  string name;
+  array<SRIMessageSignatureComponentParameter> params;
 };
 
 

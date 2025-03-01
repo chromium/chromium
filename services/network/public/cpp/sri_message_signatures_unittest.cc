@@ -28,8 +28,6 @@
 
 namespace network {
 
-using Parameters = mojom::SRIMessageSignatureComponent::Parameter;
-
 namespace {
 
 // Exciting test constants, leaning on test data from the RFC.
@@ -143,9 +141,9 @@ class SRIMessageSignatureParserTest : public testing::Test {
     ASSERT_EQ(1u, sig->components.size());
     EXPECT_EQ("unencoded-digest", sig->components[0]->name);
     ASSERT_EQ(1u, sig->components[0]->params.size());
-    EXPECT_TRUE(sig->components[0]->params.contains(
-        mojom::SRIMessageSignatureComponent::Parameter::
-            kStrictStructuredFieldSerialization));
+    EXPECT_EQ(mojom::SRIMessageSignatureComponentParameter::Type::
+                  kStrictStructuredFieldSerialization,
+              sig->components[0]->params[0]->type);
   }
 };
 

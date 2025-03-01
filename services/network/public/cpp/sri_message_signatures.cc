@@ -16,7 +16,9 @@
 
 namespace network {
 
-using Parameters = mojom::SRIMessageSignatureComponent::Parameter;
+using ComponentParameter = mojom::SRIMessageSignatureComponentParameter;
+using ComponentParameterPtr = mojom::SRIMessageSignatureComponentParameterPtr;
+using ParameterType = mojom::SRIMessageSignatureComponentParameter::Type;
 
 namespace {
 
@@ -64,8 +66,8 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
               kSignatureInputHeaderInvalidHeaderComponentParameter);
       return std::nullopt;
     }
-    result->params.insert(
-        {Parameters::kStrictStructuredFieldSerialization, ""});
+    result->params.push_back(ComponentParameter::New(
+        ParameterType::kStrictStructuredFieldSerialization, std::nullopt));
     return result;
   } else if (base::Contains(kDerivedComponents, name)) {
     // The `@status` derived component must not have any parameters (as it's
@@ -88,7 +90,8 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
               kSignatureInputHeaderInvalidDerivedComponentParameter);
       return std::nullopt;
     }
-    result->params.insert({Parameters::kRequest, ""});
+    result->params.push_back(
+        ComponentParameter::New(ParameterType::kRequest, std::nullopt));
     return result;
   } else {
     errors.push_back(mojom::SRIMessageSignatureError::
@@ -130,17 +133,17 @@ std::string SerializeParams(const net::structured_headers::Parameters params) {
 }
 
 std::string SerializeComponentParams(
-    const base::flat_map<Parameters, std::string>& params) {
+    const std::vector<ComponentParameterPtr>& params) {
   // All currently-supported component params are boolean, so we serialize them
   // by mapping each enum value to a string, and joining them with `;`.
   std::stringstream param_list;
-  for (const auto& param : params) {
+  for (const ComponentParameterPtr& param : params) {
     param_list << ';';
-    switch (param.first) {
-      case Parameters::kRequest:
+    switch (param->type) {
+      case ParameterType::kRequest:
         param_list << "req";
         break;
-      case Parameters::kStrictStructuredFieldSerialization:
+      case ParameterType::kStrictStructuredFieldSerialization:
         param_list << "sf";
         break;
     }
@@ -512,8 +515,8 @@ std::optional<std::string> ConstructSignatureBase(
       // SRI requires the `sf` parameter, which forces strict serialization for
       // structured fields.
       if (component->params.size() != 1u ||
-          !component->params.contains(
-              Parameters::kStrictStructuredFieldSerialization)) {
+          component->params[0]->type !=
+              ParameterType::kStrictStructuredFieldSerialization) {
         return std::nullopt;
       }
 
