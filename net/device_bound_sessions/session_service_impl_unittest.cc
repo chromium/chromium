@@ -108,10 +108,12 @@ class FakeDeviceBoundSessionObserver {
   std::vector<SessionAccess> notifications_;
 };
 
-class SessionServiceImplTest : public TestWithTaskEnvironment {
+class SessionServiceImplTest : public ::testing::Test,
+                               public WithTaskEnvironment {
  public:
   SessionServiceImplTest()
-      : context_(CreateTestURLRequestContextBuilder()->Build()),
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        context_(CreateTestURLRequestContextBuilder()->Build()),
         service_(*UnexportableKeyServiceFactory::GetInstance()->GetShared(),
                  context_.get(),
                  /*store=*/nullptr) {}
@@ -177,8 +179,8 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
 }
 
 TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
-  auto scoped_null_fetcher =
-      ScopedTestRegistrationFetcher::CreateWithFailure(kRefreshUrlString);
+  auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::ErrorType::kNetError, kRefreshUrlString);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       kChallenge,
@@ -458,7 +460,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
   EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
 }
 
-TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
+TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   SchemefulSite site_1(kTestUrl);
@@ -489,8 +491,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
       future_2.GetCallback<TestDeferCompletion::CallbackType>());
 
   // Set up a null fetcher for failure refresh.
-  auto scoped_null_fetcher =
-      ScopedTestRegistrationFetcher::CreateWithFailure(kRefreshUrlString);
+  auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::ErrorType::kPersistentHttpError, kRefreshUrlString);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
       defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
@@ -505,6 +507,53 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
 
   // Check the restart callback is called for successful fetcher.
   EXPECT_EQ(future_2.Take(), TestDeferCompletion::CallbackType::kContinue);
+}
+
+TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  SchemefulSite site_1(kTestUrl);
+  ASSERT_TRUE(service().GetSession(site_1, Session::Id(kSessionId)));
+
+  // Create a request to kTestUrl and defer it.
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  // The request needs to be samesite for it to be considered
+  // candidate for deferral.
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+  ASSERT_TRUE(maybe_deferral);
+  EXPECT_FALSE(maybe_deferral->is_pending_initialization);
+  EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
+
+  // Defer the request.
+  // Set AccessCallback for DeferRequestForRefresh().
+  FakeDeviceBoundSessionObserver observer;
+  request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
+
+  // Set RestartCallback and ContinueCallback.
+  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+  TestDeferCompletion defer_completion(
+      future.GetCallback<TestDeferCompletion::CallbackType>());
+
+  // Set up a null fetcher for failure refresh.
+  auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::ErrorType::kNetError, kRefreshUrlString);
+  service().DeferRequestForRefresh(
+      request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+      defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+
+  // Check access callback triggered by DeferRequestForRefresh.
+  ASSERT_THAT(
+      observer.notifications(),
+      ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
+                                SessionKey(site_1, Session::Id(kSessionId))}));
+
+  // Check the restart callback is called for successful fetcher.
+  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
 }
 
 TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
@@ -727,6 +776,93 @@ TEST_F(SessionServiceImplTest, NetLogRefresh) {
   EXPECT_EQ(
       observer.GetEntriesWithType(NetLogEventType::DBSC_REFRESH_REQUEST).size(),
       1u);
+}
+
+TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // The first refresh succeeds
+  {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  }
+
+  // The second refresh succeeds
+  {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  }
+
+  // The third refresh is throttled
+  {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
+  }
+
+  // After five minutes, the quota is restored and the fourth refresh
+  // succeeds.
+  FastForwardBy(base::Minutes(5));
+  {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  }
+}
+
+TEST_F(SessionServiceImplTest, SessionBackoff) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::ErrorType::kTransientHttpError, kRefreshUrlString);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  EXPECT_TRUE(service().ShouldDefer(request.get(), FirstPartySetMetadata()));
+
+  // Do four failing refreshes.
+  for (size_t i = 0; i < 4; i++) {
+    FastForwardBy(base::Minutes(5));
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
+  }
+
+  // Backoff should prevent us from deferring anymore.
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+  EXPECT_FALSE(maybe_deferral);
 }
 
 }  // namespace

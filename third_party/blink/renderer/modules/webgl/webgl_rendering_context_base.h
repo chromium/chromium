@@ -1884,7 +1884,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   friend class ScopedRGBEmulationColorMask;
   unsigned active_scoped_rgb_emulation_color_masks_;
 
-  ImageBitmap* TransferToImageBitmapBase(ScriptState*);
+  ImageBitmap* TransferToImageBitmapBase(ScriptState*, ExceptionState&);
 
   // Helper functions for tex(Sub)Image2D && texSubImage3D
   void TexImageHelperDOMArrayBufferView(TexImageParams params,

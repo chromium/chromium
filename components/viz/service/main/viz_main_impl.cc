@@ -80,9 +80,9 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
   // Null hypothesis finch testing. This code has no functional purpose.
   // See: crbug.com/354724066
   if (base::FeatureList::IsEnabled(features::kVizNullHypothesis)) {
-    LOG(WARNING) << "VizNullHypothesis is enabled (not a warning)";
+    VLOG(1) << "VizNullHypothesis is enabled (not a warning)";
   } else {
-    LOG(WARNING) << "VizNullHypothesis is disabled (not a warning)";
+    VLOG(1) << "VizNullHypothesis is disabled (not a warning)";
   }
   // TODO(crbug.com/41252481): Remove this when Mus Window Server and GPU are
   // split into separate processes. Until then this is necessary to be able to

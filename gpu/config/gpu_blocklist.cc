@@ -39,8 +39,6 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
                             GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL);
   list->AddSupportedFeature("accelerated_gl", GPU_FEATURE_TYPE_ACCELERATED_GL);
   list->AddSupportedFeature("vulkan", GPU_FEATURE_TYPE_VULKAN);
-  list->AddSupportedFeature("canvas_oop_rasterization",
-                            GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION);
   list->AddSupportedFeature("accelerated_webgpu",
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGPU);
   list->AddSupportedFeature("skia_graphite", GPU_FEATURE_TYPE_SKIA_GRAPHITE);

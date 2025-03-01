@@ -245,6 +245,10 @@ enum EndViewScreenSessionError {
   kHTTPError,
 };
 
+enum SetViewScreenSessionActiveError {
+  kHTTPError,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Performs authentication and sets the credential in the webview.
@@ -285,6 +289,9 @@ interface PageHandler {
   ViewStudentScreen(string id) => (ViewStudentScreenError? error);
   // Sets the state of the view screen session as inactive for a given student.
   EndViewScreenSession(string id) => (EndViewScreenSessionError? error);
+  // Sets the state of the view screen session as active for a given student.
+  SetViewScreenSessionActive(string id)
+    => (SetViewScreenSessionActiveError? error);
   // Get the value of a boca specific user pref.
   GetUserPref(BocaValidPref pref)
     => (mojo_base.mojom.Value value);
@@ -301,7 +308,9 @@ interface PageHandler {
   OpenFeedbackDialog() => ();
 };
 
-// Implemented by renderer process
+// Implemented by renderer process. There is an implementation in the browser
+// process but nothing binds to it. The browser implementation will be removed
+// as part of crbug.com/399923859.
 interface Page {
   // Notifies when student activities updated.
   OnStudentActivityUpdated(array<IdentifiedActivity> activities);
@@ -309,6 +318,8 @@ interface Page {
   OnSessionConfigUpdated(ConfigResult config);
   // Notifies when active networks updated.
   OnActiveNetworkStateChanged(array<NetworkInfo> active_networks);
+  // Notifies app when local captions is turned off from chrome.
+  OnLocalCaptionDisabled();
 };
 
 // Implemented in browser process to set up the communication between the Page

@@ -380,8 +380,7 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
 
     // Check default bucket exists.
     return quota_manager_proxy_sync
-        .GetBucket(kTestStorageKey, storage::kDefaultBucketName,
-                   blink::mojom::StorageType::kTemporary)
+        .GetBucket(kTestStorageKey, storage::kDefaultBucketName)
         .transform([&](storage::BucketInfo result) {
           EXPECT_EQ(result.name, storage::kDefaultBucketName);
           EXPECT_EQ(result.storage_key, kTestStorageKey);

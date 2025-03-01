@@ -13,7 +13,4 @@ interface Translator {
   // be null.
   Translate(string input,
             pending_remote<ModelStreamingResponder> pending_responder);
-
-  // TODO(crbug.com/392185835): Remove once window.translation is removed.
-  TranslateDeprecated(string input) => (string? output);
 };

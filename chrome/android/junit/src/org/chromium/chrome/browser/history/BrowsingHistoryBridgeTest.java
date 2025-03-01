@@ -20,6 +20,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.url.GURL;
 
@@ -32,6 +33,7 @@ import java.util.List;
 public class BrowsingHistoryBridgeTest {
 
     @Mock BrowsingHistoryBridge.Natives mNativeMocks;
+    @Mock SigninPromoCoordinator mHistorySyncPromoCoordinator;
 
     @Mock private Profile mProfile;
 
@@ -61,7 +63,9 @@ public class BrowsingHistoryBridgeTest {
         // Ensure the app ID passed from BrowsingHistoryBridge is stored in the item
         // object, and later gets passed down when marking the item for removal.
         HistoryContentManager contentManager = mock(HistoryContentManager.class);
-        HistoryAdapter adapter = new HistoryAdapter(contentManager, mBrowsingHistoryBridge);
+        HistoryAdapter adapter =
+                new HistoryAdapter(
+                        contentManager, mBrowsingHistoryBridge, mHistorySyncPromoCoordinator);
         mBrowsingHistoryBridge.setObserver(adapter);
 
         List<HistoryItem> items = new ArrayList<>();

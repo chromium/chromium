@@ -333,6 +333,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Returns the duplex setting.
   printing::mojom::DuplexMode GetDuplexMode();
 
+  // Gets the size of the page in points for the page at `page_index`. Any
+  // fractional portion of the size is retained in the result.  Returns
+  // `std::nullopt` if the indicated page index is not available.
+  virtual std::optional<gfx::SizeF> GetPageSizeInPoints(int page_index) const;
+
   // Returns the uniform page size of the document in points. Returns
   // `std::nullopt` if the document has more than one page size.
   virtual std::optional<gfx::Size> GetUniformPageSizePoints();
@@ -703,8 +708,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // array if it's not already there.
   bool CheckPageAvailable(int index, std::vector<int>* pending);
 
-  // Helper function to get a given page's size in pixels.  This is not part of
-  // PDFiumPage because we might not have that structure when we need this.
+  // Helper function to get a given page's size in pixels.  Converting from
+  // points to pixels are rounded down as part of generating integer values.
+  // This is not part of PDFiumPage because we might not have that structure
+  // when we need this.
   gfx::Size GetPageSize(int index);
   gfx::Size GetPageSizeForLayout(int index,
                                  const DocumentLayout::Options& layout_options);

@@ -273,7 +273,9 @@
                                          identity:_identity
                                       accessPoint:self.accessPoint
                                 postSignInActions:postSigninActions
-                         presentingViewController:self.baseViewController];
+                         presentingViewController:self.baseViewController
+                                       anchorView:nil
+                                       anchorRect:CGRectNull];
   authenticationFlow.precedingHistorySync = YES;
   [_mediator startSignInOnlyFlowWithAuthenticationFlow:authenticationFlow];
 }

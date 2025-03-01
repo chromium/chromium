@@ -81,6 +81,7 @@
 <translation id="131461803491198646">სახლის ქსელი, როუმინგის გარეშე</translation>
 <translation id="1327977588028644528">შლიუზი</translation>
 <translation id="1328223165223065150">ფონის ფერი</translation>
+<translation id="1329478709358066995">ტრანსკრიპტი:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">სკანირებად არეზე მორგება</translation>
 <translation id="1343442362630695901">მარილიანი ტბა</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">ფოტოს შესახებ</translation>
 <translation id="6939667434404433010">ჩანაწერის სახელის ძიება</translation>
 <translation id="6939766318048400022">კაფე</translation>
+<translation id="6942253772720771875">გამოგვეხმაურეთ ან აღწერეთ პრობლემა</translation>
 <translation id="6943893908656559156">დისტანციური იდენტობა (არასავალდებულო)</translation>
 <translation id="6953137545147683679">ოქროსფერი</translation>
 <translation id="6957231940976260713">სერვისის სახელი</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">ეს <ph name="DEVICE_TYPE" /> მართულია ორგანიზაციის მიერ</translation>
 <translation id="8398927464629426868">სიხშირე, რომლითაც მოწყობილობა ამჟამად იტენება ან იცლება</translation>
 <translation id="8403988360557588704">ნახატი, რომელზეც გამოსახულია <ph name="ART_FEATURE" />, სტილი: <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">გენერირებული შეჯამება:</translation>
 <translation id="8410244574650205435">ავტომატურად აღმოჩენილი</translation>
 <translation id="8420955526972171689">შეასრულეთ ტესტები და დეფექტების აღმოფხვრა აპარატურის პრობლემების შემთხვევაში</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811">სხვა ქმედებები <ph name="APN_NAME" />-ისთვის</translation>
 <translation id="86356131183441916">ღია მეწამული</translation>
 <translation id="8647595191512746911">აუდიოტრანსკრიფცია</translation>
+<translation id="8648578954147795914">გენერირებული სახელები:</translation>
 <translation id="8650852232143958317">ყველგან თან იქონიეთ Gmail-ისა და Google Drive-ის ფაილები</translation>
 <translation id="8651481478098336970">ხმის დადუმება</translation>
 <translation id="8655295600908251630">არხი</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">ნაცნობი APN-ების ჩვენება</translation>
 <translation id="932327136139879170">საწყისი გვერდი</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">დარწმუნდით, რომ თქვენი მიკროფონი დაკავშირებულია და ცადეთ Chromebook-ის გადატვირთვა</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="950520315903467048">მოქმედებისთვის „<ph name="DIRECTION" />“ აკლია კლავიში. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">აფასებს ჩანაწერის ხმებს ისე, რომ ტრანსკრიპტი აჩვენებს, რა და როდის თქვა თითოეულმა მოსაუბრემ</translation>

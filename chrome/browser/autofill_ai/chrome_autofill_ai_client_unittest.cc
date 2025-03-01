@@ -65,7 +65,9 @@ std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
 std::unique_ptr<KeyedService> CreateTestEntityDataManager(
     scoped_refptr<autofill::AutofillWebDataService> awds,
     content::BrowserContext* context) {
-  return std::make_unique<autofill::EntityDataManager>(std::move(awds));
+  return std::make_unique<autofill::EntityDataManager>(
+      std::move(awds), /*history_service=*/nullptr,
+      /*strike_database=*/nullptr);
 }
 
 class ChromeAutofillAiClientTest : public ChromeRenderViewHostTestHarness {

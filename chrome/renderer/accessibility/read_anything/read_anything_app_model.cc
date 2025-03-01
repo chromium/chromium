@@ -142,9 +142,8 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   UpdateSelection();
 
   if (has_selection_ && was_empty) {
-    base::UmaHistogramEnumeration(
-        string_constants::kEmptyStateHistogramName,
-        read_anything::ReadAnythingEmptyState::kSelectionAfterEmptyStateShown);
+    base::UmaHistogramEnumeration(kEmptyStateHistogramName,
+                                  EmptyState::kShownWithSelectionAfter);
     tree_infos_.at(active_tree_id_)->num_selections++;
   }
 

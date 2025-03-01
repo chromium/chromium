@@ -607,6 +607,51 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
   EXPECT_GT(seconds_half_day, border->GetEffectTimeForTesting());
 }
 
+// Ensures that the effect time starts from where it was left off when
+// switching to a new tab.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  TesterImpl tester(border, timestamp);
+  tester.set_creation_time(timestamp);
+
+  StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
+  EXPECT_TRUE(border->compositor_for_testing());
+
+  // T=0s.
+  border->OnAnimationStep(kDummyTimeStamp);
+
+  // Advance 3 seconds to reach the steady state.
+  timestamp += base::Seconds(3);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  float effect_time_before_tab_switching = border->GetEffectTimeForTesting();
+
+  // Spend 0.123 seconds in the steady state.
+  timestamp += base::Seconds(0.123);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+
+  // Changing the active tab.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL),
+                   /*index=*/-1, /*foreground=*/true);
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  tester.WaitForEmphasisRestarted();
+
+  // Force a frame after the tab is switched.
+  border->OnAnimationStep(kDummyTimeStamp);
+  float effect_time_after_tab_switching = border->GetEffectTimeForTesting();
+
+  // crbug.com/395075424: The effect time is continuous after switching to a
+  // different tab.
+  EXPECT_EQ(effect_time_before_tab_switching, effect_time_after_tab_switching);
+
+  border->CancelAnimation();
+  EXPECT_FALSE(border->compositor_for_testing());
+}
+
 namespace {
 class GlicBorderViewFeatureDisabledBrowserTest : public GlicBorderViewUiTest {
  public:

@@ -225,6 +225,8 @@ source_set("extensions") {
     "pack_extension_job.h",
     "pending_extension_manager.cc",
     "pending_extension_manager.h",
+    "pending_extension_manager_factory.cc",
+    "pending_extension_manager_factory.h",
     "permissions/permissions_updater.cc",
     "permissions/permissions_updater.h",
     "permissions/scripting_permissions_modifier.cc",

@@ -140,7 +140,7 @@ void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller =
           autofill_ai::SaveOrUpdateAutofillAiDataController::GetOrCreate(
-              &*web_contents_)) {
+              &*web_contents_, GetAutofillClient().GetAppLocale())) {
     controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
                            std::move(prompt_acceptance_callback));
     return;

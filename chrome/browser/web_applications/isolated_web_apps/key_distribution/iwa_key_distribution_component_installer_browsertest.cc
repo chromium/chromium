@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
@@ -53,8 +54,15 @@ IwaKeyDistribution CreateValidData() {
 class IwaKeyDistributionComponentInstallBrowserTest
     : public InProcessBrowserTest {
  private:
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   base::test::ScopedFeatureList features_{
       component_updater::kIwaKeyDistributionComponent};
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// TODO(crbug.com/393102554): Remove this after launch.
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList features_{features::kIsolatedWebApps};
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 IN_PROC_BROWSER_TEST_F(

@@ -53,6 +53,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -175,13 +176,16 @@ std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+    SignoutConfirmationCallback callback) {
   // Set an initial height of 0 since the actual dialog's height will be set
   // dynamically based on its contents, so the initial height does not matter.
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, GURL(chrome::kChromeUISignoutConfirmationURL),
       /*dialog_height=*/0, kModalDialogWidth,
       InitializeSigninWebDialogUI(false));
+  web_view->SetProperty(
+      views::kElementIdentifierKey,
+      SigninViewController::kSignoutConfirmationDialogViewElementId);
 
   SignoutConfirmationUI* web_ui = web_view->GetWebContents()
                                       ->GetWebUI()
@@ -538,7 +542,7 @@ SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+    SignoutConfirmationCallback callback) {
   // Don't have the native view animate resizes since the dialog contains WebUI
   // elements that animate on resize.
   return new SigninViewControllerDelegateViews(

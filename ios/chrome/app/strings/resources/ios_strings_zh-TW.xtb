@@ -663,6 +663,7 @@
 <translation id="3909222758573607742">將密碼和其他項目儲存到帳戶</translation>
 <translation id="3913463964270756493">隱藏「透過 Google 智慧鏡頭搜尋畫面內容」</translation>
 <translation id="3914640181019354363">偵測地址</translation>
+<translation id="3921585859122905677">網址列位置</translation>
 <translation id="3922185497376658606">預先載入網頁</translation>
 <translation id="3922395466317605522">自訂選單</translation>
 <translation id="3929457972718048006">地址</translation>
@@ -1116,6 +1117,7 @@
 <translation id="5817176759448082654">密碼安全檢查</translation>
 <translation id="5819208479324046259">由「<ph name="MANAGER" />」管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">同步處理中…</translation>
+<translation id="583923961930319521">在所有裝置上使用你的密碼</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
 <translation id="5854790677617711513">超過 30 天前</translation>
 <translation id="5857770089550859117">必須輸入通關密語，才能開始進行同步處理。</translation>
@@ -1691,6 +1693,7 @@
 <translation id="8221665793629393739">提醒你重新造訪</translation>
 <translation id="8230355548492839438">尋找上一個項目</translation>
 <translation id="8232956427053453090">保留資料</translation>
+<translation id="8233237502828137700">關閉橫幅宣傳內容</translation>
 <translation id="8238711781852526820">隱藏「價格追蹤」</translation>
 <translation id="8258999165172757081">已新增</translation>
 <translation id="8261506727792406068">刪除</translation>
@@ -1712,7 +1715,6 @@
 <translation id="8299613349954694191">開啟無痕分頁就能以私密模式瀏覽網頁。</translation>
 <translation id="8307481894409578819">無法上傳這個檔案</translation>
 <translation id="8319076807703933069">新搜尋</translation>
-<translation id="8328607660158575887">開啟「自動填入和密碼」設定</translation>
 <translation id="833647236762414178">建立、儲存及管理密碼和密碼金鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8349305172487531364">書籤列</translation>

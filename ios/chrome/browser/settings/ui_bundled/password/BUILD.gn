@@ -332,6 +332,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions:widget_promo_instructions_constants",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/common/ui/confirmation_alert:constants",

@@ -10,3 +10,6 @@ per-file threat_details_unittest.cc=skrakowi@chromium.org
 per-file BUILD.gn=anunoy@chromium.org
 
 per-file *client_side_detection*=andysjlim@chromium.org
+
+# Prefer skrakowi@ for reviews.
+per-file *notification_content_detection*=file://components/safe_browsing/content/browser/notification_content_detection/OWNERS

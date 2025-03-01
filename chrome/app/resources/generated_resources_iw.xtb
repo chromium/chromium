@@ -9837,9 +9837,7 @@
 <translation id="7990863024647916394">קול <ph name="COUNT" /> ב<ph name="DISPLAY_NAME" /></translation>
 <translation id="7990958035181555539">‏העברת ההגדרות של ה-Wi-Fi באופן אוטומטי מטלפון Android</translation>
 <translation id="7991296728590311172">הגדרות גישה באמצעות מתג</translation>
-<translation id="7992080146463834191">מסכמים תכנים, מפשטים שפה מורכבת או שואלים שאלות.</translation>
 <translation id="7992203134935383159">סינתזת דיבור</translation>
-<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">עדיפות תהליך</translation>
 <translation id="7997828719430450286">הפעולה הצליחה.</translation>
 <translation id="7998701048266085837">‏כתובות URL</translation>
@@ -11103,7 +11101,6 @@
 <translation id="8874448314264883207">תוסף אחד (<ph name="EXTENSION_NAME" />) הושבת</translation>
 <translation id="8874647982044395866">אורגני</translation>
 <translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
-<translation id="8875221558267407626">מסכמים תכנים, מפשטים שפה מורכבת או שואלים שאלות</translation>
 <translation id="8875520811099717934">‏שדרוג של Linux</translation>
 <translation id="8875736897340638404">בחירת הרשאות הגישה שלך</translation>
 <translation id="8876307312329369159">לא ניתן לשנות את ההגדרה הזו בסשן להדגמה.</translation>

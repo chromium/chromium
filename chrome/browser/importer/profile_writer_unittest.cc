@@ -31,7 +31,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/query_parser.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -229,7 +229,7 @@ TEST_F(ProfileWriterTest, CheckBookmarksAfterWritingDataTwice) {
 
 TEST_F(ProfileWriterTest, CheckBookmarksWrittenToAccountStorageIfPresent) {
   base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   CreateImportedBookmarksEntries();
   BookmarkModel* bookmark_model =

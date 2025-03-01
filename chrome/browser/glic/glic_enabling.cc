@@ -10,6 +10,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -56,7 +57,7 @@ bool GlicEnabling::IsEnabledForProfile(Profile* profile) {
     return false;
   }
 
-  return profile->GetPrefs()->GetInteger(glic::prefs::kGlicSettingsPolicy) ==
+  return profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) ==
          static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled);
 }
 
@@ -86,7 +87,7 @@ bool GlicEnabling::IsReadyForProfile(Profile* profile) {
 GlicEnabling::GlicEnabling(Profile* profile) : profile_(profile) {
   pref_registrar_.Init(profile_->GetPrefs());
   pref_registrar_.Add(
-      prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       base::BindRepeating(&GlicEnabling::OnGlicSettingsPolicyChanged,
                           base::Unretained(this)));
   signin::IdentityManager* identity_manager =

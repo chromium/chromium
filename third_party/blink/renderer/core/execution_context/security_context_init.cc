@@ -8,8 +8,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -117,8 +117,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   // inherited policies. https://crbug.com/898688.
   if (frame.InViewSourceMode()) {
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
-        PermissionsPolicy::CreateFromParentPolicy(nullptr, /*header_policy=*/{},
-                                                  {}, origin));
+        network::PermissionsPolicy::CreateFromParentPolicy(
+            nullptr, /*header_policy=*/{}, {}, origin));
     return;
   }
 
@@ -198,36 +198,38 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
   if (isolated_app_policy) {
     DCHECK(frame.IsOutermostMainFrame());
-    std::unique_ptr<PermissionsPolicy> permissions_policy =
-        PermissionsPolicy::CreateFromParsedPolicy(permissions_policy_header_,
-                                                  isolated_app_policy, origin);
+    std::unique_ptr<network::PermissionsPolicy> permissions_policy =
+        network::PermissionsPolicy::CreateFromParsedPolicy(
+            permissions_policy_header_, isolated_app_policy, origin);
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
         std::move(permissions_policy));
   } else {
-    std::unique_ptr<PermissionsPolicy> permissions_policy;
+    std::unique_ptr<network::PermissionsPolicy> permissions_policy;
     if (frame.IsFencedFrameRoot()) {
       if (!fenced_frame_properties.has_value()) {
         // Without fenced frame properties, there won't be a list of effective
         // enabled permissions or information about the embedder's permissions
         // policies, so we create a permissions policy with every permission
         // disabled.
-        permissions_policy = PermissionsPolicy::CreateFixedForFencedFrame(
-            origin, /*header_policy=*/permissions_policy_header_, {});
+        permissions_policy =
+            network::PermissionsPolicy::CreateFixedForFencedFrame(
+                origin, /*header_policy=*/permissions_policy_header_, {});
       } else if (fenced_frame_properties->parent_permissions_info()
                      .has_value()) {
         // Fenced frames with flexible permissions are allowed to inherit
         // certain permissions from their parent.
         auto parent_permissions_policy =
-            PermissionsPolicy::CreateFromParsedPolicy(
+            network::PermissionsPolicy::CreateFromParsedPolicy(
                 fenced_frame_properties->parent_permissions_info()
                     ->parsed_permissions_policy,
                 /*base_policy=*/std::nullopt,
                 fenced_frame_properties->parent_permissions_info()->origin);
 
-        permissions_policy = PermissionsPolicy::CreateFlexibleForFencedFrame(
-            parent_permissions_policy.get(),
-            /*header_policy=*/permissions_policy_header_, container_policy,
-            origin);
+        permissions_policy =
+            network::PermissionsPolicy::CreateFlexibleForFencedFrame(
+                parent_permissions_policy.get(),
+                /*header_policy=*/permissions_policy_header_, container_policy,
+                origin);
 
         // Warn if a disallowed permissions policy is attempted to be enabled.
         for (const auto& policy : container_policy) {
@@ -252,9 +254,10 @@ void SecurityContextInit::ApplyPermissionsPolicy(
         // that the parent policies must allow the required policies, which is
         // checked separately in
         // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
-        permissions_policy = PermissionsPolicy::CreateFixedForFencedFrame(
-            origin, /*header_policy=*/permissions_policy_header_,
-            fenced_frame_properties->effective_enabled_permissions());
+        permissions_policy =
+            network::PermissionsPolicy::CreateFixedForFencedFrame(
+                origin, /*header_policy=*/permissions_policy_header_,
+                fenced_frame_properties->effective_enabled_permissions());
       }
     } else {
       auto* parent_permissions_policy = frame.Tree().Parent()
@@ -265,10 +268,11 @@ void SecurityContextInit::ApplyPermissionsPolicy(
                                             : nullptr;
       // Ideally we would use the URL in `execution_context_` but at this point,
       // it has no `document_` and so does not know its URL.
-      permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
+      permissions_policy = network::PermissionsPolicy::CreateFromParentPolicy(
           parent_permissions_policy,
           /*header_policy=*/permissions_policy_header_, container_policy,
-          origin, PermissionsPolicy::IsHeaderlessUrl(GURL(document_url)));
+          origin,
+          network::PermissionsPolicy::IsHeaderlessUrl(GURL(document_url)));
     }
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
         std::move(permissions_policy));
@@ -283,8 +287,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   // policy for report-only permissions policy. For inherited policies, the
   // behavior is dominated by enforced permissions policy.
   if (!parsed_report_only_permissions_policy_header.empty()) {
-    std::unique_ptr<PermissionsPolicy> report_only_policy =
-        PermissionsPolicy::CreateFromParentPolicy(
+    std::unique_ptr<network::PermissionsPolicy> report_only_policy =
+        network::PermissionsPolicy::CreateFromParentPolicy(
             nullptr /* parent_policy */,
             /*header_policy=*/parsed_report_only_permissions_policy_header,
             {} /* container_policy */,
@@ -298,9 +302,10 @@ void SecurityContextInit::InitPermissionsPolicyFrom(
     const SecurityContext& other) {
   auto& security_context = execution_context_->GetSecurityContext();
   security_context.SetPermissionsPolicy(
-      PermissionsPolicy::CopyStateFrom(other.GetPermissionsPolicy()));
+      network::PermissionsPolicy::CopyStateFrom(other.GetPermissionsPolicy()));
   security_context.SetReportOnlyPermissionsPolicy(
-      PermissionsPolicy::CopyStateFrom(other.GetReportOnlyPermissionsPolicy()));
+      network::PermissionsPolicy::CopyStateFrom(
+          other.GetReportOnlyPermissionsPolicy()));
 }
 
 void SecurityContextInit::InitDocumentPolicyFrom(const SecurityContext& other) {

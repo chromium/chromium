@@ -9816,9 +9816,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Ses <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Android telefonunuzdan kablosuz bağlantıyı otomatik olarak aktarın</translation>
 <translation id="7991296728590311172">Anahtar Erişimi ayarları</translation>
-<translation id="7992080146463834191">İçeriği özetleyin, karmaşık dili basitleştirin veya soru sorun.</translation>
 <translation id="7992203134935383159">Konuşma sentezi</translation>
-<translation id="799570308305997052">Web görünümü</translation>
 <translation id="7997826902155442747">Süreç Önceliği</translation>
 <translation id="7997828719430450286">Başarılı.</translation>
 <translation id="7998701048266085837">URL'ler</translation>
@@ -11078,7 +11076,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" devre dışı bırakıldı</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir.</translation>
-<translation id="8875221558267407626">İçeriği özetleyin, karmaşık dili basitleştirin veya soru sorun</translation>
 <translation id="8875520811099717934">Linux'u yeni sürüme geçir</translation>
 <translation id="8875736897340638404">Görünürlük ayarınızı seçin</translation>
 <translation id="8876307312329369159">Bu ayar demo oturumunda değiştirilemez.</translation>

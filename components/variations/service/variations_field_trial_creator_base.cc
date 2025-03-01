@@ -32,6 +32,7 @@
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -784,14 +785,14 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
 
   if (!seed_data || !seed_data->is_string()) {
     ExitWithMessage(
-        base::StringPrintf("Missing or invalid seed data in contents of \"%s\"",
-                           json_seed_path.AsUTF8Unsafe().c_str()));
+        base::StrCat({"Missing or invalid seed data in contents of \"",
+                      json_seed_path.AsUTF8Unsafe(), "\""}));
   }
 
   if (!seed_signature || !seed_signature->is_string()) {
-    ExitWithMessage(base::StringPrintf(
-        "Missing or invalid seed signature in contents of \"%s\"",
-        json_seed_path.AsUTF8Unsafe().c_str()));
+    ExitWithMessage(
+        base::StrCat({"Missing or invalid seed signature in contents of \"",
+                      json_seed_path.AsUTF8Unsafe(), "\""}));
   }
 
   // Set fail counters to 0 to make sure Chrome doesn't run in variations safe
@@ -803,8 +804,8 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
   std::string decoded_seed;
   if (!base::Base64Decode(seed_data->GetString(), &decoded_seed)) {
     ExitWithMessage(
-        base::StringPrintf("Failed to decode seed data in contents of \"%s\"",
-                           json_seed_path.AsUTF8Unsafe().c_str()));
+        base::StrCat({"Failed to decode seed data in contents of \"",
+                      json_seed_path.AsUTF8Unsafe(), "\""}));
   }
   seed_store_->StoreSeedData(decoded_seed, seed_signature->GetString(),
                              /*country_code=*/"",

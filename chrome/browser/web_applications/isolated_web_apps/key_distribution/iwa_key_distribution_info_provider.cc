@@ -210,8 +210,8 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
 
 base::OneShotEvent&
 IwaKeyDistributionInfoProvider::OnMaybeDownloadedComponentDataReady() {
-  if (!base::FeatureList::IsEnabled(
-          component_updater::kIwaKeyDistributionComponent) ||
+  if (!component_updater::IwaKeyDistributionComponentInstallerPolicy::
+          IsSupported() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableComponentUpdate)) {
     // `switches::kDisableComponentUpdate` is set by default in browsertests.

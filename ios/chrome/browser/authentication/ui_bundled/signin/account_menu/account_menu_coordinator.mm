@@ -300,7 +300,9 @@
                       identity:identity
                    accessPoint:signin_metrics::AccessPoint::kAccountMenu
              postSignInActions:PostSignInActionSet()
-      presentingViewController:_navigationController];
+      presentingViewController:_navigationController
+                    anchorView:nil
+                    anchorRect:CGRectNull];
 
   [authenticationFlow
       startSignInWithCompletion:^(SigninCoordinatorResult result) {

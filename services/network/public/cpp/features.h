@@ -66,6 +66,7 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kOmitCorsClientCert);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPervasivePayloadsList);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kReduceAcceptLanguage);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kReduceAcceptLanguageHTTP);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kReduceAcceptLanguageCacheDuration);
 
@@ -171,6 +172,7 @@ COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE_PARAM(int, kDeprecateUnloadBucket);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE_PARAM(std::string, kDeprecateUnloadAllowlist);
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kFrameAncestorHeaders);
 
 // Updates the request body, headers, and referrer policy for CORS
 // redirects, following 4.4. HTTP-redirect fetch:

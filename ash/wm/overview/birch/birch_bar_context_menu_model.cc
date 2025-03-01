@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/coral_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -49,7 +50,9 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
     if (features::IsCoralFeatureEnabled()) {
-      bool coral_enabled = coral_util::IsCoralAllowedByPolicy(GetPrefService());
+      bool coral_enabled =
+          coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
+          BirchCoralProvider::Get()->GetGenAIAvailability();
       AddItem(base::to_underlying(CommandId::kCoralSuggestions),
               l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM));
       auto coral_index = GetIndexOfCommandId(

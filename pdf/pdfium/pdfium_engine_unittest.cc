@@ -743,6 +743,34 @@ TEST_P(PDFiumEngineTest, IncrementalLoadingFeatureDisabled) {
   EXPECT_FALSE(TryLoadIncrementally());
 }
 
+TEST_P(PDFiumEngineTest, GetPageSizeInPoints) {
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  engine.PluginSizeUpdated({});
+  initialize_result.FinishLoading();
+
+  ASSERT_EQ(engine.GetNumberOfPages(), 7);
+  EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/0),
+              testing::Optional(gfx::SizeF(612.0f, 792.0f)));
+  EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/1),
+              testing::Optional(gfx::SizeF(595.0f, 842.0f)));
+  EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/2),
+              testing::Optional(gfx::SizeF(200.0f, 200.0f)));
+  EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/3),
+              testing::Optional(gfx::SizeF(1000.0f, 200.0f)));
+  EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/4),
+              testing::Optional(gfx::SizeF(200.0f, 1000.0f)));
+  EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/5),
+              testing::Optional(gfx::SizeF(1500.0f, 50.0f)));
+  EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/6),
+              testing::Optional(gfx::SizeF(50.0f, 1500.0f)));
+  EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/7), std::nullopt);
+}
+
 TEST_P(PDFiumEngineTest, RequestThumbnail) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(

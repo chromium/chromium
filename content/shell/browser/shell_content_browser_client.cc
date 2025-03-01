@@ -479,7 +479,9 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 
 #if BUILDFLAG(IS_IOS)
-  if (!IsJITEnabled()) {
+  if (command_line->GetSwitchValueASCII(switches::kProcessType) ==
+          switches::kRendererProcess &&
+      !IsJITEnabled()) {
     command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                     "--jitless");
   }

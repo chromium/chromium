@@ -28,6 +28,7 @@ import("//services/screen_ai/buildflags/features.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/repack.gni")
 import("//tools/resources/generate_resource_allowlist.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_cronet_build)
 
@@ -1209,6 +1210,7 @@ grit("generate_components_resources") {
     "enable_printing=$enable_printing",
     "safe_browsing_mode=$safe_browsing_mode",
     "enable_supervised_users=$enable_supervised_users",
+    "optimize_webui=$optimize_webui",
     "use_blink=$use_blink",
     "use_internal_isolated_origins=$use_internal_isolated_origins",
   ]

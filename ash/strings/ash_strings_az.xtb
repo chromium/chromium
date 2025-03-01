@@ -246,7 +246,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="17722141032474077">Hesablamalar</translation>
 <translation id="1774796056689732716">Təqvim, <ph name="CURRENT_MONTH_YEAR" />, hazırda <ph name="DATE" /> seçilib.</translation>
 <translation id="178347895271755507">Telefonun son foto, media və bildirişlərinə baxmağı ayarlayın</translation>
-<translation id="1785317913592722944">Elementi təklif edilən qrupdan silin</translation>
 <translation id="1786487376942610288">Şəkildə şəkil pəncərəsinin maksimum və ya cari ölçüsü arasında keçid edin</translation>
 <translation id="1787955149152357925">Deaktiv</translation>
 <translation id="1796561540704213354">Ziyarət etdiyiniz və açıq səhifələr daxil olmaqla veb-saytlar</translation>
@@ -853,6 +852,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3859364108019690">Tətbiqləri yayımlamaq olmur</translation>
 <translation id="3861651314799684201">Tam ekranı qeydə almaq üçün enter düyməsini basın</translation>
 <translation id="3870197372373144624">Cihazı söndürün.</translation>
+<translation id="3879748587602334249">Endirmə meneceri</translation>
 <translation id="3886872229787704059">Bugün açılıb</translation>
 <translation id="3891340733213178823">Hesabdan çıxmaq üçün iki dəfə Ctrl+Shift+Q basın.</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
@@ -878,6 +878,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3958714870339660776">Bütün gün</translation>
 <translation id="3962859241508114581">Əvvəlki trek</translation>
 <translation id="3963124517343721543">Əvvəlki pəncərə və tabları açaraq asanlıqla qaldığınız yerdən davam edin. Sonrakı işlər üçün fərdiləşdirilmiş təklifləri də görəcəksiniz.</translation>
+<translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="3969043077941541451">Deaktiv</translation>
 <translation id="3970324493235864154">Telefon bildirişlərinə baxın</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
@@ -1619,6 +1620,7 @@ Cihaz qoşulmayıb.</translation>
 <translation id="6319058840130157106">Aşağı sağ künc, Başladıcı, ünvan paneli, əlfəcin paneli, açıq veb-sayt və endirmələr arasında geri hərəkət edin</translation>
 <translation id="6319503618073410818">Brauzerdə detallara baxın</translation>
 <translation id="6324916366299863871">Qısayola düzəliş edin</translation>
+<translation id="6325525973963619867">Alınmadı</translation>
 <translation id="6330012934079202188">Bütün masaların pəncərələri göstərilir, cari masanın pəncərələrini göstərmək üçün Yuxarı ox düyməsini basın</translation>
 <translation id="6337159624125741244">Tam ekran böyüdücüsü aktivdir</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> sessiyası <ph name="MANAGER" /> tərəfindən idarə olunur</translation>

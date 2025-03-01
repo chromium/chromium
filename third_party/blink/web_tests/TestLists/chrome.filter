@@ -29,6 +29,9 @@ external/wpt/ai/translator/*
 external/wpt/storage-access-api/*
 external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
 
+# Device Bound Session Credentials relies on the `//chrome` layer.
+virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/*
+
 # Tests fail on headless shell so run them on Chrome
 external/wpt/client-hints/accept-ch/answers.sub.https.html
 external/wpt/client-hints/accept-ch/feature-policy-navigation/feature-policy.https.html

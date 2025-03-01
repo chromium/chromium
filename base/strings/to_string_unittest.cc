@@ -37,11 +37,16 @@ static_assert(internal::SupportsToString<const HasToString&>,
 static_assert(internal::SupportsToString<HasToString&&>,
               "&& with ToString() should be marked SupportsToString");
 
+// Booleans should stringify specifically as "true" and "false".
+TEST(ToStringTest, Booleans) {
+  EXPECT_EQ(ToString(true), "true");
+  EXPECT_EQ(ToString(false), "false");
+}
+
 TEST(ToStringTest, Streamable) {
   // Types with built-in <<.
   EXPECT_EQ(ToString("foo"), "foo");
   EXPECT_EQ(ToString(123), "123");
-  EXPECT_EQ(ToString(true), "true");  // bools should become words, not numbers.
 }
 
 enum class StreamableTestEnum { kGreeting, kLocation };

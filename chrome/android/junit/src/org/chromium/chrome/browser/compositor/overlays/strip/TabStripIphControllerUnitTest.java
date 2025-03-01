@@ -134,7 +134,7 @@ public class TabStripIphControllerUnitTest {
 
     @Test
     public void testIphProperties_GroupTitleBubble() {
-        mGroupTitle.setShowBubble(true);
+        mGroupTitle.setNotificationBubbleShown(true);
         mController.showIphOnTabStrip(
                 mGroupTitle,
                 null,
@@ -167,7 +167,7 @@ public class TabStripIphControllerUnitTest {
     @Test
     public void testIphProperties_GroupTitleBubble_Rtl() {
         LocalizationUtils.setRtlForTesting(true);
-        mGroupTitle.setShowBubble(true);
+        mGroupTitle.setNotificationBubbleShown(true);
         mController.showIphOnTabStrip(
                 mGroupTitle,
                 null,
@@ -198,7 +198,7 @@ public class TabStripIphControllerUnitTest {
 
     @Test
     public void testIphProperties_TabBubble() {
-        mGroupTitle.setShowBubble(true);
+        mGroupTitle.setNotificationBubbleShown(true);
         mController.showIphOnTabStrip(
                 mGroupTitle,
                 mTab,
@@ -230,7 +230,7 @@ public class TabStripIphControllerUnitTest {
     @Test
     public void testIphProperties_TabBubble_Rtl() {
         LocalizationUtils.setRtlForTesting(true);
-        mGroupTitle.setShowBubble(true);
+        mGroupTitle.setNotificationBubbleShown(true);
         mController.showIphOnTabStrip(
                 mGroupTitle,
                 mTab,

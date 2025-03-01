@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos NFC. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos NFC.</translation>
 <translation id="1660204651932907780">Permite que os sitios reproduzan son (recomendado)</translation>
 <translation id="1677097821151855053">As cookies e outros datos do sitio utilízanse para lembrarte (por exemplo, á hora de iniciar de sesión ou de personalizar anuncios). Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Os sitios adoitan enviar notificacións con noticias de última hora ou mensaxes de chat.</translation>
 <translation id="169515064810179024">Impide que os sitios accedan aos sensores de movemento</translation>
 <translation id="1717218214683051432">Sensores de movemento</translation>
 <translation id="1743802530341753419">Preguntar antes de permitir que os sitios se conecten a un dispositivo (recomendado)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Son</translation>
 <translation id="2096716221239095980">Eliminar todos os datos</translation>
 <translation id="2117655453726830283">Seguinte diapositiva</translation>
+<translation id="2146263598007866206">Os sitios poderían descargar automaticamente conxuntos de ficheiros relacionados para aforrarche tempo</translation>
 <translation id="2148716181193084225">Hoxe</translation>
 <translation id="216989819110952009">Ao principio, aínda cos ollos protexidos polas lentes verdes, Dorothy e os seus amigos quedaron cegados polo brillo</translation>
 <translation id="2176704795966505152">Mostrar opción de zoom no menú principal</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Os sitios poden mostrar solicitudes de inicio de sesión dos servizos de identidade.</translation>
 <translation id="2787357173144933081">Iniciar rapidamente omnibox</translation>
 <translation id="2790501146643349491">Cando esta opción está activada, os sitios pechados recentemente poden terminar de enviar e recibir datos. Cando esta opción está desactivada, os sitios pechados recentemente non poden terminar de enviar nin de recibir datos.</translation>
+<translation id="2795716239552913152">Os sitios adoitan usar a túa localización para ofrecerche funcións ou información relevantes (por exemplo, noticias locais ou tendas próximas)</translation>
 <translation id="2814830417943086299">Chrome xa mostra as pestanas recentes na lista de aplicacións e nos resultados de busca do teu dispositivo. Desactiva esta opción cando queiras na configuración de Chrome.</translation>
 <translation id="2822354292072154809">Seguro que queres restablecer todos os permisos do sitio <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Solicita unha vista para dispositivos móbiles</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueadas</translation>
 <translation id="3448554387819310837">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar a cámara. Cando esta opción está desactivada, os sitios non poden utilizar a cámara.</translation>
+<translation id="3491678231052507920">Os sitios adoitan usar os datos e dispositivos de realidade virtual para permitirche acceder a sesións de RV</translation>
+<translation id="3496995426334945408">Os sitios adoitan usar JavaScript para ofrecerche determinadas funcións interactivas (por exemplo, videoxogos ou formularios web)</translation>
 <translation id="3521663503435878242">Sitios do dominio <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Non permitir que os sitios fagan un seguimento das mans</translation>
 <translation id="3532312529397438268">Os sitios non poden usar o optimizador de V8</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Abrir Configuración de localización</translation>
 <translation id="4226663524361240545">O dispositivo pode vibrar ao recibir notificacións</translation>
 <translation id="4259722352634471385">A navegación está bloqueada: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Unha vez que saes dun sitio, este pode seguir sincronizando datos para finalizar tarefas (por exemplo, cargar fotos ou enviar mensaxes de chat)</translation>
 <translation id="4278390842282768270">Permitida</translation>
 <translation id="429312253194641664">Un sitio está reproducindo contido multimedia</translation>
 <translation id="42981349822642051">Ampliar</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Zoom gardado para os sitios</translation>
 <translation id="4836046166855586901">Pregúntache sempre que un sitio quere saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="483914009762354899">Incluír todos os sitios deste dominio</translation>
+<translation id="4882919381756638075">Os sitios adoitan usar o micrófono para ofrecerche determinadas funcións relacionadas coa comunicación (por exemplo, chat de vídeo)</translation>
 <translation id="4883854917563148705">Non se pode restablecer a configuración xestionada</translation>
 <translation id="4887024562049524730">Pregunta antes de permitir que os sitios utilicen os teus datos e dispositivos de realidade virtual (recomendado)</translation>
 <translation id="4936863036653376783">Atoparás os teus grupos na sección Grupos de pestanas que hai en todos os teus dispositivos</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Selecciona elementos</translation>
 <translation id="6838525730752203626">Usa Chrome de forma predeterminada</translation>
 <translation id="6840760312327750441">Para agrupar varias pestanas, mantén premida unha delas e despois arrástraa ata outra.</translation>
+<translation id="6842868554183332230">Os sitios adoitan detectar cando estás utilizando o dispositivo de maneira activa para definir a túa dispoñibilidade nas aplicacións de chat</translation>
 <translation id="6851981911629679515">Activa a protección adicional no motor de Chrome para JavaScript e WebAssembly</translation>
 <translation id="6864395892908308021">Este dispositivo non pode ler NFC</translation>
 <translation id="6870169401250095575">Ocultar tarxeta Comprobación de seguranza</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Opcións de configuración de <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7406113532070524618">Esta opción de configuración non te identifica nin permite que os sitios vexan o teu historial de navegación. Aínda así, os sitios poden compartir certa información mínima como parte da verificación</translation>
+<translation id="7409735910987429903">Os sitios poderían mostrar ventás emerxentes con anuncios ou redirixirte a sitios web que quizais non queiras visitar</translation>
 <translation id="7423098979219808738">Preguntar primeiro</translation>
 <translation id="7423538860840206698">Bloqueouse a lectura do portapapeis</translation>
 <translation id="7425915948813553151">Tema escuro para os sitios</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Saír da busca do concentrador</translation>
 <translation id="7554752735887601236">Un sitio está utilizando o micrófono</translation>
 <translation id="7561196759112975576">Sempre</translation>
+<translation id="7573594921350120855">Os sitios adoitan usar a cámara de vídeo para ofrecerche determinadas funcións relacionadas coa comunicación (por exemplo, chat de vídeo)</translation>
 <translation id="757524316907819857">Non permite que os sitios reproduzan o contido protexido</translation>
 <translation id="7594634374516752650">Estableceuse conexión cun dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Podes eliminar, parcial ou totalmente, o teu historial, as cookies, os datos dos sitios e moito máis</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O marabilloso mago de Oz</translation>
+<translation id="7681597159868843240">Os sitios adoitan usar os sensores de movemento do dispositivo para ofrecerche determinadas funcións (por exemplo, as relacionadas coa realidade virtual ou co seguimento da forma física)</translation>
 <translation id="7688240020069572972">Ocultar tarxeta de consellos de Chrome</translation>
 <translation id="7719367874908701697">Zoom na páxina</translation>
 <translation id="7759147511335618829">Controlar/Reprogramar disp. MIDI</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Buscar cara atrás</translation>
 <translation id="8444433999583714703">Para permitir que <ph name="APP_NAME" /> acceda á túa localización, actívaa tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoga o permiso do dispositivo</translation>
+<translation id="8471525937465764768">Os sitios adoitan conectarse aos dispositivos USB para ofrecerche determinadas funcións (por exemplo, imprimir documentos ou gardar información nun dispositivo de almacenamento)</translation>
 <translation id="8473055640493819707">A aplicación <ph name="APP_NAME" /> está desactualizada. Volve instalala.</translation>
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
 <translation id="848952951823693243">Solicitar sempre o sitio para móbiles</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Cando esta opción está activada, os sitios poden gardar datos no teu dispositivo. Cando esta opción está desactivada, os sitios non poden gardar datos no teu dispositivo.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> permitido</translation>
 <translation id="9019902583201351841">Xestionado por teus pais</translation>
+<translation id="902236149563113779">Os sitios adoitan facer un seguimento da posición da cámara para ofrecerche determinadas funcións relacionadas coa realidade aumentada (por exemplo, xogos ou indicacións)</translation>
 <translation id="9039697262778250930">A sesión pode pecharse neses sitios</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Queres eliminar as cookies?</translation>

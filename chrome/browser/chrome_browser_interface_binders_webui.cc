@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
@@ -128,7 +129,6 @@
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
-#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
@@ -357,6 +357,26 @@
 namespace chrome::internal {
 
 using content::RegisterWebUIControllerInterfaceBinder;
+
+#if !BUILDFLAG(IS_ANDROID)
+void BindMetricsReporterService(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
+  if (!web_contents) {
+    return;
+  }
+
+  // MetricsReporterService is only intended for use by WebUI.
+  if (!frame_host->GetWebUI()) {
+    return;
+  }
+
+  MetricsReporterService* service =
+      MetricsReporterService::GetFromWebContents(web_contents);
+  service->BindReceiver(std::move(receiver));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PopulateChromeWebUIFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
@@ -667,9 +687,6 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,
                                          TabSearchUI>(map);
-  RegisterWebUIControllerInterfaceBinder<
-      metrics_reporter::mojom::PageMetricsHost, TabSearchUI, NewTabPageUI,
-      OmniboxPopupUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ::mojom::user_education_internals::UserEducationInternalsPageHandler,
@@ -682,7 +699,11 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       access_code_cast::mojom::PageHandlerFactory,
       media_router::AccessCodeCastUI>(map);
-#endif  // BUILDFLAG(IS_ANDROID)
+
+  // TODO(crbug.com/398926117): Create a generic mechanism for these interfaces.
+  map->Add<metrics_reporter::mojom::PageMetricsHost>(
+      base::BindRepeating(&BindMetricsReporterService));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   RegisterWebUIControllerInterfaceBinder<tab_strip::mojom::PageHandlerFactory,

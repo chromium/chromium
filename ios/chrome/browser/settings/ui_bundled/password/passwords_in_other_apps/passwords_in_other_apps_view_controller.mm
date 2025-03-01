@@ -37,6 +37,28 @@ CGFloat const kContentWidthMultiplier = 0.65;
 CGFloat const kBottomMargin = 10;
 CGFloat const kButtonHorizontalMargin = 4;
 CGFloat const kContentOptimalWidth = 327;
+CGFloat const kCheckmarkIconSize = 18;
+CGFloat const kSubtitleMarginLayoutGuideHeight = 24;
+
+// Helper method that returns the green checkmark image.
+UIImage* GetCheckmarkImage(bool passkeys_m2_enabled) {
+  if (passkeys_m2_enabled) {
+    return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                      kCheckmarkIconSize);
+  } else {
+    return [[UIImage imageNamed:@"settings_safe_state"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+}
+
+// Helper method that returns the height of the `subtitleMarginLayoutGuide`.
+CGFloat GetSubtitleMarginLayoutGuideHeight(bool passkeys_m2_enabled) {
+  if (passkeys_m2_enabled) {
+    return kSubtitleMarginLayoutGuideHeight;
+  } else {
+    return kDefaultMargin;
+  }
+}
 
 // Helper method that returns the string to use as title.
 NSString* GetTitleString(bool passkeys_m2_enabled) {
@@ -173,8 +195,13 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
   [self.scrollContentView addSubview:self.imageView];
 
   // Add the labels.
-  [self.scrollContentView addSubview:self.titleLabel];
-  [self.scrollContentView addSubview:self.subtitleLabel];
+  UIStackView* titleStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ self.titleLabel, self.subtitleLabel ]];
+  titleStackView.axis = UILayoutConstraintAxisVertical;
+  titleStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  titleStackView.spacing = kDefaultMargin;
+  titleStackView.alignment = UIStackViewAlignmentCenter;
+  [self.scrollContentView addSubview:titleStackView];
   [self.view addLayoutGuide:subtitleMarginLayoutGuide];
   [self.scrollContentView addSubview:self.specificContentView];
 
@@ -244,27 +271,23 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
 
     // Labels contraints. Attach them to the top of the scroll content view, and
     // center them horizontally.
-    [self.titleLabel.topAnchor
+    [titleStackView.topAnchor
         constraintEqualToAnchor:self.imageView.bottomAnchor],
-    [self.titleLabel.centerXAnchor
+    [titleStackView.centerXAnchor
         constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
-    [self.titleLabel.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor
-                                 constant:-2 * kTitleHorizontalMargin],
-    [self.subtitleLabel.topAnchor
-        constraintEqualToAnchor:self.titleLabel.bottomAnchor
-                       constant:kDefaultMargin],
-    [self.subtitleLabel.centerXAnchor
-        constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
-    [self.subtitleLabel.widthAnchor
+    [titleStackView.widthAnchor
         constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
+    [self.titleLabel.widthAnchor
+        constraintLessThanOrEqualToAnchor:titleStackView.widthAnchor
+                                 constant:-2 * kTitleHorizontalMargin],
 
     // Constraints for the screen-specific content view. It should take the
     // remaining scroll view area, with some margins on the top and sides.
     [subtitleMarginLayoutGuide.topAnchor
-        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor],
+        constraintEqualToAnchor:titleStackView.bottomAnchor],
     [subtitleMarginLayoutGuide.heightAnchor
-        constraintEqualToConstant:kDefaultMargin],
+        constraintEqualToConstant:GetSubtitleMarginLayoutGuideHeight(
+                                      _passkeysM2Enabled)],
     [self.specificContentView.topAnchor
         constraintEqualToAnchor:subtitleMarginLayoutGuide.bottomAnchor],
     [self.specificContentView.leadingAnchor
@@ -585,10 +608,10 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
 - (UIView*)turnOffInstructionView {
   if (!_turnOffInstructionView) {
     UITextView* captionTextView = [self drawCaptionTextView];
-    UIImage* checkmark = [[UIImage imageNamed:@"settings_safe_state"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* checkmark = GetCheckmarkImage(_passkeysM2Enabled);
     UIImageView* checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
-    checkmarkView.tintColor = [UIColor colorNamed:kGreenColor];
+    checkmarkView.tintColor =
+        [UIColor colorNamed:_passkeysM2Enabled ? kGreen500Color : kGreenColor];
     checkmarkView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _turnOffInstructionView = [[UIView alloc] init];
@@ -643,7 +666,6 @@ NSString* GetTurnOffCaptionTitleString(bool passkeys_m2_enabled) {
       sharedManager.ready && sharedManager.autoFillEnabled;
 
   if (_passkeysM2Enabled) {
-    // TODO(crbug.com/394580626): Remove empty space after hiding this view.
     self.subtitleLabel.hidden = shouldShowTurnOffInstructions;
   }
 

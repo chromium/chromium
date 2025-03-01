@@ -71,15 +71,14 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
   const url::Origin sample_system_web_app_untrusted_origin =
       url::Origin::Create(GURL(kChromeUISampleSystemWebAppUntrustedURL));
-  for (const auto& permission : {
-           ContentSettingsType::COOKIES,
-           ContentSettingsType::JAVASCRIPT,
-           ContentSettingsType::IMAGES,
-           ContentSettingsType::SOUND,
-       }) {
-    webui_allowlist->RegisterAutoGrantedPermission(
-        sample_system_web_app_untrusted_origin, permission);
-  }
+  webui_allowlist->RegisterAutoGrantedPermissions(
+      sample_system_web_app_untrusted_origin,
+      {
+          ContentSettingsType::COOKIES,
+          ContentSettingsType::JAVASCRIPT,
+          ContentSettingsType::IMAGES,
+          ContentSettingsType::SOUND,
+      });
 }
 
 SampleSystemWebAppUI::~SampleSystemWebAppUI() = default;

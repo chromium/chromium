@@ -19,11 +19,13 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
@@ -396,18 +398,21 @@ public class FastCheckoutIntegrationTest {
                                         }
 
                                         @Override
-                                        public int getSheetHalfHeightAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetHalfHeightAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
 
                                         @Override
-                                        public int getSheetFullHeightAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetFullHeightAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
 
                                         @Override
-                                        public int getSheetClosedAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetClosedAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
                                     };
                             mBottomSheetController.requestShowContent(

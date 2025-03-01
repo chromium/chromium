@@ -69,15 +69,6 @@ const struct trim_case_ascii {
     {"\t\rTest String\n", TRIM_ALL, "Test String", TRIM_ALL},
 };
 
-// Helper used to test TruncateUTF8ToByteSize.
-bool Truncated(const std::string& input,
-               const size_t byte_size,
-               std::string* output) {
-  size_t prev = input.length();
-  TruncateUTF8ToByteSize(input, byte_size, output);
-  return prev != output->length();
-}
-
 using TestFunction = bool (*)(std::string_view str);
 
 // Helper used to test IsStringUTF8[AllowingNoncharacters].
@@ -201,175 +192,140 @@ void TestNoncharacters(TestFunction fn, bool expected_result) {
 }
 
 TEST(StringUtilTest, TruncateUTF8ToByteSize) {
+  // Just a few tests of the version which takes an output parameter. It's
+  // implemented in terms `TruncateUTF8ToByteSize()` which returns a string
+  // view.
   std::string output;
+  TruncateUTF8ToByteSize("test", 3, &output);
+  EXPECT_EQ("tes", output);
+  TruncateUTF8ToByteSize("test", 0, &output);
+  EXPECT_EQ("", output);
+  TruncateUTF8ToByteSize("", 3, &output);
+  EXPECT_EQ("", output);
 
   // Empty strings and invalid byte_size arguments
-  EXPECT_FALSE(Truncated(std::string(), 0, &output));
-  EXPECT_EQ(output, "");
-  EXPECT_TRUE(Truncated("\xe1\x80\xbf", 0, &output));
-  EXPECT_EQ(output, "");
-  EXPECT_FALSE(Truncated("\xe1\x80\xbf", static_cast<size_t>(-1), &output));
-  EXPECT_FALSE(Truncated("\xe1\x80\xbf", 4, &output));
+  EXPECT_EQ("", TruncateUTF8ToByteSize(std::string(), 0));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xe1\x80\xbf", 0));
+  EXPECT_EQ("\xe1\x80\xbf",
+            TruncateUTF8ToByteSize("\xe1\x80\xbf", static_cast<size_t>(-1)));
+  EXPECT_EQ("\xe1\x80\xbf", TruncateUTF8ToByteSize("\xe1\x80\xbf", 4));
 
   // Testing the truncation of valid UTF8 correctly
-  EXPECT_TRUE(Truncated("abc", 2, &output));
-  EXPECT_EQ(output, "ab");
-  EXPECT_TRUE(Truncated("\xc2\x81\xc2\x81", 2, &output));
-  EXPECT_EQ(output.compare("\xc2\x81"), 0);
-  EXPECT_TRUE(Truncated("\xc2\x81\xc2\x81", 3, &output));
-  EXPECT_EQ(output.compare("\xc2\x81"), 0);
-  EXPECT_FALSE(Truncated("\xc2\x81\xc2\x81", 4, &output));
-  EXPECT_EQ(output.compare("\xc2\x81\xc2\x81"), 0);
+  EXPECT_EQ("ab", TruncateUTF8ToByteSize("abc", 2));
+  EXPECT_EQ("\xc2\x81", TruncateUTF8ToByteSize("\xc2\x81\xc2\x81", 2));
+  EXPECT_EQ("\xc2\x81", TruncateUTF8ToByteSize("\xc2\x81\xc2\x81", 3));
+  EXPECT_EQ("\xc2\x81\xc2\x81", TruncateUTF8ToByteSize("\xc2\x81\xc2\x81", 4));
 
   {
     const char array[] = "\x00\x00\xc2\x81\xc2\x81";
     const std::string array_string(array, std::size(array));
-    EXPECT_TRUE(Truncated(array_string, 4, &output));
-    EXPECT_EQ(output.compare(std::string("\x00\x00\xc2\x81", 4)), 0);
+    EXPECT_EQ(std::string_view("\x00\x00\xc2\x81", 4),
+              TruncateUTF8ToByteSize(array_string, 4));
   }
 
   {
     const char array[] = "\x00\xc2\x81\xc2\x81";
     const std::string array_string(array, std::size(array));
-    EXPECT_TRUE(Truncated(array_string, 4, &output));
-    EXPECT_EQ(output.compare(std::string("\x00\xc2\x81", 3)), 0);
+    EXPECT_EQ(std::string_view("\x00\xc2\x81", 3),
+              TruncateUTF8ToByteSize(array_string, 4));
   }
 
   // Testing invalid UTF8
-  EXPECT_TRUE(Truncated("\xed\xa0\x80\xed\xbf\xbf", 6, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xed\xa0\x8f", 3, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xed\xbf\xbf", 3, &output));
-  EXPECT_EQ(output.compare(""), 0);
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xed\xa0\x80\xed\xbf\xbf", 6));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xed\xa0\x8f", 3));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xed\xbf\xbf", 3));
 
   // Testing invalid UTF8 mixed with valid UTF8
-  EXPECT_FALSE(Truncated("\xe1\x80\xbf", 3, &output));
-  EXPECT_EQ(output.compare("\xe1\x80\xbf"), 0);
-  EXPECT_FALSE(Truncated("\xf1\x80\xa0\xbf", 4, &output));
-  EXPECT_EQ(output.compare("\xf1\x80\xa0\xbf"), 0);
-  EXPECT_FALSE(Truncated("a\xc2\x81\xe1\x80\xbf\xf1\x80\xa0\xbf", 10, &output));
-  EXPECT_EQ(output.compare("a\xc2\x81\xe1\x80\xbf\xf1\x80\xa0\xbf"), 0);
-  EXPECT_TRUE(
-      Truncated("a\xc2\x81\xe1\x80\xbf\xf1"
-                "a"
-                "\x80\xa0",
-                10, &output));
-  EXPECT_EQ(output.compare("a\xc2\x81\xe1\x80\xbf\xf1"
-                           "a"),
-            0);
-  EXPECT_FALSE(
-      Truncated("\xef\xbb\xbf"
-                "abc",
-                6, &output));
-  EXPECT_EQ(output.compare("\xef\xbb\xbf"
-                           "abc"),
-            0);
+  EXPECT_EQ("\xe1\x80\xbf", TruncateUTF8ToByteSize("\xe1\x80\xbf", 3));
+  EXPECT_EQ("\xf1\x80\xa0\xbf", TruncateUTF8ToByteSize("\xf1\x80\xa0\xbf", 4));
+  EXPECT_EQ(
+      "a\xc2\x81\xe1\x80\xbf\xf1\x80\xa0\xbf",
+      TruncateUTF8ToByteSize("a\xc2\x81\xe1\x80\xbf\xf1\x80\xa0\xbf", 10));
+  EXPECT_EQ(
+      "a\xc2\x81\xe1\x80\xbf\xf1"
+      "a",
+      TruncateUTF8ToByteSize("a\xc2\x81\xe1\x80\xbf\xf1"
+                             "a"
+                             "\x80\xa0",
+                             10));
+  EXPECT_EQ(
+      "\xef\xbb\xbf"
+      "abc",
+      TruncateUTF8ToByteSize("\xef\xbb\xbf"
+                             "abc",
+                             6));
 
   // Overlong sequences
-  EXPECT_TRUE(Truncated("\xc0\x80", 2, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xc1\x80\xc1\x81", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xe0\x80\x80", 3, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xe0\x82\x80", 3, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xe0\x9f\xbf", 3, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xf0\x80\x80\x8D", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xf0\x80\x82\x91", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xf0\x80\xa0\x80", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xf0\x8f\xbb\xbf", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xf8\x80\x80\x80\xbf", 5, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xfc\x80\x80\x80\xa0\xa5", 6, &output));
-  EXPECT_EQ(output.compare(""), 0);
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xc0\x80", 2));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xc1\x80\xc1\x81", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xe0\x80\x80", 3));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xe0\x82\x80", 3));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xe0\x9f\xbf", 3));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf0\x80\x80\x8D", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf0\x80\x82\x91", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf0\x80\xa0\x80", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf0\x8f\xbb\xbf", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf8\x80\x80\x80\xbf", 5));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xfc\x80\x80\x80\xa0\xa5", 6));
 
   // Beyond U+10FFFF (the upper limit of Unicode codespace)
-  EXPECT_TRUE(Truncated("\xf4\x90\x80\x80", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xf8\xa0\xbf\x80\xbf", 5, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xfc\x9c\xbf\x80\xbf\x80", 6, &output));
-  EXPECT_EQ(output.compare(""), 0);
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf4\x90\x80\x80", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf8\xa0\xbf\x80\xbf", 5));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xfc\x9c\xbf\x80\xbf\x80", 6));
 
   // BOMs in UTF-16(BE|LE) and UTF-32(BE|LE)
-  EXPECT_TRUE(Truncated("\xfe\xff", 2, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xff\xfe", 2, &output));
-  EXPECT_EQ(output.compare(""), 0);
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xfe\xff", 2));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xff\xfe", 2));
 
   {
     const char array[] = "\x00\x00\xfe\xff";
     const std::string array_string(array, std::size(array));
-    EXPECT_TRUE(Truncated(array_string, 4, &output));
-    EXPECT_EQ(output.compare(std::string("\x00\x00", 2)), 0);
+    EXPECT_EQ(std::string("\x00\x00", 2),
+              TruncateUTF8ToByteSize(array_string, 4));
   }
 
   // Variants on the previous test
   {
     const char array[] = "\xff\xfe\x00\x00";
     const std::string array_string(array, 4);
-    EXPECT_FALSE(Truncated(array_string, 4, &output));
-    EXPECT_EQ(output.compare(std::string("\xff\xfe\x00\x00", 4)), 0);
+    EXPECT_EQ(std::string_view("\xff\xfe\x00\x00", 4),
+              TruncateUTF8ToByteSize(array_string, 4));
   }
   {
     const char array[] = "\xff\x00\x00\xfe";
     const std::string array_string(array, std::size(array));
-    EXPECT_TRUE(Truncated(array_string, 4, &output));
-    EXPECT_EQ(output.compare(std::string("\xff\x00\x00", 3)), 0);
+    EXPECT_EQ(std::string_view("\xff\x00\x00", 3),
+              TruncateUTF8ToByteSize(array_string, 4));
   }
 
   // Non-characters : U+xxFFF[EF] where xx is 0x00 through 0x10 and <FDD0,FDEF>
-  EXPECT_TRUE(Truncated("\xef\xbf\xbe", 3, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xf0\x8f\xbf\xbe", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xf3\xbf\xbf\xbf", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xef\xb7\x90", 3, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_TRUE(Truncated("\xef\xb7\xaf", 3, &output));
-  EXPECT_EQ(output.compare(""), 0);
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xef\xbf\xbe", 3));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf0\x8f\xbf\xbe", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xf3\xbf\xbf\xbf", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xef\xb7\x90", 3));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xef\xb7\xaf", 3));
 
   // Strings in legacy encodings that are valid in UTF-8, but
   // are invalid as UTF-8 in real data.
-  EXPECT_TRUE(Truncated("caf\xe9", 4, &output));
-  EXPECT_EQ(output.compare("caf"), 0);
-  EXPECT_TRUE(Truncated("\xb0\xa1\xb0\xa2", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
-  EXPECT_FALSE(Truncated("\xa7\x41\xa6\x6e", 4, &output));
-  EXPECT_EQ(output.compare("\xa7\x41\xa6\x6e"), 0);
-  EXPECT_TRUE(Truncated("\xa7\x41\xa6\x6e\xd9\xee\xe4\xee", 7, &output));
-  EXPECT_EQ(output.compare("\xa7\x41\xa6\x6e"), 0);
-
-  // Testing using the same string as input and output.
-  EXPECT_FALSE(Truncated(output, 4, &output));
-  EXPECT_EQ(output.compare("\xa7\x41\xa6\x6e"), 0);
-  EXPECT_TRUE(Truncated(output, 3, &output));
-  EXPECT_EQ(output.compare("\xa7\x41"), 0);
+  EXPECT_EQ("caf", TruncateUTF8ToByteSize("caf\xe9", 4));
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xb0\xa1\xb0\xa2", 4));
+  EXPECT_EQ("\xa7\x41\xa6\x6e", TruncateUTF8ToByteSize("\xa7\x41\xa6\x6e", 4));
+  EXPECT_EQ("\xa7\x41\xa6\x6e",
+            TruncateUTF8ToByteSize("\xa7\x41\xa6\x6e\xd9\xee\xe4\xee", 7));
 
   // "abc" with U+201[CD] in windows-125[0-8]
-  EXPECT_TRUE(
-      Truncated("\x93"
-                "abc\x94",
-                5, &output));
-  EXPECT_EQ(output.compare("\x93"
-                           "abc"),
-            0);
+  EXPECT_EQ(
+      "\x93"
+      "abc",
+      TruncateUTF8ToByteSize("\x93"
+                             "abc\x94",
+                             5));
 
   // U+0639 U+064E U+0644 U+064E in ISO-8859-6
-  EXPECT_TRUE(Truncated("\xd9\xee\xe4\xee", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xd9\xee\xe4\xee", 4));
 
   // U+03B3 U+03B5 U+03B9 U+03AC in ISO-8859-7
-  EXPECT_TRUE(Truncated("\xe3\xe5\xe9\xdC", 4, &output));
-  EXPECT_EQ(output.compare(""), 0);
+  EXPECT_EQ("", TruncateUTF8ToByteSize("\xe3\xe5\xe9\xdC", 4));
 }
 
 #if defined(WCHAR_T_IS_16_BIT)

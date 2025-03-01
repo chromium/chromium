@@ -810,9 +810,17 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       GenerateBidTaskList::iterator task,
       DirectFromSellerSignalsRequester::Result result);
 
+  // Returns true iff all generateBid()'s inputs are ready. The JS and WASM
+  // may or may not be ready yet.
+  bool GenerateBidTaskHasInputs(const GenerateBidTask& task) const;
+
   // Returns true iff all generateBid()'s prerequisite loading tasks have
   // completed.
   bool IsReadyToGenerateBid(const GenerateBidTask& task) const;
+
+  // If the task is ready other than waiting for the JS script, avoid eager
+  // compilation so that we can get started on generating this bid.
+  void DisableEagerJsCompilationIfOnlyWaitingOnJs(const GenerateBidTask& task);
 
   // Checks if IsReadyToGenerateBid(). If so, calls generateBid(), and invokes
   // the task callback with the resulting bid, if any.

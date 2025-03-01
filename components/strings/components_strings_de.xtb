@@ -837,6 +837,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2451607499823206582">Tracking</translation>
 <translation id="2452098632681057184">Ökologie und Umwelt</translation>
 <translation id="2452837234288608067">Dabei konnten wir nicht helfen. Bitte versuche es noch einmal.</translation>
+<translation id="2453045048779611513">Deine Organisation schränkt ein, was du speichern kannst</translation>
 <translation id="2456755709261364512">Der Akku muss mindestens zu <ph name="REQUIRED_BATTERY_PRECENT" /> % geladen sein</translation>
 <translation id="2461385121573678775">Mit Chrome Enterprise Core kannst du Browserrichtlinien über die Cloud zentral konfigurieren</translation>
 <translation id="2461822463642141190">Aktuell</translation>
@@ -1086,6 +1087,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2942492342931589800">Informell</translation>
 <translation id="2942515540157583425">IT- und technische Jobs</translation>
 <translation id="2943895734390379394">Uhrzeit des Uploads:</translation>
+<translation id="2947281105969315778">Wenn du Tabgruppen teilen oder ihnen beitreten möchtest, musst du dich in Chrome anmelden können</translation>
 <translation id="2948083400971632585">Du kannst alle für eine Verbindung konfigurierten Proxys auf der Seite „Einstellungen“ deaktivieren.</translation>
 <translation id="2949183777371959169">Ignoriert, da der Computer nicht bei der Chrome-Verwaltung über die Cloud angemeldet ist.</translation>
 <translation id="2951588413176968965">Meine Ablage</translation>
@@ -3902,6 +3904,7 @@ Weitere Details:
 <translation id="791107458486222637">Aktion wird wiederholt</translation>
 <translation id="791551905239004656">Zeichnen und Malen</translation>
 <translation id="7916162853251942238">Flexobasis</translation>
+<translation id="791698251820376781">Deine Organisation lässt deine Anmeldung nicht zu</translation>
 <translation id="7926503317156566022">Luftfahrtindustrie</translation>
 <translation id="793209273132572360">Adresse aktualisieren?</translation>
 <translation id="7932579305932748336">Im­prä­g­nie­ren</translation>
@@ -4615,6 +4618,7 @@ Weitere Details:
 <translation id="9191834167571392248">Lochung unten links</translation>
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Naturkosmetik</translation>
+<translation id="9195969368671142407">Wenn deine Organisation die Speicheroption für dein Google-Konto einschränkt, kannst du Tabgruppen nicht teilen oder ihnen beitreten</translation>
 <translation id="9199905725844810519">Drucken ist blockiert</translation>
 <translation id="9201904868909900493">Umfrage öffnen…</translation>
 <translation id="9204089334327209740">Sobald der Upload abgeschlossen ist, kannst du deine Dateien in <ph name="CLOUD_PROVIDER" /> bearbeiten. Der lokale Speicher, einschließlich aller Dateien im Papierkorb, wird automatisch deaktiviert.</translation>

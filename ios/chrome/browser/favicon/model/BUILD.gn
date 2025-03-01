@@ -51,6 +51,21 @@ source_set("model") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_favicon_loader.h",
+    "mock_favicon_loader.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//ios/chrome/common/ui/favicon",
+    "//testing/gmock",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

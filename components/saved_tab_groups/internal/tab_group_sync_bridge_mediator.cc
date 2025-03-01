@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/internal/stats.h"
 #include "components/saved_tab_groups/internal/sync_data_type_configuration.h"
+#include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/utils.h"
@@ -59,6 +60,11 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
         std::move(shared_tab_group_configuration->change_processor),
         pref_service);
   }
+
+  // This new value is written after the old value is read inside the
+  // `shared_bridge_` constructor, hence there is no race.
+  pref_service->SetBoolean(prefs::kDidEnableSharedTabGroupsInLastSession,
+                           !!shared_bridge_);
 }
 
 TabGroupSyncBridgeMediator::~TabGroupSyncBridgeMediator() = default;
@@ -278,6 +284,12 @@ void TabGroupSyncBridgeMediator::SavedTabGroupLastUserInteractionTimeUpdated(
     CHECK(saved_bridge_);
     saved_bridge_->SavedTabGroupLastUserInteractionTimeUpdated(group_guid);
   }
+}
+
+void TabGroupSyncBridgeMediator::UntrackEntitiesForCollaboration(
+    const syncer::CollaborationId& collaboration_id) {
+  CHECK(shared_bridge_);
+  shared_bridge_->UntrackEntitiesForCollaboration(collaboration_id);
 }
 
 void TabGroupSyncBridgeMediator::OnSavedGroupsWithTabsLoaded(

@@ -43,10 +43,6 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
 #endif
 
   registry->RegisterModule(
-      WhatsNewModule(performance_manager::features::kPerformanceInterventionUI,
-                     "agale@google.com"));
-
-  registry->RegisterModule(
       WhatsNewModule(::features::kReadAnythingReadAloud, "trewin@google.com"));
 }
 

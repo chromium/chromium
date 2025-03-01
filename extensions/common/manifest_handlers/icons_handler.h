@@ -11,6 +11,7 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handler.h"
+#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 
 class GURL;
 
@@ -20,16 +21,24 @@ struct IconsInfo : public Extension::ManifestData {
   // The icons for the extension.
   ExtensionIconSet icons;
 
-  // Return the icon set for the given |extension|.
-  static const ExtensionIconSet& GetIcons(const Extension* extension);
+  // Return the icon set for the given `extension`.
+  static const ExtensionIconSet& GetIcons(
+      const Extension* extension,
+      std::optional<ExtensionIconVariant::ColorScheme> color_scheme =
+          std::nullopt);
 
   // Get an extension icon as a resource or URL.
-  static ExtensionResource GetIconResource(const Extension* extension,
-                                           int size_in_px,
-                                           ExtensionIconSet::Match match_type);
+  static ExtensionResource GetIconResource(
+      const Extension* extension,
+      int size_in_px,
+      ExtensionIconSet::Match match_type,
+      ExtensionIconVariant::ColorScheme color_scheme =
+          ExtensionIconVariant::ColorScheme::kLight);
   static GURL GetIconURL(const Extension* extension,
                          int size_in_px,
-                         ExtensionIconSet::Match match_type);
+                         ExtensionIconSet::Match match_type,
+                         ExtensionIconVariant::ColorScheme color_scheme =
+                             ExtensionIconVariant::ColorScheme::kLight);
 };
 
 // Parses the "icons" manifest key.

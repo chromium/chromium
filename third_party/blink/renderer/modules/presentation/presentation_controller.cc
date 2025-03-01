@@ -121,7 +121,7 @@ void PresentationController::OnDefaultPresentationStarted(
     return;
   }
 
-  auto* connection = ControllerPresentationConnection::Take(
+  auto* connection = ControllerPresentationConnection::Create(
       this, *result->presentation_info, presentation_->defaultRequest());
   // TODO(btolsch): Convert this and similar calls to just use InterfacePtrInfo
   // instead of constructing an InterfacePtr every time we have

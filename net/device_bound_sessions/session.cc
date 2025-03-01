@@ -28,10 +28,38 @@ namespace {
 
 constexpr base::TimeDelta kSessionTtl = base::Days(400);
 
+constexpr net::BackoffEntry::Policy kBackoffPolicy = {
+    // Number of initial errors (in sequence) to ignore before applying
+    // exponential back-off rules.
+    3,
+
+    // Initial delay for exponential backoff in ms.
+    500,
+
+    // Factor by which the waiting time will be multiplied.
+    1.5,
+
+    // Fuzzing percentage. ex: 10% will spread requests randomly
+    // between 90%-100% of the calculated time.
+    0.2,  // 20%
+
+    // Maximum amount of time we are willing to delay our request in ms.
+    1000 * 60 * 8,  // 8 Minutes
+
+    // Time to keep an entry from being discarded even when it
+    // has no significant state, -1 to never discard.
+    -1,
+
+    // Don't use initial delay unless the last request was an error.
+    false,
+};
 }
 
 Session::Session(Id id, url::Origin origin, GURL refresh)
-    : id_(id), refresh_url_(refresh), inclusion_rules_(origin) {}
+    : id_(id),
+      refresh_url_(refresh),
+      inclusion_rules_(origin),
+      backoff_(&kBackoffPolicy) {}
 
 Session::Session(Id id,
                  GURL refresh,
@@ -46,7 +74,8 @@ Session::Session(Id id,
       cookie_cravings_(std::move(cookie_cravings)),
       should_defer_when_expired_(should_defer_when_expired),
       creation_date_(creation_date),
-      expiry_date_(expiry_date) {}
+      expiry_date_(expiry_date),
+      backoff_(&kBackoffPolicy) {}
 
 Session::~Session() = default;
 
@@ -210,6 +239,10 @@ proto::Session Session::ToProto() const {
 bool Session::ShouldDeferRequest(
     URLRequest* request,
     const net::FirstPartySetMetadata& first_party_set_metadata) const {
+  if (backoff_.ShouldRejectRequest()) {
+    return false;
+  }
+
   if (!IncludesUrl(request->url())) {
     // Request is not in scope for this session.
     return false;
@@ -354,6 +387,38 @@ void Session::RecordAccess() {
 bool Session::IncludesUrl(const GURL& url) const {
   return inclusion_rules_.EvaluateRequestUrl(url) ==
          SessionInclusionRules::kInclude;
+}
+
+void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
+  using enum SessionError::ErrorType;
+
+  switch (error_type) {
+    case kSuccess:
+      backoff_.InformOfRequest(/*succeeded=*/true);
+      break;
+    // Fatal errors, no backoff needed
+    case kKeyError:
+    case kSigningError:
+    case kServerRequestedTermination:
+    case kInvalidConfigJson:
+    case kInvalidSessionId:
+    case kInvalidCredentials:
+    case kInvalidChallenge:
+    case kTooManyChallenges:
+    case kInvalidFetcherUrl:
+    case kInvalidRefreshUrl:
+    case kPersistentHttpError:
+
+    // We do not want to back off on many network connection errors
+    // (e.g. internet disconnected), so we do not hit our maximum
+    // backoff whenever the machine goes offline while the browser is
+    // running.
+    case kNetError:
+      break;
+    case kTransientHttpError:
+      backoff_.InformOfRequest(/*succeeded=*/false);
+      break;
+  }
 }
 
 }  // namespace net::device_bound_sessions

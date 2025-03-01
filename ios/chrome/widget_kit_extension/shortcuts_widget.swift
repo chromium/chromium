@@ -51,7 +51,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
     in context: TimelineProviderContext,
     completion: @escaping (Entry) -> Void
   ) {
-    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, gaia: "")
+    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, gaia: nil)
     completion(entry)
   }
 
@@ -60,7 +60,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
     in context: TimelineProviderContext,
     completion: @escaping (Timeline<Entry>) -> Void
   ) {
-    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, gaia: "")
+    let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, gaia: nil)
     let entries = [entry]
     let timeline = Timeline(
       entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)

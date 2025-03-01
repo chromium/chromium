@@ -50,10 +50,7 @@ WTF::Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
       FeatureVal(
           RuntimeEnabledFeatures::FledgeDeprecatedRenderURLReplacementsEnabled(
               execution_context)));
-  feature_status.emplace_back(
-      String("reportingTimeout"),
-      FeatureVal(RuntimeEnabledFeatures::FledgeReportingTimeoutEnabled(
-          execution_context)));
+  feature_status.emplace_back(String("reportingTimeout"), FeatureVal(true));
   feature_status.emplace_back(String("permitCrossOriginTrustedSignals"),
                               FeatureVal(true));
   feature_status.emplace_back(

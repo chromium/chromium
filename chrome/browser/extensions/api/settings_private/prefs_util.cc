@@ -1288,7 +1288,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
         settings_api::PrefType::kBoolean;
     (*s_allowlist)[glic::prefs::kGlicTabContextEnabled] =
         settings_api::PrefType::kBoolean;
-    (*s_allowlist)[glic::prefs::kGlicSettingsPolicy] =
+    (*s_allowlist)[prefs::kGeminiSettings] =
         settings_api::PrefType::kNumber;
   }
 #endif

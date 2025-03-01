@@ -837,6 +837,7 @@
 <translation id="2451607499823206582">Suivi activé</translation>
 <translation id="2452098632681057184">Écologie et environnement</translation>
 <translation id="2452837234288608067">Impossible de vous aider avec cette requête. Réessayez.</translation>
+<translation id="2453045048779611513">Votre organisation impose une limite quant à ce que vous pouvez enregistrer</translation>
 <translation id="2456755709261364512">Votre pile doit être chargée à plus de <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vous offre un outil centralisé pour configurer les politiques de navigateur à partir du nuage</translation>
 <translation id="2461822463642141190">Actuelle</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2942492342931589800">Grand public</translation>
 <translation id="2942515540157583425">Emplois dans le domaine de l'informatique et technique</translation>
 <translation id="2943895734390379394">Heure du téléversement :</translation>
+<translation id="2947281105969315778">Pour partager ou rejoindre des groupes d'onglets, vous devez pouvoir vous connecter à Chrome</translation>
 <translation id="2948083400971632585">Vous pouvez désactiver tout mandataire configuré pour une connexion à partir de la page des paramètres.</translation>
 <translation id="2949183777371959169">Ignorée parce que la machine n'a pas été inscrite au moyen de la gestion infonuagique du navigateur Chrome.</translation>
 <translation id="2951588413176968965">Ma boîte aux lettres</translation>
@@ -3903,6 +3905,7 @@ Détails supplémentaires :
 <translation id="791107458486222637">Rétablissement du résultat en cours…</translation>
 <translation id="791551905239004656">Dessin et coloriage</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
+<translation id="791698251820376781">Votre organisation ne vous autorise pas à vous connecter</translation>
 <translation id="7926503317156566022">Industrie aéronautique</translation>
 <translation id="793209273132572360">Mettre à jour l'adresse?</translation>
 <translation id="7932579305932748336">Revêtement</translation>
@@ -4614,6 +4617,7 @@ Détails supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Produits de beauté responsables</translation>
+<translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement sur votre compte Google, vous ne pouvez ni partager ni rejoindre des groupes d'onglets</translation>
 <translation id="9199905725844810519">L'impression est bloquée</translation>
 <translation id="9201904868909900493">Ouverture du sondage en cours…</translation>
 <translation id="9204089334327209740">Quand le téléversement sera terminé, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. Le stockage local, y compris tous les fichiers de la corbeille, sera automatiquement retiré.</translation>

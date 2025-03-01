@@ -940,10 +940,6 @@ wgpu::Texture DawnImageRepresentation::BeginAccess(
   return this->BeginAccess(usage, internal_usage);
 }
 
-bool DawnImageRepresentation::SupportsMultipleConcurrentReadAccess() {
-  return false;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // DawnBufferRepresentation
 

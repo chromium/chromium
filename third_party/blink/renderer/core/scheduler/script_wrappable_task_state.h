@@ -19,21 +19,22 @@ class TaskAttributionInfo;
 }  // namespace blink::scheduler
 
 namespace blink {
-class AbortSignal;
-class DOMTaskSignal;
+class ExecutionContext;
 class ScriptState;
+class SchedulerTaskContext;
 
 // Interface for objects stored as `ScriptWrappableTaskState`.
 //
 // Instances of this class will either be WebSchedulingTaskState, if propagating
-// abort and priority sources (web scheduling APIs), or TaskAttributionInfoImpl,
+// `SchedulerTaskContext` (web scheduling APIs), or TaskAttributionInfoImpl,
+//
 // which is exposed as TaskAttributionInfo via TaskAttributionTracker public
 // APIs.
 class WrappableTaskState : public GarbageCollectedMixin {
  public:
   virtual scheduler::TaskAttributionInfo* GetTaskAttributionInfo() = 0;
-  virtual AbortSignal* AbortSource() = 0;
-  virtual DOMTaskSignal* PrioritySource() = 0;
+  virtual SchedulerTaskContext* GetSchedulerTaskContextFor(
+      const ExecutionContext&) = 0;
 };
 
 // `ScriptWrappableTaskState` objects are stored in V8 as continuation preserved

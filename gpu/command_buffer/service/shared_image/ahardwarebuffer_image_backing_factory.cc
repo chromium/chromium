@@ -535,7 +535,7 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
   // NOTE: AHardwareBufferImageBacking doesn't support multiplanar formats,
   // so there is no need to specify the `is_yuv_plane` or
   // `legacy_plane_index` optional parameters.
-  return SkiaGraphiteDawnImageRepresentation::Create(
+  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else

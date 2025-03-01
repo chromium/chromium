@@ -49,10 +49,10 @@ This is a wdspec test.
   webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_path_invalid_type[archivePath-value4]
   webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
-[ERROR] test_params_extension_data_archive_path_invalid_webextension
-  setup error: KeyError: 'chrome'
-[ERROR] test_params_extension_data_path_invalid_webextension
-  setup error: KeyError: 'chrome'
+[FAIL] test_params_extension_data_archive_path_invalid_webextension
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
+[FAIL] test_params_extension_data_path_invalid_webextension
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_missing
   webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.install is not implemented.)
 [FAIL] test_params_extension_data_value_invalid_type[None]

@@ -23,7 +23,9 @@ void OnReleaseVideoFrame(scoped_refptr<content::StreamTextureFactory> factories,
                          const gpu::SyncToken& sync_token) {
   gpu::SharedImageInterface* sii = factories->SharedImageInterface();
   sii->DestroySharedImage(sync_token, std::move(shared_image));
-  sii->Flush();
+  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
+  // that the deferred destroy request is flushed. Thus, clients don't need to
+  // call SharedImageInterface::Flush explicitly.
 }
 }
 

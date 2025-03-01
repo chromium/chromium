@@ -838,6 +838,7 @@
 <translation id="2451607499823206582">စောင့်ကြည့်ခြင်း</translation>
 <translation id="2452098632681057184">ဂေဟဗေဒ၊ ပတ်ဝန်းကျင်</translation>
 <translation id="2452837234288608067">၎င်းကို လုပ်ဆောင်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="2453045048779611513">သိမ်းနိုင်သည်များကို သင့်အဖွဲ့အစည်းက ကန့်သတ်ထားသည်</translation>
 <translation id="2456755709261364512">သင့်ဘက်ထရီကို <ph name="REQUIRED_BATTERY_PRECENT" />% အထက် အားသွင်းထားရမည်</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core သည် cloud မှ ဘရောင်ဇာမူဝါဒများကို စီစဉ်သတ်မှတ်ရန်အတွက် ဗဟိုပြုတူးလ်ကို ပေးသည်</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
@@ -1091,6 +1092,7 @@
 <translation id="2942492342931589800">ပေါ့ပေါ့ပါးပါး</translation>
 <translation id="2942515540157583425">IT နှင့် နည်းပညာအလုပ်</translation>
 <translation id="2943895734390379394">အပ်လုဒ်လုပ်ချိန်-</translation>
+<translation id="2947281105969315778">တဘ်အုပ်စုများကို မျှဝေရန် (သို့) ၎င်းတို့တွင် ပါဝင်ရန် Chrome သို့ လက်မှတ်ထိုးဝင်နိုင်ရမည်</translation>
 <translation id="2948083400971632585">ကြိုတင်ပြင်ဆင်ခြင်း စာမျက်နှာမှ ချိတ်ဆက်မှုတစ်ခုအတွက် ပရောက်စီပြုပြင်ချက်များအား ပိတ်နိုင်သည်။</translation>
 <translation id="2949183777371959169">စက်ကို ‘Chrome ဘရောင်ဇာ Cloud စီမံခန့်ခွဲရေး’ ဖြင့် စာရင်းသွင်းမထားသဖြင့် လျစ်လျူရှုထားသည်။</translation>
 <translation id="2951588413176968965">ကျွန်ုပ်၏စာတိုက်ပုံး</translation>
@@ -1947,6 +1949,7 @@
 <translation id="4378154925671717803">ဖုန်း</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive သို့ ဖိုင်အပ်လုဒ်လုပ်ခြင်းကို ခဏရပ်ထားသည်</translation>
+<translation id="4389931020843542579">တဘ်အုပ်စု ဖွင့်နေသည်</translation>
 <translation id="4390472908992056574">အစွန်အနား</translation>
 <translation id="4395550503472021297">ဤမူဝါဒသည် အောက်ပါမူဝါဒများ၏ မူရင်းလုပ်ဆောင်ပုံကို ထိန်းချုပ်နေသည်- <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">သင့်ဘဏ်၏ဝဘ်ဆိုက်တွင် အတည်ပြုရန်ပေါ့ပ်အပ်ကို ဖွင့်သည်</translation>
@@ -3904,6 +3907,7 @@
 <translation id="791107458486222637">ရလဒ် ပြန်လုပ်နေသည်</translation>
 <translation id="791551905239004656">ပုံဆွဲခြင်း၊ ဆေးရောင်ခြယ်ခြင်း</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
+<translation id="791698251820376781">သင့်အဖွဲ့အစည်းသည် သင့်အား လက်မှတ်ထိုးဝင်ခွင့်မပြုပါ</translation>
 <translation id="7926503317156566022">လေကြောင်းဆိုင်ရာလုပ်ငန်း</translation>
 <translation id="793209273132572360">လိပ်စာ အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="7932579305932748336">အလွှာအုပ်ရန်</translation>
@@ -4617,6 +4621,7 @@
 <translation id="9191834167571392248">ဘယ်ဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>
 <translation id="9192361865877479444">သတ္တု (မှိုင်းပျပျ)</translation>
 <translation id="9192947025498305328">သဘာဝ အလှကုန်</translation>
+<translation id="9195969368671142407">သင်၏ Google Account တွင် သိမ်းသည့်အရာများကို သင့်အဖွဲ့အစည်းက ကန့်သတ်လိုက်သည့်အခါ တဘ်အုပ်စုများကို မျှဝေခြင်း (သို့) ၎င်းတို့တွင် ပါဝင်ခြင်းတို့ မလုပ်နိုင်ပါ</translation>
 <translation id="9199905725844810519">ပုံနှိပ်ထုတ်ယူခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="9201904868909900493">စစ်တမ်း ဖွင့်နေသည်…</translation>
 <translation id="9204089334327209740">အပ်လုဒ်လုပ်ပြီးပါက <ph name="CLOUD_PROVIDER" /> တွင် သင့်ဖိုင်များကို ပြင်နိုင်သည်။ အမှိုက်ပုံးထဲရှိ ဖိုင်အားလုံး အပါအဝင် စက်တွင်း သိုလှောင်ခန်းကို အလိုအလျောက် ဖယ်ရှားပါမည်။</translation>

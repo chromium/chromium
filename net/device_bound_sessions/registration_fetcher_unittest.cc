@@ -743,6 +743,46 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
             SessionError::ErrorType::kNetError);
 }
 
+TEST_F(RegistrationTest, ServerError407) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponse, HTTP_PROXY_AUTHENTICATION_REQUIRED, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcherParam params = GetBasicParam();
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kNetError);
+}
+
+TEST_F(RegistrationTest, ServerError400) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_BAD_REQUEST, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcherParam params = GetBasicParam();
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_FALSE(callback.outcome().has_value());
+  EXPECT_EQ(callback.outcome().error().type,
+            SessionError::ErrorType::kPersistentHttpError);
+}
+
 TEST_F(RegistrationTest, ServerError500) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(
@@ -760,7 +800,7 @@ TEST_F(RegistrationTest, ServerError500) {
 
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kHttpError);
+            SessionError::ErrorType::kTransientHttpError);
 }
 
 TEST_F(RegistrationTest, ServerErrorReturnOne401ThenSuccess) {
@@ -874,7 +914,7 @@ TEST_F(RegistrationTest, DontFollowHttpsToHttpRedirect) {
   EXPECT_FALSE(followed);
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kHttpError);
+            SessionError::ErrorType::kPersistentHttpError);
 }
 
 // Should be allowed: http://localhost -> http://localhost/redirect.

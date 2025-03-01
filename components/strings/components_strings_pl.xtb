@@ -837,6 +837,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2451607499823206582">Śledzenie</translation>
 <translation id="2452098632681057184">Ekologia i środowisko</translation>
 <translation id="2452837234288608067">Nie udało się pomóc. Spróbuj ponownie.</translation>
+<translation id="2453045048779611513">Twoja organizacja nie pozwala na synchronizację niektórych typów danych</translation>
 <translation id="2456755709261364512">Poziom naładowania baterii musi przekraczać <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core to centralne narzędzie do konfigurowania zasad przeglądarki w chmurze</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
@@ -1086,6 +1087,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2942492342931589800">Zwykły</translation>
 <translation id="2942515540157583425">Praca w IT i działach technicznych</translation>
 <translation id="2943895734390379394">Czas przesłania:</translation>
+<translation id="2947281105969315778">Aby udostępniać grupy kart lub do nich dołączać, musisz mieć możliwość logowania się w Chrome</translation>
 <translation id="2948083400971632585">Możesz wyłączyć dowolne serwery proxy skonfigurowane dla połączenia na stronie ustawień.</translation>
 <translation id="2949183777371959169">Zignorowano, ponieważ komputer nie jest zarejestrowany w zarządzaniu przeglądarką Chrome w chmurze.</translation>
 <translation id="2951588413176968965">Mój zestaw tac odbiorczych</translation>
@@ -3904,6 +3906,7 @@ Dodatkowe informacje:
 <translation id="791107458486222637">Wynik ponownego wykonania</translation>
 <translation id="791551905239004656">Rysowanie i kolorowanie</translation>
 <translation id="7916162853251942238">Podstawa fleksograficzna</translation>
+<translation id="791698251820376781">Twoja organizacja nie zezwala na logowanie się</translation>
 <translation id="7926503317156566022">Branża lotnicza</translation>
 <translation id="793209273132572360">Zaktualizować adres?</translation>
 <translation id="7932579305932748336">Powłoka</translation>
@@ -4615,6 +4618,7 @@ Dodatkowe informacje:
 <translation id="9191834167571392248">Otwór w lewym dolnym rogu</translation>
 <translation id="9192361865877479444">Metal (matowy)</translation>
 <translation id="9192947025498305328">Kosmetyki naturalne</translation>
+<translation id="9195969368671142407">Gdy Twoja organizacja ogranicza zapisywanie danych na koncie Google, nie możesz udostępniać grup kart ani do nich dołączać</translation>
 <translation id="9199905725844810519">Drukowanie jest zablokowane</translation>
 <translation id="9201904868909900493">Otwieram ankietę…</translation>
 <translation id="9204089334327209740">Po zakończeniu przesyłania możesz zmodyfikować pliki w usłudze <ph name="CLOUD_PROVIDER" />. Dane z pamięci lokalnej, w tym wszystkie pliki w koszu, zostaną automatycznie usunięte.</translation>

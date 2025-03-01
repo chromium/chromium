@@ -10,14 +10,13 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/scheduler/dom_scheduler.h"
-#include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
+class SchedulerTaskContext;
 class ScriptState;
 class V8SchedulerPostTaskCallback;
 
@@ -32,8 +31,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
  public:
   DOMTask(ScriptPromiseResolver<IDLAny>*,
           V8SchedulerPostTaskCallback*,
-          AbortSignal* abort_source,
-          DOMTaskSignal* priority_source,
+          SchedulerTaskContext*,
           DOMScheduler::DOMTaskQueue*,
           base::TimeDelta delay,
           uint64_t task_id_for_tracing);
@@ -62,8 +60,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   Member<V8SchedulerPostTaskCallback> callback_;
   Member<ScriptPromiseResolver<IDLAny>> resolver_;
   probe::AsyncTaskContext async_task_context_;
-  Member<AbortSignal> abort_source_;
-  Member<DOMTaskSignal> priority_source_;
+  Member<SchedulerTaskContext> scheduler_task_context_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
   // Do not remove. For dynamic priority task queues, |task_queue_| ensures that
   // the associated WebSchedulingTaskQueue stays alive until after this task

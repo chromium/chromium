@@ -48,7 +48,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(SignoutConfirmationUI)
 void SignoutConfirmationUI::Initialize(
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+    SignoutConfirmationCallback callback) {
   initialize_handler_callback_ = base::BindOnce(
       &SignoutConfirmationUI::OnMojoHandlersReady, base::Unretained(this),
       browser, variant, std::move(callback));
@@ -78,12 +78,12 @@ SignoutConfirmationUI* SignoutConfirmationUI::GetForTesting(
 
 void SignoutConfirmationUI::AcceptDialogForTesting() {
   CHECK(handler_);
-  handler_->Accept();
+  handler_->Accept(/*uninstall_account_extensions=*/false);
 }
 
 void SignoutConfirmationUI::CancelDialogForTesting() {
   CHECK(handler_);
-  handler_->Cancel();
+  handler_->Cancel(/*uninstall_account_extensions=*/false);
 }
 
 void SignoutConfirmationUI::CreateSignoutConfirmationHandler(
@@ -107,7 +107,7 @@ void SignoutConfirmationUI::CreateSignoutConfirmationHandler(
 void SignoutConfirmationUI::OnMojoHandlersReady(
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback,
+    SignoutConfirmationCallback callback,
     mojo::PendingRemote<signout_confirmation::mojom::Page> page,
     mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver) {
   CHECK(!handler_);

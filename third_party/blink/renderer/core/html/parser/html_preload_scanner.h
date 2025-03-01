@@ -73,7 +73,7 @@ using MetaCHValues = Vector<MetaCHValue>;
 struct PendingPreloadData {
   MetaCHValues meta_ch_values;
   std::optional<ViewportDescription> viewport;
-  int csp_meta_tag_count = 0;
+  bool has_csp_meta_tag = false;
   bool has_located_potential_lcp_element = false;
   PreloadRequestStream requests;
 };
@@ -125,7 +125,7 @@ class TokenPreloadScanner {
             PreloadRequestStream& requests,
             MetaCHValues& meta_ch_values,
             std::optional<ViewportDescription>*,
-            int* csp_meta_tag_counter);
+            bool* is_csp_meta_tag);
 
   void SetPredictedBaseElementURL(const KURL& url) {
     predicted_base_element_url_ = url;

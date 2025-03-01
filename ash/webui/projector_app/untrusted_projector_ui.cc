@@ -92,12 +92,10 @@ void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
   const url::Origin untrusted_origin =
       url::Origin::Create(GURL(kChromeUIUntrustedProjectorUrl));
-  webui_allowlist->RegisterAutoGrantedPermission(untrusted_origin,
-                                                 ContentSettingsType::COOKIES);
-  webui_allowlist->RegisterAutoGrantedPermission(
-      untrusted_origin, ContentSettingsType::JAVASCRIPT);
-  webui_allowlist->RegisterAutoGrantedPermission(untrusted_origin,
-                                                 ContentSettingsType::IMAGES);
+  webui_allowlist->RegisterAutoGrantedPermissions(
+      untrusted_origin,
+      {ContentSettingsType::COOKIES, ContentSettingsType::JAVASCRIPT,
+       ContentSettingsType::IMAGES});
 }
 
 }  // namespace

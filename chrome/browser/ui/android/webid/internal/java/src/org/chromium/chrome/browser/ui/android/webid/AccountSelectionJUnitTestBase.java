@@ -28,6 +28,7 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
@@ -123,7 +124,7 @@ public class AccountSelectionJUnitTestBase {
             };
     protected static final float ALPHA_COMPARISON_DELTA = 0.00001f;
 
-    @Mock Callback<Account> mAccountCallback;
+    @Mock Callback<ButtonData> mAccountCallback;
     @Mock AccountSelectionComponent.Delegate mMockDelegate;
     @Mock BottomSheetController mMockBottomSheetController;
     @Mock Tab mTab;

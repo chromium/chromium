@@ -64,7 +64,7 @@ using OnProfileSwitchCompletion =
             (UIViewController*)baseViewController
                                                    browser:(Browser*)browser
                                                 anchorView:(UIView*)anchorView
-                                                anchorRect:(CGRect)anchorView;
+                                                anchorRect:(CGRect)anchorRect;
 
 // Fetches the managed status for `identity`.
 - (void)fetchManagedStatus:(ProfileIOS*)profile

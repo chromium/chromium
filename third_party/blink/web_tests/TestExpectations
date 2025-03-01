@@ -131,6 +131,9 @@ crbug.com/1254933 [ Linux ] css3/filters/filterRegions.html [ Failure Pass ]
 crbug.com/1254933 [ Win ] css3/filters/filterRegions.html [ Failure Pass ]
 crbug.com/1405377 [ Mac ] css3/filters/filterRegions.html [ Failure Pass ]
 
+# Script preloaded: No
+crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
+
 crbug.com/1459010 fast/events/hit-test-counts.html [ Failure ]
 
 # Fails flakily or times out
@@ -2627,6 +2630,10 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac ] external/wpt/editing/whitespaces/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]  # Flaky output
+[ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/device-with-name.https.window.html [ Failure Timeout ]
+[ Mac14-arm64 ] external/wpt/soft-navigation-heuristics/first-interaction-not-softnav.tentative.html [ Timeout ]
+[ Mac12 ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/root-and-nested-element-transition.html [ Failure ]
 crbug.com/398879934 [ Mac15-arm64 ] external/wpt/webrtc/legacy/simplecall_callbacks.optional.https.html [ Crash ]
 crbug.com/398879934 [ Mac15 ] external/wpt/webrtc/legacy/simplecall_callbacks.optional.https.html [ Crash ]
 [ Mac13 ] wpt_internal/hid/hidDevice_reports.https.window.html [ Timeout ]
@@ -2675,6 +2682,7 @@ crbug.com/394920629 [ Mac13 ] external/wpt/css/css-pseudo/active-selection-021.h
 crbug.com/394920629 [ Mac14 ] external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
 crbug.com/394920629 [ Mac15 ] external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
 crbug.com/394932379 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/popup-with-structured-header.https.html [ Crash ]
+crbug.com/394932379 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/popup-with-structured-header.https.html [ Crash ]
 crbug.com/394656809 [ Mac ] external/wpt/css/css-overflow/scroll-marker-group-keeps-active-in-view.html [ Failure ]
 crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
 crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]
@@ -7030,7 +7038,6 @@ crbug.com/1290077 [ Mac11-arm64 ] fast/canvas/canvas-drawImage-live-video.html [
 crbug.com/1393995 fast/dom/shadow/import-rule-in-shadow-tree-needs-document-style-recalc.html [ Failure Pass ]
 crbug.com/1379180 fast/events/event-hit-testing-fallback-to-iframe.html [ Failure Pass ]
 crbug.com/1394041 [ Mac11-arm64 ] virtual/gpu-rasterization/images/2-dht.html [ Failure Pass ]
-crbug.com/1394151 virtual/gpu/fast/canvas/OffscreenCanvasImageRenderingPixelatedWorker.html [ Failure Pass ]
 
 # Sheriff 2022-12-5
 crbug.com/1395549 webaudio/codec-tests/vorbis/vbr-96kbps-44khz.html [ Failure Pass ]
@@ -9069,7 +9076,7 @@ crbug.com/396687592 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importSc
 crbug.com/397870172 [ Linux ] external/wpt/css/css-scroll-snap/selection-target.html [ Failure ]
 
 # Disabled to land a fix
-crbug.com/384954756 external/wpt/webrtc/protocol/rtx-codecs.https.html [ Pass Failure ]
+crbug.com/384954756 external/wpt/webrtc/protocol/rtx-codecs.https.html [ Failure Pass ]
 
 #Gardener 2025-02-21
 crbug.com/398165466 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screenshots.js [ Failure Pass Timeout ]

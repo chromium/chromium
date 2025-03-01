@@ -6,10 +6,14 @@
 #define CHROME_BROWSER_UI_ASH_WM_CORAL_DELEGATE_IMPL_H_
 
 #include "ash/public/cpp/coral_delegate.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class DesksTemplatesAppLaunchHandler;
 
-class CoralDelegateImpl : public ash::CoralDelegate {
+class CoralDelegateImpl : public ash::CoralDelegate,
+                          public signin::IdentityManager::Observer {
  public:
   CoralDelegateImpl();
   CoralDelegateImpl(const CoralDelegateImpl&) = delete;
@@ -26,11 +30,27 @@ class CoralDelegateImpl : public ash::CoralDelegate {
   void OpenFeedbackDialog(const std::string& group_description,
                           ash::ScannerDelegate::SendFeedbackCallback
                               send_feedback_callback) override;
-  bool CanUseGenerativeAiForCurrentProfile() override;
+  void CheckGenAIAgeAvailability(GenAIInquiryCallback callback) override;
+  bool GetGenAILocationAvailability() override;
+
+  // signin::IdentityManager::Observer:
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+  void OnRefreshTokensLoaded() override;
 
  private:
+  void HandleGenerativeAiInquiryTimeout();
+
   // Handles launching apps and creating browsers for post login groups.
   std::unique_ptr<DesksTemplatesAppLaunchHandler> app_launch_handler_;
+
+  GenAIInquiryCallback gen_ai_age_inquiry_callback_;
+
+  base::OneShotTimer gen_ai_age_inquiry_timeout_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<CoralDelegateImpl> weak_ptr_factory_{this};
 };

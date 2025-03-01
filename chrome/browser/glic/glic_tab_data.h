@@ -7,11 +7,63 @@
 
 #include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/glic/glic.mojom.h"
+#include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace glic {
+
+// TODO: Detect changes to windowID.
+class TabDataObserver : public content::WebContentsObserver,
+                        public favicon::FaviconDriverObserver {
+ public:
+  // Observes `web_contents` for changes that would modify the result of
+  // `CreateTabData(web_contents)`. `tab_data_changed` is called any time tab
+  // data may have changed.
+  // If `observe_current_page_only` is true, TabDataObserver will automatically
+  // stop providing updates if the primary page changes.
+  TabDataObserver(
+      content::WebContents* web_contents,
+      bool observe_current_page_only,
+      base::RepeatingCallback<void(glic::mojom::TabDataPtr)> tab_data_changed);
+  ~TabDataObserver() override;
+  TabDataObserver(const TabDataObserver&) = delete;
+  TabDataObserver& operator=(const TabDataObserver&) = delete;
+
+  // Returns the web contents being observed. Returns null if the web contents
+  // was null originally, the web contents has been destroyed, or the primary
+  // page has changed, and observe_current_page_only is true.
+  content::WebContents* web_contents() {
+    // const_cast is safe because a non-const WebContents is passed in this
+    // class's constructor.
+    return const_cast<content::WebContents*>(
+        content::WebContentsObserver::web_contents());
+  }
+
+  // content::WebContentsObserver.
+  void PrimaryPageChanged(content::Page& page) override;
+  void TitleWasSetForMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
+
+  // favicon::FaviconDriverObserver.
+  void OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
+                        NotificationIconType notification_icon_type,
+                        const GURL& icon_url,
+                        bool icon_url_changed,
+                        const gfx::Image& image) override;
+
+ private:
+  void SendUpdate();
+  void ClearObservation();
+
+  bool observe_current_page_only_ = false;
+  base::RepeatingCallback<void(glic::mojom::TabDataPtr)> tab_data_changed_;
+};
+
 struct FocusedTabCandidate {
   FocusedTabCandidate(
       content::WebContents* const web_contents,

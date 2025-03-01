@@ -44,6 +44,15 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
   // column zero.
   virtual std::u16string GetTooltip(size_t row);
 
+  // Returns the accessibility name for the header.
+  // If there are multiple columns in the table, the AX name will be combined
+  // names from all visible columns' titles.
+  // For example: The table has 3 visible columns with title as `col1`, `col2`
+  // and `col3` correspondingly. The accessibility name for the `header` would
+  // be `col1 col2 col3`.
+  virtual std::u16string GetAXNameForHeader(
+      const std::vector<std::u16string>& visible_column_titles);
+
   // Returns the accessibility name for the row.
   // If there are multiple columns in the `row`, the AX name will be combined
   // names from all visible columns.

@@ -73,10 +73,22 @@ class IOSCollaborationControllerDelegate
   void FetchPreviewItems(std::vector<data_sharing::TabPreview> tabs,
                          PreviewItemsCallBack callback);
 
-  // Configures the shareKit config for the join flow and starts the join flow.
+  // Configures the shareKit config for the join flow and starts the flow.
   void ConfigureAndJoinTabGroup(const data_sharing::GroupToken& token,
                                 ResultCallback result,
                                 NSArray<ShareKitPreviewItem*>* preview_items);
+
+  // Configures the shareKit config for the share flow and starts the flow.
+  void ConfigureAndShareTabGroup(const tab_groups::EitherGroupID& either_id,
+                                 ResultWithGroupTokenCallback result,
+                                 const TabGroup* tab_group,
+                                 UIImage* faviconsGridImage);
+
+  // Configures the shareKit config for the manage flow and starts the flow.
+  void ConfigureAndManageTabGroup(const tab_groups::EitherGroupID& either_id,
+                                  ResultCallback result,
+                                  const TabGroup* tab_group,
+                                  UIImage* faviconsGridImage);
 
   // Returns the join group image displayed in the join flow.
   UIImage* JoinGroupImage(NSArray<ShareKitPreviewItem*>* preview_items);

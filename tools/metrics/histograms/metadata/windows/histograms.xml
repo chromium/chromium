@@ -193,6 +193,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.LegacyDisplayIdAlgorithm2"
+    enum="UsedDisplayIdFallback" expires_after="2025-07-13">
+  <owner>btriebw@google.com</owner>
+  <owner>msw@google.com</owner>
+  <summary>
+    Records when a monitor is missing DISPLAYCONFIG_PATH_INFO to derive a
+    display ID and instead used the fallback legacy algorithm. Recorded once for
+    each monitor detected by the OS during startup of chrome and after any
+    monitor topology changes (addition/removal) thereafter.
+
+    Subsampled to 1/100.
+  </summary>
+</histogram>
+
 <histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->

@@ -44,11 +44,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace network {
+class PermissionsPolicy;
+}  // namespace network
+
 namespace blink {
 
 class DocumentPolicy;
 class ExecutionContext;
-class PermissionsPolicy;
 class PolicyValue;
 class SecurityOrigin;
 
@@ -131,14 +134,15 @@ class CORE_EXPORT SecurityContext {
     return insecure_request_policy_;
   }
 
-  const PermissionsPolicy* GetPermissionsPolicy() const {
+  const network::PermissionsPolicy* GetPermissionsPolicy() const {
     return permissions_policy_.get();
   }
-  const PermissionsPolicy* GetReportOnlyPermissionsPolicy() const {
+  const network::PermissionsPolicy* GetReportOnlyPermissionsPolicy() const {
     return report_only_permissions_policy_.get();
   }
-  void SetPermissionsPolicy(std::unique_ptr<PermissionsPolicy>);
-  void SetReportOnlyPermissionsPolicy(std::unique_ptr<PermissionsPolicy>);
+  void SetPermissionsPolicy(std::unique_ptr<network::PermissionsPolicy>);
+  void SetReportOnlyPermissionsPolicy(
+      std::unique_ptr<network::PermissionsPolicy>);
 
   const DocumentPolicy* GetDocumentPolicy() const {
     return document_policy_.get();
@@ -190,8 +194,8 @@ class CORE_EXPORT SecurityContext {
  protected:
   network::mojom::blink::WebSandboxFlags sandbox_flags_;
   scoped_refptr<SecurityOrigin> security_origin_;
-  std::unique_ptr<PermissionsPolicy> permissions_policy_;
-  std::unique_ptr<PermissionsPolicy> report_only_permissions_policy_;
+  std::unique_ptr<network::PermissionsPolicy> permissions_policy_;
+  std::unique_ptr<network::PermissionsPolicy> report_only_permissions_policy_;
   std::unique_ptr<DocumentPolicy> document_policy_;
   std::unique_ptr<DocumentPolicy> report_only_document_policy_;
 

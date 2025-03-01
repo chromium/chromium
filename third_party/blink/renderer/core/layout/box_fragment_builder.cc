@@ -48,8 +48,10 @@ void BoxFragmentBuilder::SetInitialTextBoxTrim() {
     return;
   }
 
-  should_text_box_trim_node_start_ |= style.ShouldTextBoxTrimStart();
-  should_text_box_trim_node_end_ |= style.ShouldTextBoxTrimEnd();
+  if (!space_.IsAnonymous()) {
+    should_text_box_trim_node_start_ |= style.ShouldTextBoxTrimStart();
+    should_text_box_trim_node_end_ |= style.ShouldTextBoxTrimEnd();
+  }
 
   // Unless box-decoration-break is 'clone', box trimming specified inside a
   // fragmentation context will not apply at fragmentainer breaks in that

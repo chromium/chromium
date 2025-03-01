@@ -103,7 +103,15 @@ void Subscriber::next(ScriptValue value) {
     return;
   }
 
-  for (auto& observer : internal_observers_) {
+  // Call `Next()` on all observers. Do this by iterating over a *copy* of the
+  // list of observers, because `Next()` can actually complete one of the
+  // observers' subscriptions, thus removing `observer` from
+  // `internal_observers_`. That means `internal_observers_` can be mutated
+  // throughout this process, and we cannot iterate over it while it is
+  // mutating.
+  HeapVector<Member<ObservableInternalObserver>> internal_observers =
+      internal_observers_;
+  for (auto& observer : internal_observers) {
     observer->Next(value);
   }
 }
@@ -118,7 +126,10 @@ void Subscriber::complete(ScriptState* script_state) {
   // `internal_observer` out before calling this.
   CloseSubscription(script_state, /*abort_reason=*/std::nullopt);
 
-  for (auto& observer : internal_observers_) {
+  // See the documentation in `Subscriber::next()`.
+  HeapVector<Member<ObservableInternalObserver>> internal_observers =
+      internal_observers_;
+  for (auto& observer : internal_observers) {
     observer->Complete();
   }
 }
@@ -148,7 +159,10 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
   // `internal_observer` out before calling this.
   CloseSubscription(script_state, error_value);
 
-  for (auto& observer : internal_observers_) {
+  // See the documentation in `Subscriber::next()`.
+  HeapVector<Member<ObservableInternalObserver>> internal_observers =
+      internal_observers_;
+  for (auto& observer : internal_observers) {
     observer->Error(script_state, error_value);
   }
 }

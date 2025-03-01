@@ -168,12 +168,9 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
 
     if (ShouldDisableNonprimaryTileController(*controller, modeset_mode,
                                               use_current_crtc_mode)) {
-      if (controller->is_enabled()) {
-        CrtcCommitRequest request = CrtcCommitRequest::DisableCrtcRequest(
-            controller->crtc(), controller->connector());
-        commit_request->push_back(std::move(request));
-      }
-
+      CrtcCommitRequest request = CrtcCommitRequest::DisableCrtcRequest(
+          controller->crtc(), controller->connector());
+      commit_request->push_back(std::move(request));
       continue;
     }
 

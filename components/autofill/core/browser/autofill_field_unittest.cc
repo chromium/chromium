@@ -43,37 +43,6 @@ class AutofillFieldTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-TEST_F(AutofillFieldTest, ValueWasIdentifiedAsPotentiallySensitive) {
-  AutofillField field;
-
-  // Initially the value should not be identified as sensitive.
-  EXPECT_FALSE(field.value_identified_as_potentially_sensitive());
-
-  // We should be able to set the value and retrieve the state.
-  field.set_value_identified_as_potentially_sensitive(true);
-  EXPECT_TRUE(field.value_identified_as_potentially_sensitive());
-}
-
-TEST_F(AutofillFieldTest, FieldIsEligibleForAutofillAiFlag) {
-  AutofillField field;
-
-  // Initially the value should not be identified as sensitive.
-  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().has_value());
-
-  // Test that setting the value works.
-  field.set_field_is_eligible_for_autofill_ai(true);
-  ASSERT_TRUE(field.field_is_eligible_for_autofill_ai().has_value());
-  EXPECT_TRUE(field.field_is_eligible_for_autofill_ai().value());
-
-  field.set_field_is_eligible_for_autofill_ai(false);
-  ASSERT_TRUE(field.field_is_eligible_for_autofill_ai().has_value());
-  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().value());
-
-  // Verify that the state can also be reset.
-  field.set_field_is_eligible_for_autofill_ai(std::nullopt);
-  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().has_value());
-}
-
 // Tests that if both autocomplete attributes and server agree it's a phone
 // field, always use server predicted type. If they disagree with autocomplete
 // says it's a phone field, always use autocomplete attribute.

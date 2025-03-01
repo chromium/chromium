@@ -34,6 +34,7 @@
 #include "chromeos/ime/input_methods.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -141,12 +142,9 @@ void DoLoadExtension(content::BrowserContext* context,
                           true,          // is_enabled.
                           true);         // is_incognito_enabled.
   DCHECK_EQ(loaded_extension_id, extension_id);
-  extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(context);
-  extensions::ExtensionService* extension_service =
-      extension_system->extension_service();
-  DCHECK(extension_service);
-  if (!extension_service->IsExtensionEnabled(loaded_extension_id)) {
+  auto* registrar = extensions::ExtensionRegistrar::Get(context);
+  DCHECK(registrar);
+  if (!registrar->IsExtensionEnabled(loaded_extension_id)) {
     LOG(ERROR) << "An IME extension(id=\"" << loaded_extension_id
                << "\") is not enabled after loading";
   }

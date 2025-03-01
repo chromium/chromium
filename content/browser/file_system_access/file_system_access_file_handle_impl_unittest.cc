@@ -142,7 +142,6 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
         bucket_future;
     quota_manager_proxy_->CreateBucketForTesting(
         test_src_storage_key_, "custom_bucket",
-        blink::mojom::StorageType::kTemporary,
         base::SequencedTaskRunner::GetCurrentDefault(),
         bucket_future.GetCallback());
     return bucket_future.Take().transform(

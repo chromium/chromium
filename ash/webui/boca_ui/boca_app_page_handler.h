@@ -30,14 +30,11 @@
 
 namespace ash::boca {
 
+// TODO(crbug.com/399923859): Remove `mojom::Page` implementation.
 class BocaAppHandler : public mojom::PageHandler,
                        public mojom::Page,
                        public BocaSessionManager::Observer {
  public:
-  using ActivityInterceptorCallback =
-      base::OnceCallback<void(std::vector<mojom::IdentifiedActivityPtr>)>;
-  using SessionConfigInterceptorCallback =
-      base::OnceCallback<void(mojom::ConfigResultPtr)>;
   BocaAppHandler(
       mojo::PendingReceiver<mojom::PageHandler> receiver,
       mojo::PendingRemote<mojom::Page> remote,
@@ -87,6 +84,9 @@ class BocaAppHandler : public mojom::PageHandler,
                          ViewStudentScreenCallback callback) override;
   void EndViewScreenSession(const std::string& id,
                             EndViewScreenSessionCallback callback) override;
+  void SetViewScreenSessionActive(
+      const std::string& id,
+      SetViewScreenSessionActiveCallback callback) override;
   void GetUserPref(mojom::BocaValidPref pref,
                    GetUserPrefCallback callback) override;
   void SetUserPref(mojom::BocaValidPref pref,
@@ -106,6 +106,7 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnSessionConfigUpdated(mojom::ConfigResultPtr config) override;
   void OnActiveNetworkStateChanged(
       std::vector<mojom::NetworkInfoPtr> active_networks) override;
+  void OnLocalCaptionDisabled() override;
 
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(
@@ -127,12 +128,6 @@ class BocaAppHandler : public mojom::PageHandler,
   void SetSpotlightService(SpotlightService* spotlight_service);
 
   // For testing.
-  // Mojo service binding is not invoked in unit test. So we manually override
-  // a interceptor for testing.
-  void SetActivityInterceptorCallbackForTesting(
-      ActivityInterceptorCallback callback);
-  void SetSessionConfigInterceptorCallbackForTesting(
-      SessionConfigInterceptorCallback callback);
   void SetSpotlightServiceForTesting(std::unique_ptr<SpotlightService> service);
   WebviewAuthHandler* GetWebviewAuthHandlerForTesting() {
     return auth_handler_.get();
@@ -176,8 +171,6 @@ class BocaAppHandler : public mojom::PageHandler,
   ::boca::UserIdentity user_identity_;
   mojo::Receiver<boca::mojom::PageHandler> receiver_;
   mojo::Remote<boca::mojom::Page> remote_;
-  ActivityInterceptorCallback test_activity_callback_;
-  SessionConfigInterceptorCallback test_config_callback_;
   raw_ptr<SpotlightService> spotlight_service_;
   const raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
   raw_ptr<SessionClientImpl> session_client_impl_;

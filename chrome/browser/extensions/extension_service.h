@@ -31,7 +31,6 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
@@ -77,6 +76,7 @@ class ExtensionRegistry;
 class ExtensionSystem;
 class ExtensionUpdater;
 class ExternalInstallManager;
+class PendingExtensionManager;
 class SharedModuleService;
 class UpdateObserver;
 enum class UnloadedExtensionReason;
@@ -624,8 +624,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   SafeBrowsingVerdictHandler safe_browsing_verdict_handler_;
 
-  OmahaAttributesHandler omaha_attributes_handler_;
-
   ExtensionTelemetryServiceVerdictHandler
       extension_telemetry_service_verdict_handler_;
 
@@ -636,8 +634,8 @@ class ExtensionService : public ExtensionServiceInterface,
   // --disable-extensions-except command line flag.
   std::set<std::string> disable_flag_exempted_extensions_;
 
-  // Hold the set of pending extensions.
-  PendingExtensionManager pending_extension_manager_;
+  // Hold the set of pending extensions. Not owned.
+  raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
 
   // The full path to the directory where extensions are installed.
   const base::FilePath install_directory_;
@@ -716,6 +714,9 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Helper to register and unregister extensions.
   raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
+
+  // Needs `extension_registrar_` during construction.
+  OmahaAttributesHandler omaha_attributes_handler_;
 
   // Tracker of enterprise policy forced installation.
   ForceInstalledTracker force_installed_tracker_;

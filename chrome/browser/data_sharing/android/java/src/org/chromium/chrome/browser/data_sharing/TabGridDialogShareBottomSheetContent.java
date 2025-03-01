@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
@@ -66,19 +67,19 @@ public class TabGridDialogShareBottomSheetContent implements BottomSheetContent 
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // TODO(haileywang): Add strings for the sheet.
         return R.string.undo_bar_close_all_message;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         // TODO(haileywang): Add strings for the sheet.
         return R.string.undo_bar_close_all_message;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         // TODO(haileywang): Add strings for the sheet.
         return R.string.undo_bar_close_all_message;
     }

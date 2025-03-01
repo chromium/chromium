@@ -554,7 +554,8 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
   if (cached_data) {
     compile_options = v8::ScriptCompiler::kConsumeCodeCache;
   } else if (base::FeatureList::IsEnabled(
-                 features::kFledgeEagerJSCompilation)) {
+                 features::kFledgeEagerJSCompilation) &&
+             eagerly_compile_js_) {
     compile_options = v8::ScriptCompiler::kEagerCompile;
   }
   auto result = v8::ScriptCompiler::CompileUnboundScript(

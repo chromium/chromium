@@ -324,7 +324,7 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
         return PermissionsPolicyDoubleCheckStatus::
             kDisallowedMainFrameNavigation;
       }
-      const blink::PermissionsPolicy* parent_policy =
+      const network::PermissionsPolicy* parent_policy =
           frame_tree_node->parent()->GetPermissionsPolicy();
       if (!parent_policy) {
         return PermissionsPolicyDoubleCheckStatus::kNavigationSourceNoPolicy;

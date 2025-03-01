@@ -34,6 +34,7 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
@@ -164,13 +165,14 @@ class AccountSelectionViewBinder {
             ImageView avatarView = view.findViewById(R.id.start_icon);
             avatarView.setImageDrawable(croppedAvatar);
         } else if (key == AccountProperties.ON_CLICK_LISTENER) {
-            Callback<Account> clickCallback = model.get(AccountProperties.ON_CLICK_LISTENER);
+            Callback<ButtonData> clickCallback = model.get(AccountProperties.ON_CLICK_LISTENER);
             if (clickCallback == null) {
                 view.setOnClickListener(null);
             } else {
                 view.setOnClickListener(
                         clickedView -> {
-                            clickCallback.onResult(account);
+                            clickCallback.onResult(
+                                    new ButtonData(account, /* idpMetadata= */ null));
                         });
             }
         } else if (key == AccountProperties.ACCOUNT) {
@@ -219,6 +221,7 @@ class AccountSelectionViewBinder {
             // If iconView is available, the add account button is an account row at the end of the
             // accounts list.
             ImageView iconView = view.findViewById(R.id.start_icon);
+            IdentityProviderMetadata idpMetadata = properties.mIdpMetadata;
             if (iconView != null) {
                 TintedDrawable plusIcon =
                         TintedDrawable.constructTintedDrawable(
@@ -236,7 +239,8 @@ class AccountSelectionViewBinder {
 
                 view.setOnClickListener(
                         clickedView -> {
-                            properties.mOnClickListener.onResult(null);
+                            properties.mOnClickListener.onResult(
+                                    new ButtonData(/* account= */ null, idpMetadata));
                         });
                 return;
             }
@@ -246,11 +250,11 @@ class AccountSelectionViewBinder {
             ButtonCompat button = view.findViewById(R.id.account_selection_add_account_btn);
             button.setOnClickListener(
                     clickedView -> {
-                        properties.mOnClickListener.onResult(null);
+                        properties.mOnClickListener.onResult(
+                                new ButtonData(/* account= */ null, idpMetadata));
                     });
             button.setText(context.getString(R.string.account_selection_add_account));
 
-            IdentityProviderMetadata idpMetadata = properties.mIdpMetadata;
             if (!ColorUtils.inNightMode(context)) {
                 Integer backgroundColor = idpMetadata.getBrandBackgroundColor();
                 if (backgroundColor != null) {
@@ -570,7 +574,8 @@ class AccountSelectionViewBinder {
             Account account = properties.mAccount;
             button.setOnClickListener(
                     clickedView -> {
-                        properties.mOnClickListener.onResult(account);
+                        properties.mOnClickListener.onResult(
+                                new ButtonData(account, properties.mIdpMetadata));
                     });
 
             String btnText;

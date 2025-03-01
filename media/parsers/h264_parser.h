@@ -23,6 +23,7 @@
 #include "media/base/video_color_space.h"
 #include "media/base/video_types.h"
 #include "media/parsers/h264_bit_reader.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
 class Rect;
@@ -407,25 +408,10 @@ struct MEDIA_EXPORT H264SEIContentLightLevelInfo {
   gfx::HdrMetadataCta861_3 ToGfx() const;
 };
 
-struct MEDIA_EXPORT H264SEIMessage {
-  H264SEIMessage();
-
-  enum Type {
-    kSEIRecoveryPoint = 6,
-    kSEIMasteringDisplayInfo = 137,
-    kSEIContentLightLevelInfo = 144,
-  };
-
-  int type;
-  int payload_size;
-  union {
-    // Placeholder; in future more supported types will contribute to more
-    // union members here.
-    H264SEIRecoveryPoint recovery_point;
-    H264SEIMasteringDisplayInfo mastering_display_info;
-    H264SEIContentLightLevelInfo content_light_level_info;
-  };
-};
+using H264SEIMessage = absl::variant<absl::monostate,
+                                     H264SEIRecoveryPoint,
+                                     H264SEIMasteringDisplayInfo,
+                                     H264SEIContentLightLevelInfo>;
 
 struct MEDIA_EXPORT H264SEI {
   H264SEI();

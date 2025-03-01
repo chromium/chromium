@@ -21,12 +21,12 @@ class TestSignoutConfirmationHandler extends TestBrowserProxy implements
     this.methodCalled('updateViewHeight', height);
   }
 
-  accept() {
-    this.methodCalled('accept');
+  accept(uninstallAccountExtensions: boolean) {
+    this.methodCalled('accept', uninstallAccountExtensions);
   }
 
-  cancel() {
-    this.methodCalled('cancel');
+  cancel(uninstallAccountExtensions: boolean) {
+    this.methodCalled('cancel', uninstallAccountExtensions);
   }
 
   close() {

@@ -10,6 +10,7 @@ import android.view.View.MeasureSpec;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -97,7 +98,7 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         if (mExpectedContentItemCount > 2) {
             return R.string.commerce_bottom_sheet_content_opened_half;
         }
@@ -108,12 +109,12 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.commerce_bottom_sheet_content_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.commerce_bottom_sheet_content_closed;
     }
 

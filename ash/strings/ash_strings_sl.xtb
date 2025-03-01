@@ -246,7 +246,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="17722141032474077">Računanje</translation>
 <translation id="1774796056689732716">Koledar, <ph name="CURRENT_MONTH_YEAR" />, trenutno izbran datum: <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Nastavitev ogleda nedavnih fotografij, predstavnosti in obvestil telefona</translation>
-<translation id="1785317913592722944">Odstranitev elementa iz predlagane skupine</translation>
 <translation id="1786487376942610288">Preklop med največjo ali trenutno velikostjo okna slike v sliki</translation>
 <translation id="1787955149152357925">Izklopljeno</translation>
 <translation id="1796561540704213354">Spletna mesta, vključno s stranmi, ki ste jih obiskali, in odprtimi stranmi</translation>
@@ -853,6 +852,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3859364108019690">Aplikacij ni mogoče pretočno predvajati</translation>
 <translation id="3861651314799684201">Pritisnite Enter, če želite snemati v celozaslonskem načinu</translation>
 <translation id="3870197372373144624">Poskusite izklopiti napravo.</translation>
+<translation id="3879748587602334249">Upravitelj prenosov</translation>
 <translation id="3886872229787704059">Odprto danes</translation>
 <translation id="3891340733213178823">Dvakrat pritisnite Ctrl + Shift + Q, če se želite odjaviti.</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
@@ -878,6 +878,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3958714870339660776">Ves dan</translation>
 <translation id="3962859241508114581">Prejšnja skladba</translation>
 <translation id="3963124517343721543">Preprosto nadaljujte, kjer ste končali, tako da odprete prejšnja okna in zavihke. Prikazani bodo tudi osebno prilagojeni predlogi za stvari, ki jih lahko počnete.</translation>
+<translation id="3967822245660637423">Prenos končan</translation>
 <translation id="3969043077941541451">Izklop</translation>
 <translation id="3970324493235864154">Ogled obvestil telefona</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
@@ -1619,6 +1620,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6319058840130157106">Premikanje nazaj med spodnjim desnim kotom, zaganjalnikom, naslovno vrstico, vrstico z zaznamki, odprtim spletnim mestom in prenosi</translation>
 <translation id="6319503618073410818">Prikaži podrobnosti v brskalniku</translation>
 <translation id="6324916366299863871">Urejanje bližnjice</translation>
+<translation id="6325525973963619867">Ni uspelo</translation>
 <translation id="6330012934079202188">Prikaz oken z vseh namizij, pritisnite tipko s puščico gor, če želite prikazati okna s trenutnega namizja</translation>
 <translation id="6337159624125741244">Celozaslonska lupa je vklopljena</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana seja, ki jo upravlja domena <ph name="MANAGER" />.</translation>

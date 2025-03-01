@@ -14,6 +14,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
@@ -963,7 +964,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingFaviconHash) {
 TEST(SyncedBookmarkTrackerTest,
      ShouldInvalidateMetadataIfPermanentFolderMissingLocally) {
   base::test::ScopedFeatureList features(
-      syncer::kSyncEnableBookmarksInTransportMode);
+      switches::kSyncEnableBookmarksInTransportMode);
   std::unique_ptr<bookmarks::BookmarkModel> model =
       bookmarks::TestBookmarkClient::CreateModel();
 

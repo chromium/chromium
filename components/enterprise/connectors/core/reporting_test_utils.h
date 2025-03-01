@@ -45,6 +45,15 @@ class EventReportValidatorBase {
                         const std::string& expected_profile_identifier,
                         const std::u16string& expected_login_username);
 
+  // TODO(crbug.com/396436374): Use password breach event proto instead of raw
+  // json string for validation.
+  void ExpectPasswordBreachEvent(
+      const std::string& expected_trigger,
+      const std::vector<std::pair<std::string, std::u16string>>&
+          expected_identities,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier);
+
  protected:
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
@@ -64,6 +73,10 @@ class EventReportValidatorBase {
           expected_rule_info);
   void ValidateFederatedOrigin(const base::Value::Dict* value,
                                const std::string& expected_federated_origin);
+  void ValidateIdentities(
+      const base::Value::Dict* value,
+      const std::vector<std::pair<std::string, std::u16string>>&
+          expected_identities);
 
   raw_ptr<policy::MockCloudPolicyClient> client_;
   base::RepeatingClosure done_closure_;

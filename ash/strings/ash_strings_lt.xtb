@@ -246,7 +246,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="17722141032474077">Skaičiavimai</translation>
 <translation id="1774796056689732716">Kalendorius, <ph name="CURRENT_MONTH_YEAR" />, šiuo metu pasirinkta <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Nustatyti naujausių telefono nuotraukų, medijos ir pranešimų peržiūrą</translation>
-<translation id="1785317913592722944">Pašalinti elementą iš siūlomos grupės</translation>
 <translation id="1786487376942610288">Perjungti maksimalų arba dabartinį vaizdo vaizde lango dydį</translation>
 <translation id="1787955149152357925">Išjungta</translation>
 <translation id="1796561540704213354">Svetainės, įskaitant puslapius, kuriuose lankėtės, ir atidarytus puslapius</translation>
@@ -853,6 +852,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3859364108019690">Nepavyko perduoti programų srautu</translation>
 <translation id="3861651314799684201">Paspauskite „Enter“, kad įrašytumėte visą ekraną</translation>
 <translation id="3870197372373144624">Pabandykite išjungti įrenginį.</translation>
+<translation id="3879748587602334249">Atsisiuntimų tvarkytuvė</translation>
 <translation id="3886872229787704059">Atidaryta šiandien</translation>
 <translation id="3891340733213178823">Jei norite atsijungti, du kartus paspauskite „Ctrl“ + „Shift“ + Q.</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
@@ -878,6 +878,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3958714870339660776">Visą dieną</translation>
 <translation id="3962859241508114581">Ankstesnis takelis</translation>
 <translation id="3963124517343721543">Lengvai tęskite ten, kur baigėte, atidarę ankstesnius langus ir skirtukus. Taip pat matysite suasmenintus dalykų, kuriuos galima nuveikti paskui, pasiūlymus.</translation>
+<translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="3969043077941541451">Išjungta</translation>
 <translation id="3970324493235864154">Peržiūrėkite telefono pranešimus</translation>
 <translation id="397105322502079400">Skaičiuojama...</translation>
@@ -1619,6 +1620,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6319058840130157106">Perkelti atgal iš apatinio dešiniojo kampo, Paleidimo priemonės, adreso juostos, žymių juostos, atidarytos svetainės ir atsisiuntimų aplanko (arba į juos)</translation>
 <translation id="6319503618073410818">Žr. išsamią informaciją naršyklėje</translation>
 <translation id="6324916366299863871">Redaguoti spartųjį klavišą</translation>
+<translation id="6325525973963619867">Nepavyko</translation>
 <translation id="6330012934079202188">Rodomi visų darbastalių langai. Paspauskite rodyklės aukštyn klavišą, kad būtų rodomi dabartinio darbastalio langai</translation>
 <translation id="6337159624125741244">Viso ekrano didinimas įjungtas</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> yra valdomas seansas, kurį valdo <ph name="MANAGER" /></translation>

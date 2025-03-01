@@ -447,7 +447,20 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)deleteNotificationItem:(TabGroupsPanelItem*)item {
-  // TODO(crbug.com/375596435): Notify the MessagingBackendService.
+  // The user has dismissed the summary card displaying all the "group removed"
+  // messages. Dismissing it should clear all messages on the backend.
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      _messagingService->GetMessages(
+          collaboration::messaging::PersistentNotificationType::TOMBSTONED);
+  for (const collaboration::messaging::PersistentMessage& message : messages) {
+    if (!message.attribution.id.has_value()) {
+      continue;
+    }
+    _messagingService->ClearPersistentMessage(
+        message.attribution.id.value(),
+        collaboration::messaging::PersistentNotificationType::TOMBSTONED);
+  }
+
   [self populateItemsFromServices];
 }
 

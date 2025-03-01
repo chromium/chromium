@@ -172,7 +172,8 @@ public final class TabGroupSyncControllerImpl
                         mTabGroupModelFilter,
                         mTabGroupSyncService,
                         mLocalMutationHelper,
-                        mRemoteMutationHelper);
+                        mRemoteMutationHelper,
+                        mPrefService);
         mLocalObserver =
                 new TabGroupSyncLocalObserver(
                         mTabModelSelector,

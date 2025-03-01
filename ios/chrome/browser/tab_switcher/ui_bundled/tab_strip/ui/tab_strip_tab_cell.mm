@@ -595,19 +595,22 @@ UIImage* DefaultFavicon() {
 - (void)updateColors {
   BOOL isSelected = self.isSelected;
 
-  UIColor* backgroundColor;
   if (self.isHighlighted || self.configurationState.cellDragState !=
                                 UICellConfigurationDragStateNone) {
     // Before a cell is dragged, it is highlighted.
     // The cell's background color must be updated at this moment, otherwise it
     // will not be applied correctly.
-    backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  } else if (_hovered) {
-    backgroundColor = [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+    _selectedBackground.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+    _accessibilityContainerView.backgroundColor =
+        _selectedBackground.backgroundColor;
   } else {
-    backgroundColor =
+    _selectedBackground.backgroundColor =
         isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
                    : TabStripHelper.cellBackgroundColor;
+    _accessibilityContainerView.backgroundColor =
+        _hovered ? [UIColor colorNamed:kGrey50Color]
+                 : _selectedBackground.backgroundColor;
   }
 
   if (TabStripFeaturesUtils.hasBlackBackground) {
@@ -630,7 +633,6 @@ UIImage* DefaultFavicon() {
         isSelected ? [UIColor colorNamed:kTextPrimaryColor] : inactiveColor;
   }
 
-  _selectedBackground.backgroundColor = backgroundColor;
   _faviconView.tintColor = self.selected
                                ? [UIColor colorNamed:kCloseButtonColor]
                                : [UIColor colorNamed:kGrey500Color];

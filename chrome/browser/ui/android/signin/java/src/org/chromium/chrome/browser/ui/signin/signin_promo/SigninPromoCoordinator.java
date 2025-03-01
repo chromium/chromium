@@ -24,7 +24,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the signin promo card. */
-public final class SigninPromoCoordinator {
+public class SigninPromoCoordinator {
     private static boolean sPromoDisabledForTesting;
     private final Context mContext;
     private final SigninPromoDelegate mDelegate;
@@ -108,8 +108,7 @@ public final class SigninPromoCoordinator {
     static int getLayoutResId(@SigninAccessPoint int accessPoint) {
         return switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER -> R.layout.sync_promo_view_bookmarks;
-                // TODO(crbug.com/388201374): Create layout for history page promo.
-            case SigninAccessPoint.HISTORY_PAGE -> R.layout.sync_promo_view_bookmarks;
+            case SigninAccessPoint.HISTORY_PAGE -> R.layout.sync_promo_view_history_page;
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> R.layout
                     .sync_promo_view_content_suggestions;
             case SigninAccessPoint.RECENT_TABS -> R.layout.sync_promo_view_recent_tabs;

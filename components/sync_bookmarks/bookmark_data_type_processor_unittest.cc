@@ -18,6 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -297,11 +298,20 @@ class BookmarkDataTypeProcessorTest : public testing::Test {
         bookmark_model_.get());
   }
 
-  void SimulateOnSyncStarting(const std::string& cache_guid = kCacheGuid) {
+  std::unique_ptr<base::test::TestFuture<
+      std::unique_ptr<syncer::DataTypeActivationResponse>>>
+  SimulateOnSyncStartingNoWait(const std::string& cache_guid = kCacheGuid) {
     syncer::DataTypeActivationRequest request;
     request.cache_guid = cache_guid;
     request.error_handler = error_handler_.Get();
-    processor_->OnSyncStarting(request, base::DoNothing());
+    auto response = std::make_unique<base::test::TestFuture<
+        std::unique_ptr<syncer::DataTypeActivationResponse>>>();
+    processor_->OnSyncStarting(request, response->GetCallback());
+    return response;
+  }
+
+  void SimulateOnSyncStarting(const std::string& cache_guid = kCacheGuid) {
+    std::ignore = SimulateOnSyncStartingNoWait(cache_guid)->Wait();
   }
 
   void SimulateConnectSync() {
@@ -356,6 +366,8 @@ class BookmarkDataTypeProcessorTest : public testing::Test {
     inv.set_hint(payload);
     return inv;
   }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -553,8 +565,8 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
       bookmark_model()->bookmark_bar_node();
   const bookmarks::BookmarkNode* bookmark_node = bookmark_model()->AddURL(
       bookmark_bar, /*index=*/0, base::UTF8ToUTF16(kTitle), kUrl);
-  SimulateOnSyncStarting();
   SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
 
   const SyncedBookmarkTrackerEntity* entity =
       processor()->GetTrackerForTest()->GetEntityForBookmarkNode(bookmark_node);
@@ -663,8 +675,8 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
                            base::UTF8ToUTF16(kTitle1), kUrl1);
   bookmark_model()->AddURL(bookmark_bar, /*index=*/1,
                            base::UTF8ToUTF16(kTitle2), kUrl2);
-  SimulateOnSyncStarting();
   SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
 
   // Create a new processor and init it with the same metadata str.
   BookmarkDataTypeProcessor new_processor(
@@ -754,6 +766,16 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
+TEST_F(BookmarkDataTypeProcessorTest,
+       ShouldIgnoreMetadataIfCacheGuidMismatchUponEarlySyncStartup) {
+  std::unique_ptr<base::test::TestFuture<
+      std::unique_ptr<syncer::DataTypeActivationResponse>>>
+      start_response = SimulateOnSyncStartingNoWait("unexpected_cache_guid");
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  std::ignore = start_response->Wait();
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+}
+
 // Verifies that the data type state stored in the tracker gets
 // updated upon handling remote updates by assigning a new encryption
 // key name.
@@ -820,8 +842,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotRecommitEntitiesWhenEncryptionIsUpToDate) {
   // Initialize the process to make sure the tracker has been created.
-  SimulateOnSyncStarting();
   SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
   SimulateConnectSync();
   const SyncedBookmarkTracker* tracker = processor()->GetTrackerForTest();
   // The encryption key name should be empty.
@@ -874,8 +896,17 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldStopAfterReceivingRemoteUpdates) {
 
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportNoCountersWhenModelIsNotLoaded) {
-  SimulateOnSyncStarting();
+  std::unique_ptr<base::test::TestFuture<
+      std::unique_ptr<syncer::DataTypeActivationResponse>>>
+      start_response = SimulateOnSyncStartingNoWait();
+
+  // Process any pending tasks, in case that would incorrectly lead to
+  // completion of the start procedure.
+  RunUntilIdle();
+
+  ASSERT_FALSE(start_response->IsReady());
   ASSERT_FALSE(processor()->IsTrackingMetadata());
+
   syncer::TypeEntitiesCount count(syncer::BOOKMARKS);
   // Assign an arbitrary non-zero number of entities to be able to check that
   // actually a 0 has been written to it later.
@@ -906,10 +937,10 @@ TEST_F(BookmarkDataTypeProcessorTest,
   *model_metadata.add_bookmarks_metadata() =
       CreateUnsyncedNodeMetadata(node, kNodeId);
 
-  SimulateOnSyncStarting();
   processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
                                 schedule_save_closure()->Get(),
                                 bookmark_model());
+  SimulateOnSyncStarting();
 
   ASSERT_FALSE(bookmark_client()->HasFaviconLoadTasks());
   EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/10), IsEmpty());
@@ -948,10 +979,10 @@ TEST_F(BookmarkDataTypeProcessorTest,
   *model_metadata.add_bookmarks_metadata() =
       CreateUnsyncedNodeMetadata(node2, kNodeId2);
 
-  SimulateOnSyncStarting();
   processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
                                 schedule_save_closure()->Get(),
                                 bookmark_model());
+  SimulateOnSyncStarting();
 
   // The goal of this test is to mimic the case where one bookmark (the first
   // one listed by SyncedBookmarkTracker::GetEntitiesWithLocalChanges()) has no
@@ -994,8 +1025,8 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
       bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(),
                                /*index=*/0, base::UTF8ToUTF16(kTitle), kUrl);
 
-  SimulateOnSyncStarting();
   SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
   SimulateConnectSync();
 
   ASSERT_THAT(processor()->GetTrackerForTest()->GetEntityForBookmarkNode(node),
@@ -1060,8 +1091,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // Expect failure when adding new bookmark.
   EXPECT_CALL(*error_handler(), Run);
 
-  SimulateOnSyncStarting();
   SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
   SimulateConnectSync();
 
   const std::string kNodeId = "node_id1";
@@ -1125,8 +1156,11 @@ TEST_F(
                                 bookmark_model());
   // Metadata matches model, so tracker should be not null.
   EXPECT_TRUE(processor()->IsTrackingMetadata());
-  // Should invoke error_handler::Run and schedule_save_closure::Run.
-  SimulateOnSyncStarting();
+
+  // Should invoke error_handler::Run and schedule_save_closure::Run. This
+  // requires using SimulateOnSyncStartingNoWait() because the operation never
+  // completes successfully.
+  SimulateOnSyncStartingNoWait();
 
   // Expect tracking to still be enabled.
   EXPECT_TRUE(processor()->IsTrackingMetadata());
@@ -1161,10 +1195,14 @@ TEST_F(
   ResetDataTypeProcessor();
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   SimulateModelReadyToSyncWithoutLocalMetadata();
+
   // Metadata does not match model, so tracker should be null.
   EXPECT_FALSE(processor()->IsTrackingMetadata());
-  // Should invoke error_handler::Run and schedule_save_closure::Run.
-  SimulateOnSyncStarting();
+
+  // Should invoke error_handler::Run and schedule_save_closure::Run. This
+  // requires using SimulateOnSyncStartingNoWait() because the operation never
+  // completes successfully.
+  SimulateOnSyncStartingNoWait();
 }
 
 TEST_F(
@@ -1221,7 +1259,7 @@ TEST_F(
   processor()->ModelReadyToSync(metadata_str, base::DoNothing(),
                                 bookmark_model());
   // Should lead to error_handler::Run.
-  SimulateOnSyncStarting();
+  SimulateOnSyncStartingNoWait();
 
   // The second bookmark should have been added anyway.
   EXPECT_EQ(bookmark_model()->bookmark_bar_node()->children().size(), 2u);
@@ -1507,7 +1545,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
                                 bookmark_model());
-  SimulateOnSyncStarting();
+  SimulateOnSyncStartingNoWait();
 
   EXPECT_TRUE(error_reported);
   // Tracker would not be initialised.
@@ -1582,7 +1620,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
                                 bookmark_model());
-  SimulateOnSyncStarting();
+  SimulateOnSyncStartingNoWait();
   EXPECT_TRUE(error_reported);
   // Tracker would not be initialised.
   EXPECT_FALSE(processor()->IsTrackingMetadata());
@@ -1600,7 +1638,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
                                 bookmark_model());
-  SimulateOnSyncStarting();
+  SimulateOnSyncStartingNoWait();
   EXPECT_TRUE(error_reported);
   // Tracker would not be initialised.
   EXPECT_FALSE(processor()->IsTrackingMetadata());

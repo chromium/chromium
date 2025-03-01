@@ -212,23 +212,6 @@ class WPTAdapter:
         with self.fs.open_text_file_for_writing(dst_config_json) as dst:
             json.dump(data, dst)
 
-        # TODO: Remove once no wpt_internal tests are run with Chrome
-        # create //third_party/blink/web_tests/wptrunner.blink.ini with content
-        # as below:
-        #     [manifest:internal]
-        #     tests = %(pwd)s/wpt_internal
-        #     metadata = %(pwd)s/wpt_internal
-        #     url_base = /wpt_internal/
-        if self.options.run_wpt_internal:
-            ini_file = self.finder.path_from_web_tests('wptrunner.blink.ini')
-            with self.fs.open_text_file_for_writing(ini_file) as fp:
-                fp.write('[manifest:internal]\n')
-                fp.write('tests = %s\n' %
-                         self.finder.path_from_web_tests('wpt_internal'))
-                fp.write('metadata = %s\n' %
-                         self.finder.path_from_web_tests('wpt_internal'))
-                fp.write('url_base = /wpt_internal/\n')
-
     def log_config(self):
         logger.info(f'Running tests for {self.product.name}')
         logger.info(f'Using port "{self.port.name()}"')
@@ -367,10 +350,6 @@ class WPTAdapter:
         runner_options.repeat = self.options.iterations
         runner_options.fully_parallel = self.options.fully_parallel
         runner_options.leak_check = self.options.enable_leak_detection
-
-        if self.options.run_wpt_internal:
-            runner_options.config = self.finder.path_from_web_tests(
-                'wptrunner.blink.ini')
 
         if (self.options.enable_sanitizer
                 or self.options.configuration == 'Debug'):

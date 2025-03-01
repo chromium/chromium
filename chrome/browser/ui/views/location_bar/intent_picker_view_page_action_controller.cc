@@ -45,7 +45,6 @@ void IntentPickerViewPageActionController::UpdatePageActionVisibility(
   CHECK(page_action_controller);
   if (should_show_icon) {
     page_action_controller->Show(kActionShowIntentPicker);
-    page_action_controller->ShowSuggestionChip(kActionShowIntentPicker);
   } else {
     HideIcon();
   }

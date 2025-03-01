@@ -120,7 +120,9 @@ class AuthenticationFlowTest : public PlatformTest {
                                            identity:identity
                                         accessPoint:accessPoint
                                   postSignInActions:postSignInActions
-                           presentingViewController:view_controller_mock_];
+                           presentingViewController:view_controller_mock_
+                                         anchorView:nil
+                                         anchorRect:CGRectNull];
     performer_mock_ = OCMStrictClassMock([AuthenticationFlowPerformer class]);
     [authentication_flow_ setPerformerForTesting:performer_mock_];
   }

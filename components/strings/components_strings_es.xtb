@@ -837,6 +837,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2452098632681057184">Ecología y medioambiente</translation>
 <translation id="2452837234288608067">No hemos podido ayudarte con eso. Inténtalo de nuevo.</translation>
+<translation id="2453045048779611513">Tu organización limita lo que puedes guardar</translation>
 <translation id="2456755709261364512">El nivel de carga de la batería debe ser superior al <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core te ofrece una herramienta centralizada para configurar políticas del navegador desde la nube</translation>
 <translation id="2461822463642141190">Actual</translation>
@@ -1086,6 +1087,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2942492342931589800">Informal</translation>
 <translation id="2942515540157583425">Trabajos informáticos y técnicos</translation>
 <translation id="2943895734390379394">Fecha de subida:</translation>
+<translation id="2947281105969315778">Para compartir o unirte a grupos de pestañas, debes poder iniciar sesión en Chrome</translation>
 <translation id="2948083400971632585">Puedes inhabilitar los servidores proxy configurados para una conexión en la página de configuración.</translation>
 <translation id="2949183777371959169">Ignorada porque el equipo no está registrado con Gestión en la nube del navegador Chrome.</translation>
 <translation id="2951588413176968965">Mi buzón de correo</translation>
@@ -1946,6 +1948,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Se ha pausado la subida de archivos a Microsoft OneDrive</translation>
+<translation id="4389931020843542579">Cargando grupo de pestañas</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4395550503472021297">Esta política controla el comportamiento predeterminado de las siguientes políticas: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Abre una ventana emergente para realizar la verificación en el sitio web de tu banco</translation>
@@ -3904,6 +3907,7 @@ Más información:
 <translation id="791107458486222637">Rehaciendo resultado</translation>
 <translation id="791551905239004656">Dibujar y colorear</translation>
 <translation id="7916162853251942238">Base flexográfica</translation>
+<translation id="791698251820376781">Tu organización no te permite iniciar sesión</translation>
 <translation id="7926503317156566022">Industria aeronáutica</translation>
 <translation id="793209273132572360">¿Actualizar dirección?</translation>
 <translation id="7932579305932748336">Capa</translation>
@@ -4616,6 +4620,7 @@ Más información:
 <translation id="9191834167571392248">Perforado en la parte inferior izquierda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Belleza con productos sostenibles</translation>
+<translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
 <translation id="9199905725844810519">La impresión está bloqueada</translation>
 <translation id="9201904868909900493">Abriendo encuesta...</translation>
 <translation id="9204089334327209740">Cuando termine la subida, podrás modificar tus archivos en <ph name="CLOUD_PROVIDER" />. El almacenamiento local, incluidos los archivos de la papelera, se eliminará automáticamente.</translation>

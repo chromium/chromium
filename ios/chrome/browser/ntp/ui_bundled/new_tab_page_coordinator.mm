@@ -952,15 +952,16 @@
     return;
   }
 
-  if (self.prefService->GetInteger(
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (localState->GetInteger(
           prefs::kNTPHomeCustomizationNewBadgeImpressionCount) <=
       kCustomizationNewBadgeMaxImpressionCount) {
     base::RecordAction(
         base::UserMetricsAction(kNTPCustomizationNewBadgeTappedAction));
     // Set the new badge impression count to `INT_MAX` to ensure it isn't shown
     // again, even if we increase the max impression count.
-    self.prefService->SetInteger(
-        prefs::kNTPHomeCustomizationNewBadgeImpressionCount, INT_MAX);
+    localState->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
+                           INT_MAX);
 
     [self.headerViewController hideBadgeOnCustomizationMenu];
   }

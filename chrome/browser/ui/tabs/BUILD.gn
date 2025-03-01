@@ -349,6 +349,7 @@ if (!is_android) {
       "//components/favicon/core",
       "//components/fingerprinting_protection_filter/common:features",
       "//components/image_fetcher/core",
+      "//components/ip_protection/common:ip_protection_status",
       "//components/metrics:content",
       "//components/performance_manager",
       "//components/permissions",
@@ -357,6 +358,7 @@ if (!is_android) {
       "//components/sessions",
       "//components/sync_sessions",
       "//components/tab_groups",
+      "//net",
       "//ui/webui",
     ]
 

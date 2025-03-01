@@ -9,6 +9,14 @@
 #include "build/build_config.h"
 
 namespace tab_groups {
+
+// The default time interval to clean up a hidden tab group.
+const int kDefaultGroupCleanUpTimeInternalInSeconds = 60 * 60;
+
+// Finch parameter key value for the group clean up time interval in seconds.
+constexpr char kGroupCleanUpTimeIntervalInSecondsFinchKey[] =
+    "group_clean_up_time_internal_seconds";
+
 // Core feature flag for tab group sync on Android.
 // Controls registration with the sync service and tab model hookup UI layer.
 // TabGroupSyncService is eanbled when either this flag or kTabGroupPaneAndroid
@@ -97,6 +105,11 @@ BASE_FEATURE(kEnableUrlRestriction,
              "EnableUrlRestriction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables clean up of hidden groups.
+BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
+             "EnableOriginatingSavedGroupCleanUp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }
@@ -143,6 +156,18 @@ bool IsTabTitleSanitizationEnabled() {
 
 bool IsUrlRestrictionEnabled() {
   return base::FeatureList::IsEnabled(kEnableUrlRestriction);
+}
+
+bool IsOriginatingSavedGroupCleanUpEnabled() {
+  return base::FeatureList::IsEnabled(kEnableOriginatingSavedGroupCleanUp);
+}
+
+base::TimeDelta GetOriginatingSavedGroupCleanUpTimeInterval() {
+  int time_in_seconds = base::GetFieldTrialParamByFeatureAsInt(
+      kEnableOriginatingSavedGroupCleanUp,
+      kGroupCleanUpTimeIntervalInSecondsFinchKey,
+      kDefaultGroupCleanUpTimeInternalInSeconds);
+  return base::Seconds(time_in_seconds);
 }
 
 }  // namespace tab_groups

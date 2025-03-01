@@ -90,7 +90,9 @@ void ScreenCaptureTrayItemView::MultiCaptureStartedFromApp(
 
 void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {
   const auto request = requests_.find(label);
-  DCHECK(request != requests_.end());
+  if (request == requests_.end()) {
+    return;
+  }
 
   ScreenCaptureTrayItemMetadata& metadata = request->second;
   const base::TimeDelta time_already_shown =

@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -170,18 +169,11 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     }
 
                     @Override
-                    public void onBrowserControlsOffsetUpdate(
-                            int layerYOffset, boolean didMinHeightChange) {
+                    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
                         if (mLayerVisibility == LayerVisibility.VISIBLE) {
                             mBrowserControlsOffsetSupplier.set(layerYOffset);
                             mControlContainer.getView().setTranslationY(layerYOffset);
                         }
-                    }
-
-                    // TODO(peilinwang) implement bciv for bottom toolbar.
-                    @Override
-                    public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
-                        return 0;
                     }
                 };
         mProgressBarLayer =
@@ -207,15 +199,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     }
 
                     @Override
-                    public void onBrowserControlsOffsetUpdate(
-                            int layerYOffset, boolean didMinHeightChange) {
+                    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
                         mToolbarProgressBarContainer.setTranslationY(layerYOffset);
-                    }
-
-                    // TODO(peilinwang) implement bciv for bottom toolbar.
-                    @Override
-                    public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
-                        return 0;
                     }
                 };
 

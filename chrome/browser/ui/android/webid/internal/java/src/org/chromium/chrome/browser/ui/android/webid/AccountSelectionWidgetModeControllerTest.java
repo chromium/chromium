@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -144,7 +145,7 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             mModel.get(ItemProperties.CONTINUE_BUTTON)
                     .get(ContinueButtonProperties.PROPERTIES)
                     .mOnClickListener
-                    .onResult(mAnaAccount);
+                    .onResult(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
             verify(mMockDelegate, times(++count))
                     .onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
             assertTrue(mMediator.wasDismissed());

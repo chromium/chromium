@@ -224,6 +224,13 @@ void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
     // Update the bounds before showing up.
     SetBounds(GetDesiredBoundsInScreen());
 
+    // Re-stack the widget below the coral chip and guarantee it above the
+    // overview items.
+    aura::Window* selector_window = GetNativeWindow();
+    aura::Window* parent = selector_window->parent();
+    parent->StackChildBelow(selector_window,
+                            owner_->GetWidget()->GetNativeWindow());
+
     // Slide the widget out of the coral chip. We apply a clip as well since the
     // contents view is almost always taller than the coral chip.
     const gfx::Rect chip_bounds = owner_->GetBoundsInScreen();

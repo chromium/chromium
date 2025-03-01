@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -1045,6 +1046,7 @@ class BottomSheet extends FrameLayout
         mCurrentState = state;
 
         if (mCurrentState == SheetState.HALF || mCurrentState == SheetState.FULL) {
+            @StringRes
             int resId =
                     mCurrentState == SheetState.FULL
                             ? getCurrentSheetContent().getSheetFullHeightAccessibilityStringId()

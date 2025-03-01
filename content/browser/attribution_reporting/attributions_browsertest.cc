@@ -22,6 +22,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -1105,8 +1106,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif
 
 ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsOnPrerender) {
-  const char* kTestCases[] = {"createAttributionSrcImg($1);",
-                              "createTrackingPixel($1);"};
+  const char* kTestCases[] = {
+      "createAttributionSrcImg($1);",
+      "createTrackingPixel($1);",
+      R"(fetch($1, {keepalive: true}))",
+  };
 
   for (const char* registration_js : kTestCases) {
     auto https_server = std::make_unique<net::EmbeddedTestServer>(
@@ -1173,8 +1177,11 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsOnPrerender) {
 }
 
 ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
-  const char* kTestCases[] = {"createAttributionSrcImg($1);",
-                              "createTrackingPixel($1);"};
+  const char* kTestCases[] = {
+      "createAttributionSrcImg($1);",
+      "createTrackingPixel($1);",
+      R"(fetch($1, {keepalive: true}))",
+  };
 
   ASSERT_TRUE(https_server()->Start());
 
@@ -1213,7 +1220,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
     base::RunLoop loop;
     EXPECT_CALL(observer, OnTriggerHandled).WillOnce([&]() { loop.Quit(); });
 
-    // Navigate to pre-rendered page, bringing it to the fore.
+    // Navigate to pre-rendered page, bringing it to the foreground.
     prerender_helper_.NavigatePrimaryPage(kConversionUrl);
 
     ASSERT_EQ(kConversionUrl, web_contents()->GetLastCommittedURL());
@@ -1229,52 +1236,191 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
   }
 }
 
-// This test shows different behaviors for keepalive fetch on prerenderred pages
-// when handled in the browser (in browser migration enabled) and in the
-// renderer.
-//
-// TODO(crbug.com/395906295): Align the behaviors for keepalive fetch on
-// prerendered pages.
-ATTRIBUTION_PRERENDER_BROWSER_TEST(KeepAliveFetchOnPrerender) {
+ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsInSubframeOnPrerender) {
+  const char* kTestCases[] = {
+      "createAttributionSrcImg($1);",
+      "createTrackingPixel($1);",
+      R"(fetch($1, {keepalive: true}))",
+  };
+
   ASSERT_TRUE(https_server()->Start());
 
-  const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");
-  {
-    auto url_loader_interceptor =
-        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-            kBaseDataDir, kEmptyUrl.DeprecatedGetOriginAsURL());
-    EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+  for (const char* registration_js : kTestCases) {
+    // Navigate to a starting same origin page with the conversion url.
+    const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");
+    {
+      auto url_loader_interceptor =
+          content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+              kBaseDataDir, kEmptyUrl.DeprecatedGetOriginAsURL());
+      EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+    }
+
+    MockAttributionObserver observer;
+    base::ScopedObservation<AttributionManager, AttributionObserver>
+        observation(&observer);
+    observation.Observe(attribution_manager());
+    EXPECT_CALL(observer, OnTriggerHandled).Times(0);
+
+    // Pre-render the conversion url.
+    const GURL kConversionUrl = https_server()->GetURL(
+        "d.test",
+        "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
+    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    content::test::PrerenderHostObserver host_observer(*web_contents(),
+                                                       host_id);
+
+    prerender_helper_.WaitForPrerenderLoadCompletion(kConversionUrl);
+    content::RenderFrameHost* prerender_rfh =
+        prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+    RenderFrameHost* subframe = ChildFrameAt(prerender_rfh, 0);
+
+    const GURL register_trigger_url = https_server()->GetURL(
+        "a.test", "/attribution_reporting/register_trigger_headers.html");
+    EXPECT_TRUE(
+        ExecJs(subframe, JsReplace(registration_js, register_trigger_url)));
+
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
   }
+}
 
-  MockAttributionObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
-      &observer);
-  observation.Observe(attribution_manager());
+ATTRIBUTION_PRERENDER_BROWSER_TEST(
+    ConversionsRegisteredInSubframeActivatedPrerender) {
+  const char* kTestCases[] = {
+      "createAttributionSrcImg($1);",
+      "createTrackingPixel($1);",
+      R"(fetch($1, {keepalive: true}))",
+  };
 
-  // The trigger was registered on prerendered pages when the keepalive fetch is
-  // handled in the browser, but not when it is handled in the renderer.
-  const bool in_browser_migration_enabled = GetParam();
-  EXPECT_CALL(observer, OnTriggerHandled).Times(in_browser_migration_enabled);
+  ASSERT_TRUE(https_server()->Start());
 
-  // Pre-render the conversion url.
-  const GURL kConversionUrl = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
-  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  for (const char* registration_js : kTestCases) {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  prerender_helper_.WaitForPrerenderLoadCompletion(kConversionUrl);
-  content::RenderFrameHost* prerender_rfh =
-      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+    // Navigate to a starting same origin page with the conversion url.
+    const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");
+    {
+      auto url_loader_interceptor =
+          content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+              kBaseDataDir, kEmptyUrl.DeprecatedGetOriginAsURL());
+      EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+    }
 
-  const GURL register_trigger_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_trigger_headers.html");
-  EXPECT_TRUE(ExecJs(prerender_rfh, JsReplace(R"(fetch($1, {keepalive: true}))",
-                                              register_trigger_url)));
+    // Pre-render the conversion url.
+    const GURL kConversionUrl = https_server()->GetURL(
+        "d.test",
+        "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
+    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    content::test::PrerenderHostObserver host_observer(*web_contents(),
+                                                       host_id);
 
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
-  run_loop.Run();
+    prerender_helper_.WaitForPrerenderLoadCompletion(kConversionUrl);
+    content::RenderFrameHost* prerender_rfh =
+        prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+    RenderFrameHost* subframe = ChildFrameAt(prerender_rfh, 0);
+
+    const GURL register_trigger_url = https_server()->GetURL(
+        "a.test", "/attribution_reporting/register_trigger_headers.html");
+    EXPECT_TRUE(
+        ExecJs(subframe, JsReplace(registration_js, register_trigger_url)));
+
+    MockAttributionObserver observer;
+    base::ScopedObservation<AttributionManager, AttributionObserver>
+        observation(&observer);
+    observation.Observe(attribution_manager());
+    base::RunLoop loop;
+    EXPECT_CALL(observer, OnTriggerHandled).WillOnce([&]() { loop.Quit(); });
+
+    // Navigate to pre-rendered page, bringing it to the foreground.
+    prerender_helper_.NavigatePrimaryPage(kConversionUrl);
+
+    ASSERT_EQ(kConversionUrl, web_contents()->GetLastCommittedURL());
+    ASSERT_TRUE(host_observer.was_activated());
+
+    loop.Run();
+
+    VerifyEventLevelResultUkmEntries(
+        ukm_recorder,
+        {UkmEntry(
+            kConversionUrl,
+            static_cast<int64_t>(EventLevelResult::kNoMatchingImpressions))});
+  }
+}
+
+ATTRIBUTION_PRERENDER_BROWSER_TEST(
+    NoConversionsAfterSubframeNavigationActivatedPrerenderer) {
+  const char* kTestCases[] = {
+      "createAttributionSrcImg($1);",
+      "createTrackingPixel($1);",
+      R"(fetch($1, {keepalive: true}))",
+  };
+
+  ASSERT_TRUE(https_server()->Start());
+
+  for (const char* registration_js : kTestCases) {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+    // Navigate to a starting same origin page with the conversion url.
+    const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");
+    {
+      auto url_loader_interceptor =
+          content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+              kBaseDataDir, kEmptyUrl.DeprecatedGetOriginAsURL());
+      EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+    }
+
+    MockAttributionObserver observer;
+    base::ScopedObservation<AttributionManager, AttributionObserver>
+        observation(&observer);
+    observation.Observe(attribution_manager());
+    EXPECT_CALL(observer, OnTriggerHandled).Times(0);
+
+    // Pre-render the conversion url.
+    const GURL kConversionUrl = https_server()->GetURL(
+        "d.test",
+        "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
+    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    content::test::PrerenderHostObserver host_observer(*web_contents(),
+                                                       host_id);
+
+    prerender_helper_.WaitForPrerenderLoadCompletion(kConversionUrl);
+    content::RenderFrameHost* prerender_rfh =
+        prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+    RenderFrameHost* subframe = ChildFrameAt(prerender_rfh, 0);
+
+    const GURL register_trigger_url = https_server()->GetURL(
+        "a.test", "/attribution_reporting/register_trigger_headers.html");
+    EXPECT_TRUE(
+        ExecJs(subframe, JsReplace(registration_js, register_trigger_url)));
+
+    const GURL new_subframe_url = https_server()->GetURL(
+        "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
+
+    // Navigate subframe.
+    TestNavigationManager subframe_nav_manager(web_contents(),
+                                               new_subframe_url);
+    ASSERT_TRUE(
+        ExecJs(prerender_rfh,
+               JsReplace("document.getElementById('test_iframe').src = $1",
+                         new_subframe_url)));
+    ASSERT_TRUE(subframe_nav_manager.WaitForNavigationFinished());
+
+    //  Navigate to pre-rendered page, bringing it to the foreground.
+    prerender_helper_.NavigatePrimaryPage(kConversionUrl);
+
+    ASSERT_EQ(kConversionUrl, web_contents()->GetLastCommittedURL());
+    ASSERT_TRUE(host_observer.was_activated());
+
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+    run_loop.Run();
+  }
 }
 
 class AttributionsCrossAppWebEnabledBrowserTest

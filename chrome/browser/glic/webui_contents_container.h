@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_WEBUI_CONTENTS_CONTAINER_H_
 #define CHROME_BROWSER_GLIC_WEBUI_CONTENTS_CONTAINER_H_
 
+#include <memory>
+
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -42,12 +44,12 @@ class WebUIContentsContainer : public content::WebContentsDelegate {
   void RendererCrashed(WCObserver* observer);
 
   ScopedProfileKeepAlive profile_keep_alive_;
-  std::unique_ptr<content::WebContents> web_contents_;
+  const std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WCObserver> outer_wc_observer_;
   std::unique_ptr<WCObserver> inner_wc_observer_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   // GlicWindowController owns this.
-  raw_ptr<GlicWindowController> glic_window_controller_;
+  const raw_ptr<GlicWindowController> glic_window_controller_;
 };
 
 }  // namespace glic

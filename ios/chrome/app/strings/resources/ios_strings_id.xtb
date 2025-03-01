@@ -663,6 +663,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3909222758573607742">Simpan sandi dan item lainnya di akun</translation>
 <translation id="3913463964270756493">Sembunyikan layar Penelusuran dengan Google Lens</translation>
 <translation id="3914640181019354363">Deteksi alamat</translation>
+<translation id="3921585859122905677">Posisi Kolom URL</translation>
 <translation id="3922185497376658606">Pramuat halaman web</translation>
 <translation id="3922395466317605522">Sesuaikan Menu</translation>
 <translation id="3929457972718048006">Alamat</translation>
@@ -1116,6 +1117,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5817176759448082654">Pemeriksaan Sandi</translation>
 <translation id="5819208479324046259">Dikelola oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Menyinkronkan…</translation>
+<translation id="583923961930319521">Gunakan sandi di semua perangkat Anda</translation>
 <translation id="5844284118433003733">Jika Anda login, data ini akan ditautkan ke Akun Google Anda untuk melindungi Anda di berbagai layanan Google, misalnya, meningkatkan perlindungan di Gmail setelah insiden keamanan.</translation>
 <translation id="5854790677617711513">Lebih dari 30 hari</translation>
 <translation id="5857770089550859117">Perlu frasa sandi untuk memulai sinkronisasi.</translation>
@@ -1691,6 +1693,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8221665793629393739">Pengingat untuk kembali</translation>
 <translation id="8230355548492839438">Mencari sebelumnya</translation>
 <translation id="8232956427053453090">Pertahankan data</translation>
+<translation id="8233237502828137700">Tutup banner promo</translation>
 <translation id="8238711781852526820">Sembunyikan "Pemantauan Harga"</translation>
 <translation id="8258999165172757081">Ditambahkan</translation>
 <translation id="8261506727792406068">Hapus</translation>
@@ -1712,7 +1715,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8299613349954694191">Buka tab Samaran untuk menjelajahi web secara pribadi.</translation>
 <translation id="8307481894409578819">File ini tidak dapat diupload</translation>
 <translation id="8319076807703933069">Penelusuran Baru</translation>
-<translation id="8328607660158575887">Buka setelan Isi Otomatis &amp; Sandi</translation>
 <translation id="833647236762414178">Buat, simpan, dan kelola sandi &amp; kunci sandi Anda untuk login dengan mudah ke situs dan aplikasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Cadangkan data Anda dan gunakan di perangkat mana pun.</translation>
 <translation id="8349305172487531364">Bilah bookmark</translation>

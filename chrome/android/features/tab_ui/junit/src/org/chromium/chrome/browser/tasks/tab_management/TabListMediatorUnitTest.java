@@ -174,6 +174,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -4770,6 +4771,27 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.size(), equalTo(2));
         assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
         assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+    }
+
+    @Test
+    public void testGetSpanCount_OnXrDevice() {
+        XrUtils.setXrDeviceForTesting(true);
+        // Perform action and validate for compact width.
+        assertEquals(
+                TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
+                mMediator.getSpanCountForTesting(
+                        TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1));
+        // Perform action and validate for medium width.
+        assertEquals(
+                TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
+                mMediator.getSpanCountForTesting(
+                        TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP - 1));
+        // Perform action and validate for large width.
+        assertEquals(
+                TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
+                mMediator.getSpanCountForTesting(
+                        TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1));
+        XrUtils.resetXrDeviceForTesting();
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {

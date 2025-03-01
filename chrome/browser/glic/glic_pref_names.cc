@@ -10,8 +10,6 @@
 namespace glic::prefs {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      kGlicSettingsPolicy, static_cast<int>(SettingsPolicyState::kEnabled));
   registry->RegisterBooleanPref(kGlicPinnedToTabstrip, true);
   registry->RegisterBooleanPref(kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(kGlicGeolocationEnabled, false);

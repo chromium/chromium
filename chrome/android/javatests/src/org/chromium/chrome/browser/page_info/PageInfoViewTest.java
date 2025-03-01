@@ -69,6 +69,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -94,7 +95,10 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
+import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
+import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
@@ -135,6 +139,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for PageInfoView. Uses pixel tests to ensure the UI handles different configurations
  * correctly.
  */
+// TODO(crbug.com/344672095): Failing when batched, batch this again.
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({
@@ -142,7 +147,7 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_STARTUP_PROMOS,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
-// TODO(crbug.com/344672095): Failing when batched, batch this again.
+@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI})
 // Disable TrackingProtection3pcd as we use prefs instead of the feature in
 // these tests.
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
@@ -321,6 +326,36 @@ public class PageInfoViewTest {
         assertNotNull(controller);
         var tpController = controller.getCookiesController();
         tpController.setEnforcementForTesting(CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT);
+    }
+
+    private RwsCookieInfo getRwsCookieInfo(String url) {
+        Website rwsOwnerWebsite =
+                new Website(
+                        WebsiteAddress.create(
+                                mTestServerRule.getServer().getURLWithHostName(url, "/")),
+                        null);
+        Website rwsMemberWebsite =
+                new Website(
+                        WebsiteAddress.create(
+                                mTestServerRule
+                                        .getServer()
+                                        .getURLWithHostName(("prefix." + url), "/")),
+                        null);
+        RwsCookieInfo rwsInfo =
+                new RwsCookieInfo(
+                        rwsOwnerWebsite.getAddress().getDomainAndRegistry(),
+                        List.of(rwsOwnerWebsite, rwsMemberWebsite));
+        rwsOwnerWebsite.setRwsCookieInfo(rwsInfo);
+        rwsMemberWebsite.setRwsCookieInfo(rwsInfo);
+        return rwsInfo;
+    }
+
+    private void setRwsInfo(String url) {
+        RwsCookieInfo rwsInfo = getRwsCookieInfo(url);
+        PageInfoController controller = PageInfoController.getLastPageInfoController();
+        assertNotNull(controller);
+        var cookiesController = controller.getCookiesController();
+        cookiesController.setRwsInfoForTesting(rwsInfo.getMembers());
     }
 
     private void setThirdPartyCookieBlocking(@CookieControlsMode int value) {
@@ -745,6 +780,24 @@ public class PageInfoViewTest {
         onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
         onView(withText("Location")).check(matches(hasSibling(withText("Allowed this time"))));
         onView(withText("Camera")).check(matches(hasSibling(withText("Allowed"))));
+    }
+
+    /** Tests the cookies page of the PageInfo UI with RWS enabled. */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void showRwsButtonWhenRwsEnabled() throws IOException {
+        String hostName = "example.com";
+        String url = mTestServerRule.getServer().getURLWithHostName(hostName, "/");
+        loadUrlAndOpenPageInfo(url);
+        setRwsInfo(hostName);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(allOf(withText(R.string.page_info_rws_enhanced_button_title), isDisplayed()));
+        Context context = ApplicationProvider.getApplicationContext();
+        String subtitle =
+                context.getString(R.string.page_info_rws_v2_button_subtitle_android, hostName);
+        onViewWaiting(allOf(withText(subtitle), isDisplayed()));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_RwsEnabled");
     }
 
     /** Tests the cookies page of the PageInfo UI with the Cookie Controls UI enabled. */

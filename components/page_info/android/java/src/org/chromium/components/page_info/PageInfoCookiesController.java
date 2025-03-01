@@ -9,6 +9,8 @@ import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOK
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
@@ -47,6 +49,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private boolean mIsModeBUi;
     private int mDaysUntilExpirationForTesting;
     private boolean mFixedExpirationForTesting;
+    private Collection<Website> mRwsInfoForTesting;
 
     public PageInfoCookiesController(
             PageInfoMainController mainController,
@@ -123,6 +126,9 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         new WebsitePermissionsFetcher(getDelegate().getSiteSettingsDelegate())
                 .fetchPreferencesForCategoryAndPopulateRwsInfo(
                         storageCategory, this::onStorageFetched);
+        if (mRwsInfoForTesting != null) {
+            onStorageFetched(mRwsInfoForTesting);
+        }
 
         return view;
     }
@@ -265,6 +271,11 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
 
     public void setIsModeBUiForTesting(boolean isModeBUi) {
         mIsModeBUi = isModeBUi;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setRwsInfoForTesting(Collection<Website> rwsInfoForTesting) {
+        mRwsInfoForTesting = rwsInfoForTesting;
     }
 
     void destroy() {

@@ -2733,6 +2733,16 @@ printing::mojom::DuplexMode PDFiumEngine::GetDuplexMode() {
   }
 }
 
+std::optional<gfx::SizeF> PDFiumEngine::GetPageSizeInPoints(
+    int page_index) const {
+  FS_SIZEF size_in_points;
+  if (!FPDF_GetPageSizeByIndexF(doc(), page_index, &size_in_points)) {
+    return std::nullopt;
+  }
+
+  return gfx::SizeF(size_in_points.width, size_in_points.height);
+}
+
 std::optional<gfx::Size> PDFiumEngine::GetUniformPageSizePoints() {
   if (pages_.empty())
     return std::nullopt;
@@ -3157,14 +3167,15 @@ gfx::Size PDFiumEngine::GetPageSize(int index) {
 gfx::Size PDFiumEngine::GetPageSizeForLayout(
     int index,
     const DocumentLayout::Options& layout_options) {
-  FS_SIZEF size_in_points;
-  if (!FPDF_GetPageSizeByIndexF(doc(), index, &size_in_points))
+  std::optional<gfx::SizeF> size_in_points = GetPageSizeInPoints(index);
+  if (!size_in_points.has_value()) {
     return gfx::Size();
+  }
 
-  int width_in_pixels = static_cast<int>(
-      ConvertUnitFloat(size_in_points.width, kPointsPerInch, kPixelsPerInch));
-  int height_in_pixels = static_cast<int>(
-      ConvertUnitFloat(size_in_points.height, kPointsPerInch, kPixelsPerInch));
+  int width_in_pixels = static_cast<int>(ConvertUnitFloat(
+      size_in_points.value().width(), kPointsPerInch, kPixelsPerInch));
+  int height_in_pixels = static_cast<int>(ConvertUnitFloat(
+      size_in_points.value().height(), kPointsPerInch, kPixelsPerInch));
 
   switch (layout_options.default_page_orientation()) {
     case PageOrientation::kOriginal:

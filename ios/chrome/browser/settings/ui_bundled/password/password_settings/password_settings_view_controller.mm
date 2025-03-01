@@ -60,6 +60,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeBulkMovePasswordsToAccountDescription,
   ItemTypeBulkMovePasswordsToAccountButton,
   ItemTypePasswordsInOtherApps,
+  ItemTypeTurnOnPasswordsInOtherAppsButton,
   ItemTypeAutomaticPasskeyUpgradesSwitch,
   ItemTypeChangeGooglePasswordManagerPinDescription,
   ItemTypeChangeGooglePasswordManagerPinButton,
@@ -104,18 +105,17 @@ NSString* GetPasswordsInOtherAppsItemTitle() {
   }
 }
 
-// Helper method that returns whether the `passwordsInOtherAppsItem` should be
-// tappable depending on its accessory type.
-BOOL IsPasswordsInOtherAppsItemTappable(
-    UITableViewCellAccessoryType cell_accessory_type) {
-  switch (cell_accessory_type) {
-    case UITableViewCellAccessoryNone:
-      return NO;
-    case UITableViewCellAccessoryDisclosureIndicator:
-      return YES;
-    default:
-      NOTREACHED();
+// Helper method that returns whether the `turnOnPasswordsInOtherAppsItem`
+// should be visible depending on the given `passwords_in_other_apps_enabled`
+// status.
+BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
+    BOOL passwords_in_other_apps_enabled) {
+  BOOL should_show_item = NO;
+  if (@available(iOS 18, *)) {
+    should_show_item =
+        IOSPasskeysM2Enabled() && !passwords_in_other_apps_enabled;
   }
+  return should_show_item;
 }
 
 // Whether automatic passkey upgrades feature is enabled.
@@ -142,6 +142,9 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   // TODO(crbug.com/396694707): Should become a plain bool once the Passkeys M2
   // feature is launched.
   std::optional<bool> _passwordsInOtherAppsEnabled;
+
+  // Whether the `turnOnPasswordsInOtherAppsItem` should be visible.
+  BOOL _shouldShowTurnOnPasswordsInOtherAppsItem;
 
   // Whether the change PIN button should be set up. This will be true when it's
   // requested by the mediator before the model is loaded.
@@ -210,6 +213,11 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 @property(nonatomic, readonly)
     TableViewMultiDetailTextItem* passwordsInOtherAppsItem;
 
+// A button which triggers a prompt to allow the user to set the app as a
+// credential provider.
+@property(nonatomic, readonly)
+    TableViewTextItem* turnOnPasswordsInOtherAppsItem;
+
 // The item related to the switch for the automatic passkey upgrades setting.
 @property(nonatomic, readonly)
     TableViewSwitchItem* automaticPasskeyUpgradesSwitchItem;
@@ -252,6 +260,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 @synthesize bulkMovePasswordsToAccountButtonItem =
     _bulkMovePasswordsToAccountButtonItem;
 @synthesize passwordsInOtherAppsItem = _passwordsInOtherAppsItem;
+@synthesize turnOnPasswordsInOtherAppsItem = _turnOnPasswordsInOtherAppsItem;
 @synthesize automaticPasskeyUpgradesSwitchItem =
     _automaticPasskeyUpgradesSwitchItem;
 @synthesize changeGooglePasswordManagerPinDescriptionItem =
@@ -268,6 +277,18 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
+  if (self) {
+    if (IOSPasskeysM2Enabled()) {
+      // An "undefined" `passwordsInOtherAppsEnabled` value isn't supported when
+      // the Passkeys M2 feature is enabled.
+      _passwordsInOtherAppsEnabled = NO;
+      _shouldShowTurnOnPasswordsInOtherAppsItem =
+          ShouldShowTurnOnPasswordsInOtherAppsItem(
+              _passwordsInOtherAppsEnabled.value());
+    } else {
+      _shouldShowTurnOnPasswordsInOtherAppsItem = NO;
+    }
+  }
   return self;
 }
 
@@ -323,6 +344,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+  [self updateTurnOnPasswordsInOtherAppsItemVisibility];
 
   if ([self shouldDisplayPasskeyUpgradesSwitch]) {
     [model addSectionWithIdentifier:
@@ -415,12 +437,14 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypePasswordsInOtherApps: {
-      if (IsPasswordsInOtherAppsItemTappable(
-              self.passwordsInOtherAppsItem.accessoryType)) {
+      if ([self shouldPasswordsInOtherAppsBeTappable]) {
         [self.presentationDelegate showPasswordsInOtherAppsScreen];
       }
       break;
     }
+    case ItemTypeTurnOnPasswordsInOtherAppsButton:
+      // TODO(crbug.com/394580626): Handle taps.
+      break;
     case ItemTypeBulkMovePasswordsToAccountButton: {
       if (self.showBulkMovePasswordsToAccount) {
         [self.delegate bulkMovePasswordsToAccountButtonClicked];
@@ -472,8 +496,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
     case ItemTypeSavePasswordsSwitch:
       return NO;
     case ItemTypePasswordsInOtherApps:
-      return IsPasswordsInOtherAppsItemTappable(
-          self.passwordsInOtherAppsItem.accessoryType);
+      return [self shouldPasswordsInOtherAppsBeTappable];
   }
   return YES;
 }
@@ -581,6 +604,21 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
       kPasswordSettingsPasswordsInOtherAppsRowId;
   [self updatePasswordsInOtherAppsItem];
   return _passwordsInOtherAppsItem;
+}
+
+- (TableViewTextItem*)turnOnPasswordsInOtherAppsItem {
+  if (_turnOnPasswordsInOtherAppsItem) {
+    return _turnOnPasswordsInOtherAppsItem;
+  }
+
+  _turnOnPasswordsInOtherAppsItem = [[TableViewTextItem alloc]
+      initWithType:ItemTypeTurnOnPasswordsInOtherAppsButton];
+  _turnOnPasswordsInOtherAppsItem.text = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
+  _turnOnPasswordsInOtherAppsItem.textColor = [UIColor colorNamed:kBlueColor];
+  _turnOnPasswordsInOtherAppsItem.accessibilityTraits =
+      UIAccessibilityTraitButton;
+  return _turnOnPasswordsInOtherAppsItem;
 }
 
 - (TableViewSwitchItem*)automaticPasskeyUpgradesSwitchItem {
@@ -810,12 +848,16 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   }
 
   _passwordsInOtherAppsEnabled = enabled;
+  _shouldShowTurnOnPasswordsInOtherAppsItem =
+      ShouldShowTurnOnPasswordsInOtherAppsItem(
+          _passwordsInOtherAppsEnabled.value());
 
   if (self.modelLoadStatus == ModelNotLoaded) {
     return;
   }
 
   [self updatePasswordsInOtherAppsItem];
+  [self updateTurnOnPasswordsInOtherAppsItemVisibility];
 }
 
 - (void)setOnDeviceEncryptionState:
@@ -1039,24 +1081,17 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // current state of `_passwordsInOtherAppsEnabled`.
 - (void)updatePasswordsInOtherAppsItem {
   if (!_passwordsInOtherAppsEnabled.has_value()) {
-    if (IOSPasskeysM2Enabled()) {
-      // If the `passwordsInOtherAppsEnabled` value hasn't been set yet when the
-      // Passkeys M2 feature is enabled, default to `NO` as it doesn't make
-      // sense, in this case, for the UI to be in an intermediate state.
-      _passwordsInOtherAppsEnabled = NO;
-    } else {
-      return;
-    }
+    // A value should have been set upon initialization of this class when the
+    // Passkeys M2 feature is on.
+    CHECK(!IOSPasskeysM2Enabled());
+    return;
   }
 
   // Whether the `passwordsInOtherAppsItem` should be tappable and allow the
   // user to access the Passwords in Other Apps view. The UI of the cell varies
   // depending on whether or not it is tappable.
-  BOOL shouldPasswordsInOtherAppsItemBeTappable = YES;
-  if (@available(iOS 18, *)) {
-    shouldPasswordsInOtherAppsItemBeTappable =
-        !IOSPasskeysM2Enabled() || _passwordsInOtherAppsEnabled.value();
-  }
+  BOOL shouldPasswordsInOtherAppsItemBeTappable =
+      [self shouldPasswordsInOtherAppsBeTappable];
 
   if (shouldPasswordsInOtherAppsItemBeTappable) {
     self.passwordsInOtherAppsItem.trailingDetailText =
@@ -1074,9 +1109,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
         ~UIAccessibilityTraitButton;
   }
 
-  // TODO(crbug.com/394580626): Create and manage visibility of the "Turn on
-  // autofill" button.
-
   if (self.modelLoadStatus != ModelLoadComplete) {
     return;
   }
@@ -1085,6 +1117,59 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   // Refresh the cells' height.
   [self.tableView beginUpdates];
   [self.tableView endUpdates];
+}
+
+// Whether the `passwordsInOtherAppsItem` should be tappable and lead to the
+// Passwords in Other Apps screen.
+- (BOOL)shouldPasswordsInOtherAppsBeTappable {
+  return !_shouldShowTurnOnPasswordsInOtherAppsItem;
+}
+
+// Adds or removes the `turnOnPasswordsInOtherAppsItem` from the table view if
+// needed.
+- (void)updateTurnOnPasswordsInOtherAppsItemVisibility {
+  if (self.modelLoadStatus == ModelNotLoaded) {
+    return;
+  }
+
+  TableViewModel* model = self.tableViewModel;
+  CHECK([model
+      hasSectionForSectionIdentifier:SectionIdentifierPasswordsInOtherApps]);
+
+  BOOL itemAlreadyExists =
+      [model hasItemForItemType:ItemTypeTurnOnPasswordsInOtherAppsButton
+              sectionIdentifier:SectionIdentifierPasswordsInOtherApps];
+
+  // First check if an update is required or if the item's visibility is already
+  // as needed.
+  if (_shouldShowTurnOnPasswordsInOtherAppsItem == itemAlreadyExists) {
+    return;
+  }
+
+  if (_shouldShowTurnOnPasswordsInOtherAppsItem) {
+    [model addItem:self.turnOnPasswordsInOtherAppsItem
+        toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+    [self.tableView insertRowsAtIndexPaths:@[
+      [self turnOnPasswordsInOtherAppsItemIndexPath]
+    ]
+                          withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else {
+    NSIndexPath* turnOnPasswordsInOtherAppsItemIndexPath =
+        [self turnOnPasswordsInOtherAppsItemIndexPath];
+    [self removeFromModelItemAtIndexPaths:@[
+      turnOnPasswordsInOtherAppsItemIndexPath
+    ]];
+    [self.tableView
+        deleteRowsAtIndexPaths:@[ turnOnPasswordsInOtherAppsItemIndexPath ]
+              withRowAnimation:UITableViewRowAnimationAutomatic];
+  }
+}
+
+// Returns the index path of the `turnOnPasswordsInOtherAppsItem`
+- (NSIndexPath*)turnOnPasswordsInOtherAppsItemIndexPath {
+  return [self.tableViewModel
+      indexPathForItemType:ItemTypeTurnOnPasswordsInOtherAppsButton
+         sectionIdentifier:SectionIdentifierPasswordsInOtherApps];
 }
 
 // Updates the UI to present the correct elements for the user's current

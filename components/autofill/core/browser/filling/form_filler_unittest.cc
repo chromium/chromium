@@ -1543,9 +1543,7 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   set_server_type(0, PASSPORT_NUMBER);
   set_server_type(1, NAME_FIRST, PASSPORT_NAME_TAG);
   set_server_type(2, NAME_LAST, PASSPORT_NAME_TAG);
-  // TODO(crbug.com/389625753): The classified type should be
-  // ADDRESS_HOME_COUNTRY when countries get special handling.
-  set_server_type(3, PASSPORT_ISSUING_COUNTRY_TAG);
+  set_server_type(3, ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY_TAG);
   set_server_type(4, PASSPORT_ISSUE_DATE_TAG);
   set_server_type(5, PASSPORT_EXPIRATION_DATE_TAG);
   form_structure->UpdateAutofillCount();

@@ -7,6 +7,8 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "extensions/common/verifier_formats.h"
@@ -33,7 +35,12 @@ FakeCwsMixin::FakeCwsMixin(InProcessBrowserTestMixinHost* host,
                            CwsInstanceType instance_type)
     : InProcessBrowserTestMixin(host),
       instance_type_(instance_type),
-      test_server_setup_mixin_(host, &test_server_) {
+      fake_origin_mixin_(
+          host,
+          /*origin=*/
+          GURL(instance_type == kPublic ? "https://fakecws.com/"
+                                        : "https://selfhostedappserver.com/"),
+          /*path_to_be_served=*/FILE_PATH_LITERAL("chrome/test/data")) {
   if (instance_type == kPublic) {
     // When installing or updating a CRX, the extension code may verify the CRX
     // is signed by the real CWS via verified_contents.json. It is difficult to
@@ -49,19 +56,22 @@ FakeCwsMixin::~FakeCwsMixin() = default;
 void FakeCwsMixin::SetUpCommandLine(base::CommandLine* command_line) {
   // `fake_cws_.Init` modifies the command line using static methods. It must be
   // called during SetUpCommandLine.
-  instance_type_ == kPublic ? fake_cws_.Init(&test_server_)
-                            : fake_cws_.InitAsPrivateStore(
-                                  &test_server_, kPrivateStoreUpdateEndpoint);
+  instance_type_ == kPublic
+      ? fake_cws_.Init(&fake_origin_mixin_.server())
+      : fake_cws_.InitAsPrivateStore(&fake_origin_mixin_.server(),
+                                     fake_origin_mixin_.origin(),
+                                     kPrivateStoreUpdateEndpoint);
 }
 
 void FakeCwsMixin::SetUpOnMainThread() {
-  test_server_.RegisterRequestMonitor(base::BindRepeating(&LogRequest));
+  fake_origin_mixin_.server().RegisterRequestMonitor(
+      base::BindRepeating(&LogRequest));
 }
 
 GURL FakeCwsMixin::UpdateUrl() const {
-  return test_server_.base_url().Resolve(instance_type_ == kPublic
-                                             ? kPublicStoreUpdateEndpoint
-                                             : kPrivateStoreUpdateEndpoint);
+  return fake_origin_mixin_.GetUrl(instance_type_ == kPublic
+                                       ? kPublicStoreUpdateEndpoint
+                                       : kPrivateStoreUpdateEndpoint);
 }
 
 }  // namespace ash

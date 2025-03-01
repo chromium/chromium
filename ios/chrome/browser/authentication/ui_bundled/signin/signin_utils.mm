@@ -9,6 +9,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/version.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -24,7 +27,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -256,11 +261,33 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
     return false;
   }
 
-  // The sign-in promo should be shown twice, even if no account has been added.
-  NSInteger display_count =
-      [defaults integerForKey:kSigninPromoViewDisplayCountKey];
-  if (display_count <= 1) {
-    return true;
+  if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(profile);
+    unsigned int interactions = 0;
+    std::vector<std::pair<feature_engagement::EventConfig, int>> events =
+        tracker->ListEvents(
+            feature_engagement::kIPHiOSPromoSigninFullscreenFeature);
+    for (const auto& event : events) {
+      if (event.first.name ==
+          feature_engagement::events::kIOSSigninFullscreenPromoTrigger) {
+        interactions = event.second;
+        break;
+      }
+    }
+
+    if (interactions <= 1) {
+      return true;
+    }
+
+  } else {
+    // The sign-in promo should be shown twice, even if no account has been
+    // added.
+    NSInteger display_count =
+        [defaults integerForKey:kSigninPromoViewDisplayCountKey];
+    if (display_count <= 1) {
+      return true;
+    }
   }
 
   // Otherwise, it can be shown only if a new account has been added.

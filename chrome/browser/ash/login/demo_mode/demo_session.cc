@@ -701,14 +701,6 @@ void DemoSession::OnSessionStateChanged() {
       // Register the device with in the A/A experiment
       RegisterDemoModeAAExperiment();
 
-      // TODO(b/292454543): Remove this after issue is resolved.
-      if (InstallAttributes::IsInitialized()) {
-        LOG(WARNING) << "Demo Mode DeviceMode: "
-                     << InstallAttributes::Get()->GetMode();
-        LOG(WARNING) << "Demo Mode domain: "
-                     << InstallAttributes::Get()->GetDomain();
-      }
-
       // When the session successfully starts, we record the action
       // DemoMode.DemoSessionStarts.
       base::RecordAction(base::UserMetricsAction("DemoMode.DemoSessionStarts"));

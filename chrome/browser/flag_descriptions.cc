@@ -1503,11 +1503,13 @@ const char kEnableIsolatedWebAppDevModeName[] =
 const char kEnableIsolatedWebAppDevModeDescription[] =
     "Enables the installation of unverified Isolated Web Apps";
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const char kEnableIwaKeyDistributionComponentName[] =
     "Enable the Iwa Key Distribution component";
 const char kEnableIwaKeyDistributionComponentDescription[] =
     "Enables the Iwa Key Distribution component that supplies key rotation "
     "data for Isolated Web Apps.";
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 const char kIwaKeyDistributionComponentExpCohortName[] =
     "Experimental cohort for the Iwa Key Distribution component";
@@ -3241,11 +3243,24 @@ const char kReduceIPAddressChangeNotificationDescription[] =
     "TCP and QUIC connection resets.";
 #endif  // BUILDFLAG(IS_MAC)
 
-const char kReduceAcceptLanguageName[] =
-    "Reduce Accept-Language request header";
-const char kReduceAcceptLanguageDescription[] =
+const char kReduceAcceptLanguageHTTPName[] =
+    "Reduce Accept-Language request header only";
+const char kReduceAcceptLanguageHTTPDescription[] =
     "Reduce the amount of information available in the Accept-Language request "
-    "header. See https://github.com/Tanych/accept-language for more info.";
+    "header only. chrome://flags/#reduce-accept-language overrides this flag, "
+    "and if enabled, the changes will take effect for Javascript as well. See "
+    "https://github.com/explainers-by-googlers/reduce-accept-language for more "
+    "information.";
+
+const char kReduceAcceptLanguageName[] =
+    "Reduce Accept-Language request header and JavaScript navigator.languages.";
+const char kReduceAcceptLanguageDescription[] =
+    "Reduce the amount of information in the Accept-Language request header "
+    "and JavaScript navigator.languages. Enabling this flag overrides the "
+    "behavior of chrome://flags/#reduce-accept-language-http, which by itself "
+    "only reduces the Accept-Language request header when enabled. For more "
+    "information, see "
+    "https://github.com/explainers-by-googlers/reduce-accept-language.";
 
 const char kReduceTransferSizeUpdatedIPCName[] =
     "Reduce TransferSizeUpdated IPC";
@@ -7810,9 +7825,13 @@ const char kPdfUseSkiaRendererDescription[] =
 const char kWebXrHandInputName[] = "WebXR Hand Input";
 const char kWebXrHandInputDescription[] =
     "Enables access to articulated hand tracking sensor input in WebXR.";
+const char kWebXrProjectionLayersName[] = "WebXR Projection Layers";
+const char kWebXrProjectionLayersDescription[] =
+    "Enables use of XRProjectionLayers.";
 const char kWebXrWebGpuBindingName[] = "WebXR/WebGPU Binding";
 const char kWebXrWebGpuBindingDescription[] =
-    "Enables rendering with WebGPU for WebXR sessions.";
+    "Enables rendering with WebGPU for WebXR sessions. WebXR Projection "
+    "Layers must be also be enabled to use this feature.";
 const char kWebXrInternalsName[] = "WebXR Internals Debugging Page";
 const char kWebXrInternalsDescription[] =
     "Enables the webxr-internals developer page which can be used to help "

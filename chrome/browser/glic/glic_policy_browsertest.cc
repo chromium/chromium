@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
-#include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -38,8 +39,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
-using glic::prefs::kGlicSettingsPolicy;
 using glic::prefs::SettingsPolicyState;
+using ::prefs::kGeminiSettings;
 
 using policy::PolicyTest;
 
@@ -160,10 +161,10 @@ class GlicPolicyTest : public PolicyTest {
     using policy::POLICY_SCOPE_USER;
     using policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
     using policy::PolicyMap;
-    using policy::key::kGlicSettings;
+    using policy::key::kGeminiSettings;
 
     PolicyMap policies;
-    policies.Set(kGlicSettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+    policies.Set(kGeminiSettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                  POLICY_SOURCE_ENTERPRISE_DEFAULT,
                  base::Value(static_cast<int>(value)), nullptr);
     provider.UpdateChromePolicy(policies);
@@ -200,26 +201,24 @@ class GlicPolicyTest : public PolicyTest {
 
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDefaultsToEnabled) {
   // The pref defaults to enabled.
-  EXPECT_EQ(kEnabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
-  EXPECT_EQ(kEnabledValue,
-            profile_2_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+  EXPECT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
+  EXPECT_EQ(kEnabledValue, profile_2_->GetPrefs()->GetInteger(kGeminiSettings));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDisabledByPolicy) {
   // By default the pref should start off unmanaged and defaulted to enabled.
   PrefService* prefs = browser()->profile()->GetPrefs();
-  EXPECT_FALSE(prefs->IsManagedPreference(kGlicSettingsPolicy));
-  EXPECT_EQ(kEnabledValue, prefs->GetInteger(kGlicSettingsPolicy));
+  EXPECT_FALSE(prefs->IsManagedPreference(kGeminiSettings));
+  EXPECT_EQ(kEnabledValue, prefs->GetInteger(kGeminiSettings));
 
   // Verify that policy can force-disable Glic.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
-  EXPECT_TRUE(prefs->IsManagedPreference(kGlicSettingsPolicy));
-  EXPECT_EQ(kDisabledValue, prefs->GetInteger(kGlicSettingsPolicy));
+  EXPECT_TRUE(prefs->IsManagedPreference(kGeminiSettings));
+  EXPECT_EQ(kDisabledValue, prefs->GetInteger(kGeminiSettings));
 
   // Verify the policy value cannot be overridden.
-  prefs->SetInteger(kGlicSettingsPolicy, kEnabledValue);
-  EXPECT_EQ(kDisabledValue, prefs->GetInteger(kGlicSettingsPolicy));
+  prefs->SetInteger(kGeminiSettings, kEnabledValue);
+  EXPECT_EQ(kDisabledValue, prefs->GetInteger(kGeminiSettings));
 }
 
 // Ensure that when policy disables Glic, a browser window doesn't show the Glic
@@ -231,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
   // Disable the policy in the default profile.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
   ASSERT_EQ(kDisabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+            profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   {
     // A new window in profile 1 shouldn't have the Glic button.
@@ -246,8 +245,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
 
   // Re-enable the policy. Ensure the button is recreated.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kEnabled);
-  ASSERT_EQ(kEnabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+  ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   {
     // A new window in profile 1 should again get the Glic button now that the
@@ -278,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
   // Disable the policy in the first profile.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
   ASSERT_EQ(kDisabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+            profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   {
     // The windows in profile 1 should have lost their Glic button.
@@ -292,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
 
   // Re-enable the policy. Ensure the button is recreated.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kEnabled);
-  ASSERT_EQ(kEnabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+  ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   {
     // The windows in profile 1 should get back their Glic button.
@@ -323,9 +320,9 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
   {
     SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
     ASSERT_EQ(kDisabledValue,
-              profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+              profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
     ASSERT_EQ(kEnabledValue,
-              profile_2_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+              profile_2_->GetPrefs()->GetInteger(kGeminiSettings));
   }
 
   // Background mode should remain active since profile_2_ still has it enabled.
@@ -335,9 +332,9 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
   {
     SetGlicPolicy(policy_for_profile_2(), SettingsPolicyState::kDisabled);
     ASSERT_EQ(kDisabledValue,
-              profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+              profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
     ASSERT_EQ(kDisabledValue,
-              profile_2_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+              profile_2_->GetPrefs()->GetInteger(kGeminiSettings));
   }
 
   // Background mode should be exited since none of the loaded profiles enable
@@ -348,9 +345,9 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
   {
     SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kEnabled);
     ASSERT_EQ(kEnabledValue,
-              profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+              profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
     ASSERT_EQ(kDisabledValue,
-              profile_2_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+              profile_2_->GetPrefs()->GetInteger(kGeminiSettings));
   }
 
   // Background mode should be reentered since the first profile is enabled.
@@ -380,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
   // Disable the policy.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
   ASSERT_EQ(kDisabledValue,
-            browser()->profile()->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+            browser()->profile()->GetPrefs()->GetInteger(kGeminiSettings));
 
   // Navigate to chrome://glic. The glic page should be unavailable.
   {
@@ -396,8 +393,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
 
   // Re-enable the policy.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kEnabled);
-  ASSERT_EQ(kEnabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+  ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   // Navigating to chrome://glic should now succeed again.
   {
@@ -444,8 +440,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
 
   // Enable the policy at runtime
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kEnabled);
-  ASSERT_EQ(kEnabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+  ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   // Navigating to chrome://glic should now load the webview.
   {
@@ -465,8 +460,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
 // an open Glic window, that window is closed.
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
   // The pref defaults to enabled.
-  ASSERT_EQ(kEnabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+  ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_);
@@ -486,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
   // Disable the policy.
   SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
   ASSERT_EQ(kDisabledValue,
-            profile_1_->GetPrefs()->GetInteger(kGlicSettingsPolicy));
+            profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   EXPECT_FALSE(service->window_controller().IsShowing());
 }

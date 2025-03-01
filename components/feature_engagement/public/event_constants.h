@@ -170,12 +170,6 @@ extern const char kHistoryOnOverflowMenuUsed[];
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
 
-// The user has triggered Parcel Tracking.
-extern const char kParcelTrackingTriggered[];
-
-// The user has tracked a parcel.
-extern const char kParcelTracked[];
-
 // The user has more than one gesture to refresh a page in iOS. This includes
 // but not limited to re-typing the URL in omnibox and refreshing from context
 // menu.

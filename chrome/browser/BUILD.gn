@@ -274,6 +274,12 @@ static_library("browser") {
     "browsing_data/site_data_size_collector.h",
     "browsing_topics/browsing_topics_service_factory.cc",
     "browsing_topics/browsing_topics_service_factory.h",
+    "btm/btm_browser_signin_detector.cc",
+    "btm/btm_browser_signin_detector.h",
+    "btm/btm_browser_signin_detector_factory.cc",
+    "btm/btm_browser_signin_detector_factory.h",
+    "btm/stateful_bounce_counter.cc",
+    "btm/stateful_bounce_counter.h",
     "chained_back_navigation_tracker.cc",
     "chained_back_navigation_tracker.h",
     "child_process_host_flags.h",
@@ -387,12 +393,6 @@ static_library("browser") {
     "digital_credentials/digital_identity_interstitial_closed_reason.h",
     "digital_credentials/digital_identity_low_risk_origins.cc",
     "digital_credentials/digital_identity_low_risk_origins.h",
-    "dips/dips_browser_signin_detector.cc",
-    "dips/dips_browser_signin_detector.h",
-    "dips/dips_browser_signin_detector_factory.cc",
-    "dips/dips_browser_signin_detector_factory.h",
-    "dips/stateful_bounce_counter.cc",
-    "dips/stateful_bounce_counter.h",
     "display_capture/captured_surface_control_permission_context.cc",
     "display_capture/captured_surface_control_permission_context.h",
     "display_capture/display_capture_permission_context.cc",
@@ -6020,14 +6020,14 @@ static_library("browser") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/background/glic",
+      "//chrome/browser/background/glic:impl",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
-      "//chrome/browser/glic/launcher",
-      "//chrome/browser/glic/launcher:impl",
     ]
 
     allow_circular_includes_from += [
-      "//chrome/browser/glic/launcher:impl",
+      "//chrome/browser/background/glic:impl",
       "//chrome/browser/glic:impl",
     ]
   }

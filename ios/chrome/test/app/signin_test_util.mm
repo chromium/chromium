@@ -162,7 +162,9 @@ void SignInWithoutSync(id<SystemIdentity> identity) {
                       identity:identity
                    accessPoint:signin_metrics::AccessPoint::kUnknown
              postSignInActions:PostSignInActionSet()
-      presentingViewController:viewController];
+      presentingViewController:viewController
+                    anchorView:nil
+                    anchorRect:CGRectNull];
   [authenticationFlow
       startSignInWithCompletion:^(SigninCoordinatorResult result) {
         authenticationFlow = nil;

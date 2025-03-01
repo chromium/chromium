@@ -263,6 +263,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Too many challenges"/>
   <int value="11" label="Invalid fetcher URL"/>
   <int value="12" label="Invalid refresh URL"/>
+  <int value="13" label="Transient HTTP error"/>
+  <int value="14" label="Persistent HTTP error"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

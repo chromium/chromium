@@ -28,9 +28,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_manager.h",
       "autofill_ai_utils.cc",
       "autofill_ai_utils.h",
-      "autofill_ai_value_filter.cc",
-      "autofill_ai_value_filter.h",
-      "suggestion/autofill_ai_model_executor.cc",
       "suggestion/autofill_ai_model_executor.h",
       "suggestion/autofill_ai_model_executor_impl.cc",
       "suggestion/autofill_ai_model_executor_impl.h",
@@ -43,7 +40,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     deps = [
       "//base",
       "//components/autofill/core/browser",
-      "//components/autofill/core/browser/strike_databases/autofill_ai",
       "//components/autofill/core/common",
       "//components/keyed_service/core",
       "//components/optimization_guide/core",
@@ -57,8 +53,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     testonly = true
     sources = [
       "autofill_ai_manager_test_api.h",
-      "autofill_ai_test_utils.cc",
-      "autofill_ai_test_utils.h",
       "mock_autofill_ai_client.cc",
       "mock_autofill_ai_client.h",
     ]
@@ -77,7 +71,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_features_unittest.cc",
       "autofill_ai_logger_unittest.cc",
       "autofill_ai_manager_unittest.cc",
-      "autofill_ai_value_filter_unittest.cc",
       "suggestion/autofill_ai_model_executor_impl_unittest.cc",
       "suggestion/autofill_ai_suggestions_unittest.cc",
     ]

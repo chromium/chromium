@@ -14,8 +14,8 @@
 #include "base/strings/string_util.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -34,9 +34,10 @@ bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
 
 // Add a list of Client Hints headers to be removed to the output vector, based
 // on PermissionsPolicy and the url's origin.
-void FindClientHintsToRemove(const PermissionsPolicy* permissions_policy,
-                             const GURL& url,
-                             std::vector<std::string>* removed_headers) {
+void FindClientHintsToRemove(
+    const network::PermissionsPolicy* permissions_policy,
+    const GURL& url,
+    std::vector<std::string>* removed_headers) {
   DCHECK(removed_headers);
   url::Origin origin = url::Origin::Create(url);
   for (const auto& elem : network::GetClientHintToNameMap()) {

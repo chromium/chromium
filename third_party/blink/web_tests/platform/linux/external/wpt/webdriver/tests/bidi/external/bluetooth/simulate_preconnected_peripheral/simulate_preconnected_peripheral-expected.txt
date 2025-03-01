@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_simulate_preconnected_peripheral
+  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+Harness: the test ran to completion.
+

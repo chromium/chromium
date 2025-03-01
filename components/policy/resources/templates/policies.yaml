@@ -1325,7 +1325,7 @@ policies:
   1324: WebRtcIPHandlingUrl
   1325: GenAIPhotoEditingSettings
   1326: PartitionedBlobUrlUsage
-  1327: GlicSettings
+  1327: ''
   1328: DefaultControlledFrameSetting
   1329: ControlledFrameAllowedForUrls
   1330: ControlledFrameBlockedForUrls

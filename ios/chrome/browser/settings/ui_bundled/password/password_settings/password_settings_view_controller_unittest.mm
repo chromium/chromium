@@ -73,6 +73,12 @@ class PasswordSettingsViewControllerTest : public PlatformTest {
         itemAtIndexPath:[NSIndexPath indexPathForItem:item inSection:section]];
   }
 
+  bool HasTableViewItem(int section, int item) {
+    return [[controller_ tableViewModel]
+        hasItemAtIndexPath:[NSIndexPath indexPathForItem:item
+                                               inSection:section]];
+  }
+
   void CreateController() {
     controller_ = [[PasswordSettingsViewController alloc] init];
 
@@ -146,12 +152,18 @@ TEST_F(PasswordSettingsViewControllerTest,
       EXPECT_FALSE(passwords_in_other_apps_item.trailingDetailText);
       EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
                 UITableViewCellAccessoryNone);
+
+      // Check that the "Turn on AutoFill…" button is in the table view.
+      EXPECT_TRUE(HasTableViewItem(/*section=*/1, /*item=*/1));
     } else {
       EXPECT_FALSE(passwords_in_other_apps_item.leadingDetailText);
       EXPECT_NSEQ(passwords_in_other_apps_item.trailingDetailText,
                   l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
       EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
                 UITableViewCellAccessoryDisclosureIndicator);
+
+      // Check that the "Turn on AutoFill…" button isn't in the table view.
+      EXPECT_FALSE(HasTableViewItem(/*section=*/1, /*item=*/1));
     }
   }
   {
@@ -172,6 +184,9 @@ TEST_F(PasswordSettingsViewControllerTest,
                 l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
     EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
               UITableViewCellAccessoryDisclosureIndicator);
+
+    // Check that the "Turn on AutoFill…" button isn't in the table view.
+    EXPECT_FALSE(HasTableViewItem(/*section=*/1, /*item=*/1));
   }
 }
 
@@ -201,6 +216,9 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
     } else {
       EXPECT_FALSE(passwords_in_other_apps_item.leadingDetailText);
     }
+
+    // Check that the "Turn on AutoFill…" button isn't in the table view.
+    EXPECT_FALSE(HasTableViewItem(/*section=*/1, /*item=*/1));
   }
   {
     // Disable the Passkeys M2 feature and re-create the controller so that the
@@ -221,6 +239,9 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysPasswordInOtherAppsEnabled) {
     EXPECT_EQ(passwords_in_other_apps_item.accessoryType,
               UITableViewCellAccessoryDisclosureIndicator);
     EXPECT_FALSE(passwords_in_other_apps_item.leadingDetailText);
+
+    // Check that the "Turn on AutoFill…" button isn't in the table view.
+    EXPECT_FALSE(HasTableViewItem(/*section=*/1, /*item=*/1));
   }
 }
 

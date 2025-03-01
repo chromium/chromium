@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.history;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -81,17 +83,17 @@ class AppFilterSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
-        return 0; // disabled
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+        return Resources.ID_NULL; // disabled
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.history_app_filter_sheet_opened;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.history_app_filter_sheet_closed;
     }
 }

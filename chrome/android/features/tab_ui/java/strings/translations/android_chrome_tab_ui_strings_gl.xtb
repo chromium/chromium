@@ -12,7 +12,6 @@
 <translation id="1293272072740285747">Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.
 
 Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="TITLE_OF_GROUP" />", que se eliminará de todos os dispositivos.</translation>
-<translation id="1326654401173629446">O grupo de pestanas "<ph name="TAB_GROUP_NAME" />" xa non está dispoñible</translation>
 <translation id="1329584516321524826">Actualizouse agora mesmo</translation>
 <translation id="1340839264183302272">Saír do grupo</translation>
 <translation id="1419023007528516122">Con esta acción eliminarase permanentemente o grupo do teu dispositivo</translation>
@@ -47,7 +46,9 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="266935134738038806">Visitar sitio</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2677748264148917807">Saír</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Actualizado hai <ph name="NUM_WEEKS_ONE" /> semana}other{Actualizado hai <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida. Pestanas cambiadas: <ph name="ANY_CHANGED" />. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> pestanas engadidas. Pestanas cambiadas: <ph name="ANY_CHANGED" />. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{Actualizado hai <ph name="NUM_HOURS_ONE" /> hora}other{Actualizado hai <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2755485474385016903">Todos os membros do grupo poden ver os cambios realizados</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creouse hai <ph name="NUM_HOURS_ONE" /> hora}other{Creouse hai <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2801787514987684416">Queres ver a información da tenda?</translation>
@@ -84,6 +85,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> pestana cambiada. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_CHANGED" /> pestanas cambiadas. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4431937619879060901">Perderás inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" />, que se eliminará de todos os dispositivos</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{Actualizado hai <ph name="NUM_DAYS_ONE" /> día}other{Actualizado hai <ph name="NUM_DAYS_MANY" /> días}}</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Queres pechar 1 pestana inactiva?}other{Queres pechar <ph name="TAB_COUNT_MANY" /> pestanas inactivas?}}</translation>
 <translation id="4686942373615810936">Creouse agora mesmo</translation>
@@ -164,6 +166,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7688386659311034820">Cadro de diálogo de pestanas inactivas</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Compartir <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Compartir <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{Actualizado hai <ph name="NUM_YEARS_ONE" /> ano}other{Actualizado hai <ph name="NUM_YEARS_MANY" /> anos}}</translation>
 <translation id="7773714564112603605">Quitar pestana e eliminar grupo</translation>
 <translation id="7792771145871471484">Revisar as suxestións.</translation>
 <translation id="7792860826279960128">Aviso sobre os cambios no grupo de pestanas compartido a media altura</translation>
@@ -181,10 +184,12 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="8076492880354921740">Pestanas</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Desprega o grupo de pestanas <ph name="TITLE_OF_GROUP" /> de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Desprega o grupo de pestanas <ph name="TITLE_OF_GROUP" /> de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="8205266828577616993">Mover pestana cara arriba</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{Actualizado hai <ph name="NUM_MINS_ONE" /> minuto}other{Actualizado hai <ph name="NUM_MINS_MANY" /> minutos}}</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8338427544764842461">Os grupos de pestanas gárdanse aquí e actualízanse en todos os dispositivos nos que teñas a sesión iniciada</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Despregar o grupo de pestanas compartido de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Despregar o grupo de pestanas compartido de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Pechar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Pechar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{Actualizado hai <ph name="NUM_MONTHS_ONE" /> mes}other{Actualizado hai <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8398929769197326728">Cartafol novo: <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> pestanas engadidas. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>

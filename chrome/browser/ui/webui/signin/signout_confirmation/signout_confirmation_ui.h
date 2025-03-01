@@ -46,10 +46,9 @@ class SignoutConfirmationUI
   SignoutConfirmationUI& operator=(const SignoutConfirmationUI&) = delete;
 
   // Prepares the information to be given to the handler once ready.
-  void Initialize(
-      Browser* browser,
-      ChromeSignoutConfirmationPromptVariant variant,
-      base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
+  void Initialize(Browser* browser,
+                  ChromeSignoutConfirmationPromptVariant variant,
+                  SignoutConfirmationCallback callback);
 
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
@@ -86,7 +85,7 @@ class SignoutConfirmationUI
   void OnMojoHandlersReady(
       Browser* browser,
       ChromeSignoutConfirmationPromptVariant variant,
-      base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback,
+      SignoutConfirmationCallback callback,
       mojo::PendingRemote<signout_confirmation::mojom::Page> page,
       mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver);
 

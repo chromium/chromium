@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
 
-#include "third_party/blink/renderer/core/dom/abort_signal.h"
-#include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
+#include "third_party/blink/renderer/core/scheduler/scheduler_task_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 
@@ -13,29 +12,27 @@ namespace blink {
 
 WebSchedulingTaskState::WebSchedulingTaskState(
     scheduler::TaskAttributionInfo* task_state,
-    AbortSignal* abort_source,
-    DOMTaskSignal* priority_source)
+    SchedulerTaskContext* task_context)
     : subtask_propagatable_task_state_(task_state),
-      abort_source_(abort_source),
-      priority_source_(priority_source) {}
+      scheduler_task_context_(task_context) {}
 
 void WebSchedulingTaskState::Trace(Visitor* visitor) const {
-  visitor->Trace(abort_source_);
-  visitor->Trace(priority_source_);
+  visitor->Trace(scheduler_task_context_);
   visitor->Trace(subtask_propagatable_task_state_);
-}
-
-AbortSignal* WebSchedulingTaskState::AbortSource() {
-  return abort_source_.Get();
-}
-
-DOMTaskSignal* WebSchedulingTaskState::PrioritySource() {
-  return priority_source_.Get();
 }
 
 scheduler::TaskAttributionInfo*
 WebSchedulingTaskState::GetTaskAttributionInfo() {
   return subtask_propagatable_task_state_.Get();
+}
+
+SchedulerTaskContext* WebSchedulingTaskState::GetSchedulerTaskContextFor(
+    const ExecutionContext& context) {
+  if (scheduler_task_context_ &&
+      scheduler_task_context_->CanPropagateTo(context)) {
+    return scheduler_task_context_.Get();
+  }
+  return nullptr;
 }
 
 }  // namespace blink

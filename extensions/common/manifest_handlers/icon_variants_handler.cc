@@ -5,6 +5,7 @@
 #include "extensions/common/manifest_handlers/icon_variants_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/lazy_instance.h"
@@ -13,7 +14,6 @@
 #include "extensions/common/api/icon_variants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/icons/extension_icon_variants.h"
-#include "extensions/common/icons/extension_icon_variants_diagnostics.h"
 #include "extensions/common/manifest_constants.h"
 #include "ui/gfx/color_utils.h"
 
@@ -54,34 +54,25 @@ void AddInstallWarningForId(Extension& extension, Id id) {
 
 // Returns the icon variants parsed from the `extension` manifest.
 // Populates `error` if there are no icon variants.
-std::unique_ptr<ExtensionIconVariants> GetIconVariants(Extension& extension,
-                                                       std::u16string* error) {
+ExtensionIconVariants GetIconVariants(Extension& extension) {
+  ExtensionIconVariants icon_variants;
+
   // Convert the input key into a list containing everything.
   const base::Value::List* icon_variants_list =
       extension.manifest()->available_values().FindList(keys::kIconVariants);
   if (!icon_variants_list) {
-    *error = base::UTF8ToUTF16(
-        diagnostics::icon_variants::GetDiagnostic(
-            Feature::kIconVariants, Id::kIconVariantsKeyMustBeAList)
-            .message);
-    return nullptr;
+    icon_variants.AddDiagnostic(Feature::kIconVariants,
+                                Id::kIconVariantsKeyMustBeAList);
+    return icon_variants;
   }
 
-  std::vector<diagnostics::icon_variants::Diagnostic> diagnostics;
-
-  std::unique_ptr<ExtensionIconVariants> icon_variants =
-      std::make_unique<ExtensionIconVariants>();
-  icon_variants->Parse(icon_variants_list);
+  icon_variants.Parse(icon_variants_list);
 
   // Verify `icon_variants`, e.g. that at least one `icon_variant` is valid.
-  // TODO(crbug.com/344639840): Consider whether an empty list should be an
-  // error or just a warning instead (for future proofing).
-  if (icon_variants->IsEmpty()) {
-    *error =
-        base::UTF8ToUTF16(diagnostics::icon_variants::GetDiagnostic(
-                              Feature::kIconVariants, Id::kIconVariantsInvalid)
-                              .message);
-    return nullptr;
+  if (icon_variants.IsEmpty()) {
+    icon_variants.AddDiagnostic(Feature::kIconVariants,
+                                Id::kIconVariantsInvalid);
+    return icon_variants;
   }
 
   return icon_variants;
@@ -126,16 +117,16 @@ void IconVariantsInfo::InitializeIconSets() {
   }
 }
 
-const ExtensionIconSet& IconVariantsInfo::Get() const {
+const ExtensionIconSet& IconVariantsInfo::Get(
+    std::optional<ExtensionIconVariant::ColorScheme> color_scheme) const {
   if (!icon_variants) {
     g_empty_icon_set.Get();
   }
 
-  // TODO(crbug.com/344639840): Determine the current browser theme color.
-  return light_;
+  return color_scheme == ExtensionIconVariant::ColorScheme::kDark ? dark_
+                                                                  : light_;
 }
 
-// TODO(crbug.com/41419485): Add more test coverage for warnings and errors.
 bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   DCHECK(extension);
 
@@ -156,22 +147,11 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
 
   // If `ExtensionIconVariants` isn't returned, it's ok to just show an error
   // and ignore possible warnings.
-  // TODO(crbug.com/41419485): Don't set `error` from within `GetIconVariants`.
-  // Instead, return with one diagnostic as the error as soon as one is found.
-  std::unique_ptr<ExtensionIconVariants> icon_variants =
-      GetIconVariants(*extension, error);
-
-  // TODO(crbug.com/41419485): Consider not generating an error this and other
-  // cases, unless absolutely necessary. Additionally, consider letting all
-  // errors be caught in the handling below, instead of this custom if block.
-  if (!icon_variants) {
-    // `error` is being populated in `GetIconVariants`.
-    return false;
-  }
+  ExtensionIconVariants icon_variants = GetIconVariants(*extension);
 
   // Add any install warnings, handle errors, and then clear out diagnostics.
   // TODO(crbug.com/41419485): If there is an error, warnings can be omitted.
-  auto& diagnostics = icon_variants->get_diagnostics();
+  auto& diagnostics = icon_variants.get_diagnostics();
   for (auto& diagnostic : diagnostics) {
     // If any error exists, do not load the extension.
     if (diagnostic.severity == diagnostics::icon_variants::Severity::kError) {

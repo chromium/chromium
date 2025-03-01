@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
+#include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version_info/channel.h"
@@ -198,6 +201,136 @@ TEST_F(IconVariantsManifestTest, PreferIconVariantsOverIcons) {
   EXPECT_EQ("icon_variants.16.png",
             icons.Get(extension_misc::EXTENSION_ICON_BITTY,
                       ExtensionIconSet::Match::kExactly));
+}
+
+TEST_F(IconVariantsManifestTest, GetIconMethods) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icons": {
+          "16": "icons.16.png"
+        },
+        "icon_variants": [
+          {
+            "16": "icon_variants.16.png"
+          },
+          {
+            "16": "icon_variants.16.dark.png",
+            "color_schemes": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+
+  static constexpr struct {
+    const char* title;
+    const std::optional<ExtensionIconVariant::ColorScheme> color_scheme;
+    const char* expected;
+  } test_cases[] = {
+      {
+          "Light theme icons are returned by default sans color scheme.",
+          std::nullopt,
+          "icon_variants.16.png",
+      },
+      {
+          "Light theme specified.",
+          ExtensionIconVariant::ColorScheme::kLight,
+          "icon_variants.16.png",
+      },
+      {
+          "Dark theme specified.",
+          ExtensionIconVariant::ColorScheme::kDark,
+          "icon_variants.16.dark.png",
+      }};
+
+  // GetIcons.
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("GetIcons: '%s'", test_case.title));
+    const ExtensionIconSet& icons =
+        !test_case.color_scheme.has_value()
+            ? IconsInfo::GetIcons(extension.get())
+            : IconsInfo::GetIcons(extension.get(),
+                                  test_case.color_scheme.value());
+    EXPECT_EQ(test_case.expected,
+              icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                        ExtensionIconSet::Match::kExactly));
+  }
+
+  // GetIconResource.
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("GetIconResource: '%s'", test_case.title));
+    const ExtensionResource& resource =
+        !test_case.color_scheme.has_value()
+            ? IconsInfo::GetIconResource(extension.get(),
+                                         extension_misc::EXTENSION_ICON_BITTY,
+                                         ExtensionIconSet::Match::kExactly)
+            : IconsInfo::GetIconResource(extension.get(),
+                                         extension_misc::EXTENSION_ICON_BITTY,
+                                         ExtensionIconSet::Match::kExactly,
+                                         test_case.color_scheme.value());
+    EXPECT_EQ(test_case.expected, resource.relative_path().AsUTF8Unsafe());
+  }
+
+  // GetIconURL.
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("GetIconURL: '%s'", test_case.title));
+    const GURL& icon_url =
+        !test_case.color_scheme.has_value()
+            ? IconsInfo::GetIconURL(extension.get(),
+                                    extension_misc::EXTENSION_ICON_BITTY,
+                                    ExtensionIconSet::Match::kExactly)
+            : IconsInfo::GetIconURL(extension.get(),
+                                    extension_misc::EXTENSION_ICON_BITTY,
+                                    ExtensionIconSet::Match::kExactly,
+                                    test_case.color_scheme.value());
+    EXPECT_EQ(test_case.expected, icon_url.path().substr(1));
+  }
+}
+
+// "color_scheme" is not currently supported in singular form. It only generates
+// a warning, and not an error. Because known keys are checked first, all
+// subsequent keys are assumed to be integer sizes, until a warning such as this
+// proves otherwise.
+TEST_F(IconVariantsManifestTest, ColorSchemeKeyWarning) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "Test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [
+          {
+            "128": "128.png",
+            "color_scheme": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  ASSERT_TRUE(extension->install_warnings().size() == 1);
+  ASSERT_EQ("Icon variant 'size' is not valid.",
+            extension->install_warnings().at(0).message);
+}
+
+// "color_schemes" is represented as a plural key for manifest.json.
+TEST_F(IconVariantsManifestTest, ColorSchemesKeyValid) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "Test",
+        "version": "1",
+        "manifest_version": 3,
+        "icon_variants": [
+          {
+            "128": "128.png",
+            "color_schemes": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  ASSERT_TRUE(extension->install_warnings().empty());
 }
 
 }  // namespace extensions

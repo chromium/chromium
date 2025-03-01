@@ -1,0 +1,30 @@
+<!doctype html>
+<style type="text/css">
+  canvas {
+    width: 100px;
+    height: 100px;
+  }
+  #canvas0 { image-rendering: auto; }
+  #canvas1 { image-rendering: pixelated; }
+  #canvas2 { image-rendering: pixelated; }
+  #canvas3 { image-rendering: auto; }
+  #canvas4 { image-rendering: pixelated; }
+  #canvas5 { image-rendering: auto; }
+</style>
+
+<canvas id="canvas0" width="5" height="5"></canvas>
+<canvas id="canvas1" width="5" height="5"></canvas>
+<br>
+<canvas id="canvas2" width="5" height="5"></canvas>
+<canvas id="canvas3" width="5" height="5"></canvas>
+<br>
+<canvas id="canvas4" width="5" height="5"></canvas>
+<canvas id="canvas5" width="5" height="5"></canvas>
+
+<script>
+  for (const id of Array(6).keys()) {
+    const canvas = document.getElementById(`canvas${id}`);
+    const ctx = canvas.getContext('2d');
+    ctx.fillRect(1, 1, 3, 3);
+  }
+</script>

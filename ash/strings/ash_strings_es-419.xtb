@@ -246,7 +246,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="17722141032474077">Cálculos</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, se seleccionó <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configurar la visualización de las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
-<translation id="1785317913592722944">Quitar elemento del grupo sugerido</translation>
 <translation id="1786487376942610288">Cambiar entre el tamaño máximo o actual de la ventana de pantalla en pantalla</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1796561540704213354">Sitios web que incluyen las páginas que visitaste y las páginas abiertas</translation>
@@ -854,6 +853,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3859364108019690">No se pueden transmitir apps</translation>
 <translation id="3861651314799684201">Presiona intro para grabar la pantalla completa</translation>
 <translation id="3870197372373144624">Intenta apagar el dispositivo.</translation>
+<translation id="3879748587602334249">Administrador de descargas</translation>
 <translation id="3886872229787704059">Se abrió hoy</translation>
 <translation id="3891340733213178823">Presiona Ctrl + Mayús + Q dos veces para salir.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -879,6 +879,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3958714870339660776">Todo el día</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963124517343721543">Abre las ventanas y pestañas anteriores para continuar fácilmente desde donde dejaste. También verás sugerencias personalizadas de las próximas tareas.</translation>
+<translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3969043077941541451">No</translation>
 <translation id="3970324493235864154">Ver las notificaciones de tu teléfono</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -1620,6 +1621,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6319058840130157106">Se desplaza hacia atrás entre la esquina inferior derecha, el Selector, la barra de direcciones, la barra de favoritos, el sitio web abierto y las descargas</translation>
 <translation id="6319503618073410818">Ver detalles en el navegador</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
+<translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="6330012934079202188">Se muestran las ventanas de todos los escritorios. Para ver solo las del escritorio actual, presiona la flecha hacia arriba.</translation>
 <translation id="6337159624125741244">La lupa de pantalla completa está activada</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> es una sesión administrada por <ph name="MANAGER" /></translation>

@@ -837,6 +837,7 @@
 <translation id="2451607499823206582">Көз салуу</translation>
 <translation id="2452098632681057184">Экология жана айлана-чөйрөнү коргоо</translation>
 <translation id="2452837234288608067">Ишке ашкан жок. Кайра аракет кылыңыз.</translation>
+<translation id="2453045048779611513">Сактай алган нерселер уюмуңуз тарабынан чектелген.</translation>
 <translation id="2456755709261364512">Батареяңыздын кубаты <ph name="REQUIRED_BATTERY_PRECENT" />% жогору болушу керек</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core – булутта серепчинин эрежелерин бир жерден белгилөө куралы</translation>
 <translation id="2461822463642141190">Учурда</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2942492342931589800">Күнүмдүк</translation>
 <translation id="2942515540157583425">IT жана техникалык жумуштар</translation>
 <translation id="2943895734390379394">Жүктөп берүү убакыты:</translation>
+<translation id="2947281105969315778">Өтмөктөр топторуна кошулуу же бөлүшүү үчүн Chrome'го кирүүңүз керек</translation>
 <translation id="2948083400971632585">Параметрлер бетинен туташат деп конфигурацияланган бардык проксилерди өчүрүп койсоңуз болот.</translation>
 <translation id="2949183777371959169">Машина Chrome серепчисинин Булуттан башкаруу системасында катталган эмес болгондуктан этибарга алынган жок.</translation>
 <translation id="2951588413176968965">Электрондук каттар кутум</translation>
@@ -1945,6 +1947,7 @@
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Файлдарды Microsoft OneDrive'га жүктөп берүү тындырылды</translation>
+<translation id="4389931020843542579">Өтмөктөр тобу жүктөлүүдө</translation>
 <translation id="4390472908992056574">Кыр</translation>
 <translation id="4395550503472021297">Бул эрежелер төмөнкү эрежелердин демейки жүрүм-турумун көзөмөлдөйт: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Банктын вебсайтында ырастоо үчүн калкыма терезени ачат</translation>
@@ -3902,6 +3905,7 @@
 <translation id="791107458486222637">Кайталоо</translation>
 <translation id="791551905239004656">Сүрөт тартуу жана боёо</translation>
 <translation id="7916162853251942238">Флексо басып чыгаруу үчүн негиз</translation>
+<translation id="791698251820376781">Уюмуңуз кирүүгө тыюу салды</translation>
 <translation id="7926503317156566022">Авиация индустриясы</translation>
 <translation id="793209273132572360">Дарек жаңыртылсынбы?</translation>
 <translation id="7932579305932748336">Пальто</translation>
@@ -4614,6 +4618,7 @@
 <translation id="9191834167571392248">Төмөнкү сол жагын тешүү</translation>
 <translation id="9192361865877479444">Металл (Жылтырабаган кагаз)</translation>
 <translation id="9192947025498305328">Таза сулуулук</translation>
+<translation id="9195969368671142407">Уюмуңуз Google аккаунтуңузда сактоону чектегенде, өтмөктөр топторуна кошула же бөлүшө албайсыз</translation>
 <translation id="9199905725844810519">Басып чыгаруу бөгөттөлгөн</translation>
 <translation id="9201904868909900493">Сурамжылоо ачылууда...</translation>
 <translation id="9204089334327209740">Жүктөп берүү аяктагандан кийин, файлдарыңызды <ph name="CLOUD_PROVIDER" /> камсыздоочусунда өзгөртө аласыз. Жергиликтүү сактагыч, анын ичинде таштандыдагы бардык файлдар автоматтык түрдө өчүрүлөт.</translation>

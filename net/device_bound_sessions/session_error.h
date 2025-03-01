@@ -19,7 +19,7 @@ struct NET_EXPORT SessionError {
     kKeyError = 1,
     kSigningError = 2,
     kNetError = 3,
-    kHttpError = 4,
+    // Deprecated: kHttpError = 4,
     kServerRequestedTermination = 5,
     kInvalidConfigJson = 6,
     kInvalidSessionId = 7,
@@ -28,7 +28,9 @@ struct NET_EXPORT SessionError {
     kTooManyChallenges = 10,
     kInvalidFetcherUrl = 11,
     kInvalidRefreshUrl = 12,
-    kMaxValue = kInvalidRefreshUrl
+    kTransientHttpError = 13,
+    kPersistentHttpError = 14,
+    kMaxValue = kPersistentHttpError
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 

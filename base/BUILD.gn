@@ -45,7 +45,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 if (is_ios) {
-  # Used to access target_environment.
+  # Used to access target_environment and target_platform.
   import("//build/config/apple/mobile_config.gni")
 
   # Used to access ios_is_app_extension variable definition.
@@ -2188,12 +2188,19 @@ component("base") {
         "process/process_handle_mac.cc",
         "process/process_ios.cc",
         "process/process_iterator_mac.cc",
-        "process/process_mac.cc",
         "process/process_posix.cc",
         "sync_socket_posix.cc",
         "synchronization/waitable_event_posix.cc",
         "synchronization/waitable_event_watcher_posix.cc",
       ]
+
+      if (target_platform == "tvos") {
+        # tvOS apps must be single-process. Build a Process version that does
+        # the bare minimum and does not use Mach ports.
+        sources += [ "process/process_tvos.cc" ]
+      } else {
+        sources += [ "process/process_mac.cc" ]
+      }
 
       # We include launch_mac on simulator builds so unittests can fork.
       if (target_environment == "simulator") {
@@ -2250,13 +2257,6 @@ component("base") {
       "Foundation.framework",
       "UIKit.framework",
     ]
-  }
-
-  # tvOS.
-  if (is_tvos) {
-    sources -= [ "process/process_mac.cc" ]
-
-    sources += [ "process/process_tvos.cc" ]
   }
 
   # Linux.

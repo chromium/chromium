@@ -6,12 +6,14 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/extensions/sync_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/signin/public/base/consent_level.h"
@@ -116,8 +118,12 @@ void AccountExtensionTracker::SetAccountExtensionTypeOnExtensionInstalled(
   // Set to `kAccountInstalledSignedIn` if this is a syncable extension (by
   // ExtensionSyncService) that was installed when a user is signed in and has
   // sync enabled. Otherwise, set to `kLocal`.
+  // Note: Treat syncable component extensions as "local" extensions despite
+  // being syncable since they shouldn't be directly associated with users'
+  // accounts (and they're component extensions).
   AccountExtensionType type =
-      (is_syncable_extension && extension_sync_enabled)
+      (is_syncable_extension && extension_sync_enabled &&
+       !sync_helper::IsSyncableComponentExtension(&extension))
           ? AccountExtensionType::kAccountInstalledSignedIn
           : AccountExtensionType::kLocal;
   SetAccountExtensionType(extension.id(), type);
@@ -159,15 +165,30 @@ void AccountExtensionTracker::OnPrimaryAccountChanged(
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
-      // TODO(crbug.com/366474682): If extension syncing is enabled in transport
-      // mode, only set the pref if the user chooses to keep extensions when
-      // signing out.
+      ExtensionService* extension_service =
+          ExtensionSystem::Get(profile_)->extension_service();
+
       const ExtensionSet extensions =
           extension_registry->GenerateInstalledExtensionsSet();
 
+      // Uninstall any signed in account extensions if
+      // `uninstall_account_extensions_on_signout_` is true. Otherwise, set all
+      // extensions' AccountExtensionType to `kLocal`.
       for (const auto& extension : extensions) {
-        SetAccountExtensionType(extension->id(), AccountExtensionType::kLocal);
+        if (uninstall_account_extensions_on_signout_ &&
+            GetAccountExtensionType(extension->id()) ==
+                AccountExtensionType::kAccountInstalledSignedIn) {
+          extension_service->UninstallExtension(extension->id(),
+                                                UNINSTALL_REASON_USER_INITIATED,
+                                                /*error=*/nullptr);
+        } else {
+          SetAccountExtensionType(extension->id(),
+                                  AccountExtensionType::kLocal);
+        }
       }
+
+      // Reset the value of `uninstall_account_extensions_on_signout_`.
+      uninstall_account_extensions_on_signout_ = false;
 
       NotifyOnExtensionsUploadabilityChanged();
       observers_notified = true;
@@ -208,6 +229,23 @@ void AccountExtensionTracker::OnExtensionSyncDataReceived(
   if (type == AccountExtensionType::kLocal) {
     PromoteLocalToAccountExtension(extension_id);
   }
+}
+
+std::vector<const Extension*>
+AccountExtensionTracker::GetSignedInAccountExtensions() const {
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  const ExtensionSet extensions =
+      extension_registry->GenerateInstalledExtensionsSet();
+
+  std::vector<const Extension*> signed_in_account_extensions;
+  for (const auto& extension : extensions) {
+    if (GetAccountExtensionType(extension->id()) ==
+        AccountExtensionType::kAccountInstalledSignedIn) {
+      signed_in_account_extensions.push_back(extension.get());
+    }
+  }
+
+  return signed_in_account_extensions;
 }
 
 void AccountExtensionTracker::OnInitialExtensionsSyncDataReceived() {

@@ -31,6 +31,9 @@ bool ShouldShowPasswordSignInPromo(Profile& profile);
 bool ShouldShowAddressSignInPromo(Profile& profile,
                                   const autofill::AutofillProfile& address);
 
+// Whether we should show the sign in promo after a bookmark was saved.
+bool ShouldShowBookmarkSignInPromo(Profile& profile);
+
 // Returns whether `access_point` has an equivalent autofill signin promo.
 bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point);
 

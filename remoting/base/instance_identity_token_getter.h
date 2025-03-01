@@ -55,8 +55,8 @@ class InstanceIdentityTokenGetter {
   // The instance identity token from the last successful fetch operation.
   std::string identity_token_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The timestamp of the last successful identity token fetch operation.
-  base::Time last_fetch_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // The point at which the token should be refreshed.
+  base::Time token_expiration_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The set of callbacks to run after fetching an updated identity token.
   std::vector<TokenCallback> queued_callbacks_

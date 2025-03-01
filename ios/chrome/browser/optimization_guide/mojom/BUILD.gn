@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [
     "ai_prototyping_service.mojom",
+    "enhanced_calendar_service.mojom",
     "tab_organization_service.mojom",
   ]
 

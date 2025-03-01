@@ -837,6 +837,7 @@
 <translation id="2451607499823206582">በመከታተል ላይ</translation>
 <translation id="2452098632681057184">ሥነ ምህዳር እና አካባቢ</translation>
 <translation id="2452837234288608067">በዚህ ላይ ማገዝ አልተቻለም። እንደገና ይሞክሩ።</translation>
+<translation id="2453045048779611513">ድርጅትዎ እርስዎ ምን ማስቀመጥ እንደሚችሉ ይገድባል</translation>
 <translation id="2456755709261364512">ባትሪዎ ከ<ph name="REQUIRED_BATTERY_PRECENT" />% በላይ ኃይል መሙላት አለበት</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core ከደመና ሆነው የአሳሽ መመሪያዎችን ለማዋቀር የተማከለ መሣሪያ ይሰጥዎታል</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2942492342931589800">የተለመደ</translation>
 <translation id="2942515540157583425">የአይቲ እና የቴክኒክ ስራዎች</translation>
 <translation id="2943895734390379394">የሰቀላ ጊዜ፦</translation>
+<translation id="2947281105969315778">የትር ቡድኖችን ለማጋራት ወይም ለመቀላቀል ወደ Chrome በመለያ መግባት መቻል አለብዎት</translation>
 <translation id="2948083400971632585">ከቅንብሮች ገፅ ሆነው ማናቸውንም ለግንኙነት የተዋቀሩ ተኪዎችን ማሰናከል ይችላሉ።</translation>
 <translation id="2949183777371959169">ማሽኑ በChrome አሳሽ ደመና አስተዳደር ያልተመዘገበ ስለሆነ ችላ ተብሏል።</translation>
 <translation id="2951588413176968965">የእኔ የመልዕክት ሳጥን</translation>
@@ -1945,6 +1947,7 @@
 <translation id="4378154925671717803">ስልክ</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">ወደ Microsoft OneDrive የሚደረግ የፋይል ሰቀላ ባለበት ቆሟል</translation>
+<translation id="4389931020843542579">የትር ቡድንን በመጫን ላይ</translation>
 <translation id="4390472908992056574">ከፈፍ</translation>
 <translation id="4395550503472021297">ይህ መመሪያ የሚከተሉትን መመሪያዎች ነባሪ ባህሪ እየተቆጣጠረ ነው፦ <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">በባንክዎ ድር ጣቢያ ላይ ለማረጋገጥ ብቅ ባይ ይከፍታል</translation>
@@ -3903,6 +3906,7 @@
 <translation id="791107458486222637">የመድገም ውጤት</translation>
 <translation id="791551905239004656">ሥዕል መሳል እና ማቅለም</translation>
 <translation id="7916162853251942238">ፍሌክሶ ቤዝ</translation>
+<translation id="791698251820376781">ድርጅትዎ በመለያ እንዲገቡ አይፈቅድልዎትም</translation>
 <translation id="7926503317156566022">የአየር በረራ ኢንዱስትሪ</translation>
 <translation id="793209273132572360">አድራሻ ይዘምን?</translation>
 <translation id="7932579305932748336">ኮት</translation>
@@ -4616,6 +4620,7 @@
 <translation id="9191834167571392248">ግራ በኩል ከታች ብሳ</translation>
 <translation id="9192361865877479444">ብረት (ድብዳብ)</translation>
 <translation id="9192947025498305328">ንጹህ ውበት</translation>
+<translation id="9195969368671142407">ድርጅትዎ ወደ Google መለያ ማስቀመጥን ከገደበ የትር ቡድኖችን ማጋራት ወይም መቀላቀል አይችሉም</translation>
 <translation id="9199905725844810519">ማተም ታግዷል</translation>
 <translation id="9201904868909900493">የዳሰሳ ጥናት በመክፈት ላይ…</translation>
 <translation id="9204089334327209740">አንዴ ሰቀላ ከተጠናቀቀ በኋላ ፋይሎችዎን <ph name="CLOUD_PROVIDER" /> ውስጥ ማስተካከል ይችላሉ። መጣያ ውስጥ ያሉ ማናቸውም ፋይሎችን ጨምሮ አካባቢያዊ ማከማቻ በራስ-ሰር ይወገዳል።</translation>

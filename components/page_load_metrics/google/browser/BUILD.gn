@@ -4,6 +4,8 @@
 
 source_set("browser") {
   sources = [
+    "from_gws_abandoned_page_load_metrics_observer.cc",
+    "from_gws_abandoned_page_load_metrics_observer.h",
     "google_url_util.cc",
     "google_url_util.h",
     "gws_abandoned_page_load_metrics_observer.cc",

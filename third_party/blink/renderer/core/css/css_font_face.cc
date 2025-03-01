@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 
 #include <algorithm>
+
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_segmented_font_face.h"
@@ -35,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -83,6 +86,14 @@ bool CSSFontFace::FontLoaded(CSSFontFaceSource* source) {
   for (CSSSegmentedFontFace* segmented_font_face : segmented_font_faces_) {
     segmented_font_face->FontFaceInvalidated();
   }
+
+  const FontCustomPlatformData* platform_data = source->GetCustomPlaftormData();
+  if (LoadStatus() == FontFace::kLoaded && platform_data) {
+    TRACE_EVENT("devtools.timeline", "RemoteFontLoaded", "url",
+                source->GetURL(), "name",
+                platform_data->GetPostScriptNameOrFamilyNameForInspector());
+  }
+
   return true;
 }
 

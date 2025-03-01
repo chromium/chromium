@@ -35,6 +35,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
@@ -161,13 +162,20 @@ void GetOrigins(JNIEnv* env,
 
   // Now add all origins that have a non-default setting to the list.
   for (const auto& settings_it : all_settings) {
-    if (settings_it.GetContentSetting() == default_content_setting)
+    if (!base::FeatureList::IsEnabled(
+            permissions::features::kPermissionSiteSettingsRadioButton) &&
+        settings_it.GetContentSetting() == default_content_setting) {
       continue;
+    }
     if (managedOnly &&
         settings_it.source != content_settings::ProviderType::kPolicyProvider) {
       continue;
     }
     const std::string origin = settings_it.primary_pattern.ToString();
+    if (origin == "*") {
+      continue;
+    }
+
     const std::string embedder = settings_it.secondary_pattern.ToString();
 
     ScopedJavaLocalRef<jstring> jembedder;

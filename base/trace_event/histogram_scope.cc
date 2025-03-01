@@ -4,6 +4,8 @@
 
 #include "base/trace_event/histogram_scope.h"
 
+#include "base/check_op.h"
+
 namespace base::trace_event {
 namespace {
 

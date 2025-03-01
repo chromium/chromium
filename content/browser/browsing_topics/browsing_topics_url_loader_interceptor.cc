@@ -152,7 +152,7 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
     return;
   }
 
-  const blink::PermissionsPolicy* permissions_policy =
+  const network::PermissionsPolicy* permissions_policy =
       request_initiator_frame->GetPermissionsPolicy();
 
   if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(

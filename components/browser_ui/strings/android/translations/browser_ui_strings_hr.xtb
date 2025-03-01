@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu NFC uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati NFC uređaje.</translation>
 <translation id="1660204651932907780">Web-lokacije mogu reproducirati zvuk (preporučeno)</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci web-lokacije koriste se kako bi vas web-lokacija zapamtila, na primjer kako bi vas prijavila na račun ili vam prilagodila oglase. Da biste upravljali kolačićima za sve web-lokacije, idite na <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Web-lokacije obično šalju obavijesti o izvanrednim vijestima ili porukama chata.</translation>
 <translation id="169515064810179024">Blokiranje pristupa senzorima kretanja za web-lokacije</translation>
 <translation id="1717218214683051432">Senzori kretanja</translation>
 <translation id="1743802530341753419">Web-lokacije moraju tražiti dopuštenje za povezivanje s uređajem (preporučeno)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2096716221239095980">Izbriši sve podatke</translation>
 <translation id="2117655453726830283">Sljedeći slajd</translation>
+<translation id="2146263598007866206">Web-lokacije mogu automatski zajedno preuzimati povezane datoteke kako bi vam uštedjele vrijeme</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="216989819110952009">Iako su im oči bile zaštićene zelenim naočalama, Dorothy i njezine prijatelje u početku su zadivili</translation>
 <translation id="2176704795966505152">Prikaži opciju zumiranja na glavnom izborniku</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Web-lokacije mogu prikazivati upite za prijavu s usluga za provjeru identiteta.</translation>
 <translation id="2787357173144933081">Odmah pokreni višenamjenski okvir</translation>
 <translation id="2790501146643349491">Kad je ta postavka uključena, nedavno zatvorene web-lokacije mogu dovršiti slanje i primanje podataka. Kad je ta postavka isključena, nedavno zatvorene web-lokacije ne mogu dovršiti slanje ili primanje podataka.</translation>
+<translation id="2795716239552913152">Web-lokacije upotrebljavaju vašu lokaciju za relevantne značajke ili informacije poput lokalnih vijesti ili trgovina u blizini</translation>
 <translation id="2814830417943086299">Chrome sada prikazuje vaše nedavne kartice na popisu aplikacija i u rezultatima pretraživanja na uređaju. To uvijek možete isključiti u postavkama Chromea.</translation>
 <translation id="2822354292072154809">Jeste li sigurni da želite poništiti sva dopuštenja za aplikaciju <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Zahtijevaj prikaz na mobilnom uređaju</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Blokirani su kolačići trećih strana</translation>
 <translation id="3448554387819310837">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu kamere. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati kameru.</translation>
+<translation id="3491678231052507920">Web-lokacije obično upotrebljavaju uređaje i podatke virtualne stvarnosti da bi vam omogućile pristup VR sesijama</translation>
+<translation id="3496995426334945408">Web-lokacije obično upotrebljavaju JavaScript za prikaz interaktivnih značajki, primjerice videoigara ili web-obrazaca</translation>
 <translation id="3521663503435878242">Web-lokacije na domeni <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Ne dopuštaj web-lokacijama praćenje ruku</translation>
 <translation id="3532312529397438268">Web-lokacije ne mogu upotrebljavati alat za optimizaciju V8</translation>
@@ -179,6 +184,7 @@
 <translation id="3628308229821498208">Predložena pretraživanja</translation>
 <translation id="3658847490588580244">Donja tablica zadanog preglednika</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koja može vidjeti vaše aktivnosti u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koja može vidjeti vaše aktivnosti u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web-lokacije u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koje mogu vidjeti vaše aktivnosti u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koje mogu vidjeti vaše aktivnosti u grupi}}</translation>
+<translation id="3676777756440746804">Web-lokacije od vas ne smiju tražiti da odobrite korištenje podataka koje su spremile o vama</translation>
 <translation id="3697164069658504920">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu USB uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati USB uređaje.</translation>
 <translation id="3707034683772193706">Web-lokacija koju posjetite može spremiti male količine podataka pomoću Chromea, uglavnom kako bi potvrdila da niste bot</translation>
 <translation id="3709818294139939629">Uklonjen je pristup web-lokacije datoteci</translation>
@@ -203,9 +209,11 @@
 <translation id="3922092564198021702">Otvorite Postavke na telefonu</translation>
 <translation id="3933121352599513978">Sažmite neželjene zahtjeve (preporučeno)</translation>
 <translation id="3955193568934677022">Web-lokacije mogu reproducirati zaštićeni sadržaj (preporučeno)</translation>
+<translation id="3965467402665811906">Web-lokacije mogu tražiti dopuštenje za upotrebu podataka koje su spremile o vama</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="3987993985790029246">Kopiraj vezu</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992308058851451478">Web-lokacija <ph name="SITE" /> može upotrebljavati vaše podatke dok pregledavate</translation>
 <translation id="3992684624889376114">Informacije o ovoj stranici</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4046123991198612571">Sljedeća pjesma</translation>
@@ -218,6 +226,7 @@
 <translation id="4200726100658658164">Otvori postavke lokacije</translation>
 <translation id="4226663524361240545">Obavijesti mogu uključiti vibriranje uređaja</translation>
 <translation id="4259722352634471385">Otvaranje je blokirano: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Nakon što je napustite, web-lokacija može nastaviti sa sinkronizacijom kao što je prijenos fotografija ili slanje poruke chata</translation>
 <translation id="4278390842282768270">Dopušteno</translation>
 <translation id="429312253194641664">Web-lokacija reproducira medije</translation>
 <translation id="42981349822642051">Proširi</translation>
@@ -253,9 +262,11 @@
 <translation id="4816495437032298535">Spremljeno zumiranje za web-lokacije</translation>
 <translation id="4836046166855586901">Prikaži upit kad web-lokacija želi znati kad aktivno upotrebljavam ovaj uređaj</translation>
 <translation id="483914009762354899">Uključi sve web-lokacije pod ovom domenom</translation>
+<translation id="4882919381756638075">Web-lokacije obično upotrebljavaju mikrofon za komunikacijske značajke poput videochata</translation>
 <translation id="4883854917563148705">Upravljane postavke ne mogu se vratiti na zadano</translation>
 <translation id="4887024562049524730">Web-lokacije moraju tražiti dopuštenje za upotrebu uređaja i podataka virtualne stvarnosti (preporučeno)</translation>
 <translation id="4936863036653376783">Grupe ćete pronaći u odjeljku grupe kartica na svim svojim uređajima</translation>
+<translation id="4945443401464700059">Web-lokacija <ph name="SITE" /> ne smije upotrebljavati vaše podatke na sljedećim web-lokacijama:</translation>
 <translation id="4953688446973710931">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za automatsko preuzimanje više datoteka. Kad je ta postavka isključena, web-lokacije ne mogu automatski preuzimati više datoteka.</translation>
 <translation id="4962975101802056554">Opoziv svih dopuštenja za uređaj</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
@@ -403,6 +414,7 @@
 <translation id="6818926723028410516">Odaberite stavke</translation>
 <translation id="6838525730752203626">Koristite Chrome prema zadanim postavkama</translation>
 <translation id="6840760312327750441">Da biste grupirali kartice, dodirnite i držite karticu. Zatim je povucite na drugu karticu.</translation>
+<translation id="6842868554183332230">Web-lokacije obično otkriju kad aktivno koristite uređaj kako bi postavile vašu dostupnost u aplikacijama za chat</translation>
 <translation id="6851981911629679515">Uključite dodatnu zaštitu u Chromeovom alatu za JavaScript i WebAssembly</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može čitati NFC</translation>
 <translation id="6870169401250095575">Sakrij karticu Sigurnosna provjera</translation>
@@ -440,6 +452,7 @@
 <translation id="7383715096023715447">Postavke domene <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Sigurnosna provjera</translation>
 <translation id="7406113532070524618">Ova postavka funkcionira bez identificiranja ili dopuštanja web-lokacijama da vide vašu povijest pregledavanja, no web-lokacije mogu dijeliti malu količinu informacija kao dio potvrde</translation>
+<translation id="7409735910987429903">Web-lokacije mogu slati skočne prozore radi prikaza oglasa ili upotrebljavati preusmjeravanja kako bi vas odvele na web-lokacije koje možda ne želite posjetiti</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Blokirano je čitanje međuspremnika</translation>
 <translation id="7425915948813553151">Tamna tema za web-lokacije</translation>
@@ -449,12 +462,14 @@
 <translation id="7553211568594248088">Zatvori pretraživanje centra</translation>
 <translation id="7554752735887601236">Web-lokacija upotrebljava vaš mikrofon</translation>
 <translation id="7561196759112975576">Uvijek</translation>
+<translation id="7573594921350120855">Web-lokacije obično upotrebljavaju vašu videokameru radi komunikacijskih značajki poput videochata</translation>
 <translation id="757524316907819857">Web-lokacijama nije dopušteno reproduciranje zaštićenog sadržaja</translation>
 <translation id="7594634374516752650">Povezano s Bluetooth uređajem</translation>
 <translation id="7617547684249261169">Povijest, kolačiće, podatke web-lokacije i druge podatke možete izbrisati djelomično ili u potpunosti</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7667547420449112975">Čarobnjak iz Oza</translation>
+<translation id="7681597159868843240">Web-lokacije obično upotrebljavaju senzore kretanja uređaja radi značajki poput virtualne stvarnosti ili praćenja fitnessa</translation>
 <translation id="7688240020069572972">Sakrij karticu sa savjetima za Chrome</translation>
 <translation id="7719367874908701697">Zumiranje stranice</translation>
 <translation id="7759147511335618829">Kontrola i reprogr. MIDI uređaja</translation>
@@ -512,6 +527,7 @@
 <translation id="8441146129660941386">Traži unatrag</translation>
 <translation id="8444433999583714703">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj lokaciji, uključite lokaciju i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opozovi odobrenje uređaja</translation>
+<translation id="8471525937465764768">Web-lokacije se obično povezuju s USB uređajima radi značajki poput ispisa dokumenta ili njihovog spremanja na uređaj za pohranu</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarjela. Ponovo instalirajte aplikaciju.</translation>
 <translation id="8487700953926739672">Dostupno izvanmrežno</translation>
 <translation id="848952951823693243">Uvijek zahtijevaj web-lokaciju za mobilne uređaje</translation>
@@ -520,9 +536,11 @@
 <translation id="851751545965956758">Blokiraj povezivanje web-lokacija s uređajima</translation>
 <translation id="8525306231823319788">Cijeli zaslon</translation>
 <translation id="8541410041357371550">Ova web-lokacija prima podatke o temama vaših oglasa kako bi vam prikazivala relevantnije oglase.</translation>
+<translation id="854876774113449365">Web-lokacije koje posjećujete mogu ugraditi sadržaj s drugih web-lokacija, primjerice slike, oglase i tekst. Te druge web-lokacije mogu tražiti dopuštenje za upotrebu podataka koje su spremile o vama tijekom pregledavanja web-lokacije. <ph name="BEGIN_LINK" />Saznajte više o ugrađenom sadržaju<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Kako prikazivati zahtjeve</translation>
 <translation id="8558480467877843976">Sad možete koristiti Chrome svaki put kad pregledavate ili dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="857943718398505171">Dopušteno (preporučeno)</translation>
+<translation id="8593422116412089302">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu podataka koje su spremile o vama. Kad je ta postavka isključena, web-lokacije od vas ne mogu tražiti korištenje podataka koje su spremile o vama.</translation>
 <translation id="8609465669617005112">Premjesti gore</translation>
 <translation id="8617611086246832542">Kad je ta postavka uključena, prikazuje se prikaz web-lokacija na računalu. Kad je ta postavka isključena, prikazuje se prikaz web-lokacija na mobilnom uređaju.</translation>
 <translation id="8670078035093027626">Donja tablica zadanog preglednika otvorena je u punoj visini</translation>
@@ -560,6 +578,7 @@
 <translation id="9002538116239926534">Kad je ta postavka uključena, web-lokacije mogu spremati podatke na vaš uređaj. Kad je ta postavka isključena, web-lokacije ne mogu spremati podatke na vaš uređaj.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> ima dopuštenje</translation>
 <translation id="9019902583201351841">Upravljaju tvoji roditelji</translation>
+<translation id="902236149563113779">Web-lokacije obično prate položaj vaše kamere radi značajki AR-a, poput igara ili uputa s upozorenjima</translation>
 <translation id="9039697262778250930">Možda ste odjavljeni s tih web-lokacija</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Obrisati kolačiće?</translation>

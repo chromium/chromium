@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää NFC-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää NFC-laitteita.</translation>
 <translation id="1660204651932907780">Salli sivustojen toistaa ääniä (suositus)</translation>
 <translation id="1677097821151855053">Evästeillä ja muulla sivustodatalla tunnistetaan sinut, jotta voit esimerkiksi kirjautua sisään tai nähdä personoituja mainoksia. Jos haluat ylläpitää kaikkien sivustojen evästeitä, siirry <ph name="BEGIN_LINK" />Asetuksiin<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Sivustoilta lähetetään yleensä ilmoituksia esimerkiksi tuoreista uutisista tai chat-viesteistä.</translation>
 <translation id="169515064810179024">Estä sivustoja käyttämästä liiketunnistimien lukemia</translation>
 <translation id="1717218214683051432">Liiketunnistimet</translation>
 <translation id="1743802530341753419">Pyydä lupaa, kun sivustot yrittävät yhdistää laitteeseen (suositus)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Ääni</translation>
 <translation id="2096716221239095980">Poista kaikki data</translation>
 <translation id="2117655453726830283">Seuraava dia</translation>
+<translation id="2146263598007866206">Sivustot voivat ladata toisiinsa liittyviä tiedostoja automaattisesti yhdessä säästääkseen aikaa</translation>
 <translation id="2148716181193084225">Tänään</translation>
 <translation id="216989819110952009">Vihreistä silmälaseista huolimatta Dorothy ja ystävät sokaistuivat aluksi</translation>
 <translation id="2176704795966505152">Zoomausvaihtoehdon näyttäminen päävalikossa</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita.</translation>
 <translation id="2787357173144933081">Omniboxin pikakäynnistys</translation>
 <translation id="2790501146643349491">Kun tämä on päällä, äskettäin suljetut sivustot voivat viimeistellä datan lähettämistä tai vastaanottamista. Kun tämä ei ole päällä, äskettäin suljetut sivustot eivät voi viimeistellä datan lähettämistä tai vastaanottamista.</translation>
+<translation id="2795716239552913152">Sivustot käyttävät yleensä sijaintia tarjotakseen siihen liittyviä ominaisuuksia tai tietoja (esim. paikallisuutisia tai tietoja lähellä olevista kaupoista)</translation>
 <translation id="2814830417943086299">Chrome näyttää nyt äskettäiset välilehdet laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="2822354292072154809">Haluatko varmasti nollata kaikki sivuston käyttöoikeudet (<ph name="CHOSEN_OBJECT_NAME" />)?</translation>
 <translation id="2850913818900871965">Pyydä mobiilinäkymää</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Kolmannen osapuolen evästeet estetty</translation>
 <translation id="3448554387819310837">Kun tämä on päällä, sivustot voivat pyytää lupaa kameran käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää kameraasi.</translation>
+<translation id="3491678231052507920">Sivustot käyttävät yleensä virtuaalitodellisuuslaitteita ja ‑dataa VR-käyttökertojen luomiseen</translation>
+<translation id="3496995426334945408">Sivustot käyttävät JavaScriptiä yleensä videopelien, verkkolomakkeiden tai muiden interaktiivisten ominaisuuksien näyttämiseen</translation>
 <translation id="3521663503435878242">Sivustot, joiden verkkotunnus on <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Älä salli sivustojen seurata käsiäsi</translation>
 <translation id="3532312529397438268">Sivustot eivät voi käyttää V8-optimoijaa</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Kun lähdet sivustolta, se voi jatkaa synkronointia viimeistelläkseen asioita, kuten kuvien latauksen tai chat-viestin lähettämisen</translation>
 <translation id="4278390842282768270">Sallittu</translation>
 <translation id="429312253194641664">Sivusto toistaa mediaa</translation>
 <translation id="42981349822642051">Laajenna</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Tallennettu zoomaus sivustoille</translation>
 <translation id="4836046166855586901">Kysy aina, kun sivusto pyytää lupaa nähdä, käytätkö tätä laitetta aktiivisesti</translation>
 <translation id="483914009762354899">Lisää kaikki tämän verkkotunnuksen sivustot</translation>
+<translation id="4882919381756638075">Sivustot käyttävät mikrofonia yleensä kommunikaatio-ominaisuuksiin, kuten videopuheluihin</translation>
 <translation id="4883854917563148705">Ylläpidettyjä asetuksia ei voi nollata</translation>
 <translation id="4887024562049524730">Kysy, saavatko sivustot käyttää virtuaalitodellisuuslaitteitasi ja ‑dataasi (suositus)</translation>
 <translation id="4936863036653376783">Löydät ryhmäsi välilehtiryhmäosiosta kaikilla laitteillasi</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Valitse kohteet</translation>
 <translation id="6838525730752203626">Käytä oletuksena Chromea</translation>
 <translation id="6840760312327750441">Kun haluat ryhmitellä välilehtiä, kosketa yhtä pitkään. Vedä se sitten toisen välilehden päälle.</translation>
+<translation id="6842868554183332230">Sivustot havaitsevat yleensä, kun käytät laitetta aktiivisesti ja määrittävät sen perusteella saatavuutesi chat-sovelluksissa</translation>
 <translation id="6851981911629679515">Laita lisäsuojaus päälle Chromen JavaScript- ja WebAssembly-moottorissa</translation>
 <translation id="6864395892908308021">Tämä laite ei lue NFC-dataa</translation>
 <translation id="6870169401250095575">Piilota turvatarkistuskortti</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Asetukset: <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Turvatarkistus</translation>
 <translation id="7406113532070524618">Tämä asetus toimii niin, että sinua ei tunnisteta eivätkä sivustot näe selaushistoriaasi, mutta sivustot voivat jakaa pienen määrän tietoja osana todennusta</translation>
+<translation id="7409735910987429903">Sivustot voivat näyttää mainoksia ponnahdusikkunoissa tai ohjata sinut uudelleen sivustoille, joille et halunnut siirtyä</translation>
 <translation id="7423098979219808738">Kysy ensin</translation>
 <translation id="7423538860840206698">Leikepöydältä lukeminen estetty</translation>
 <translation id="7425915948813553151">Sivustojen tumma teema</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Poistu hubin hausta</translation>
 <translation id="7554752735887601236">Sivusto käyttää mikrofoniasi</translation>
 <translation id="7561196759112975576">Aina</translation>
+<translation id="7573594921350120855">Sivustot käyttävät videokameraa yleensä kommunikaatio-ominaisuuksiin, kuten videopuheluihin</translation>
 <translation id="757524316907819857">Estä sivustoja toistamasta suojattua sisältöä</translation>
 <translation id="7594634374516752650">Yhdistetty Bluetooth-laitteeseen</translation>
 <translation id="7617547684249261169">Voit poistaa osan tai kaiken historian, evästeet, sivustodatan ja muuta</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7667547420449112975">Ihmemaa Oz</translation>
+<translation id="7681597159868843240">Sivustot käyttävät yleensä laitteen liiketunnistimia esim. virtuaalitodellisuuteen tai liikuntaseurantaan</translation>
 <translation id="7688240020069572972">Piilota Chromen vinkkikortti</translation>
 <translation id="7719367874908701697">Sivun zoomaus</translation>
 <translation id="7759147511335618829">Ohjaus ja uudelleenohjelmointi</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Kelaa taaksepäin</translation>
 <translation id="8444433999583714703">Ota sijaintitiedot käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn sijaintiisi.</translation>
 <translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
+<translation id="8471525937465764768">Sivustot yhdistävät yleensä USB-laitteisiin tulostaakseen dokumentteja tai lisätäkseen niitä tallennustilaan</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> on vanhentunut. Asenna sovellus uudelleen.</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="848952951823693243">Pyydä aina mobiilisivustoa</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Kun tämä on päällä, sivustot voivat tallentaa dataa laitteellesi. Kun tämä on pois päältä, sivustot eivät voi tallentaa dataa laitteellesi.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> sallittu</translation>
 <translation id="9019902583201351841">Vanhempiesi hallinnoima</translation>
+<translation id="902236149563113779">Sivustot seuraavat yleensä kameran asentoa tarjotakseen AR-ominaisuuksia, kuten pelejä tai suuntailmoituksia</translation>
 <translation id="9039697262778250930">Sinut voidaan kirjata ulos näiltä sivustoilta</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Poistetaanko evästeet?</translation>

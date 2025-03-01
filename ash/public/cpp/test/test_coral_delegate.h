@@ -25,7 +25,8 @@ class TestCoralDelegate : public CoralDelegate {
   void OpenFeedbackDialog(
       const std::string& group_description,
       ScannerDelegate::SendFeedbackCallback send_feedback_callback) override;
-  bool CanUseGenerativeAiForCurrentProfile() override;
+  void CheckGenAIAgeAvailability(GenAIInquiryCallback callback) override;
+  bool GetGenAILocationAvailability() override;
 };
 
 }  // namespace ash

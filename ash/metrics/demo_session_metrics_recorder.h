@@ -118,6 +118,26 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kMaxValue = kEmptyClientID,
   };
 
+  // Types of the current demo session.
+  //
+  // It is worth noting that here is not perfectly accurate on the word
+  // "current", because functions in `[demo_login_controller.cc]
+  // LoginDemoAccount()` are asyc calls and they may fail with no failure
+  // handlers. It may not reflect the actual current session type on failure,
+  // but instead, it's more like an "upcoming" session type, also because it's
+  // set before entering the session.
+  //
+  // However, when you get its value in `DemoSessionMetricsRecorder`, it is
+  // reflecting the current session type as we're currently in the session.
+  enum class SessionType {
+    // Classic managed guest session.
+    kClassicMGS = 0,
+    // Signed-in demo session.
+    kSignedInDemoSession = 1,
+    // Fallback managed guest session due to the sign-in failure.
+    kFallbackMGS = 2,
+  };
+
   static constexpr char kUserClicksAndPressesMetric[] =
       "DemoMode.UserClicksAndPresses";
 
@@ -125,6 +145,21 @@ class ASH_EXPORT DemoSessionMetricsRecorder
 
   // Getter of this class' instance.
   static DemoSessionMetricsRecorder* Get();
+
+  // Records the result of the demo account setup request.
+  static void ReportDemoAccountSetupResult(
+      DemoAccountRequestResultCode result_code);
+
+  // Records the result of the demo account cleanup request.
+  static void ReportDemoAccountCleanupResult(
+      DemoAccountRequestResultCode result_code);
+
+  // It is used by Demo Mode only, and called by DemoLoginController before
+  // entering the session, to set the upcoming session type.
+  static void SetCurrentSessionType(SessionType session_type);
+
+  // Get the type of the current demo session.
+  static SessionType GetCurrentSessionTypeForTesting();
 
   // The recorder will create a normal timer by default. Tests should provide a
   // mock timer to control sampling periods.
@@ -153,12 +188,6 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   // demo mode signed-in shopper session, measured from first user activity to
   // last user activity.
   void ReportShopperSessionDwellTime();
-
-  // Records the result of demo account setup request.
-  void ReportDemoAccountSetupResult(DemoAccountRequestResultCode result_code);
-
-  // Records the result of demo account cleanup request.
-  void ReportDemoAccountCleanupResult(DemoAccountRequestResultCode result_code);
 
   // Called by DemoModeWindowCloser::OnInstanceUpdate:
   // Passing `app_id_or_package` instead of `aura::Window` here because app

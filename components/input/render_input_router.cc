@@ -240,10 +240,9 @@ blink::mojom::WidgetInputHandler* RenderInputRouter::GetWidgetInputHandler() {
 
 void RenderInputRouter::OnImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::optional<std::vector<gfx::Rect>>& character_bounds,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
-  render_input_router_client_->OnImeCompositionRangeChanged(
-      range, character_bounds, line_bounds);
+    const std::optional<std::vector<gfx::Rect>>& character_bounds) {
+  render_input_router_client_->OnImeCompositionRangeChanged(range,
+                                                            character_bounds);
 }
 void RenderInputRouter::OnImeCancelComposition() {
   render_input_router_client_->OnImeCancelComposition();

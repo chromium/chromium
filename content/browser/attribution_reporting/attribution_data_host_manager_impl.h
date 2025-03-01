@@ -108,9 +108,10 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       attribution_reporting::mojom::RegistrationEligibility,
       std::optional<blink::AttributionSrcToken> attribution_src_token,
       std::optional<std::string> devtools_request_id) override;
-  bool NotifyBackgroundRegistrationData(BackgroundRegistrationsId id,
-                                        const net::HttpResponseHeaders* headers,
-                                        GURL reporting_url) override;
+  bool NotifyBackgroundRegistrationData(
+      BackgroundRegistrationsId id,
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      GURL reporting_url) override;
   void NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId id) override;
 

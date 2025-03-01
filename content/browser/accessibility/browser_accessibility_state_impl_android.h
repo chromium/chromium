@@ -23,6 +23,9 @@ class BrowserAccessibilityStateImplAndroid
   void OnContrastLevelChanged(bool highContrastEnabled) override;
   void RecordAccessibilityServiceInfoHistograms() override;
 
+  // BrowserAccessibilityState implementation.
+  void SetKnownScreenReaderAppActive(bool is_active) override;
+
  protected:
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;

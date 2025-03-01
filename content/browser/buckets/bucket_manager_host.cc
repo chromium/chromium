@@ -135,8 +135,7 @@ void BucketManagerHost::GetBucketForDevtools(
     const std::string& name,
     mojo::PendingReceiver<blink::mojom::BucketHost> receiver) {
   GetQuotaManagerProxy()->GetBucketByNameUnsafe(
-      storage_key_, name, blink::mojom::StorageType::kTemporary,
-      base::SequencedTaskRunner::GetCurrentDefault(),
+      storage_key_, name, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&BucketManagerHost::DidGetBucketForDevtools,
                      weak_factory_.GetWeakPtr(), receivers_.current_context(),
                      std::move(receiver)));

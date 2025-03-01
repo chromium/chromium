@@ -29,7 +29,6 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -47,7 +46,6 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
-#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 
 namespace base {
 class RefCountedMemory;
@@ -137,11 +135,6 @@ class NewTabPageUI : public ui::MojoWebUIController,
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(mojo::PendingReceiver<searchbox::mojom::PageHandler>
                          pending_page_handler);
-
-  // Instantiates the implementor of metrics_reporter::mojom::PageMetricsHost
-  // mojo interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver);
 
   // Instantiates the implementor of the
   // browser_command::mojom::CommandHandlerFactory mojo interface passing
@@ -275,7 +268,6 @@ class NewTabPageUI : public ui::MojoWebUIController,
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
-  MetricsReporter metrics_reporter_;
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif

@@ -352,7 +352,9 @@
                                          identity:self.selectedIdentity
                                       accessPoint:self.accessPoint
                                 postSignInActions:PostSignInActionSet()
-                         presentingViewController:self.navigationController];
+                         presentingViewController:self.navigationController
+                                       anchorView:nil
+                                       anchorRect:CGRectNull];
   authenticationFlow.precedingHistorySync = YES;
   [self.consistencyPromoSigninMediator
       signinWithAuthenticationFlow:authenticationFlow];

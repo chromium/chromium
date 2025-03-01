@@ -2937,11 +2937,18 @@ void FederatedAuthRequestImpl::CompleteRequest(
     bool should_delay_callback) {
   DCHECK(result == FederatedAuthRequestResult::kSuccess || id_token.empty());
 
+  bool should_trigger_cooldown_on_ignore =
+      IsFedCmCooldownOnIgnoreEnabled() &&
+      token_status == TokenStatus::kUnhandledRequest &&
+      rp_mode_ == RpMode::kPassive;
   if (accounts_dialog_shown_time_.has_value()) {
     fedcm_metrics_->RecordAccountsDialogShownDuration(
         idp_data_for_display_,
         base::TimeTicks::Now() - accounts_dialog_shown_time_.value());
     accounts_dialog_shown_time_ = std::nullopt;
+    if (should_trigger_cooldown_on_ignore && dialog_type_ == kSelectAccount) {
+      api_permission_delegate_->RecordIgnoreAndEmbargo(GetEmbeddingOrigin());
+    }
   }
 
   if (mismatch_dialog_shown_time_.has_value()) {
@@ -2949,6 +2956,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
         idp_data_for_display_,
         base::TimeTicks::Now() - mismatch_dialog_shown_time_.value());
     mismatch_dialog_shown_time_ = std::nullopt;
+    if (should_trigger_cooldown_on_ignore && dialog_type_ == kConfirmIdpLogin) {
+      api_permission_delegate_->RecordIgnoreAndEmbargo(GetEmbeddingOrigin());
+    }
   }
 
   if (!auth_request_token_callback_) {

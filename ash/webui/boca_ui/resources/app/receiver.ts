@@ -37,6 +37,9 @@ function initializeApp(app: ClientApi) {
         app.onActiveNetworkStateChanged(
             getNetworkInfoMojomToUI(activeNetworks));
       });
+
+  callbackRouter.onLocalCaptionDisabled.addListener(
+      () => app.onLocalCaptionDisabled());
 }
 
 /**

@@ -472,8 +472,21 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
+    focused_tab_data_observer_ = std::make_unique<TabDataObserver>(
+        focused_tab_data.focused_tab_contents.get(),
+        /*disconnect_on_primary_page_changed=*/true,
+        base::BindRepeating(&GlicWebClientHandler::FocusedTabDataChanged,
+                            base::Unretained(this)));
     web_client_->NotifyFocusedTabChanged(
         CreateFocusedTabData(focused_tab_data));
+  }
+
+  void FocusedTabDataChanged(glic::mojom::TabDataPtr tab_data) {
+    if (!tab_data) {
+      return;
+    }
+    web_client_->NotifyFocusedTabChanged(
+        glic::mojom::FocusedTabData::NewFocusedTab(std::move(tab_data)));
   }
 
   PrefChangeRegistrar pref_change_registrar_;
@@ -483,6 +496,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   raw_ptr<PrefService> pref_service_;
   ActiveStateCalculator active_state_calculator_;
   base::CallbackListSubscription focus_changed_subscription_;
+  std::unique_ptr<TabDataObserver> focused_tab_data_observer_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;

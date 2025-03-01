@@ -42,8 +42,8 @@
 #include "components/page_image_service/image_service_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -207,7 +207,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   // launch account storage for bookmarks.
   source->AddBoolean("isBookmarksInTransportModeEnabled",
                      base::FeatureList::IsEnabled(
-                         syncer::kSyncEnableBookmarksInTransportMode));
+                         switches::kSyncEnableBookmarksInTransportMode));
   source->AddInteger(
       "sortOrder",
       prefs->GetInteger(bookmarks_webui::prefs::kBookmarksSortOrder));

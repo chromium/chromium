@@ -265,6 +265,10 @@ export class ClientDelegateFactory {
         const result = await pageHandler.endViewScreenSession(id);
         return !resultHasError(result);
       },
+      setViewScreenSessionActive: async (id: string) => {
+        const result = await pageHandler.setViewScreenSessionActive(id);
+        return !resultHasError(result);
+      },
       getUserPref: async (pref: BocaValidPref) => {
         return (await pageHandler.getUserPref(pref.valueOf())).value;
       },

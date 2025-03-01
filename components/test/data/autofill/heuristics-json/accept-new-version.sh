@@ -8,7 +8,9 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-for FILE in "${SCRIPT_DIR}"/**/**/*.json; do
+shopt -s globstar  # Enable **
+
+for FILE in "${SCRIPT_DIR}"/**/*.json; do
   if [[ -f "${FILE}.new" ]]; then
     mv "${FILE}.new" "${FILE}"
   fi

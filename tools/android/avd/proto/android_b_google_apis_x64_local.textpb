@@ -11,14 +11,14 @@ emulator_package {
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-baklava/google_apis/x86_64"
-  version: "ly6e302ZivQeSDIEjrw4VA2X9W5u9Nqh34Zp7HE_NskC"  # (v3) BP22.250103.003
+  version: "qPrZ-kVdkcbaCLpF2uP-gzhUimrvkjiS5xAgxMN2VqUC"  # (v4) BP22.250124.008
 }
 system_image_name: "system-images;android-Baklava;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-baklava/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8723031256415080033
-  version: "0YSQtnQZa891Rqv5n4MhNMITUNTfzZaxaHrmyvIJkUIC"
+  # Created in https://ci.chromium.org/ui/b/8721753575661275057
+  version: "ei2kwE9YLrg8hRxmRBbxB5bwPDaV9n6wmImEc5Fug3QC"
 }
 avd_name: "android_b_google_apis_x64"
 

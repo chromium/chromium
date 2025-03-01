@@ -36,8 +36,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterClient {
   virtual void OnImeCancelComposition() = 0;
   virtual void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds) = 0;
   // Initiate stylus handwriting.
   virtual void OnStartStylusWriting() = 0;
   // Update which editable element has focus for stylus writing. When

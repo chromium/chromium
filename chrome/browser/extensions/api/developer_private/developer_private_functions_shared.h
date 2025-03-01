@@ -276,6 +276,24 @@ class DeveloperPrivateRemoveUserSpecifiedSitesFunction
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateGetUserAndExtensionSitesByEtldFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getUserAndExtensionSitesByEtld",
+                             DEVELOPERPRIVATE_GETUSERANDEXTENSIONSITESBYETLD)
+  DeveloperPrivateGetUserAndExtensionSitesByEtldFunction();
+
+  DeveloperPrivateGetUserAndExtensionSitesByEtldFunction(
+      const DeveloperPrivateGetUserAndExtensionSitesByEtldFunction&) = delete;
+  DeveloperPrivateGetUserAndExtensionSitesByEtldFunction& operator=(
+      const DeveloperPrivateGetUserAndExtensionSitesByEtldFunction&) = delete;
+
+ private:
+  ~DeveloperPrivateGetUserAndExtensionSitesByEtldFunction() override;
+
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateGetMatchingExtensionsForSiteFunction
     : public DeveloperPrivateAPIFunction {
  public:

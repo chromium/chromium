@@ -246,7 +246,6 @@
 <translation id="17722141032474077">محاسبات</translation>
 <translation id="1774796056689732716">تقویم، <ph name="CURRENT_MONTH_YEAR" />، درحال‌حاضر <ph name="DATE" /> انتخاب شده است.</translation>
 <translation id="178347895271755507">راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، و اعلان‌های جدید تلفن</translation>
-<translation id="1785317913592722944">برداشتن مورد از گروه پیشنهادی</translation>
 <translation id="1786487376942610288">جابه‌جایی بین اندازه بیشینه یا اندازه فعلی پنجره تصویر در تصویر</translation>
 <translation id="1787955149152357925">خاموش</translation>
 <translation id="1796561540704213354">وب‌سایت‌ها شامل صفحه‌های که از آن‌ها بازدید کرده‌اید و صفحه‌های باز می‌شود</translation>
@@ -853,6 +852,7 @@
 <translation id="3859364108019690">برنامه‌ها جاری‌سازی نشدند</translation>
 <translation id="3861651314799684201">برای ضبط تمام صفحه، کلید «ورود» را فشار دهید</translation>
 <translation id="3870197372373144624">دستگاهتان را خاموش کنید.</translation>
+<translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3886872229787704059">امروز باز شده است</translation>
 <translation id="3891340733213178823">‏برای خروج از سیستم Ctrl+Shift+Q را دو بار فشار دهید.</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
@@ -878,6 +878,7 @@
 <translation id="3958714870339660776">کل روز</translation>
 <translation id="3962859241508114581">آهنگ قبلی</translation>
 <translation id="3963124517343721543">با باز کردن پنجره‌ها و برگه‌های قبلی‌تان، به‌راحتی از جایی که کار را رها کردید ادامه دهید. همچنین پیشنهادهای شخصی‌سازی‌شده برای فعالیت‌های بعدی را خواهید دید.</translation>
+<translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3969043077941541451">خاموش</translation>
 <translation id="3970324493235864154">مشاهده اعلان‌های تلفن</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
@@ -1619,6 +1620,7 @@
 <translation id="6319058840130157106">حرکت به‌عقب بین گوشه پایین سمت راست، «راه‌انداز»، نوار نشانی، نوار نشانک‌ها، وب‌سایتی که باز است، و بارگیری‌ها</translation>
 <translation id="6319503618073410818">مشاهده جزئیات در مرورگر</translation>
 <translation id="6324916366299863871">ویرایش میان‌بر</translation>
+<translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="6330012934079202188">درحال نمایش پنجره‌های همه میز کارها، برای نمایش پنجره‌های میز کار کنونی، کلید «جهت‌نمای بالا» را فشار دهید</translation>
 <translation id="6337159624125741244">ذره‌بین تمام‌صفحه روشن است</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> جلسه مدیریت‌شده‌ای است که توسط <ph name="MANAGER" /> مدیریت می‌شود</translation>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>Test that canvases observe pixelated style changes.</title>
+<style>
+  img {
+    display: none;
+  }
+  canvas {
+    width: 100px;
+    height: 100px;
+  }
+  #canvas0 { image-rendering: pixelated; }
+  #canvas1 { image-rendering: auto; }
+  #canvas2 { image-rendering: auto; }
+  #canvas3 { image-rendering: pixelated; }
+  #canvas4 { image-rendering: auto; }
+  #canvas5 { image-rendering: pixelated; }
+</style>
+<body>
+  <img id="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQIHWP4z8DwHwyBNJDN8B8AQNEG+t5Ik2kAAAAASUVORK5CYII=">
+  <canvas id="canvas0" width="4" height="4"></canvas>
+  <canvas id="canvas1" width="4" height="4"></canvas>
+  <br>
+  <canvas id="canvas2" width="4" height="4"></canvas>
+  <canvas id="canvas3" width="4" height="4"></canvas>
+  <br>
+  <canvas id="canvas4" width="4" height="4"></canvas>
+  <canvas id="canvas5" width="4" height="4"></canvas>
+</body>
+<script>
+  function draw() {
+    const img = document.getElementById('img');
+    for (const id of Array(6).keys()) {
+      const canvas = document.getElementById(`canvas${id}`);
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 1, 1);
+    }
+  }
+  window.onload = draw;
+</script>

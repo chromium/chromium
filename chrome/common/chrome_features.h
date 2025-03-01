@@ -198,6 +198,10 @@ extern const base::FeatureParam<int> kGlicInitialHeight;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicMaxHeightPercentOfScreen;
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kGlicFreInitialWidth;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kGlicFreInitialHeight;
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kGlicDefaultHotkey;
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicURLConfig);

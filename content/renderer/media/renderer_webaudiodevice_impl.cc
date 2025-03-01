@@ -69,33 +69,33 @@ blink::WebAudioDeviceSourceType GetLatencyHintSourceType(
 }
 
 int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
-                        media::AudioLatency::Type latency,
                         const media::AudioParameters& hardware_params) {
-  media::AudioParameters::HardwareCapabilities hardware_capabilities =
+  const media::AudioParameters::HardwareCapabilities hardware_capabilities =
       hardware_params.hardware_capabilities().value_or(
           media::AudioParameters::HardwareCapabilities());
 
   // Adjust output buffer size according to the latency requirement.
-  switch (latency) {
-    case media::AudioLatency::Type::kInteractive:
+  switch (latency_hint.Category()) {
+    case WebAudioLatencyHint::kCategoryInteractive:
       return media::AudioLatency::GetInteractiveBufferSize(
           hardware_params.frames_per_buffer());
-    case media::AudioLatency::Type::kRtc:
+    case WebAudioLatencyHint::kCategoryBalanced:
       return media::AudioLatency::GetRtcBufferSize(
           hardware_params.sample_rate(), hardware_params.frames_per_buffer());
-    case media::AudioLatency::Type::kPlayback:
+    case WebAudioLatencyHint::kCategoryPlayback:
       return media::AudioLatency::GetHighLatencyBufferSize(
           hardware_params.sample_rate(), hardware_params.frames_per_buffer());
-    case media::AudioLatency::Type::kExactMS:
+    case WebAudioLatencyHint::kCategoryExact:
       return media::AudioLatency::GetExactBufferSize(
           base::Seconds(latency_hint.Seconds()), hardware_params.sample_rate(),
           hardware_params.frames_per_buffer(),
           hardware_capabilities.min_frames_per_buffer,
           hardware_capabilities.max_frames_per_buffer,
           media::limits::kMaxWebAudioBufferSize);
-    default:
+    case WebAudioLatencyHint::kLastValue:
       NOTREACHED();
   }
+  NOTREACHED();
 }
 
 media::AudioParameters GetOutputDeviceParameters(
@@ -195,12 +195,8 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
       "%s => (hardware_params=[%s])", __func__,
       original_sink_params_.AsHumanReadableString().c_str()));
 
-  const media::AudioLatency::Type latency =
-      AudioDeviceFactory::GetSourceLatencyType(
-          GetLatencyHintSourceType(latency_hint_.Category()));
-
   const int output_buffer_size =
-      GetOutputBufferSize(latency_hint_, latency, original_sink_params_);
+      GetOutputBufferSize(latency_hint_, original_sink_params_);
   DCHECK_NE(0, output_buffer_size);
 
   current_sink_params_.Reset(original_sink_params_.format(), layout_config,
@@ -208,7 +204,8 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
                              output_buffer_size);
 
   // Specify the latency info to be passed to the browser side.
-  current_sink_params_.set_latency_tag(latency);
+  current_sink_params_.set_latency_tag(AudioDeviceFactory::GetSourceLatencyType(
+      GetLatencyHintSourceType(latency_hint_.Category())));
   SendLogMessage(
       base::StringPrintf("%s => (sink_params=[%s])", __func__,
                          current_sink_params_.AsHumanReadableString().c_str()));

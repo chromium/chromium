@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
 
 namespace blink {
 
@@ -63,6 +64,11 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
         grid_axis_tracks_->Direction());
   }
 
+  const Vector<LayoutUnit>& GetRunningPositions(
+      const MasonryRunningPositions& running_positions) {
+    return running_positions.running_positions_;
+  }
+
  private:
   const MinMaxSizes& ContributionSizes(wtf_size_t index) {
     const auto& contribution_sizes =
@@ -85,13 +91,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
-    <style>
-    #masonry {
-      display: masonry;
-      masonry-template-tracks: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
-    }
-    </style>
-    <div id="masonry">
+    <div id="masonry" style="display: masonry">
       <div>1</div>
       <div style="masonry-track: 3 / span 2">2</div>
       <div style="masonry-track: span 2">3</div>
@@ -135,7 +135,10 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
       masonry-template-tracks: 5% repeat(3, 10px auto) repeat(1, auto 5px 1fr);
     }
     </style>
-    <div id="masonry"></div>
+    <div id="masonry">
+      <div style="masonry-track: span 2 / 1"></div>
+      <div style="masonry-track: 9 / span 5"></div>
+    </div>
   )HTML");
 
   BlockNode node(GetLayoutBoxByElementId("masonry"));
@@ -152,11 +155,17 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
   MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
-  const auto& ranges = Ranges();
-  EXPECT_EQ(ranges.size(), 3u);
+  // The first item spans 2 tracks before the explicit grid, creating the first
+  // range of 2 tracks. Then follows the template track ranges: one range of a
+  // single track for the `5%`, then a range for the `repeat(3, ...)` which
+  // spans 6 tracks. The last repeat creates a range of 3 tracks, but it's split
+  // by the second item, creating one range of 1 track and another of 2 tracks.
+  // Finally, the second item spans a range of 3 track past the explicit grid.
+  const Vector<wtf_size_t> expected_start_lines = {0, 2, 3, 9, 10, 12};
+  const Vector<wtf_size_t> expected_track_counts = {2, 1, 6, 1, 2, 3};
 
-  const Vector<wtf_size_t> expected_start_lines = {0, 1, 7};
-  const Vector<wtf_size_t> expected_track_counts = {1, 6, 3};
+  const auto& ranges = Ranges();
+  EXPECT_EQ(ranges.size(), expected_start_lines.size());
 
   for (wtf_size_t i = 0; i < ranges.size(); ++i) {
     EXPECT_EQ(ranges[i].start_line, expected_start_lines[i]);
@@ -365,6 +374,28 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
   for (wtf_size_t i = 0; i < set_count; ++i) {
     EXPECT_EQ(TrackSize(i), LayoutUnit(expected_track_sizes[i]));
   }
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
+  MasonryRunningPositions running_positions(4);
+
+  Vector<LayoutUnit> expected_running_positions = {
+      LayoutUnit(0), LayoutUnit(3), LayoutUnit(3), LayoutUnit(0)};
+  running_positions.UpdateRunningPositionsForSpan(
+      GridSpan::TranslatedDefiniteGridSpan(1, 3), LayoutUnit(3));
+  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
+
+  expected_running_positions = {LayoutUnit(4), LayoutUnit(4), LayoutUnit(4),
+                                LayoutUnit(4)};
+  running_positions.UpdateRunningPositionsForSpan(
+      GridSpan::TranslatedDefiniteGridSpan(0, 4), LayoutUnit(4));
+  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
+
+  expected_running_positions = {LayoutUnit(4), LayoutUnit(4), LayoutUnit(5),
+                                LayoutUnit(5)};
+  running_positions.UpdateRunningPositionsForSpan(
+      GridSpan::TranslatedDefiniteGridSpan(2, 4), LayoutUnit(5));
+  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
 }
 
 }  // namespace blink

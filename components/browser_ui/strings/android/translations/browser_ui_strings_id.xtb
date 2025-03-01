@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat NFC. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat NFC.</translation>
 <translation id="1660204651932907780">Mengizinkan situs memutar suara (direkomendasikan)</translation>
 <translation id="1677097821151855053">Cookie dan data situs lainnya digunakan untuk mengingat Anda, misalnya untuk login atau personalisasi iklan. Untuk mengelola cookie semua situs, lihat <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Situs biasanya mengirim notifikasi untuk memberi tahu Anda tentang berita terbaru atau pesan chat.</translation>
 <translation id="169515064810179024">Memblokir situs agar tidak mengakses sensor gerakan</translation>
 <translation id="1717218214683051432">Sensor gerakan</translation>
 <translation id="1743802530341753419">Tanya sebelum mengizinkan situs terhubung ke perangkat (disarankan)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Suara</translation>
 <translation id="2096716221239095980">Hapus semua data</translation>
 <translation id="2117655453726830283">Slide berikutnya</translation>
+<translation id="2146263598007866206">Situs mungkin dapat otomatis mendownload file yang berkaitan sekaligus untuk menghemat waktu Anda</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="216989819110952009">Meskipun mengenakan kacamata berwarna hijau, Dorothy dan teman-temannya pada awalnya terpesona oleh</translation>
 <translation id="2176704795966505152">Tampilkan opsi zoom di menu utama</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Situs dapat menampilkan perintah login dari layanan identitas.</translation>
 <translation id="2787357173144933081">Mulai Omnibox</translation>
 <translation id="2790501146643349491">Jika diaktifkan, situs yang baru saja ditutup dapat menyelesaikan pengiriman dan penerimaan data. Jika dinonaktifkan, situs yang baru saja ditutup tidak dapat menyelesaikan pengiriman atau penerimaan data.</translation>
+<translation id="2795716239552913152">Situs biasanya menggunakan lokasi Anda untuk fitur atau informasi yang relevan, seperti berita lokal atau toko terdekat</translation>
 <translation id="2814830417943086299">Chrome kini menampilkan tab terbaru di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="2822354292072154809">Yakin ingin menyetel ulang semua izin situs untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Minta tampilan seluler</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Cookie pihak ketiga diblokir</translation>
 <translation id="3448554387819310837">Jika diaktifkan, situs dapat meminta untuk menggunakan kamera Anda. Jika dinonaktifkan, situs tidak dapat menggunakan kamera Anda.</translation>
+<translation id="3491678231052507920">Situs biasanya menggunakan perangkat dan data virtual reality Anda agar Anda dapat masuk ke sesi VR</translation>
+<translation id="3496995426334945408">Situs biasanya menggunakan JavaScript untuk menampilkan fitur interaktif, seperti video game atau formulir web</translation>
 <translation id="3521663503435878242">Situs di domain <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Jangan izinkan situs melacak tangan Anda</translation>
 <translation id="3532312529397438268">Situs tidak dapat menggunakan pengoptimal V8</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Buka Setelan Lokasi</translation>
 <translation id="4226663524361240545">Notifikasi dapat membuat perangkat bergetar</translation>
 <translation id="4259722352634471385">Navigasi diblokir: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Setelah Anda menutupnya, situs dapat terus melakukan sinkronisasi untuk menyelesaikan tugas, seperti mengupload foto atau mengirim pesan chat</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
 <translation id="429312253194641664">Sebuah situs sedang memutar media</translation>
 <translation id="42981349822642051">Luaskan</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Zoom tersimpan untuk situs</translation>
 <translation id="4836046166855586901">Tanyakan saat situs ingin mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="483914009762354899">Sertakan semua situs di domain ini</translation>
+<translation id="4882919381756638075">Situs biasanya menggunakan mikrofon Anda untuk fitur komunikasi seperti video chat</translation>
 <translation id="4883854917563148705">Setelan yang dikelola tidak dapat direset</translation>
 <translation id="4887024562049524730">Tanyakan sebelum mengizinkan situs untuk menggunakan perangkat dan data virtual reality Anda (direkomendasikan)</translation>
 <translation id="4936863036653376783">Anda akan menemukan grup di bagian grup tab di semua perangkat Anda</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Pilih item</translation>
 <translation id="6838525730752203626">Gunakan Chrome secara Default</translation>
 <translation id="6840760312327750441">Untuk mengelompokkan tab, sentuh lama sebuah tab. Lalu, tarik ke tab lainnya.</translation>
+<translation id="6842868554183332230">Situs biasanya mendeteksi saat Anda aktif menggunakan perangkat untuk menyetel status Anda di aplikasi chat</translation>
 <translation id="6851981911629679515">Aktifkan perlindungan tambahan di mesin WebAssembly dan JavaScript Chrome</translation>
 <translation id="6864395892908308021">Perangkat ini tidak dapat membaca NFC</translation>
 <translation id="6870169401250095575">Sembunyikan kartu Pemeriksaan Keselamatan</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Setelan untuk <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Pemeriksaan Keamanan</translation>
 <translation id="7406113532070524618">Setelan ini berfungsi tanpa mengidentifikasi Anda atau mengizinkan situs melihat histori penjelajahan Anda, meskipun situs dapat membagikan info dalam jumlah kecil sebagai bagian dari verifikasi</translation>
+<translation id="7409735910987429903">Situs mungkin dapat mengirim pop-up untuk menampilkan iklan, atau menggunakan pengalihan untuk mengarahkan Anda ke situs yang mungkin tidak ingin Anda kunjungi</translation>
 <translation id="7423098979219808738">Tanyakan dulu</translation>
 <translation id="7423538860840206698">Diblokir agar tidak membaca papan klip</translation>
 <translation id="7425915948813553151">Tema gelap untuk situs</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Keluar dari penelusuran hub</translation>
 <translation id="7554752735887601236">Situs menggunakan mikrofon Anda</translation>
 <translation id="7561196759112975576">Selalu</translation>
+<translation id="7573594921350120855">Situs biasanya menggunakan kamera video Anda untuk fitur komunikasi seperti video chat</translation>
 <translation id="757524316907819857">Blokir situs agar tidak memutar konten yang dilindungi</translation>
 <translation id="7594634374516752650">Terhubung ke perangkat Bluetooth</translation>
 <translation id="7617547684249261169">Anda dapat menghapus sebagian atau semua histori, cookie, data situs, dan lainnya</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7667547420449112975">Penyihir Oz yang Menakjubkan</translation>
+<translation id="7681597159868843240">Situs biasanya menggunakan sensor gerakan perangkat Anda untuk fitur seperti virtual reality atau pelacak kebugaran</translation>
 <translation id="7688240020069572972">Sembunyikan kartu tips Chrome</translation>
 <translation id="7719367874908701697">Perkecil/perbesar halaman</translation>
 <translation id="7759147511335618829">Program ulang &amp; kontrol perangkat MIDI</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Cari mundur</translation>
 <translation id="8444433999583714703">Untuk mengizinkan <ph name="APP_NAME" /> mengakses lokasi Anda, aktifkan juga lokasi di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Cabut izin perangkat</translation>
+<translation id="8471525937465764768">Situs biasanya terhubung ke perangkat USB untuk fitur seperti pencetakan dokumen atau penyimpanan ke perangkat penyimpanan</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' sudah usang. Instal ulang aplikasi.</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>
 <translation id="848952951823693243">Selalu minta situs seluler</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Jika diaktifkan, situs dapat menyimpan data di perangkat Anda. Jika dinonaktifkan, situs tidak dapat menyimpan data di perangkat Anda.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> diizinkan</translation>
 <translation id="9019902583201351841">Dikelola oleh orang tua Anda</translation>
+<translation id="902236149563113779">Situs biasanya melacak posisi kamera Anda untuk fitur AR, seperti game atau petunjuk arah</translation>
 <translation id="9039697262778250930">Anda mungkin akan logout dari situs ini</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Hapus cookie?</translation>

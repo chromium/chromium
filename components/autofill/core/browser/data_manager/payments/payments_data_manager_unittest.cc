@@ -2429,7 +2429,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers) {
   int64_t instrument_id = 1234L;
   std::string issuer_id = std::string(kBnplAffirmIssuerId);
   std::string currency = "USD";
-  uint64_t min_price_in_micros = 50000000;
+  uint64_t min_price_in_micros = 5000000;
   uint64_t max_price_in_micros = 35000000;
   sync_pb::PaymentInstrument payment_instrument =
       test::CreatePaymentInstrumentWithLinkedBnplIssuer(

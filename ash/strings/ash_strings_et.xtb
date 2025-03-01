@@ -246,7 +246,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="17722141032474077">Arvutused</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, praegu on valitud <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Teie telefoni hiljutiste fotode, meediafailide ja märguannete kuvamise seadistamine</translation>
-<translation id="1785317913592722944">Üksuse eemaldamine soovitatud grupist</translation>
 <translation id="1786487376942610288">Vaheta pilt pildis aknas maksimumsuuruse ja praeguse suuruse vahel</translation>
 <translation id="1787955149152357925">Väljas</translation>
 <translation id="1796561540704213354">Veebisaidid, mis hõlmavad teie külastatud lehti ja avatud lehti</translation>
@@ -854,6 +853,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3859364108019690">Rakendusi ei saa voogesitada</translation>
 <translation id="3861651314799684201">Vajutage täisekraani salvestamiseks sisestusklahvi</translation>
 <translation id="3870197372373144624">Üritage oma seade välja lülitada.</translation>
+<translation id="3879748587602334249">Allalaadimishaldur</translation>
 <translation id="3886872229787704059">Täna avatud</translation>
 <translation id="3891340733213178823">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
@@ -879,6 +879,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3958714870339660776">Terve päev</translation>
 <translation id="3962859241508114581">Eelmine lugu</translation>
 <translation id="3963124517343721543">Jätkake sealt, kus pooleli jäite, avades oma eelmise seansi aknad ja vahelehed. Samuti näete isikupärastatud soovitusi järgmiste tegevuste kohta.</translation>
+<translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
 <translation id="3969043077941541451">Väljas</translation>
 <translation id="3970324493235864154">Teie telefoni märguannete kuvamine</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
@@ -1620,6 +1621,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6319058840130157106">Fookuse teisaldamine vastupidises järjestuses: parem allnurk, käivitaja, aadressiriba, järjehoidjariba, avatud veebisait, allalaadimised</translation>
 <translation id="6319503618073410818">Vaadake üksikasju brauseris</translation>
 <translation id="6324916366299863871">Otsetee muutmine</translation>
+<translation id="6325525973963619867">Ebaõnnestus</translation>
 <translation id="6330012934079202188">Kuvatud on kõigi töölaudade aknad. Praeguse töölaua akende kuvamiseks vajutage ülesnooleklahvi.</translation>
 <translation id="6337159624125741244">Täisekraani suurendus on sisse lülitatud</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on hallatud seanss, mida haldab <ph name="MANAGER" /></translation>

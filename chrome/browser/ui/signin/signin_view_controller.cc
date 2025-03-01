@@ -31,6 +31,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -39,7 +40,9 @@
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "base/strings/utf_string_conversions.h"
@@ -73,6 +76,12 @@
 #include "ui/base/models/dialog_model.h"
 #include "url/url_constants.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/account_extension_tracker.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
+#include "extensions/common/extension.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -162,7 +171,8 @@ void HandleSignoutConfirmationChoice(
     signin_metrics::AccessPoint reauth_access_point,
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
-    ChromeSignoutConfirmationChoice user_choice) {
+    ChromeSignoutConfirmationChoice user_choice,
+    bool uninstall_account_extensions_on_signout) {
   if (!browser) {
     return;
   }
@@ -176,6 +186,12 @@ void HandleSignoutConfirmationChoice(
           profile, reauth_access_point);
       return;
     case ChromeSignoutConfirmationChoice::kSignout: {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      extensions::AccountExtensionTracker::Get(profile)
+          ->set_uninstall_account_extensions_on_signout(
+              uninstall_account_extensions_on_signout);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
       // Sign out from all accounts on the web if needed.
@@ -232,6 +248,9 @@ GURL GetSigninUrlForDiceSigninTab(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
+                                      kSignoutConfirmationDialogViewElementId);
 
 SigninViewController::SigninViewController(Browser* browser)
     : browser_(browser) {}
@@ -367,9 +386,7 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
   new_tab_web_contents_observer_ = std::make_unique<NewTabWebContentsObserver>(
       web_contents, std::move(callback));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SigninViewController::ShowModalProfileCustomizationDialog(
     bool is_local_profile_creation) {
   CloseModalSignin();
@@ -645,13 +662,24 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     sign_out_immediately = true;
   }
 
-  base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
-      base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
-                     reauth_access_point, profile_signout_source,
-                     token_signout_source);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Do not sign out immediately if the user has account extensions.
+  if (extensions::sync_util::IsSyncingExtensionsInTransportMode(profile)) {
+    extensions::AccountExtensionTracker* tracker =
+        extensions::AccountExtensionTracker::Get(profile);
+    if (!tracker->GetSignedInAccountExtensions().empty()) {
+      sign_out_immediately = false;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  SignoutConfirmationCallback callback = base::BindOnce(
+      &HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
+      reauth_access_point, profile_signout_source, token_signout_source);
 
   if (sign_out_immediately) {
-    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
+    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout,
+                            /*uninstall_account_extensions_on_signout=*/false);
     return;
   }
 
@@ -739,12 +767,13 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
 
 void SigninViewController::ShowSignoutConfirmationPrompt(
     ChromeSignoutConfirmationPromptVariant prompt_variant,
-    base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+    SignoutConfirmationCallback callback) {
   if (!switches::IsImprovedSigninUIOnDesktopEnabled() &&
       prompt_variant ==
           ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData) {
     // This variant is not enabled. Skip the UI and sign out immediately.
-    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
+    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout,
+                            /*uninstall_account_extensions_on_signout=*/false);
     return;
   }
 

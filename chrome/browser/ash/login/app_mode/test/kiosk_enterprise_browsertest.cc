@@ -9,14 +9,11 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/app_mode/fake_cws.h"
-#include "chrome/browser/ash/app_mode/fake_cws_mixin.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
-#include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -252,53 +249,6 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, LaunchAppUserCancel) {
 
   EXPECT_EQ(KioskAppLaunchError::Error::kUserCancel,
             KioskAppLaunchError::Get());
-}
-
-// Verifies that Kiosk can launch a self hosted Chrome app.
-class SelfHostedKioskEnterpriseTest : public KioskEnterpriseTest {
- public:
-  SelfHostedKioskEnterpriseTest(const SelfHostedKioskEnterpriseTest&) = delete;
-  SelfHostedKioskEnterpriseTest& operator=(
-      const SelfHostedKioskEnterpriseTest&) = delete;
-
-  SelfHostedKioskEnterpriseTest() = default;
-
-  ~SelfHostedKioskEnterpriseTest() override = default;
-
-  FakeCWS& private_cws() { return private_cws_mixin_.fake_cws(); }
-
- protected:
-  void SetUpOnMainThread() override {
-    KioskEnterpriseTest::SetUpOnMainThread();
-    private_cws().SetUpdateCrx(kTestEnterpriseKioskAppId,
-                               std::string(kTestEnterpriseKioskAppId) + ".crx",
-                               "1.0.0");
-    SetTestApp(kTestEnterpriseKioskAppId);
-
-    ConfigureKioskAppInPolicy(kTestEnterpriseAccountId,
-                              kTestEnterpriseKioskAppId,
-                              private_cws_mixin_.UpdateUrl().spec());
-  }
-
-  FakeCwsMixin private_cws_mixin_{&mixin_host_,
-                                  FakeCwsMixin::CwsInstanceType::kPrivate};
-};
-
-IN_PROC_BROWSER_TEST_F(SelfHostedKioskEnterpriseTest, SelfHostedChromeApp) {
-  // Should be able to extract metadata from crx before launching.
-  KioskChromeAppManager* manager = KioskChromeAppManager::Get();
-  TestAppDataLoadWaiter waiter(manager, kTestEnterpriseKioskAppId,
-                               std::string());
-  waiter.WaitForAppData();
-
-  PrepareAppLaunch();
-  EXPECT_TRUE(LaunchApp(kTestEnterpriseKioskAppId));
-  WaitForAppLaunchWithOptions(/*check_launch_data=*/false,
-                              /*terminate_app=*/true);
-
-  // Update checks should be made to the private store instead of CWS.
-  EXPECT_GT(private_cws().GetUpdateCheckCountAndReset(), 0);
-  EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
 }
 
 }  // namespace ash

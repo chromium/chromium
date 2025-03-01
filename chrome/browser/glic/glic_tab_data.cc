@@ -8,10 +8,74 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace glic {
+
+TabDataObserver::TabDataObserver(
+    content::WebContents* web_contents,
+    bool observe_current_page_only,
+    base::RepeatingCallback<void(glic::mojom::TabDataPtr)> tab_data_changed)
+    : content::WebContentsObserver(web_contents),
+      observe_current_page_only_(observe_current_page_only),
+      tab_data_changed_(std::move(tab_data_changed)) {
+  if (web_contents) {
+    auto* favicon_driver =
+        favicon::ContentFaviconDriver::FromWebContents(web_contents);
+    if (favicon_driver) {
+      favicon_driver->AddObserver(this);
+    }
+  }
+}
+
+TabDataObserver::~TabDataObserver() {
+  ClearObservation();
+}
+
+void TabDataObserver::ClearObservation() {
+  // If the web contents is destroyed, web_contents() returns null. The favicon
+  // driver is owned by the web contents, so it's not necessary to remove our
+  // observer if the web contents is destroyed.
+  // Note, we do not used a scoped observation because there is no event
+  // notifying us when a web contents is destroyed.
+  if (web_contents()) {
+    auto* favicon_driver =
+        favicon::ContentFaviconDriver::FromWebContents(web_contents());
+    if (favicon_driver) {
+      favicon_driver->RemoveObserver(this);
+    }
+  }
+  Observe(nullptr);
+}
+
+void TabDataObserver::PrimaryPageChanged(content::Page& page) {
+  if (observe_current_page_only_) {
+    ClearObservation();
+  } else {
+    SendUpdate();
+  }
+}
+
+void TabDataObserver::TitleWasSetForMainFrame(
+    content::RenderFrameHost* render_frame_host) {
+  SendUpdate();
+}
+
+void TabDataObserver::SendUpdate() {
+  tab_data_changed_.Run(CreateTabData(web_contents()));
+}
+
+void TabDataObserver::OnFaviconUpdated(
+    favicon::FaviconDriver* favicon_driver,
+    NotificationIconType notification_icon_type,
+    const GURL& icon_url,
+    bool icon_url_changed,
+    const gfx::Image& image) {
+  SendUpdate();
+}
+
 // FocusedTabCandidate Implementations:
 FocusedTabCandidate::FocusedTabCandidate(
     content::WebContents* const web_contents,
@@ -153,4 +217,5 @@ glic::mojom::FocusedTabDataPtr CreateFocusedTabData(
   return glic::mojom::FocusedTabData::NewNoCandidateTabError(
       focused_tab_data.no_candidate_tab_error.value());
 }
+
 }  // namespace glic

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
@@ -19,6 +20,7 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -88,7 +90,7 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
   MOCK_METHOD(bool,
               NotifyBackgroundRegistrationData,
               (BackgroundRegistrationsId id,
-               const net::HttpResponseHeaders* headers,
+               scoped_refptr<net::HttpResponseHeaders> headers,
                GURL reporting_url),
               (override));
 

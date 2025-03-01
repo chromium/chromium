@@ -461,29 +461,6 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
           });
 }
 
-void EventReportValidator::ExpectPasswordBreachEvent(
-    const std::string& expected_trigger,
-    const std::vector<std::pair<std::string, std::u16string>>&
-        expected_identities,
-    const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier) {
-  event_key_ = enterprise_connectors::kKeyPasswordBreachEvent;
-  trigger_ = expected_trigger;
-  password_breach_identities_ = expected_identities;
-  username_ = expected_profile_username;
-  profile_identifier_ = expected_profile_identifier;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
-                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                     callback) {
-            ValidateReport(&report);
-            if (!done_closure_.is_null()) {
-              done_closure_.Run();
-            }
-          });
-}
-
 void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   DCHECK(report);
 

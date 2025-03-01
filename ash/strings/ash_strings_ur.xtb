@@ -246,7 +246,6 @@
 <translation id="17722141032474077">حساب کتاب</translation>
 <translation id="1774796056689732716">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" />، فی الحال <ph name="DATE" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="178347895271755507">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
-<translation id="1785317913592722944">تجویز کردہ گروپ سے آئٹم کو ہٹائیں</translation>
 <translation id="1786487376942610288">تصویر میں تصویر ونڈو کو اس کے زیادہ سے زیادہ یا موجودہ سائز کے درمیان سوئچ کریں</translation>
 <translation id="1787955149152357925">آف</translation>
 <translation id="1796561540704213354">ویب سائٹس بشمول وہ صفحات جن کا آپ نے ملاحظہ کیا ہے اور وہ صفحات جنہیں آپ نے کھولا ہے</translation>
@@ -853,6 +852,7 @@
 <translation id="3859364108019690">ایپس کی سلسلہ بندی نہیں کی جا سکتی</translation>
 <translation id="3861651314799684201">فُل اسکرین ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="3870197372373144624">اپنے آلے کو شٹ ڈاؤن کرنے کی کوشش کریں۔</translation>
+<translation id="3879748587602334249">ڈاؤن لوڈ مینیجر</translation>
 <translation id="3886872229787704059">آج کھولا گیا</translation>
 <translation id="3891340733213178823">‏سائن آؤٹ کرنے کیلئے Ctrl+Shift+Q کو دو بار دبائیں۔</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
@@ -878,6 +878,7 @@
 <translation id="3958714870339660776">پورا دن</translation>
 <translation id="3962859241508114581">پچھلا ٹریک</translation>
 <translation id="3963124517343721543">اپنی پچھلی ونڈوز اور ٹیبز کو کھول کر آسانی سے وہیں سے جاری رکھیں جہاں آپ نے چھوڑا تھا۔ آپ کو آگے کرنے کی چیزوں کے لیے ذاتی نوعیت کی تجاویز بھی نظر آئیں گی۔</translation>
+<translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3969043077941541451">آف</translation>
 <translation id="3970324493235864154">اپنے فون کی اطلاعات دیکھیں</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
@@ -1619,6 +1620,7 @@
 <translation id="6319058840130157106">نیچے دائیں کونے، لانچر، ایڈریس بار، بُک مارکس بار، کھلی ہوئی ویب سائٹ اور ڈاؤن لوڈز کے درمیان پیچھے کی طرف منتقل ہوں</translation>
 <translation id="6319503618073410818">براؤزر میں تفصیلات دیکھیں</translation>
 <translation id="6324916366299863871">شارٹ کٹ میں ترمیم کریں</translation>
+<translation id="6325525973963619867">ناکام</translation>
 <translation id="6330012934079202188">تمام ڈیسکس سے ونڈوز دکھائی جا رہی ہیں موجودہ ڈیسک سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="6337159624125741244">فُل اسکرین میگنیفائر آن کریں</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> کے زیر انتظام ایک نظم کردہ سیشن ہے</translation>

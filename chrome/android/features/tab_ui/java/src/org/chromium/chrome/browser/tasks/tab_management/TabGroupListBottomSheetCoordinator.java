@@ -11,6 +11,7 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -58,6 +59,16 @@ public class TabGroupListBottomSheetCoordinator {
         void onSheetClosed();
     }
 
+    /** A callback to run after a tab group is created. */
+    public interface TabGroupCreationCallback {
+        /**
+         * Responds to tab group creation.
+         *
+         * @param tabGroupId The tab group ID of the newly-created tab group.
+         */
+        void onTabGroupCreated(Token tabGroupId);
+    }
+
     private final TabGroupListBottomSheetView mView;
     private final BottomSheetController mBottomSheetController;
     private final SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
@@ -67,14 +78,14 @@ public class TabGroupListBottomSheetCoordinator {
     /**
      * @param context The {@link Context} to attach the bottom sheet to.
      * @param profile The current user profile.
-     * @param tabGroupCreationDialogManager Used to show the tab group creation dialog.
+     * @param tabGroupCreationCallback Used to follow up on tab group creation.
      * @param filter Used to read current tab groups.
      * @param bottomSheetController Used to interact with the bottom sheet.
      */
     public TabGroupListBottomSheetCoordinator(
             Context context,
             Profile profile,
-            TabGroupCreationDialogManager tabGroupCreationDialogManager,
+            TabGroupCreationCallback tabGroupCreationCallback,
             TabGroupModelFilter filter,
             BottomSheetController bottomSheetController) {
         mView = new TabGroupListBottomSheetView(context);
@@ -122,7 +133,7 @@ public class TabGroupListBottomSheetCoordinator {
                 new TabGroupListBottomSheetMediator(
                         modelList,
                         filter,
-                        tabGroupCreationDialogManager,
+                        tabGroupCreationCallback,
                         faviconResolver,
                         tabGroupSyncService,
                         dataSharingService,

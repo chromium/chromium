@@ -66,13 +66,13 @@ class GlicSettingsUtilUiTest
   auto VerifyOpensGlicSettings(auto f) {
     return Steps(
         InstrumentTab(kFirstTab), Do([this] {
-          chrome::ShowSettingsSubPage(browser(), chrome::kChromeUIGlicHost);
+          chrome::ShowSettingsSubPage(browser(), chrome::kGlicSettingsSubpage);
         }),
         WaitForWebContentsNavigation(
-            kFirstTab, chrome::GetSettingsUrl(chrome::kChromeUIGlicHost)),
+            kFirstTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)),
         Do([this, f] { f(browser()->profile()); }), InstrumentTab(kSettingsTab),
         WaitForWebContentsReady(
-            kSettingsTab, chrome::GetSettingsUrl(chrome::kChromeUIGlicHost)),
+            kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)),
         CheckResult(
             [this] { return browser()->tab_strip_model()->GetTabCount(); }, 2,
             "CheckTabCount"));
@@ -168,5 +168,5 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
                      GlicInstrumentMode::kHostAndContents),
       InstrumentNextTab(kSettingsTab), ClickGlicUiButton(kOpenSettingsButton),
       WaitForWebContentsReady(
-          kSettingsTab, chrome::GetSettingsUrl(chrome::kChromeUIGlicHost)));
+          kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
 }

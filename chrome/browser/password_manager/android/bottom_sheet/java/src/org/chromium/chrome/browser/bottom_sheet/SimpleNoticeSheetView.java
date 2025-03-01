@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bottom_sheet;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
@@ -98,20 +100,20 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // The sheet doesn't have a half height state.
         assert false;
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         // TODO(crbug.com/366158726): Make the string configurable.
         return R.string.pwd_access_loss_warning_content_description;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         // TODO(crbug.com/366158726): Make the string configurable.
         return R.string.pwd_access_loss_warning_closed;
     }

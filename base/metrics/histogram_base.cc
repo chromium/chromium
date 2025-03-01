@@ -26,6 +26,7 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/trace_event/histogram_scope.h"  // no-presubmit-check
 #include "base/values.h"
 
 namespace base {
@@ -187,10 +188,11 @@ void HistogramBase::WriteJSON(std::string* output,
 }
 
 void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample32 sample) const {
+  auto event_id = trace_event::HistogramScope::GetFlowId();
   StatisticsRecorder::GlobalSampleCallback global_sample_callback =
       StatisticsRecorder::global_sample_callback();
   if (global_sample_callback) {
-    global_sample_callback(histogram_name(), name_hash(), sample);
+    global_sample_callback(histogram_name(), name_hash(), sample, event_id);
   }
 
   // We check the flag first since it is very cheap and we can avoid the
@@ -200,7 +202,8 @@ void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample32 sample) const {
   }
 
   StatisticsRecorder::FindAndRunHistogramCallbacks(
-      base::PassKey<HistogramBase>(), histogram_name(), name_hash(), sample);
+      base::PassKey<HistogramBase>(), histogram_name(), name_hash(), sample,
+      event_id);
 }
 
 HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {

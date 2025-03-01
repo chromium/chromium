@@ -536,6 +536,8 @@ void BocaAppHandler::ViewStudentScreen(const std::string& id,
           [](ViewStudentScreenCallback callback,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              LOG(WARNING) << "[Boca] Error requesting to view student screen: "
+                           << result.error();
               std::move(callback).Run(
                   mojom::ViewStudentScreenError::kHTTPError);
               return;
@@ -557,7 +559,33 @@ void BocaAppHandler::EndViewScreenSession(
           [](EndViewScreenSessionCallback cb,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              LOG(WARNING)
+                  << "[Boca] Error setting view screen state to inactive: "
+                  << result.error();
               std::move(cb).Run(mojom::EndViewScreenSessionError::kHTTPError);
+              return;
+            }
+            std::move(cb).Run(std::nullopt);
+          },
+          std::move(callback)));
+}
+
+void BocaAppHandler::SetViewScreenSessionActive(
+    const std::string& id,
+    SetViewScreenSessionActiveCallback callback) {
+  CHECK(spotlight_service_);
+
+  spotlight_service_->UpdateViewScreenState(
+      id, ::boca::ViewScreenConfig::ACTIVE, base_url_,
+      base::BindOnce(
+          [](SetViewScreenSessionActiveCallback cb,
+             base::expected<bool, google_apis::ApiErrorCode> result) {
+            if (!result.has_value()) {
+              LOG(WARNING)
+                  << "[Boca] Error setting view screen state to active: "
+                  << result.error();
+              std::move(cb).Run(
+                  mojom::SetViewScreenSessionActiveError::kHTTPError);
               return;
             }
             std::move(cb).Run(std::nullopt);
@@ -613,20 +641,10 @@ void BocaAppHandler::OpenFeedbackDialog(OpenFeedbackDialogCallback callback) {
 
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
-  if (!test_activity_callback_.is_null()) {
-    CHECK_IS_TEST();
-    std::move(test_activity_callback_).Run(std::move(activities));
-    return;
-  }
   remote_->OnStudentActivityUpdated(std::move(activities));
 }
 
 void BocaAppHandler::OnSessionConfigUpdated(mojom::ConfigResultPtr config) {
-  if (!test_config_callback_.is_null()) {
-    CHECK_IS_TEST();
-    std::move(test_config_callback_).Run(std::move(config));
-    return;
-  }
   remote_->OnSessionConfigUpdated(std::move(config));
 }
 
@@ -639,6 +657,8 @@ void BocaAppHandler::OnConsumerActivityUpdated(
     const std::map<std::string, ::boca::StudentStatus>& activities) {
   OnStudentActivityUpdated(SessionActivityProtoToMojom(activities));
 }
+
+void BocaAppHandler::OnLocalCaptionDisabled() {}
 
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
                                       const ::boca::UserIdentity& producer) {
@@ -705,16 +725,6 @@ void BocaAppHandler::SetFloatModeAndBoundsForWindow(
   window_state->OnWMEvent(&float_event);
   window_state->OnWMEvent(&set_bound_event);
   std::move(callback).Run(true);
-}
-
-void BocaAppHandler::SetActivityInterceptorCallbackForTesting(
-    ActivityInterceptorCallback callback) {
-  test_activity_callback_ = std::move(callback);
-}
-
-void BocaAppHandler::SetSessionConfigInterceptorCallbackForTesting(
-    SessionConfigInterceptorCallback callback) {
-  test_config_callback_ = std::move(callback);
 }
 
 void BocaAppHandler::UpdateSessionConfig() {

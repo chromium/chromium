@@ -209,7 +209,7 @@ minify_js("build_min_js") {
     # Expose target to //components/neterror only, which needs to include the
     # Lit bundle in its own bundle unlike WebUIs that exclude it and therefore
     # don't need to depend on this target.
-    "//components/neterror/resources:bundle_js",
+    "//components/neterror/resources:bundle_js_internal",
   ]
   deps = [ ":build_bundle" ]
   in_folder = "$target_gen_dir/bundled"

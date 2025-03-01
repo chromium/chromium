@@ -195,7 +195,7 @@ OzoneImageBacking::ProduceSkiaGraphite(
 
   // Use GPU main recorder since this should only be called for
   // fulfilling Graphite promise images on GPU main thread.
-  return SkiaGraphiteDawnImageRepresentation::Create(
+  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else

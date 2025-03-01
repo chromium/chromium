@@ -44,7 +44,7 @@ void* GetKey() {
 namespace version {
 constexpr char kTableName[] = "entities_version";
 constexpr char kVersion[] = "version";
-constexpr int kCurrentVersion = 6;
+constexpr int kCurrentVersion = 7;
 }  // namespace version
 
 namespace attributes {
@@ -101,11 +101,13 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
       AttributeInstance country((AttributeType(kPassportCountry)));
       AttributeInstance expiry_date((AttributeType(kPassportExpiryDate)));
       AttributeInstance issue_date((AttributeType(kPassportIssueDate)));
-      number.SetInfo(PASSPORT_NUMBER, u"123");
-      name.SetInfo(NAME_FULL, u"Pippi Långstrump");
-      country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden");
-      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"09/2098");
-      issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"10/1998");
+      number.SetInfo(PASSPORT_NUMBER, u"123", /*app_locale=*/"");
+      name.SetInfo(NAME_FULL, u"Pippi Långstrump", /*app_locale=*/"");
+      country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden", /*app_locale=*/"");
+      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"09/2098",
+                          /*app_locale=*/"");
+      issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"10/1998",
+                         /*app_locale=*/"");
       table.AddOrUpdateEntityInstance(EntityInstance(
           EntityType(EntityTypeName::kPassport),
           {number, name, country, expiry_date, issue_date},
@@ -117,9 +119,11 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
       AttributeInstance program((AttributeType(kLoyaltyCardProgram)));
       AttributeInstance provider((AttributeType(kLoyaltyCardProvider)));
       AttributeInstance member_id((AttributeType(kLoyaltyCardMemberId)));
-      program.SetInfo(LOYALTY_MEMBERSHIP_PROGRAM, u"Asterisk Alliance");
-      provider.SetInfo(LOYALTY_MEMBERSHIP_PROVIDER, u"Propeller Airways");
-      program.SetInfo(LOYALTY_MEMBERSHIP_ID, u"987");
+      program.SetInfo(LOYALTY_MEMBERSHIP_PROGRAM, u"Asterisk Alliance",
+                      /*app_locale=*/"");
+      provider.SetInfo(LOYALTY_MEMBERSHIP_PROVIDER, u"Propeller Airways",
+                       /*app_locale=*/"");
+      program.SetInfo(LOYALTY_MEMBERSHIP_ID, u"987", /*app_locale=*/"");
       table.AddOrUpdateEntityInstance(EntityInstance(
           EntityType(EntityTypeName::kLoyaltyCard),
           {program, provider, member_id},
@@ -234,7 +238,7 @@ bool EntityTable::AddAttribute(const EntityInstance& entity,
     s.BindString(1, attribute.type().name_as_string());
     s.BindInt(2, type);
     if (std::string encrypted_value; encryptor()->EncryptString16(
-            attribute.GetInfo(type), &encrypted_value)) {
+            attribute.GetRawInfo(/*pass_key=*/{}, type), &encrypted_value)) {
       s.BindString(3, encrypted_value);
     } else {
       return false;

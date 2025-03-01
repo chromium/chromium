@@ -16,7 +16,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tpcd/metadata/manager_factory.h"
-#include "content/public/browser/dips_service.h"
+#include "content/public/browser/btm_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 

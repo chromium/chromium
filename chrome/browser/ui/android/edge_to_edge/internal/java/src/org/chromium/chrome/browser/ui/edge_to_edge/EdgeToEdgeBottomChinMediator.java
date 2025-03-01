@@ -264,7 +264,7 @@ class EdgeToEdgeBottomChinMediator
     }
 
     @Override
-    public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {
+    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
         assert BottomControlsStacker.isDispatchingYOffset();
 
         mRendererOffset = layerYOffset;
@@ -278,9 +278,7 @@ class EdgeToEdgeBottomChinMediator
             changeBottomChinDividerColor(mDividerColor);
         }
 
-        if (!mBottomControlsStacker.isMoveableByViz()) {
-            mModel.set(Y_OFFSET, layerYOffset);
-        }
+        mModel.set(Y_OFFSET, layerYOffset);
     }
 
     @Override

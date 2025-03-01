@@ -178,6 +178,7 @@ android_resources("java_resources") {
     "java/res/layout/sync_promo_view.xml",
     "java/res/layout/sync_promo_view_bookmarks.xml",
     "java/res/layout/sync_promo_view_content_suggestions.xml",
+    "java/res/layout/sync_promo_view_history_page.xml",
     "java/res/layout/sync_promo_view_recent_tabs.xml",
     "java/res/layout/sync_promo_view_settings.xml",
     "java/res/layout/uma_dialog.xml",

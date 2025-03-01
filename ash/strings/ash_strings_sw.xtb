@@ -246,7 +246,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="17722141032474077">Ukokotoaji</translation>
 <translation id="1774796056689732716">Kalenda, <ph name="CURRENT_MONTH_YEAR" />, kwa sasa umechagua <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Weka mipangilio ya kuangalia picha, maudhui na arifa za hivi karibuni za simu yako</translation>
-<translation id="1785317913592722944">Ondoa kipengee katika kikundi kilichopendekezwa</translation>
 <translation id="1786487376942610288">Badilisha kati ya ukubwa wa sasa na wa juu zaidi unaoruhusiwa wa dirisha la kupachika picha ndani ya picha nyingine</translation>
 <translation id="1787955149152357925">Yamezimwa</translation>
 <translation id="1796561540704213354">Tovuti zinajumuisha kurasa ulizotembelea na kurasa zilizofunguliwa</translation>
@@ -853,6 +852,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3859364108019690">Imeshindwa kutiririsha programu</translation>
 <translation id="3861651314799684201">Bonyeza enter ili urekodi skrini nzima</translation>
 <translation id="3870197372373144624">Jaribu kuzima kifaa chako.</translation>
+<translation id="3879748587602334249">Kidhibiti cha vipakuliwa</translation>
 <translation id="3886872229787704059">Imefunguliwa leo</translation>
 <translation id="3891340733213178823">Bonyeza Ctrl+Shift+Q mara mbili ili kuondoka katika akaunti.</translation>
 <translation id="3892148308691398805">Nakili maandishi</translation>
@@ -878,6 +878,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3958714870339660776">Siku Nzima</translation>
 <translation id="3962859241508114581">Wimbo Uliotangulia</translation>
 <translation id="3963124517343721543">Endelea kwa urahisi pale ulipoachia kwa kufungua madirisha na vichupo vyako vya awali. Pia, utaona mapendekezo ya mambo ya kufanya baadaye yaliyowekewa mapendeleo.</translation>
+<translation id="3967822245660637423">Imemaliza kupakua</translation>
 <translation id="3969043077941541451">Zima</translation>
 <translation id="3970324493235864154">Angalia arifa za simu yako</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
@@ -1619,6 +1620,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6319058840130157106">Sogeza nyuma kati ya kona ya chini kulia, Kifungua Programu, sehemu ya anwani, sehemu ya alamisho, tovuti iliyofunguliwa na vipakuliwa</translation>
 <translation id="6319503618073410818">Angalia maelezo kwenye kivinjari</translation>
 <translation id="6324916366299863871">Badilisha njia ya mkato</translation>
+<translation id="6325525973963619867">Imeshindwa</translation>
 <translation id="6330012934079202188">Inaonyesha madirisha yaliyo kwenye maeneokazi yote, bonyeza kishale cha Juu ili uonyeshe madirisha yaliyo kwenye eneokazi la sasa</translation>
 <translation id="6337159624125741244">Kikuzaji cha skrini nzima kimewashwa</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ni kipindi kinachodhibitiwa ambacho kinadhibitiwa na <ph name="MANAGER" /></translation>

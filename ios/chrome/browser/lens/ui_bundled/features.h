@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kLensUnaryApisWithHttpTransportEnabled);
 // Whether to use HTTP transport for unary requests.
 BASE_DECLARE_FEATURE(kLensUnaryHttpTransportEnabled);
 
+// Whether to enable the unary salient text API.
+BASE_DECLARE_FEATURE(kLensUnaryApiSalientTextEnabled);
+
 // Whether to enable background uploading for clearcut logs.
 BASE_DECLARE_FEATURE(kLensClearcutBackgroundUploadEnabled);
 

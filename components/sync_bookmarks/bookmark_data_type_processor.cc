@@ -365,7 +365,13 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
     }
   }
 
-  ConnectIfReady();
+  // Post a task instead of invoking ConnectIfReady() immediately to avoid
+  // sophisticated operations while BookmarkModel is being loaded. In
+  // particular, cache GUID mismatches (edge case) lead to deleting account
+  // bookmarks.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&BookmarkDataTypeProcessor::ConnectIfReady,
+                                weak_ptr_factory_for_controller_.GetWeakPtr()));
 }
 
 void BookmarkDataTypeProcessor::SetFaviconService(
@@ -412,7 +418,8 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
   if (!bookmark_model_) {
     return;
   }
-  // Return if Sync didn't start yet.
+  // Return if Sync didn't start yet, or ConnectIfReady() already succeeded
+  // before.
   if (!start_callback_) {
     return;
   }
@@ -456,7 +463,7 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
 
   if (bookmark_tracker_ && bookmark_tracker_->data_type_state().cache_guid() !=
                                activation_request_.cache_guid) {
-    // In case of a cache uuid mismatch, treat it as a corrupted metadata and
+    // In case of a cache guid mismatch, treat it as a corrupted metadata and
     // start clean.
     StopTrackingMetadataAndResetTracker();
   }

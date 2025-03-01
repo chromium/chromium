@@ -287,7 +287,7 @@ DCompSurfaceImageBacking::ProduceSkiaGraphite(
   auto dawn_representation =
       std::make_unique<DCompSurfaceDawnImageRepresentation>(
           manager, this, tracker, device, wgpu::BackendType::D3D11);
-  return SkiaGraphiteDawnImageRepresentation::Create(
+  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else

@@ -99,19 +99,31 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     SizingConstraint sizing_constraint,
     wtf_size_t* start_offset) const {
   const auto& style = Style();
+  const auto grid_axis_direction = style.MasonryTrackSizingDirection();
+  auto* virtual_items = VirtualMasonryItems(line_resolver, start_offset);
+
+  auto BuildRanges = [&]() {
+    GridRangeBuilder range_builder(
+        style, grid_axis_direction,
+        line_resolver.AutoRepetitions(grid_axis_direction), *start_offset);
+
+    for (auto& virtual_item : *virtual_items) {
+      auto& range_indices = virtual_item.RangeIndices(grid_axis_direction);
+      const auto& span = virtual_item.Span(grid_axis_direction);
+
+      range_builder.EnsureTrackCoverage(span.StartLine(), span.IntegerSpan(),
+                                        &range_indices.begin,
+                                        &range_indices.end);
+    }
+    return range_builder.FinalizeRanges();
+  };
+
   const auto& available_size = ChildAvailableSize();
-  const auto grid_direction = style.MasonryTrackSizingDirection();
-
-  GridRangeBuilder range_builder(style, grid_direction,
-                                 ComputeAutomaticRepetitions(),
-                                 /*start_offset=*/0);
-
-  GridSizingTrackCollection track_collection(range_builder.FinalizeRanges(),
-                                             grid_direction);
+  GridSizingTrackCollection track_collection(BuildRanges(),
+                                             grid_axis_direction);
   track_collection.BuildSets(style, available_size);
 
   if (track_collection.HasNonDefiniteTrack()) {
-    auto* virtual_items = VirtualMasonryItems(line_resolver, start_offset);
     GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,
                                                        virtual_items);
 

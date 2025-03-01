@@ -325,6 +325,11 @@ const base::FeatureParam<int> kGlicMinLoadingTimeMs{
 const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
     &kGlic, "glic-max-loading-time-ms", 15000};
 
+const base::FeatureParam<int> kGlicFreInitialWidth{
+    &kGlic, "glic-fre-initial-width", 512};
+const base::FeatureParam<int> kGlicFreInitialHeight{
+    &kGlic, "glic-fre-initial-height", 512};
+
 const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
                                                 350};
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
@@ -648,15 +653,9 @@ BASE_FEATURE(kHappinessTrackingOffice,
 
 // Enables HTTPS-First Mode in a balanced configuration that doesn't warn on
 // HTTP when HTTPS can't be reasonably expected.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kHttpsFirstBalancedMode,
-             "HttpsFirstBalancedMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
 BASE_FEATURE(kHttpsFirstBalancedMode,
              "HttpsFirstBalancedMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // Automatically enables HTTPS-First Mode in a balanced configuration when
 // possible.

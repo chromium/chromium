@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "components/content_settings/core/common/features.h"
-#include "content/browser/dips/dips_service_impl.h"
+#include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/tpcd_heuristics/opener_heuristic_metrics.h"
 #include "content/browser/tpcd_heuristics/opener_heuristic_utils.h"
 #include "content/common/features.h"

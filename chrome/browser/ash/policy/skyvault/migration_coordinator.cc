@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -309,25 +308,23 @@ void OneDriveMigrationUploader::OnUploadDone(
     errors_.insert({file_path, error.value()});
   }
 
-  if (base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
-    if (error.value() == MigrationUploadError::kNetworkError) {
-      // Just retry, uploaders handle waiting for connectivity.
-      base::FilePath relative_path =
-          GetPathRelativeToMyFiles(profile_, file_path);
-      // Safe to replace; original OdfsSkyvaultUploader is destroyed when its
-      // Upload method completes.
-      uploaders_.insert_or_assign(
-          file_path,
-          ash::cloud_upload::OdfsSkyvaultUploader::Upload(
-              profile_, file_path, relative_path, upload_root_,
-              UploadTrigger::kMigration,
-              // No need to show progress updates.
-              /*progress_callback=*/base::DoNothing(),
-              /*upload_callback=*/
-              base::BindOnce(&OneDriveMigrationUploader::OnUploadDone,
-                             weak_ptr_factory_.GetWeakPtr(), file_path)));
-      return;
-    }
+  if (error.value() == MigrationUploadError::kNetworkError) {
+    // Just retry, uploaders handle waiting for connectivity.
+    base::FilePath relative_path =
+        GetPathRelativeToMyFiles(profile_, file_path);
+    // Safe to replace; original OdfsSkyvaultUploader is destroyed when its
+    // Upload method completes.
+    uploaders_.insert_or_assign(
+        file_path,
+        ash::cloud_upload::OdfsSkyvaultUploader::Upload(
+            profile_, file_path, relative_path, upload_root_,
+            UploadTrigger::kMigration,
+            // No need to show progress updates.
+            /*progress_callback=*/base::DoNothing(),
+            /*upload_callback=*/
+            base::BindOnce(&OneDriveMigrationUploader::OnUploadDone,
+                           weak_ptr_factory_.GetWeakPtr(), file_path)));
+    return;
   }
 
   if (!error_log_file_.IsValid()) {
@@ -432,24 +429,21 @@ void GoogleDriveMigrationUploader::OnUploadDone(
     errors_.insert({file_path, error.value()});
   }
 
-  if (base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
-    if (error.value() == MigrationUploadError::kNetworkError) {
-      // Just retry, uploaders handle waiting for connectivity.
-      base::FilePath target_path =
-          GetPathRelativeToMyFiles(profile_, file_path);
-      std::unique_ptr<DriveSkyvaultUploader> uploader =
-          std::make_unique<DriveSkyvaultUploader>(
-              profile_, file_path, target_path, upload_root_,
-              base::BindOnce(&GoogleDriveMigrationUploader::OnUploadDone,
-                             weak_ptr_factory_.GetWeakPtr(), file_path));
+  if (error.value() == MigrationUploadError::kNetworkError) {
+    // Just retry, uploaders handle waiting for connectivity.
+    base::FilePath target_path = GetPathRelativeToMyFiles(profile_, file_path);
+    std::unique_ptr<DriveSkyvaultUploader> uploader =
+        std::make_unique<DriveSkyvaultUploader>(
+            profile_, file_path, target_path, upload_root_,
+            base::BindOnce(&GoogleDriveMigrationUploader::OnUploadDone,
+                           weak_ptr_factory_.GetWeakPtr(), file_path));
 
-      auto uploader_ptr = uploader.get();
-      // Safe to replace; original DriveSkyvaultUploader is destroyed when its
-      // unique_ptr is removed from the map.
-      uploaders_.insert_or_assign(file_path, std::move(uploader));
-      uploader_ptr->Run();
-      return;
-    }
+    auto uploader_ptr = uploader.get();
+    // Safe to replace; original DriveSkyvaultUploader is destroyed when its
+    // unique_ptr is removed from the map.
+    uploaders_.insert_or_assign(file_path, std::move(uploader));
+    uploader_ptr->Run();
+    return;
   }
 
   if (!error_log_file_.IsValid()) {

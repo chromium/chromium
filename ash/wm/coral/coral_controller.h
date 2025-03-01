@@ -115,9 +115,7 @@ class ASH_EXPORT CoralController {
       mojo::PendingRemote<coral::mojom::TitleObserver> title_observer,
       CoralResponseCallback callback);
 
-  // Callback returns whether the request was successful.
-  void CacheEmbeddings(const CoralRequest& request,
-                       base::OnceCallback<void(bool)> callback);
+  void CacheEmbeddings(const CoralRequest& request);
 
   // Creates a new desk for the content group from `source_desk`.
   void OpenNewDeskWithGroup(CoralResponse::Group group,
@@ -142,12 +140,8 @@ class ASH_EXPORT CoralController {
                          const base::TimeTicks& request_time,
                          coral::mojom::GroupResultPtr result);
 
-  // Used as the callback of mojom::CoralProcessor::CacheEmbeddings. `callback`
-  // is the callback passed from `CoralController::CacheEmbeddings`, which
-  // should be triggered with a bool indicating whether the CacheEmbeddings
-  // operation was successful.
+  // Used as the callback of mojom::CoralProcessor::CacheEmbeddings.
   void HandleCacheEmbeddingsResult(
-      base::OnceCallback<void(bool)> callback,
       coral::mojom::CacheEmbeddingsResultPtr result);
 
   // Callback that is run when we call

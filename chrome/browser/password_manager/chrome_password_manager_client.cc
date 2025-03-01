@@ -69,8 +69,8 @@
 #include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/content/browser/password_requirements_service_factory.h"
+#include "components/password_manager/core/browser/browser_credential_manager_factory.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/password_manager/core/browser/credential_manager_impl.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
@@ -1784,7 +1784,8 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                                 SyncServiceFactory::GetForProfile(profile_)),
       httpauth_manager_(this),
       content_credential_manager_(
-          std::make_unique<password_manager::CredentialManagerImpl>(this)),
+          password_manager::BrowserCredentialManagerFactory(this)
+              .CreateCredentialManager()),
       password_generation_driver_receivers_(web_contents, this),
       observer_(nullptr),
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

@@ -59,7 +59,8 @@ class SaveOrUpdateAutofillAiDataControllerImpl
 
  protected:
   explicit SaveOrUpdateAutofillAiDataControllerImpl(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      const std::string& app_locale);
 
   // AutofillBubbleControllerBase::
   PageActionIconType GetPageActionIconType() override;
@@ -71,6 +72,9 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   friend class SaveOrUpdateAutofillAiDataControllerImplTest;
 
   void ShowBubble();
+
+  // The browser's locale when the object was instantiated.
+  const std::string app_locale_;
 
   // New entity prompted to the user to be saved. It can be a fresh new entity
   // or an update of `old_entity`.

@@ -246,7 +246,6 @@
 <translation id="17722141032474077">计算</translation>
 <translation id="1774796056689732716">日历，<ph name="CURRENT_MONTH_YEAR" />，目前所选日期为 <ph name="DATE" />。</translation>
 <translation id="178347895271755507">设置查看手机中的近期照片、媒体内容和通知</translation>
-<translation id="1785317913592722944">从建议的分组中移除内容</translation>
 <translation id="1786487376942610288">将画中画窗口最大化或还原为当前大小</translation>
 <translation id="1787955149152357925">关闭</translation>
 <translation id="1796561540704213354">一系列网站，包含您访问过的网页和打开的网页</translation>
@@ -853,6 +852,7 @@
 <translation id="3859364108019690">无法流式传输应用</translation>
 <translation id="3861651314799684201">按 Enter 键即可录制整个屏幕</translation>
 <translation id="3870197372373144624">请尝试关闭设备。</translation>
+<translation id="3879748587602334249">下载管理器</translation>
 <translation id="3886872229787704059">今天打开过</translation>
 <translation id="3891340733213178823">连按两次Ctrl+Shift+Q即可退出。</translation>
 <translation id="3892148308691398805">复制文字</translation>
@@ -878,6 +878,7 @@
 <translation id="3958714870339660776">全天</translation>
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3963124517343721543">打开之前的窗口和标签页，轻松地从上次停下的地方继续。您还会看到待办事项的个性化建议。</translation>
+<translation id="3967822245660637423">下载完毕</translation>
 <translation id="3969043077941541451">已关闭</translation>
 <translation id="3970324493235864154">查看手机中的通知</translation>
 <translation id="397105322502079400">正在计算...</translation>
@@ -1617,6 +1618,7 @@
 <translation id="6319058840130157106">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间向后移动</translation>
 <translation id="6319503618073410818">在浏览器中查看详细信息</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
+<translation id="6325525973963619867">失败</translation>
 <translation id="6330012934079202188">正在显示所有桌面中的窗口，按向上键即可显示当前桌面中的窗口</translation>
 <translation id="6337159624125741244">全屏放大镜已开启</translation>
 <translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>

@@ -426,6 +426,23 @@ può essere utilizzata per escludere determinati nomi host o pattern dei nomi ho
 dall'upgrade ad HTTPS da parte di questa funzionalità.</translation>
 <translation id="1342918903685430097">Configura la versione minima di <ph name="PRODUCT_OS_NAME" /> consentita per il dispositivo.</translation>
 <translation id="1343128241903870688">Disattiva i report sulle informazioni relative alle app del dispositivo</translation>
+<translation id="1345276795096570241">Disattiva il Single Sign-On utilizzando <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> per i provider di identità elencati.
+
+Se aggiungi il valore <ph name="POLICY_VALUE_ALL" />, tutti i provider di identità supportati per l'autenticazione SSO vengono disabilitati.
+
+Se aggiungi il valore <ph name="POLICY_VALUE_MICROSOFT" />, il supporto per Single Sign-On per il provider di identità cloud Microsoft® in Chrome viene disattivato.
+
+Se non configuri questa policy, verranno attivati tutti i provider di identità supportati da <ph name="PRODUCT_NAME" />.
+
+Per i provider di identità che sono abilitati in <ph name="PRODUCT_NAME" /> e configurati sul dispositivo dall'amministratore, gli utenti che accedono una volta utilizzando quel provider di identità, su qualsiasi applicazione che supporta <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, possono accedere automaticamente alle proprietà web utilizzando quel provider di identità. Le informazioni relative ai dati di autenticazione dell'utente vengono trasmesse al provider di identità cloud dell'utente per ogni evento di autenticazione.
+
+Note:
+
+<ph name="PRODUCT_NAME" /> non supporta il Single Sign-On tramite <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> in modalità Ospite o in incognito.
+
+<ph name="PRODUCT_NAME" /> supporta il Single Sign-On solo con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> per i seguenti provider di identità: Microsoft.
+
+Questa funzionalità è disponibile a partire da <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1347198119056266798">Questa policy è deprecata, al suo posto usa <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Questa policy viene ignorata se è impostata la policy <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (deprecata).
 
       Forza l'esecuzione delle query nella Ricerca Google con l'opzione SafeSearch attiva e impedisce agli utenti di modificare questa impostazione. Questa impostazione forza anche la modalità Restrizione moderata su YouTube.

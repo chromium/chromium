@@ -84,7 +84,7 @@ class TestLoader(testloader.TestLoader):
                 if not test_url.startswith('/'):
                     test_url = f'/{test_url}'
                 item = items_by_url.get(test_url)
-                # Skip items excluded by `run_wpt_tests.py --no-wpt-internal`.
+                # Skip items not actually exist
                 if not item:
                     continue
                 manifest = manifests_by_url_base[item.url_base]

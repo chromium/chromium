@@ -430,6 +430,8 @@ class CONTENT_EXPORT AuctionV8Helper
   static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
                                             v8::Local<v8::Message> message);
 
+  void DisableEagerJsCompilation() { eagerly_compile_js_ = false; }
+
  private:
   friend class base::RefCountedDeleteOnSequence<AuctionV8Helper>;
   friend class base::DeleteHelper<AuctionV8Helper>;
@@ -454,6 +456,10 @@ class CONTENT_EXPORT AuctionV8Helper
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
   scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
+
+  // This starts true but can be set to false if a task is waiting on the script
+  // to be ready.
+  bool eagerly_compile_js_ = true;
 
   // This needs to be invoked after ~IsolateHolder to make sure that V8 is
   // really shut down.

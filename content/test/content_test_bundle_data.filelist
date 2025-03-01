@@ -6299,6 +6299,7 @@ data/attribution_reporting/interop/verbose_debug_report_multiple_data.json
 data/attribution_reporting/page_with_conversion_measurement_disabled.html
 data/attribution_reporting/page_with_conversion_measurement_disabled.html.mock-http-headers
 data/attribution_reporting/page_with_conversion_redirect.html
+data/attribution_reporting/page_with_conversion_redirect_in_iframe.html
 data/attribution_reporting/page_with_disallowed_iframe.html
 data/attribution_reporting/page_with_impression_creator.html
 data/attribution_reporting/page_with_impression_creator.html.mock-http-headers
@@ -6431,6 +6432,14 @@ data/browsing_topics/v0.init_too_old.sql
 data/browsing_topics/v1.init_too_new.sql
 data/browsing_topics/v1.no_hashed_to_unhashed_domains_table.sql
 data/browsing_topics/v1.sql
+data/btm/v1.sql
+data/btm/v2.sql
+data/btm/v3.sql
+data/btm/v4.sql
+data/btm/v5.sql
+data/btm/v6.sql
+data/btm/v7.sql
+data/btm/v8.sql
 data/cache_storage/invalid_bucket_id/0430f1a484a0ea6d8de562488c5fbeec0111d16f/ba31f73b-95e8-44fb-a273-265e7e76f5ab/3767fbd3edc759b5_0
 data/cache_storage/invalid_bucket_id/0430f1a484a0ea6d8de562488c5fbeec0111d16f/ba31f73b-95e8-44fb-a273-265e7e76f5ab/index
 data/cache_storage/invalid_bucket_id/0430f1a484a0ea6d8de562488c5fbeec0111d16f/ba31f73b-95e8-44fb-a273-265e7e76f5ab/index-dir/the-real-index
@@ -6577,9 +6586,6 @@ data/devtools/test.jpg
 data/devtools/worker_imported_classic.js
 data/devtools/worker_imported_module.js
 data/devtools/zoom.html
-data/dips/v6.sql
-data/dips/v7.sql
-data/dips/v8.sql
 data/direct_sockets/open.html
 data/direct_sockets/open.html.mock-http-headers
 data/direct_sockets/open.js

@@ -31,6 +31,8 @@ using autofill::SuggestionType;
 using ::testing::Ge;
 using ::testing::SizeIs;
 
+constexpr char kAppLocaleUS[] = "en-US";
+
 autofill::EntityInstance MakePassportWithRandomGuid(
     autofill::test::PassportEntityOptions options = {}) {
   base::Uuid guid = base::Uuid::GenerateRandomV4();
@@ -51,15 +53,17 @@ size_t CountFillingSuggestions(base::span<const Suggestion> suggestions) {
 
 std::u16string GetEntityInstanceValueForFieldType(
     const autofill::EntityInstance entity,
-    autofill::FieldType type) {
+    autofill::FieldType type,
+    const std::string& app_locale = kAppLocaleUS) {
   return entity.attribute(*autofill::AttributeType::FromFieldType(type))
-      ->value();
+      ->GetInfo(type, app_locale);
 }
 
 std::optional<std::u16string> GetFillValueForField(
     base::span<const autofill::EntityInstance> entities,
     const Suggestion::AutofillAiPayload& payload,
-    const autofill::AutofillField& field) {
+    const autofill::AutofillField& field,
+    const std::string& app_locale = kAppLocaleUS) {
   auto entity_it = std::ranges::find(entities, payload.guid,
                                      &autofill::EntityInstance::guid);
   if (entity_it == entities.end()) {
@@ -74,7 +78,7 @@ std::optional<std::u16string> GetFillValueForField(
   if (attribute_it == entity_it->attributes().end()) {
     return std::nullopt;
   }
-  return attribute_it->value();
+  return attribute_it->GetInfo(field.Type().GetStorableType(), app_locale);
 }
 
 std::unique_ptr<autofill::FormStructure> CreateFormStructure(
@@ -103,8 +107,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER,
                            autofill::PHONE_HOME_WHOLE_NUMBER});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestions(*form, form->fields()[0]->global_id(), entities);
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), entities, kAppLocaleUS);
 
   // There should be only one suggestion whose main text matches the entity
   // value for the `triggering_field_type`.
@@ -149,7 +153,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
 
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
-      {passport_prefix_matches, passport_prefix_does_not_match});
+      {passport_prefix_matches, passport_prefix_does_not_match}, kAppLocaleUS);
 
   // There should be only one suggestion whose main text matches is a prefix of
   // the value already existing in the triggering field.
@@ -174,7 +178,7 @@ TEST_F(AutofillAiSuggestionsTest,
   form->field(0)->set_value(u"12");
 
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(), {passport});
+      *form, form->fields()[0]->global_id(), {passport}, kAppLocaleUS);
   EXPECT_FALSE(suggestions.empty());
 }
 
@@ -187,8 +191,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_LoyaltyCardEntity) {
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
       {triggering_field_type, autofill::LOYALTY_MEMBERSHIP_PROVIDER,
        autofill::EMAIL_ADDRESS});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestions(*form, form->fields()[0]->global_id(), entities);
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), entities, kAppLocaleUS);
 
   // There should be only one suggestion whose main text matches the entity
   // value for the `triggering_field_type`.
@@ -231,8 +235,8 @@ TEST_F(AutofillAiSuggestionsTest,
         autofill::Section::FromFieldIdentifier(*field, frame_token_ids));
   }
 
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestions(*form, form->fields()[0]->global_id(), entities);
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), entities, kAppLocaleUS);
 
   // There should be only one suggestion whose main text matches the entity
   // value for the `triggering_field_type`.
@@ -258,8 +262,8 @@ TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({triggering_field_type});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestions(*form, form->fields()[0]->global_id(), entities);
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), entities, kAppLocaleUS);
 
   // There should be no suggestion since the triggering is a passport field and
   // the only available entity is for loyalty cards.
@@ -287,8 +291,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER,
                            autofill::PASSPORT_ISSUING_COUNTRY_TAG});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestions(*form, form->fields()[0]->global_id(), entities);
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), entities, kAppLocaleUS);
 
   // The passport with passport_a_with_different_expiry_date should be
   // deduped because while it has an unique attribute (expiry date), the form
@@ -312,18 +316,16 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
 
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({autofill::PASSPORT_NUMBER});
-  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(), {passport_entity});
 
   EXPECT_FALSE(base::Contains(
       CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
-                               {passport_entity}),
+                               {passport_entity}, kAppLocaleUS),
       SuggestionType::kUndoOrClear, &Suggestion::type));
 
   form->field(0)->set_is_autofilled(true);
   EXPECT_TRUE(base::Contains(
       CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
-                               {passport_entity}),
+                               {passport_entity}, kAppLocaleUS),
       SuggestionType::kUndoOrClear, &Suggestion::type));
 }
 
@@ -335,7 +337,7 @@ TEST_F(AutofillAiSuggestionsTest,
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({triggering_field_type});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(), {passport_entity});
+      *form, form->fields()[0]->global_id(), {passport_entity}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
@@ -351,7 +353,7 @@ TEST_F(AutofillAiSuggestionsTest,
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(), {passport_entity});
+      *form, form->fields()[0]->global_id(), {passport_entity}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
@@ -371,7 +373,7 @@ TEST_F(AutofillAiSuggestionsTest,
       {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
        autofill::PASSPORT_EXPIRATION_DATE_TAG});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(), {passport_entity});
+      *form, form->fields()[0]->global_id(), {passport_entity}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
@@ -390,9 +392,9 @@ TEST_F(
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
       {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
        autofill::PASSPORT_NUMBER});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
-                               {passport_entity, passport_entity_b});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_entity, passport_entity_b}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
@@ -421,7 +423,7 @@ TEST_F(AutofillAiSuggestionsTest,
        autofill::PASSPORT_EXPIRATION_DATE_TAG});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
-      {passport_entity, passport_entity_b, passport_entity_c});
+      {passport_entity, passport_entity_b, passport_entity_c}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 3u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
@@ -455,7 +457,7 @@ TEST_F(
       {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
-      {passport_entity_a, passport_entity_b, passport_entity_c});
+      {passport_entity_a, passport_entity_b, passport_entity_c}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 3u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
@@ -484,9 +486,9 @@ TEST_F(
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
       {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
        autofill::PASSPORT_NUMBER, autofill::PASSPORT_EXPIRATION_DATE_TAG});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
-                               {passport_entity, passport_entity_b});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_entity, passport_entity_b}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
@@ -509,9 +511,9 @@ TEST_F(
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
       {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG,
        autofill::PASSPORT_NUMBER});
-  std::vector<autofill::Suggestion> suggestions =
-      CreateFillingSuggestions(*form, form->fields()[0]->global_id(),
-                               {passport_entity, passport_entity_b});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_entity, passport_entity_b}, kAppLocaleUS);
 
   ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);

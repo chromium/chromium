@@ -4314,9 +4314,9 @@ enum WebFeature {
   // The items above roughly this point are available in the M125 branch.
 
   kSharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient = 4944,
-  kV8LanguageTranslator_Translate_Method = 4945,
-  kV8Translation_CanTranslate_Method = 4946,
-  kV8Translation_CreateTranslator_Method = 4947,
+  kOBSOLETE_V8LanguageTranslator_Translate_Method = 4945,
+  kOBSOLETE_V8Translation_CanTranslate_Method = 4946,
+  kOBSOLETE_V8Translation_CreateTranslator_Method = 4947,
   kIdentityDigitalCredentialsDeepLink = 4948,
   kV8WebView_GetExperimentalMediaIntegrityTokenProvider_Method = 4949,
   kV8MediaIntegrityTokenProvider_RequestToken_Method = 4950,

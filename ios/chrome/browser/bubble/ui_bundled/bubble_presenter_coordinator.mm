@@ -150,10 +150,6 @@
       [_presenter presentLensKeyboardTipBubble];
       break;
     }
-    case InProductHelpType::kParcelTracking: {
-      [_presenter presentParcelTrackingTipBubble];
-      break;
-    }
     case InProductHelpType::kPullToRefresh: {
       [_presenter
           presentPullToRefreshGestureInProductHelpWithDeviceSwitcherResultDispatcher:

@@ -918,8 +918,10 @@ extern const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[];
 extern const char kEnableIsolatedWebAppDevModeName[];
 extern const char kEnableIsolatedWebAppDevModeDescription[];
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const char kEnableIwaKeyDistributionComponentName[];
 extern const char kEnableIwaKeyDistributionComponentDescription[];
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 extern const char kIwaKeyDistributionComponentExpCohortName[];
 extern const char kIwaKeyDistributionComponentExpCohortDescription[];
@@ -2372,6 +2374,9 @@ extern const char kWebXrHandAnonymizationChoiceFallback[];
 extern const char kWebXrHandInputName[];
 extern const char kWebXrHandInputDescription[];
 
+extern const char kWebXrProjectionLayersName[];
+extern const char kWebXrProjectionLayersDescription[];
+
 extern const char kWebXrWebGpuBindingName[];
 extern const char kWebXrWebGpuBindingDescription[];
 
@@ -2398,6 +2403,9 @@ extern const char kSanitizerApiDescription[];
 
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
+
+extern const char kReduceAcceptLanguageHTTPName[];
+extern const char kReduceAcceptLanguageHTTPDescription[];
 
 extern const char kReduceAcceptLanguageName[];
 extern const char kReduceAcceptLanguageDescription[];

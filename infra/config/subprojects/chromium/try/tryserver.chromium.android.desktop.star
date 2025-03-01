@@ -4,7 +4,6 @@
 """Definitions of builders in the tryserver.chromium.android builder group."""
 
 load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -73,25 +72,6 @@ try_.builder(
             "release_try_builder",
         ],
     ),
-)
-
-# TODO(crbug.com/391893869): Set back to a normal includable_only trybot.
-try_.builder(
-    name = "android-desktop-x64-compile-rel",
-    mirrors = [
-        "ci/android-desktop-x64-compile-rel",
-    ],
-    builder_config_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-desktop-x64-compile-rel",
-            "release_try_builder",
-        ],
-    ),
-    builderless = False,
 )
 
 try_.orchestrator_builder(

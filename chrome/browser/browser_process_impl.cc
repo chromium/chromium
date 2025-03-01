@@ -336,13 +336,15 @@ void BrowserProcessImpl::Init() {
   // Initialize the ExtensionsBrowserClient. This isn't in extension-specific
   // code because a number of external concepts that extensions shouldn't know
   // about leverage the extensions system, such as platform apps and controlled
-  // frame.
+  // frame. On Android the ExtensionsBrowserClient is created elsewhere,
+  // as BrowserContextKeyedServices are initialized earlier on Android. However,
+  // ownership is transferred here, as this object lives long into shutdown, and
+  // ExtensionsBrowserClient must also live during most of shutdown.
   // TODO(devlin): Move this block out of BrowserProcessImpl to somewhere like
   // //chrome/browser/initialize_extensions_browser_client, analogous to
   // `EnsureExtensionsClientInitialized()` above?
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  extensions_browser_client_ =
-      std::make_unique<extensions::DesktopAndroidExtensionsBrowserClient>();
+  extensions_browser_client_ = startup_data()->TakeExtensionsBrowserClient();
 #elif BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
   extensions_browser_client_ =

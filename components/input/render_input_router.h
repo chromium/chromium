@@ -85,8 +85,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds) override;
   void OnImeCancelComposition() override;
   StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;

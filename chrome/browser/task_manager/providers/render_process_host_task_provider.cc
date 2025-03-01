@@ -30,11 +30,8 @@ RenderProcessHostTaskProvider::~RenderProcessHostTaskProvider() = default;
 Task* RenderProcessHostTaskProvider::GetTaskOfUrlRequest(int child_id,
                                                          int route_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto itr = tasks_by_rph_id_.find(child_id);
-  if (itr == tasks_by_rph_id_.end())
-    return nullptr;
-
-  return itr->second.get();
+  auto itr = tasks_by_rph_id_.find(content::ChildProcessId(child_id));
+  return itr != tasks_by_rph_id_.end() ? itr->second.get() : nullptr;
 }
 
 void RenderProcessHostTaskProvider::StartUpdating() {
@@ -69,7 +66,7 @@ void RenderProcessHostTaskProvider::CreateTask(
     content::RenderProcessHost* host) {
   // Checks that the task by RenderProcessHost ID isn't already a task in the
   // map and deletes it if it is so they new task can be cleanly added.
-  const int render_process_host_id = host->GetDeprecatedID();
+  const content::ChildProcessId render_process_host_id = host->GetID();
   DeleteTask(render_process_host_id);
 
   // TODO(cburn): plumb out something from RPH so the title can be set here.
@@ -85,7 +82,7 @@ void RenderProcessHostTaskProvider::CreateTask(
 }
 
 void RenderProcessHostTaskProvider::DeleteTask(
-    const int render_process_host_id) {
+    const content::ChildProcessId render_process_host_id) {
   auto itr = tasks_by_rph_id_.find(render_process_host_id);
   // If the render process host id isn't being tracked in `tasks_by_rph_id` do
   // nothing.
@@ -113,13 +110,13 @@ void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
 void RenderProcessHostTaskProvider::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  DeleteTask(host->GetDeprecatedID());
+  DeleteTask(host->GetID());
   host_observation_.RemoveObservation(host);
 }
 
 void RenderProcessHostTaskProvider::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
-  DeleteTask(host->GetDeprecatedID());
+  DeleteTask(host->GetID());
   host_observation_.RemoveObservation(host);
 }
 

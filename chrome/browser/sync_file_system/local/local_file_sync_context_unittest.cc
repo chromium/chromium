@@ -434,18 +434,17 @@ TEST_F(LocalFileSyncContextTest, CreateDefaultTemporaryBucket) {
   EXPECT_EQ(SYNC_STATUS_OK,
             file_system.MaybeInitializeFileSystemContext(sync_context_.get()));
 
-  // Opens the file_system, to verify a kTemporary bucket is created.
+  // Opens the file_system, to verify a bucket is created.
   EXPECT_EQ(base::File::FILE_OK, file_system.OpenFileSystem());
 
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
   file_system.quota_manager()->proxy()->GetBucketByNameUnsafe(
       blink::StorageKey::CreateFromStringForTesting(kOrigin1),
-      storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary,
+      storage::kDefaultBucketName,
       base::SequencedTaskRunner::GetCurrentDefault(), future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(const auto result, future.Take());
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
-  EXPECT_EQ(result.type, blink::mojom::StorageType::kTemporary);
   EXPECT_GT(result.id.value(), 0);
 
   // Finishing the test.

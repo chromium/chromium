@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Kada je uključeno, sajtovi mogu da traže da koriste NFC uređaje. Kada je isključeno, sajtovi ne mogu da koriste NFC uređaje.</translation>
 <translation id="1660204651932907780">Dozvoli sajtovima da puštaju zvuk (preporučeno)</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama ćaskanja.</translation>
 <translation id="169515064810179024">Ne dozvoljavaj sajtovima da pristupaju senzorima za pokret</translation>
 <translation id="1717218214683051432">Senzori pokreta</translation>
 <translation id="1743802530341753419">Pitaj pre nego što dozvoliš sajtovima da se povezuju sa uređajem (preporučeno)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2096716221239095980">Izbriši sve podatke</translation>
 <translation id="2117655453726830283">Sledeći slajd</translation>
+<translation id="2146263598007866206">Sajtovi mogu automatski da preuzimaju srodne fajlove zajedno da bi vam štedeli vreme</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="216989819110952009">Iako su im oči bile zaštićene zelenim naočarima, Doroti i njene prijatelje u početku su zadivili</translation>
 <translation id="2176704795966505152">Prikazuj opciju zumiranja u glavnom meniju</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Sajtovi mogu da prikazuju upite za prijavljivanje iz usluga za identitet.</translation>
 <translation id="2787357173144933081">Pokreni omniboks</translation>
 <translation id="2790501146643349491">Kada je uključeno, nedavno zatvoreni sajtovi mogu da završe slanje i prijem podataka. Kada je isključeno, nedavno zatvoreni sajtovi ne mogu da završe slanje niti prijem podataka.</translation>
+<translation id="2795716239552913152">Sajtovi obično koriste vašu lokaciju za relevantne funkcije ili informacije, poput lokalnih vesti ili prodavnica u blizini</translation>
 <translation id="2814830417943086299">Chrome sada prikazuje nedavne kartice na listi aplikacija i u rezultatima pretrage uređaja. To možete da isključite u svakom trenutku u Chrome podešavanjima.</translation>
 <translation id="2822354292072154809">Želite li stvarno da resetujete sve dozvole za sajt za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Zahtevaj prikaz za mobilne uređaje</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Kolačići treće strane su blokirani</translation>
 <translation id="3448554387819310837">Kada je uključeno, sajtovi mogu da traže da koriste kameru. Kada je isključeno, sajtovi ne mogu da koriste kameru.</translation>
+<translation id="3491678231052507920">Sajtovi obično koriste uređaje i podatke virtuelne realnosti da biste mogli da ulazite u sesije virtuelne realnosti</translation>
+<translation id="3496995426334945408">Sajtovi obično koriste JavaScript da bi prikazivali interaktivne funkcije poput video igara ili veb-obrazaca</translation>
 <translation id="3521663503435878242">Sajtovi na domenu <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Ne dozvoljavaj sajtovima da prate moje ruke</translation>
 <translation id="3532312529397438268">Sajtovi ne mogu da koriste V8 optimizator</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Otvorite podešavanja lokacije</translation>
 <translation id="4226663524361240545">Uređaj će vibrirati kada primate obaveštenja</translation>
 <translation id="4259722352634471385">Navigacija je blokirana: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Kada napustite sajt, on obično nastavlja sinhronizaciju da bi završio zadatke poput otpremanja slika ili slanja poruke ćaskanja</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
 <translation id="429312253194641664">Sajt pušta medijski sadržaj</translation>
 <translation id="42981349822642051">Proširite</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Sačuvano zumiranje za sajtove</translation>
 <translation id="4836046166855586901">Pitaj kada sajt želi da zna kada aktivno koristim ovaj uređaj</translation>
 <translation id="483914009762354899">Uvrsti sve sajtove u okviru ovog domena</translation>
+<translation id="4882919381756638075">Sajtovi obično koriste mikrofon za potrebe funkcija za komunikaciju poput video ćaskanja</translation>
 <translation id="4883854917563148705">Podešavanja kojima se upravlja ne mogu da se resetuju</translation>
 <translation id="4887024562049524730">Pre nego što dozvolite sajtovima da koriste uređaj i podatke virtuelne realnosti prikazuje se upit (preporučeno)</translation>
 <translation id="4936863036653376783">Grupe ćete pronaći u odeljku za grupe kartica na svim uređajima</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Izaberite stavke</translation>
 <translation id="6838525730752203626">Podrazumevano koristite Chrome</translation>
 <translation id="6840760312327750441">Da biste grupisali kartice, dodirnite karticu i zadržite je. Zatim je prevucite na drugu karticu.</translation>
+<translation id="6842868554183332230">Sajtovi obično otkrivaju kada aktivno koristite uređaj radi podešavanja dostupnosti u aplikacijama za ćaskanje</translation>
 <translation id="6851981911629679515">Uključite dodatnu zaštitu u Chrome alatki za JavaScript i WebAssembly</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može da čita NFC</translation>
 <translation id="6870169401250095575">Sakrij karticu Provera bezbednosti</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Podešavanja za <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Bezbednosna provera</translation>
 <translation id="7406113532070524618">Ovo podešavanje radi, a da ne mora da vas identifikuje ili da dozvoli sajtovima da vide istoriju pregledanja, iako sajtovi mogu da dele malu količinu podataka u okviru verifikacije</translation>
+<translation id="7409735910987429903">Sajtovi mogu da prikazuju iskačuće prozore sa oglasima ili da koriste preusmeravanja da bi vas upućivali na veb-sajtove koje možda ne želite da posetite</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje privremene memorije je blokirano</translation>
 <translation id="7425915948813553151">Tamna tema za sajtove</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Izađite iz pretrage u centru</translation>
 <translation id="7554752735887601236">Sajt koristi mikrofon</translation>
 <translation id="7561196759112975576">Uvek</translation>
+<translation id="7573594921350120855">Sajtovi obično koriste video kameru za potrebe funkcija komunikacije poput video ćaskanja</translation>
 <translation id="757524316907819857">Blokiraj da sajtovi puštaju zaštićeni sadržaj</translation>
 <translation id="7594634374516752650">Povezan je sa Bluetooth uređajem</translation>
 <translation id="7617547684249261169">Možete da izbrišete delove ili celu istoriju, kolačiće, podatke o sajtovima i drugo</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7667547420449112975">Čarobnjak iz Oza</translation>
+<translation id="7681597159868843240">Sajtovi obično koriste senzore pokreta uređaja za potrebe funkcija poput virtuelne realnosti ili praćenja fitnesa</translation>
 <translation id="7688240020069572972">Sakrij karticu sa savetima za Chrome</translation>
 <translation id="7719367874908701697">Zumiranje stranice</translation>
 <translation id="7759147511335618829">MIDI – Kontrola i reprogramiranje</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Premotaj unazad</translation>
 <translation id="8444433999583714703">Da biste dozvolili da <ph name="APP_NAME" /> pristupa lokaciji, uključite lokaciju i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opozovi dozvolu za uređaj</translation>
+<translation id="8471525937465764768">Sajtovi se obično povezuju sa USB uređajima za potrebe funkcija poput štampanja dokumenata ili čuvanja sadržaja na memorijskim uređajima</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarela. Ponovo instalirajte aplikaciju.</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvek se zahteva mobilni sajt</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Kada je uključeno, sajtovi mogu da čuvaju podatke na uređaju. Kada je isključeno, sajtovi ne mogu da čuvaju podatke na uređaju.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> je dozvoljen</translation>
 <translation id="9019902583201351841">Ovim upravljaju tvoji roditelji</translation>
+<translation id="902236149563113779">Sajtovi obično prate položaj kamere za potrebe funkcija proširene realnosti, poput igara ili putanja</translation>
 <translation id="9039697262778250930">Možda ćete biti odjavljeni sa ovih sajtova</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Želite da izbrišete kolačiće?</translation>

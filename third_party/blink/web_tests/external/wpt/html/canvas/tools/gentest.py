@@ -1,43 +1,14 @@
-"""Generates Canvas tests from YAML file definitions."""
-# Current code status:
-#
-# This was originally written by Philip Taylor for use at
-# http://philip.html5.org/tests/canvas/suite/tests/
-#
-# It has been adapted for use with the Web Platform Test Suite suite at
-# https://github.com/web-platform-tests/wpt/
-#
-# The original version had a number of now-removed features (multiple versions
-# of each test case of varying verbosity, Mozilla mochitests, semi-automated
-# test harness). It also had a different directory structure.
+"""Generates Canvas tests from YAML file definitions.
 
-# To use this script:
-# -make a python virtual environment somewhere (it doesn't matter where)
-#   python3 -m venv venv
-# -enter the virtual environment
-#   source venv/bin/activate
-# -install required packages in the venv
-#   pip3 install cairocffi jinja2 pyyaml
-# -change to the directory with this script and run it
-#   python3 gentest.py
+See README.md for instructions on how to run this test generator and for how to
+add or modify tests.
 
-# To update or add test cases:
-#
-# * Modify the tests*.yaml files.
-#  - 'name' is an arbitrary hierarchical name to help categorise tests.
-#  - 'desc' is a rough description of what behaviour the test aims to test.
-#  - 'code' is JavaScript code to execute, with some special commands starting
-#    with '@'.
-#  - 'expected' is what the final canvas output should be: a string 'green' or
-#    'clear' (100x50 images in both cases), or a string 'size 100 50' (or any
-#    other size) followed by Python code using Pycairo to generate the image.
-#
-# * Run "./build.sh".
-# This requires a few Python modules which might not be ubiquitous.
-# It will usually emit some warnings, which ideally should be fixed but can
-# generally be safely ignored.
-#
-# * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
+This code generatror was originally written by Philip Taylor for use at
+http://philip.html5.org/tests/canvas/suite/tests/
+
+It has been adapted for use with the Web Platform Test Suite suite at
+https://github.com/web-platform-tests/wpt/
+"""
 
 from typing import Any, Callable, Container, DefaultDict, FrozenSet
 from typing import List, Mapping, MutableMapping, Set, Tuple, Union
@@ -160,7 +131,8 @@ _TEST_DEFINITION_PARAMS = {
     # old tests, leaving `test_type` unspecified produces a test using the
     # legacy `_addTest` helper from canvas-tests.js. These are synchronous tests
     # that can be made asynchronous by calling `deferTest()` and calling
-    # `t.done()` when the test completes.
+    # `t.done()` when the test completes. New tests should prefer specifying
+    # `test_type` explicitly.
     #
     # For reftests, generated tests are by default synchronous (if 'test_type'
     # is not specified). Setting 'test_type' to "promise" makes it possible to

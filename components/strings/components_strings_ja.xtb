@@ -837,6 +837,7 @@
 <translation id="2451607499823206582">トラッキング</translation>
 <translation id="2452098632681057184">生態学、環境</translation>
 <translation id="2452837234288608067">候補を生成できませんでした。もう一度お試しください。</translation>
+<translation id="2453045048779611513">保存できるアイテムは組織によって制限されています</translation>
 <translation id="2456755709261364512">バッテリーの残量が <ph name="REQUIRED_BATTERY_PRECENT" />% 以上である必要があります</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core では、クラウドからブラウザ ポリシーを一元的に管理できます</translation>
 <translation id="2461822463642141190">現在</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2942492342931589800">カジュアル</translation>
 <translation id="2942515540157583425">IT、技術系の求人情報</translation>
 <translation id="2943895734390379394">アップロード時刻:</translation>
+<translation id="2947281105969315778">タブグループを共有するか、タブグループに参加するには、Chrome にログインする必要があります</translation>
 <translation id="2948083400971632585">接続用に設定されたプロキシは、設定ページで無効にできます。</translation>
 <translation id="2949183777371959169">マシンが Chrome ブラウザ クラウド管理に登録されていないため、無視されました。</translation>
 <translation id="2951588413176968965">自分の用紙受け</translation>
@@ -3906,6 +3908,7 @@
 <translation id="791107458486222637">結果をやり直しています</translation>
 <translation id="791551905239004656">お絵かき、塗り絵</translation>
 <translation id="7916162853251942238">フレキソベース</translation>
+<translation id="791698251820376781">組織がログインを許可していません</translation>
 <translation id="7926503317156566022">航空産業</translation>
 <translation id="793209273132572360">住所を更新しますか？</translation>
 <translation id="7932579305932748336">コーティング</translation>
@@ -4618,6 +4621,7 @@
 <translation id="9191834167571392248">パンチ（左下）</translation>
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9192947025498305328">クリーン ビューティー</translation>
+<translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>
 <translation id="9201904868909900493">アンケートを開いています…</translation>
 <translation id="9204089334327209740">アップロードが完了したら、<ph name="CLOUD_PROVIDER" /> でファイルを変更できます。ゴミ箱内のファイルを含め、ローカル ストレージは自動的に削除されます。</translation>

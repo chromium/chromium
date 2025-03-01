@@ -336,7 +336,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'angle-d3d9',
             'no-passthrough',
             'renderer-skia-gl',
-            'no-oop-c',
             'no-asan',
             'target-cpu-64',
             'no-clang-coverage',
@@ -365,7 +364,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'angle-opengles',
             'passthrough',
             'renderer-skia-gl',
-            'no-oop-c',
             'no-clang-coverage',
             'graphite-disabled',
         ]))
@@ -390,7 +388,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'angle-disabled',
             'no-passthrough',
             'renderer-skia-gl',
-            'no-oop-c',
             'no-clang-coverage',
             'graphite-disabled',
         ]))

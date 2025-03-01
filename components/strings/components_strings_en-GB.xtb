@@ -837,6 +837,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2451607499823206582">Tracking</translation>
 <translation id="2452098632681057184">Ecology and environment</translation>
 <translation id="2452837234288608067">Couldn't help with that. Try again.</translation>
+<translation id="2453045048779611513">Your organisation limits what you can save</translation>
 <translation id="2456755709261364512">Your battery must be charged above <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core gives you a centralised tool for configuring browser policies from the cloud</translation>
 <translation id="2461822463642141190">Current</translation>
@@ -1086,6 +1087,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2942492342931589800">Casual</translation>
 <translation id="2942515540157583425">IT and Technical Jobs</translation>
 <translation id="2943895734390379394">Upload time:</translation>
+<translation id="2947281105969315778">To share or join tab groups, you must be able to sign in to Chrome</translation>
 <translation id="2948083400971632585">You can disable any proxies configured for a connection from the settings page.</translation>
 <translation id="2949183777371959169">Ignored because the machine is not enrolled with Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">My mailbox</translation>
@@ -1946,6 +1948,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">File upload to Microsoft OneDrive has been paused</translation>
+<translation id="4389931020843542579">Loading tab group</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4395550503472021297">This policy is controlling the default behaviour of the following policies: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Opens a pop-up to verify on your bank's website</translation>
@@ -3904,6 +3907,7 @@ Additional details:
 <translation id="791107458486222637">Redoing result</translation>
 <translation id="791551905239004656">Drawing and colouring</translation>
 <translation id="7916162853251942238">Flexo base</translation>
+<translation id="791698251820376781">Your organisation doesn't allow you to sign in</translation>
 <translation id="7926503317156566022">Aviation industry</translation>
 <translation id="793209273132572360">Update address?</translation>
 <translation id="7932579305932748336">Coat</translation>
@@ -4616,6 +4620,7 @@ Additional details:
 <translation id="9191834167571392248">Punch bottom left</translation>
 <translation id="9192361865877479444">Metal (matte)</translation>
 <translation id="9192947025498305328">Clean beauty</translation>
+<translation id="9195969368671142407">When your organisation limits saving to your Google Account, you can’t share or join tab groups</translation>
 <translation id="9199905725844810519">Printing is blocked</translation>
 <translation id="9201904868909900493">Opening survey…</translation>
 <translation id="9204089334327209740">Once the upload is complete, you can modify your files in <ph name="CLOUD_PROVIDER" />. Local storage, including any files in Trash, will be automatically removed.</translation>

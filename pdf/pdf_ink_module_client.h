@@ -53,6 +53,10 @@ class PdfInkModuleClient {
   // non-negative page index returned from `VisiblePageIndexFromPoint()`.
   virtual gfx::Rect GetPageContentsRect(int page_index) = 0;
 
+  // Gets the page size in points for `page_index`.  Must be non-empty for any
+  // non-negative page index returned from `VisiblePageIndexFromPoint()`.
+  virtual gfx::SizeF GetPageSizeInPoints(int page_index) = 0;
+
   // Gets the thumbnail size for `page_index`. The size must be non-empty for
   // any valid page index.
   virtual gfx::Size GetThumbnailSize(int page_index) = 0;

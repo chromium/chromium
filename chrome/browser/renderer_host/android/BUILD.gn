@@ -21,6 +21,7 @@ android_library("javatests") {
     "//components/browsing_data/core:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/core/common:content_settings_types_java",
+    "//components/permissions/android:core_java",
     "//components/permissions/android:java",
     "//content/public/android:content_java",
     "//net/android:net_java_test_support",

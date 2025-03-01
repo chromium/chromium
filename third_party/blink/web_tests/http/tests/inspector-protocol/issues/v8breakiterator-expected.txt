@@ -13,7 +13,7 @@ Inspector issue: {
                     scriptId : <string>
                     url : 
                 }
-                type : Intl.v8BreakIterator
+                type : IntlV8BreakIterator
             }
         }
     }

@@ -27,7 +27,9 @@ class IwaKeyDistributionInfoProvider;
 
 namespace component_updater {
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kIwaKeyDistributionComponent);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 inline constexpr char kIwaKeyDistributionComponentExpCohort[] =
     "iwa-kd-component-exp-cohort";
@@ -50,6 +52,10 @@ class IwaKeyDistributionComponentInstallerPolicy
       const IwaKeyDistributionComponentInstallerPolicy&) = delete;
   IwaKeyDistributionComponentInstallerPolicy operator=(
       const IwaKeyDistributionComponentInstallerPolicy&) = delete;
+
+  // Tells whether the component is supported on a particular platform wrt to
+  // the feature flags.
+  static bool IsSupported();
 
   // Triggers an on-demand update for the component. Returns whether the update
   // has been queued.

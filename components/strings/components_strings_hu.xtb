@@ -837,6 +837,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2451607499823206582">Nyomon követés</translation>
 <translation id="2452098632681057184">Ökológia és környezet</translation>
 <translation id="2452837234288608067">Ebben nem tudunk segíteni. Próbálkozzon újra.</translation>
+<translation id="2453045048779611513">Szervezete korlátozza, hogy mit lehet menteni</translation>
 <translation id="2456755709261364512">Az akkumulátor töltöttségi szintjének <ph name="REQUIRED_BATTERY_PRECENT" />% felett kell lennie.</translation>
 <translation id="2461385121573678775">A Chrome Enterprise Core egy központi eszközt biztosít a böngészőházirendek felhőből történő konfigurálásához</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
@@ -1086,6 +1087,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2942492342931589800">Általános</translation>
 <translation id="2942515540157583425">Informatikai és műszaki állások</translation>
 <translation id="2943895734390379394">Feltöltés ideje:</translation>
+<translation id="2947281105969315778">Be kell tudnia jelentkezni a Chrome-ba, hogy megoszthasson lapcsoportokat vagy csatlakozhasson hozzájuk</translation>
 <translation id="2948083400971632585">Bármelyik kapcsolatlétesítésre használt proxyt letilthatja a beállítások oldalon.</translation>
 <translation id="2949183777371959169">Figyelmen kívül hagyva, mert a gép nincs regisztrálva a Chrome Browser Cloud Management szolgáltatásra.</translation>
 <translation id="2951588413176968965">Saját postaládám</translation>
@@ -3902,6 +3904,7 @@ További részletek:
 <translation id="791107458486222637">Folyamatban van az eredmény ismételt generálása</translation>
 <translation id="791551905239004656">Rajzolás és színezés</translation>
 <translation id="7916162853251942238">Flexo alap</translation>
+<translation id="791698251820376781">Szervezete nem engedélyezi a bejelentkezést</translation>
 <translation id="7926503317156566022">Légiközlekedési szektor</translation>
 <translation id="793209273132572360">Frissíti a címet?</translation>
 <translation id="7932579305932748336">Bevonat</translation>
@@ -4616,6 +4619,7 @@ További részletek:
 <translation id="9191834167571392248">Lyuk balra lent</translation>
 <translation id="9192361865877479444">Fém (matt)</translation>
 <translation id="9192947025498305328">Etikus szépségápolás</translation>
+<translation id="9195969368671142407">Ha a szervezete korlátozza a Google-fiókba történő mentést, akkor nem oszthat meg lapcsoportokat, valamint nem csatlakozhat hozzájuk</translation>
 <translation id="9199905725844810519">A nyomtatás le van tiltva</translation>
 <translation id="9201904868909900493">Kérdőív megnyitása…</translation>
 <translation id="9204089334327209740">A feltöltés végeztével a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásban módosíthatja a fájlokat. A helyi tárhely, beleértve a kukában lévő fájlokat is, automatikusan eltávolításra kerül.</translation>

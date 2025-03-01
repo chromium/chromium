@@ -14,8 +14,3 @@ for Blink:
   * Update `WPT_HOST_AND_PORTS` in
     `//third_party/blink/tools/blinkpy/web_tests/port/driver.py`
   * Update `WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess`
-* `web_tests/wptrunner.blink.ini`: This file is now created on the fly. It describes
-  WPT tests other than `external/wpt`, which is automatically mapped to the document
-  root `http://web-platform.test/`. Note that this config is only ingested by
-  `wptrunner`; `run_web_tests.py` automatically recognizes all tests under
-  `web_tests/`.

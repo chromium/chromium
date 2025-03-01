@@ -67,12 +67,8 @@ function handleAcquireTokenResponse(result: typeof AuthenticationResult|null) {
   }
 }
 
-function handleAuthError(_: typeof AuthError) {
-  // All authentication errors are currently treated the same:
-  // the service is marked as errored, which cancels the current
-  // authentication attempt and triggers UI updates to prompt
-  // the user to retry authenticating.
-  handler.setAuthStateError();
+function handleAuthError(err: typeof AuthError) {
+  handler.setAuthStateError(err.errorCode, err.errorMessage);
 }
 
 function acquireTokenPopup() {

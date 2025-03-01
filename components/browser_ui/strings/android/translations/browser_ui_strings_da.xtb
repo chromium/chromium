@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Når dette er slået til, kan websites anmode om tilladelse til at bruge NFC-enheder. Når dette er slået fra, kan websites ikke bruge NFC-enheder.</translation>
 <translation id="1660204651932907780">Tillad, at websites afspiller lyd (anbefales)</translation>
 <translation id="1677097821151855053">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig personligt tilpassede annoncer. Gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
+<translation id="1686785653877010442">Websites sender normalt notifikationer for at informere dig om de seneste nyheder eller chatbeskeder.</translation>
 <translation id="169515064810179024">Bloker adgang til bevægelsessensorer på websites</translation>
 <translation id="1717218214683051432">Bevægelsessensorer</translation>
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2096716221239095980">Slet alle data</translation>
 <translation id="2117655453726830283">Næste dias</translation>
+<translation id="2146263598007866206">Websites kan automatisk downloade relaterede filer sammen for at spare tid</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Selv med øjnene beskyttet bag de grønne briller blev Dorothy og hendes venner først forblændet af den</translation>
 <translation id="2176704795966505152">Vis zoomindstilling i hovedmenuen</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
 <translation id="2787357173144933081">Åbn omnifeltet</translation>
 <translation id="2790501146643349491">Når dette er slået til, kan nyligt lukkede websites gennemføre afsendelse og modtagelse af data. Når dette er slået fra, kan nyligt lukkede websites ikke sende eller modtage data.</translation>
+<translation id="2795716239552913152">Websites bruger normalt din lokation til relevante formål eller oplysninger om lokale nyheder eller butikker i nærheden</translation>
 <translation id="2814830417943086299">Chrome viser nu dine seneste faner på din enheds appliste og i søgeresultaterne. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Anmod om mobilvenlig visning</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Tredjepartscookies er blokeret</translation>
 <translation id="3448554387819310837">Når dette er slået til, kan websites anmode om at anvende dit kamera. Når dette er slået fra, kan websites ikke anvende dit kamera.</translation>
+<translation id="3491678231052507920">Websites bruger normalt dine virtual reality-enheder og -data til at gøre det muligt for dig at deltage i VR-sessioner</translation>
+<translation id="3496995426334945408">Websites bruger normalt JavaScript til interaktive formål såsom videospil og webformularer</translation>
 <translation id="3521663503435878242">Websites på <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Tillad ikke, at websites registrerer dine hænder</translation>
 <translation id="3532312529397438268">Websites kan ikke anvende V8-optimering</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Åbn lokationsindstillinger</translation>
 <translation id="4226663524361240545">Notifikationer kan få enheden til at vibrere</translation>
 <translation id="4259722352634471385">Navigationen er blokeret: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Når du forlader et website, kan websitet fortsætte med at synkronisere for at afslutte opgaver såsom upload af billeder eller afsendelse af en chatbesked</translation>
 <translation id="4278390842282768270">Tilladt</translation>
 <translation id="429312253194641664">Et website afspiller medier</translation>
 <translation id="42981349822642051">Udvid</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Gemt zoomniveau for websites</translation>
 <translation id="4836046166855586901">Spørg, når et website vil vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="483914009762354899">Medtag alle websites under dette domæne</translation>
+<translation id="4882919381756638075">Websites bruger normalt din mikrofon til kommunikationsformål såsom videochat</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
 <translation id="4936863036653376783">Du finder dine grupper i sektionen for fanegrupper på alle dine enheder</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Vælg elementer</translation>
 <translation id="6838525730752203626">Brug Chrome som standard</translation>
 <translation id="6840760312327750441">Du kan gruppere faner ved at holde en fane nede. Træk den derefter oven på en anden fane.</translation>
+<translation id="6842868554183332230">Websites registrerer som regel, hvornår du aktivt bruger din enhed, så de kan angive din tilgængelighed i chatapps</translation>
 <translation id="6851981911629679515">Aktivér yderligere beskyttelse i JavaScript- og WebAssembly-maskinen i Chrome</translation>
 <translation id="6864395892908308021">Denne enhed kan ikke læse NFC</translation>
 <translation id="6870169401250095575">Skjul kortet Sikkerhedstjek</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Indstillinger for <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Sikkerhedstjek</translation>
 <translation id="7406113532070524618">Denne indstilling fungerer uden at identificere dig eller give websites tilladelse til at se din browserhistorik, men websites kan dele en lille mængde oplysninger som en del af verificeringen</translation>
+<translation id="7409735910987429903">Websites kan sende pop op-vinduer for at vise annoncer eller bruge omdirigeringer til af føre dig til websites, du måske ikke ønsker at besøge</translation>
 <translation id="7423098979219808738">Spørg først</translation>
 <translation id="7423538860840206698">Blokeret fra at læse udklipsholderen</translation>
 <translation id="7425915948813553151">Mørkt tema på websites</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Afslut søgehub</translation>
 <translation id="7554752735887601236">Et website anvender din mikrofon</translation>
 <translation id="7561196759112975576">Altid</translation>
+<translation id="7573594921350120855">Websites bruger normalt dit videokamera til kommunikationsformål såsom videochat</translation>
 <translation id="757524316907819857">Bloker afspilning af beskyttet indhold på websites</translation>
 <translation id="7594634374516752650">Forbundet til en Bluetooth-enhed</translation>
 <translation id="7617547684249261169">Du kan slette dele af eller hele din historik og dele af eller alle cookies, websitedata og meget mere</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7667547420449112975">Den vidunderlige troldmand fra Oz</translation>
+<translation id="7681597159868843240">Websites bruger normalt din enheds bevægelsessensorer til funktioner som f.eks. virtual reality eller registrering af motion</translation>
 <translation id="7688240020069572972">Skjul kort med Chrome-tip</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
 <translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Spol tilbage</translation>
 <translation id="8444433999583714703">Aktivér også lokation i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din lokation.</translation>
 <translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
+<translation id="8471525937465764768">Websites opretter normalt forbindelse til USB-enheder for at kunne udskrive dokumenter eller gemme filer på en lagerenhed</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" er forældet. Geninstaller appen.</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="848952951823693243">Anmod altid om mobilwebsite</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Når dette er slået til, kan websites gemme data på din enhed. Når dette er slået fra, kan websites ikke gemme data på din enhed.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> er tilladt</translation>
 <translation id="9019902583201351841">Administreret af dine forældre</translation>
+<translation id="902236149563113779">Websites registrerer normalt din kameraposition til AR-formål såsom spil eller overlejrede rutevejledninger</translation>
 <translation id="9039697262778250930">Du bliver muligvis logget ud af disse websites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Vil du slette cookies?</translation>

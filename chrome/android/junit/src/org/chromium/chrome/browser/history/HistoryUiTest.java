@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
@@ -89,7 +90,10 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.PageTransition;
@@ -103,6 +107,7 @@ import java.util.Date;
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
+@EnableFeatures({SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS})
 public class HistoryUiTest {
     private static final int PAGE_INCREMENT = 2;
     private static final String HISTORY_SEARCH_QUERY = "some page";
@@ -134,9 +139,10 @@ public class HistoryUiTest {
     @Mock private PrefService mPrefService;
     @Mock private IdentityServicesProvider mIdentityService;
     @Mock private SigninManager mSigninManager;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private SyncService mSyncService;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private TemplateUrlService mTemplateUrlService;
-    @Mock private HistoryAdapter mMockAdapter;
     @Mock private PackageManager mPackageManager;
     @Mock private AppFilterCoordinator mAppFilterSheet;
     @Mock private ApplicationInfo mPackageAppInfo;
@@ -164,6 +170,8 @@ public class HistoryUiTest {
         doReturn(true).when(mPrefService).getBoolean(HistoryManager.HISTORY_CLUSTERS_VISIBLE_PREF);
         IdentityServicesProvider.setInstanceForTests(mIdentityService);
         doReturn(mSigninManager).when(mIdentityService).getSigninManager(mProfile);
+        doReturn(mIdentityManager).when(mIdentityService).getIdentityManager(mProfile);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
         IncognitoUtils.setEnabledForTesting(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
@@ -269,7 +277,7 @@ public class HistoryUiTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedIn() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         setHasOtherFormsOfBrowsingData(false);
 
@@ -279,7 +287,7 @@ public class HistoryUiTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedInSynced() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         setHasOtherFormsOfBrowsingData(false);
 
@@ -289,7 +297,7 @@ public class HistoryUiTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedInSyncedAndOtherForms() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         setHasOtherFormsOfBrowsingData(true);
 
@@ -641,7 +649,7 @@ public class HistoryUiTest {
         Assert.assertEquals(1, headerGroup.size());
 
         // Signed in but not synced and history has items. The info button should be hidden.
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setHasOtherFormsOfBrowsingData(false);
         toolbar.onSignInStateChange();
         Assert.assertFalse(infoMenuItem.isVisible());

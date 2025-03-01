@@ -8,6 +8,5 @@ export const AccountInfo = msal.AccountInfo;
 export const AuthenticationResult = msal.AuthenticationResult;
 export const AuthError = msal.AuthError;
 export const Configuration = msal.Configuration;
-export const InteractionRequiredAuthError = msal.InteractionRequiredAuthError;
 export const PopupRequest = msal.PopupRequest;
 export const PublicClientApplication = msal.PublicClientApplication;

@@ -47,6 +47,7 @@ import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -222,7 +223,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         mModel.get(ItemProperties.CONTINUE_BUTTON)
                 .get(ContinueButtonProperties.PROPERTIES)
                 .mOnClickListener
-                .onResult(mAnaAccount);
+                .onResult(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
         verify(mMockDelegate).onAccountSelected(mAnaAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
@@ -247,7 +248,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 .get(0)
                 .model
                 .get(AccountProperties.ON_CLICK_LISTENER)
-                .onResult(mCarlAccount);
+                .onResult(new ButtonData(mCarlAccount, /* idpMetadata= */ null));
         verify(mMockDelegate).onAccountSelected(mCarlAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
@@ -291,7 +292,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
-        mMediator.onAccountSelected(mAnaAccount);
+        mMediator.onAccountSelected(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
         verify(mMockDelegate).onAccountSelected(mAnaAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
@@ -307,7 +308,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
-        mMediator.onAccountSelected(mNewUserAccount);
+        mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
 
         assertFalse(mMediator.wasDismissed());
         assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
@@ -324,7 +325,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
-        mMediator.onAccountSelected(mNewUserAccount);
+        mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
 
         pressBack();
         assertFalse(mMediator.wasDismissed());
@@ -347,7 +348,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
         assertEquals(2, mSheetAccountItems.size());
-        mMediator.onAccountSelected(mAnaAccount);
+        mMediator.onAccountSelected(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
 
         pressBack();
         assertTrue(mMediator.wasDismissed());
@@ -448,7 +449,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mIdpData),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
-        mMediator.onAccountSelected(mNewUserAccount);
+        mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
         verify(mMockDelegate).onAccountSelected(mNewUserAccount);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
@@ -485,7 +486,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
             mModel.get(ItemProperties.CONTINUE_BUTTON)
                     .get(ContinueButtonProperties.PROPERTIES)
                     .mOnClickListener
-                    .onResult(null);
+                    .onResult(new ButtonData(/* account= */ null, mIdpMetadata));
             verify(mMockDelegate, times(++count)).onLoginToIdP(mTestConfigUrl, mTestLoginUrl);
         }
     }

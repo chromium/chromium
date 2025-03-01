@@ -51,7 +51,8 @@ class SaveOrUpdateAutofillAiDataControllerImplTest : public DialogBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
 
     SaveOrUpdateAutofillAiDataControllerImpl::CreateForWebContents(
-        web_contents);
+        web_contents,
+        /*app_locale=*/"en-US");
     controller_ =
         SaveOrUpdateAutofillAiDataControllerImpl::FromWebContents(web_contents);
     CHECK(controller_);

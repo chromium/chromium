@@ -837,6 +837,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2451607499823206582">Spremljanje</translation>
 <translation id="2452098632681057184">Ekologija in okolje</translation>
 <translation id="2452837234288608067">Pri tem vam nismo mogli pomagati. Poskusite znova.</translation>
+<translation id="2453045048779611513">Vaša organizacija omejuje, kaj je mogoče shraniti</translation>
 <translation id="2456755709261364512">Baterija mora imeti več kot <ph name="REQUIRED_BATTERY_PRECENT" /> % energije</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vam omogoča centralizirano orodje za konfiguriranje pravilnikov brskalnika v oblaku</translation>
 <translation id="2461822463642141190">Trenutno</translation>
@@ -1086,6 +1087,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2942492342931589800">Neformalno</translation>
 <translation id="2942515540157583425">Zaposlitev na področju IT-ja in tehnične podpore</translation>
 <translation id="2943895734390379394">Čas nalaganja:</translation>
+<translation id="2947281105969315778">Če želite deliti ali se pridružiti skupinam zavihkov, se morate biti zmožni prijaviti v Chrome</translation>
 <translation id="2948083400971632585">Namestniške strežnike, konfigurirane za povezavo, lahko onemogočite na strani z nastavitvami.</translation>
 <translation id="2949183777371959169">Prezrto, ker računalnik ni včlanjen v upravljanje v oblaku za brskalnik Chrome.</translation>
 <translation id="2951588413176968965">Moj nabiralnik</translation>
@@ -1946,6 +1948,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Nalaganje datotek v Microsoft OneDrive je bilo začasno zaustavljeno</translation>
+<translation id="4389931020843542579">Nalaganje skupine zavihkov</translation>
 <translation id="4390472908992056574">Polna podlaga</translation>
 <translation id="4395550503472021297">Ta pravilnik nadzira privzeto delovanje teh pravilnikov: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Odpre pojavno okno za preverjanje na spletnem mestu banke</translation>
@@ -3904,6 +3907,7 @@ Dodatne podrobnosti:
 <translation id="791107458486222637">Uveljavitev rezultata</translation>
 <translation id="791551905239004656">Risanje in barvanje</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
+<translation id="791698251820376781">Vaša organizacija vam ne dovoli prijave</translation>
 <translation id="7926503317156566022">Letalska industrija</translation>
 <translation id="793209273132572360">Želite posodobiti naslov?</translation>
 <translation id="7932579305932748336">Prevleka</translation>
@@ -4616,6 +4620,7 @@ Dodatne podrobnosti:
 <translation id="9191834167571392248">Luknjanje spodaj levo</translation>
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9192947025498305328">Čistilna kozmetika</translation>
+<translation id="9195969368671142407">Ko organizacija omeji shranjevanje v računu Google, ne morete deliti ali se pridružiti skupinam zavihkov</translation>
 <translation id="9199905725844810519">Tiskanje je blokirano</translation>
 <translation id="9201904868909900493">Odpiranje ankete …</translation>
 <translation id="9204089334327209740">Ko je nalaganje končano, lahko datoteke spreminjate v storitvi <ph name="CLOUD_PROVIDER" />. Lokalna shramba, vključno z datotekami v smetnjaku, bo samodejno odstranjena.</translation>

@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_translation_availability.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {

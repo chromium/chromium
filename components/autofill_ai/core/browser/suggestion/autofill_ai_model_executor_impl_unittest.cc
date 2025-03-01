@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill_ai/core/browser/autofill_ai_test_utils.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
@@ -26,8 +25,7 @@
 namespace autofill_ai {
 namespace {
 
-using Prediction = AutofillAiModelExecutor::Prediction;
-using PredictionsOrError = AutofillAiModelExecutor::PredictionsOrError;
+using Predictions = AutofillAiModelExecutor::Predictions;
 using optimization_guide::OptimizationGuideModelExecutionError;
 using optimization_guide::OptimizationGuideModelExecutionResult;
 using optimization_guide::OptimizationGuideModelExecutionResultCallback;
@@ -69,15 +67,12 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
           _, An<OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<3>(
           OptimizationGuideModelExecutionResult(
-
               optimization_guide::AnyWrapProto(AutofillAiTypeResponse()),
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
-      test_future;
-  engine()->GetPredictions(autofill::FormData(), /*field_eligibility_map=*/{},
-                           /*field_sensitivity_map=*/{},
+  base::test::TestFuture<std::optional<Predictions>> test_future;
+  engine()->GetPredictions(autofill::FormData(),
                            optimization_guide::proto::AXTreeUpdate(),
                            test_future.GetCallback());
   EXPECT_TRUE(test_future.Get<0>().has_value());
@@ -98,10 +93,8 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
-      test_future;
-  engine()->GetPredictions(autofill::FormData(), /*field_eligibility_map=*/{},
-                           /*field_sensitivity_map=*/{},
+  base::test::TestFuture<std::optional<Predictions>> test_future;
+  engine()->GetPredictions(autofill::FormData(),
                            optimization_guide::proto::AXTreeUpdate(),
                            test_future.GetCallback());
   EXPECT_FALSE(test_future.Get<0>().has_value());
@@ -118,9 +111,8 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
               optimization_guide::proto::Any(), /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
-      test_future;
-  engine()->GetPredictions(autofill::FormData(), {}, {},
+  base::test::TestFuture<std::optional<Predictions>> test_future;
+  engine()->GetPredictions(autofill::FormData(),
                            optimization_guide::proto::AXTreeUpdate(),
                            test_future.GetCallback());
   EXPECT_FALSE(test_future.Get<0>().has_value());

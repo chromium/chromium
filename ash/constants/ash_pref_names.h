@@ -2624,6 +2624,10 @@ inline constexpr char kClassManagementToolsNavRuleSetting[] =
 inline constexpr char kClassManagementToolsCaptionEnablementSetting[] =
     "ash.class_management_tools.caption_enablement_setting";
 
+// A boolean pref indicating whether age requirement met for GenAI access for
+// Coral.
+inline constexpr char kCoralGenAIAgeAllowed[] = "ash.coral.gen_ai_age_allowed";
+
 // A boolean pref that holds whether the user dismissed the extended updates
 // notification.
 inline constexpr char kExtendedUpdatesNotificationDismissed[] =

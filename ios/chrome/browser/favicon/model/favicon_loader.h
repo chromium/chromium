@@ -51,7 +51,7 @@ class FaviconLoader : public KeyedService {
   // TODO(crbug.com/40266381): Remove the `fallback_to_google_server` param, and
   // instead have FaviconLoader determine this internally, based on
   // `CanSendHistoryData()`.
-  void FaviconForPageUrl(
+  virtual void FaviconForPageUrl(
       const GURL& page_url,
       float size_in_points,
       float min_size_in_points,
@@ -66,7 +66,7 @@ class FaviconLoader : public KeyedService {
   //   1. Use `large_icon_service_` to fetch from local DB managed by
   //      HistoryService;
   //   2. Create a favicon base on the fallback style from `large_icon_service`.
-  void FaviconForPageUrlOrHost(
+  virtual void FaviconForPageUrlOrHost(
       const GURL& page_url,
       float size_in_points,
       FaviconAttributesCompletionBlock favicon_block_handler);
@@ -79,14 +79,14 @@ class FaviconLoader : public KeyedService {
   //   1. Use `large_icon_service_` to fetch from local DB managed by
   //      HistoryService;
   //   2. Create a favicon base on the fallback style from `large_icon_service`.
-  void FaviconForIconUrl(
+  virtual void FaviconForIconUrl(
       const GURL& icon_url,
       float size_in_points,
       float min_size_in_points,
       FaviconAttributesCompletionBlock favicon_block_handler);
 
   // Cancel all incomplete requests.
-  void CancellAllRequests();
+  virtual void CancellAllRequests();
 
   // Return a weak pointer to the current object.
   base::WeakPtr<FaviconLoader> AsWeakPtr();

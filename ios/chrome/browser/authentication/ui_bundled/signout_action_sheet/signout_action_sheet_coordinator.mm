@@ -300,8 +300,12 @@ using signin_metrics::SignoutDataLossAlertReason;
                     action:^{
                       base::RecordAction(base::UserMetricsAction(
                           "Signin_Signout_Confirm_Regular_UNO"));
-                      [weakSelf signoutWithReason:SignoutDataLossAlertReason::
-                                                      kSignoutWithUnsyncedData];
+                      signin_metrics::
+                          RecordSignoutConfirmationFromDataLossAlert(
+                              SignoutDataLossAlertReason::
+                                  kSignoutWithUnsyncedData,
+                              true);
+                      [weakSelf signoutConfirmationWithContinue:YES];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
@@ -309,13 +313,15 @@ using signin_metrics::SignoutDataLossAlertReason;
                     action:^{
                       base::RecordAction(base::UserMetricsAction(
                           "Signin_Signout_Cancel_Regular_UNO"));
-                      [weakSelf cancelSignoutAndRecordHistogram:
-                                    SignoutDataLossAlertReason::
-                                        kSignoutWithUnsyncedData];
+                      signin_metrics::
+                          RecordSignoutConfirmationFromDataLossAlert(
+                              SignoutDataLossAlertReason::
+                                  kSignoutWithUnsyncedData,
+                              false);
+                      [weakSelf signoutConfirmationWithContinue:NO];
                     }
                      style:UIAlertActionStyleCancel];
-      [self.actionSheetCoordinator start];
-      return;
+      break;
     }
     case SignedInUserState::kManagedAccountClearsDataOnSignout: {
       self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
@@ -330,10 +336,12 @@ using signin_metrics::SignoutDataLossAlertReason;
                     action:^{
                       base::RecordAction(base::UserMetricsAction(
                           "Signin_Signout_Confirm_Managed_ClearDataOnSignout"));
-
-                      [weakSelf signoutWithReason:
-                                    SignoutDataLossAlertReason::
-                                        kSignoutWithClearDataForManagedUser];
+                      signin_metrics::
+                          RecordSignoutConfirmationFromDataLossAlert(
+                              SignoutDataLossAlertReason::
+                                  kSignoutWithClearDataForManagedUser,
+                              true);
+                      [weakSelf signoutConfirmationWithContinue:YES];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
@@ -341,13 +349,15 @@ using signin_metrics::SignoutDataLossAlertReason;
                     action:^{
                       base::RecordAction(base::UserMetricsAction(
                           "Signin_Signout_Cancel_Managed_ClearDataOnSignout"));
-                      [weakSelf cancelSignoutAndRecordHistogram:
-                                    SignoutDataLossAlertReason::
-                                        kSignoutWithClearDataForManagedUser];
+                      signin_metrics::
+                          RecordSignoutConfirmationFromDataLossAlert(
+                              SignoutDataLossAlertReason::
+                                  kSignoutWithClearDataForManagedUser,
+                              false);
+                      [weakSelf signoutConfirmationWithContinue:NO];
                     }
                      style:UIAlertActionStyleCancel];
-      [self.actionSheetCoordinator start];
-      return;
+      break;
     }
     case SignedInUserState::kManagedAccountAndMigratedFromSyncing: {
       if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
@@ -360,46 +370,33 @@ using signin_metrics::SignoutDataLossAlertReason;
                     action:^{
                       base::RecordAction(base::UserMetricsAction(
                           "Signin_Signout_Confirm_Managed_Syncing"));
-                      [weakSelf signout];
+                      [weakSelf signoutConfirmationWithContinue:YES];
                     }
                      style:UIAlertActionStyleDestructive];
+      [self.actionSheetCoordinator
+          addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                    action:^{
+                      base::RecordAction(
+                          base::UserMetricsAction("Signin_Signout_Cancel"));
+                      [weakSelf signoutConfirmationWithContinue:NO];
+                    }
+                     style:UIAlertActionStyleCancel];
       break;
     }
   }
-  // This CANCEL item is ignored in the few cases were a more specific cancel
-  // item was added above.
-  [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                action:^{
-                  base::RecordAction(
-                      base::UserMetricsAction("Signin_Signout_Cancel"));
-                  [weakSelf cancelSignout];
-                }
-                 style:UIAlertActionStyleCancel];
-
   base::RecordAction(
       base::UserMetricsAction("Signin_Signout_ConfirmationRequestPresented"));
   [self.actionSheetCoordinator start];
 }
 
-- (void)cancelSignoutAndRecordHistogram:(SignoutDataLossAlertReason)reason {
-  signin_metrics::RecordSignoutConfirmationFromDataLossAlert(reason, false);
-  [self cancelSignout];
-}
-
-- (void)cancelSignout {
-  [self callCompletionBlock:NO];
-  [self dismissActionSheetCoordinator];
-}
-
-- (void)signoutWithReason:(SignoutDataLossAlertReason)reason {
-  signin_metrics::RecordSignoutConfirmationFromDataLossAlert(reason, true);
-  [self signout];
-}
-
-- (void)signout {
-  [self handleSignOut];
-  [self dismissActionSheetCoordinator];
+- (void)signoutConfirmationWithContinue:(BOOL)continueSignout {
+  if (continueSignout) {
+    [self handleSignOut];
+    [self dismissActionSheetCoordinator];
+  } else {
+    [self callCompletionBlock:NO];
+    [self dismissActionSheetCoordinator];
+  }
 }
 
 // Signs the user out of the primary account and clears the data from their

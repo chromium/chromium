@@ -2856,6 +2856,7 @@ if (!is_android) {
       "../browser/browsing_data/navigation_entry_remover_browsertest.cc",
       "../browser/browsing_topics/browsing_topics_internals_browsertest.cc",
       "../browser/browsing_topics/browsing_topics_service_browsertest.cc",
+      "../browser/btm/btm_devtools_browsertest.cc",
       "../browser/chained_back_navigation_tracker_browsertest.cc",
       "../browser/chrome_back_forward_cache_browsertest.cc",
       "../browser/chrome_content_browser_client_browsertest.cc",
@@ -2890,7 +2891,6 @@ if (!is_android) {
       "../browser/devtools/protocol/devtools_protocol_browsertest.cc",
       "../browser/devtools/protocol/devtools_pwa_browsertest.cc",
       "../browser/devtools/protocol/form_devtools_issues_browsertest.cc",
-      "../browser/dips/dips_devtools_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_apitest.cc",
       "../browser/dom_distiller/distillable_page_utils_browsertest.cc",
       "../browser/dom_distiller/dom_distiller_viewer_source_browsertest.cc",
@@ -3065,6 +3065,7 @@ if (!is_android) {
       "../browser/page_load_metrics/observers/core/amp_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/foreground_duration_ukm_observer_browsertest.cc",
+      "../browser/page_load_metrics/observers/from_gws_abandoned_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.h",
       "../browser/page_load_metrics/observers/gws_hp_page_load_metrics_observer_browsertest.cc",
@@ -3269,6 +3270,7 @@ if (!is_android) {
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
       "../browser/ui/omnibox/alternate_nav_infobar_delegate_browsertest.cc",
+      "../browser/ui/omnibox/omnibox_search_aggregator_browsertest.cc",
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
       "../browser/ui/passwords/password_generation_popup_view_browsertest.cc",
@@ -3488,11 +3490,11 @@ if (!is_android) {
       sources += [ "../browser/ui/webui/settings/glic_handler_browsertest.cc" ]
 
       deps += [
+        "//chrome/browser/background/glic",
+        "//chrome/browser/background/glic:browser_tests",
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
         "//chrome/browser/glic:test_support",
-        "//chrome/browser/glic/launcher:browser_tests",
-        "//chrome/browser/glic/launcher:launcher",
       ]
     }
 
@@ -4593,7 +4595,6 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/autofill_progress_dialog_views_browsertest.cc",
-        "../browser/ui/views/autofill/payments/bnpl_tos_view_desktop_browsertest.cc",
         "../browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_browsertest.cc",
         "../browser/ui/views/autofill/payments/card_unmask_otp_input_dialog_browsertest.cc",
         "../browser/ui/views/autofill/payments/credit_card_access_manager_browsertest.cc",
@@ -6415,6 +6416,7 @@ test("unit_tests") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/breadcrumbs:unit_tests",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/btm:unit_tests",
     "//chrome/browser/chooser_controller:unit_tests",
     "//chrome/browser/commerce",
     "//chrome/browser/commerce:unit_tests",
@@ -6424,7 +6426,6 @@ test("unit_tests") {
     "//chrome/browser/crash_upload_list:unit_tests",
     "//chrome/browser/data_saver",
     "//chrome/browser/devtools",
-    "//chrome/browser/dips:unit_tests",
     "//chrome/browser/download",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback",
@@ -6923,9 +6924,9 @@ test("unit_tests") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/background/glic:unit_tests",
       "//chrome/browser/glic:test_support",
       "//chrome/browser/glic:unit_tests",
-      "//chrome/browser/glic/launcher:unit_tests",
     ]
   }
 
@@ -10697,6 +10698,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/test/test_browser_dialog.cc",
       "../browser/ui/test/test_browser_dialog.h",
       "../browser/ui/thumbnails/thumbnail_tab_helper_interactive_uitest.cc",
+      "../browser/ui/views/autofill/payments/bnpl_tos_view_desktop_interactive_uitest.cc",
       "../browser/ui/views/autofill/payments/iban_bubble_view_uitest.cc",
       "../browser/ui/views/autofill/payments/local_card_migration_uitest.cc",
       "../browser/ui/views/content_test_utils.cc",
@@ -11550,12 +11552,12 @@ if (!is_android && !is_chromeos_device) {
 
     if (enable_glic) {
       deps += [
+        "//chrome/browser/background/glic:interactive_ui_tests",
         "//chrome/browser/glic:interactive_ui_tests",
-        "//chrome/browser/glic/launcher:interactive_ui_tests",
       ]
       data_deps += [
+        "//chrome/browser/background/glic:interactive_ui_tests",
         "//chrome/browser/glic:interactive_ui_tests",
-        "//chrome/browser/glic/launcher:interactive_ui_tests",
       ]
     }
 

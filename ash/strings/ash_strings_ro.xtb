@@ -246,7 +246,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="17722141032474077">Calcule</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, momentan s-a selectat <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configurează afișarea fotografiilor, a elementelor media și a notificărilor recente ale telefonului</translation>
-<translation id="1785317913592722944">Elimină elementul din grupul sugerat</translation>
 <translation id="1786487376942610288">Comută între dimensiunea maximă și cea actuală a ferestrei picture-in-picture</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
 <translation id="1796561540704213354">Site-urile, inclusiv paginile pe care le-ai accesat și paginile deschise</translation>
@@ -853,6 +852,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3859364108019690">Nu se pot reda în stream aplicațiile</translation>
 <translation id="3861651314799684201">Apasă pe Enter pentru a înregistra ecranul complet</translation>
 <translation id="3870197372373144624">Încearcă să închizi dispozitivul.</translation>
+<translation id="3879748587602334249">Manager de descărcări</translation>
 <translation id="3886872229787704059">Deschis astăzi</translation>
 <translation id="3891340733213178823">Apăsați de două ori Ctrl+Shift+Q pentru a vă deconecta.</translation>
 <translation id="3892148308691398805">Copiază textul</translation>
@@ -878,6 +878,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3958714870339660776">Toată ziua</translation>
 <translation id="3962859241508114581">Melodia anterioară</translation>
 <translation id="3963124517343721543">Continuă cu ușurință de unde ai rămas, deschizând ferestrele și filele anterioare. Vei vedea și sugestii personalizate privind pașii următori.</translation>
+<translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="3969043077941541451">Dezactivată</translation>
 <translation id="3970324493235864154">Afișează notificările telefonului</translation>
 <translation id="397105322502079400">Se calculează...</translation>
@@ -1619,6 +1620,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6319058840130157106">Deplasează-te înapoi între colțul din dreapta jos, Lansator, bara de adrese, bara de marcaje, site-ul deschis și descărcări</translation>
 <translation id="6319503618073410818">Vezi detalii în browser</translation>
 <translation id="6324916366299863871">Editează o comandă rapidă</translation>
+<translation id="6325525973963619867">Eșuat</translation>
 <translation id="6330012934079202188">Se afișează ferestrele de pe toate desktopurile. Apasă tasta săgeată în sus pentru a afișa ferestrele de pe desktopul actual.</translation>
 <translation id="6337159624125741244">S-a activat lupa de ecran complet</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> este o sesiune gestionată de <ph name="MANAGER" /></translation>

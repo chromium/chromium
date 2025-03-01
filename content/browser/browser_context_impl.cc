@@ -17,7 +17,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "content/browser/background_sync/background_sync_scheduler.h"
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
-#include "content/browser/dips/dips_service_impl.h"
+#include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/permissions/permission_controller_impl.h"

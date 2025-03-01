@@ -375,13 +375,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Images in a specific NTP collection"/>
 </enum>
 
-<!--
-TODO(crbug.com/396711227): Add more error types. This basically functions as an
-error count for now.
--->
-
 <enum name="NTPMicrosoftAuthError">
-  <int value="0" label="Other"/>
+  <int value="2652902242" label="user_cancelled: The user cancelled the flow"/>
+  <int value="3367032940"
+      label="no_account_error: Silent auth was attempted with no user account"/>
 </enum>
 
 <enum name="NTPMicrosoftAuthType">

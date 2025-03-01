@@ -663,6 +663,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3909222758573607742">Salvestage kontole paroole ja muid üksusi</translation>
 <translation id="3913463964270756493">Peida valik Otsige ekraanilt Google Lensiga</translation>
 <translation id="3914640181019354363">Aadresside tuvastamine</translation>
+<translation id="3921585859122905677">Aadressiriba asukoht</translation>
 <translation id="3922185497376658606">Veebilehtede eellaadimine</translation>
 <translation id="3922395466317605522">Menüü kohandamine</translation>
 <translation id="3929457972718048006">Aadressid</translation>
@@ -1116,6 +1117,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5817176759448082654">Paroolikontroll</translation>
 <translation id="5819208479324046259">Seadet haldab <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sünkroonimine …</translation>
+<translation id="583923961930319521">Paroolide kasutamine kõigis oma seadmetes</translation>
 <translation id="5844284118433003733">Kui olete sisse logitud, lingitakse need andmed teie Google'i kontoga, et teid Google'i teenustest kaitsta. Näiteks suurendades pärast turvaintsidenti Gmailis kaitset.</translation>
 <translation id="5854790677617711513">Vanemad kui 30 päeva</translation>
 <translation id="5857770089550859117">Sünkroonimise alustamiseks on vaja parooli.</translation>
@@ -1691,6 +1693,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8221665793629393739">Teie meeldetuletus uuesti külastamiseks</translation>
 <translation id="8230355548492839438">Leia eelmine</translation>
 <translation id="8232956427053453090">Säilita andmed</translation>
+<translation id="8233237502828137700">Promobänneri sulgemine</translation>
 <translation id="8238711781852526820">Peida valik „Hinnajälgimine”</translation>
 <translation id="8258999165172757081">Lisatud</translation>
 <translation id="8261506727792406068">Kustuta</translation>
@@ -1712,7 +1715,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8299613349954694191">Avage inkognito vaheleht ja sirvige veebi privaatselt.</translation>
 <translation id="8307481894409578819">Seda faili ei saanud üles laadida</translation>
 <translation id="8319076807703933069">Uus otsing</translation>
-<translation id="8328607660158575887">Avage seadetest Autofill &amp; Passwords</translation>
 <translation id="833647236762414178">Looge, salvestage ja hallake oma paroole ning pääsuvõtmeid, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varundage oma sisu ja kasutage seda mis tahes seadmes.</translation>
 <translation id="8349305172487531364">Järjehoidjariba</translation>

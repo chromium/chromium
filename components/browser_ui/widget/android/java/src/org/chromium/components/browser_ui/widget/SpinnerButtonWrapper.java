@@ -19,19 +19,22 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
  * A layout that will automatically play a progress spinner inside the button and run an associated
  * action when clicked. The button will not reset afterwards and the spinner will keep running.
  */
+@NullMarked
 public class SpinnerButtonWrapper extends FrameLayout implements View.OnClickListener {
     private @ColorInt int mSpinnerColor;
     private @DimenRes int mSpinnerSize;
     private Button mButton;
     private @StringRes int mOnButtonClickContentDescription;
     private ProgressBar mSpinner;
-    private @Nullable Runnable mOnButtonClickRunnable;
+    private Runnable mOnButtonClickRunnable;
 
     /**
      * Creates a spinner button wrapper and adds a custom button view to its hierarchy.
@@ -74,6 +77,7 @@ public class SpinnerButtonWrapper extends FrameLayout implements View.OnClickLis
     }
 
     /** Helper for setting up the custom button. */
+    @Initializer
     private void setupButton(
             Button button,
             @StringRes int onButtonClickContentDescription,

@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -340,7 +341,7 @@ TEST_F(ExtensionSyncServiceTest, DisableExtensionFromSync) {
   // We start enabled.
   const Extension* extension = registry()->enabled_extensions().GetByID(kGood0);
   ASSERT_TRUE(extension);
-  ASSERT_TRUE(service()->IsExtensionEnabled(kGood0));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(kGood0));
 
   // Sync starts up.
   extension_sync_service()->MergeDataAndStartSyncing(
@@ -355,7 +356,7 @@ TEST_F(ExtensionSyncServiceTest, DisableExtensionFromSync) {
       1, disable_good_crx.GetSyncChange(SyncChange::ACTION_UPDATE));
   extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
 
-  ASSERT_FALSE(service()->IsExtensionEnabled(kGood0));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(kGood0));
 }
 
 // Test that sync can enable and disable installed extensions.
@@ -502,20 +503,20 @@ TEST_F(ExtensionSyncServiceTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
   ASSERT_TRUE(extension_system()->is_ready());
   ASSERT_EQ(3u, loaded_extensions().size());
 
-  ASSERT_TRUE(service()->IsExtensionEnabled(kGood0));
-  ASSERT_TRUE(service()->IsExtensionEnabled(kGood2));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(kGood0));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(kGood2));
 
   // Disable and re-enable kGood0 before first sync data arrives.
   service()->DisableExtension(kGood0,
                               extensions::disable_reason::DISABLE_USER_ACTION);
-  ASSERT_FALSE(service()->IsExtensionEnabled(kGood0));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(kGood0));
   service()->EnableExtension(kGood0);
-  ASSERT_TRUE(service()->IsExtensionEnabled(kGood0));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(kGood0));
   // Disable kGood2 before first sync data arrives (good1 is considered
   // non-syncable because it has plugin permission).
   service()->DisableExtension(kGood2,
                               extensions::disable_reason::DISABLE_USER_ACTION);
-  ASSERT_FALSE(service()->IsExtensionEnabled(kGood2));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(kGood2));
 
   const Extension* extension0 =
       registry()->enabled_extensions().GetByID(kGood0);
@@ -540,8 +541,8 @@ TEST_F(ExtensionSyncServiceTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
 
   // Both sync changes should be ignored, since the local state was changed
   // before sync started, and so the local state is considered more recent.
-  EXPECT_TRUE(service()->IsExtensionEnabled(kGood0));
-  EXPECT_FALSE(service()->IsExtensionEnabled(kGood2));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(kGood0));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(kGood2));
 }
 
 TEST_F(ExtensionSyncServiceTest, DontSelfNotify) {
@@ -554,7 +555,7 @@ TEST_F(ExtensionSyncServiceTest, DontSelfNotify) {
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
   ASSERT_EQ(3u, loaded_extensions().size());
-  ASSERT_TRUE(service()->IsExtensionEnabled(kGood0));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(kGood0));
 
   syncer::FakeSyncChangeProcessor* processor =
       new syncer::FakeSyncChangeProcessor;
@@ -653,7 +654,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncData) {
   ASSERT_TRUE(data.get());
   EXPECT_EQ(extension->id(), data->id());
   EXPECT_FALSE(data->uninstalled());
-  EXPECT_EQ(service()->IsExtensionEnabled(kGoodCrx), data->enabled());
+  EXPECT_EQ(registrar()->IsExtensionEnabled(kGoodCrx), data->enabled());
   EXPECT_EQ(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()),
             data->incognito_enabled());
   EXPECT_EQ(data->version(), extension->version());
@@ -757,7 +758,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncDataTerminated) {
   ASSERT_TRUE(data.get());
   EXPECT_EQ(extension->id(), data->id());
   EXPECT_FALSE(data->uninstalled());
-  EXPECT_EQ(service()->IsExtensionEnabled(kGoodCrx), data->enabled());
+  EXPECT_EQ(registrar()->IsExtensionEnabled(kGoodCrx), data->enabled());
   EXPECT_EQ(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()),
             data->incognito_enabled());
   EXPECT_EQ(data->version(), extension->version());
@@ -1082,7 +1083,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
       std::make_unique<syncer::FakeSyncChangeProcessor>());
 
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
-  EXPECT_TRUE(service()->IsExtensionEnabled(kGoodCrx));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
   EXPECT_FALSE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
 
   sync_pb::EntitySpecifics specifics;
@@ -1097,7 +1098,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
         MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
 
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
-    EXPECT_FALSE(service()->IsExtensionEnabled(kGoodCrx));
+    EXPECT_FALSE(registrar()->IsExtensionEnabled(kGoodCrx));
     EXPECT_FALSE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
   }
 
@@ -1109,7 +1110,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
         MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
 
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
-    EXPECT_TRUE(service()->IsExtensionEnabled(kGoodCrx));
+    EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
     EXPECT_TRUE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
   }
 
@@ -1121,7 +1122,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
         MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
 
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
-    EXPECT_FALSE(service()->IsExtensionEnabled(kGoodCrx));
+    EXPECT_FALSE(registrar()->IsExtensionEnabled(kGoodCrx));
     EXPECT_TRUE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
   }
 
@@ -1132,7 +1133,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
         MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
 
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
-    EXPECT_TRUE(service()->IsExtensionEnabled(kGoodCrx));
+    EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
   }
 
   EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodCrx));
@@ -1233,7 +1234,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataTerminatedExtension) {
 
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
   TerminateExtension(kGoodCrx);
-  EXPECT_TRUE(service()->IsExtensionEnabled(kGoodCrx));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
   EXPECT_FALSE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
 
   sync_pb::EntitySpecifics specifics;
@@ -1248,7 +1249,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataTerminatedExtension) {
       MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
 
   extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
-  EXPECT_FALSE(service()->IsExtensionEnabled(kGoodCrx));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(kGoodCrx));
   EXPECT_TRUE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
 
   EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodCrx));
@@ -1261,7 +1262,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataVersionCheck) {
       std::make_unique<syncer::FakeSyncChangeProcessor>());
 
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
-  EXPECT_TRUE(service()->IsExtensionEnabled(kGoodCrx));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
   EXPECT_FALSE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
 
   sync_pb::EntitySpecifics specifics;
@@ -1352,11 +1353,11 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNotInstalled) {
   SyncChangeList list =
       MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
 
-  EXPECT_TRUE(service()->IsExtensionEnabled(kGoodCrx));
+  EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
   EXPECT_FALSE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
   extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
   EXPECT_TRUE(service()->updater()->WillCheckSoon());
-  EXPECT_FALSE(service()->IsExtensionEnabled(kGoodCrx));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(kGoodCrx));
   EXPECT_TRUE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
 
   const extensions::PendingExtensionInfo* info;
@@ -1567,7 +1568,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
 
     // Check expectations.
     const bool expect_enabled = test_case.expect_disable_reasons.empty();
-    EXPECT_EQ(expect_enabled, service()->IsExtensionEnabled(id));
+    EXPECT_EQ(expect_enabled, registrar()->IsExtensionEnabled(id));
     EXPECT_EQ(test_case.expect_disable_reasons,
               prefs->GetRawDisableReasons(passkey, id));
 
@@ -1648,8 +1649,8 @@ TEST_F(ExtensionSyncServiceTest, AccountExtensionTypeChangesWithSync) {
 
   extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
 
-  ASSERT_FALSE(service()->IsExtensionEnabled(first_extension_id));
-  ASSERT_FALSE(service()->IsExtensionEnabled(second_extension_id));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(first_extension_id));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(second_extension_id));
 
   // `first_extension` has the AccountExtensionType `kAccountInstalledLocally`
   // since it's part of the signed in user's account data but was first
@@ -1830,7 +1831,7 @@ TEST_F(ExtensionSyncServiceCustomGalleryTest,
 
     // Check expectations.
     const bool expect_enabled = test_case.expect_disable_reasons.empty();
-    EXPECT_EQ(expect_enabled, service()->IsExtensionEnabled(id));
+    EXPECT_EQ(expect_enabled, registrar()->IsExtensionEnabled(id));
     EXPECT_EQ(test_case.expect_disable_reasons, prefs->GetDisableReasons(id));
     std::unique_ptr<const PermissionSet> granted_permissions =
         prefs->GetGrantedPermissions(id);
@@ -2122,9 +2123,10 @@ class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
 
  protected:
   scoped_refptr<const Extension> LoadExtension(
-      const std::string& extension_path) {
+      const std::string& extension_path,
+      bool pack_extension) {
     extensions::ChromeTestExtensionLoader extension_loader(profile());
-    extension_loader.set_pack_extension(true);
+    extension_loader.set_pack_extension(pack_extension);
     return extension_loader.LoadExtension(
         data_dir().AppendASCII(extension_path));
   }
@@ -2157,7 +2159,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
   // `second_extension` after a user signs in. `second_extension` is associated
   // with the user's account where as `first_extension` is not.
   scoped_refptr<const Extension> first_extension =
-      LoadExtension("simple_with_file");
+      LoadExtension("simple_with_file", /*pack_extension=*/true);
   ASSERT_TRUE(first_extension);
   const std::string first_extension_id = first_extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
@@ -2168,7 +2170,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
                                                        identity_test_env());
 
   scoped_refptr<const Extension> second_extension =
-      LoadExtension("simple_with_icon");
+      LoadExtension("simple_with_icon", /*pack_extension=*/true);
   ASSERT_TRUE(second_extension);
   const std::string second_extension_id = second_extension->id();
 
@@ -2220,7 +2222,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest, OnlySyncAccountExtensions) {
 TEST_F(ExtensionSyncServiceTransportModeTest,
        OnlyUpdateAccountExtensionTypeWhenLocalStateIsMoreRecent) {
   scoped_refptr<const Extension> first_extension =
-      LoadExtension("simple_with_file");
+      LoadExtension("simple_with_file", /*pack_extension=*/true);
   ASSERT_TRUE(first_extension);
   const std::string first_extension_id = first_extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
@@ -2233,9 +2235,9 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   // Disable and re-enable `first_extension` before first sync data arrives.
   service()->DisableExtension(first_extension_id,
                               extensions::disable_reason::DISABLE_USER_ACTION);
-  ASSERT_FALSE(service()->IsExtensionEnabled(first_extension_id));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(first_extension_id));
   service()->EnableExtension(first_extension_id);
-  ASSERT_TRUE(service()->IsExtensionEnabled(first_extension_id));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(first_extension_id));
 
   // After the user has signed in but before any sync data is received,
   // `first_extension` is treated as a local extension.
@@ -2257,7 +2259,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
       syncer::EXTENSIONS, list,
       std::make_unique<syncer::FakeSyncChangeProcessor>());
 
-  ASSERT_TRUE(service()->IsExtensionEnabled(first_extension_id));
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(first_extension_id));
 
   // `first_extension` has the AccountExtensionType `kAccountInstalledLocally`
   // since it's part of the signed in user's account data, despite having its
@@ -2274,7 +2276,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   // Install two extensions: `first_extension` before a user signs in, and
   // `second_extension` after a user signs in.
   scoped_refptr<const Extension> first_extension =
-      LoadExtension("simple_with_file");
+      LoadExtension("simple_with_file", /*pack_extension=*/true);
   ASSERT_TRUE(first_extension);
   const std::string first_extension_id = first_extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
@@ -2285,7 +2287,7 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
                                                        identity_test_env());
 
   scoped_refptr<const Extension> second_extension =
-      LoadExtension("simple_with_icon");
+      LoadExtension("simple_with_icon", /*pack_extension=*/true);
   ASSERT_TRUE(second_extension);
   const std::string second_extension_id = second_extension->id();
 
@@ -2326,8 +2328,8 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
 
   extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
 
-  ASSERT_FALSE(service()->IsExtensionEnabled(first_extension_id));
-  ASSERT_FALSE(service()->IsExtensionEnabled(second_extension_id));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(first_extension_id));
+  ASSERT_FALSE(registrar()->IsExtensionEnabled(second_extension_id));
 
   // `first_extension` has the AccountExtensionType `kAccountInstalledLocally`
   // since it's part of the signed in user's account data but was first
@@ -2342,4 +2344,20 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   EXPECT_EQ(
       AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
       GetAccountExtensionType(second_extension_id));
+
+  // Install a third, unsyncable extension. Should be a local extension.
+  scoped_refptr<const Extension> third_extension =
+      LoadExtension("simple_with_host", /*pack_extension=*/false);
+  ASSERT_TRUE(third_extension);
+  const std::string third_extension_id = third_extension->id();
+
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(third_extension_id));
+
+  // Verify that only the second extension counts as a signed in account
+  // extension.
+  std::vector<const Extension*> signed_in_account_extensions =
+      AccountExtensionTracker::Get(profile())->GetSignedInAccountExtensions();
+  EXPECT_THAT(signed_in_account_extensions,
+              ::testing::ElementsAre(second_extension.get()));
 }

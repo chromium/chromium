@@ -663,6 +663,7 @@
 <translation id="3909222758573607742">অ্যাকাউন্টে পাসওয়ার্ড ও অন্যান্য আইটেম সেভ করুন</translation>
 <translation id="3913463964270756493">Google Lens ব্যবহার করে Search স্ক্রিন আড়াল করুন</translation>
 <translation id="3914640181019354363">ঠিকানা শনাক্ত করুন</translation>
+<translation id="3921585859122905677">অ্যাড্রেস বারের পজিশন</translation>
 <translation id="3922185497376658606">ওয়েবপেজ প্রিলোড করুন</translation>
 <translation id="3922395466317605522">মেনু কাস্টমাইজ করুন</translation>
 <translation id="3929457972718048006">ঠিকানা</translation>
@@ -1117,6 +1118,7 @@
 <translation id="5817176759448082654">পাসওয়ার্ড চেক-আপ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> এটি ম্যানেজ করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">সিঙ্ক হচ্ছে…</translation>
+<translation id="583923961930319521">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="5844284118433003733">আপনি সাইন-ইন করলে, এই ডেটা আপনাকে Google পরিষেবা জু়ড়ে সুরক্ষিত রাখতে Google অ্যাকাউন্টে লিঙ্ক করা হয়, যেমন কোনও সুরক্ষা সম্পর্কিত ঘটনার পর Gmail-এ নিরাপত্তা বাড়ানো।</translation>
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
 <translation id="5857770089550859117">সিঙ্ক শুরু করতে পাসফ্রেজ প্রয়োজন।</translation>
@@ -1692,6 +1694,7 @@
 <translation id="8221665793629393739">আবার ভিজিট করার রিমাইন্ডার</translation>
 <translation id="8230355548492839438">আগেরটি খুঁজুন</translation>
 <translation id="8232956427053453090">ডেটা রাখুন</translation>
+<translation id="8233237502828137700">ব্যানারের প্রোমো বন্ধ করুন</translation>
 <translation id="8238711781852526820">"দাম ট্র্যাক করা" লুকান</translation>
 <translation id="8258999165172757081">যোগ করা্ হয়েছে</translation>
 <translation id="8261506727792406068">মুছুন</translation>
@@ -1713,7 +1716,6 @@
 <translation id="8299613349954694191">গোপনে ওয়েব ব্রাউজ করতে ছদ্মবেশী ট্যাব খুলুন।</translation>
 <translation id="8307481894409578819">এই ফাইলটি আপলোড করা যায়নি</translation>
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
-<translation id="8328607660158575887">অটোফিল ও পাসওয়ার্ড সেটিংস খুলুন</translation>
 <translation id="833647236762414178">সাইট এবং অ্যাপে সহজে সাইন-ইন করতে আপনার পাসওয়ার্ড ও পাসকী তৈরি, সেভ ও ম্যানেজ করুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>

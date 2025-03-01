@@ -20,8 +20,8 @@
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/test/test_matchers.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
@@ -591,7 +591,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
 
 TEST(BookmarkModelMergerTest, ShouldIgnoreUnsyncableNodes) {
   base::test::ScopedFeatureList override_features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   TestBookmarkModelView view(TestBookmarkModelView::ViewType::kAccountNodes);
   view.EnsurePermanentNodesExist();
 
@@ -618,7 +618,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreUnsyncableNodes) {
 // been previously turned on and later off.
 TEST(BookmarkModelMergerTest, ShouldIgnoreUnsyncableNodeWithCollidingUuid) {
   base::test::ScopedFeatureList override_features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   TestBookmarkModelView view(TestBookmarkModelView::ViewType::kAccountNodes);
   view.EnsurePermanentNodesExist();
 

@@ -332,10 +332,11 @@ void FakeCWS::Init(net::EmbeddedTestServer* embedded_test_server) {
 }
 
 void FakeCWS::InitAsPrivateStore(net::EmbeddedTestServer* embedded_test_server,
+                                 const GURL& web_store_url,
                                  std::string_view update_check_end_point) {
   use_private_store_templates_ = true;
   update_check_end_point_ = update_check_end_point;
-  web_store_url_ = embedded_test_server->base_url();
+  web_store_url_ = web_store_url;
 
   embedded_test_server->RegisterRequestHandler(
       base::BindRepeating(&FakeCWS::HandleRequest, base::Unretained(this)));

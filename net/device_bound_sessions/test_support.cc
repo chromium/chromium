@@ -292,15 +292,15 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
 
 // static
 ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithFailure(
+    SessionError::ErrorType error_type,
     std::string_view refresh_url_string) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
-      [](const GURL& refresh_url) {
-        return base::expected<SessionParams, SessionError>(
-            base::unexpected(SessionError{SessionError::ErrorType::kNetError,
-                                          net::SchemefulSite(refresh_url),
-                                          /*session_id=*/std::nullopt}));
+      [](SessionError::ErrorType error_type, const GURL& refresh_url) {
+        return base::expected<SessionParams, SessionError>(base::unexpected(
+            SessionError{error_type, net::SchemefulSite(refresh_url),
+                         /*session_id=*/std::nullopt}));
       },
-      GURL(refresh_url_string)));
+      error_type, GURL(refresh_url_string)));
 }
 
 // static

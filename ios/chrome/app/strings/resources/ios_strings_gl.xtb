@@ -663,6 +663,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3909222758573607742">Garda os contrasinais e outros elementos na conta</translation>
 <translation id="3913463964270756493">Ocultar Buscar pantalla con Google Lens</translation>
 <translation id="3914640181019354363">Detectar enderezos</translation>
+<translation id="3921585859122905677">Posición da barra de enderezos</translation>
 <translation id="3922185497376658606">Precargar páxinas web</translation>
 <translation id="3922395466317605522">Personalizar o menú</translation>
 <translation id="3929457972718048006">Enderezos</translation>
@@ -1116,6 +1117,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5817176759448082654">Revisión de contrasinais</translation>
 <translation id="5819208479324046259">Xestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
+<translation id="583923961930319521">Usar contrasinais en todos os dispositivos</translation>
 <translation id="5844284118433003733">Cando tes a sesión iniciada, estes datos asócianse á túa Conta de Google para protexerte nos servizos de Google (por exemplo, aumentando a protección en Gmail despois dun incidente de seguranza).</translation>
 <translation id="5854790677617711513">Con máis de 30 días</translation>
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>
@@ -1691,6 +1693,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8221665793629393739">Recordatorio para vistar a páxina de novo</translation>
 <translation id="8230355548492839438">Buscar anterior</translation>
 <translation id="8232956427053453090">Conservar datos</translation>
+<translation id="8233237502828137700">Pechar o báner de promoción</translation>
 <translation id="8238711781852526820">Ocultar Seguimento de prezos</translation>
 <translation id="8258999165172757081">Engadiuse</translation>
 <translation id="8261506727792406068">Eliminar</translation>
@@ -1712,7 +1715,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8299613349954694191">Abre unha pestana do modo de incógnito para navegar pola Web de forma privada.</translation>
 <translation id="8307481894409578819">Non se puido cargar este ficheiro</translation>
 <translation id="8319076807703933069">Nova busca</translation>
-<translation id="8328607660158575887">Abre a opción de AutoFill &amp; Password (Autocompletar e contrasinal)</translation>
 <translation id="833647236762414178">Crea, garda e xestiona os teus contrasinais e claves de acceso para poder iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo.</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>

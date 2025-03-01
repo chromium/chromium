@@ -5,6 +5,7 @@
 #include "components/saved_tab_groups/internal/tab_group_sync_coordinator_impl.h"
 
 #include "base/uuid.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/internal/startup_helper.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -14,11 +15,13 @@ namespace tab_groups {
 
 TabGroupSyncCoordinatorImpl::TabGroupSyncCoordinatorImpl(
     std::unique_ptr<TabGroupSyncDelegate> delegate,
-    TabGroupSyncService* service)
+    TabGroupSyncService* service,
+    PrefService* pref_service)
     : service_(service),
       platform_delegate_(std::move(delegate)),
-      startup_helper_(
-          std::make_unique<StartupHelper>(platform_delegate_.get(), service_)) {
+      startup_helper_(std::make_unique<StartupHelper>(platform_delegate_.get(),
+                                                      service_,
+                                                      pref_service)) {
   CHECK(platform_delegate_);
   CHECK(service_);
 }
@@ -31,8 +34,10 @@ void TabGroupSyncCoordinatorImpl::OnInitialized() {
 
 void TabGroupSyncCoordinatorImpl::InitializeTabGroupSync() {
   startup_helper_->CloseDeletedTabGroupsFromTabModel();
-  startup_helper_->CreateRemoteTabGroupForNewGroups();
+  startup_helper_->HandleUnsavedLocalTabGroups();
 
+  // At this point, there should be no unsaved local groups. Update them to
+  // match sync state.
   for (const auto& saved_tab_group : service_->GetAllGroups()) {
     if (!saved_tab_group.local_group_id()) {
       continue;

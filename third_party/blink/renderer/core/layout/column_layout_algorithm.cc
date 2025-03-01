@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/simplified_oof_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/space_utils.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -234,6 +235,8 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
           UnpositionedListMarker(marker_node));
     }
   }
+
+  container_builder_.SetInitialTextBoxTrim();
 }
 
 const LayoutResult* ColumnLayoutAlgorithm::Layout() {
@@ -504,6 +507,12 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
         // spanner. We'll now walk that spanner and any sibling spanners, before
         // resuming at |next_column_token|.
         BlockNode spanner_node = GetSpannerFromPath(path);
+
+        if (Node().FirstChild() != spanner_node) {
+          // Preceded by column content. Done with any block-start trimming.
+          container_builder_.ClearShouldTextBoxTrimNodeStart();
+        }
+
         walker.MoveToSpanner(spanner_node, next_column_token);
         continue;
       }
@@ -534,6 +543,8 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
 
     BreakStatus break_status =
         LayoutSpanner(spanner_node, child_break_token, &margin_strut);
+
+    container_builder_.ClearShouldTextBoxTrimNodeStart();
 
     walker.Next();
 
@@ -748,7 +759,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       ConstraintSpace child_space = CreateConstraintSpaceForFragmentainer(
           GetConstraintSpace(), kFragmentColumn, column_size,
           ColumnPercentageResolutionSize(), balance_columns,
-          min_break_appeal.value_or(kBreakAppealLastResort));
+          min_break_appeal.value_or(kBreakAppealLastResort),
+          &container_builder_);
 
       FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
           child_space, Node(), GetBreakToken());
@@ -1532,6 +1544,10 @@ ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
   space_builder.SetIsInColumnBfc();
   space_builder.SetIsInsideBalancedColumns();
 
+  if (container_builder_.ShouldTextBoxTrim()) {
+    SetTextBoxTrimOnChildSpaceBuilder(container_builder_, &space_builder);
+  }
+
   return space_builder.ToConstraintSpace();
 }
 
@@ -1552,6 +1568,11 @@ ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
 
   space_builder.SetBaselineAlgorithmType(
       GetConstraintSpace().GetBaselineAlgorithmType());
+
+  if (container_builder_.ShouldTextBoxTrim()) {
+    SetTextBoxTrimOnChildSpaceBuilder(container_builder_,
+                                      !!spanner.NextSibling(), &space_builder);
+  }
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(container_builder_, spanner, block_offset,

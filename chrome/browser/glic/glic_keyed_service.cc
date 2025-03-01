@@ -29,6 +29,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -82,6 +83,14 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
+
+  auto* glic_web_contents = window_controller().GetWebContents();
+  if (glic_web_contents) {
+    blink::web_pref::WebPreferences prefs(top->GetOrCreateWebPreferences());
+    prefs.default_font_size =
+        glic_web_contents->GetOrCreateWebPreferences().default_font_size;
+    top->SetWebPreferences(prefs);
+  }
   auto* page_handler = GetPageHandler(top);
   if (page_handler) {
     page_handler->GuestAdded(guest_contents);

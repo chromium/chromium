@@ -58,7 +58,9 @@ TEST_F(EntityDataManagerTest, InitialPopulation) {
       lc, base::DoNothing());
   helper().WaitUntilIdle();
 
-  EntityDataManager entity_data_manager(helper().autofill_webdata_service());
+  EntityDataManager entity_data_manager(helper().autofill_webdata_service(),
+                                        /*history_service=*/nullptr,
+                                        /*strike_database=*/nullptr);
   EXPECT_THAT(entity_data_manager.GetEntityInstances(), IsEmpty());
 
   helper().WaitUntilIdle();
@@ -77,7 +79,9 @@ class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
   }
 
  private:
-  EntityDataManager entity_data_manager_{helper().autofill_webdata_service()};
+  EntityDataManager entity_data_manager_{helper().autofill_webdata_service(),
+                                         /*history_service=*/nullptr,
+                                         /*strike_database=*/nullptr};
 };
 
 // Tests that AddOrUpdateEntityInstance() asynchronously adds entities.

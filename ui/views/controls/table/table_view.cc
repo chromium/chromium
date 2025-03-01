@@ -2141,6 +2141,8 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
 
   auto ax_header = std::make_unique<AXVirtualView>();
   ax_header->SetRole(ax::mojom::Role::kRow);
+  std::vector<std::u16string> column_titles;
+  column_titles.reserve(visible_columns_.size());
 
   for (size_t visible_column_index = 0;
        visible_column_index < visible_columns_.size(); ++visible_column_index) {
@@ -2150,6 +2152,7 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
     auto ax_cell = std::make_unique<AXVirtualView>();
     ax_cell->SetRole(ax::mojom::Role::kColumnHeader);
     ax_cell->SetName(column.title);
+    column_titles.push_back(column.title);
     ax_cell->SetTableCellColumnIndex(
         static_cast<int32_t>(visible_column_index));
     ax_cell->SetTableCellColumnSpan(1);
@@ -2166,6 +2169,16 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
     ax_cell->SetSortDirection(sort_direction);
 
     ax_header->AddChildView(std::move(ax_cell));
+  }
+
+  // Update header name to be combined column titles for macOS.
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
+      !column_titles.empty()) {
+    const std::u16string header_name =
+        model()->GetAXNameForHeader(column_titles);
+    if (!header_name.empty()) {
+      ax_header->SetName(header_name);
+    }
   }
 
   return ax_header;

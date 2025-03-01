@@ -24,7 +24,12 @@ void TestCoralDelegate::OpenFeedbackDialog(
     const std::string& group_description,
     ScannerDelegate::SendFeedbackCallback send_feedback_callback) {}
 
-bool TestCoralDelegate::CanUseGenerativeAiForCurrentProfile() {
+void TestCoralDelegate::CheckGenAIAgeAvailability(
+    GenAIInquiryCallback callback) {
+  std::move(callback).Run(true);
+}
+
+bool TestCoralDelegate::GetGenAILocationAvailability() {
   return true;
 }
 

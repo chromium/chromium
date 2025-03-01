@@ -663,6 +663,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3909222758573607742">Cadw cyfrineiriau ac eitemau eraill yn y cyfrif</translation>
 <translation id="3913463964270756493">Cuddio Chwilio'r sgrîn gyda Google Lens</translation>
 <translation id="3914640181019354363">Canfod cyfeiriadau</translation>
+<translation id="3921585859122905677">Safle Bar Cyfeiriad</translation>
 <translation id="3922185497376658606">Rhag-lwytho tudalennau gwe</translation>
 <translation id="3922395466317605522">Personoleiddio Dewislen</translation>
 <translation id="3929457972718048006">Cyfeiriadau</translation>
@@ -1116,6 +1117,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5817176759448082654">Gwiriad Cyfrineiriau</translation>
 <translation id="5819208479324046259">Rheolir gan <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Wrthi'n cysoni…</translation>
+<translation id="583923961930319521">Defnyddio cyfrineiriau ar eich holl ddyfeisiadau</translation>
 <translation id="5844284118433003733">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
 <translation id="5854790677617711513">Hŷn na 30 diwrnod</translation>
 <translation id="5857770089550859117">Mae angen cyfrinymadrodd i ddechrau cysoni.</translation>
@@ -1691,6 +1693,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8221665793629393739">Eich atgoffwr i ailymweld</translation>
 <translation id="8230355548492839438">Dod o hyd i'r eitem flaenorol</translation>
 <translation id="8232956427053453090">Cadw'r data</translation>
+<translation id="8233237502828137700">Cau'r hyrwyddiad baner</translation>
 <translation id="8238711781852526820">Cuddio "Olrhain Prisiau"</translation>
 <translation id="8258999165172757081">Ychwanegwyd</translation>
 <translation id="8261506727792406068">Dileu</translation>
@@ -1712,7 +1715,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8299613349954694191">Gallwch agor tab Anhysbys i bori'r we yn breifat.</translation>
 <translation id="8307481894409578819">Ni ellir lawrlwytho'r ffeil hon</translation>
 <translation id="8319076807703933069">Chwiliad Newydd</translation>
-<translation id="8328607660158575887">Agor gosodiadau Awtolenwi a Chyfrineiriau</translation>
 <translation id="833647236762414178">Creu, cadw a rheoli'ch cyfrineiriau a'ch codau pas i fewngofnodi'n hawdd i wefannau ac apiau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais.</translation>
 <translation id="8349305172487531364">Bar nodau tudalen</translation>

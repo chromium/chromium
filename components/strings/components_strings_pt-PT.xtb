@@ -837,6 +837,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2451607499823206582">Monitorizar</translation>
 <translation id="2452098632681057184">Ecologia e ambiente</translation>
 <translation id="2452837234288608067">Não foi possível ajudar nessa questão. Tente novamente.</translation>
+<translation id="2453045048779611513">A sua organização limita o que pode guardar</translation>
 <translation id="2456755709261364512">A bateria tem de estar carregada acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">O Chrome Enterprise Core oferece-lhe uma ferramenta centralizada para configurar políticas do navegador a partir da nuvem</translation>
 <translation id="2461822463642141190">Atual</translation>
@@ -1086,6 +1087,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2942492342931589800">Casual</translation>
 <translation id="2942515540157583425">Empregos na área de TI e tecnologia</translation>
 <translation id="2943895734390379394">Hora do carregamento:</translation>
+<translation id="2947281105969315778">Para partilhar ou aderir a grupos de separadores, tem de poder iniciar sessão no Chrome</translation>
 <translation id="2948083400971632585">Pode desativar qualquer proxy configurado para uma ligação a partir da página de definições.</translation>
 <translation id="2949183777371959169">Ignorada porque a máquina não está inscrita no Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">A minha caixa de correio</translation>
@@ -3903,6 +3905,7 @@ Detalhes adicionais:
 <translation id="791107458486222637">A refazer o resultado</translation>
 <translation id="791551905239004656">Desenhar e colorir</translation>
 <translation id="7916162853251942238">Base flexo</translation>
+<translation id="791698251820376781">A sua organização não lhe permite iniciar sessão</translation>
 <translation id="7926503317156566022">Indústria da aviação</translation>
 <translation id="793209273132572360">Quer atualizar o endereço?</translation>
 <translation id="7932579305932748336">Revestir</translation>
@@ -4616,6 +4619,7 @@ Detalhes adicionais:
 <translation id="9191834167571392248">Perfurar na parte inferior esquerda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Beleza consciente</translation>
+<translation id="9195969368671142407">Quando a sua organização limita a gravação na sua Conta Google, não pode partilhar nem aderir a grupos de separadores</translation>
 <translation id="9199905725844810519">A impressão está bloqueada.</translation>
 <translation id="9201904868909900493">A abrir inquérito…</translation>
 <translation id="9204089334327209740">Quando o carregamento estiver concluído, pode modificar os seus ficheiros no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os ficheiros no Lixo, vai ser removido automaticamente.</translation>

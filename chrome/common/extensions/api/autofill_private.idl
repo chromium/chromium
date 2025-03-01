@@ -318,14 +318,6 @@ namespace autofillPrivate {
     AutofillMetadata? metadata;
   };
 
-  // User annotations entry data. Corresponds to the eponymous message from
-  // components/optimization_guide/proto/features/common_quality_data.proto.
-  dictionary UserAnnotationsEntry {
-    long entryId;
-    DOMString key;
-    DOMString value;
-  };
-
   // Contains the attribute type name and other relevant information about the
   // attribute type. It is part of the `EntityInstance` API.
   dictionary AttributeType {
@@ -415,8 +407,6 @@ namespace autofillPrivate {
   callback IsValidIbanCallback = void(boolean isValid);
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
-  callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
-  callback hasUserAnnotationsEntriesCallback = void(boolean hasEntries);
   callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
   callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
   callback GetEntityInstanceByGuid = void(EntityInstance entity);
@@ -543,23 +533,9 @@ namespace autofillPrivate {
     // `syncer::UserSelectableType::kAutofill` in `SyncUserSettings`.
     static void setAutofillSyncToggleEnabled(boolean enabled);
 
-    // Returns the list of user annotations entries.
-    static void getUserAnnotationsEntries(
-        GetUserAnnotationsEntriesCallback callback);
-
-    // Returns if there are any saved user annotations entries.
-    static void hasUserAnnotationsEntries(
-        hasUserAnnotationsEntriesCallback callback);
-
     // Returns if the user is eligible for autofill improvements.
     static void isUserEligibleForAutofillImprovements(
         isUserEligibleForAutofillImprovementsCallback callback);
-
-    // Deletes the user annotations entry by its id.
-    static void deleteUserAnnotationsEntry(long entryId);
-
-    // Deletes all user annotations entries.
-    static void deleteAllUserAnnotationsEntries();
 
     // Notifies autofill client about the prediction improvements pre changing.
     static void predictionImprovementsIphFeatureUsed();

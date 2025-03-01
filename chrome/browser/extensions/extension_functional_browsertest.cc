@@ -23,8 +23,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,12 +79,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, TestSetExtensionsState) {
   ExtensionService* service = extension_service();
   service->DisableExtension(last_loaded_extension_id(),
                             disable_reason::DISABLE_USER_ACTION);
-  EXPECT_FALSE(service->IsExtensionEnabled(last_loaded_extension_id()));
+  auto* registrar = ExtensionRegistrar::Get(profile());
+  EXPECT_FALSE(registrar->IsExtensionEnabled(last_loaded_extension_id()));
 
   // Enable the extension and verify.
   util::SetIsIncognitoEnabled(last_loaded_extension_id(), profile(), false);
   service->EnableExtension(last_loaded_extension_id());
-  EXPECT_TRUE(service->IsExtensionEnabled(last_loaded_extension_id()));
+  EXPECT_TRUE(registrar->IsExtensionEnabled(last_loaded_extension_id()));
 
   // Allow extension in incognito mode and verify.
   service->EnableExtension(last_loaded_extension_id());

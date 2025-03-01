@@ -837,6 +837,7 @@
 <translation id="2451607499823206582">ट्रॅक करणे</translation>
 <translation id="2452098632681057184">जैवपरिस्थितिशास्त्र आणि पर्यावरण</translation>
 <translation id="2452837234288608067">त्याबाबतीत मदत करू शकत नाही. पुन्हा प्रयत्न करा.</translation>
+<translation id="2453045048779611513">तुम्ही काय सेव्ह करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत</translation>
 <translation id="2456755709261364512">तुमची बॅटरी <ph name="REQUIRED_BATTERY_PRECENT" />% पेक्षा जास्त चार्ज असणे आवश्यक आहे</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core तुम्हाला क्लाउडवरून ब्राउझर धोरणे कॉन्फिगर करण्यासाठी केंद्रीकृत टूल देते</translation>
 <translation id="2461822463642141190">सद्य</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2942492342931589800">अनौपचारिक</translation>
 <translation id="2942515540157583425">आयटी आणि तांत्रिक नोकऱ्या</translation>
 <translation id="2943895734390379394">अपलोड करण्याची वेळ:</translation>
+<translation id="2947281105969315778">टॅब गट शेअर करण्यासाठी किंवा त्यामधे सामील होण्यासाठी, तुम्हाला Chrome मध्ये साइन इन करता येणे आवश्यक आहे</translation>
 <translation id="2948083400971632585">तुम्ही सेटिंग्ज पेजवरून एका कनेक्शनसाठी कॉन्फिगर केलेले कोणत्याही प्रॉक्सी बंद करू शकता.</translation>
 <translation id="2949183777371959169">Chrome ब्राउझर क्लाउड व्यवस्थापन यामध्ये मशीनची नोंदणी न केल्यामुळे, दुर्लक्ष केले.</translation>
 <translation id="2951588413176968965">माझा मेलबॉक्स</translation>
@@ -1945,6 +1947,7 @@
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive वरील फाइल अपलोड थांबवले गेले</translation>
+<translation id="4389931020843542579">टॅब गट लोड करत आहे</translation>
 <translation id="4390472908992056574">ब्रिम</translation>
 <translation id="4395550503472021297">हे धोरण पुढील धोरणांचे डीफॉल्ट वर्तन नियंत्रित करत आहे: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">तुमच्या बँकच्या वेबसाइटवर पडताळणी करण्यासाठी पॉप-अप उघडते</translation>
@@ -3904,6 +3907,7 @@
 <translation id="791107458486222637">परिणाम पुन्हा जनरेट करत आहे</translation>
 <translation id="791551905239004656">चित्रकला आणि रंग भरणे</translation>
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>
+<translation id="791698251820376781">तुमची संस्था तुम्हाला साइन इन करण्याची अनुमती देत नाही</translation>
 <translation id="7926503317156566022">हवाई वाहतूक उद्योग</translation>
 <translation id="793209273132572360">पत्ता अपडेट करायचा आहे का?</translation>
 <translation id="7932579305932748336">कोट</translation>
@@ -4616,6 +4620,7 @@
 <translation id="9191834167571392248">पंच बॉटम लेफ्ट</translation>
 <translation id="9192361865877479444">मेटल (मॅट)</translation>
 <translation id="9192947025498305328">आरोग्याला अनुकूल अशा सौंदर्याबाबत आशय</translation>
+<translation id="9195969368671142407">तुमची संस्था ही तुमच्या Google खाते मध्ये सेव्ह करणे मर्यादित करते, तेव्हा तुम्ही टॅब गट शेअर करू शकत नाही किंवा त्यामध्ये सामील होऊ शकत नाही</translation>
 <translation id="9199905725844810519">प्रिंट करणे ब्लॉक केले</translation>
 <translation id="9201904868909900493">सर्वेक्षण उघडत आहे...</translation>
 <translation id="9204089334327209740">अपलोड पूर्ण झाल्यावर, तुम्ही <ph name="CLOUD_PROVIDER" /> मध्ये तुमच्या फाइलमध्ये फेरबदल करू शकता. ट्रॅश मधील कोणत्याही फाइलसह स्थानिक स्टोरेज आपोआप काढून टाकले जाईल.</translation>

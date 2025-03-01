@@ -981,6 +981,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   VISIT_SECRET(encrypted);
   VISIT(edited_by_user);
   VISIT(hidden);
+  VISIT(hidden_time);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics::PageTransition& proto) {

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<title>Test if the users can change Image Rendering Quality in Offscreen Canvas</title>
+<style type="text/css">
+  canvas {
+    width: 100px;
+    height: 100px;
+  }
+  /* Canvases presented with their style untouched. */
+  #canvas0 { image-rendering: auto; }
+  #canvas1 { image-rendering: pixelated; }
+  /* Canvases whose style will be updated before they are presented. */
+  #canvas2 { image-rendering: auto; }
+  #canvas3 { image-rendering: pixelated; }
+  /* Canvases whose style will be updated after they are presented. */
+  #canvas4 { image-rendering: auto; }
+  #canvas5 { image-rendering: pixelated; }
+</style>
+
+<canvas id="canvas0" width="1" height="1"></canvas>
+<canvas id="canvas1" width="1" height="1"></canvas>
+<br>
+<canvas id="canvas2" width="1" height="1"></canvas>
+<canvas id="canvas3" width="1" height="1"></canvas>
+<br>
+<canvas id="canvas4" width="1" height="1"></canvas>
+<canvas id="canvas5" width="1" height="1"></canvas>
+
+<script id='myWorker' type='text/worker'>
+  self.onmessage = function(msg) {
+    const canvas = msg.data;
+    canvas.width = 5;
+    canvas.height = 5;
+    const ctx = canvas.getContext('2d');
+    ctx.fillRect(1, 1, 3, 3);
+  }
+</script>
+
+<script type="module">
+  const blob = new Blob([document.getElementById('myWorker').textContent]);
+  const worker = new Worker(URL.createObjectURL(blob));
+
+  async function drawToCanvas(canvas) {
+    const offscreen = canvas.transferControlToOffscreen();
+    worker.postMessage(offscreen, [offscreen]);
+    await waitForCanvasToDraw(canvas);
+  }
+
+  async function waitForCanvasToDraw(canvas) {
+    while (canvas.width != 5) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    await new Promise(resolve => requestAnimationFrame(resolve));
+  }
+
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+
+  const canvases = [];
+  const completion_promises = [];
+  for (const id of Array(6).keys()) {
+    const canvas = document.getElementById(`canvas${id}`);
+    drawToCanvas(canvas);
+    canvases.push(canvas);
+    completion_promises.push(waitForCanvasToDraw(canvas));
+  }
+
+  // Update canvas 2 and 3 before terminating the task that drew the image.
+  canvases[2].style.imageRendering = 'pixelated';
+  canvases[3].style.imageRendering = 'auto';
+
+  await Promise.all(completion_promises);
+
+  // Update canvas 4 and 5 after the canvas was presented.
+  canvases[4].style.imageRendering = 'pixelated';
+  canvases[5].style.imageRendering = 'auto';
+
+  await new Promise(resolve => requestAnimationFrame(resolve));
+
+  if (window.testRunner) {
+    testRunner.notifyDone();
+  }
+</script>

@@ -21,7 +21,7 @@ namespace glic {
 
 void OpenGlicSettingsPage(Profile* profile) {
   NavigateParams params(profile,
-                        chrome::GetSettingsUrl(chrome::kChromeUIGlicHost),
+                        chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
@@ -45,7 +45,8 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
   const bool show_promo_bubble =
       UserEducationService::MaybeShowNewBadge(profile, feature);
   if (show_promo_bubble) {
-    promo_params.target_url = chrome::GetSettingsUrl(chrome::kChromeUIGlicHost);
+    promo_params.target_url =
+        chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage);
     ShowPromoInPage::Start(browser, std::move(promo_params));
   } else {
     glic::OpenGlicSettingsPage(profile);

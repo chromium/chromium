@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -32,6 +33,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -102,6 +104,22 @@ public class JavascriptOptimizerFeatureTest {
                     return JavascriptOptimizerFeatureTestHelperAndroid
                             .areJavascriptOptimizersEnabledOnWebContents(webContents);
                 });
+    }
+
+    /** Test that the provider is not queried when the kill switch is on. */
+    @Test
+    @EnableFeatures({PermissionsAndroidFeatureList.OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH})
+    @MediumTest
+    public void testKillSwitchOn() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ServiceLoaderUtil.setInstanceForTesting(
+                            OsAdditionalSecurityPermissionProvider.class,
+                            new TestPermissionProvider(
+                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                });
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
+        assertTrue(queryJavascriptOptimizersEnabledForActiveWebContents());
     }
 
     /**

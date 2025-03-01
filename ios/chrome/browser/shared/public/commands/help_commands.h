@@ -29,9 +29,6 @@ enum class InProductHelpType : NSInteger {
   /// Help bubble to inform the user that they can tap the Lens button in the
   /// omnibox keyboard to search with their camera.
   kLensKeyboard,
-  /// Help bubble to inform the user that their tracked packages will appear in
-  /// the Magic Stack.
-  kParcelTracking,
   /// Fullscreen help bubble for the pull-to-refresh gesture.
   kPullToRefresh,
   /// Fullscreen help bubble for the gesture to swipe to navigate back/forward.

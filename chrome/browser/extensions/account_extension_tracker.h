@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_ACCOUNT_EXTENSION_TRACKER_H_
 #define CHROME_BROWSER_EXTENSIONS_ACCOUNT_EXTENSION_TRACKER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -98,6 +100,9 @@ class AccountExtensionTracker : public KeyedService,
   AccountExtensionType GetAccountExtensionType(
       const ExtensionId& extension_id) const;
 
+  // Returns all account extensions with type `kAccountInstalledSignedIn`.
+  std::vector<const Extension*> GetSignedInAccountExtensions() const;
+
   // Called when the user initiates a signin from a promo that appears after an
   // extension with the given `extension_id` is installed.
   void OnSignInInitiatedFromExtensionPromo(const ExtensionId& extension_id);
@@ -109,6 +114,12 @@ class AccountExtensionTracker : public KeyedService,
   // Called when the user initiates an upload for the given `extension_id` to
   // their account.
   void OnAccountUploadInitiatedForExtension(const ExtensionId& extension_id);
+
+  void set_uninstall_account_extensions_on_signout(
+      bool uninstall_account_extensions_on_signout) {
+    uninstall_account_extensions_on_signout_ =
+        uninstall_account_extensions_on_signout;
+  }
 
   void SetAccountExtensionTypeForTesting(const ExtensionId& extension_id,
                                          AccountExtensionType type);
@@ -138,6 +149,10 @@ class AccountExtensionTracker : public KeyedService,
   // Keeps track of extensions for which a signin promo was shown after
   // installation.
   std::vector<ExtensionId> extensions_installed_with_signin_promo_;
+
+  // Whether account extensions with type `kAccountInstalledSignedIn` should be
+  // uninstalled when the primary user signs out.
+  bool uninstall_account_extensions_on_signout_ = false;
 
   base::ObserverList<Observer> observers_;
 

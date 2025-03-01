@@ -586,9 +586,17 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       ScoreAdTaskList::iterator task,
       DirectFromSellerSignalsRequester::Result result);
 
+  // Returns true iff all scoreAd()'s inputs are ready. The JS
+  // may or may not be ready yet.
+  bool ScoreAdTaskHasInputs(const SellerWorklet::ScoreAdTask& task) const;
+
   // Returns true iff all scoreAd()'s prerequisite loading tasks have
   // completed.
   bool IsReadyToScoreAd(const ScoreAdTask& task) const;
+
+  // If the task is ready other than waiting for the JS script, avoid eager
+  // compilation so that we can get started on scoring this ad.
+  void DisableEagerJsCompilationIfOnlyWaitingOnJs(const ScoreAdTask& task);
 
   // Checks if the script has been loaded successfully, the
   // DirectFromSellerSignals loads have finished and the TrustedSignals load has

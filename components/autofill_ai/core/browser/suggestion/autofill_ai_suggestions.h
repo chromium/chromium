@@ -22,7 +22,8 @@ namespace autofill_ai {
 std::vector<autofill::Suggestion> CreateFillingSuggestions(
     const autofill::FormStructure& form,
     autofill::FieldGlobalId field_global_id,
-    base::span<const autofill::EntityInstance> entities);
+    base::span<const autofill::EntityInstance> entities,
+    const std::string& app_locale);
 
 }  // namespace autofill_ai
 

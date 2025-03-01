@@ -49,6 +49,8 @@ inline constexpr int kSearchBoxHeight = 48;
 inline constexpr int kSearchBoxRadius = 24;
 inline constexpr int kSearchBoxImageRadius = 8;
 inline constexpr gfx::Insets kSearchBoxViewSpacing = gfx::Insets::VH(12, 0);
+inline constexpr gfx::Insets kSearchResultsViewSpacing =
+    gfx::Insets::TLBR(12, 0, 0, 0);
 inline constexpr gfx::Insets kSearchImageSpacing =
     gfx::Insets::TLBR(8, 16, 8, 12);
 inline constexpr gfx::Insets kSearchTextfieldSpacing =
@@ -216,14 +218,26 @@ SearchResultsPanel::SearchResultsPanel() {
                           .WithAlignment(views::LayoutAlignment::kEnd)))
           .Build());
 
-  search_box_view_ = AddChildView(std::make_unique<SunfishSearchBoxView>());
-  search_box_view_->SetProperty(views::kMarginsKey, kSearchBoxViewSpacing);
+  // Lens Web API uses its own sticky search box, so there's no need to create a
+  // native one.
+  if (!features::IsSunfishLensWebEnabled()) {
+    search_box_view_ = AddChildView(std::make_unique<SunfishSearchBoxView>());
+    search_box_view_->SetProperty(views::kMarginsKey, kSearchBoxViewSpacing);
+  }
+
   search_results_view_ =
       AddChildView(CaptureModeController::Get()->CreateSearchResultsView());
   search_results_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded));
+
+  // Without the native search box, there needs to be padding between the header
+  // and the web view.
+  if (features::IsSunfishLensWebEnabled()) {
+    search_results_view_->SetProperty(views::kMarginsKey,
+                                      kSearchResultsViewSpacing);
+  }
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
@@ -235,19 +249,21 @@ SearchResultsPanel::SearchResultsPanel() {
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   // Install highlightable views for when a Sunfish session is active and the
-  // `CaptureModeSessionFocusCycler` is handling focus.
-  CaptureModeSessionFocusCycler::HighlightHelper::Install(close_button_);
-  CaptureModeSessionFocusCycler::HighlightHelper::Install(
-      search_box_view_->textfield_);
-
-  // Set up the focus predicate for the focusable views now, so they will have
-  // the correct behavior before `CaptureModeSessionFocusCycler::PseudoFocus()`
+  // `CaptureModeSessionFocusCycler` is handling focus. Set up the focus
+  // predicate for the focusable views now, so they will have the correct
+  // behavior before `CaptureModeSessionFocusCycler::PseudoFocus()`
   // is called on them.
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(close_button_);
   CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_)
-      ->SetUpFocusPredicate(close_button_);
-  CaptureModeSessionFocusCycler::HighlightHelper::Get(
-      search_box_view_->textfield_)
-      ->SetUpFocusPredicate(search_box_view_->textfield_);
+      ->SetUpFocusPredicate();
+
+  if (!features::IsSunfishLensWebEnabled()) {
+    CaptureModeSessionFocusCycler::HighlightHelper::Install(
+        search_box_view_->textfield_);
+    CaptureModeSessionFocusCycler::HighlightHelper::Get(
+        search_box_view_->textfield_)
+        ->SetUpFocusPredicate();
+  }
 }
 
 SearchResultsPanel::~SearchResultsPanel() = default;
@@ -269,7 +285,7 @@ views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root,
 }
 
 views::Textfield* SearchResultsPanel::GetSearchBoxTextfield() const {
-  return search_box_view_->textfield_;
+  return search_box_view_ ? search_box_view_->textfield_ : nullptr;
 }
 
 std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
@@ -285,10 +301,12 @@ void SearchResultsPanel::Navigate(const GURL& url) {
 }
 
 void SearchResultsPanel::SetSearchBoxImage(const gfx::ImageSkia& image) {
+  CHECK(search_box_view_);
   search_box_view_->SetImage(image);
 }
 
 void SearchResultsPanel::SetSearchBoxText(const std::u16string& text) {
+  CHECK(search_box_view_);
   search_box_view_->textfield_->SetText(text);
 }
 

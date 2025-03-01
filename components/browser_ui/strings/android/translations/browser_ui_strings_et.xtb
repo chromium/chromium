@@ -40,6 +40,7 @@
 <translation id="1652197001188145583">Kui see on sisse lülitatud, võivad saidid küsida luba NFC-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid NFC-seadmeid kasutada.</translation>
 <translation id="1660204651932907780">Saitidel lubatakse esitada heli (soovitatav)</translation>
 <translation id="1677097821151855053">Küpsisefaile ja muid saidi andmeid kasutatakse teie meeldejätmiseks, näiteks selleks, et teid sisse logida või reklaame isikupärastada. Kõigi saitide küpsisefailide haldamiseks vaadake jaotist <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
+<translation id="1686785653877010442">Saidid saadavad tavaliselt märguandeid, et teavitada teid erakorralistest uudistest või vestlussõnumitest.</translation>
 <translation id="169515064810179024">Blokeeri saitide juurdepääs liikumisanduritele</translation>
 <translation id="1717218214683051432">Liikumisandurid</translation>
 <translation id="1743802530341753419">Küsi luba, kui saidid üritavad seadmega ühendust luua (soovitatav)</translation>
@@ -65,6 +66,7 @@
 <translation id="2091887806945687916">Heli</translation>
 <translation id="2096716221239095980">Kustuta kõik andmed</translation>
 <translation id="2117655453726830283">Järgmine slaid</translation>
+<translation id="2146263598007866206">Saidid võivad seotud faile koos automaatselt alla laadida, et teie aega säästa</translation>
 <translation id="2148716181193084225">Täna</translation>
 <translation id="216989819110952009">Kuigi rohelised prillid olid silmade kaitseks ninale asetatud, olid Dorothy ja tema sõbrad esialgu</translation>
 <translation id="2176704795966505152">Kuva peamenüüs suumimisvalik</translation>
@@ -119,6 +121,7 @@
 <translation id="2750481671343847896">Saidid saavad kuvada identiteedihaldusteenuste sisselogimisviipasid.</translation>
 <translation id="2787357173144933081">Omnikastikese kiirkäivitamine</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
+<translation id="2795716239552913152">Saidid kasutavad teie asukohateavet tavaliselt asjakohaste funktsioonide või teabe (nt kohalikud uudised või läheduses asuvad kauplused) pakkumiseks</translation>
 <translation id="2814830417943086299">Chrome kuvab nüüd teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="2822354292072154809">Kas soovite objekti <ph name="CHOSEN_OBJECT_NAME" /> jaoks kindlasti lähtestada kõik saidi load?</translation>
 <translation id="2850913818900871965">Mobiilivaate taotlemine</translation>
@@ -164,6 +167,8 @@
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="3448554387819310837">Kui see on sisse lülitatud, võivad saidid küsida luba teie kaamera kasutamiseks. Kui see on välja lülitatud, ei saa saidid teie kaamerat kasutada.</translation>
+<translation id="3491678231052507920">Saidid kasutavad teie VR-seadmeid ja -andmeid tavaliselt VR-seansi käivitamiseks</translation>
+<translation id="3496995426334945408">Saidid kasutavad JavaScripti tavaliselt interaktiivsete funktsioonide, näiteks videomängude või veebivormide kuvamiseks</translation>
 <translation id="3521663503435878242">Saidid domeenil <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Saitidel keelatakse teie käeliigutusi jälgida</translation>
 <translation id="3532312529397438268">Saidid ei saa kasutada V8 optimeerijat</translation>
@@ -218,6 +223,7 @@
 <translation id="4200726100658658164">Ava asukohaseaded</translation>
 <translation id="4226663524361240545">Seade võib märguannete korral vibreerida</translation>
 <translation id="4259722352634471385">Navigeerimine on blokeeritud: <ph name="URL" /></translation>
+<translation id="4274673989874969668">Kui lahkute saidilt, võib see sünkroonimist jätkata, et toimingud (nt fotode üleslaadimine või vestlussõnumi saatmine) lõpule viia</translation>
 <translation id="4278390842282768270">Lubatud</translation>
 <translation id="429312253194641664">Sait esitab meediasisu</translation>
 <translation id="42981349822642051">Laienda</translation>
@@ -253,6 +259,7 @@
 <translation id="4816495437032298535">Saitide jaoks salvestatud suum</translation>
 <translation id="4836046166855586901">Küsi, kui sait soovib teada, millal kasutate aktiivselt seda seadet</translation>
 <translation id="483914009762354899">Kaasab kõik sellel domeenil olevad saidid</translation>
+<translation id="4882919381756638075">Saidid kasutavad teie mikrofoni tavaliselt suhtlusfunktsioonide jaoks, näiteks videovestluseks</translation>
 <translation id="4883854917563148705">Hallatud seadeid ei saa lähtestada</translation>
 <translation id="4887024562049524730">Küsi enne saitidele loa andmist virtuaalreaalsuse seadme ja andmete kasutamiseks (soovitatav)</translation>
 <translation id="4936863036653376783">Grupid kuvatakse kõikides seadmetes vahelehegruppide jaotises</translation>
@@ -403,6 +410,7 @@
 <translation id="6818926723028410516">Valige üksused</translation>
 <translation id="6838525730752203626">Kasutage Chrome'i vaikimisi</translation>
 <translation id="6840760312327750441">Vahelehtede rühmitamiseks puudutage vahelehte pikalt. Seejärel lohistage see teise vahelehe peale.</translation>
+<translation id="6842868554183332230">Saidid tuvastavad, millel seadet aktiivselt kasutate, et määrata vestlusrakendustes teie saadavalolek</translation>
 <translation id="6851981911629679515">Lülitage Chrome'i JavaScripti ja WebAssembly mootoris sisse lisakaitse</translation>
 <translation id="6864395892908308021">See seade ei saa NFC andmeid lugeda</translation>
 <translation id="6870169401250095575">Peida ohutuskontrolli kaart</translation>
@@ -440,6 +448,7 @@
 <translation id="7383715096023715447">Domeeni <ph name="DOMAIN" /> seaded</translation>
 <translation id="7399802613464275309">Ohutuskontroll</translation>
 <translation id="7406113532070524618">See seade toimib ilma teid tuvastamata ega luba saitidel vaadata teie sirvimisajalugu, kuid saidid võivad kontrollimistoimingu käigus jagada väikest hulka teavet</translation>
+<translation id="7409735910987429903">Saidid võivad kuvada hüpikaknaid või reklaame või kasutada ümbersuunamisi, et suunata teid veebisaitidele, mida te võib-olla ei soovi külastada</translation>
 <translation id="7423098979219808738">Esmalt küsib</translation>
 <translation id="7423538860840206698">Lõikelaua lugemine on blokeeritud</translation>
 <translation id="7425915948813553151">Tume teema saitide jaoks</translation>
@@ -449,12 +458,14 @@
 <translation id="7553211568594248088">Välju Hubi otsingust</translation>
 <translation id="7554752735887601236">Sait kasutab teie mikrofoni</translation>
 <translation id="7561196759112975576">Alati</translation>
+<translation id="7573594921350120855">Saidid kasutavad teie videokaamerat tavaliselt suhtlusfunktsioonide jaoks, näiteks videovestluseks</translation>
 <translation id="757524316907819857">Saitidel kaitstud sisu esitamise blokeerimine</translation>
 <translation id="7594634374516752650">Ühendatud Bluetooth-seadmega</translation>
 <translation id="7617547684249261169">Saate kustutada osa või kogu oma ajaloo, küpsisefailid, saidiandmed ja palju muud</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7667547420449112975">Võlur Oz</translation>
+<translation id="7681597159868843240">Saidid kasutavad teie seadme liikumisandureid näiteks VR-kogemuse pakkumiseks või treeningu jälgimiseks</translation>
 <translation id="7688240020069572972">Chrome'i nõuannete kaardi peitmine</translation>
 <translation id="7719367874908701697">Lehe suum</translation>
 <translation id="7759147511335618829">MIDI-seadme juhtimine ja ümberprogrammeerimine</translation>
@@ -512,6 +523,7 @@
 <translation id="8441146129660941386">Keri tagasi</translation>
 <translation id="8444433999583714703">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie asukohale, lülitage funktsioon Asukoht sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Seadme loa tühistamine</translation>
+<translation id="8471525937465764768">Saidid loovad USB-seadmetega ühenduse tavaliselt teatud funktsioonide jaoks, näiteks dokumentide printimiseks või salvestusseadmele talletamiseks</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> on aegunud. Installige rakendus uuesti.</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="848952951823693243">Alati taotletakse mobiilisaiti</translation>
@@ -560,6 +572,7 @@
 <translation id="9002538116239926534">Kui see on sisse lülitatud, saavad saidid teie seadmesse andmeid salvestada. Kui see on välja lülitatud, ei saa saidid teie seadmesse andmeid salvestada.</translation>
 <translation id="9011903857143958461">Saidi <ph name="SITE_NAME" /> jaoks lubatud</translation>
 <translation id="9019902583201351841">Vanemate hallatud</translation>
+<translation id="902236149563113779">Saidid jälgivad teie kaamera asendit tavaliselt AR-funktsioonide jaoks, nt mängudeks või juhiste esitamisel</translation>
 <translation id="9039697262778250930">Võite olla nendelt saitidelt välja logitud</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Kas kustutada küpsisefailid?</translation>

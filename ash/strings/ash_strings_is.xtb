@@ -246,7 +246,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="17722141032474077">Útreikningar</translation>
 <translation id="1774796056689732716">Dagatal, <ph name="CURRENT_MONTH_YEAR" />, núverandi val er <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Setja upp skoðun nýlegra mynda, efnis og tilkynninga í símanum</translation>
-<translation id="1785317913592722944">Fjarlægja atriði úr hópi sem stungið er upp á</translation>
 <translation id="1786487376942610288">Skiptu á milli hámarksstærð eða núverandi stærðar af mynd í mynd-glugganum</translation>
 <translation id="1787955149152357925">Slökkt</translation>
 <translation id="1796561540704213354">Vefsvæði að meðtöldum síðum sem þú hefur heimsótt og opnar síður</translation>
@@ -853,6 +852,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3859364108019690">Ekki er hægt að streyma forritum</translation>
 <translation id="3861651314799684201">Ýttu á Enter til að taka upp allan skjáinn</translation>
 <translation id="3870197372373144624">Reyndu að slökkva á tækinu þínu.</translation>
+<translation id="3879748587602334249">Niðurhalsstjórnun</translation>
 <translation id="3886872229787704059">Opnað í dag</translation>
 <translation id="3891340733213178823">Ýttu tvisvar á Ctrl+Shift+Q til að skrá þig út.</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
@@ -878,6 +878,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3958714870339660776">Allan daginn</translation>
 <translation id="3962859241508114581">Fyrra lag</translation>
 <translation id="3963124517343721543">Þú heldur auðveldlega áfram þar sem frá var horfið með því að opna glugga og flipa sem voru opnir. Þú færð einnig að sjá sérsniðnar tillögur að því hvað þú átt að gera næst.</translation>
+<translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="3969043077941541451">Slökkt</translation>
 <translation id="3970324493235864154">Skoða tilkynningar símans</translation>
 <translation id="397105322502079400">Reiknar...</translation>
@@ -1619,6 +1620,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6319058840130157106">Fara til baka til að skipta á milli hægra horns neðst, ræsiforrits, veffangastiku, bókamerkjastiku, vefsvæðis sem er opið og niðurhals</translation>
 <translation id="6319503618073410818">Sjá upplýsingar í vafra</translation>
 <translation id="6324916366299863871">Breyta flýtileið</translation>
+<translation id="6325525973963619867">Mistókst</translation>
 <translation id="6330012934079202188">Sýnir glugga allra skrifborða, ýttu á ör upp til að sýna glugga núverandi skrifborðs</translation>
 <translation id="6337159624125741244">Kveikt er á stækkun á öllum skjánum</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er stýrð lota sem <ph name="MANAGER" /> hefur umsjón með</translation>

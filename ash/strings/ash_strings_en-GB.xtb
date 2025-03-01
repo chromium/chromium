@@ -246,7 +246,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="17722141032474077">Calculations</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
 <translation id="178347895271755507">Set up viewing your phone's recent photos, media and notifications</translation>
-<translation id="1785317913592722944">Remove item from suggested group</translation>
 <translation id="1786487376942610288">Switch between the maximum or current size of the picture-in-picture window</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Websites including pages you've visited and open pages</translation>
@@ -853,6 +852,7 @@ Connect your device to power.</translation>
 <translation id="3859364108019690">Can't stream apps</translation>
 <translation id="3861651314799684201">Press enter to record full screen</translation>
 <translation id="3870197372373144624">Try shutting down your device.</translation>
+<translation id="3879748587602334249">Download manager</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3892148308691398805">Copy text</translation>
@@ -878,6 +878,7 @@ Connect your device to power.</translation>
 <translation id="3958714870339660776">All day</translation>
 <translation id="3962859241508114581">Previous track</translation>
 <translation id="3963124517343721543">Easily continue where you left off by opening your previous windows and tabs. You'll also see personalised suggestions for things to do next.</translation>
+<translation id="3967822245660637423">Download complete</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="3970324493235864154">View your phone's notifications</translation>
 <translation id="397105322502079400">Calculating...</translation>
@@ -1619,6 +1620,7 @@ No devices connected.</translation>
 <translation id="6319058840130157106">Move backwards between the bottom-right corner, Launcher, address bar, bookmarks bar, website that's open and downloads</translation>
 <translation id="6319503618073410818">View details in browser</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>
+<translation id="6325525973963619867">Failed</translation>
 <translation id="6330012934079202188">Showing windows from all desks; press the Up arrow key to show windows from the current desk</translation>
 <translation id="6337159624125741244">Full-screen magnifier is on</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is a managed session managed by <ph name="MANAGER" /></translation>

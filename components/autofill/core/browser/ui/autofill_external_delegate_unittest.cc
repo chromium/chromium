@@ -322,7 +322,8 @@ class AutofillExternalDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
-        webdata_helper_.autofill_webdata_service()));
+        webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
+        /*strike_database=*/nullptr));
     autofill_driver_ =
         std::make_unique<NiceMock<MockAutofillDriver>>(&client());
     auto mock_browser_autofill_manager =
@@ -1249,19 +1250,21 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
                  Property("value", &FormFieldData::value, Eq(value)));
   };
 
-  EXPECT_CALL(
-      driver(),
-      ApplyFormAction(
-          _, mojom::ActionPersistence::kPreview,
-          ElementsAre(field_with_value(
-              field_to_fill, GetObfuscatedValue(passport_number->value()))),
-          _, _))
+  EXPECT_CALL(driver(),
+              ApplyFormAction(_, mojom::ActionPersistence::kPreview,
+                              ElementsAre(field_with_value(
+                                  field_to_fill,
+                                  GetObfuscatedValue(passport_number->GetInfo(
+                                      PASSPORT_NUMBER, /*app_locale=*/"")))),
+                              _, _))
       .WillOnce(Return(std::vector<FieldGlobalId>{}));
   EXPECT_CALL(driver(),
-              ApplyFormAction(_, mojom::ActionPersistence::kFill,
-                              ElementsAre(field_with_value(
-                                  field_to_fill, passport_number->value())),
-                              _, _))
+              ApplyFormAction(
+                  _, mojom::ActionPersistence::kFill,
+                  ElementsAre(field_with_value(
+                      field_to_fill, passport_number->GetInfo(
+                                         PASSPORT_NUMBER, /*app_locale=*/""))),
+                  _, _))
       .WillOnce(Return(std::vector<FieldGlobalId>{}));
 
   Suggestion fill_suggestion =

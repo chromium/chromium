@@ -181,19 +181,19 @@ suite('Metrics', function() {
     ];
     testService.setForeignSessions(sessionList);
     await finishSetup([]);
+    await microtasksFinished();
 
     navigateTo('/syncedTabs', app);
-    await flushTasks();
+    await microtasksFinished();
 
     const histogram = histogramMap[SYNCED_TABS_HISTOGRAM_NAME];
     assertTrue(!!histogram);
     assertEquals(1, histogram[SyncedTabsHistogram.INITIALIZED]);
 
     await testService.whenCalled('getForeignSessions');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(1, histogram[SyncedTabsHistogram.HAS_FOREIGN_DATA]);
-    await flushTasks();
 
     const syncedDeviceManager =
         app.shadowRoot!.querySelector('history-synced-device-manager');

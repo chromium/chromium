@@ -246,7 +246,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="17722141032474077">Laskutoimitukset</translation>
 <translation id="1774796056689732716">Kalenteri, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> on valittuna</translation>
 <translation id="178347895271755507">Ota käyttöön puhelimen viimeaikaisten kuvien, median ja ilmoitusten katselu</translation>
-<translation id="1785317913592722944">Poista tämä ehdotetusta ryhmästä</translation>
 <translation id="1786487376942610288">Vaihda pikkuruutu-ikkunan maksimikoon tai tämänhetkisen koon välillä</translation>
 <translation id="1787955149152357925">Pois päältä</translation>
 <translation id="1796561540704213354">Verkkosivustot, esimerkiksi aiemmin avaamasi sivut ja avoinna olevat sivut</translation>
@@ -853,6 +852,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3859364108019690">Sovelluksia ei voi striimata</translation>
 <translation id="3861651314799684201">Tallenna koko näytön sisältö painamalla Enter</translation>
 <translation id="3870197372373144624">Kokeile sammuttaa laite.</translation>
+<translation id="3879748587602334249">Latausten hallinta</translation>
 <translation id="3886872229787704059">Avattu tänään</translation>
 <translation id="3891340733213178823">Kirjaudu ulos painamalla Ctrl+Shift+Q kahdesti.</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
@@ -878,6 +878,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3958714870339660776">Koko päivä</translation>
 <translation id="3962859241508114581">Edellinen kappale</translation>
 <translation id="3963124517343721543">Jatka helposti siitä, mihin jäit avaamalla aiemmat ikkunat ja välilehdet. Saat myös personoituja ehdotuksia jatkotoimista.</translation>
+<translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3969043077941541451">Pois päältä</translation>
 <translation id="3970324493235864154">Katsele puhelimesi ilmoituksia</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
@@ -1619,6 +1620,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6319058840130157106">Siirry taaksepäin oikean alakulman, käynnistysohjelman, osoitepalkin, kirjanmerkkipalkin, avoimen verkkosivuston ja latausten välillä</translation>
 <translation id="6319503618073410818">Katso tiedot selaimessa</translation>
 <translation id="6324916366299863871">Muokkaa pikanäppäintä</translation>
+<translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="6330012934079202188">Näytetään kaikkien työpöytien ikkunat, näytä nykyisen työpöydän ikkunat painamalla ylänuolta</translation>
 <translation id="6337159624125741244">Koko näytön suurennus on päällä</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on ylläpidetty käyttökerta, jota ylläpitää <ph name="MANAGER" /></translation>

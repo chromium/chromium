@@ -88,6 +88,11 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(gfx::Rect, GetPageScreenRect, (int), (const override));
 
+  MOCK_METHOD(std::optional<gfx::SizeF>,
+              GetPageSizeInPoints,
+              (int),
+              (const override));
+
   // Returns an empty bookmark list.
   base::Value::List GetBookmarks() override;
 

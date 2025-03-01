@@ -15,7 +15,6 @@
 
 namespace ai {
 
-//
 class AIPrototypingServiceImpl : public mojom::AIPrototypingService {
  public:
   explicit AIPrototypingServiceImpl(

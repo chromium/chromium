@@ -63,6 +63,8 @@ bool IsFedCmLightweightModeEnabled();
 // Whether phone/username is supported and name/email are optional.
 bool IsFedCmAlternativeIdentifiersEnabled();
 
+// Whether cooldown on ignore is enabled.
+bool IsFedCmCooldownOnIgnoreEnabled();
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

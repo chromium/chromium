@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.educational_tip.cards;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -67,18 +69,18 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         assert false : "This method will not be called.";
-        return 0;
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.educational_tip_default_browser_bottom_sheet_accessibility_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.educational_tip_default_browser_bottom_sheet_accessibility_closed;
     }
 }

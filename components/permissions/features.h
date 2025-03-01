@@ -78,6 +78,10 @@ BASE_DECLARE_FEATURE(kCpssUseTfliteSignatureRunner);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kFedCmUpdatedCooldownPeriod);
 
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kOsAdditionalSecurityPermissionKillSwitch);
+#endif
 }  // namespace features
 namespace feature_params {
 

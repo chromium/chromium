@@ -37,7 +37,7 @@ import org.chromium.url.GURL;
  */
 public class StartupMetricsTracker {
 
-    private static final long NTP_STARTUP_METRIC_RECORDING_DELAY_MS = 2500;
+    private static final long TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS = 2500;
     private boolean mFirstNavigationCommitted;
 
     private class TabObserver extends TabModelSelectorTabObserver {
@@ -53,7 +53,7 @@ public class StartupMetricsTracker {
             if (tab == null) return;
 
             if (tab.isNativePage()) destroy();
-            if (!UrlUtilities.isNtpUrl(tab.getUrl())) mShouldTrackNewTabPageStartup = false;
+            if (!UrlUtilities.isNtpUrl(tab.getUrl())) mShouldTrackTimeToFirstDraw = false;
         }
 
         @Override
@@ -131,7 +131,7 @@ public class StartupMetricsTracker {
     private TabModelSelectorTabObserver mTabObserver;
     private PageObserver mPageObserver;
     private boolean mShouldTrack = true;
-    private boolean mShouldTrackNewTabPageStartup = true;
+    private boolean mShouldTrackTimeToFirstDraw = true;
     private @ActivityType int mHistogramSuffix;
 
     // The time it took for SafeBrowsing API to return a Safe Browsing response for the first time.
@@ -197,15 +197,32 @@ public class StartupMetricsTracker {
      *     MV tiles etc.
      */
     public void registerNtpViewObserver(@NonNull View ntpRootView) {
-        if (!mShouldTrackNewTabPageStartup) return;
+        if (!mShouldTrackTimeToFirstDraw) return;
+        trackTimeToFirstDraw(ntpRootView, "Startup.Android.Cold.NewTabPage.TimeToFirstDraw");
+    }
 
+    /**
+     * Sets up an onDraw listener for the SearchActivity root view to record the SA cold start
+     * metric exactly once per application lifecycle. onDraw will not be called if the screen is
+     * off.
+     *
+     * @param searchActivityRootView SearchActivity's root view.
+     */
+    public void registerSearchActivityViewObserver(@NonNull View searchActivityRootView) {
+        if (!mShouldTrackTimeToFirstDraw) return;
+        trackTimeToFirstDraw(
+                searchActivityRootView, "Startup.Android.Cold.SearchActivity.TimeToFirstDraw");
+    }
+
+    private void trackTimeToFirstDraw(View view, String histogram) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
                 || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
+
         FirstDrawDetector.waitForFirstDrawStrict(
-                ntpRootView,
+                view,
                 () -> {
                     long timeToFirstDrawMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
-                    // During a cold start into NTP, first draw can be triggered while Chrome is in
+                    // During a cold start, first draw can be triggered while Chrome is in
                     // the background, leading to ablated draw times. This early in the startup
                     // process, events that indicate Chrome has been backgrounded do not run until
                     // after the first draw pass. To work around this, post a task to be run with
@@ -213,15 +230,15 @@ public class StartupMetricsTracker {
                     // sent to the background during startup.
                     PostTask.postDelayedTask(
                             TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                            () -> recordNtpTimeToFirstDraw(timeToFirstDrawMs),
-                            NTP_STARTUP_METRIC_RECORDING_DELAY_MS);
-                    mShouldTrackNewTabPageStartup = false;
+                            () -> recordTimeToFirstDraw(histogram, timeToFirstDrawMs),
+                            TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS);
+                    mShouldTrackTimeToFirstDraw = false;
                 });
     }
 
     public void destroy() {
         mShouldTrack = false;
-        mShouldTrackNewTabPageStartup = false;
+        mShouldTrackTimeToFirstDraw = false;
         if (mTabObserver != null) {
             mTabObserver.destroy();
             mTabObserver = null;
@@ -286,11 +303,19 @@ public class StartupMetricsTracker {
         }
     }
 
-    private void recordNtpTimeToFirstDraw(long timeToFirstDrawMs) {
+    /**
+     * Records a histogram capturing the time taken from a cold start to the first draw event.
+     *
+     * <p>This function logs the time elapsed from application launch to the first draw event,
+     * categorized by what was drawn first (e.g., NTP or SearchActivity).
+     *
+     * @param histogramName The name of the histogram, indicating what was drawn first.
+     * @param timeToFirstDrawMs The elapsed time in milliseconds from cold start to the first draw
+     *     event.
+     */
+    private void recordTimeToFirstDraw(String histogramName, long timeToFirstDrawMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
                 || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
-
-        RecordHistogram.recordMediumTimesHistogram(
-                "Startup.Android.Cold.NewTabPage.TimeToFirstDraw", timeToFirstDrawMs);
+        RecordHistogram.recordMediumTimesHistogram(histogramName, timeToFirstDrawMs);
     }
 }

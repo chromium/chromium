@@ -5,7 +5,7 @@
 import 'chrome://signout-confirmation/signout_confirmation.js';
 
 import {SignoutConfirmationBrowserProxyImpl} from 'chrome://signout-confirmation/signout_confirmation.js';
-import type {PageRemote, SignoutConfirmationAppElement} from 'chrome://signout-confirmation/signout_confirmation.js';
+import type {ExtensionsSectionElement, PageRemote, SignoutConfirmationAppElement} from 'chrome://signout-confirmation/signout_confirmation.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -83,19 +83,39 @@ suite('SignoutConfirmationViewTest', function() {
     await testProxy.handler.whenCalled('updateViewHeight');
 
     // The extensions section should now be visible.
-    assertTrue(isChildVisible(signoutConfirmationApp, 'extensions-section'));
+    const extensionsSection =
+        signoutConfirmationApp.shadowRoot!
+            .querySelector<ExtensionsSectionElement>('extensions-section');
+
+    assertTrue(!!extensionsSection);
+    assertTrue(isVisible(extensionsSection));
+
+    // Now check the checkbox in the extensions section.
+    assertFalse(extensionsSection.checked());
+    extensionsSection.$.checkbox.click();
+    assertTrue(extensionsSection.checked());
+
+    // Accept the dialog.
+    signoutConfirmationApp.$.acceptButton.click();
+    const uninstallAccountExtensions =
+        await testProxy.handler.whenCalled('accept');
+    assertTrue(uninstallAccountExtensions);
   });
 
-  test('ClickAccept', function() {
+  test('ClickAccept', async function() {
     assertTrue(isVisible(signoutConfirmationApp));
     signoutConfirmationApp.$.acceptButton.click();
-    return testProxy.handler.whenCalled('accept');
+    const uninstallAccountExtensions =
+        await testProxy.handler.whenCalled('accept');
+    assertFalse(uninstallAccountExtensions);
   });
 
-  test('ClickCancel', function() {
+  test('ClickCancel', async function() {
     assertTrue(isVisible(signoutConfirmationApp));
     signoutConfirmationApp.$.cancelButton.click();
-    return testProxy.handler.whenCalled('cancel');
+    const uninstallAccountExtensions =
+        await testProxy.handler.whenCalled('cancel');
+    assertFalse(uninstallAccountExtensions);
   });
 
   test('CloseDialog', function() {

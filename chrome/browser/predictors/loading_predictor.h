@@ -138,7 +138,9 @@ class LoadingPredictor : public KeyedService,
       bool allow_credentials,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const net::NetworkTrafficAnnotationTag& traffic_annotation =
-          kLoadingPredictorPreconnectTrafficAnnotation);
+          kLoadingPredictorPreconnectTrafficAnnotation,
+      const content::StoragePartitionConfig* storage_partition_config =
+          nullptr);
 
   void MaybePrewarmResources(const std::optional<url::Origin>& initiator_origin,
                              const GURL& top_frame_main_resource_url);

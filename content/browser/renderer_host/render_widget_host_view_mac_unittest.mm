@@ -766,7 +766,7 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
   // If the firstRectForCharacterRange is failed in renderer, empty rect vector
   // is sent. Make sure this does not crash.
   rwhv_mac_->ImeCompositionRangeChanged(gfx::Range(10, 12),
-                                        std::vector<gfx::Rect>(), std::nullopt);
+                                        std::vector<gfx::Rect>());
   EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
       gfx::Range(10, 11), &rect, nullptr));
 
@@ -780,8 +780,7 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
                                kCompositionLength,
                                std::vector<size_t>(),
                                &composition_bounds);
-  rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds,
-                                        std::nullopt);
+  rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds);
 
   // Out of range requests will return caret position.
   EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
@@ -839,8 +838,7 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionMultilineCase) {
                                kCompositionLength,
                                break_points,
                                &composition_bounds);
-  rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds,
-                                        std::nullopt);
+  rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds);
 
   // Range doesn't contain line breaking point.
   gfx::Range range;
@@ -925,7 +923,7 @@ TEST_F(RenderWidgetHostViewMacTest, CompositionEventAfterDestroy) {
   const gfx::Rect composition_bounds(0, 0, 30, 40);
   const gfx::Range range(0, 1);
   rwhv_mac_->ImeCompositionRangeChanged(
-      range, std::vector<gfx::Rect>(1, composition_bounds), std::nullopt);
+      range, std::vector<gfx::Rect>(1, composition_bounds));
 
   NSRange actual_range = NSMakeRange(0, 0);
 

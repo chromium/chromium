@@ -413,7 +413,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
     enum="DIPSRedirectCategory" expires_after="2025-08-10">
   <owner>rtarpine@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Whether a {DIPSRedirectType} redirect accessed cookies and whether its
     origin previously had user engagement. Recorded when redirecting between
@@ -430,7 +430,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.BounceStatusCode.{DIPSCachedResponseStatus}"
     enum="HttpResponseCode" expires_after="2025-08-10">
   <owner>liu@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The HTTP response status codes for each redirect within a DIPS-eligible
     redirect chain.
@@ -441,7 +441,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.ClearedSitesCount{DIPSCookieMode}" units="sites"
     expires_after="2025-07-13">
   <owner>wanderview@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The number of sites that may have had their storage cleared by DIPS.
 
@@ -467,7 +467,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     units="ms" expires_after="2025-07-13">
   <owner>etienneb@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The time taken to execute the {DIPSDatabaseOperation} DIPS database
     operation.
@@ -480,7 +480,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
     expires_after="2025-07-06">
   <owner>wanderview@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Number of entries present in the `bounces` table of the user's DIPS database
     (where there is 1 entry per eTLD+1). For each user profile, reported at
@@ -494,7 +494,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
     expires_after="2025-08-10">
   <owner>wanderview@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Errors reported by SQLite while initializing or using the DIPS database.
   </summary>
@@ -503,7 +503,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.DatabaseHealthMetricsTime" units="ms"
     expires_after="2025-07-06">
   <owner>wanderview@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The time taken to gather DIPS database health metrics. For each user
     profile, these metrics are reported at profile open (which usually happens
@@ -518,7 +518,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
     expires_after="2026-01-27">
   <owner>wanderview@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Logs how many attempts it took to initialize the DIPS database. Logs a value
     of 0 if all attempts failed.
@@ -528,7 +528,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.DatabaseSize" units="KB"
     expires_after="2025-10-21">
   <owner>wanderview@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The size of the DIPS database file. For each user profile, reported at
     profile open (which usually happens at startup). Also reported approximately
@@ -543,7 +543,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     name="Privacy.DIPS.DeletionDomainLength.{DIPSCookiePartitionKeyState}"
     units="lengths" expires_after="2026-02-03">
   <owner>liu@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The length of a domain that will be cleared by bounce tracking mitigations.
     This metric is recorded after any invalid domain filtering, so it only
@@ -559,7 +559,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.DeletionLatency2" units="ms"
     expires_after="2025-08-10">
   <owner>wanderview@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The amount of time it takes to complete the DIPS deletion process.
 
@@ -574,7 +574,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.Deletion{DIPSCookieMode}"
     enum="DIPSDeletionAction" expires_after="2025-07-13">
   <owner>njeunje@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     This is recorded each time we initiate a possible deletion of state on
     DIPS-eligible (incidental) sites. This metric will represents the action
@@ -588,7 +588,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.DIPSErrorCodes" enum="DIPSErrorCode"
     expires_after="2025-07-06">
   <owner>wanderview@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Tracks certain errors that DIPS may encounter when running on a client.
 
@@ -604,7 +604,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.ServerBounceChainDelay" units="ms"
     expires_after="2025-08-10">
   <owner>liu@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The cumulative amount of time across all server redirects within a single
     DIPS-eligible redirect chain. This is effectively the sum of the
@@ -615,7 +615,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.ServerBounceDelay" units="ms"
     expires_after="2025-08-10">
   <owner>liu@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The amount of time between server redirects within a DIPS-eligible redirect
     chain. Each bounce within the redirect chain will be its own entry.
@@ -629,7 +629,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
     units="ms" expires_after="2025-06-29">
   <owner>rtarpine@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The amount of time after a navigation to a site commits until a renderer
     initiated navigation (without user activation) is started to a different

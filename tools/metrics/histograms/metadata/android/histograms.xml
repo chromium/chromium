@@ -1259,6 +1259,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.CustomTab.CannotOpenUrlInBrowser.IsPdf" enum="Boolean"
+    expires_after="2025-06-02">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether the custom tab is a pdf page when it fails to open current
+    url in browser. Used to diagnose and evaluate how often this occurs for
+    prioritization.
+  </summary>
+</histogram>
+
 <histogram name="Android.DarkTheme.AutoDarkMode.SettingsChangeSource{NewState}"
     enum="AndroidAutoDarkModeSettingsChangeSource" expires_after="2023-04-01">
   <owner>nemco@google.com</owner>

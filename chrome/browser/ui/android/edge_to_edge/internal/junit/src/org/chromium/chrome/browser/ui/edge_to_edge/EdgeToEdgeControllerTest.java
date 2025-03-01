@@ -56,6 +56,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.ViewportFit;
@@ -93,6 +94,7 @@ import org.chromium.ui.base.WindowAndroid;
     ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
     ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
 })
+@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class EdgeToEdgeControllerTest {
 
     private static final int TOP_INSET = 113;

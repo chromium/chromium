@@ -164,6 +164,7 @@ source_set("common_sources") {
 
   sources = [
     "bindings_policy.h",
+    "btm_utils.h",
     "cdm_info.cc",
     "cdm_info.h",
     "color_parser.h",
@@ -182,7 +183,6 @@ source_set("common_sources") {
     "content_paths.h",
     "content_switch_dependent_feature_overrides.cc",
     "content_switch_dependent_feature_overrides.h",
-    "dips_utils.h",
     "drop_data.cc",
     "drop_data.h",
     "isolated_world_ids.h",

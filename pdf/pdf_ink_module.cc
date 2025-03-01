@@ -172,7 +172,6 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
 
   const gfx::Vector2dF origin_offset = client_->GetViewportOriginOffset();
   const PageOrientation rotation = client_->GetOrientation();
-  const float zoom = client_->GetZoom();
 
   auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
   CHECK(!in_progress_stroke.empty());
@@ -180,8 +179,10 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
   DrawingStrokeState& state = drawing_stroke_state();
 
   const gfx::Rect content_rect = client_->GetPageContentsRect(state.page_index);
-  const ink::AffineTransform transform =
-      GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
+  const gfx::SizeF page_size_in_points =
+      client_->GetPageSizeInPoints(state.page_index);
+  const ink::AffineTransform transform = GetInkRenderTransform(
+      origin_offset, rotation, content_rect, page_size_in_points);
 
   SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
   canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));

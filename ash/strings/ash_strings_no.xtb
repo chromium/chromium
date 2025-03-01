@@ -246,7 +246,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="17722141032474077">Beregninger</translation>
 <translation id="1774796056689732716">Kalender – <ph name="CURRENT_MONTH_YEAR" />. For øyeblikket er <ph name="DATE" /> valgt.</translation>
 <translation id="178347895271755507">Konfigurer visning av nylige bilder, medier og varsler fra telefonen din</translation>
-<translation id="1785317913592722944">Fjern elementet fra den foreslåtte gruppen</translation>
 <translation id="1786487376942610288">Bytt mellom maksimal og gjeldende størrelse på bilde-i-bilde-vinduet</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Nettsteder, inkludert sider du har besøkt, og åpne sider</translation>
@@ -853,6 +852,7 @@ Koble enheten til strøm.</translation>
 <translation id="3859364108019690">Kan ikke strømme apper</translation>
 <translation id="3861651314799684201">Trykk på Enter for å ta opp hele skjermen</translation>
 <translation id="3870197372373144624">Prøv å slå av enheten.</translation>
+<translation id="3879748587602334249">Nedlastingsbehandling</translation>
 <translation id="3886872229787704059">Åpnet i dag</translation>
 <translation id="3891340733213178823">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
 <translation id="3892148308691398805">Kopier teksten</translation>
@@ -878,6 +878,7 @@ Koble enheten til strøm.</translation>
 <translation id="3958714870339660776">Hele dagen</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3963124517343721543">Du kan enkelt fortsette der du slapp, ved å åpne tidligere vinduer og faner. Du ser også personlig tilpassede forslag til ting du kan gjøre videre.</translation>
+<translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="3970324493235864154">Se varsler fra telefonen din</translation>
 <translation id="397105322502079400">Beregner …</translation>
@@ -1619,6 +1620,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6319058840130157106">Beveg deg bakover mellom nedre høyre hjørne, Appoversikt, adressefeltet, bokmerkeraden, nettstedet som er åpent, og nedlastingene</translation>
 <translation id="6319503618073410818">Se detaljer i nettleseren</translation>
 <translation id="6324916366299863871">Endre snarvei</translation>
+<translation id="6325525973963619867">Mislykket</translation>
 <translation id="6330012934079202188">Viser vinduer fra alle skrivebord. Trykk på oppoverpiltasten for å vise vinduer fra det nåværende skrivebordet</translation>
 <translation id="6337159624125741244">Forstørrelse av hele skjermen er på</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er en administrert økt som administreres av <ph name="MANAGER" /></translation>

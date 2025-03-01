@@ -1418,6 +1418,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.EngineUse.TimeUntilStart" units="ms"
+    expires_after="2025-07-06">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    This histogram tracks the time from start-up until the kWebContents AXMode
+    is first used. This is tracked only one per instance, and is recorded as the
+    accessibility code is enable.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.EventProcessingTime3{Variation}" units="ms"
     expires_after="2025-11-25">
   <owner>grt@chromium.org</owner>
@@ -3004,13 +3016,18 @@ even if they fit the naming pattern. -->
   <summary>Records the client type of each failed OCR request.</summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.OCR.ImageSize.PDF" units="count"
-    expires_after="2025-08-24">
+<histogram name="Accessibility.ScreenAI.OCR.ImageSize.PDF.{Result}"
+    units="count" expires_after="2026-02-06">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Records the number of pixels in the passed image to OCR from PDF.
+    Records the number of pixels in the passed image to OCR from PDF, when the
+    output had {Result}.
   </summary>
+  <token key="Result">
+    <variant name="NoText" summary="no text"/>
+    <variant name="WithText" summary="text"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.ImageSize10M" units="count"
@@ -3331,7 +3348,10 @@ even if they fit the naming pattern. -->
     {ReportDelay}
   </summary>
   <token key="ScreenReader">
-    <variant name="Android.ScreenReader" summary="Android (e.g. Talkback)"/>
+    <variant name="Android.ScreenReader"
+        summary="Android (e.g. Talkback, or any other screen reader, or app
+                 masquerading as a screen reader)."/>
+    <variant name="Android.TalkBack" summary="Android, specifically TalkBack."/>
     <variant name="Linux.Orca"
         summary="This tracks Orca screen reader usage specifically"/>
     <variant name="Mac.ScreenReader"

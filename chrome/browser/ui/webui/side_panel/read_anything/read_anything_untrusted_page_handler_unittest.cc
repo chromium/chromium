@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/read_anything/read_anything.mojom-forward.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_value_map.h"
@@ -314,7 +313,7 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
   bool expected_images_enabled = true;
   read_anything::mojom::Colors expected_color =
       read_anything::mojom::Colors::kBlue;
-  double expected_speech_rate = read_anything::kReadAnythingDefaultSpeechRate;
+  double expected_speech_rate = 1.0;
   read_anything::mojom::HighlightGranularity expected_highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
   PrefService* prefs = profile()->GetPrefs();

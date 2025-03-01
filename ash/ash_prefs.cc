@@ -14,6 +14,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/coral_util.h"
@@ -133,6 +134,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   AutozoomNudgeController::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
   BirchBarController::RegisterProfilePrefs(registry);
+  BirchCoralProvider::RegisterProfilePrefs(registry);
   BirchItem::RegisterProfilePrefs(registry);
   BirchModel::RegisterProfilePrefs(registry);
   BirchPrivacyNudgeController::RegisterProfilePrefs(registry);

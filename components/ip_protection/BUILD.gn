@@ -34,6 +34,12 @@ source_set("unit_tests") {
     "//components/ip_protection/common:ip_protection_telemetry_uma",
   ]
 
+  # Unit tests cannot be run on iOS because they depend on Blink.
+  if (use_blink) {
+    deps +=
+        [ "//components/ip_protection/common:ip_protection_status_unittest" ]
+  }
+
   if (is_android) {
     deps += [ "//components/ip_protection/android:blind_sign_message_android_impl_unittest" ]
   }
@@ -44,15 +50,19 @@ source_set("unit_tests") {
 # A unit test binary that only runs tests for this component. This is useful
 # during development, but these tests are typically run as part of
 # `//components:components_unittests`.
-test("components_ip_protection_unittests") {
-  sources = [ "test/run_all_unittests.cc" ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/ip_protection:unit_tests",
-    "//mojo/core/embedder",
-    "//testing/gtest",
-  ]
+# Note: This test is not run on iOS because it depends on Blink.
+if (use_blink) {
+  test("components_ip_protection_unittests") {
+    sources = [ "test/run_all_unittests.cc" ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//components/ip_protection:unit_tests",
+      "//content/test:test_support",
+      "//mojo/core/embedder",
+      "//testing/gtest",
+    ]
+  }
 }
 
 test("components_ip_protection_fuzztests") {

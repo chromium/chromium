@@ -165,8 +165,6 @@ public class TabListCoordinator
      * @param emptyHeadingStringResId String resource for empty heading.
      * @param emptySubheadingStringResId String resource for empty subheading.
      * @param onTabGroupCreation Runnable invoked on tab group creation
-     * @param backgroundColorSupplier The supplier of the list UI's background color. Should be
-     *     non-null for TabListMode.STRIP.
      * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      */
     TabListCoordinator(
@@ -194,7 +192,6 @@ public class TabListCoordinator
             @StringRes int emptyHeadingStringResId,
             @StringRes int emptySubheadingStringResId,
             @Nullable Runnable onTabGroupCreation,
-            @Nullable ObservableSupplier<Integer> backgroundColorSupplier,
             boolean allowDragAndDrop) {
         mMode = mode;
         mTabActionState = initialTabActionState;
@@ -385,8 +382,7 @@ public class TabListCoordinator
                             updateGridCardLayout(right - left);
         } else if (mMode == TabListMode.STRIP) {
             mTabStripSnapshotter =
-                    new TabStripSnapshotter(
-                            onModelTokenChange, mModelList, mRecyclerView, backgroundColorSupplier);
+                    new TabStripSnapshotter(onModelTokenChange, mModelList, mRecyclerView);
         }
 
         mHasEmptyView = hasEmptyView;

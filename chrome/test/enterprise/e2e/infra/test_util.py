@@ -5,6 +5,7 @@
 
 import os
 import time
+from typing import NamedTuple
 import win32con
 import win32gui
 
@@ -52,6 +53,40 @@ def shutdown_chrome():
   # wait a little bit for chrome processes to end.
   # TODO: the right way is to wait until there are no chrome.exe processes.
   time.sleep(2)
+
+
+class Policy(NamedTuple):
+  value: str
+  source: str
+  scope: str
+  messages: str
+
+
+# TODO(crbug.com/399483772): Update tests to use this to get policies.
+def fetch_policies(driver: webdriver.Chrome,
+                   refresh: bool = True) -> dict[str, Policy]:
+  driver.get('chrome://policy')
+  if refresh:
+    clickable = EC.element_to_be_clickable((By.ID, 'reload-policies'))
+    WebDriverWait(driver, 10).until(clickable).click()
+  # Wait for DOM to settle.
+  time.sleep(10)
+
+  policy_table = driver.find_element(By.CSS_SELECTOR, 'policy-table')
+  rows = getElementsFromShadowRoot(driver, policy_table, '.policy-data')
+  policies = {}
+  for row in rows:
+    name = getElementFromShadowRoot(driver, row, '#name').text.strip()
+    if not name:
+      continue
+    if name in policies:
+      raise Exception(f'duplicate policy {name!r}: {policies!r}')
+    policy_attrs = {}
+    for attr in ['value', 'source', 'scope', 'messages']:
+      policy_attrs[attr] = getElementFromShadowRoot(
+          driver, row, f'div.policy.row > div.{attr}').text
+    policies[name] = Policy(**policy_attrs)
+  return policies
 
 
 def getElementFromShadowRoot(driver, element, selector):

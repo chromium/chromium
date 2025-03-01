@@ -27,7 +27,6 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -65,8 +64,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_annotations/user_annotations_service.h"
-#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -1016,100 +1013,6 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateGetUserAnnotationsEntriesFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateGetUserAnnotationsEntriesFunction::Run() {
-  Profile* profile =
-      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  user_annotations::UserAnnotationsService* user_annotations_service =
-      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
-  if (!user_annotations_service) {
-    return RespondNow(Error(kErrorAutofillAiUnavailable));
-  }
-
-  user_annotations_service->RetrieveAllEntries(base::BindOnce(
-      &AutofillPrivateGetUserAnnotationsEntriesFunction::OnEntriesRetrieved,
-      this));
-
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void AutofillPrivateGetUserAnnotationsEntriesFunction::OnEntriesRetrieved(
-    user_annotations::UserAnnotationsEntries response) {
-  std::vector<autofill_private::UserAnnotationsEntry> result;
-  result.reserve(response.size());
-  for (optimization_guide::proto::UserAnnotationsEntry& entry : response) {
-    result.emplace_back();
-    result.back().entry_id = entry.entry_id();
-    result.back().key = std::move(entry.key());
-    result.back().value = std::move(entry.value());
-  }
-  Respond(ArgumentList(
-      api::autofill_private::GetUserAnnotationsEntries::Results::Create(
-          result)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateDeleteUserAnnotationsEntryFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateDeleteUserAnnotationsEntryFunction::Run() {
-  std::optional<api::autofill_private::DeleteUserAnnotationsEntry::Params>
-      parameters =
-          api::autofill_private::DeleteUserAnnotationsEntry::Params::Create(
-              args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  Profile* profile =
-      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  user_annotations::UserAnnotationsService* user_annotations_service =
-      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
-
-  if (!user_annotations_service) {
-    return RespondNow(Error(kErrorAutofillAiUnavailable));
-  }
-
-  user_annotations_service->RemoveEntry(
-      parameters->entry_id,
-      base::BindOnce(
-          &AutofillPrivateDeleteUserAnnotationsEntryFunction::OnEntryDeleted,
-          this));
-
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void AutofillPrivateDeleteUserAnnotationsEntryFunction::OnEntryDeleted() {
-  Respond(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateHasUserAnnotationsEntriesFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateHasUserAnnotationsEntriesFunction::Run() {
-  Profile* profile =
-      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  user_annotations::UserAnnotationsService* user_annotations_service =
-      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
-
-  if (!user_annotations_service) {
-    return RespondNow(WithArguments(false));
-  }
-
-  user_annotations_service->RetrieveAllEntries(base::BindOnce(
-      &AutofillPrivateHasUserAnnotationsEntriesFunction::OnEntriesRetrieved,
-      this));
-
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void AutofillPrivateHasUserAnnotationsEntriesFunction::OnEntriesRetrieved(
-    user_annotations::UserAnnotationsEntries response) {
-  Respond(WithArguments(response.size() > 0));
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
 
 // TODO(crbug.com/393318914): Remove function.
@@ -1118,33 +1021,6 @@ AutofillPrivateIsUserEligibleForAutofillImprovementsFunction::Run() {
   Profile* profile =
       Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
   return RespondNow(WithArguments(autofill_ai::IsUserEligible(profile)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateDeleteAllUserAnnotationsEntriesFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::Run() {
-  Profile* profile =
-      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  user_annotations::UserAnnotationsService* user_annotations_service =
-      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
-
-  if (!user_annotations_service) {
-    return RespondNow(Error(kErrorAutofillAiUnavailable));
-  }
-
-  user_annotations_service->RemoveAllEntries(
-      base::BindOnce(&AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::
-                         OnAllEntriesDeleted,
-                     this));
-
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::
-    OnAllEntriesDeleted() {
-  Respond(NoArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1235,8 +1111,11 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
   }
   std::vector<autofill_private::EntityInstanceWithLabels> result =
       base::ToVector(entity_data_manager->GetEntityInstances(),
-                     &autofill_ai_util::
-                         EntityInstanceToPrivateApiEntityInstanceWithLabels);
+                     [&](const EntityInstance& entity) {
+                       return autofill_ai_util::
+                           EntityInstanceToPrivateApiEntityInstanceWithLabels(
+                               entity, autofill_client()->GetAppLocale());
+                     });
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
 }
@@ -1271,7 +1150,7 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
   return RespondNow(ArgumentList(
       api::autofill_private::GetEntityInstanceByGuid::Results::Create(
           autofill_ai_util::EntityInstanceToPrivateApiEntityInstance(
-              entity_instance.value()))));
+              entity_instance.value(), autofill_client()->GetAppLocale()))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

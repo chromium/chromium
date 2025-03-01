@@ -92,39 +92,18 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
 
     private static final String TAG = "InstalledAppProvider";
 
-    /** Used to inject Instant Apps logic into InstalledAppProviderImpl. */
-    public interface InstantAppProvider {
-        /**
-         * Returns whether or not the instant app is available.
-         *
-         * @param url The URL where the instant app is located.
-         * @param checkHoldback Check if the app would be available if the user weren't in the
-         *         holdback group.
-         * @param includeUserPrefersBrowser Function should return true if there's an instant app
-         *         intent even if the user has opted out of instant apps.
-         * @return Whether or not the instant app specified by the entry in the page's manifest is
-         *         either available, or would be available if the user wasn't in the holdback group.
-         */
-        boolean isInstantAppAvailable(
-                String url, boolean checkHoldback, boolean includeUserPrefersBrowser);
-    }
-
     // May be null in tests.
     private final BrowserContextHandle mBrowserContextHandle;
     private final RenderFrameHost mRenderFrameHost;
     // May be overridden in tests.
     private PackageManagerDelegate mPackageManagerDelegate;
     private boolean mIsInTest;
-    private final @Nullable InstantAppProvider mInstantAppProvider;
 
     public InstalledAppProviderImpl(
-            BrowserContextHandle browserContextHandle,
-            RenderFrameHost renderFrameHost,
-            @Nullable InstantAppProvider instantAppProvider) {
+            BrowserContextHandle browserContextHandle, RenderFrameHost renderFrameHost) {
         mBrowserContextHandle = browserContextHandle;
         mRenderFrameHost = renderFrameHost;
         mPackageManagerDelegate = new PackageManagerDelegate();
-        mInstantAppProvider = instantAppProvider;
     }
 
     void setPackageManagerDelegateForTest(PackageManagerDelegate packageManagerDelegate) {
@@ -199,9 +178,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             @RelatedAppType int relatedAppType;
             if (isInstantNativeApp(app)) {
                 relatedAppType = RelatedAppType.INSTANT_APP;
-                PostTask.postTask(
-                        TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                        () -> checkInstantApp(resultHolder, taskIdx, app, frameUrl));
+                resultHolder.onResult(null, taskIdx, 0);
             } else if (isRegularNativeApp(app)) {
                 relatedAppType = RelatedAppType.REGULAR_APP;
                 PostTask.postTask(
@@ -256,25 +233,6 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
                 TaskTraits.UI_DEFAULT,
                 () -> callback.call(installedAppsArray),
                 mIsInTest ? 0 : delayMs);
-    }
-
-    @WorkerThread
-    private void checkInstantApp(
-            ResultHolder resultHolder, int taskIdx, RelatedApplication app, GURL frameUrl) {
-        assumeNonNull(app.id);
-        int delayMs = calculateDelayForPackageMs(app.id);
-
-        if (mInstantAppProvider != null
-                && !mInstantAppProvider.isInstantAppAvailable(
-                        frameUrl.getSpec(),
-                        INSTANT_APP_HOLDBACK_ID_STRING.equals(app.id),
-                        /* includeUserPrefersBrowser= */ true)) {
-            postResultOnUiThread(resultHolder, null, taskIdx, delayMs);
-            return;
-        }
-
-        setVersionInfo(app);
-        postResultOnUiThread(resultHolder, app, taskIdx, delayMs);
     }
 
     @WorkerThread

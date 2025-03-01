@@ -49,6 +49,18 @@ import java.util.List;
     @Nullable private PaymentRequestService mPaymentRequestService;
     private final List<PaymentApp> mApps = new ArrayList<>();
 
+    // Whether the correct value for response to PaymentRequest.canMakePayment() is known. This
+    // becomes true after all matching payment apps have been found and verified.
+    private boolean mIsReadyToSendCanMakePaymentResponseToRenderer;
+
+    // The value for response to PaymentRequest.canMakePayment() as calculated by the
+    // mPaymentRequestService, which contains the common (not specific to WebView) implementation of
+    // the PaymentRequest service.
+    private boolean mPaymentRequestCanMakePaymentResponse;
+
+    // The method for sending the response to the renderer process.
+    Callback<Boolean> mSenderOfCanMakePaymentResponseToRenderer;
+
     /**
      * Constructs the WebView part of the PaymentRequest service.
      *
@@ -137,6 +149,8 @@ import java.util.List;
     @Override
     public void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
         mApps.addAll(pendingApps);
+        mIsReadyToSendCanMakePaymentResponseToRenderer = true;
+        maybeSendCanMakePaymentResponseToRendererIfReady();
     }
 
     // BrowserPaymentRequest:
@@ -207,6 +221,28 @@ import java.util.List;
     @Override
     public AndroidIntentLauncher getAndroidIntentLauncher() {
         return this;
+    }
+
+    // BrowserPaymentRequest:
+    @Override
+    public void maybeOverrideCanMakePaymentResponse(boolean response, Callback<Boolean> sender) {
+        mPaymentRequestCanMakePaymentResponse = response;
+        mSenderOfCanMakePaymentResponseToRenderer = sender;
+        maybeSendCanMakePaymentResponseToRendererIfReady();
+    }
+
+    /**
+     * Sends the response for the JavaScript API call PaymentRequest.canMakePayment() to the
+     * renderer, if needed, while ensuring to send "false" if the number of matching payment
+     * apps is not exactly equal to 1.
+     */
+    private void maybeSendCanMakePaymentResponseToRendererIfReady() {
+        if (mIsReadyToSendCanMakePaymentResponseToRenderer
+                && mSenderOfCanMakePaymentResponseToRenderer != null) {
+            mSenderOfCanMakePaymentResponseToRenderer.onResult(
+                    mPaymentRequestCanMakePaymentResponse && mApps.size() == 1);
+            mSenderOfCanMakePaymentResponseToRenderer = null;
+        }
     }
 
     // PaymentResponseHelperInterface:

@@ -9,6 +9,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -161,23 +163,6 @@ class DocumentAssociatedData : public base::SupportsUserData {
     keep_alive_url_loader_factory_context_ = factory_context;
   }
 
-  // fetch later handling:
-  //
-  // https://github.com/WICG/pending-beacon/blob/main/docs/fetch-later-api.md
-  //
-  // Contains the weak pointer to the FactoryContext of the in-browser
-  // URLLoaderFactory implementation used by this document.
-  base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
-  fetch_later_loader_factory_context() const {
-    return fetch_later_loader_factory_context_;
-  }
-  void set_fetch_later_loader_factory_context(
-      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
-          factory_context) {
-    CHECK(!fetch_later_loader_factory_context_);
-    fetch_later_loader_factory_context_ = factory_context;
-  }
-
   // Produces weak pointers to the hosting RenderFrameHostImpl. This is
   // invalidated whenever DocumentAssociatedData is destroyed, due to
   // RenderFrameHost deletion or cross-document navigation.
@@ -194,7 +179,12 @@ class DocumentAssociatedData : public base::SupportsUserData {
   void RemoveService(internal::DocumentServiceBase* service,
                      base::PassKey<internal::DocumentServiceBase>);
 
-  void OnDidCommitPrerenderedPageActivation();
+  // Add `callback` to the callback queue to be run after prerendered page
+  // activation.
+  void AddPostPrerenderingActivationStep(base::OnceClosure callback);
+
+  // Run callback queue for post-prerendering activation.
+  void RunPostPrerenderingActivationSteps();
 
  private:
   const blink::DocumentToken token_;
@@ -211,8 +201,8 @@ class DocumentAssociatedData : public base::SupportsUserData {
       blink::mojom::ConfidenceLevel::kHigh;
   base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
       keep_alive_url_loader_factory_context_;
-  base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
-      fetch_later_loader_factory_context_;
+  // The callback queue for post-prerendering activation.
+  base::queue<base::OnceClosure> post_prerendering_activation_callbacks_;
 
   base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
 };

@@ -96,9 +96,9 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     // `PseudoFocus()` is called.
     void InvalidateFocusRingPath();
 
-    // Sets the focus predicate for the given `view` so it will work with both
-    // regular focus and `PseudoFocus()`.
-    void SetUpFocusPredicate(views::View* view);
+    // Sets the focus predicate for the view so it will work with both regular
+    // focus and `PseudoFocus()`.
+    void SetUpFocusPredicate();
 
     // Shows the focus ring and triggers setting accessibility focus on the
     // associated view.

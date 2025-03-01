@@ -106,10 +106,12 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
 base::expected<void, IwaComponentUpdateError>
 InstallIwaKeyDistributionComponent(const base::Version& version,
                                    const IwaKeyDistribution& kd_proto) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   CHECK(base::FeatureList::IsEnabled(
       component_updater::kIwaKeyDistributionComponent))
       << "The `IwaKeyDistribution` feature must be enabled for the component "
          "installation to succeed.";
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   using Installer =
       component_updater::IwaKeyDistributionComponentInstallerPolicy;

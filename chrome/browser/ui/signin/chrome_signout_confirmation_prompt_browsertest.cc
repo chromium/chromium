@@ -43,8 +43,8 @@ class ChromeSignoutConfirmationPromptPixelTest
 
     auto* controller = browser()->signin_view_controller();
     controller->ShowSignoutConfirmationPrompt(
-        GetVariant(),
-        base::BindOnce([](ChromeSignoutConfirmationChoice choice) {}));
+        GetVariant(), base::BindOnce([](ChromeSignoutConfirmationChoice choice,
+                                        bool uninstall_extensions) {}));
 
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
@@ -80,6 +80,8 @@ IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationPromptPixelTest,
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/399387412): Add a version with an extension installed which
+// will add an additional section in the dialog.
 INSTANTIATE_TEST_SUITE_P(
     ,
     ChromeSignoutConfirmationPromptPixelTest,

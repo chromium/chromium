@@ -318,6 +318,12 @@ export declare interface ClientApiDelegate {
   endViewScreenSession(id: string): Promise<boolean>;
 
   /**
+   * Request to set the view screen session to active for the student with the
+   * given id.
+   */
+  setViewScreenSessionActive(id: string): Promise<boolean>;
+
+  /**
    * Get the value of a boca specific user pref.
    */
   getUserPref(pref: BocaValidPref): Promise<any>;
@@ -368,4 +374,11 @@ export declare interface ClientApi {
    * Notify the app that the active networks has been updated.
    */
   onActiveNetworkStateChanged(activeNetworks: NetworkInfo[]): void;
+
+  /**
+   * Notify the app that the local captions has been turned off from the caption
+   * bubble or by another mean from chrome. This can be called during a session
+   * or outside of a session in the teacher case.
+   */
+  onLocalCaptionDisabled(): void;
 }

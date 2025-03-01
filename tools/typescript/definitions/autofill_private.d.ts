@@ -198,12 +198,6 @@ declare global {
         metadata?: AutofillMetadata;
       }
 
-      export interface UserAnnotationsEntry {
-        entryId: number;
-        key: string;
-        value: string;
-      }
-
       export interface AttributeType {
         typeName: number;
         typeNameAsString: string;
@@ -267,12 +261,7 @@ declare global {
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
-      export function hasUserAnnotationsEntries(): Promise<boolean>;
       export function isUserEligibleForAutofillImprovements(): Promise<boolean>;
-      export function getUserAnnotationsEntries():
-          Promise<UserAnnotationsEntry[]>;
-      export function deleteUserAnnotationsEntry(entryId: number): void;
-      export function deleteAllUserAnnotationsEntries(): void;
       export function predictionImprovementsIphFeatureUsed(): void;
       export function addOrUpdateEntityInstance(entityInstance: EntityInstance):
           void;

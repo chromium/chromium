@@ -65,9 +65,6 @@ DECLARE_EMPTY_FUNC(DeveloperPrivateSetShortcutHandlingSuspendedFunction,
 DECLARE_EMPTY_FUNC(DeveloperPrivateUpdateExtensionCommandFunction,
                    "developerPrivate.updateExtensionCommand",
                    DEVELOPERPRIVATE_UPDATEEXTENSIONCOMMAND);
-DECLARE_EMPTY_FUNC(DeveloperPrivateGetUserAndExtensionSitesByEtldFunction,
-                   "developerPrivate.getUserAndExtensionSitesByEtld",
-                   DEVELOPERPRIVATE_GETUSERANDEXTENSIONSITESBYETLD);
 DECLARE_EMPTY_FUNC(DeveloperPrivateUpdateSiteAccessFunction,
                    "developerPrivate.updateSiteAccess",
                    DEVELOPERPRIVATE_UPDATESITEACCESS);

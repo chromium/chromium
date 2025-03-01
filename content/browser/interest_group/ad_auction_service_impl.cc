@@ -147,7 +147,7 @@ bool ShouldWarnAboutPermissionPolicyDefault(
     for (const auto& declaration : container_policy) {
       if (declaration.feature == feature) {
         auto allowlist =
-            blink::PermissionsPolicy::Allowlist::FromDeclaration(declaration);
+            network::PermissionsPolicy::Allowlist::FromDeclaration(declaration);
         if (!allowlist.Contains(frame_origin)) {
           return true;
         }

@@ -672,6 +672,7 @@
       "external/wpt/html/infrastructure/urls/terminology-0",
       "external/wpt/html/semantics/embedded-content/the-iframe-element",
       "external/wpt/navigation-api/navigate-event/cross-window",
+      "external/wpt/scheduler/tentative/yield/yield-cross-origin-propagation.html",
       "http/tests/security/cross-frame-access-callback-explicit-domain-ALLOW.html",
       "http/tests/security/cross-frame-access-callback-explicit-domain-DENY.html",
       "http/tests/security/cross-frame-access-child-explicit-domain.html",
@@ -1425,6 +1426,26 @@
       "--disable-features=FledgeSampleDebugReports"
     ],
     "expires": "Jul 14, 2025"
+  },
+  {
+    "prefix": "fledge-devtools-with-key-value-v2",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "owners": [
+      "mmenke@chromium.org",
+      "morlovich@chromium.org",
+      "pauljensen@chromium.org"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/network/auction-network-events-handler.js"
+    ],
+    "args": [
+      "--enable-features=FledgeTrustedSignalsKVv2Support,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fa.test%22%3A%22https%3A%2F%2Fa.test%3A8443%2Finspector-protocol%2Fresources%2Fba-public-keys\"}"
+    ],
+    "expires": "July 1, 2025"
   },
   {
     "prefix": "low-priority-async-script-execution",
@@ -4161,6 +4182,16 @@
       "--force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled/"
     ],
     "expires": "August 31, 2025"
+  },
+  {
+    "prefix": "dbsc-enabled",
+    "owners": ["thefrog@chromium.org", "drubery@chromium.org"],
+    "platforms": ["Mac", "Win", "Linux"],
+    "bases": ["external/wpt/device-bound-session-credentials"],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions"],
+    "expires": "never"
   },
   {
     "prefix": "css-line-clamp-line-breaking-ellipsis",

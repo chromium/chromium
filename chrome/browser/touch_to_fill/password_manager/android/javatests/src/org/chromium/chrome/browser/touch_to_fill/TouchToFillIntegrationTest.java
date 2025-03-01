@@ -19,11 +19,13 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMous
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
@@ -360,18 +362,21 @@ public class TouchToFillIntegrationTest {
                                         }
 
                                         @Override
-                                        public int getSheetHalfHeightAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetHalfHeightAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
 
                                         @Override
-                                        public int getSheetFullHeightAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetFullHeightAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
 
                                         @Override
-                                        public int getSheetClosedAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetClosedAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
                                     };
                             mBottomSheetController.requestShowContent(

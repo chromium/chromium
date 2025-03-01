@@ -317,8 +317,8 @@ source_set("impl") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/background/glic",
       "//chrome/browser/glic",
-      "//chrome/browser/glic/launcher",
     ]
   }
 }

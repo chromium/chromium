@@ -89,10 +89,6 @@
           "group": "tryserver.chromium.android"
         },
         {
-          "builder": "android-desktop-x64-compile-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
           "builder": "android-desktop-x64-rel",
           "group": "tryserver.chromium.android"
         }

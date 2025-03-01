@@ -14880,6 +14880,59 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Navigation.FromGoogleSearch.Abandoned" singular="True">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Metrics recorded each time a navigation from Google Search is abandoned
+    (e.g. the navigation got cancelled, or the user backgrounded the app while
+    the page load is not finished yet, etc. See AbandonedPageLoadMetricsObserver
+    for more details).
+  </summary>
+  <metric name="AbandonReason">
+    <summary>
+      The reason the navigation/page load gets abandoned.
+    </summary>
+  </metric>
+  <metric name="AbandonTimingFromLastMilestone">
+    <summary>
+      The time when the navigation/page load is abandoned, relative to the last
+      milestone.
+    </summary>
+  </metric>
+  <metric name="AbandonTimingFromNavigationStart">
+    <summary>
+      The time when the navigation/page load is abandoned, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="LastMilestoneBeforeAbandon">
+    <summary>
+      The last milestone before the navigation is abandoned.
+    </summary>
+  </metric>
+  <metric name="PreviousBackgroundedTime">
+    <summary>
+      If we've experienced backgrounding while the navigation/page load is
+      running before this abandonment event happened, this will have the time
+      when the backgrounding happened, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="PreviousHiddenTime">
+    <summary>
+      If we've experienced hiding while the navigation/page load is running
+      before this abandonment event happened, this will have the time when the
+      hiding happened, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="RendererProcessInitTime">
+    <summary>
+      The time when the final renderer process for the navigation is
+      initialized, relative to navigation start.
+    </summary>
+  </metric>
+</event>
+
 <event name="Navigation.IDNA2008Transition" singular="True">
   <owner>meacer@google.com</owner>
   <owner>chrome-trusty-transport@google.com</owner>
@@ -17555,9 +17608,22 @@ be describing additional metrics about the same event.
   <owner>vasilii@chromium.org</owner>
   <summary>
     Metrics for clientside password form classifications. Recorded when the
-    field types are received by Password Manager, iff there is data available
-    for the below metrics.
+    field types are received by Password Manager after the model finishes
+    execution, iff there is data available for the below metrics.
   </summary>
+  <metric name="ModelPredictionsEmpty" enum="Boolean">
+    <summary>
+      Records if the predictions made by Password manager clientside
+      classification model are empty (= contain only NO_SERVER_DATA values).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="PasswordVsOtpFormType" enum="PasswordVsOtpFormType">
     <summary>
       Records whether a form is an OTP form, a normal multi-use password form,

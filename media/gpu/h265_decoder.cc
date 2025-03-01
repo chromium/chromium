@@ -12,11 +12,13 @@
 #include <algorithm>
 #include <array>
 
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 
@@ -517,31 +519,31 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         H265SEI sei;
         if (parser_.ParseSEI(&sei) != H265Parser::kOk)
           break;
-        for (auto& sei_msg : sei.msgs) {
-          switch (sei_msg.type) {
-            case H265SEIMessage::kSEIContentLightLevelInfo:
-              // HEVC HDR metadata may appears in the below places:
-              // 1. Container.
-              // 2. Bitstream.
-              // 3. Both container and bitstream.
-              // Thus we should also extract HDR metadata here in case we
-              // miss the information.
-              if (!hdr_metadata_.has_value()) {
-                hdr_metadata_.emplace();
-              }
-              hdr_metadata_->cta_861_3 =
-                  sei_msg.content_light_level_info.ToGfx();
-              break;
-            case H265SEIMessage::kSEIMasteringDisplayInfo:
-              if (!hdr_metadata_.has_value()) {
-                hdr_metadata_.emplace();
-              }
-              hdr_metadata_->smpte_st_2086 =
-                  sei_msg.mastering_display_info.ToGfx();
-              break;
-            default:
-              break;
-          }
+        for (const auto& sei_msg : sei.msgs) {
+          absl::visit(base::Overloaded{
+                          [](const H265SEIAlphaChannelInfo& info) {},
+                          [this](const H265SEIContentLightLevelInfo& info) {
+                            // HEVC HDR metadata may appears in the below
+                            // places:
+                            // 1. Container.
+                            // 2. Bitstream.
+                            // 3. Both container and bitstream.
+                            // Thus we should also extract HDR metadata here in
+                            // case we miss the information.
+                            if (!hdr_metadata_.has_value()) {
+                              hdr_metadata_.emplace();
+                            }
+                            hdr_metadata_->cta_861_3 = info.ToGfx();
+                          },
+                          [this](const H265SEIMasteringDisplayInfo& info) {
+                            if (!hdr_metadata_.has_value()) {
+                              hdr_metadata_.emplace();
+                            }
+                            hdr_metadata_->smpte_st_2086 = info.ToGfx();
+                          },
+                          [](absl::monostate) {},
+                      },
+                      sei_msg);
         }
         break;
       }

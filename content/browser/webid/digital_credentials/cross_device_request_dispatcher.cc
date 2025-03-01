@@ -177,6 +177,22 @@ void RequestDispatcher::OnComplete(
     return;
   }
 
+  // The CTAP protocol standards defines the format of the mobile devices
+  // response contains a JSON object that has both a protocol and data. Mobile
+  // devices are being migrated to support the CTAP standards. First, try to
+  // read the proper format, otherwise, fallback to the legacy format.
+  if (data->is_dict()) {
+    FIDO_LOG(EVENT) << "Standard format is received from the mobile device.";
+    const base::Value::Dict& data_dict = data->GetDict();
+    const base::Value* wallet_data = data_dict.Find("data");
+    if (wallet_data) {
+      std::move(callback_).Run(Response(wallet_data->Clone()));
+      return;
+    }
+    FIDO_LOG(EVENT) << "Response doesn't contain a 'data' field.";
+  }
+  FIDO_LOG(EVENT) << "No proper standard format is received from the mobile "
+                     "device. Fallback to legacy format.";
   std::move(callback_).Run(Response(data->Clone()));
 }
 

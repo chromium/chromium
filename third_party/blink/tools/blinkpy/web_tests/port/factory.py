@@ -702,10 +702,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                                    action='store_true',
                                    default=None,
                                    help=('Do not run virtual tests.'))
-        testing_group.add_argument('--no-wpt-internal',
-                                   action='store_false',
-                                   dest='run_wpt_internal',
-                                   help='Do not run internal WPTs.')
 
 
 # for run_wpt_tests.py only

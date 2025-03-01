@@ -40,6 +40,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -68,7 +69,10 @@ constexpr char kDeclutterTriggerOutcomeName[] =
     "Tab.Organization.Declutter.Trigger.Outcome";
 constexpr char kDeclutterTriggerBucketedCTRName[] =
     "Tab.Organization.Declutter.Trigger.BucketedCTR";
+
+#if BUILDFLAG(ENABLE_GLIC)
 constexpr int kLargeSpaceBetweenButtons = 4;
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace
 
@@ -345,6 +349,8 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
                               base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonDismissed,
                               base::Unretained(this)),
+          base::BindRepeating(&TabStripActionContainer::OnGlicButtonHovered,
+                              base::Unretained(this)),
           glic::GlicVectorIconManager::GetVectorIcon(
               IDR_GLIC_BUTTON_VECTOR_ICON),
           l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
@@ -430,6 +436,13 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(glic_button_);
+}
+
+void TabStripActionContainer::OnGlicButtonHovered() {
+  Profile* profile = tab_strip_controller_->GetProfile();
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  glic_service->window_controller().fre_controller()->MaybePreconnect();
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -537,6 +550,17 @@ void TabStripActionContainer::ExecuteShowTabStripNudge(
 
   button->SetIsShowingNudge(true);
 
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_button_ && glic_button_->GetVisible() && button != glic_button_) {
+    const int space_between_buttons = kLargeSpaceBetweenButtons;
+    gfx::Insets margin;
+    margin.set_right(space_between_buttons);
+    button->SetProperty(views::kMarginsKey, margin);
+  } else {
+    // Reset the margins.
+    button->SetProperty(views::kMarginsKey, gfx::Insets());
+  }
+#endif
   scoped_tab_strip_modal_ui_.reset();
   scoped_tab_strip_modal_ui_ = tab_strip_controller_->ShowModalUI();
 
@@ -646,12 +670,6 @@ void TabStripActionContainer::OnTabStripNudgeButtonTimeout(
 
 void TabStripActionContainer::SetupButtonProperties(
     TabStripNudgeButton* button) {
-  // Set the margins for the button
-  const int space_between_buttons = kLargeSpaceBetweenButtons;
-  gfx::Insets margin;
-  margin.set_right(space_between_buttons);
-  button->SetProperty(views::kMarginsKey, margin);
-
   // Set opacity for the button. The glic button beings opaque
   button->SetOpacity(
 
@@ -708,6 +726,12 @@ void TabStripActionContainer::UpdateButtonBorders(
   if (product_specifications_button_) {
     product_specifications_button_->SetBorder(
         views::CreateEmptyBorder(border_insets));
+  }
+  if (glic_button_) {
+    gfx::Insets glic_border = gfx::Insets().set_left_right(
+                                  border_insets.top(), border_insets.bottom()) +
+                              border_insets;
+    glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
   }
 }
 BEGIN_METADATA(TabStripActionContainer)

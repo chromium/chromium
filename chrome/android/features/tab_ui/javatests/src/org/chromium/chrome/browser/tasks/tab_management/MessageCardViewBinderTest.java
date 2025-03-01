@@ -226,7 +226,7 @@ public class MessageCardViewBinderTest {
     @SmallTest
     public void testSetLeftMargin() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
-        mItemViewModel.set(MessageCardViewProperties.LEFT_MARGIN_OVERRIDE, MARGIN_OVERRIDE);
+        mItemViewModel.set(MessageCardViewProperties.LEFT_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
         ViewGroup.MarginLayoutParams oldParams =
                 (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
 
@@ -243,7 +243,7 @@ public class MessageCardViewBinderTest {
     @SmallTest
     public void testSetTopMargin() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
-        mItemViewModel.set(MessageCardViewProperties.TOP_MARGIN_OVERRIDE, MARGIN_OVERRIDE);
+        mItemViewModel.set(MessageCardViewProperties.TOP_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
         ViewGroup.MarginLayoutParams oldParams =
                 (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
 
@@ -260,7 +260,7 @@ public class MessageCardViewBinderTest {
     @SmallTest
     public void testSetRightMargin() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
-        mItemViewModel.set(MessageCardViewProperties.RIGHT_MARGIN_OVERRIDE, MARGIN_OVERRIDE);
+        mItemViewModel.set(MessageCardViewProperties.RIGHT_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
         ViewGroup.MarginLayoutParams oldParams =
                 (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
 
@@ -277,7 +277,7 @@ public class MessageCardViewBinderTest {
     @SmallTest
     public void testSetBottomMargin() {
         View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
-        mItemViewModel.set(MessageCardViewProperties.BOTTOM_MARGIN_OVERRIDE, MARGIN_OVERRIDE);
+        mItemViewModel.set(MessageCardViewProperties.BOTTOM_MARGIN_OVERRIDE_PX, MARGIN_OVERRIDE);
         ViewGroup.MarginLayoutParams oldParams =
                 (ViewGroup.MarginLayoutParams) messageCardView.getLayoutParams();
 

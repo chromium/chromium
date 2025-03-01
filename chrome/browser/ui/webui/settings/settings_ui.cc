@@ -565,11 +565,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableWebAppInstallation",
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
+  bool glic_enabled = false;
 #if BUILDFLAG(ENABLE_GLIC)
   AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
-  html_source->AddBoolean(
-      "showGlicSettings",
-      glic::GlicEnabling::IsEnabledAndConsentForProfile(profile));
+  glic_enabled = glic::GlicEnabling::IsEnabledAndConsentForProfile(profile);
+  html_source->AddBoolean("showGlicSettings", glic_enabled);
 #endif
 
   // AI
@@ -615,6 +615,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       show_ai_page |= visible;
     }
 
+    show_ai_page |= glic_enabled;
+
     // "showAdvancedFeaturesMainControl", despite the name, controls whether the
     // AI subpage is shown. We want to show the page if any of the AI features
     // are enabled.
@@ -641,6 +643,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       // visible.
       is_any_ai_feature_enabled |= visible;
     }
+
+    is_any_ai_feature_enabled |= glic_enabled;
 
     html_source->AddBoolean("showAdvancedFeaturesMainControl",
                             is_any_ai_feature_enabled);

@@ -36,7 +36,13 @@ message TurnServer {
 }
 
 // Requests an ICE config to use for establishing a P2P connection.
-message GenerateIceConfigRequest {}
+message GenerateIceConfigRequest {
+  // An instance identity token includes project and instance information which
+  // is used to associate a request with a specific Compute Engine Instance.
+  // More information about the contents of the token can be found at:
+  // https://cloud.google.com/compute/docs/instances/verifying-instance-identity
+  optional string instance_identity_token = 1;
+}
 
 // The response for a GenerateIceConfigRequest.
 message GenerateIceConfigResponse {

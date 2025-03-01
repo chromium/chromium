@@ -291,6 +291,13 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->engine_->GetPageContentsRect(page_index);
   }
 
+  gfx::SizeF GetPageSizeInPoints(int page_index) override {
+    if (page_index < 0 || page_index >= plugin_->engine_->GetNumberOfPages()) {
+      return gfx::SizeF();
+    }
+    return plugin_->engine_->GetPageSizeInPoints(page_index).value();
+  }
+
   gfx::Size GetThumbnailSize(int page_index) override {
     return plugin_->engine_->GetThumbnailSize(page_index,
                                               plugin_->device_scale_);
@@ -1458,7 +1465,14 @@ void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
   if (!busy) {
     if (show_searchify_in_progress_) {
       show_searchify_in_progress_ = false;
-      SetShowSearchifyInProgress(false);
+      // The UI is asked to hide the progress indicator with 1s delay, so that
+      // when the OCR process finishes in less than 1s, the indicator would not
+      // flicker.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PdfViewWebPlugin::SetShowSearchifyInProgress,
+                         weak_factory_.GetWeakPtr(), /*show=*/false),
+          kSearchifyStatePropagationDelay);
     }
     return;
   }
@@ -1469,26 +1483,20 @@ void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
   }
 
   if (!show_searchify_in_progress_) {
-    // The UI is asked to show the progress indicator with 1s delay, so that if
-    // the task finishes in less than 1s, the indicator would not be shown.
     show_searchify_in_progress_ = true;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PdfViewWebPlugin::SetShowSearchifyInProgress,
-                       weak_factory_.GetWeakPtr(), /*show=*/true),
-        kSearchifyStatePropagationDelay);
+    SetShowSearchifyInProgress(true);
     return;
   }
 }
 
 void PdfViewWebPlugin::SetShowSearchifyInProgress(bool show) {
   // Searchify tasks are expected to be quite fast most of the times, and if so,
-  // showing progress indicator is not needed.
-  // `SetShowSearchifyInProgress` is posted with delay to allow discarding the
-  // the request to show the progress indicator in such cases.
-  // A true `show` and a false `show_searchify_in_progress_` means that the task
-  // finished before the indicator is shown and UI element is not needed.
-  if (show && !show_searchify_in_progress_) {
+  // progress indicator should be kept visible for at least 1s to avoiding
+  // flickering.
+  // A false `show` and a true `show_searchify_in_progress_` means that during
+  // the 1s after OCR stopped, it started again and hence the UI should keep the
+  // progress bar visible.
+  if (!show && show_searchify_in_progress_) {
     return;
   }
 

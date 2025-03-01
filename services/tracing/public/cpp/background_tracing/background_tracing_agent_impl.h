@@ -49,6 +49,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
   void OnHistogramChanged(const std::string& rule_id,
                           base::Histogram::Sample32 reference_lower_value,
                           base::Histogram::Sample32 reference_upper_value,
+                          std::optional<uint64_t> event_id,
                           std::string_view histogram_name,
                           uint64_t name_hash,
                           base::Histogram::Sample32 actual_value);

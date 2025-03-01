@@ -9801,9 +9801,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, głos <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Automatyczne przenoszenie Wi-Fi z telefonu z Androidem</translation>
 <translation id="7991296728590311172">Ustawienia funkcji Switch Access</translation>
-<translation id="7992080146463834191">Podsumuj treść, uprość skomplikowany język lub zadaj pytania.</translation>
 <translation id="7992203134935383159">Synteza mowy</translation>
-<translation id="799570308305997052">Komponent WebView</translation>
 <translation id="7997826902155442747">Priorytet procesu</translation>
 <translation id="7997828719430450286">Udało się.</translation>
 <translation id="7998701048266085837">Adresy URL</translation>
@@ -11061,7 +11059,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8874448314264883207">Rozszerzenie „<ph name="EXTENSION_NAME" />” zostało wyłączone</translation>
 <translation id="8874647982044395866">Organiczny</translation>
 <translation id="8874790741333031443">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę podczas przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami.</translation>
-<translation id="8875221558267407626">Podsumuj treść, uprość skomplikowany język lub zadaj pytania</translation>
 <translation id="8875520811099717934">Uaktualnienie Linuksa</translation>
 <translation id="8875736897340638404">Wybierz widoczność</translation>
 <translation id="8876307312329369159">Tego ustawienia nie można zmienić w sesji demonstracyjnej.</translation>

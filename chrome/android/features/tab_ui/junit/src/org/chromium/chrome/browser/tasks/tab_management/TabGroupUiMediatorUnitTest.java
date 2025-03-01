@@ -10,6 +10,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -21,6 +23,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -88,7 +91,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
+import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -123,6 +126,7 @@ public class TabGroupUiMediatorUnitTest {
     private static final int TAB3_ROOT_ID = TAB2_ID;
     private static final String GROUP_TITLE = "My Group";
     private static final Token TAB2_GROUP_ID = new Token(1L, 2L);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -132,10 +136,7 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
-
-    @Mock
-    private BottomControlsCoordinator.BottomControlsVisibilityController mVisibilityController;
-
+    @Mock private BottomControlsVisibilityController mVisibilityController;
     @Mock private TabGroupUiMediator.ResetHandler mResetHandler;
     @Mock private TabModelSelectorImpl mTabModelSelector;
     @Mock private TabContentManager mTabContentManager;
@@ -150,9 +151,10 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
     @Mock private ThemeColorProvider mThemeColorProvider;
-    @Mock private ObservableSupplierImpl<Integer> mBackgroundColorSupplier;
     @Mock private ColorStateList mTintList1;
     @Mock private ColorStateList mTintList2;
+    @Mock private Callback<Object> mOnSnapshotTokenChange;
+
     @Captor private ArgumentCaptor<Callback<TabModel>> mTabModelSupplierObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
@@ -162,6 +164,7 @@ public class TabGroupUiMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
+    @Captor private ArgumentCaptor<Object> mTokenCaptor;
 
     private final ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
             new ObservableSupplierImpl<>();
@@ -171,8 +174,11 @@ public class TabGroupUiMediatorUnitTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mTabGridDialogShowingOrAnimationSupplier =
             new ObservableSupplierImpl<>();
+    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
+            new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<Object> mChildTokenSupplier =
+            new ObservableSupplierImpl<>();
 
-    private Context mContext;
     private Tab mTab1;
     private Tab mTab2;
     private Tab mTab3;
@@ -182,8 +188,6 @@ public class TabGroupUiMediatorUnitTest {
     private TabGroupUiMediator mTabGroupUiMediator;
     private InOrder mResetHandlerInOrder;
     private InOrder mVisibilityControllerInOrder;
-    private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
-            new OneshotSupplierImpl<>();
     private LazyOneshotSupplier<TabGridDialogMediator.DialogController> mDialogControllerSupplier;
 
     private Tab prepareTab(int tabId, int rootId) {
@@ -192,7 +196,7 @@ public class TabGroupUiMediatorUnitTest {
         return tab;
     }
 
-    private TabModel prepareIncognitoTabModel() {
+    private void prepareIncognitoTabModel() {
         Tab newTab = prepareTab(TAB4_ID, TAB4_ID);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(newTab));
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
@@ -200,7 +204,6 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(newTab).when(incognitoTabModel).getTabAt(POSITION1);
         doReturn(true).when(incognitoTabModel).isIncognito();
         doReturn(1).when(incognitoTabModel).getCount();
-        return incognitoTabModel;
     }
 
     private void verifyNeverReset() {
@@ -239,7 +242,6 @@ public class TabGroupUiMediatorUnitTest {
                 .getShowingOrAnimationSupplier();
         mTabGroupUiMediator =
                 new TabGroupUiMediator(
-                        mContext,
                         mVisibilityController,
                         mHandleBackPressChangedSupplier,
                         mResetHandler,
@@ -252,7 +254,8 @@ public class TabGroupUiMediatorUnitTest {
                         mOmniboxFocusStateSupplier,
                         mSharedImageTilesCoordinator,
                         mThemeColorProvider,
-                        mBackgroundColorSupplier);
+                        mOnSnapshotTokenChange,
+                        mChildTokenSupplier);
 
         if (currentTab == null) {
             verifyNeverReset();
@@ -285,10 +288,10 @@ public class TabGroupUiMediatorUnitTest {
      */
     @Before
     public void setUp() {
-        mContext = spy(RuntimeEnvironment.application);
-        Resources resources = spy(mContext.getResources());
+        Context context = spy(RuntimeEnvironment.application);
+        Resources resources = spy(context.getResources());
         when(resources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(1);
-        when(mContext.getResources()).thenReturn(resources);
+        when(context.getResources()).thenReturn(resources);
 
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
@@ -962,7 +965,7 @@ public class TabGroupUiMediatorUnitTest {
         mTabGridDialogBackPressSupplier.set(false);
         var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
 
-        Assert.assertNotEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
+        assertNotEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
         assertThat(mTabGroupUiMediator.onBackPressed(), equalTo(false));
         verify(mTabGridDialogController).handleBackPressed();
     }
@@ -974,7 +977,7 @@ public class TabGroupUiMediatorUnitTest {
         var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
 
         // Not initialized yet.
-        Assert.assertNotEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
+        assertNotEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
 
         // Late init.
         mDialogControllerSupplier.get();
@@ -1122,15 +1125,40 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void testThemeColorChange() {
+    public void testSnapshotToken() {
         doReturn(Color.RED).when(mThemeColorProvider).getThemeColor();
-        initAndAssertProperties(mTab2);
-        assertEquals(Color.RED, mModel.get(TabGroupUiProperties.BACKGROUND_COLOR));
-        verify(mBackgroundColorSupplier).set(Color.RED);
+        initAndAssertProperties(mTab1);
 
+        reset(mOnSnapshotTokenChange);
+        mChildTokenSupplier.set(new Object());
+        verify(mOnSnapshotTokenChange).onResult(mTokenCaptor.capture());
+        Object composite1 = mTokenCaptor.getValue();
+        assertNotNull(composite1);
+
+        reset(mOnSnapshotTokenChange);
+        doReturn(Color.BLUE).when(mThemeColorProvider).getThemeColor();
         mTabGroupUiMediator.onThemeColorChanged(Color.BLUE, false);
-        assertEquals(Color.BLUE, mModel.get(TabGroupUiProperties.BACKGROUND_COLOR));
-        verify(mBackgroundColorSupplier).set(Color.BLUE);
+        verify(mOnSnapshotTokenChange).onResult(mTokenCaptor.capture());
+        Object composite2 = mTokenCaptor.getValue();
+        assertNotNull(composite2);
+        assertNotEquals(composite1, composite2);
+
+        reset(mOnSnapshotTokenChange);
+        mChildTokenSupplier.set(new Object());
+        verify(mOnSnapshotTokenChange).onResult(mTokenCaptor.capture());
+        Object composite3 = mTokenCaptor.getValue();
+        assertNotNull(composite3);
+        assertNotEquals(composite1, composite3);
+        assertNotEquals(composite2, composite3);
+
+        reset(mOnSnapshotTokenChange);
+        mModel.get(TabGroupUiProperties.WIDTH_PX_CALLBACK).onResult(123);
+        verify(mOnSnapshotTokenChange).onResult(mTokenCaptor.capture());
+        Object composite4 = mTokenCaptor.getValue();
+        assertNotNull(composite4);
+        assertNotEquals(composite1, composite4);
+        assertNotEquals(composite2, composite4);
+        assertNotEquals(composite3, composite4);
     }
 
     @Test

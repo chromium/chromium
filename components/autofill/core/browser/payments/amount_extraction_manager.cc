@@ -151,6 +151,9 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
           : autofill_metrics::AmountExtractionResult::kSuccessful);
   // Set `search_request_pending_` to false once the search is done.
   search_request_pending_ = false;
+  // Invalidate the WeakPtr instance to ignore the scheduled delay task when the
+  // amount is found.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   std::optional<uint64_t> parsed_extracted_amount =
       MaybeParseAmountToMonetaryMicroUnits(extracted_amount);
@@ -163,6 +166,10 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
 }
 
 void AmountExtractionManager::OnTimeoutReached() {
+  // If the amount is found, ignore this callback.
+  if (!search_request_pending_) {
+    return;
+  }
   search_request_pending_ = false;
   weak_ptr_factory_.InvalidateWeakPtrs();
   autofill_metrics::LogAmountExtractionResult(

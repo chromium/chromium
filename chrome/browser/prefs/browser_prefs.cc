@@ -526,8 +526,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

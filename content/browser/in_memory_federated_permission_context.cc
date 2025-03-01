@@ -50,6 +50,9 @@ void InMemoryFederatedPermissionContext::RemoveEmbargoAndResetCounts(
   embargoed_origins_.erase(relying_party_embedder);
 }
 
+void InMemoryFederatedPermissionContext::RecordIgnoreAndEmbargo(
+    const url::Origin& relying_party_embedder) {}
+
 bool InMemoryFederatedPermissionContext::ShouldCompleteRequestImmediately()
     const {
   return base::CommandLine::ForCurrentProcess()->HasSwitch("run-web-tests");

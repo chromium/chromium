@@ -289,14 +289,16 @@ public class TopToolbarOverlayMediatorTest {
         mMediator.setViewportHeight(height);
         mBottomControlsOffsetSupplier.set(-40);
 
-        doReturn(ControlsPosition.TOP).when(mBrowserControlsProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
         mBrowserControlsObserverCaptor
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 30, 0, false, false, false);
         Assert.assertEquals(
                 0.0f, mModel.get(TopToolbarOverlayProperties.CONTENT_OFFSET), MathUtils.EPSILON);
 
-        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsPositionChanged(ControlsPosition.BOTTOM);
         mBrowserControlsObserverCaptor
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 30, 0, false, false, false);

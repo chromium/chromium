@@ -14,8 +14,8 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync_bookmarks/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -100,7 +100,7 @@ class BookmarkLocalDataBatchUploaderTest : public ::testing::Test {
 
  private:
   base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   const std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_ =
       std::make_unique<bookmarks::BookmarkModel>(
           std::make_unique<bookmarks::TestBookmarkClient>());
@@ -129,7 +129,7 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
        LocalDescriptionEmptyIfTransportModeOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      syncer::kSyncEnableBookmarksInTransportMode);
+      switches::kSyncEnableBookmarksInTransportMode);
   bookmark_model()->LoadEmptyForTest();
   BookmarkLocalDataBatchUploader uploader(bookmark_model());
   base::test::TestFuture<syncer::LocalDataDescription> description;
@@ -377,7 +377,7 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, MigrationNoOpsIfModelNotLoaded) {
 TEST_F(BookmarkLocalDataBatchUploaderTest, MigrationNoOpsIfTransportModeOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      syncer::kSyncEnableBookmarksInTransportMode);
+      switches::kSyncEnableBookmarksInTransportMode);
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(),
                            /*index=*/0, u"Local", GURL("http://local.com/"));

@@ -127,11 +127,8 @@ public class TabListFaviconProvider {
         }
 
         @Override
-        public boolean equals(Object other) {
-            if (!(other instanceof UrlTabFavicon)) {
-                return false;
-            }
-            return Objects.equals(mGurl, ((UrlTabFavicon) other).mGurl);
+        public boolean equals(Object obj) {
+            return (obj instanceof UrlTabFavicon other) && Objects.equals(mGurl, other.mGurl);
         }
     }
 
@@ -152,11 +149,8 @@ public class TabListFaviconProvider {
         }
 
         @Override
-        public boolean equals(Object other) {
-            if (!(other instanceof ComposedTabFavicon)) {
-                return false;
-            }
-            return Arrays.equals(mGurls, ((ComposedTabFavicon) other).mGurls);
+        public boolean equals(Object obj) {
+            return (obj instanceof ComposedTabFavicon other) && Arrays.equals(mGurls, other.mGurls);
         }
     }
 
@@ -210,11 +204,8 @@ public class TabListFaviconProvider {
         }
 
         @Override
-        public boolean equals(Object other) {
-            if (!(other instanceof ResourceTabFavicon)) {
-                return false;
-            }
-            return this.mType == ((ResourceTabFavicon) other).mType;
+        public boolean equals(Object obj) {
+            return (obj instanceof ResourceTabFavicon other) && mType == other.mType;
         }
     }
 

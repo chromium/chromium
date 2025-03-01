@@ -289,11 +289,15 @@ bool ModelPredictionsContainCredentialTypes(
 void RecordMetricsForModelPredictions(
     const base::flat_map<FieldGlobalId, FieldType>& field_predictions,
     ukm::SourceId ukm_source_id) {
-  base::UmaHistogramBoolean(
-      "PasswordManager.ModelPredictions.Empty",
+  ukm::builders::PasswordManager_Classification ukm_builder(ukm_source_id);
+
+  bool model_predictions_empty =
       std::ranges::all_of(field_predictions, [](const auto& prediction) {
         return prediction.second == autofill::NO_SERVER_DATA;
-      }));
+      });
+  base::UmaHistogramBoolean("PasswordManager.ModelPredictions.Empty",
+                            model_predictions_empty);
+  ukm_builder.SetModelPredictionsEmpty(model_predictions_empty);
 
   // Record metrics on whether we see password or OTP forms.
   PasswordVsOtpFormType type = PasswordVsOtpFormType::kNone;
@@ -311,11 +315,10 @@ void RecordMetricsForModelPredictions(
   }
   if (type != PasswordVsOtpFormType::kNone) {
     base::UmaHistogramEnumeration("PasswordManager.ParsedFormIsOtpForm2", type);
-
-    ukm::builders::PasswordManager_Classification(ukm_source_id)
-        .SetPasswordVsOtpFormType(static_cast<int>(type))
-        .Record(ukm::UkmRecorder::Get());
+    ukm_builder.SetPasswordVsOtpFormType(static_cast<int>(type));
   }
+
+  ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
 base::flat_map<FieldRendererId, FieldType> KeyPredictionsByRendererIds(

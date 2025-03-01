@@ -837,6 +837,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2451607499823206582">Monitoramento</translation>
 <translation id="2452098632681057184">Ecologia e meio ambiente</translation>
 <translation id="2452837234288608067">Não foi possível ajudar. Tente de novo.</translation>
+<translation id="2453045048779611513">Sua organização limita o que você pode salvar</translation>
 <translation id="2456755709261364512">O nível da bateria precisa estar acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2461385121573678775">O Chrome Enterprise Core oferece uma ferramenta centralizada para configurar políticas do navegador na nuvem</translation>
 <translation id="2461822463642141190">Atual</translation>
@@ -1086,6 +1087,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2942492342931589800">Casual</translation>
 <translation id="2942515540157583425">Vagas de emprego nas áreas técnica e de TI</translation>
 <translation id="2943895734390379394">Tempo de upload:</translation>
+<translation id="2947281105969315778">Para compartilhar ou participar de grupos de guias, é necessário fazer login no Chrome</translation>
 <translation id="2948083400971632585">Na página "Configurações", você pode desativar quaisquer proxies configurados para uma conexão.</translation>
 <translation id="2949183777371959169">Ignorado porque a máquina não está registrada no Gerenciamento de nuvem do navegador Chrome.</translation>
 <translation id="2951588413176968965">Minha caixa de e-mails</translation>
@@ -3904,6 +3906,7 @@ Mais detalhes:
 <translation id="791107458486222637">Botão "Refazer" pressionado</translation>
 <translation id="791551905239004656">Desenho e pintura</translation>
 <translation id="7916162853251942238">Flexográfica</translation>
+<translation id="791698251820376781">Sua organização não permite que você faça login</translation>
 <translation id="7926503317156566022">Setor de aviação</translation>
 <translation id="793209273132572360">Atualizar endereço?</translation>
 <translation id="7932579305932748336">Revestir</translation>
@@ -4618,6 +4621,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9191834167571392248">Perfuração na parte inferior esquerda</translation>
 <translation id="9192361865877479444">Metal (fosco)</translation>
 <translation id="9192947025498305328">Beleza consciente</translation>
+<translation id="9195969368671142407">Quando a organização limita o salvamento na sua Conta do Google, não é possível compartilhar ou participar de grupos de guias</translation>
 <translation id="9199905725844810519">A impressão foi bloqueada</translation>
 <translation id="9201904868909900493">Abrindo a pesquisa…</translation>
 <translation id="9204089334327209740">Depois que o upload for concluído, você poderá modificar seus arquivos no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os arquivos na lixeira, será removido automaticamente.</translation>

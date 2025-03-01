@@ -562,16 +562,15 @@ gCrWeb.fill.webFormControlElementToFormField = function(
 /**
  * Returns a serialized version of |form| to send to the host on form
  * submission.
- * The result string is similar to the result of calling |extractForms| filtered
- * on |form| (that is why a list is returned).
  *
  * @param form The form to serialize.
  * @return a JSON encoded version of |form|
  */
-gCrWeb.fill.autofillSubmissionData = function(form: HTMLFormElement): string {
+gCrWeb.fill.autofillSubmissionData =
+    function(form: HTMLFormElement): fillUtil.AutofillFormData {
   const formData = new gCrWeb['common'].JSONSafeObject();
   gCrWeb['fill'].webFormElementToFormData(window, form, null, formData, null);
-  return gCrWeb.stringify([formData]);
+  return formData;
 };
 
 /**

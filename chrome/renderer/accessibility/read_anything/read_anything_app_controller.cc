@@ -25,11 +25,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/common/read_anything/read_anything_constants.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -788,9 +788,8 @@ void ReadAnythingAppController::DrawSelection() {
 
 void ReadAnythingAppController::DrawEmptyState() {
   ExecuteJavaScript("chrome.readingMode.showEmpty();");
-  base::UmaHistogramEnumeration(
-      string_constants::kEmptyStateHistogramName,
-      read_anything::ReadAnythingEmptyState::kEmptyStateShown);
+  base::UmaHistogramEnumeration(ReadAnythingAppModel::kEmptyStateHistogramName,
+                                ReadAnythingAppModel::EmptyState::kShown);
 }
 
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
@@ -1296,7 +1295,7 @@ std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
 std::string ReadAnythingAppController::GetValidatedFontName(
     const std::string& font) const {
   if (!base::Contains(GetAllFonts(), font)) {
-    return string_constants::kReadAnythingDefaultFont;
+    return GetAllFonts().front();
   }
   if (font == "Serif" || font == "Sans-serif") {
     return base::ToLowerASCII(font);

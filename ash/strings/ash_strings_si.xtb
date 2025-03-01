@@ -246,7 +246,6 @@
 <translation id="17722141032474077">ගණනය කිරීම්</translation>
 <translation id="1774796056689732716">දින දර්ශනය, <ph name="CURRENT_MONTH_YEAR" />, දැනට <ph name="DATE" /> තෝරා ඇත.</translation>
 <translation id="178347895271755507">ඔබේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය සහ දැනුම්දීම් බැලීම පිහිටුවන්න</translation>
-<translation id="1785317913592722944">යෝජිත සමූහයෙන් අයිතමය ඉවත් කරන්න</translation>
 <translation id="1786487376942610288">පින්තූරය-තුළ-පින්තූර කවුළුවේ උපරිම හෝ වත්මන් තරම අතර මාරු වන්න</translation>
 <translation id="1787955149152357925">ක්‍රියාවිරහිතයි</translation>
 <translation id="1796561540704213354">ඔබ පිවිසි පිටු සහ විවෘත පිටු ඇතුළු වෙබ් අඩවි</translation>
@@ -853,6 +852,7 @@
 <translation id="3859364108019690">යෙදුම් ප්‍රවාහ කළ නොහැක</translation>
 <translation id="3861651314799684201">සම්පූර්ණ තිරය පටිගත කිරීමට Enter ඔබන්න</translation>
 <translation id="3870197372373144624">ඔබේ උපාංගය වසා දැමීමට උත්සාහ කරන්න.</translation>
+<translation id="3879748587602334249">බාගැනීමේ කළමනාකරු</translation>
 <translation id="3886872229787704059">අද විවෘත කරන ලදි</translation>
 <translation id="3891340733213178823">වැරිමට Ctrl+Shift+Q දෙසැරයක් ඔබන්න.</translation>
 <translation id="3892148308691398805">පෙළ පිටපත් කරන්න</translation>
@@ -878,6 +878,7 @@
 <translation id="3958714870339660776">දවස පුරා</translation>
 <translation id="3962859241508114581">පෙර ඛණ්ඩය</translation>
 <translation id="3963124517343721543">ඔබේ පෙර කවුළු සහ පටිති විවෘත කිරීමෙන් ඔබ හැර ගිය තැනින් පහසුවෙන් ඉදිරියට යන්න. ඔබ ඊළඟට කළ යුතු දේ සඳහා පුද්ගලායන කළ යෝජනා ද දකියි.</translation>
+<translation id="3967822245660637423">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="3969043077941541451">ක්‍රියාවිරහිතයි</translation>
 <translation id="3970324493235864154">ඔබේ දුරකථනයේ දැනුම්දීම් බලන්න</translation>
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
@@ -1619,6 +1620,7 @@
 <translation id="6319058840130157106">පහළ දකුණු කෙළවර, දියත්කරණය, ලිපින තීරුව, පිටුසන තීරුව, විවෘත වෙබ් අඩවි සහ බා ගැනීම් අතර පසුපසට ගෙන යන්න</translation>
 <translation id="6319503618073410818">බ්‍රවුසරය තුළ විස්තර බලන්න</translation>
 <translation id="6324916366299863871">කෙටිමඟ සංස්කරණය</translation>
+<translation id="6325525973963619867">අසාර්ථක විය</translation>
 <translation id="6330012934079202188">සියලු මේසවලින් කවුළු පෙන්වමින්, වත්මන් මේසයෙන් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="6337159624125741244">පුර්ණ-තිර විශාලකය ක්‍රියාත්මකයි</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> යනු <ph name="MANAGER" /> විසින් කළමනාකරණය කරනු ලබන කළමනාකරණය කළ සැසියකි</translation>

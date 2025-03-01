@@ -16,6 +16,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -112,25 +113,25 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
   PrefService* prefs = profile()->GetPrefs();
 
   prefs->SetInteger(
-      glic::prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(controller_delegate()->show_state());
 
   prefs->SetInteger(
-      glic::prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_FALSE(controller_delegate()->show_state());
 
   prefs->SetInteger(
-      glic::prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(controller_delegate()->show_state());
 
   prefs->SetInteger(
-      glic::prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(controller_delegate()->show_state());
@@ -141,7 +142,7 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
 TEST_F(GlicButtonControllerTest, GlicDetachedOverridesSettings) {
   PrefService* prefs = profile()->GetPrefs();
   prefs->SetInteger(
-      glic::prefs::kGlicSettingsPolicy,
+      ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
 

@@ -468,7 +468,7 @@ void KeepAliveURLLoader::EndReceiveRedirect(
   }
 
   if (attribution_request_helper_) {
-    attribution_request_helper_->OnReceiveRedirect(headers.get(),
+    attribution_request_helper_->OnReceiveRedirect(headers,
                                                    redirect_info.new_url);
   }
 

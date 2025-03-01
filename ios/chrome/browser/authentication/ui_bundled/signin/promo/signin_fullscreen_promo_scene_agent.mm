@@ -5,13 +5,18 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @interface SigninFullscreenPromoSceneAgent () <ProfileStateObserver>
 @end
@@ -68,7 +73,11 @@
     return;
   }
 
-  if ([self.sceneState.controller shouldPresentSigninUpgradePromo]) {
+  if (!self.sceneState.profileState.currentUIBlocker &&
+      signin::ShouldPresentUserSigninUpgrade(
+          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
+              ->GetProfile(),
+          version_info::GetVersion())) {
     _promosManager->RegisterPromoForContinuousDisplay(
         promos_manager::Promo::SigninFullscreen);
     return;

@@ -78,9 +78,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   NSInteger lensNewBadgeShowCount =
       localState->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount);
 
-  PrefService* prefService = browser->GetProfile()->GetPrefs();
   BOOL useNewBadgeForCustomizationMenu = NO;
-  NSInteger customizationNewBadgeImpressionCount = prefService->GetInteger(
+  NSInteger customizationNewBadgeImpressionCount = localState->GetInteger(
       prefs::kNTPHomeCustomizationNewBadgeImpressionCount);
 
   if (customizationNewBadgeImpressionCount <
@@ -88,8 +87,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
     useNewBadgeForCustomizationMenu = YES;
     base::RecordAction(
         base::UserMetricsAction(kNTPCustomizationNewBadgeShownAction));
-    prefService->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
-                            customizationNewBadgeImpressionCount + 1);
+    localState->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
+                           customizationNewBadgeImpressionCount + 1);
   }
 
   if (lensNewBadgeShowCount < kMaxShowCountNTPLensButtonNewBadge) {

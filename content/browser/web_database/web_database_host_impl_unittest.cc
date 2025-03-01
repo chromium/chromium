@@ -204,7 +204,7 @@ TEST_F(WebDatabaseHostImplTest, OpenFileCreatesBucket) {
       storage::BucketInfo result,
       quota_manager_proxy_sync.GetBucket(
           blink::StorageKey::CreateFromStringForTesting(example_url),
-          storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary));
+          storage::kDefaultBucketName));
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
   EXPECT_EQ(result.storage_key,
             blink::StorageKey::CreateFromStringForTesting(example_url));

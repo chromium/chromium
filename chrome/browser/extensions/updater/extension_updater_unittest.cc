@@ -45,6 +45,7 @@
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/fake_crx_installer.h"
 #include "chrome/browser/extensions/mock_crx_installer.h"
+#include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -179,6 +180,41 @@ int GetAuthUserQueryValue(const GURL& url) {
   }
   return 0;
 }
+
+// A minimal stub implementation of the ExtensionRegistrar::Delegate.
+class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
+ public:
+  StubExtensionRegistrarDelegate() = default;
+  ~StubExtensionRegistrarDelegate() override = default;
+
+  // ExtensionRegistrar::Delegate:
+  void PreAddExtension(const Extension* extension,
+                       const Extension* old_extension) override {}
+  void PostActivateExtension(
+      scoped_refptr<const Extension> extension) override {}
+  void PostDeactivateExtension(
+      scoped_refptr<const Extension> extension) override {}
+  void PreUninstallExtension(
+      scoped_refptr<const Extension> extension) override {}
+  void PostUninstallExtension(scoped_refptr<const Extension> extension,
+                              base::OnceClosure done_callback) override {}
+  void PostNotifyUninstallExtension(
+      scoped_refptr<const Extension> extension) override {}
+  void ShowExtensionDisabledError(const Extension* extension,
+                                  bool is_remote_install) override {}
+  void FinishDelayedInstallationsIfAny() override {}
+  void LoadExtensionForReload(
+      const ExtensionId& extension_id,
+      const base::FilePath& path,
+      ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override {}
+  bool CanAddExtension(const Extension* extension) override { return true; }
+  bool CanEnableExtension(const Extension* extension) override { return true; }
+  bool CanDisableExtension(const Extension* extension) override { return true; }
+  bool ShouldBlockExtension(const Extension* extension) override {
+    return false;
+  }
+  void GrantActivePermissions(const Extension* extension) override {}
+};
 
 class MockUpdateService : public UpdateService {
  public:
@@ -538,6 +574,9 @@ class ExtensionUpdaterTest : public testing::Test {
   void SetUp() override {
     prefs_ = std::make_unique<TestExtensionPrefs>(
         base::SingleThreadTaskRunner::GetCurrentDefault());
+    // The registrar needs a delegate in order to call certain methods on it.
+    ExtensionRegistrar::Get(prefs_->profile())
+        ->SetDelegate(&stub_extension_registrar_delegate_);
   }
 
   void TearDown() override {
@@ -545,6 +584,7 @@ class ExtensionUpdaterTest : public testing::Test {
     // on the IO thread. Make sure the IO loop spins before shutdown so that
     // those objects are released.
     RunUntilIdle();
+    ExtensionRegistrar::Get(prefs_->profile())->SetDelegate(nullptr);
     prefs_.reset();
   }
 
@@ -2337,6 +2377,8 @@ class ExtensionUpdaterTest : public testing::Test {
           testing_local_state_.Get(),
           ash::CrosSettings::Get())};
 #endif
+
+  StubExtensionRegistrarDelegate stub_extension_registrar_delegate_;
 };
 
 // Because we test some private methods of ExtensionUpdater, it's easier for the

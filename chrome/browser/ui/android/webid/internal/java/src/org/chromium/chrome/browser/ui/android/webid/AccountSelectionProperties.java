@@ -32,6 +32,22 @@ class AccountSelectionProperties {
     public static final int ITEM_TYPE_ACCOUNT = 1;
     public static final int ITEM_TYPE_ADD_ACCOUNT = 2;
 
+    /**
+     * The data needed for a button in the AccountSelection sheet. It may be a continue button for
+     * an account, a login URL for an IDP, or an error dialog, so we need to include Account and IDP
+     * information.
+     */
+    static class ButtonData {
+        ButtonData(Account account, IdentityProviderMetadata idpMetadata) {
+            mAccount = account;
+            mIdpMetadata = idpMetadata;
+        }
+
+        public Account mAccount;
+        public IdentityProviderMetadata mIdpMetadata;
+    }
+    ;
+
     /** Properties for an account entry in AccountSelection sheet. */
     static class AccountProperties {
         static class Avatar {
@@ -51,7 +67,7 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("avatar");
         static final ReadableObjectPropertyKey<Account> ACCOUNT =
                 new ReadableObjectPropertyKey<>("account");
-        static final ReadableObjectPropertyKey<Callback<Account>> ON_CLICK_LISTENER =
+        static final ReadableObjectPropertyKey<Callback<ButtonData>> ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("on_click_listener");
 
         static final PropertyKey[] ALL_KEYS = {AVATAR, ACCOUNT, ON_CLICK_LISTENER};
@@ -144,7 +160,7 @@ class AccountSelectionProperties {
         static class Properties {
             public Account mAccount;
             public IdentityProviderMetadata mIdpMetadata;
-            public Callback<Account> mOnClickListener;
+            public Callback<ButtonData> mOnClickListener;
             public HeaderProperties.HeaderType mHeaderType;
             public Callback<View> mSetFocusViewCallback;
         }
@@ -164,7 +180,7 @@ class AccountSelectionProperties {
     static class AddAccountButtonProperties {
         static class Properties {
             public IdentityProviderMetadata mIdpMetadata;
-            public Callback<Account> mOnClickListener;
+            public Callback<ButtonData> mOnClickListener;
             public @RpMode.EnumType int mRpMode;
         }
 

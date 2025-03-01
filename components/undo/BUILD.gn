@@ -34,7 +34,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
-    "//components/sync/base:features",
+    "//components/signin/public/base",
     "//testing/gtest",
   ]
 }

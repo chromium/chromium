@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -81,8 +80,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final ModalDialogManager mModalDialogManager;
     private final ObservableSupplierImpl<Token> mCurrentTabGroupId = new ObservableSupplierImpl<>();
     private final ThemeColorProvider mThemeColorProvider;
-    private final ObservableSupplierImpl<Integer> mBackgroundColorSupplier =
-            new ObservableSupplierImpl<>(Color.TRANSPARENT);
 
     private @Nullable PropertyModelChangeProcessor mModelChangeProcessor;
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
@@ -174,7 +171,9 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     public void initializeWithNative(
             Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
-            Callback<Object> onModelTokenChange) {
+            Callback<Object> onSnapshotTokenChange) {
+        ObservableSupplierImpl<Object> tabStripTokenSupplier = new ObservableSupplierImpl<>();
+
         var currentTabGroupModelFilterSupplier =
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
@@ -199,13 +198,12 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mTabListContainerView,
                             /* attachToParent= */ true,
                             COMPONENT_NAME,
-                            onModelTokenChange,
+                            tabStripTokenSupplier::set,
                             /* hasEmptyView= */ false,
                             /* emptyImageResId= */ Resources.ID_NULL,
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
-                            mBackgroundColorSupplier,
                             /* allowDragAndDrop= */ false);
             mTabStripCoordinator.initWithNative(mTabModelSelector.getModel(false).getProfile());
 
@@ -248,7 +246,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
             mMediator =
                     new TabGroupUiMediator(
-                            mActivity,
                             visibilityController,
                             mHandleBackPressChangedSupplier,
                             this,
@@ -261,7 +258,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mOmniboxFocusStateSupplier,
                             sharedImageTilesCoordinator,
                             mThemeColorProvider,
-                            mBackgroundColorSupplier);
+                            onSnapshotTokenChange,
+                            tabStripTokenSupplier);
 
             if (serviceStatus.isAllowedToJoin()) {
                 mTabBubbler =

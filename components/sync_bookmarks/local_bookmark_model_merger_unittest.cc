@@ -17,7 +17,7 @@
 #include "components/bookmarks/browser/bookmark_test_util.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/bookmarks/test/test_matchers.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/test_bookmark_model_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -138,7 +138,7 @@ class LocalBookmarkModelMergerTest : public testing::Test {
   ~LocalBookmarkModelMergerTest() override = default;
 
   base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 };
 
 TEST_F(LocalBookmarkModelMergerTest,

@@ -246,7 +246,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="17722141032474077">Výpočty</translation>
 <translation id="1774796056689732716">Kalendář, <ph name="CURRENT_MONTH_YEAR" />, je vybráno datum <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Nastavit zobrazování nedávných fotek, médií a oznámení z telefonu</translation>
-<translation id="1785317913592722944">Odstranit položku z navrhované skupiny</translation>
 <translation id="1786487376942610288">Přepnout mezi maximální a aktuální velikostí okna obrazu v obraze</translation>
 <translation id="1787955149152357925">Vyp</translation>
 <translation id="1796561540704213354">Weby, včetně navštívených a otevřených stránek</translation>
@@ -853,6 +852,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3859364108019690">Nelze streamovat aplikace</translation>
 <translation id="3861651314799684201">Stisknutím klávesy Enter spustíte nahrávání celé obrazovky</translation>
 <translation id="3870197372373144624">Zkuste zařízení vypnout.</translation>
+<translation id="3879748587602334249">Správce stahování</translation>
 <translation id="3886872229787704059">Otevřeno dnes</translation>
 <translation id="3891340733213178823">Odhlaste se dvojitým stisknutím kombinace kláves Ctrl+Shift+Q.</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
@@ -878,6 +878,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3958714870339660776">Celý den</translation>
 <translation id="3962859241508114581">Předchozí skladba</translation>
 <translation id="3963124517343721543">Otevřete předchozí okna a karty, abyste mohli jednoduše pokračovat tam, kde jste přestali. Budou se vám zobrazovat také personalizované návrhy dalších aktivit.</translation>
+<translation id="3967822245660637423">Stahování bylo dokončeno</translation>
 <translation id="3969043077941541451">Vypnout</translation>
 <translation id="3970324493235864154">Zobrazovat oznámení z telefonu</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
@@ -1619,6 +1620,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6319058840130157106">Přecházet zpět mezi pravým dolním rohem, spouštěčem, adresním řádkem, lištou záložek, otevřeným webem a staženými soubory</translation>
 <translation id="6319503618073410818">Zobrazit podrobnosti v prohlížeči</translation>
 <translation id="6324916366299863871">Upravit zkratku</translation>
+<translation id="6325525973963619867">Došlo k selhání</translation>
 <translation id="6330012934079202188">Zobrazují se okna ze všech ploch, stisknutím šipky nahoru zobrazíte okna z aktuální plochy</translation>
 <translation id="6337159624125741244">Zvětšení celé obrazovky je zapnuté</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je spravovaná relace, kterou spravuje doména <ph name="MANAGER" /></translation>

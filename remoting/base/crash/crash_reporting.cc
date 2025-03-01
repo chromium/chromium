@@ -18,6 +18,12 @@
 
 namespace remoting {
 
+void LogAndCleanupCrashDatabase() {
+#if BUILDFLAG(IS_LINUX) && defined(REMOTING_ENABLE_CRASHPAD)
+  CrashpadLinux::GetInstance().LogAndCleanupCrashpadDatabase();
+#endif  // BUILDFLAG(IS_LINUX) && REMOTING_ENABLE_CRASHPAD
+}
+
 // Not implemented for Mac, see https://crbug.com/714714
 void InitializeCrashReporting() {
   // Touch the object to make sure it is initialized.

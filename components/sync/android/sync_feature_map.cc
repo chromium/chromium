@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/no_destructor.h"
-#include "components/sync/base/features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/sync/android/jni_headers/SyncFeatureMap_jni.h"
@@ -19,8 +18,7 @@ namespace syncer {
 namespace {
 
 // Array of features exposed through the Java SyncFeatureMap.
-const base::Feature* const kFeaturesExposedToJava[] = {
-    &kSyncEnableBookmarksInTransportMode};
+const base::span<const base::Feature* const> kFeaturesExposedToJava;
 
 // static
 base::android::FeatureMap* GetFeatureMap() {

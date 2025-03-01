@@ -6,8 +6,6 @@
 #include "media/midi/midi_manager.h"
 #include "media/midi/midi_service.h"
 
-static_assert(BUILDFLAG(IS_TVOS), "midi_manager_tvos.cc requires is_tvos");
-
 namespace midi {
 
 MidiManager* MidiManager::Create(MidiService* service) {

@@ -709,10 +709,9 @@ TEST_F(ServiceWorkerRegistryTest, CreateNewRegistration) {
   loop.Run();
 
   // Check default bucket exists.com.
-  ASSERT_OK_AND_ASSIGN(storage::BucketInfo result,
-                       quota_manager_proxy_sync.GetBucket(
-                           kKey, storage::kDefaultBucketName,
-                           blink::mojom::StorageType::kTemporary));
+  ASSERT_OK_AND_ASSIGN(
+      storage::BucketInfo result,
+      quota_manager_proxy_sync.GetBucket(kKey, storage::kDefaultBucketName));
   EXPECT_EQ(result.name, storage::kDefaultBucketName);
   EXPECT_EQ(result.storage_key, kKey);
   EXPECT_GT(result.id.value(), 0);
@@ -2355,10 +2354,9 @@ TEST_F(ServiceWorkerRegistryTest,
     EXPECT_EQ(inflight_call_count(), 0U);
 
     // Check default bucket exists.com.
-    ASSERT_OK_AND_ASSIGN(storage::BucketInfo result,
-                         quota_manager_proxy_sync.GetBucket(
-                             kKey, storage::kDefaultBucketName,
-                             blink::mojom::StorageType::kTemporary));
+    ASSERT_OK_AND_ASSIGN(
+        storage::BucketInfo result,
+        quota_manager_proxy_sync.GetBucket(kKey, storage::kDefaultBucketName));
     EXPECT_EQ(result.name, storage::kDefaultBucketName);
     EXPECT_EQ(result.storage_key, kKey);
     EXPECT_GT(result.id.value(), 0);

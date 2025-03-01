@@ -2381,18 +2381,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/common/permissions_policy/permissions_policy.cc',
-            'third_party/blink/public/common/permissions_policy/permissions_policy.h',
-        ],
-        'allowed': [
-            'network::features::kBrowsingTopics',
-            'network::features::kInterestGroupStorage',
-            'network::features::kSharedStorageAPI',
-            'url::Origin',
-        ]
-    },
-    {
-        'paths': [
             'third_party/blink/public/common/privacy_budget/identifiable_token.h',
         ],
         'allowed': [
@@ -2457,6 +2445,7 @@ _CONFIG = [
         ],
         'allowed': [
             'base::flat_map',
+            'network::PermissionsPolicy',
         ]
     },
     {
@@ -2482,7 +2471,9 @@ _CONFIG = [
             'third_party/blink/common/client_hints/client_hints.cc',
         ],
         'allowed': [
+            'GURL',
             'network::GetClientHintToPolicyFeatureMap',
+            'network::PermissionsPolicy',
         ]
     },
 ]

@@ -20,6 +20,12 @@ namespace net::device_bound_sessions {
 
 namespace {
 
+// Parameters for the refresh quota. We currently allow 2 refreshes in 5
+// minutes. This allows sites to refresh every 5 minutes with some error
+// tolerance (e.g. a failed refresh or user cookie clearing).
+constexpr size_t kRefreshQuota = 2;
+constexpr base::TimeDelta kRefreshQuotaInterval = base::Minutes(5);
+
 bool SessionMatchesFilter(
     const SchemefulSite& site,
     const Session& session,
@@ -215,6 +221,11 @@ void SessionServiceImpl::DeferRequestForRefresh(
     return;
   }
 
+  if (RefreshQuotaExceeded(site)) {
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+    return;
+  }
+
   const Session::KeyIdOrError& key_id = session->unexportable_key_id();
   if (!key_id.has_value()) {
     if (key_id.error() == unexportable_keys::ServiceError::kKeyNotReady) {
@@ -240,8 +251,14 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
     Session::Id session_id,
     base::expected<SessionParams, SessionError> params_or_error) {
   SessionError::ErrorType result = OnRefreshRequestCompletionInternal(
-      std::move(on_access_callback), std::move(site), std::move(session_id),
+      std::move(on_access_callback), site, session_id,
       std::move(params_or_error));
+
+  Session* session = GetSession(site, session_id);
+  if (session) {
+    session->InformOfRefreshResult(result);
+  }
+
   base::UmaHistogramEnumeration("Net.DeviceBoundSessions.RefreshResult",
                                 result);
 }
@@ -387,7 +404,6 @@ SessionServiceImpl::DeleteSessionAndNotifyInternal(
                       SessionAccess::AccessType::kTermination, it->first,
                       *it->second);
 
-  // TODO(crbug.com/353774923): Clear BFCache entries for this session.
   return unpartitioned_sessions_.erase(it);
 }
 
@@ -470,8 +486,8 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
 
 SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     OnAccessCallback on_access_callback,
-    SchemefulSite site,
-    Session::Id session_id,
+    const SchemefulSite& site,
+    const Session::Id& session_id,
     base::expected<SessionParams, SessionError> params_or_error) {
   // If refresh succeeded:
   // 1. update the session by adding a new session and deleting the old one
@@ -521,7 +537,7 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
   } else {
     // Transient error, unblock the request without cookies.
-    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/true);
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
   }
 
   return params_or_error.has_value() ? SessionError::ErrorType::kSuccess
@@ -559,6 +575,8 @@ void SessionServiceImpl::RefreshSessionInternal(
   request->net_log().AddEventReferencingSource(
       net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
 
+  refresh_times_[site].push_back(base::TimeTicks::Now());
+
   auto callback = base::BindOnce(
       &SessionServiceImpl::OnRefreshRequestCompletion,
       weak_factory_.GetWeakPtr(),
@@ -567,6 +585,27 @@ void SessionServiceImpl::RefreshSessionInternal(
       RegistrationRequestParam::CreateForRefresh(*session), key_service_.get(),
       context_.get(), request->isolation_info(), net_log_source_for_refresh,
       request->initiator(), std::move(callback), key_id);
+}
+
+bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
+  auto it = refresh_times_.find(site);
+  if (it == refresh_times_.end()) {
+    return false;
+  }
+
+  it->second.erase(std::remove_if(it->second.begin(), it->second.end(),
+                                  [](base::TimeTicks time) {
+                                    return base::TimeTicks::Now() - time >=
+                                           kRefreshQuotaInterval;
+                                  }),
+                   it->second.end());
+
+  size_t refresh_count = it->second.size();
+  if (refresh_count == 0) {
+    refresh_times_.erase(it);
+  }
+
+  return refresh_count >= kRefreshQuota;
 }
 
 }  // namespace net::device_bound_sessions

@@ -249,8 +249,7 @@ void WebDatabaseHostImpl::GetSpaceAvailableValidated(
 
   DCHECK(db_tracker_->quota_manager_proxy());
   db_tracker_->quota_manager_proxy()->GetUsageAndQuota(
-      blink::StorageKey::CreateFirstParty(origin),
-      blink::mojom::StorageType::kTemporary, db_tracker_->task_runner(),
+      blink::StorageKey::CreateFirstParty(origin), db_tracker_->task_runner(),
       base::BindOnce(
           [](GetSpaceAvailableCallback callback,
              blink::mojom::QuotaStatusCode status, int64_t usage,

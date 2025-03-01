@@ -362,10 +362,6 @@
       status: "stable",
     },
     {
-      name: "AllowPreloadingWithCSPMetaTag",
-      status: "experimental",
-    },
-    {
       name: "AllowSameSiteNoneCookiesInSandbox",
       base_feature: "none",
 
@@ -651,7 +647,6 @@
         "AISummarizationAPI",
         "AIWriterAPI",
         "LanguageDetectionAPI",
-        "TranslationAPIEntryPoint",
         "TranslationAPI",
       ]
     },
@@ -1210,7 +1205,7 @@
       // For ::column pseudo element for fragment styling.
       // https://github.com/flackr/carousel/blob/main/fragmentation/README.md
       name: "CSSPseudoColumn",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Enables the :has-slotted pseudo-selector.
@@ -1235,14 +1230,14 @@
       // For ::scroll-up-button and ::scroll-down-button pseudo elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-button
       name: "CSSPseudoScrollButtons",
-      status: "experimental",
+      status: "stable",
       depends_on: ["PseudoElementsFocusable"],
     },
     {
       // For ::scroll-marker and ::scroll-marker-group pseudo elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-marker
       name: "CSSPseudoScrollMarkers",
-      status: "experimental",
+      status: "stable",
       depends_on: ["PseudoElementsFocusable"],
     },
     {
@@ -1433,13 +1428,6 @@
       // https://chromestatus.com/feature/5064894363992064
       name: "CSSViewTransitionMatchElement",
       status: "experimental"
-    },
-    {
-      name: "CursorAnchorInfoMojoPipe",
-      status: {
-        "Android": "stable",
-        "default": "",
-      }
     },
     {
       // Adds the appearance:base-select CSS value which makes <select>
@@ -2132,12 +2120,6 @@
       // https://github.com/WICG/turtledove/blob/main/PA_real_time_monitoring.md
       name: "FledgeRealTimeReporting",
       public: true,
-      status: "stable",
-    },
-    {
-      // Enables using a 'reportingTimeout' field within the Protected Audience
-      // ad auction config.
-      name: "FledgeReportingTimeout",
       status: "stable",
     },
     {
@@ -3297,9 +3279,6 @@
       base_feature: "none",
     },
     {
-      name: "PerformanceEntrySafeSort",
-    },
-    {
       name: "PerformanceManagerInstrumentation",
       base_feature: "none",
       public: true,
@@ -3509,7 +3488,7 @@
     {
       // Allowing pseudo elements to have focus.
       name: "PseudoElementsFocusable",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PushMessageDataBytes",
@@ -3787,7 +3766,7 @@
       status: "test",
     },
     {
-      name: "SchedulerYield",
+      name: "SchedulerYieldCrossOriginFix",
       status: "stable",
     },
     {
@@ -4527,12 +4506,6 @@
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
       implied_by: ["TranslationAPIV1"],
-    },
-    {
-      name: "TranslationAPIEntryPoint",
-      status: "test",
-      origin_trial_feature_name: "TranslationAPIEntryPoint",
-      implied_by: ["TranslationAPI", "LanguageDetectionAPI"],
     },
     {
       name: "TranslationAPIV1",

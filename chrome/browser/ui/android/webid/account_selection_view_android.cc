@@ -174,7 +174,7 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaIdentityProvidersList(
   base::android::CheckException(env);
   size_t i = 0;
   for (const auto& iter : identity_providers_map) {
-    env->SetObjectArrayElement(array.obj(), i, iter.second.obj());
+    env->SetObjectArrayElement(array.obj(), i++, iter.second.obj());
   }
   return array;
 }

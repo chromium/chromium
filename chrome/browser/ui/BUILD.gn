@@ -505,6 +505,7 @@ static_library("ui") {
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/input",
+    "//components/ip_protection/common:ip_protection_status",
     "//components/javascript_dialogs",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
@@ -1437,6 +1438,8 @@ static_library("ui") {
       "webui/media_router/web_contents_display_observer.h",
       "webui/metrics_reporter/metrics_reporter.cc",
       "webui/metrics_reporter/metrics_reporter.h",
+      "webui/metrics_reporter/metrics_reporter_service.cc",
+      "webui/metrics_reporter/metrics_reporter_service.h",
       "webui/new_tab_page/new_tab_page_handler.cc",
       "webui/new_tab_page/new_tab_page_handler.h",
       "webui/new_tab_page/new_tab_page_ui.cc",
@@ -5661,9 +5664,9 @@ static_library("ui") {
       "webui/settings/glic_handler.h",
     ]
     deps += [
+      "//chrome/browser/background/glic",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
-      "//chrome/browser/glic/launcher:launcher",
     ]
     allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
   }

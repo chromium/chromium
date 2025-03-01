@@ -268,7 +268,10 @@
         Enhanced Calendar
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_CALENDAR_PROMPT_PLACEHOLDER" translateable="false" desc="The placeholder for the prompt text field of the enhanced calendar page in the AI prototyping menu [Length: unlimited].">
-        (Optional) Insert your prompt...
+        (Optional) Insert your custom prompt...
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_CALENDAR_SELECTED_TEXT_PLACEHOLDER" translateable="false" desc="The placeholder for the 'selected text' (date/time) text field of the enhanced calendar page in the AI prototyping menu [Length: unlimited].">
+        Insert your 'selected text' (date/time)...
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_HEADER" translateable="false" desc="Header for AI prototyping menu [Length: unlimited].">
         AI Prototyping
@@ -312,11 +315,11 @@
       <message name="IDS_IOS_AI_PROTOTYPING_TEMPERATURE_SLIDER" translateable="false" desc="Label for the slider allowing the user to choose the temperature hyper parameter passed to the model [Length: unlimited].">
         Temperature:
       </message>
-      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES" desc="Title for the switch item in password manager settings that can be toggled allowing users to automatically upgrade their passwords to passkeys. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
-        Allow automatic passkey upgrades
+      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES" desc="Title for the switch item in password manager settings that can be toggled letting the user control a feature where websites can request to upgrade an existing password in the password manager to a passkey. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
+        Automatically create a passkey to sign in faster
       </message>
-      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE" desc="Subtitle for the switch item in password manager settings that can be toggled allowing users to automatically upgrade their passwords to passkeys. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
-        Allow websites and apps to automatically upgrade existing accounts to use passkeys when available
+      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE" desc="Subtitle for the switch item in password manager settings that can be toggled letting the user control a feature where websites can request to upgrade an existing password in the password manager to a passkey. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
+        Allow sites and apps to upgrade existing accounts to use passkeys
       </message>
       <message name="IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE" desc="Message when opening a New Incognito Search from springboard force touch static shortcuts. [Length: unlimited] [iOS only]." meaning="3D Touch entry to create a new Incognito tab.">
        Incognito search
@@ -3900,9 +3903,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_ALREADY_TRACKED_TITLE" desc="Text for the title string of the infobar that is displayed when a package is already being tracked.">
         Package already tracked
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_IPH" desc="In product help for the parcel tracking feature.">
-        See all your tracked packages here in this carousel
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_DELIVERED_BY" desc="Text that prefaces a parcel carrier in the parcel tracking infobar modal.">
         Delivered by

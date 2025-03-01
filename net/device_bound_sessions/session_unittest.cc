@@ -21,9 +21,11 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-class SessionTest : public TestWithTaskEnvironment {
+class SessionTest : public ::testing::Test, public WithTaskEnvironment {
  protected:
-  SessionTest() : context_(CreateTestURLRequestContextBuilder()->Build()) {}
+  SessionTest()
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        context_(CreateTestURLRequestContextBuilder()->Build()) {}
 
   std::unique_ptr<URLRequestContext> context_;
 };
@@ -533,6 +535,55 @@ TEST_F(SessionTest, RefreshUrlExcludedFromSession) {
   ASSERT_TRUE(session);
 
   EXPECT_FALSE(session->IncludesUrl(kRefreshUrl));
+}
+
+TEST_F(SessionTest, Backoff) {
+  using enum SessionError::ErrorType;
+
+  auto params = CreateValidParams();
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  struct TestCase {
+    SessionError::ErrorType error_type;
+    bool expect_backoff;
+  };
+
+  const TestCase kTestCases[] = {
+      {kSuccess, /*expect_backoff=*/false},
+      {kNetError, /*expect_backoff=*/false},
+      {kTransientHttpError, /*expect_backoff=*/true},
+      {kPersistentHttpError, /*expect_backoff=*/false}};
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Error type: " << static_cast<int>(test_case.error_type)
+                 << (test_case.expect_backoff ? " should backoff"
+                                              : " should not backoff"));
+    // Reset the backoff state
+    for (size_t i = 0; i < 4; i++) {
+      session->InformOfRefreshResult(kSuccess);
+    }
+    FastForwardBy(base::Seconds(1));
+    EXPECT_TRUE(
+        session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+
+    // Four errors in a row will enter backoff, if necessary
+    for (size_t i = 0; i < 4; i++) {
+      session->InformOfRefreshResult(test_case.error_type);
+    }
+
+    EXPECT_EQ(
+        session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()),
+        !test_case.expect_backoff);
+  }
 }
 
 }  // namespace

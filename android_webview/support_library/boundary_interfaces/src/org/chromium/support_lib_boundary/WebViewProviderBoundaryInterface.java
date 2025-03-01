@@ -20,6 +20,11 @@ import java.util.concurrent.Executor;
 /** */
 @NullMarked
 public interface WebViewProviderBoundaryInterface {
+    void setAsyncInterceptRequestCallback(
+            /* AsyncShouldInterceptRequestCallback */ InvocationHandler callback);
+
+    void clearAsyncInterceptRequestCallback();
+
     void insertVisualStateCallback(
             long requestId, /* VisualStateCallback */ InvocationHandler callback);
 

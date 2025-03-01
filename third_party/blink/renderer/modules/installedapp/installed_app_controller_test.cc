@@ -76,10 +76,7 @@ TEST_F(InstalledAppControllerTest, DestroyContextBeforeCallback) {
   auto* controller = InstalledAppController::From(*GetFrame().DomWindow());
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(GetScriptState());
-  controller->GetInstalledRelatedApps(
-      std::make_unique<
-          CallbackPromiseAdapter<IDLSequence<RelatedApplication>, void>>(
-          resolver));
+  controller->GetInstalledRelatedApps(resolver);
 
   ExecutionContext::From(GetScriptState())->NotifyContextDestroyed();
 

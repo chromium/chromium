@@ -2176,6 +2176,27 @@
             ]
         }
     ],
+    "AutofillImproveCityFieldClassification": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillImproveCityFieldClassification"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillImproveSubmissionDetectionV2": [
         {
             "platforms": [
@@ -8764,6 +8785,21 @@
             ]
         }
     ],
+    "EdgeToEdgeEverywhere": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_134",
+                    "enable_features": [
+                        "EdgeToEdgeEverywhere"
+                    ]
+                }
+            ]
+        }
+    ],
     "EducationalTipModule": [
         {
             "platforms": [
@@ -9010,6 +9046,23 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableExtensibleEnterpriseSSO"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableExtensionsExplicitBrowserSignin": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableExtensionsExplicitBrowserSignin"
                     ]
                 }
             ]
@@ -9394,29 +9447,6 @@
             ]
         }
     ],
-    "EventTimingSelectionAutoScrollNoInteractionId": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android_webview",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EventTimingSelectionAutoScrollNoInteractionId"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExpandCompositedCullRect": [
         {
             "platforms": [
@@ -9736,6 +9766,21 @@
             ],
             "experiments": [
                 {
+                    "name": "CooldownOnIgnore",
+                    "params": {
+                        "FirstDismissal": "24",
+                        "FourthDismissal": "28",
+                        "SecondDismissal": "5",
+                        "ThirdDismissal": "14"
+                    },
+                    "enable_features": [
+                        "FedCmCooldownOnIgnore"
+                    ],
+                    "disable_features": [
+                        "FedCmUpdatedCooldownPeriod"
+                    ]
+                },
+                {
                     "name": "UpdatedCooldownPeriod",
                     "params": {
                         "FirstDismissal": "24",
@@ -9744,6 +9789,22 @@
                         "ThirdDismissal": "14"
                     },
                     "enable_features": [
+                        "FedCmUpdatedCooldownPeriod"
+                    ],
+                    "disable_features": [
+                        "FedCmCooldownOnIgnore"
+                    ]
+                },
+                {
+                    "name": "CooldownOnIgnoreAndUpdatedCooldown",
+                    "params": {
+                        "FirstDismissal": "24",
+                        "FourthDismissal": "28",
+                        "SecondDismissal": "5",
+                        "ThirdDismissal": "14"
+                    },
+                    "enable_features": [
+                        "FedCmCooldownOnIgnore",
                         "FedCmUpdatedCooldownPeriod"
                     ]
                 }
@@ -11464,21 +11525,6 @@
             ]
         }
     ],
-    "HttpsFirstBalancedModeAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HttpsFirstBalancedMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "HttpsFirstBalancedModeAutoEnable": [
         {
             "platforms": [
@@ -12818,21 +12864,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InlineFullscreenPerfExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InputDeviceSettingsSplit": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled_InputDeviceSettingsSplit",
-                    "disable_features": [
-                        "InputDeviceSettingsSplit"
                     ]
                 }
             ]
@@ -16926,25 +16957,6 @@
                         "PerformanceControlsBatteryPerformanceSurvey",
                         "PerformanceControlsHighEfficiencyOptOutSurvey",
                         "PerformanceControlsPerformanceSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PerformanceEntrySafeSort": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PerformanceEntrySafeSort"
                     ]
                 }
             ]
@@ -22292,7 +22304,7 @@
                 {
                     "name": "EnabledWithDefaultButtonPlacement",
                     "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "100",
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "90",
                         "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
                     },
                     "enable_features": [
@@ -22302,7 +22314,7 @@
                 {
                     "name": "EnabledWithButtonSwap",
                     "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "100",
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "90",
                         "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "true"
                     },
                     "enable_features": [

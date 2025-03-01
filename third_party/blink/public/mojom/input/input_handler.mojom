@@ -257,8 +257,7 @@ interface WidgetInputHandlerHost {
   // Sends the character bounds after every composition change
   // to always have correct bound info.
   ImeCompositionRangeChanged(gfx.mojom.Range range,
-                             array<gfx.mojom.Rect>? character_bounds,
-                             array<gfx.mojom.Rect>? line_bounds);
+                             array<gfx.mojom.Rect>? character_bounds);
 
   // Updates the mouse capture state of this widget. While capture is enabled,
   // all mouse events, including those that don't hittest to this widget, will

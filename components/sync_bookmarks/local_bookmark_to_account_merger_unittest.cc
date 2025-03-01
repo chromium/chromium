@@ -18,7 +18,7 @@
 #include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/bookmarks/test/test_matchers.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_bookmarks/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,12 +119,12 @@ class LocalBookmarkToAccountMergerTest : public testing::TestWithParam<bool> {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {syncer::kSyncEnableBookmarksInTransportMode,
+          {switches::kSyncEnableBookmarksInTransportMode,
            switches::kSyncFastDeletionsDuringBookmarkBatchUpload},
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kSyncEnableBookmarksInTransportMode},
+          /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode},
           /*disabled_features=*/{
               switches::kSyncFastDeletionsDuringBookmarkBatchUpload});
     }

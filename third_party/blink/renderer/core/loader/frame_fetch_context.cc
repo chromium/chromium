@@ -44,6 +44,7 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
@@ -218,7 +219,7 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
   NOTREACHED();
 }
 
-bool ShouldSendClientHint(const PermissionsPolicy& policy,
+bool ShouldSendClientHint(const network::PermissionsPolicy& policy,
                           const url::Origin& resource_origin,
                           bool is_1p_origin,
                           network::mojom::blink::WebClientHintsType type,
@@ -515,7 +516,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   // The Permissions policy is used to enable hints for all subresources, based
   // on the policy of the requesting document, and the origin of the resource.
-  const PermissionsPolicy* policy =
+  const network::PermissionsPolicy* policy =
       document_
           ? document_->domWindow()->GetSecurityContext().GetPermissionsPolicy()
           : nullptr;
@@ -785,7 +786,10 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
     ResourceRequest& request) {
   // If the feature is enabled, then reduce accept language are allowed only on
   // http and https.
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
+  if (!(base::FeatureList::IsEnabled(
+            network::features::kReduceAcceptLanguage) ||
+        base::FeatureList::IsEnabled(
+            network::features::kReduceAcceptLanguageHTTP))) {
     return;
   }
 
@@ -1156,7 +1160,8 @@ std::optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
   return GetLocalFrameClient()->UserAgentMetadata();
 }
 
-const PermissionsPolicy* FrameFetchContext::GetPermissionsPolicy() const {
+const network::PermissionsPolicy* FrameFetchContext::GetPermissionsPolicy()
+    const {
   return document_ ? document_->domWindow()
                          ->GetSecurityContext()
                          .GetPermissionsPolicy()

@@ -6,6 +6,8 @@ source_set("reporting") {
   sources = [
     "ios_realtime_reporting_client.h",
     "ios_realtime_reporting_client.mm",
+    "ios_realtime_reporting_client_factory.h",
+    "ios_realtime_reporting_client_factory.mm",
   ]
   deps = [
     "//base",
@@ -16,9 +18,11 @@ source_set("reporting") {
     "//components/profile_metrics",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//services/network/public/cpp",
   ]

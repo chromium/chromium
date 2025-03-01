@@ -158,14 +158,12 @@ build_webui_tests("build") {
     "test_security_keys_browser_proxy.ts",
     "test_site_settings_prefs_browser_proxy.ts",
     "test_sync_browser_proxy.ts",
-    "test_user_annotations_manager_proxy.ts",
     "test_util.ts",
     "zoom_levels_test.ts",
   ]
 
   if (enable_glic) {
     files += [
-      "glic_data_page_test.ts",
       "glic_page_test.ts",
       "test_glic_browser_proxy.ts",
     ]

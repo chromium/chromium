@@ -147,7 +147,7 @@ TEST_F(ExtensionUtilUnittest, SetAllowFileAccessWhileDisabled) {
     extension = observer.WaitForExtensionInstalled();
   }
   // The extension should still be disabled.
-  EXPECT_FALSE(service()->IsExtensionEnabled(extension_id));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(extension_id));
 
   service()->EnableExtension(extension_id);
   EXPECT_TRUE(util::AllowFileAccess(extension_id, profile()));
@@ -165,7 +165,7 @@ TEST_F(ExtensionUtilUnittest, SetAllowFileAccessWhileDisabled) {
     extension = observer.WaitForExtensionInstalled();
   }
   // The extension should still be disabled.
-  EXPECT_FALSE(service()->IsExtensionEnabled(extension_id));
+  EXPECT_FALSE(registrar()->IsExtensionEnabled(extension_id));
 
   service()->EnableExtension(extension_id);
   EXPECT_FALSE(util::AllowFileAccess(extension_id, profile()));

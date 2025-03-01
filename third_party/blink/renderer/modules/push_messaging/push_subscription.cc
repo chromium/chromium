@@ -113,15 +113,11 @@ ScriptPromise<IDLBoolean> PushSubscription::unsubscribe(
     ScriptState* script_state) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
-  auto promise = resolver->Promise();
-
   PushProvider* push_provider =
       PushProvider::From(service_worker_registration_);
   DCHECK(push_provider);
-  push_provider->Unsubscribe(
-      std::make_unique<CallbackPromiseAdapter<IDLBoolean, DOMException>>(
-          resolver));
-  return promise;
+  push_provider->Unsubscribe(resolver);
+  return resolver->Promise();
 }
 
 ScriptObject PushSubscription::toJSONForBinding(ScriptState* script_state) {

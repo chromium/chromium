@@ -1732,7 +1732,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="User selection after empty state shown"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_constants.h:ReadAnythingEmptyState) -->
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.h:ReadAnythingEmptyState) -->
 
 <!-- LINT.IfChange(ReadAnythingFontName) -->
 

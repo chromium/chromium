@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
@@ -225,7 +225,7 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
   auto deferred_fetch_it = feature_list.find(
       network::mojom::PermissionsPolicyFeature::kDeferredFetch);
   CHECK(deferred_fetch_it != feature_list.end());
-  if (PermissionsPolicy::InheritedValueForFeature(
+  if (network::PermissionsPolicy::InheritedValueForFeature(
           to_url_origin, parent_permissions_policy, *deferred_fetch_it,
           container_frame->GetFramePolicy().container_policy)) {
     // then set container’s reserved deferred-fetch quota to normal quota and
@@ -244,7 +244,7 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
   auto deferred_fetch_minimal_it = feature_list.find(
       network::mojom::PermissionsPolicyFeature::kDeferredFetchMinimal);
   CHECK(deferred_fetch_minimal_it != feature_list.end());
-  if (!PermissionsPolicy::InheritedValueForFeature(
+  if (!network::PermissionsPolicy::InheritedValueForFeature(
           to_url_origin, parent_permissions_policy, *deferred_fetch_minimal_it,
           container_frame->GetFramePolicy().container_policy)) {
     // then return.

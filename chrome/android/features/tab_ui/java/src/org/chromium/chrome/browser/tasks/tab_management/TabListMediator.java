@@ -108,6 +108,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -210,14 +211,10 @@ class TabListMediator implements TabListNotificationHandler {
         }
 
         @Override
-        public boolean equals(Object other) {
-            if (this == other) return true;
-
-            if (other instanceof TabActionButtonData otherData) {
-                return this.type == otherData.type
-                        && Objects.equals(this.tabActionListener, otherData.tabActionListener);
-            }
-            return false;
+        public boolean equals(Object obj) {
+            return (obj instanceof TabActionButtonData other)
+                    && type == other.type
+                    && Objects.equals(tabActionListener, other.tabActionListener);
         }
 
         @Override
@@ -1630,6 +1627,11 @@ class TabListMediator implements TabListNotificationHandler {
      * multi-window mode on phone, the span count is fixed to 2 to keep tab card size reasonable.
      */
     private int getSpanCount(int screenWidthDp) {
+        if (XrUtils.isXrDevice()) {
+            // The layout span count is restricted to medium on XR immersive devices to display
+            // larger tab thumbnails, despite the large screen width.
+            return TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM;
+        }
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             return screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
                     ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
@@ -2848,5 +2850,9 @@ class TabListMediator implements TabListNotificationHandler {
         var oldValue = mActionsOnAllRelatedTabs;
         mActionsOnAllRelatedTabs = actionOnAllRelatedTabs;
         ResettersForTesting.register(() -> mActionsOnAllRelatedTabs = oldValue);
+    }
+
+    int getSpanCountForTesting(int screenWidthDp) {
+        return getSpanCount(screenWidthDp);
     }
 }

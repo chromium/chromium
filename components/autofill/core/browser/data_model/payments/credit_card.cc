@@ -59,7 +59,7 @@ constexpr auto k15DigitAmexNumberSegmentations = std::to_array({4, 6, 5});
 constexpr auto k16DigitNumberSegmentations = std::to_array({4, 4, 4, 4});
 
 // Suffix for GUID of a virtual card to differentiate it from it's corresponding
-// masked server card..
+// masked server card.
 constexpr char kVirtualCardIdentifierSuffix[] = "_vcn";
 
 std::u16string NetworkForFill(const std::string& network) {

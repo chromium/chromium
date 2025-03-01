@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/pending_extension_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -51,6 +52,12 @@ PendingExtensionManager::PendingExtensionManager(
     : context_(context) {}
 
 PendingExtensionManager::~PendingExtensionManager() = default;
+
+// static
+PendingExtensionManager* PendingExtensionManager::Get(
+    content::BrowserContext* browser_context) {
+  return PendingExtensionManagerFactory::GetForBrowserContext(browser_context);
+}
 
 const PendingExtensionInfo* PendingExtensionManager::GetById(
     const std::string& id) const {

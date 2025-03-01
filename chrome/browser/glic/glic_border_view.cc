@@ -37,10 +37,10 @@ constexpr static base::TimeDelta kFastOpacityRampUpDuration =
 // The amount of time for the opacity to go from 1 to 0.
 constexpr static base::TimeDelta kOpacityRampDownDuration =
     base::Milliseconds(200);
-// The amount of time for the border empasis to go from 0 the max.
+// The amount of time for the border emphasis to go from 0 the max.
 constexpr static base::TimeDelta kEmphasisRampUpDuration =
     base::Milliseconds(500);
-// The amount of time for the border empasis to go from max to 0.
+// The amount of time for the border emphasis to go from max to 0.
 constexpr static base::TimeDelta kEmphasisRampDownDuration =
     base::Milliseconds(1000);
 // The amount of time for the border to stay emphasized.
@@ -350,6 +350,17 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
   }
   if (first_emphasis_frame_.is_null()) {
     first_emphasis_frame_ = timestamp;
+
+    // The time gaps when the border is in steady state cause discontinuous
+    // border states when switching tabs. By keeping track of the total steady
+    // time, we can have a continuous effect time. Each steady time interval is
+    // added to the total at the very beginning of an upcoming emphasis
+    // animation.
+    // Note: the opacity ramp up / down is not part of the shader animation.
+    if (!last_emphasis_frame_.is_null()) {
+      total_steady_time_ += timestamp - last_emphasis_frame_;
+      last_emphasis_frame_ = base::TimeTicks{};
+    }
   }
   if (record_first_ramp_down_frame_) {
     record_first_ramp_down_frame_ = false;
@@ -380,6 +391,9 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
     // If skipping the animation the class does not need to be an animation
     // observer.
     compositor_->RemoveAnimationObserver(this);
+    if (last_emphasis_frame_.is_null()) {
+      last_emphasis_frame_ = timestamp;
+    }
     return;
   }
 
@@ -440,7 +454,9 @@ void GlicBorderView::CancelAnimation() {
   compositor_ = nullptr;
   first_frame_time_ = base::TimeTicks{};
   first_emphasis_frame_ = base::TimeTicks{};
+  last_emphasis_frame_ = base::TimeTicks{};
   first_ramp_down_frame_ = base::TimeTicks{};
+  total_steady_time_ = base::Milliseconds(0);
   opacity_ = 0.f;
   emphasis_ = 0.f;
 
@@ -553,7 +569,8 @@ float GlicBorderView::GetEffectTime() const {
   }
 
   auto time_since_creation =
-      (last_animation_step_time_ - GetCreationTime()) % kMaxTime;
+      ((last_animation_step_time_ - GetCreationTime()) - total_steady_time_) %
+      kMaxTime;
   return time_since_creation.InSecondsF();
 }
 

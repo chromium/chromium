@@ -139,7 +139,6 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
                             bool enabled) override {}
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override {}
 

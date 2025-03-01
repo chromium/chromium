@@ -19,6 +19,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+using printing::kUnitConversionFactorPixelsToPoints;
+
 namespace chrome_pdf {
 
 namespace {
@@ -62,6 +64,21 @@ gfx::PointF CanonicalPositionToScreenPosition(
   return screen_position;
 }
 
+gfx::Size GetOriginalUnrotatedSize(PageOrientation orientation,
+                                   const gfx::Size& size) {
+  switch (orientation) {
+    case PageOrientation::kOriginal:
+    case PageOrientation::kClockwise180:
+      return size;
+    case PageOrientation::kClockwise90:
+    case PageOrientation::kClockwise270:
+      gfx::Size transposed_size(size);
+      transposed_size.Transpose();
+      return transposed_size;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
@@ -98,29 +115,40 @@ ink::AffineTransform GetInkRenderTransform(
     const gfx::Vector2dF& viewport_origin_offset,
     PageOrientation orientation,
     const gfx::Rect& page_content_rect,
-    float scale_factor) {
+    const gfx::SizeF& page_size_in_points) {
   CHECK_GE(viewport_origin_offset.x(), 0.0f);
   CHECK_GE(viewport_origin_offset.y(), 0.0f);
-  CHECK_GT(scale_factor, 0.0f);
   CHECK(!page_content_rect.IsEmpty());
+  CHECK(!page_size_in_points.IsEmpty());
 
+  // To avoid a noticeable shift in position of an in-progress vs. applied
+  // Ink stroke, the rendering transform generated here needs to match the
+  // matrix setup done in PDFium's `CPDF_Page::GetDisplayMatrix()`.
   const float dx = viewport_origin_offset.x() + page_content_rect.x();
   const float dy = viewport_origin_offset.y() + page_content_rect.y();
+  const gfx::Size original_unrotated_page_size =
+      GetOriginalUnrotatedSize(orientation, page_content_rect.size());
+  const float scale_factor_x = original_unrotated_page_size.width() *
+                               kUnitConversionFactorPixelsToPoints /
+                               page_size_in_points.width();
+  const float scale_factor_y = original_unrotated_page_size.height() *
+                               kUnitConversionFactorPixelsToPoints /
+                               page_size_in_points.height();
 
   switch (orientation) {
     case PageOrientation::kOriginal:
-      return ink::AffineTransform(scale_factor, 0, dx, 0, scale_factor, dy);
+      return ink::AffineTransform(scale_factor_x, 0, dx, 0, scale_factor_y, dy);
     case PageOrientation::kClockwise90:
-      return ink::AffineTransform(0, -scale_factor,
-                                  dx + page_content_rect.width() - 1,
-                                  scale_factor, 0, dy);
+      return ink::AffineTransform(0, -scale_factor_x,
+                                  dx + page_content_rect.width(),
+                                  scale_factor_y, 0, dy);
     case PageOrientation::kClockwise180:
       return ink::AffineTransform(
-          -scale_factor, 0, dx + page_content_rect.width() - 1, 0,
-          -scale_factor, dy + page_content_rect.height() - 1);
+          -scale_factor_x, 0, dx + page_content_rect.width(), 0,
+          -scale_factor_y, dy + page_content_rect.height());
     case PageOrientation::kClockwise270:
-      return ink::AffineTransform(0, scale_factor, dx, -scale_factor, 0,
-                                  dy + page_content_rect.height() - 1);
+      return ink::AffineTransform(0, scale_factor_x, dx, -scale_factor_y, 0,
+                                  dy + page_content_rect.height());
   }
   NOTREACHED();
 }
@@ -174,10 +202,10 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
 
 gfx::AxisTransform2d GetCanonicalToPdfTransform(float page_height) {
   CHECK_GE(page_height, 0);
-  constexpr float kScreenToPageScale =
-      static_cast<float>(printing::kPointsPerInch) / printing::kPixelsPerInch;
   return gfx::AxisTransform2d::FromScaleAndTranslation(
-      {kScreenToPageScale, -kScreenToPageScale}, {0, page_height});
+      {kUnitConversionFactorPixelsToPoints,
+       -kUnitConversionFactorPixelsToPoints},
+      {0, page_height});
 }
 
 }  // namespace chrome_pdf

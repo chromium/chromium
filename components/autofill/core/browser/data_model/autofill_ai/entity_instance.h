@@ -14,10 +14,10 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
-#include "base/types/pass_key.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/country_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -67,8 +67,8 @@ class EntityTable;
 // `AttributeInstance::GetNormalizedType()` and the getter/setter methods for
 // how this problem is handled.
 class AttributeInstance final {
-  // TODO(crbug.com/389625753): Also support for countries, states and dates.
-  using InfoStructure = absl::variant<NameInfo, std::u16string>;
+  // TODO(crbug.com/389625753): Also add support for states and dates.
+  using InfoStructure = absl::variant<CountryInfo, NameInfo, std::u16string>;
 
  public:
   // Transparent less-than relation based on the AttributeType.
@@ -90,16 +90,6 @@ class AttributeInstance final {
 
   const AttributeType& type() const { return type_; }
 
-  // Returns the full value stored in the attribute, formatted according to
-  // `app_locale`.
-  std::u16string value() const;
-
-  // Returns the normalized version of `this` attribute instance value. This
-  // normalization removes extra spaces, converts the value to lowercase and
-  // removes some special characters. Its underlying implementation is
-  // `AutofillProfileComparator::NormalizeForComparison()`.
-  std::u16string NormalizedValue() const;
-
   // In the functions below, `type` refers to the type of data we want to fetch
   // from the attribute, and not the type of the attribute itself. The two might
   // coincide for unstructured types but they are different for structured
@@ -109,24 +99,38 @@ class AttributeInstance final {
   // and is assumed to be just the attribute-type-equivalent field type for
   // unstructured ones.
 
-  // Returns the value stored in this attribute instance for a specific `type`.
-  std::u16string GetInfo(FieldType type) const;
+  // Returns the value stored in this attribute instance for a specific `type`,
+  // formatted according to a given `app_locale`.
+  std::u16string GetInfo(FieldType type, const std::string& app_locale) const;
+
+  class GetRawInfoPassKey {
+    constexpr GetRawInfoPassKey() = default;
+    friend class AttributeInstance;
+    friend class EntityInstance;
+    friend class EntityTable;
+  };
+  // Same as `GetInfo` but returns the value as stored with no formatting
+  // whatsoever.
+  std::u16string GetRawInfo(GetRawInfoPassKey pass_key, FieldType type) const;
   // Returns the verification status of a value stored in this attribute
   // instance for a specific `type`.
   VerificationStatus GetVerificationStatus(FieldType type) const;
-  // Populates the attribute with a value for a specific `type`.
-  void SetInfo(FieldType type, const std::u16string& value);
+  // Populates the attribute with a value for a specific `type`, according to a
+  // given `app_locale`.
+  void SetInfo(FieldType type,
+               const std::u16string& value,
+               const std::string& app_locale);
   // Similar to `SetInfo` but also assigns a verification status to the set
   // value.
   void SetInfoWithVerificationStatus(FieldType type,
                                      const std::u16string& value,
+                                     const std::string& app_locale,
                                      const VerificationStatus status);
 
   // Same as `SetInfoWithVerificationStatus`, but for structured types this
   // function does nothing but modify the information in `type`, while the other
   // function might perform additional steps (e.g., name formatting). This
-  // function should not be used except by database logic and settings page
-  // logic.
+  // function should only be used by database logic and settings page logic.
   // TODO(crbug.com/389625753): Investigate merging SetInfo* and SetRawInfo*.
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,

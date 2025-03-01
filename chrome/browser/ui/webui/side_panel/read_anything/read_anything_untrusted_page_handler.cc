@@ -329,11 +329,11 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   side_panel_controller_->AddPageHandlerAsObserver(weak_factory_.GetWeakPtr());
 
   PrefService* prefs = profile_->GetPrefs();
-  double speechRate =
+  double speech_rate =
       features::IsReadAnythingReadAloudEnabled()
           ? prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate)
-          : read_anything::kReadAnythingDefaultSpeechRate;
-  read_anything::mojom::HighlightGranularity highlightGranularity =
+          : 1.0;
+  read_anything::mojom::HighlightGranularity highlight_granularity =
       features::IsReadAnythingReadAloudEnabled()
           ? static_cast<read_anything::mojom::HighlightGranularity>(
                 prefs->GetDouble(
@@ -355,12 +355,12 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
       prefs->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled),
       static_cast<read_anything::mojom::Colors>(
           prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
-      speechRate, std::move(voices),
+      speech_rate, std::move(voices),
       features::IsReadAnythingReadAloudEnabled()
           ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
                 .Clone()
           : base::Value::List(),
-      highlightGranularity);
+      highlight_granularity);
 
   // Get user's default language to check for compatible fonts.
   language::LanguageModel* language_model =

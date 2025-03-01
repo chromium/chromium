@@ -219,7 +219,9 @@
                                          identity:self.mediator.selectedIdentity
                                       accessPoint:_accessPoint
                                 postSignInActions:PostSignInActionSet()
-                         presentingViewController:self.viewController];
+                         presentingViewController:self.viewController
+                                       anchorView:nil
+                                       anchorRect:CGRectNull];
   authenticationFlow.precedingHistorySync = YES;
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^() {

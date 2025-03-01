@@ -27,6 +27,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -55,7 +56,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
 #include "components/autofill_ai/core/browser/autofill_ai_utils.h"
-#include "components/autofill_ai/core/browser/autofill_ai_value_filter.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -92,9 +92,10 @@ bool CheckIfEntitySatisfiesConstraints(const EntityInstance& entity) {
 }
 
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
-    const autofill::FormStructure& submitted_form) {
+    const autofill::FormStructure& submitted_form,
+    const std::string& app_locale) {
   std::map<autofill::Section,
-           std::map<EntityType, std::vector<autofill::AttributeInstance>>>
+           std::map<EntityType, std::map<AttributeType, AttributeInstance>>>
       section_to_entity_types_attributes;
   for (const std::unique_ptr<autofill::AutofillField>& field :
        submitted_form.fields()) {
@@ -113,22 +114,37 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       continue;
     }
 
-    section_to_entity_types_attributes[field->section()]
-                                      [field_attribute_type->entity_type()]
-                                          .emplace_back(*field_attribute_type)
-                                          .SetInfo(
-                                              field->Type().GetStorableType(),
-                                              value);
+    std::map<AttributeType, AttributeInstance>& entity_attributes =
+        section_to_entity_types_attributes[field->section()]
+                                          [field_attribute_type->entity_type()];
+    auto attribute_it =
+        entity_attributes
+            .try_emplace(*field_attribute_type, *field_attribute_type)
+            .first;
+    attribute_it->second.SetInfoWithVerificationStatus(
+        field->Type().GetStorableType(), value, app_locale,
+        autofill::VerificationStatus::kObserved);
+  }
+
+  for (auto& [section, entities] : section_to_entity_types_attributes) {
+    for (auto& [entity_type, attributes] : entities) {
+      for (auto& [attribute_type, attribute] : attributes) {
+        attribute.FinalizeInfo();
+      }
+    }
   }
 
   std::vector<EntityInstance> entities_found_in_form;
   for (auto& [section, entity_to_attributes] :
        section_to_entity_types_attributes) {
     for (auto& [entity_name, attributes] : entity_to_attributes) {
-      EntityInstance entity =
-          EntityInstance(EntityType(entity_name), std::move(attributes),
-                         base::Uuid::GenerateRandomV4(),
-                         /*nickname=*/std::string(""), base::Time::Now());
+      EntityInstance entity = EntityInstance(
+          EntityType(entity_name),
+          base::ToVector(
+              attributes,
+              &std::pair<const AttributeType, AttributeInstance>::second),
+          base::Uuid::GenerateRandomV4(),
+          /*nickname=*/std::string(""), base::Time::Now());
       if (!CheckIfEntitySatisfiesConstraints(entity)) {
         continue;
       }
@@ -203,7 +219,8 @@ std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
 
 // Given an `entity`, returns the string to use as a strike key for each entry
 // in `entity.type().strike_keys()`.
-std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity) {
+std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
+                                                const std::string& app_locale) {
   auto value_for_strike_key = [&](DenseSet<AttributeType> types) {
     // A list of (attribute_type_name, attribute_value) pairs.
     std::vector<std::pair<std::string, std::string>> key_value_pairs =
@@ -211,8 +228,10 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity) {
           base::optional_ref<const AttributeInstance> attribute =
               entity.attribute(attribute_type);
           return std::pair(std::string(attribute_type.name_as_string()),
-                           attribute ? base::UTF16ToUTF8(attribute->value())
-                                     : std::string());
+                           attribute
+                               ? base::UTF16ToUTF8(attribute->GetInfo(
+                                     attribute->GetTopLevelType(), app_locale))
+                               : std::string());
         });
 
     // We sort the keys to ensure they remain stable even if the ordering in
@@ -250,26 +269,6 @@ AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
   }
 }
 
-base::flat_map<autofill::FieldGlobalId, bool>
-AutofillAiManager::GetFieldValueSensitivityMap(
-    const autofill::FormData& form_data) {
-  autofill::FormStructure* form_structure =
-      client_->GetCachedFormStructure(form_data.global_id());
-
-  if (!form_structure) {
-    return base::flat_map<autofill::FieldGlobalId, bool>();
-  }
-
-  FilterSensitiveValues(*form_structure);
-
-  return base::MakeFlatMap<autofill::FieldGlobalId, bool>(
-      form_structure->fields(), {}, [](const auto& field) {
-        return std::make_pair(
-            field->global_id(),
-            field->value_identified_as_potentially_sensitive());
-      });
-}
-
 AutofillAiManager::~AutofillAiManager() = default;
 
 bool AutofillAiManager::IsFormAndFieldEligibleForAutofillAi(
@@ -296,9 +295,8 @@ bool AutofillAiManager::IsUserEligibleForFillingAndImporting() const {
 void AutofillAiManager::OnReceivedAXTree(
     const autofill::FormData& form,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
-  client_->GetModelExecutor()->GetPredictions(
-      form, /*field_eligibility_map*/ {}, GetFieldValueSensitivityMap(form),
-      std::move(ax_tree_update), base::DoNothing());
+  client_->GetModelExecutor()->GetPredictions(form, std::move(ax_tree_update),
+                                              base::DoNothing());
 }
 
 void AutofillAiManager::OnSuggestionsShown(
@@ -354,7 +352,8 @@ void AutofillAiManager::MaybeImportForm(
     return;
   }
   std::vector<EntityInstance> entity_instances_from_form =
-      GetPossibleEntitiesFromSubmittedForm(*form);
+      GetPossibleEntitiesFromSubmittedForm(
+          *form, client_->GetAutofillClient().GetAppLocale());
   if (entity_instances_from_form.empty()) {
     std::move(autofill_callback).Run(std::move(form), false);
     return;
@@ -459,7 +458,8 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
   }
 
   CHECK(autofill_field->GetAutofillAiServerTypePredictions());
-  return CreateFillingSuggestions(*form_structure, field_global_id, entities);
+  return CreateFillingSuggestions(*form_structure, field_global_id, entities,
+                                  client_->GetAutofillClient().GetAppLocale());
 }
 
 bool AutofillAiManager::ShouldDisplayIph(
@@ -484,7 +484,8 @@ void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,
             entity.type().name_as_string(), url.host()));
   }
   if (save_strike_db_by_attribute_) {
-    for (const std::string& key : GetAttributeStrikeKeys(entity)) {
+    for (const std::string& key : GetAttributeStrikeKeys(
+             entity, client_->GetAutofillClient().GetAppLocale())) {
       save_strike_db_by_attribute_->AddStrike(key);
     }
   }
@@ -506,7 +507,8 @@ void AutofillAiManager::ClearStrikesForSave(
             entity.type().name_as_string(), url.host()));
   }
   if (save_strike_db_by_attribute_) {
-    for (const std::string& key : GetAttributeStrikeKeys(entity)) {
+    for (const std::string& key : GetAttributeStrikeKeys(
+             entity, client_->GetAutofillClient().GetAppLocale())) {
       save_strike_db_by_attribute_->ClearStrikes(key);
     }
   }
@@ -530,7 +532,9 @@ bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
 
   if (!save_strike_db_by_attribute_ ||
       std::ranges::any_of(
-          GetAttributeStrikeKeys(entity), [&](const std::string& key) {
+          GetAttributeStrikeKeys(entity,
+                                 client_->GetAutofillClient().GetAppLocale()),
+          [&](const std::string& key) {
             return save_strike_db_by_attribute_->ShouldBlockFeature(key);
           })) {
     return true;

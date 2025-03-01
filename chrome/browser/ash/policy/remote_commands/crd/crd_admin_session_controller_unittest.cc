@@ -532,6 +532,7 @@ TEST_P(CrdAdminSessionControllerTestWithBoolParams,
 
   EXPECT_NE(actual_parameters.suppress_notifications, GetParam());
   EXPECT_NE(actual_parameters.suppress_user_dialogs, GetParam());
+  EXPECT_EQ(actual_parameters.connection_dialog_required, GetParam());
 }
 
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,

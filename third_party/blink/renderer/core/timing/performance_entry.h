@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -113,14 +112,11 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
       // TODO: create NT entry eagerly so that we don't have to do this
       // https://bugs.chromium.org/p/chromium/issues/detail?id=1432565
       if (a->EntryTypeEnum() == kNavigation &&
-          (b->EntryTypeEnum() != kNavigation ||
-           !RuntimeEnabledFeatures::PerformanceEntrySafeSortEnabled())) {
+          b->EntryTypeEnum() != kNavigation) {
         return true;
       } else if (b->EntryTypeEnum() == kNavigation) {
         return false;
-      } else if (a->EntryTypeEnum() == kPaint &&
-                 (b->EntryTypeEnum() != kPaint ||
-                  !RuntimeEnabledFeatures::PerformanceEntrySafeSortEnabled())) {
+      } else if (a->EntryTypeEnum() == kPaint && b->EntryTypeEnum() != kPaint) {
         return true;
       } else if (b->EntryTypeEnum() == kPaint) {
         return false;

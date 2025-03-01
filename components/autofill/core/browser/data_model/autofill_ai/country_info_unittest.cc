@@ -16,49 +16,36 @@ namespace {
 
 constexpr char kAppLocaleUS[] = "US";
 
-// Tests that setting and getting the country code via `[Set|Get]RawInfo`
-// works as expected.
-TEST(CountryInfoTest, RawMethods) {
-  CountryInfo country;
-  ASSERT_TRUE(country.GetRawInfo(ADDRESS_HOME_COUNTRY).empty());
-
-  // `SetRawInfo` doesn't allow setting the country code via country name.
-  country.SetRawInfo(ADDRESS_HOME_COUNTRY, u"Germany");
-  EXPECT_TRUE(country.GetRawInfo(ADDRESS_HOME_COUNTRY).empty());
-
-  // `SetRawInfo` allows setting the country code directly.
-  country.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
-  EXPECT_EQ(country.GetRawInfo(ADDRESS_HOME_COUNTRY), u"DE");
-}
-
 // Tests that we can read the country name of an object constructed with country
 // name.
 TEST(CountryInfoTest, SetNameReadName) {
   CountryInfo country;
-
-  // `SetRawInfo` doesn't allow setting the country code via country name.
-  country.SetInfo(ADDRESS_HOME_COUNTRY, u"Germany", kAppLocaleUS);
-  EXPECT_EQ(country.GetInfo(ADDRESS_HOME_COUNTRY, kAppLocaleUS), u"Germany");
+  country.SetCountryFromCountryName(u"Germany", kAppLocaleUS);
+  EXPECT_EQ(country.GetCountryName(kAppLocaleUS), u"Germany");
 }
 
 // Tests that we can read the country code of an object constructed with country
 // name.
 TEST(CountryInfoTest, SetNameReadCode) {
   CountryInfo country;
-
-  // `SetRawInfo` doesn't allow setting the country code via country name.
-  country.SetInfo(ADDRESS_HOME_COUNTRY, u"Germany", kAppLocaleUS);
-  EXPECT_EQ(country.GetRawInfo(ADDRESS_HOME_COUNTRY), u"DE");
+  country.SetCountryFromCountryName(u"Germany", kAppLocaleUS);
+  EXPECT_EQ(country.GetCountryCode(), "DE");
 }
 
 // Tests that we can read the country name of an object constructed with country
 // code.
 TEST(CountryInfoTest, SetCodeReadName) {
   CountryInfo country;
+  country.SetCountryFromCountryCode(u"DE");
+  EXPECT_EQ(country.GetCountryName(kAppLocaleUS), u"Germany");
+}
 
-  // `SetRawInfo` doesn't allow setting the country code via country name.
-  country.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
-  EXPECT_EQ(country.GetInfo(ADDRESS_HOME_COUNTRY, kAppLocaleUS), u"Germany");
+// Tests that we can read the country code of an object constructed with country
+// code.
+TEST(CountryInfoTest, SetCodeReadCode) {
+  CountryInfo country;
+  country.SetCountryFromCountryCode(u"DE");
+  EXPECT_EQ(country.GetCountryCode(), "DE");
 }
 
 }  // namespace

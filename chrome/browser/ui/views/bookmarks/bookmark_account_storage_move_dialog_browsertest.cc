@@ -18,8 +18,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -66,7 +66,7 @@ class BookmarkAccountStorageMoveDialogPixelTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   raw_ptr<const bookmarks::BookmarkNode> node_ = nullptr;
   raw_ptr<const bookmarks::BookmarkNode> target_folder_ = nullptr;
 };
@@ -151,7 +151,7 @@ class BookmarkAccountStorageMoveDialogInteractiveTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 };
 
 IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,

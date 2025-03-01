@@ -454,6 +454,9 @@ extern const char kLensTranslateToggleModeEnabledDescription[];
 extern const char kLensUnaryApisWithHttpTransportEnabledName[];
 extern const char kLensUnaryApisWithHttpTransportEnabledDescription[];
 
+extern const char kLensUnaryApiSalientTextEnabledName[];
+extern const char kLensUnaryApiSalientTextEnabledDescription[];
+
 extern const char kLensUnaryClientDataHeaderEnabledName[];
 extern const char kLensUnaryClientDataHeaderEnabledDescription[];
 

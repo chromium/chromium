@@ -93,6 +93,8 @@ class TaskManagerTableModel : public TaskManagerObserver,
   ui::ImageModel GetIcon(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
   int CompareValues(size_t row1, size_t row2, int column_id) override;
+  std::u16string GetAXNameForHeader(
+      const std::vector<std::u16string>& visible_column_titles) override;
   std::u16string GetAXNameForRow(
       size_t row,
       const std::vector<int>& visible_column_ids) override;

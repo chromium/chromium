@@ -1208,10 +1208,7 @@ if (use_blink && !is_cronet_build) {
     # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
     script_test("headless_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
-      args = _common_web_test_options + [
-               "--product=headless_shell",
-               "--no-wpt-internal",
-             ]
+      args = _common_web_test_options + [ "--product=headless_shell" ]
       data_deps = [
         ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",

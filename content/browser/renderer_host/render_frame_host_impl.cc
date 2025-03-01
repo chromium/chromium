@@ -238,6 +238,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -261,7 +262,6 @@
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_document_created.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
@@ -643,7 +643,7 @@ DetermineWhetherToForbidTrustTokenOperation(
     const blink::mojom::CommitNavigationParams& commit_params,
     const url::Origin& subframe_origin,
     const network::mojom::TrustTokenOperationType& operation) {
-  std::unique_ptr<blink::PermissionsPolicy> subframe_policy;
+  std::unique_ptr<network::PermissionsPolicy> subframe_policy;
   // TODO(crbug.com/40263106): Add WPT to test how TrustTokens behave in
   // a FencedFrame's subframe.
   if (frame->IsFencedFrameRoot()) {
@@ -654,18 +654,19 @@ DetermineWhetherToForbidTrustTokenOperation(
       // effective enabled permissions or information about the embedder's
       // permissions policies, so we create a permissions policy with every
       // permission disabled.
-      subframe_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
+      subframe_policy = network::PermissionsPolicy::CreateFixedForFencedFrame(
           subframe_origin, /*header_policy=*/{}, {});
     } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
       // Fenced frames with flexible permissions are allowed to inherit certain
       // permissions from their parent's permissions policy.
-      const blink::PermissionsPolicy* parent_policy =
+      const network::PermissionsPolicy* parent_policy =
           frame->GetParentOrOuterDocument()->GetPermissionsPolicy();
       network::ParsedPermissionsPolicy container_policy =
           commit_params.frame_policy.container_policy;
-      subframe_policy = blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
-          parent_policy, /*header_policy=*/{}, container_policy,
-          subframe_origin);
+      subframe_policy =
+          network::PermissionsPolicy::CreateFlexibleForFencedFrame(
+              parent_policy, /*header_policy=*/{}, container_policy,
+              subframe_origin);
     } else {
       // Fenced frames with fixed permissions have a list of required permission
       // policies to load and can't be granted extra policies, so use the
@@ -673,7 +674,7 @@ DetermineWhetherToForbidTrustTokenOperation(
       // parent policies must allow the required policies, which is checked
       // separately in
       // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
-      subframe_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
+      subframe_policy = network::PermissionsPolicy::CreateFixedForFencedFrame(
           subframe_origin, /*header_policy=*/{},
           fenced_frame_properties->effective_enabled_permissions());
     }
@@ -684,12 +685,12 @@ DetermineWhetherToForbidTrustTokenOperation(
       return network::mojom::TrustTokenOperationPolicyVerdict::
           kPotentiallyPermit;
 
-    const blink::PermissionsPolicy* parent_policy =
+    const network::PermissionsPolicy* parent_policy =
         frame->GetParent()->GetPermissionsPolicy();
     network::ParsedPermissionsPolicy container_policy =
         commit_params.frame_policy.container_policy;
 
-    subframe_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
+    subframe_policy = network::PermissionsPolicy::CreateFromParentPolicy(
         parent_policy, /*header_policy=*/{}, container_policy, subframe_origin);
   }
 
@@ -6048,7 +6049,10 @@ void RenderFrameHostImpl::DidCommitPageActivation(
     DCHECK(prerender_main_frame_replication_state ==
            frame_tree()->root()->current_replication_state());
 
-    document_associated_data_->OnDidCommitPrerenderedPageActivation();
+    ForEachRenderFrameHostImpl([](RenderFrameHostImpl* rfh) {
+      rfh->document_associated_data_->RunPostPrerenderingActivationSteps();
+    });
+
   } else if (auto* view = GetView()) {
     view->ActivatedOrEvictedFromBackForwardCache();
   }
@@ -7639,7 +7643,7 @@ bool RenderFrameHostImpl::IsFeatureEnabled(
                                     feature, GetLastCommittedOrigin());
 }
 
-const blink::PermissionsPolicy* RenderFrameHostImpl::GetPermissionsPolicy() {
+const network::PermissionsPolicy* RenderFrameHostImpl::GetPermissionsPolicy() {
   return permissions_policy_.get();
 }
 
@@ -13555,17 +13559,18 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
       // effective enabled permissions or information about the embedder's
       // permissions policies, so we create a permissions policy with every
       // permission disabled.
-      permissions_policy_ = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          last_committed_origin_, header_policy, {});
+      permissions_policy_ =
+          network::PermissionsPolicy::CreateFixedForFencedFrame(
+              last_committed_origin_, header_policy, {});
     } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
       // Fenced frames with flexible permissions are allowed to inherit certain
       // permissions from their parent's permissions policy.
-      const blink::PermissionsPolicy* parent_policy =
+      const network::PermissionsPolicy* parent_policy =
           GetParentOrOuterDocument()->GetPermissionsPolicy();
       network::ParsedPermissionsPolicy container_policy =
           browsing_context_state_->effective_frame_policy().container_policy;
       permissions_policy_ =
-          blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
+          network::PermissionsPolicy::CreateFlexibleForFencedFrame(
               parent_policy, header_policy, container_policy,
               last_committed_origin_);
     } else {
@@ -13575,9 +13580,10 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
       // parent policies must allow the required policies, which is checked
       // separately in
       // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
-      permissions_policy_ = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          last_committed_origin_, header_policy,
-          fenced_frame_properties->effective_enabled_permissions());
+      permissions_policy_ =
+          network::PermissionsPolicy::CreateFixedForFencedFrame(
+              last_committed_origin_, header_policy,
+              fenced_frame_properties->effective_enabled_permissions());
     }
     return;
   }
@@ -13592,19 +13598,19 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
     // behavior, which uses a fully permissive policy as its base permissions
     // policy and accepts rules specifying which permissions policy features
     // should be blocked, aka a blocklist.
-    permissions_policy_ = blink::PermissionsPolicy::CreateFromParsedPolicy(
+    permissions_policy_ = network::PermissionsPolicy::CreateFromParsedPolicy(
         header_policy, delegate_->GetPermissionsPolicyForIsolatedWebApp(this),
         last_committed_origin_);
     return;
   }
 
   RenderFrameHostImpl* parent_frame_host = GetParent();
-  const blink::PermissionsPolicy* parent_policy =
+  const network::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->GetPermissionsPolicy() : nullptr;
   network::ParsedPermissionsPolicy container_policy =
       browsing_context_state_->effective_frame_policy().container_policy;
 
-  permissions_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
+  permissions_policy_ = network::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, header_policy, container_policy, last_committed_origin_);
 }
 
@@ -15211,14 +15217,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     document_associated_data_->set_devtools_navigation_token(
         navigation_request->devtools_navigation_token());
 
-    // Stores fetch keepalive and fetch later FactoryContexts created before
-    // committing into document-associated data, such that it can be referenced
-    // later when DevTools tries to intercepts requests, or when the prerendered
-    // page is activated.
+    // Stores fetch keepalive FactoryContext created before committing into
+    // document-associated data, such that it can be referenced later when
+    // DevTools tries to intercepts requests.
     document_associated_data_->set_keep_alive_url_loader_factory_context(
         navigation_request->keep_alive_url_loader_factory_context());
-    document_associated_data_->set_fetch_later_loader_factory_context(
-        navigation_request->fetch_later_loader_factory_context());
 
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
         navigation_request->ComputeFencedFrameProperties();

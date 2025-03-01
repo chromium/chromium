@@ -15,6 +15,10 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
+
 # Common configuration for targets in the media/midi directory.
 config("midi_config") {
   if (use_alsa && use_udev) {
@@ -128,7 +132,9 @@ component("midi") {
   }
 
   if (is_apple) {
-    if (!is_tvos) {
+    if (is_ios && target_platform == "tvos") {
+      sources += [ "midi_manager_tvos.cc" ]
+    } else {
       sources += [
         "midi_manager_mac.cc",
         "midi_manager_mac.h",
@@ -138,8 +144,6 @@ component("midi") {
         "CoreFoundation.framework",
         "CoreMIDI.framework",
       ]
-    } else {
-      sources += [ "midi_manager_tvos.cc" ]
     }
   }
 

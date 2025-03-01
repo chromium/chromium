@@ -475,12 +475,9 @@ def _best_rank(prop, ranking_map, bitfield_properties):
     return best_rank if best_rank != worst_rank else -1
 
 
-def _evaluate_rare_non_inherited_group(properties,
-                                       properties_ranking,
-                                       bitfield_properties,
-                                       num_layers,
-                                       partition_rule=None):
-    """Re-evaluate the grouping of RareNonInherited groups based on each
+def _evaluate_rare_group(properties, properties_ranking, bitfield_properties,
+                         num_layers, partition_rule, inherited):
+    """Re-evaluate the grouping of Rare groups based on each
     property's popularity.
 
     Args:
@@ -489,17 +486,15 @@ def _evaluate_rare_non_inherited_group(properties,
         num_layers: the number of group to split
         partition_rule: cumulative distribution over properties_ranking
                         Ex: [0.3, 0.6, 1]
+        inherited: whether we are considering inherited properties
+                   (otherwise, only non-inherited)
     """
-    if partition_rule is None:
-        partition_rule = [
-            1.0 * (i + 1) / num_layers for i in range(num_layers)
-        ]
-
     assert num_layers == len(partition_rule), \
         "Length of rule and num_layers mismatch"
 
     layers_name = [
-        "rare-non-inherited-usage-less-than-{}-percent".format(
+        "rare-{}-usage-less-than-{}-percent".format(
+            "inherited" if inherited else "non-inherited",
             int(round(partition_rule[i] * 100))) for i in range(num_layers)
     ]
 
@@ -509,60 +504,16 @@ def _evaluate_rare_non_inherited_group(properties,
     for property_ in properties:
         rank = _best_rank(property_, properties_ranking, bitfield_properties)
         if (property_.field_group is not None and "*" in property_.field_group
-                and not property_.inherited and rank >= 0):
+                and property_.inherited == inherited and rank >= 0):
 
             assert property_.field_group == "*", \
-                "The property {}  will be automatically assigned a group, " \
+                "The property {} will be automatically assigned a group, " \
                 "please put '*' as the field_group".format(property_.name)
 
             property_.field_group = "->".join(layers_name[0:rank])
         elif (property_.field_group is not None
-              and "*" in property_.field_group and not property_.inherited
-              and rank < 0):
-            group_tree = property_.field_group.split("->")[1:]
-            group_tree = [layers_name[0], layers_name[0] + "-sub"] + group_tree
-            property_.field_group = "->".join(group_tree)
-
-
-def _evaluate_rare_inherit_group(properties,
-                                 properties_ranking,
-                                 bitfield_properties,
-                                 num_layers,
-                                 partition_rule=None):
-    """Re-evaluate the grouping of RareInherited groups based on each property's
-    popularity.
-
-    Args:
-        properties: list of all css properties
-        properties_ranking: map of property rankings
-        num_layers: the number of group to split
-        partition_rule: cumulative distribution over properties_ranking
-                        Ex: [0.4, 1]
-    """
-    if partition_rule is None:
-        partition_rule = [
-            1.0 * (i + 1) / num_layers for i in range(num_layers)
-        ]
-
-    assert num_layers == len(partition_rule), \
-        "Length of rule and num_layers mismatch"
-
-    layers_name = [
-        "rare-inherited-usage-less-than-{}-percent".format(
-            int(round(partition_rule[i] * 100))) for i in range(num_layers)
-    ]
-
-    properties_ranking = _get_properties_ranking_using_partition_rule(
-        properties_ranking, partition_rule)
-
-    for property_ in properties:
-        rank = _best_rank(property_, properties_ranking, bitfield_properties)
-        if (property_.field_group is not None and "*" in property_.field_group
-                and property_.inherited and rank >= 0):
-            property_.field_group = "->".join(layers_name[0:rank])
-        elif (property_.field_group is not None
-              and "*" in property_.field_group and property_.inherited
-              and rank < 0):
+              and "*" in property_.field_group
+              and property_.inherited == inherited and rank < 0):
             group_tree = property_.field_group.split("->")[1:]
             group_tree = [layers_name[0], layers_name[0] + "-sub"] + group_tree
             property_.field_group = "->".join(group_tree)
@@ -619,14 +570,14 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
             and int(_find_size_for_property(p) or 64) < 8
         }
 
-        _evaluate_rare_non_inherited_group(
+        _evaluate_rare_group(
             self._properties, properties_ranking, bitfield_properties,
             len(group_parameters["rare_non_inherited_properties_rule"]),
-            group_parameters["rare_non_inherited_properties_rule"])
-        _evaluate_rare_inherit_group(
+            group_parameters["rare_non_inherited_properties_rule"], False)
+        _evaluate_rare_group(
             self._properties, properties_ranking, bitfield_properties,
             len(group_parameters["rare_inherited_properties_rule"]),
-            group_parameters["rare_inherited_properties_rule"])
+            group_parameters["rare_inherited_properties_rule"], True)
         self._root_group = _create_groups(self._properties)
         # We create separate groups/fields for generating ComputedStyle-
         # BuilderBase. The only difference between these fields and the regular

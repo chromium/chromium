@@ -694,6 +694,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "PageContentAnnotationsService",
 #endif  // !BUILDFLAG(IS_CHROMEOS)
     "PasswordsPrivateEventRouter",
+    "PendingExtensionManager",
     "PermissionDecisionAutoBlocker",
     "PermissionHelper",
 #if BUILDFLAG(ENABLE_EXTENSIONS)

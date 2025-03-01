@@ -357,8 +357,6 @@ static_library("common_lib") {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
     sources += [
-      "read_anything/read_anything_constants.cc",
-      "read_anything/read_anything_constants.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",
     ]

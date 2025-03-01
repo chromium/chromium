@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.ACTION_BUTTON_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.BOTTOM_MARGIN_OVERRIDE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.BOTTOM_MARGIN_OVERRIDE_PX;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.IS_ICON_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.LEFT_MARGIN_OVERRIDE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.LEFT_MARGIN_OVERRIDE_PX;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_IDENTIFIER;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.RIGHT_MARGIN_OVERRIDE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.RIGHT_MARGIN_OVERRIDE_PX;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.DEFAULT_MESSAGE_IDENTIFIER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupMessageCardViewProperties.ALL_KEYS;
@@ -318,6 +318,9 @@ public class TabGroupListMediator {
         assert !tabGroupRemovedMessages.isEmpty();
         String dismissButtonContextDescription =
                 mContext.getString(R.string.accessibility_tab_group_removed_dismiss_button);
+        int horizontalPadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_group_removed_card_horizontal_padding);
 
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(MESSAGE_IDENTIFIER, DEFAULT_MESSAGE_IDENTIFIER)
@@ -331,9 +334,9 @@ public class TabGroupListMediator {
                 .with(IS_ICON_VISIBLE, false)
                 .with(CARD_TYPE, MESSAGE)
                 .with(ACTION_BUTTON_VISIBLE, false)
-                .with(LEFT_MARGIN_OVERRIDE, 0)
-                .with(RIGHT_MARGIN_OVERRIDE, 0)
-                .with(BOTTOM_MARGIN_OVERRIDE, 0)
+                .with(LEFT_MARGIN_OVERRIDE_PX, horizontalPadding)
+                .with(RIGHT_MARGIN_OVERRIDE_PX, horizontalPadding)
+                .with(BOTTOM_MARGIN_OVERRIDE_PX, 0)
                 .build();
     }
 

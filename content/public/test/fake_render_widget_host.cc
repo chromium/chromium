@@ -107,8 +107,7 @@ void FakeRenderWidgetHost::ImeCancelComposition() {}
 
 void FakeRenderWidgetHost::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::optional<std::vector<gfx::Rect>>& character_bounds,
-    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds) {
   last_composition_range_ = range;
   if (character_bounds.has_value()) {
     last_composition_bounds_ = character_bounds.value();

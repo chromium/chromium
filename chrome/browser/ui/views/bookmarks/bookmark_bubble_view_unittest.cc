@@ -34,8 +34,8 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -435,7 +435,7 @@ class BookmarkBubbleViewWithAccountBookmarksTest
  public:
   BookmarkBubbleViewWithAccountBookmarksTest() {
     test_features_.InitAndEnableFeature(
-        syncer::kSyncEnableBookmarksInTransportMode);
+        switches::kSyncEnableBookmarksInTransportMode);
   }
 };
 

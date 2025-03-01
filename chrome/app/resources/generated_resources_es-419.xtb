@@ -9818,9 +9818,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, voz <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transferir automáticamente la red Wi-Fi desde tu teléfono Android</translation>
 <translation id="7991296728590311172">Configuración de Accesibilidad con interruptores</translation>
-<translation id="7992080146463834191">Resume el contenido, simplifica el lenguaje complejo o haz preguntas.</translation>
 <translation id="7992203134935383159">Síntesis de voz</translation>
-<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Prioridad de proceso</translation>
 <translation id="7997828719430450286">Éxito</translation>
 <translation id="7998701048266085837">URLs</translation>
@@ -11080,7 +11078,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8874448314264883207">Se desactivó "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección al navegar, pero aumenta las probabilidades de que las funciones del sitio funcionen como se espera.</translation>
-<translation id="8875221558267407626">Resume el contenido, simplifica el lenguaje complejo o haz preguntas</translation>
 <translation id="8875520811099717934">Actualización de Linux</translation>
 <translation id="8875736897340638404">Elige la visibilidad</translation>
 <translation id="8876307312329369159">No se puede cambiar esta configuración en la sesión de demostración.</translation>

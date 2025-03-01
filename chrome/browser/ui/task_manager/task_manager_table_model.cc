@@ -29,6 +29,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -711,9 +712,29 @@ int TaskManagerTableModel::CompareValues(size_t row1,
   }
 }
 
+std::u16string TaskManagerTableModel::GetAXNameForHeader(
+    const std::vector<std::u16string>& visible_column_titles) {
+  // Gate the header change for task manager behind feature flag. Clean it up
+  // once refreshed task manager is launched.
+  // TODO(crbug.com/364926055): Chromium Task Manager Refresh Cleanup.
+  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    return TableModel::GetAXNameForHeader(visible_column_titles);
+  }
+
+  CHECK(!visible_column_titles.empty());
+  return base::JoinString(visible_column_titles, u" ");
+}
+
 std::u16string TaskManagerTableModel::GetAXNameForRow(
     size_t row,
     const std::vector<int>& visible_column_ids) {
+  // Gate the row change for task manager behind feature flag. Clean it up
+  // once refreshed task manager is launched.
+  // TODO(crbug.com/364926055): Chromium Task Manager Refresh Cleanup.
+  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    return TableModel::GetAXNameForRow(row, visible_column_ids);
+  }
+
   DCHECK_LT(row, RowCount());
   DCHECK(!visible_column_ids.empty());
 

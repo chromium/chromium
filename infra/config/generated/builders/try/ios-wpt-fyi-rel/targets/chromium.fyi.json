@@ -3,7 +3,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--no-wpt-internal",
           "--xcode-build-version",
           "16c5032a"
         ],

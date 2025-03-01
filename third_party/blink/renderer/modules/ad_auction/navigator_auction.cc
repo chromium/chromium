@@ -2704,8 +2704,7 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
         base::Milliseconds(config.sellerTimeout());
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
-      config.hasReportingTimeout()) {
+  if (config.hasReportingTimeout()) {
     mojo_config->auction_ad_config_non_shared_params->reporting_timeout =
         base::Milliseconds(config.reportingTimeout());
   }

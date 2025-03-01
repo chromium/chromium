@@ -311,8 +311,7 @@ blink::mojom::QuotaStatusCode AsyncFileTestHelper::GetUsageAndQuota(
       blink::mojom::QuotaStatusCode::kUnknown;
   base::RunLoop run_loop;
   quota_manager_proxy->GetUsageAndQuota(
-      storage_key, FileSystemTypeToQuotaStorageType(type),
-      base::SequencedTaskRunner::GetCurrentDefault(),
+      storage_key, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&DidGetUsageAndQuota, &status, usage, quota,
                      run_loop.QuitWhenIdleClosure()));
   run_loop.Run();

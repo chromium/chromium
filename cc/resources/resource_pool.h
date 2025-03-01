@@ -85,9 +85,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     // True if the backing is using raw draw.
     bool is_using_raw_draw = false;
 
-    // Note: Required and set only for software resources.
-    scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
-
    private:
     scoped_refptr<gpu::ClientSharedImage> shared_image_;
   };

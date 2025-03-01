@@ -276,10 +276,10 @@ void CaptureModeSessionFocusCycler::HighlightableView::
   needs_highlight_path_ = true;
 }
 
-void CaptureModeSessionFocusCycler::HighlightableView::SetUpFocusPredicate(
-    views::View* view) {
+void CaptureModeSessionFocusCycler::HighlightableView::SetUpFocusPredicate() {
   // If the view has a preset focus ring, use it instead of creating a new
   // one.
+  views::View* view = GetView();
   auto* preset_focus_ring = views::FocusRing::Get(view);
   focus_ring_ = preset_focus_ring ? preset_focus_ring
                                   : StyleUtil::SetUpFocusRingForView(view);
@@ -312,7 +312,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   // for children of HighlightableView, so it will not replace any other style
   // of FocusRing.
   if (!focus_ring_) {
-    SetUpFocusPredicate(view);
+    SetUpFocusPredicate();
   }
 
   if (needs_highlight_path_) {

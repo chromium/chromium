@@ -802,6 +802,11 @@ const char kLensUnaryApisWithHttpTransportEnabledName[] =
 const char kLensUnaryApisWithHttpTransportEnabledDescription[] =
     "Enables the unary APIs with HTTP transport.";
 
+const char kLensUnaryApiSalientTextEnabledName[] =
+    "Lens unary API salient text enabled";
+const char kLensUnaryApiSalientTextEnabledDescription[] =
+    "Enables the unary salient text API.";
+
 const char kLensUnaryClientDataHeaderEnabledName[] =
     "Lens unary client data header enabled";
 const char kLensUnaryClientDataHeaderEnabledDescription[] =

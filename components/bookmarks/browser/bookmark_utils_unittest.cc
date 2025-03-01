@@ -24,7 +24,7 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/sync/base/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -87,7 +87,7 @@ class BookmarkUtilsTest : public testing::Test,
 
   // Some of these tests exercise account bookmarks.
   base::test::ScopedFeatureList features_override_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   // Clipboard requires a full TaskEnvironment.
   base::test::TaskEnvironment task_environment_;

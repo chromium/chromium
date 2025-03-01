@@ -55,6 +55,7 @@
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/query_parser/query_parser.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -555,7 +556,7 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
 
  protected:
   base::test::ScopedFeatureList features_{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<BookmarkModel> model_;
   ObserverDetails observer_details_;
   ObserverDetails before_observer_details_;
@@ -1622,7 +1623,7 @@ TEST_F(BookmarkModelTest, MostRecentlyAddedEntries) {
 // bookmarks.
 TEST_F(BookmarkModelTest, MostRecentlyAddedEntriesLocalAndAccountBookmarks) {
   base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
   model_->CreateAccountPermanentFolders();
 
   // Add nodes such that the following holds for the creation time of the
@@ -2454,7 +2455,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
 
 TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   // Create a model with one local-or-syncable url and one account url.
   base::ScopedTempDir tmp_dir;
@@ -2493,7 +2494,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
 
 TEST(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   // Since metadata str serialized proto, it could contain non-ASCII characters.
   const std::string sync_metadata_str("a/2'\"");
@@ -2539,7 +2540,7 @@ TEST(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
 
 TEST(BookmarkModelLoadTest, RemoveAccountPermanentFoldersUponMetadataDecoding) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   // Create a model with account bookmarks.
   base::ScopedTempDir tmp_dir;
@@ -2614,7 +2615,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
 // Verifies the TitledUrlIndex is properly loaded for account bookmarks.
 TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
@@ -2683,7 +2684,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
 // Verifies the UUID index is properly loaded, for account nodes.
 TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
@@ -2722,7 +2723,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
 TEST(BookmarkModelStorageTest,
      GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
@@ -2788,7 +2789,7 @@ TEST(BookmarkModelStorageTest,
 
 TEST(BookmarkModelStorageTest, SaveExactlyOneFile) {
   base::test::ScopedFeatureList features{
-      syncer::kSyncEnableBookmarksInTransportMode};
+      switches::kSyncEnableBookmarksInTransportMode};
 
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());

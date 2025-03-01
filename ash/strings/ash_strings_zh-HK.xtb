@@ -246,7 +246,6 @@
 <translation id="17722141032474077">計算</translation>
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前揀咗 <ph name="DATE" />。</translation>
 <translation id="178347895271755507">設定睇手機最近嘅相、媒體同通知</translation>
-<translation id="1785317913592722944">從建議群組移除項目</translation>
 <translation id="1786487376942610288">將畫中畫視窗最大化或還原為目前大小</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你瀏覽過的網頁和目前開啟的頁面</translation>
@@ -853,6 +852,7 @@
 <translation id="3859364108019690">無法以串流方式使用應用程式</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
 <translation id="3870197372373144624">請嘗試將裝置關機。</translation>
+<translation id="3879748587602334249">下載管理員</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3892148308691398805">複製文字</translation>
@@ -878,6 +878,7 @@
 <translation id="3958714870339660776">全日</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963124517343721543">開啟之前使用的視窗和分頁，輕鬆繼續未完成的操作。你也可以查看個人化的後續步驟建議。</translation>
+<translation id="3967822245660637423">下載完成</translation>
 <translation id="3969043077941541451">關閉</translation>
 <translation id="3970324493235864154">查看手機的通知</translation>
 <translation id="397105322502079400">計算中…</translation>
@@ -1618,6 +1619,7 @@
 <translation id="6319058840130157106">在右下角、啟動器、網址列、書籤列、開啟的網站和下載項目之間向後移動</translation>
 <translation id="6319503618073410818">在瀏覽器中查看詳情</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
+<translation id="6325525973963619867">失敗</translation>
 <translation id="6330012934079202188">顯示緊來自所有桌面嘅視窗，㩒向上箭咀掣就可以顯示來自目前桌面嘅視窗</translation>
 <translation id="6337159624125741244">已開啟「全螢幕放大鏡」</translation>
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>

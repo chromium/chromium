@@ -36,5 +36,5 @@ interface MicrosoftAuthUntrustedPageHandler {
   // Sets Microsoft API access token in the browser-side.
   SetAccessToken(AccessToken access_token);
   // Sets error state for Microsoft auth in the browser-side.
-  SetAuthStateError();
+  SetAuthStateError(string error_code, string error_message);
 };

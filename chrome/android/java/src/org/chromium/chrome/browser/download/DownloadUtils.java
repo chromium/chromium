@@ -118,7 +118,6 @@ public class DownloadUtils {
      *     expanded.
      * @return Whether the UI was shown.
      */
-    @CalledByNative
     public static boolean showDownloadManager(
             @Nullable Activity activity,
             @Nullable Tab tab,

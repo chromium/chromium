@@ -219,7 +219,7 @@ TEST_F(FileSystemContextTest, ResolveURLOnOpenFileSystem_CustomBucket) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
       bucket_future;
   proxy()->CreateBucketForTesting(
-      storage_key, "custom_bucket", blink::mojom::StorageType::kTemporary,
+      storage_key, "custom_bucket",
       base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto bucket, bucket_future.Take());

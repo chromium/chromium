@@ -1290,7 +1290,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
   EXPECT_EQ(tab4.url().spec(),
             *activity_log[3].activity_metadata.tab_metadata->last_known_url);
   EXPECT_EQ(u"example4.com", activity_log[3].description_text);
-  EXPECT_EQ(u"Unknown user removed a tab", activity_log[3].title_text);
+  EXPECT_EQ(u"Deleted account removed a tab", activity_log[3].title_text);
   EXPECT_EQ(u"25d ago", activity_log[3].time_delta_text);
   EXPECT_EQ(std::nullopt, activity_log[3].activity_metadata.triggering_user);
 }

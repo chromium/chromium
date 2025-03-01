@@ -119,49 +119,6 @@ final class CursorAnchorInfoController {
     }
 
     /**
-     * Sets positional information of composing text as an array of character bounds or line
-     * bounding boxes as an array of line bounds (or both).
-     *
-     * @param characterBounds Array of character bounds in local coordinates.
-     * @param lineBounds Array of line bounds in local coordinates.
-     * @param view The attached view.
-     */
-    // TODO(crbug.com/40940885): Remove this method once it is no longer used.
-    public void setBounds(
-            float @Nullable [] characterBounds, float @Nullable [] lineBounds, View view) {
-        if (!mIsEditable) return;
-        boolean shouldUpdate = false;
-        if (mInputCursorAnchorInfo == null) {
-            mInputCursorAnchorInfo = new InputCursorAnchorInfo();
-            mInputCursorAnchorInfo.editorBoundsInfo =
-                    new org.chromium.blink.mojom.EditorBoundsInfo();
-            mInputCursorAnchorInfo.textAppearanceInfo =
-                    new org.chromium.blink.mojom.TextAppearanceInfo();
-        }
-
-        if (characterBounds != null) {
-            Rect[] newCharacterBounds = createRectArrayFromFloats(characterBounds);
-            if (!mojoRectArraysEqual(mInputCursorAnchorInfo.characterBounds, newCharacterBounds)) {
-                shouldUpdate = true;
-                mInputCursorAnchorInfo.characterBounds = newCharacterBounds;
-            }
-        }
-        if (lineBounds != null) {
-            Rect[] newLineBounds = createRectArrayFromFloats(lineBounds);
-            if (!mojoRectArraysEqual(mInputCursorAnchorInfo.visibleLineBounds, newLineBounds)) {
-                shouldUpdate = true;
-                mInputCursorAnchorInfo.visibleLineBounds = newLineBounds;
-            }
-        }
-        if (shouldUpdate) {
-            mLastCursorAnchorInfo = null;
-            if (mHasCoordinateInfo) {
-                updateCursorAnchorInfo(view);
-            }
-        }
-    }
-
-    /**
      * Sets coordinates system parameters and selection marker information.
      *
      * @param scale device scale factor.
@@ -249,6 +206,9 @@ final class CursorAnchorInfoController {
     }
 
     public void updateCursorAnchorInfoData(InputCursorAnchorInfo cursorAnchorInfo, View view) {
+        if (mInputCursorAnchorInfo != null && mInputCursorAnchorInfo.equals(cursorAnchorInfo)) {
+            return;
+        }
         mInputCursorAnchorInfo = cursorAnchorInfo;
         mLastCursorAnchorInfo = null;
         updateCursorAnchorInfo(view);
@@ -350,37 +310,5 @@ final class CursorAnchorInfoController {
             mInputMethodManagerWrapper.updateCursorAnchorInfo(view, mLastCursorAnchorInfo);
         }
         mHasPendingImmediateRequest = false;
-    }
-
-    private Rect[] createRectArrayFromFloats(float[] floatArray) {
-        int numRects = floatArray.length / 4;
-        Rect[] rectArray = new Rect[numRects];
-        for (int i = 0; i < numRects; ++i) {
-            rectArray[i] = new Rect();
-            rectArray[i].x = Math.round(floatArray[i * 4]);
-            rectArray[i].y = Math.round(floatArray[i * 4 + 1]);
-            rectArray[i].width = Math.round(floatArray[i * 4 + 2]) - rectArray[i].x;
-            rectArray[i].height = Math.round(floatArray[i * 4 + 3]) - rectArray[i].y;
-        }
-        return rectArray;
-    }
-
-    /**
-     * Mojo Rect objects don't implement equals() and don't work well with Arrays.equals(). This
-     * method provides utility for checking whether two Mojo Rect[] objects have equal elements.
-     */
-    private boolean mojoRectArraysEqual(Rect[] first, Rect[] second) {
-        if ((first == null && second != null) || (first != null && second == null)) return false;
-        if (first == null && second == null) return true;
-        if (first.length != second.length) return false;
-        for (int i = 0; i < first.length; i++) {
-            if (first[i].x != second[i].x
-                    || first[i].y != second[i].y
-                    || first[i].width != second[i].width
-                    || first[i].height != second[i].height) {
-                return false;
-            }
-        }
-        return true;
     }
 }

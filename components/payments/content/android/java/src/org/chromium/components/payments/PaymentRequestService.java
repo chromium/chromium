@@ -1060,8 +1060,8 @@ public class PaymentRequestService
     }
 
     /** Responds to the CanMakePayment query from the merchant page. */
-    public void respondCanMakePaymentQuery() {
-        if (mClient == null) return;
+    private void respondCanMakePaymentQuery() {
+        if (mBrowserPaymentRequest == null) return;
 
         mIsCanMakePaymentResponsePending = false;
 
@@ -1075,6 +1075,19 @@ public class PaymentRequestService
         }
 
         boolean response = mCanMakePayment && allowedByPref;
+        mBrowserPaymentRequest.maybeOverrideCanMakePaymentResponse(
+                response, this::sendCanMakePaymentResponseToRenderer);
+    }
+
+    /**
+     * Sends the given response to the renderer process in order to resolve the pending JavaScript
+     * promise for the PaymentRequest.canMakePayment() API call.
+     *
+     * @param response The value to be returned from the PaymentRequest.canMakePayment() API call in
+     *     JavaScript.
+     */
+    private void sendCanMakePaymentResponseToRenderer(boolean response) {
+        if (mClient == null) return;
         mClient.onCanMakePayment(
                 response
                         ? CanMakePaymentQueryResult.CAN_MAKE_PAYMENT
