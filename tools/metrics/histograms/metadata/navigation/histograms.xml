@@ -1541,7 +1541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrameSchemeDifferentPage2NonUniqueHostname"
-    enum="NavigationScheme" expires_after="2024-09-01">
+    enum="NavigationScheme" expires_after="2026-02-28">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -1550,6 +1550,9 @@ chromium-metrics-reviews@google.com.
     replaces a document object. This is not reported for reference fragment
     navigations, pushState/replaceState or same page history navigation. This is
     only recorded for finished navigations and not attempts.
+
+    Warning: this histogram was expired from 2024-09-01 to 2025-02-28; data may
+    be missing.
   </summary>
 </histogram>
 
