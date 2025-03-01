@@ -16,7 +16,12 @@
   <div route-path="default">
     <!-- TODO(crbug.com/393445109) Placeholder for final icons. -->
     <cr-link-row id="glicLinkRow"
+<if expr="not _google_chrome">
         start-icon="settings20:lightbulb"
+</if>
+<if expr="_google_chrome">
+        start-icon="settings-internal:spark"
+</if>
         label="$i18n{glicRowLabel}"
         sub-label="$i18n{glicRowSublabel}"
         on-click="onGlicPageClick_"></cr-link-row>
@@ -126,14 +131,24 @@
                 <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
                 <ul class="icon-bulleted-list">
                   <li>
-                    <!-- TODO(crbug.com/393445109) Placeholder until we decide
-                        on final icons. -->
-                    <cr-icon icon="settings20:lightbulb" aria-hidden="true">
+                    <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                        icon="settings20:edit-square">
+</if>
+<if expr="_google_chrome">
+                        icon="settings-internal:text-analysis">
+</if>
                     </cr-icon>
                     <div class="secondary">$i18n{glicTabAccessWhenOn1}</div>
                   </li>
                   <li>
-                    <cr-icon icon="settings20:lightbulb" aria-hidden="true">
+                    <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                        icon="settings20:account-circle">
+</if>
+<if expr="_google_chrome">
+                        icon="settings-internal:chat-spark-2">
+</if>
                     </cr-icon>
                     <div class="secondary">$i18n{glicTabAccessWhenOn2}</div>
                   </li>
@@ -143,12 +158,24 @@
                 <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
                 <ul class="icon-bulleted-list">
                   <li>
-                    <cr-icon icon="settings20:lightbulb" aria-hidden="true">
+                    <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                        icon="settings20:web">
+</if>
+<if expr="_google_chrome">
+                        icon="settings-internal:screensaver-auto">
+</if>
                     </cr-icon>
                     <div class="secondary">$i18n{glicTabAccessConsider1}</div>
                   </li>
                   <li>
-                    <cr-icon icon="settings20:lightbulb" aria-hidden="true">
+                    <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                        icon="settings:language">
+</if>
+<if expr="_google_chrome">
+                        icon="settings-internal:google-g">
+</if>
                     </cr-icon>
                     <div class="secondary">$i18n{glicTabAccessConsider2}</div>
                   </li>
@@ -156,7 +183,7 @@
               </div>
             </div>
           </cr-collapse>
-          <cr-link-row id="activityButton"
+          <cr-link-row id="activityButton" on-click="onActivityRowClick_"
               label="$i18n{glicActivityButton}"
               sub-label="$i18n{glicActivityButtonSublabel}" external>
           </cr-link-row>

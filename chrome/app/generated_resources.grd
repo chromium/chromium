@@ -17385,6 +17385,24 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Sign in to <ph name="RP_ID">$1<ex>webauthn.io</ex></ph>
       </message>
 
+      <!-- WebAuthn Automatic Passkey Upgrades -->
+      <message name="IDS_PASSKEY_UPGRADE_BUBBLE_TITLE" desc="The title of a bubble that informs the user a passkey was created for them automatically. Refer to Glossary for the meaning of 'passkey'.">
+        Sign in faster next time
+      </message>
+
+      <message name="IDS_PASSKEY_UPGRADE_BUBBLE_DESCRIPTION" desc="The body of a bubble that informs the user a passkey was created for them automatically. Refer to Glossary for the meaning of 'passkey'.">
+        <ph name="RP_ID">$1<ex>example.com</ex></ph> just created a passkey for your account. Passkeys offer a faster and safer way to sign in and are saved in Google Password Manager for <ph name="USER">$2<ex>elisa.beckett@gmail.com</ex></ph>. <ph name="LEARN_MORE">$3<ex>Learn more about passkeys</ex></ph>
+      </message>
+
+      <message name="IDS_PASSKEY_UPGRADE_BUBBLE_LEARN_MORE" desc="A link in the body of a bubble that informs the user a passkey was created for them automatically. The link opens a Google help center article on passkeys. Refer to Glossary for the meaning of 'passkey'.">
+        Learn more about passkeys
+      </message>
+
+      <message name="IDS_PASSKEY_UPGRADE_BUBBLE_MANAGE_BUTTON" desc="The label of a button that opens Google Password Manager settings. Refer to Glossary for the meaning of 'passkey'.">
+        Manage passwords and passkeys
+      </message>
+
+
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_TITLE">
         Turn on Bluetooth?

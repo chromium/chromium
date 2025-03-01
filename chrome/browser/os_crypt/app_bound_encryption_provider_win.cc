@@ -50,6 +50,11 @@ namespace features {
 BASE_FEATURE(kAppBoundUserDataDirProtection,
              "AppBoundUserDataDirProtection",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAppBoundEncryptionKeyV3,
+             "AppBoundEncryptionKeyV3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 AppBoundEncryptionProviderWin::AppBoundEncryptionProviderWin(
@@ -68,8 +73,12 @@ class AppBoundEncryptionProviderWin::COMWorker {
     std::string ciphertext;
     DWORD last_error;
 
-    HRESULT res = os_crypt::EncryptAppBoundString(
-        kCurrentProtectionLevel, plaintext_string, ciphertext, last_error);
+    elevation_service::EncryptFlags flags{
+        .use_latest_key =
+            base::FeatureList::IsEnabled(features::kAppBoundEncryptionKeyV3)};
+    HRESULT res = os_crypt::EncryptAppBoundString(kCurrentProtectionLevel,
+                                                  plaintext_string, ciphertext,
+                                                  last_error, &flags);
 
     base::UmaHistogramSparse("OSCrypt.AppBoundProvider.Encrypt.ResultCode",
                              res);
@@ -93,9 +102,12 @@ class AppBoundEncryptionProviderWin::COMWorker {
                                      encrypted_key.end());
     std::string decrypted_key_string;
     std::optional<std::string> maybe_new_ciphertext;
+    elevation_service::EncryptFlags flags{
+        .use_latest_key =
+            base::FeatureList::IsEnabled(features::kAppBoundEncryptionKeyV3)};
     HRESULT res = os_crypt::DecryptAppBoundString(
         encrypted_key_string, decrypted_key_string, kCurrentProtectionLevel,
-        maybe_new_ciphertext, last_error);
+        maybe_new_ciphertext, last_error, &flags);
 
     base::UmaHistogramSparse("OSCrypt.AppBoundProvider.Decrypt.ResultCode",
                              res);

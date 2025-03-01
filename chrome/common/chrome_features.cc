@@ -335,6 +335,10 @@ const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
                                                  48};
 
+// Quality value in the range [0, 100]. For use with gfx::JPEGCodec::Encode().
+const base::FeatureParam<int> kGlicScreenshotEncodeQuality{
+    &kGlic, "glic-screenshot-encode-quality", 100};
+
 const base::FeatureParam<std::string> kGlicDefaultHotkey{
     &kGlic, "glic-default-hotkey", ""};
 

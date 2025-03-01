@@ -36,6 +36,11 @@ namespace features {
 // previously encrypted data will function correctly but Encrypts do not use
 // app-bound.
 BASE_DECLARE_FEATURE(kAppBoundUserDataDirProtection);
+
+// If enabled, App-Bound encryption will request that the version 3 key be used
+// for data encryption by the elevated service.
+BASE_DECLARE_FEATURE(kAppBoundEncryptionKeyV3);
+
 }  // namespace features
 
 class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {

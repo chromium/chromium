@@ -328,11 +328,12 @@ void NavigationCapturingProcess::AttachToNextNavigationInWebContents(
   // web contents, we want to overwrite that user data to make sure the newest
   // process gets attached to the next navigation. As such we don't check for
   // existing user data.
+  GURL target_url = user_data->navigation_params_url_;
   web_contents.SetUserData(
       UserDataKey(),
       std::make_unique<
           NavigationHandleUserDataForwarder<NavigationCapturingProcess>>(
-          web_contents, std::move(user_data)));
+          web_contents, std::move(user_data), target_url));
 }
 
 BrowserAndTabOverride

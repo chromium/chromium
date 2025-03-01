@@ -195,14 +195,10 @@ RequestResult RuntimeHooksDelegate::GetURL(
   // as part of the path, there should be no way this could conceivably fail.
   DCHECK(url.is_valid());
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDynamicURLRedirection)) {
-    if (WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension,
-                                                        url.path())) {
-      GURL::Replacements replacements;
-      replacements.SetHostStr(extension->guid());
-      url = url.ReplaceComponents(replacements);
-    }
+  if (WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, url.path())) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(extension->guid());
+    url = url.ReplaceComponents(replacements);
   }
 
   RequestResult result(RequestResult::HANDLED);
@@ -279,11 +275,8 @@ void RuntimeHooksDelegate::InitializeTemplate(
     const APITypeReferenceMap& type_refs) {
   object_template->SetNativeDataProperty(gin::StringToSymbol(isolate, "id"),
                                          &GetExtensionId, &EmptySetter);
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDynamicURLRedirection)) {
-    object_template->SetNativeDataProperty(
-        gin::StringToSymbol(isolate, "dynamicId"), &GetDynamicId, &EmptySetter);
-  }
+  object_template->SetNativeDataProperty(
+      gin::StringToSymbol(isolate, "dynamicId"), &GetDynamicId, &EmptySetter);
 }
 
 RequestResult RuntimeHooksDelegate::HandleGetManifest(

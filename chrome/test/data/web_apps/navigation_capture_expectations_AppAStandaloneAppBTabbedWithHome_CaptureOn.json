@@ -122,15 +122,16 @@
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left"
                   } ],
-                  "is_pinned_home_tab": true
+                  "is_pinned_home_tab": true,
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBTabbedWithHome_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": "https://crbug.com/396123952",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -160,10 +161,11 @@
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left"
                   } ],
-                  "is_pinned_home_tab": true
+                  "is_pinned_home_tab": true,
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       },
       "Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
@@ -213,7 +215,7 @@
       },
       "Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "AppAStandaloneAppBTabbedWithHome_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": "https://crbug.com/396123952, https://crbug.com/396122954",
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -243,10 +245,11 @@
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left"
                   } ],
-                  "is_pinned_home_tab": true
+                  "is_pinned_home_tab": true,
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Left" ]
                } ]
             } ],
-            "launch_metric_buckets": [  ]
+            "launch_metric_buckets": [ "kFromNavigationCapturing" ]
          }
       }
    }

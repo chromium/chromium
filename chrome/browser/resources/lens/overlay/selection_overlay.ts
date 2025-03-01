@@ -309,9 +309,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.isClosing = true;
         this.removeDragListeners();
       }),
-      this.browserProxy.callbackRouter.triggerCopyText.addListener(() => {
-        this.handleCopy();
-      }),
+      this.browserProxy.callbackRouter.onCopyCommand.addListener(
+          this.onCopyCommand.bind(this)),
     ];
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
         this.screenshotDataReceived.bind(this));
@@ -1196,6 +1195,15 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.textSelectionLayer =
         this.shadowRoot!.querySelector('lens-text-layer')!;
     return this.textSelectionLayer;
+  }
+
+  private onCopyCommand() {
+    if (!this.simplifiedSelectionEnabled) {
+      this.handleCopy();
+      return;
+    }
+
+    this.handleCopyAsImage();
   }
 
   /**

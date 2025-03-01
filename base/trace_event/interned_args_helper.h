@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/profiler/module_cache.h"

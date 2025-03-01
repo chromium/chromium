@@ -26,8 +26,11 @@ class NavigationHandleUserDataForwarder : public content::WebContentsObserver,
                                           public base::SupportsUserData::Data {
  public:
   NavigationHandleUserDataForwarder(content::WebContents& contents,
-                                    std::unique_ptr<UserDataType> data)
-      : content::WebContentsObserver(&contents), data_(std::move(data)) {}
+                                    std::unique_ptr<UserDataType> data,
+                                    GURL target_url)
+      : content::WebContentsObserver(&contents),
+        data_(std::move(data)),
+        target_url_(std::move(target_url)) {}
   ~NavigationHandleUserDataForwarder() override = default;
 
   // Deletes the current instance of `NavigationHandleUserDataForwarder`
@@ -40,12 +43,10 @@ class NavigationHandleUserDataForwarder : public content::WebContentsObserver,
   // content::WebContentsObserver overrides:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
-    UserDataType::AttachToNavigationHandle(*navigation_handle,
-                                           std::move(data_));
-    SelfDestruct();
-  }
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() == target_url_) {
+      UserDataType::AttachToNavigationHandle(*navigation_handle,
+                                             std::move(data_));
+    }
     SelfDestruct();
   }
 
@@ -53,6 +54,7 @@ class NavigationHandleUserDataForwarder : public content::WebContentsObserver,
 
  private:
   std::unique_ptr<UserDataType> data_;
+  GURL target_url_;
 };
 
 }  // namespace web_app

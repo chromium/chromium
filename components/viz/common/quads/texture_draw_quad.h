@@ -8,7 +8,6 @@
 #include <array>
 #include <optional>
 
-#include "base/containers/span.h"
 #include "cc/paint/paint_flags.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"

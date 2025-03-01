@@ -15,7 +15,9 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import type {CrShortcutInputElement} from 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -41,7 +43,8 @@ const OS_WIDGET_TOGGLE_ELEMENT_ID = 'kGlicOsToggleElementId';
 const OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID =
     'kGlicOsWidgetKeyboardShortcutElementId';
 
-const SettingsGlicPageElementBase = HelpBubbleMixin(PrefsMixin(PolymerElement));
+const SettingsGlicPageElementBase =
+    HelpBubbleMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   static get is() {
@@ -152,6 +155,11 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   private onTabAccessToggleChange_(event: CustomEvent<{value: boolean}>) {
     this.tabAccessToggleExpanded_ = event.detail.value;
+  }
+
+  private onActivityRowClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        this.i18n('glicActivityButtonUrl'));
   }
 }
 

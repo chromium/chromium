@@ -6169,6 +6169,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "non-modal-sign-in-promo",
+    "owners": [
+      "kanouche@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "notification-one-tap-unsubscribe",
     "owners": [ "engedy@chromium.org" ],
     "expiry_milestone": 132

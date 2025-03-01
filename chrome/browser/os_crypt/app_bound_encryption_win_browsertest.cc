@@ -27,6 +27,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
@@ -171,23 +172,58 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptWithFlags) {
   ASSERT_TRUE(install_static::IsSystemInstall());
   const std::string plaintext("plaintext");
   std::string ciphertext;
-  DWORD last_error;
-  elevation_service::EncryptFlags flags;
-  flags.use_latest_key = true;
-  HRESULT hr =
-      EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
-                            plaintext, ciphertext, last_error, &flags);
+  {
+    DWORD last_error;
+    elevation_service::EncryptFlags flags{.use_latest_key = false};
+    HRESULT hr =
+        EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                              plaintext, ciphertext, last_error, &flags);
+    ASSERT_HRESULT_SUCCEEDED(hr);
+    EXPECT_EQ(last_error, DWORD{ERROR_SUCCESS});
+  }
 
-  ASSERT_HRESULT_SUCCEEDED(hr);
+  {
+    std::string returned_plaintext;
+    std::optional<std::string> maybe_new_ciphertext;
+    DWORD last_error;
+    HRESULT hr =
+        DecryptAppBoundString(ciphertext, returned_plaintext,
+                              ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                              maybe_new_ciphertext, last_error);
+    ASSERT_HRESULT_SUCCEEDED(hr);
+    EXPECT_FALSE(maybe_new_ciphertext);
+    EXPECT_EQ(last_error, DWORD{ERROR_SUCCESS});
+    EXPECT_EQ(plaintext, returned_plaintext);
+  }
+  // Encrypt with new encryption key. There's no real way to know the new key is
+  // being used because it's a blob of encrypted data.
+  {
+    DWORD last_error;
+    std::string new_ciphertext;
+    elevation_service::EncryptFlags flags{.use_latest_key = true};
+    HRESULT hr =
+        EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                              plaintext, new_ciphertext, last_error, &flags);
+    ASSERT_HRESULT_SUCCEEDED(hr);
+    EXPECT_EQ(last_error, DWORD{ERROR_SUCCESS});
 
-  std::string returned_plaintext;
-  std::optional<std::string> maybe_new_ciphertext;
-  hr = DecryptAppBoundString(ciphertext, returned_plaintext,
-                             ProtectionLevel::PROTECTION_PATH_VALIDATION,
-                             maybe_new_ciphertext, last_error);
-  EXPECT_FALSE(maybe_new_ciphertext);
-  ASSERT_HRESULT_SUCCEEDED(hr);
-  EXPECT_EQ(plaintext, returned_plaintext);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // Ciphertext is bigger for latest key version. Longer ciphertext, more
+    // security! This new encryption is only available in Chrome branded builds
+    // so this (fuzzy) check can only happen there.
+    EXPECT_GT(new_ciphertext.size(), ciphertext.size());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // Verify decrypt still works for data encrypted with the latest key.
+    std::string returned_plaintext;
+    std::optional<std::string> maybe_new_ciphertext;
+    hr = DecryptAppBoundString(ciphertext, returned_plaintext,
+                               ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                               maybe_new_ciphertext, last_error);
+    ASSERT_HRESULT_SUCCEEDED(hr);
+    EXPECT_FALSE(maybe_new_ciphertext);
+    EXPECT_EQ(last_error, DWORD{ERROR_SUCCESS});
+    EXPECT_EQ(plaintext, returned_plaintext);
+  }
 }
 
 // Test that invalid data is handled correctly.

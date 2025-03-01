@@ -5,6 +5,7 @@
 #include "pdf/pdf_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "pdf/buildflags.h"
 
 namespace chrome_pdf::features {
@@ -73,6 +74,10 @@ BASE_FEATURE(kPdfXfaSupport,
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 BASE_FEATURE(kPdfInk2, "PdfInk2", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables text highlighting with the Ink highlighter brush.
+const base::FeatureParam<bool> kPdfInk2TextHighlighting{
+    &kPdfInk2, "text-highlighting", false};
 #endif
 
 void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {

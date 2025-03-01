@@ -15,13 +15,14 @@
 
 class PasswordBubbleControllerBase;
 class PasskeyUpgradeBubbleController;
+class RichHoverButton;
 
 namespace content {
 class WebContents;
 }
 
 namespace views {
-class MdTextButton;
+class BoxLayoutView;
 class View;
 }  // namespace views
 
@@ -39,7 +40,7 @@ class PasskeyUpgradeBubbleView : public PasswordBubbleViewBase {
   PasskeyUpgradeBubbleView& operator=(const PasskeyUpgradeBubbleView&) = delete;
   ~PasskeyUpgradeBubbleView() override;
 
-  views::MdTextButton* manage_passkeys_button_for_testing();
+  RichHoverButton* manage_passkeys_button_for_testing();
 
  private:
   void ManagePasskeysButtonClicked();
@@ -51,7 +52,8 @@ class PasskeyUpgradeBubbleView : public PasswordBubbleViewBase {
 
   std::unique_ptr<PasskeyUpgradeBubbleController> controller_;
 
-  raw_ptr<views::MdTextButton> manage_passkeys_button_ = nullptr;
+  raw_ptr<views::BoxLayoutView> container_ = nullptr;
+  raw_ptr<RichHoverButton> manage_passkeys_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_UPGRADE_BUBBLE_VIEW_H_

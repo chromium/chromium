@@ -40,6 +40,8 @@
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/strokes/input/type_matchers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -174,9 +176,10 @@ MATCHER_P(InkStrokeDrawingBrushTypeEq, expected_type, "") {
   return opacity == 0.4f;
 }
 
-// Matcher for bitmap against expected dimensions.
-MATCHER_P(BitmapImageSizeEq, dimensions, "") {
-  return arg.dimensions() == dimensions;
+// Matcher for cursor with a custom bitmap against expected dimensions.
+MATCHER_P(CursorBitmapImageSizeEq, dimensions, "") {
+  return arg.type() == ui::mojom::CursorType::kCustom &&
+         arg.custom_bitmap().dimensions() == dimensions;
 }
 
 std::map<int, std::vector<raw_ref<const ink::Stroke>>> CollectVisibleStrokes(
@@ -305,7 +308,7 @@ class FakeClient : public PdfInkModuleClient {
 
   void StrokeFinished() override { ++stroke_finished_count_; }
 
-  MOCK_METHOD(void, UpdateInkCursorImage, (SkBitmap bitmap), (override));
+  MOCK_METHOD(void, UpdateInkCursor, (const ui::Cursor&), (override));
 
   MOCK_METHOD(void,
               UpdateShapeActive,
@@ -650,9 +653,9 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
 TEST_F(PdfInkModuleTest, MaybeSetCursorWhenTogglingAnnotationMode) {
   EXPECT_FALSE(ink_module().enabled());
 
-  EXPECT_CALL(client(), UpdateInkCursorImage(_))
-      .WillOnce(
-          [this](SkBitmap bitmap) { EXPECT_TRUE(ink_module().enabled()); });
+  EXPECT_CALL(client(), UpdateInkCursor(_)).WillOnce([this]() {
+    EXPECT_TRUE(ink_module().enabled());
+  });
 
   base::Value::Dict message =
       CreateSetAnnotationModeMessageForTesting(/*enable=*/true);
@@ -667,18 +670,24 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenTogglingAnnotationMode) {
 TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
   {
     InSequence seq;
-    EXPECT_CALL(client(), UpdateInkCursorImage(_))
-        .WillOnce([](SkBitmap bitmap) {
+    EXPECT_CALL(client(), UpdateInkCursor(_))
+        .WillOnce([](const ui::Cursor& cursor) {
+          ASSERT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
+          const SkBitmap& bitmap = cursor.custom_bitmap();
           EXPECT_EQ(6, bitmap.width());
           EXPECT_EQ(6, bitmap.height());
         });
-    EXPECT_CALL(client(), UpdateInkCursorImage(_))
-        .WillOnce([](SkBitmap bitmap) {
+    EXPECT_CALL(client(), UpdateInkCursor(_))
+        .WillOnce([](const ui::Cursor& cursor) {
+          ASSERT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
+          const SkBitmap& bitmap = cursor.custom_bitmap();
           EXPECT_EQ(20, bitmap.width());
           EXPECT_EQ(20, bitmap.height());
         });
-    EXPECT_CALL(client(), UpdateInkCursorImage(_))
-        .WillOnce([](SkBitmap bitmap) {
+    EXPECT_CALL(client(), UpdateInkCursor(_))
+        .WillOnce([](const ui::Cursor& cursor) {
+          ASSERT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
+          const SkBitmap& bitmap = cursor.custom_bitmap();
           EXPECT_EQ(6, bitmap.width());
           EXPECT_EQ(6, bitmap.height());
         });
@@ -700,18 +709,24 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
 TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
   {
     InSequence seq;
-    EXPECT_CALL(client(), UpdateInkCursorImage(_))
-        .WillOnce([](SkBitmap bitmap) {
+    EXPECT_CALL(client(), UpdateInkCursor(_))
+        .WillOnce([](const ui::Cursor& cursor) {
+          ASSERT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
+          const SkBitmap& bitmap = cursor.custom_bitmap();
           EXPECT_EQ(6, bitmap.width());
           EXPECT_EQ(6, bitmap.height());
         });
-    EXPECT_CALL(client(), UpdateInkCursorImage(_))
-        .WillOnce([](SkBitmap bitmap) {
+    EXPECT_CALL(client(), UpdateInkCursor(_))
+        .WillOnce([](const ui::Cursor& cursor) {
+          ASSERT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
+          const SkBitmap& bitmap = cursor.custom_bitmap();
           EXPECT_EQ(20, bitmap.width());
           EXPECT_EQ(20, bitmap.height());
         });
-    EXPECT_CALL(client(), UpdateInkCursorImage(_))
-        .WillOnce([](SkBitmap bitmap) {
+    EXPECT_CALL(client(), UpdateInkCursor(_))
+        .WillOnce([](const ui::Cursor& cursor) {
+          ASSERT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
+          const SkBitmap& bitmap = cursor.custom_bitmap();
           EXPECT_EQ(10, bitmap.width());
           EXPECT_EQ(10, bitmap.height());
         });
@@ -1918,7 +1933,8 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
   // until the mouse-up event.  The cursor image will be updated only when
   // there is not a stroke in progress.
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
-  EXPECT_CALL(client(), UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
+  EXPECT_CALL(client(),
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(6, 6))));
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
                                                   /*color_g=*/0,
                                                   /*color_b=*/0, /*size=*/2.0};
@@ -1945,7 +1961,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
     EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
                                       InkStrokeBrushSizeEq(2.0f)));
     EXPECT_CALL(client(),
-                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(8, 8))));
+                UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
   }
   blink::WebMouseEvent mouse_move_event =
       CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);
@@ -2082,7 +2098,8 @@ TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
   // until the mouse-up event.  The cursor image will be updated only if a
   // stroke is not in progress.
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
-  EXPECT_CALL(client(), UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
+  EXPECT_CALL(client(),
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(6, 6))));
   TestAnnotationBrushMessageParams pen_message_params{/*color_r=*/0,
                                                       /*color_g=*/0,
                                                       /*color_b=*/0,
@@ -2116,7 +2133,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
         StrokeAdded(kPageIndex, InkStrokeId(0),
                     InkStrokeDrawingBrushTypeEq(PdfInkBrush::Type::kPen)));
     EXPECT_CALL(client(),
-                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(10, 10))));
+                UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
   }
   blink::WebMouseEvent mouse_move_event =
       CreateMouseMoveWithLeftButtonEventAtPoint(kLeftVerticalStrokePoint2);

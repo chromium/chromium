@@ -222,10 +222,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
 class WebAccessibleResourcesDynamicUrlScriptingApiTest
     : public ExtensionApiTestBase {
  public:
-  WebAccessibleResourcesDynamicUrlScriptingApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionDynamicURLRedirection);
-  }
+  WebAccessibleResourcesDynamicUrlScriptingApiTest() = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTestBase::SetUpOnMainThread();

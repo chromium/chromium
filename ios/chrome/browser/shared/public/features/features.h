@@ -1055,4 +1055,10 @@ BASE_DECLARE_FEATURE(kIPHAblation);
 // Returns true if IPH ablation is enabled.
 bool IsIPHAblationEnabled();
 
+// Feature flag for enabling the non-modal sign-in promo.
+BASE_DECLARE_FEATURE(kNonModalSignInPromo);
+
+// Returns whether the non-modal sign-in promo is enabled.
+bool IsNonModalSignInPromoEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

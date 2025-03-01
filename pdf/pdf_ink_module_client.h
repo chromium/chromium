@@ -12,7 +12,6 @@
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/ui/thumbnail.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -24,6 +23,10 @@ class PointF;
 
 namespace ink {
 class Stroke;
+}
+
+namespace ui {
+class Cursor;
 }
 
 namespace chrome_pdf {
@@ -104,8 +107,8 @@ class PdfInkModuleClient {
   // Notifies the client that a stroke has finished drawing or erasing.
   virtual void StrokeFinished() {}
 
-  // Asks the client to change the cursor to `bitmap`.
-  virtual void UpdateInkCursorImage(SkBitmap bitmap) {}
+  // Asks the client to change the cursor to `cursor`.
+  virtual void UpdateInkCursor(const ui::Cursor& cursor) {}
 
   // Notifies that an existing shape identified by `id` on the page at
   // `page_index` should update its active state.

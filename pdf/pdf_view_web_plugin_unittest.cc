@@ -2622,15 +2622,13 @@ class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
     // not matter.
     EXPECT_CALL(*engine_ptr_, HandleInputEvent).Times(0);
     ON_CALL(*engine_ptr_, GetPageContentsRect)
-        .WillByDefault([](int page_index) -> gfx::Rect {
-          return gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/100, /*height=*/50);
-        });
+        .WillByDefault(
+            Return(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/100, /*height=*/50)));
     ON_CALL(*engine_ptr_, GetPageSizeInPoints)
-        .WillByDefault(Return(gfx::SizeF(/*width=*/75.0f, /*height=*/37.5f)));
+        .WillByDefault(Return(gfx::SizeF(75.0f, 37.5f)));
     ON_CALL(*engine_ptr_, GetThumbnailSize)
         .WillByDefault(Return(gfx::Size(50, 25)));
-    ON_CALL(*engine_ptr_, IsPageVisible)
-        .WillByDefault([](int page_index) -> bool { return true; });
+    ON_CALL(*engine_ptr_, IsPageVisible).WillByDefault(Return(true));
 
     // Draw some trivial strokes.
     plugin_->OnMessage(
@@ -2970,15 +2968,12 @@ TEST_F(PdfViewWebPluginInkTest, DrawInProgressStroke) {
   constexpr gfx::SizeF kPageSizeInPoints(
       kCanvasSize.width() * kUnitConversionFactorPixelsToPoints,
       kCanvasSize.height() * kUnitConversionFactorPixelsToPoints);
-  ON_CALL(*engine_ptr_, GetPageContentsRect)
-      .WillByDefault(
-          [kScreenRect](int page_index) -> gfx::Rect { return kScreenRect; });
+  ON_CALL(*engine_ptr_, GetPageContentsRect).WillByDefault(Return(kScreenRect));
   ON_CALL(*engine_ptr_, GetPageSizeInPoints)
       .WillByDefault(Return(kPageSizeInPoints));
   ON_CALL(*engine_ptr_, GetThumbnailSize)
       .WillByDefault(Return(gfx::Size(50, 50)));
-  ON_CALL(*engine_ptr_, IsPageVisible)
-      .WillByDefault([](int page_index) -> bool { return true; });
+  ON_CALL(*engine_ptr_, IsPageVisible).WillByDefault(Return(true));
 
   UpdatePluginGeometry(/*device_scale=*/1.0f, kScreenRect);
 

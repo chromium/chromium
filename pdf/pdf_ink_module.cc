@@ -51,6 +51,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -1348,9 +1349,12 @@ void PdfInkModule::MaybeSetCursor() {
     brush_size = kEraserSize;
   }
 
-  client_->UpdateInkCursorImage(GenerateToolCursor(
+  SkBitmap bitmap = GenerateToolCursor(
       color,
-      CursorDiameterFromBrushSizeAndZoom(brush_size, client_->GetZoom())));
+      CursorDiameterFromBrushSizeAndZoom(brush_size, client_->GetZoom()));
+  gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
+  client_->UpdateInkCursor(
+      ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot)));
 }
 
 PdfInkModule::DrawingStrokeState::DrawingStrokeState() = default;

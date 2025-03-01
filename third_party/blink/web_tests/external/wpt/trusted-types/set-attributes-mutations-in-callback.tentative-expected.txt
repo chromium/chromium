@@ -1,12 +1,10 @@
 This is a testharness.js-based test.
-Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 132 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (delete other attribute before)
-  assert_equals: expected Node object of unknown type but got Node object of unknown type
-[FAIL] Element.setAttributeNode works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
@@ -22,8 +20,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
-[FAIL] Element.setAttributeNodeNS works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (delete other attribute before)
-  assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (delete other attribute before)
@@ -37,8 +33,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (delete other attribute before)
-  assert_equals: expected Node object of unknown type but got Node object of unknown type
-[FAIL] NamedNodeMap.setNamedItem works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
@@ -54,8 +48,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
-[FAIL] NamedNodeMap.setNamedItemNS works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (delete other attribute before)
-  assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (delete other attribute before)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (delete other attribute before)
@@ -69,8 +61,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Attr.value works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (delete attribute)
   assert_equals: expected 2 but got 3
 [FAIL] Attr.value works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (delete attribute)
-  assert_equals: expected 2 but got 3
-[FAIL] Attr.value works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (delete attribute)
   assert_equals: expected 2 but got 3
 [FAIL] Attr.value works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (delete attribute)
   assert_equals: expected 2 but got 3
@@ -86,8 +76,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected 2 but got 3
 [FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (delete attribute)
   assert_equals: expected 2 but got 3
-[FAIL] Node.nodeValue works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (delete attribute)
-  assert_equals: expected 2 but got 3
 [FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (delete attribute)
   assert_equals: expected 2 but got 3
 [FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (delete attribute)
@@ -101,8 +89,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Node.textContent works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (delete attribute)
   assert_equals: expected 2 but got 3
 [FAIL] Node.textContent works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (delete attribute)
-  assert_equals: expected 2 but got 3
-[FAIL] Node.textContent works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (delete attribute)
   assert_equals: expected 2 but got 3
 [FAIL] Node.textContent works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (delete attribute)
   assert_equals: expected 2 but got 3
@@ -118,8 +104,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected 1 but got 2
 [FAIL] Element.setAttribute works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (modify attribute)
   assert_equals: expected 1 but got 2
-[FAIL] Element.setAttribute works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (modify attribute)
-  assert_equals: expected 1 but got 2
 [FAIL] Element.setAttribute works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (modify attribute)
   assert_equals: expected 1 but got 2
 [FAIL] Element.setAttribute works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (modify attribute)
@@ -131,8 +115,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (modify attribute)
-  assert_equals: expected Node object of unknown type but got Node object of unknown type
-[FAIL] Element.setAttributeNode works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
@@ -148,8 +130,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
-[FAIL] Element.setAttributeNodeNS works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (modify attribute)
-  assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (modify attribute)
@@ -163,8 +143,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (modify attribute)
-  assert_equals: expected Node object of unknown type but got Node object of unknown type
-[FAIL] NamedNodeMap.setNamedItem works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
@@ -180,8 +158,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
-[FAIL] NamedNodeMap.setNamedItemNS works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (modify attribute)
-  assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (modify attribute)
   assert_equals: expected Node object of unknown type but got Node object of unknown type
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (modify attribute)
@@ -195,8 +171,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
-  assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
-[FAIL] Element.setAttributeNode works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] Element.setAttributeNode works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
@@ -212,8 +186,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
-[FAIL] Element.setAttributeNodeNS works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (move attribute node to another element)
-  assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] Element.setAttributeNodeNS works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (move attribute node to another element)
@@ -227,8 +199,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
-  assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
-[FAIL] NamedNodeMap.setNamedItem works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] NamedNodeMap.setNamedItem works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
@@ -244,8 +214,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
-[FAIL] NamedNodeMap.setNamedItemNS works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (move attribute node to another element)
-  assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
   assert_throws_dom: function "_ => {\n            returnValue = setterData.runSetter(element, testData.attrNS,\n                                               testData.attrName,\n                                               input_string, testData.type);\n          }" did not throw
 [FAIL] NamedNodeMap.setNamedItemNS works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (move attribute node to another element)
@@ -259,8 +227,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Attr.value works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (move attribute node to another element)
   assert_equals: expected 0 but got 1
 [FAIL] Attr.value works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
-  assert_equals: expected 0 but got 1
-[FAIL] Attr.value works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (move attribute node to another element)
   assert_equals: expected 0 but got 1
 [FAIL] Attr.value works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
   assert_equals: expected 0 but got 1
@@ -276,8 +242,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected 0 but got 1
 [FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
   assert_equals: expected 0 but got 1
-[FAIL] Node.nodeValue works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (move attribute node to another element)
-  assert_equals: expected 0 but got 1
 [FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
   assert_equals: expected 0 but got 1
 [FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (move attribute node to another element)
@@ -291,8 +255,6 @@ Found 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Node.textContent works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (move attribute node to another element)
   assert_equals: expected 0 but got 1
 [FAIL] Node.textContent works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
-  assert_equals: expected 0 but got 1
-[FAIL] Node.textContent works for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup (move attribute node to another element)
   assert_equals: expected 0 but got 1
 [FAIL] Node.textContent works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
   assert_equals: expected 0 but got 1
