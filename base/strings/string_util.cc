@@ -153,9 +153,13 @@ void TruncateUTF8ToByteSize(const std::string& input,
                             const size_t byte_size,
                             std::string* output) {
   DCHECK(output);
+  *output = TruncateUTF8ToByteSize(input, byte_size);
+}
+
+std::string_view TruncateUTF8ToByteSize(std::string_view input,
+                                        size_t byte_size) {
   if (byte_size > input.length()) {
-    *output = input;
-    return;
+    return input;
   }
   DCHECK_LE(byte_size,
             static_cast<uint32_t>(std::numeric_limits<int32_t>::max()));
@@ -181,9 +185,9 @@ void TruncateUTF8ToByteSize(const std::string& input,
   }
 
   if (char_index >= 0) {
-    *output = input.substr(0, static_cast<size_t>(char_index));
+    return input.substr(0, static_cast<size_t>(char_index));
   } else {
-    output->clear();
+    return std::string_view();
   }
 }
 
