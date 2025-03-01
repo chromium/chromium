@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Suas senhas são criptografadas no dispositivo antes de serem salvas no Gerenciador de senhas do Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Fechar guia</translation>
-<translation id="230956208401264723">Confira todos os seus pacotes rastreados neste carrossel</translation>
 <translation id="2311077293164383652">Fechar guia fixada</translation>
 <translation id="2316129865977710310">Não.</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -471,7 +470,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2931440415625410757">Mostrar instruções</translation>
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2962516096219646456">Mostrar todos os dados de preenchimento automático</translation>
-<translation id="2963044753825419640">Permitir que sites e apps façam upgrade automático das contas para usar chaves de acesso quando disponíveis</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989805286512600854">Abrir em uma nova guia</translation>
@@ -1117,6 +1115,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5817176759448082654">Check-up de senha</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
+<translation id="583923961930319521">Usar senhas em todos seus dispositivos</translation>
 <translation id="5844284118433003733">Quando sua Conta do Google está conectada, esses dados são vinculados a ela para proteger você nos Serviços do Google, por exemplo, aumentando a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857770089550859117">É necessário ter uma senha longa para iniciar a sincronização.</translation>
@@ -1458,7 +1457,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7253951228444156601">Verificando senhas…</translation>
 <translation id="7261217796641151584">Compartilhar grupo</translation>
 <translation id="7266578100016339897">Isso ajuda você a se organizar. É possível mudar essa definição a qualquer momento nas configurações.</translation>
-<translation id="7271220006028561438">Permitir upgrades automáticos para chaves de acesso</translation>
 <translation id="7272437679830969316">Não é possível confirmar sua identidade. Senha não copiada.</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="7300448350764260141">Adicione uma camada extra de proteção contra ameaças on-line.</translation>
@@ -1692,6 +1690,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8221665793629393739">Seu lembrete para rever</translation>
 <translation id="8230355548492839438">Localizar anterior</translation>
 <translation id="8232956427053453090">Manter dados</translation>
+<translation id="8233237502828137700">Fechar banner promocional</translation>
 <translation id="8238711781852526820">Ocultar "Monitoramento de preços"</translation>
 <translation id="8258999165172757081">Adicionado</translation>
 <translation id="8261506727792406068">Excluir</translation>

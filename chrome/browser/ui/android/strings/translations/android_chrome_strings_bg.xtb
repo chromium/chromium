@@ -809,6 +809,7 @@
 <translation id="4777866634702576038">Да се изтрие ли групата раздели?</translation>
 <translation id="4778653490315793244">Още няма нищо за показване</translation>
 <translation id="4782929588435725897">Основната ви търсеща машина е <ph name="SEARCH_ENGINE" /></translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> иска да използва лична информация от дигиталния ви портфейл.</translation>
 <translation id="4787736314074622408">Искате ли да изтриете <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Научете как Chrome се грижи за безопасността ви</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
 <translation id="5375374982898812658">Незабавно ще загубите достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всичките ви устройства</translation>
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> иска да използва лична информация от дигиталния ви портфейл. Продължете само ако имате доверие на този сайт. Опасните сайтове може да ви подведат да разкриете информация, като например името ви или номер на ваш документ за самоличност.</translation>
 <translation id="5394331612381306435">Излизане от режим „инкогнито“</translation>
 <translation id="5395376160638294582">Уверете се, че винаги можете да използвате данните в Chrome в профила си в Google</translation>
 <translation id="539881862970320163">Предложена бе надеждна парола. Клавиатурата е скрита.</translation>
@@ -1803,6 +1805,7 @@
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9157212632995922070">Изберете профил, за да продължите към <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Споделяне само на съдържанието</translation>
+<translation id="9161172953291434881">Доверявате ли данните си на този сайт?</translation>
 <translation id="9168847423516963845">Преместване на адресната лента в долната част</translation>
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
 <translation id="918419812064856259">Chrome бета</translation>

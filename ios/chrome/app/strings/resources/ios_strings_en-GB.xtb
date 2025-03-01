@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Your passwords are encrypted on your device before they’re saved to Google Password Manager.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Close tab</translation>
-<translation id="230956208401264723">See all your tracked packages here in this carousel</translation>
 <translation id="2311077293164383652">Close pinned tab</translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
@@ -471,7 +470,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2931440415625410757">Show instructions</translation>
 <translation id="2952278131021475699">Lens Camera Search</translation>
 <translation id="2962516096219646456">See all autofill data</translation>
-<translation id="2963044753825419640">Allow websites and apps to automatically upgrade existing accounts to use passkeys when available</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2989523299700148168">Recently Visited</translation>
 <translation id="2989805286512600854">Open in New Tab</translation>
@@ -1459,7 +1457,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7253951228444156601">Checking passwords…</translation>
 <translation id="7261217796641151584">Share group</translation>
 <translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>
-<translation id="7271220006028561438">Allow automatic passkey upgrades</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="7300448350764260141">Add an extra layer of protection against online threats.</translation>

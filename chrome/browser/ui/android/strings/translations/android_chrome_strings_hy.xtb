@@ -809,6 +809,7 @@
 <translation id="4777866634702576038">Ջնջե՞լ ներդիրների խումբը</translation>
 <translation id="4778653490315793244">Բովանդակություն չկա</translation>
 <translation id="4782929588435725897">Ձեր կանխադրված որոնողական համակարգը՝ <ph name="SEARCH_ENGINE" /></translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />-ը ցանկանում է օգտագործել ձեր թվային դրամապանակի անձնական տեղեկությունները։</translation>
 <translation id="4787736314074622408">Ջնջե՞լ <ph name="ITEM_TITLE" /> տարրը</translation>
 <translation id="4793679854893018356">Ինչպես է Chrome-ն ապահով պահում ձեր տվյալները</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +933,7 @@
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5375374982898812658">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />-ը ցանկանում է օգտագործել ձեր թվային դրամապանակի անձնական տեղեկությունները։ Շարունակեք միայն, եթե վստահում եք այս կայքին։ Վտանգավոր կայքերը կարող են ձեզ խաբել՝ բացահայտելու ձեր լրիվ անունը կամ անձը հաստատող փաստաթղթի համարը։</translation>
 <translation id="5394331612381306435">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="5395376160638294582">Համոզվեք, որ միշտ կարող եք օգտվել Chrome-ի տվյալներից ձեր Google հաշվում</translation>
 <translation id="539881862970320163">Հուսալի գաղտնաբառ է առաջարկվում։ Ստեղնաշարը թաքցված է։</translation>
@@ -1803,6 +1805,7 @@
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>
 <translation id="9157212632995922070">Ընտրեք հաշիվ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում շարունակելու համար</translation>
 <translation id="9158770349521403363">Կիսվել միայն բովանդակությամբ</translation>
+<translation id="9161172953291434881">Վստահո՞ւմ եք այս կայքին ձեր տվյալները։</translation>
 <translation id="9168847423516963845">Հասցեագոտին տեղափոխել ներքև</translation>
 <translation id="9169507124922466868">Նավիգացիայի պատմության թերթը կիսաբացված է</translation>
 <translation id="918419812064856259">Chrome Beta</translation>

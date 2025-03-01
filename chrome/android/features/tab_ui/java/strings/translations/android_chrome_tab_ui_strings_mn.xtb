@@ -46,7 +46,9 @@
 <translation id="266935134738038806">Сайтад зочлох</translation>
 <translation id="2671423594960767771">Бүлгийг хуваалцах</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
+<translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> долоо хоногийн өмнө шинэчилсэн}other{<ph name="NUM_WEEKS_MANY" /> долоо хоногийн өмнө шинэчилсэн}}</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_ADDED" /> таб нэмсэн, <ph name="ANY_CHANGED" />-г өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>
+<translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> цагийн өмнө шинэчилсэн}other{<ph name="NUM_HOURS_MANY" /> цагийн өмнө шинэчилсэн}}</translation>
 <translation id="2755485474385016903">Хийсэн өөрчлөлтийг бүлэг дэх хүн бүр хардаг</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> цагийн өмнө үүсгэсэн}other{<ph name="NUM_HOURS_MANY" /> цагийн өмнө үүсгэсэн}}</translation>
 <translation id="2801787514987684416">Дэлгүүрийн мэдээллийг үзэх үү?</translation>
@@ -83,6 +85,7 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> табыг өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_CHANGED" /> табыг өөрчилсөн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>
 <translation id="4371591986692297148">Идэвхгүй</translation>
 <translation id="4431937619879060901">Та "<ph name="GROUP_NAME" />" табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
+<translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> хоногийн өмнө шинэчилсэн}other{<ph name="NUM_DAYS_MANY" /> хоногийн өмнө шинэчилсэн}}</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Идэвхгүй 1 табыг хаах уу?}other{Идэвхгүй <ph name="TAB_COUNT_MANY" /> табыг хаах уу?}}</translation>
 <translation id="4686942373615810936">Дөнгөж сая үүсгэсэн</translation>
@@ -163,6 +166,7 @@
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7688386659311034820">Идэвхгүй табуудын харилцах цонх</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хуваалцах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хуваалцах}}</translation>
+<translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> жилийн өмнө шинэчилсэн}other{<ph name="NUM_YEARS_MANY" /> жилийн өмнө шинэчилсэн}}</translation>
 <translation id="7773714564112603605">Табыг хасаж, бүлгийг устгах</translation>
 <translation id="7792771145871471484">Зөвлөмжийг шалгах.</translation>
 <translation id="7792860826279960128">Хуваалцсан табын бүлгийн өөрчлөлтийн талаарх мэдэгдлийг хагас өндрөөр нээсэн</translation>
@@ -180,10 +184,12 @@
 <translation id="8076492880354921740">Таб</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг дэлгэнэ үү.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг дэлгэнэ үү.}}</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>
+<translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> минутын өмнө шинэчилсэн}other{<ph name="NUM_MINS_MANY" /> минутын өмнө шинэчилсэн}}</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8338427544764842461">Таны табын бүлгийг энд хадгалдаг ба таны нэвтэрсэн бүх төхөөрөмж дээр шинэчилдэг</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> табтай, <ph name="COLOR_NAME" /> өнгөтэй хуваалцсан табын бүлгийг дэлгэх.}other{<ph name="TABS_COUNT_MANY" /> табтай, <ph name="COLOR_NAME" /> өнгөтэй хуваалцсан табын бүлгийг дэлгэх.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
+<translation id="8374451057714760401">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> сарын өмнө шинэчилсэн}other{<ph name="NUM_MONTHS_MANY" /> сарын өмнө шинэчилсэн}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> таб нэмсэн, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_ADDED" /> таб нэмсэн, <ph name="ANY_CLOSED" />-г хаасан}}</translation>

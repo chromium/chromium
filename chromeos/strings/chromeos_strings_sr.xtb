@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Матична мрежа, није у ромингу</translation>
 <translation id="1327977588028644528">Мрежни пролаз</translation>
 <translation id="1328223165223065150">Боја позадине</translation>
+<translation id="1329478709358066995">Транскрипт:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Прилагоди области за скенирање</translation>
 <translation id="1343442362630695901">слано језеро</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">О позадини</translation>
 <translation id="6939667434404433010">Претражите назив снимка</translation>
 <translation id="6939766318048400022">Кафић</translation>
+<translation id="6942253772720771875">Делите повратне информације или опишите проблем</translation>
 <translation id="6943893908656559156">Удаљени идентитет (опционално)</translation>
 <translation id="6953137545147683679">златне</translation>
 <translation id="6957231940976260713">Назив услуге</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">Предузеће управља овим <ph name="DEVICE_TYPE" /> уређајем</translation>
 <translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
 <translation id="8403988360557588704">Слика на којој је <ph name="ART_FEATURE" /> у стилу <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Генерисани резиме:</translation>
 <translation id="8410244574650205435">Аутоматски изабрано</translation>
 <translation id="8420955526972171689">Покретање тестова и решавање проблема са хардвером</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811">Још радњи за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светлољубичасто</translation>
 <translation id="8647595191512746911">Транскрипција звука</translation>
+<translation id="8648578954147795914">Генерисани називи:</translation>
 <translation id="8650852232143958317">Узмите фајлове из Gmail-а и са Google диска са собом</translation>
 <translation id="8651481478098336970">искључи звук</translation>
 <translation id="8655295600908251630">Канал</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">Прикажи познате називе приступних тачака</translation>
 <translation id="932327136139879170">Почетна</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Уверите се да је микрофон повезан или пробајте да рестартујете Chromebook</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="950520315903467048">Недостаје тастер за <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Поређење гласове на снимку да би транскрипт одражавао шта је сваки говорник рекао и када</translation>

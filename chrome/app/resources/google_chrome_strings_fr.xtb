@@ -280,6 +280,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4720851490453439956">Service interne de mise à jour Google</translation>
 <translation id="4724676981607797757">Échec de l'installation en raison d'une erreur de protocole non compatible.</translation>
 <translation id="4728575227883772061">Échec de l'installation suite à une erreur non spécifiée. Si Google Chrome est en cours d'exécution, fermez-le puis réessayez.</translation>
+<translation id="4737281654364167024">Pour continuer, connectez-vous à Chrome en tant que <ph name="EMAIL" />. Cela permet de vérifier que vous avez bien les règles de votre organisation.</translation>
 <translation id="4741235124132242877">Épinglé. Réutilisez Google Lens à partir de la barre d'outils.</translation>
 <translation id="4747730611090640388">Chrome peut estimer quels sont vos centres d'intérêt.  Ensuite, un site que vous consultez pourra demander à Chrome de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="475321580758063259">Mettez Chrome à jour pour continuer à utiliser les données Chrome dans votre compte Google <ph name="ACCOUNT_EMAIL" /></translation>
@@ -587,6 +588,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8781673607513845160">Pour que Chrome puisse utiliser votre caméra, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erreur d'installation : votre administrateur réseau a appliqué une stratégie de groupe qui empêche de procéder à l'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome a bloqué ce téléchargement, car le fichier peut compromettre vos comptes personnels et de réseaux sociaux, y compris <ph name="USER_EMAIL" /></translation>
+<translation id="8798550110818026746">Votre organisation peut voir et gérer les données de navigation, telles que vos favoris, votre historique et vos mots de passe. Elle ne peut pas voir les données de navigation d'autres profils Chrome.</translation>
 <translation id="8801657293260363985">V8 est le moteur JavaScript et WebAssembly de Chrome qui permet d'améliorer les performances des sites</translation>
 <translation id="8821043148920470810">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 7.</translation>
 <translation id="8823341990149967727">Version de Chrome obsolète</translation>

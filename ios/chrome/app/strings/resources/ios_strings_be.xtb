@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Вашы паролі шыфруюцца на прыладзе і толькі потым захоўваюцца ў Менеджары пароляў Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • №<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Закрыць укладку</translation>
-<translation id="230956208401264723">У гэтай каруселі можна паглядзець усе пасылкі, за якімі вы сочыце</translation>
 <translation id="2311077293164383652">Закрыць замацаваную ўкладку</translation>
 <translation id="2316129865977710310">Не, дзякуй</translation>
 <translation id="2320166752086256636">Схаваць клавіятуру</translation>
@@ -471,7 +470,6 @@
 <translation id="2931440415625410757">Паказаць інструкцыі</translation>
 <translation id="2952278131021475699">Пошук з дапамогай камеры і Аб’ектыва</translation>
 <translation id="2962516096219646456">Паглядзець усе даныя аўтазапаўнення</translation>
-<translation id="2963044753825419640">Вэб-сайты і праграмы будуць аўтаматычна абнаўляць існуючыя ўліковыя запісы і выкарыстоўваць ключы доступу, калі гэта магчыма</translation>
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
 <translation id="2989523299700148168">Нядаўнія</translation>
 <translation id="2989805286512600854">Адкрыць у новай укладцы</translation>
@@ -1117,6 +1115,7 @@
 <translation id="5817176759448082654">Праверка пароляў</translation>
 <translation id="5819208479324046259">Браўзерам кіруе <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Сінхранізацыя…</translation>
+<translation id="583923961930319521">Выкарыстоўвайце паролі на ўсіх сваіх прыладах</translation>
 <translation id="5844284118433003733">Даныя будуць звязаны з Уліковым запісам Google, у які вы ўвайшлі. Гэта дазволіць абараніць вас у сэрвісах Google (напрыклад, узмацніць абарону ў Gmail пасля парушэння бяспекі).</translation>
 <translation id="5854790677617711513">Даныя, старэйшыя за 30 дзён</translation>
 <translation id="5857770089550859117">Фраза-пароль для запуску сінхранізацыі.</translation>
@@ -1458,7 +1457,6 @@
 <translation id="7253951228444156601">Ідзе праверка пароляў…</translation>
 <translation id="7261217796641151584">Абагуліць групу</translation>
 <translation id="7266578100016339897">Гэта дзеянне дапамагае захоўваць парадак. Змяніць гэты параметр можна ў любы час у наладах.</translation>
-<translation id="7271220006028561438">Дазволіць аўтаматычнае абнаўленне ключоў доступу</translation>
 <translation id="7272437679830969316">Не ўдалося спраўдзіць вашу асобу. Пароль не скапіраваны.</translation>
 <translation id="7293429513719260019">Выбраць мову</translation>
 <translation id="7300448350764260141">Задайце дадатковы ўзровень абароны ад пагроз у інтэрнэце.</translation>
@@ -1692,6 +1690,7 @@
 <translation id="8221665793629393739">Напамін наведаць зноў</translation>
 <translation id="8230355548492839438">Знайсці папярэдняе супадзенне</translation>
 <translation id="8232956427053453090">Захаваць даныя</translation>
+<translation id="8233237502828137700">Закрыць рэкламны банер</translation>
 <translation id="8238711781852526820">Схаваць "Адсочванне цэн"</translation>
 <translation id="8258999165172757081">Дададзена</translation>
 <translation id="8261506727792406068">Выдаліць</translation>

@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Sulje välilehti</translation>
-<translation id="230956208401264723">Näe kaikki seuratut paketit tässä karusellissa</translation>
 <translation id="2311077293164383652">Sulje kiinnitetty välilehti</translation>
 <translation id="2316129865977710310">Ei kiitos</translation>
 <translation id="2320166752086256636">Piilota näppäimistö</translation>
@@ -471,7 +470,6 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="2931440415625410757">Näytä ohjeet</translation>
 <translation id="2952278131021475699">Lens-kamerahaku</translation>
 <translation id="2962516096219646456">Näytä kaikki automaattisen täytön data</translation>
-<translation id="2963044753825419640">Salli sivustojen ja sovellusten päivittää nykyiset tilit automaattisesti avainkoodeiksi, kun ne ovat saatavilla</translation>
 <translation id="2969979262385602596">Kirjautuminen epäonnistui. Yritä myöhemmin uudelleen.</translation>
 <translation id="2989523299700148168">Viimeksi käytetyt</translation>
 <translation id="2989805286512600854">Avaa uudessa välilehdessä</translation>
@@ -1459,7 +1457,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7253951228444156601">Tarkistetaan salasanoja…</translation>
 <translation id="7261217796641151584">Jaa ryhmä</translation>
 <translation id="7266578100016339897">Näin pysyt järjestyksessä. Voit muuttaa tätä asetuksista koska tahansa.</translation>
-<translation id="7271220006028561438">Salli automaattiset avainkoodipäivitykset</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
 <translation id="7293429513719260019">Valitse kieli</translation>
 <translation id="7300448350764260141">Lisäsuojaus verkkouhkia vastaan.</translation>

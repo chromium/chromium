@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Stäng flik</translation>
-<translation id="230956208401264723">Se alla dina spårade paket här i den här snurran</translation>
 <translation id="2311077293164383652">Stäng fäst flik</translation>
 <translation id="2316129865977710310">Nej tack</translation>
 <translation id="2320166752086256636">Dölj tangentbordet</translation>
@@ -471,7 +470,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2931440415625410757">Visa anvisningar</translation>
 <translation id="2952278131021475699">Kamerasökning med Lens</translation>
 <translation id="2962516096219646456">Se all data för Autofyll</translation>
-<translation id="2963044753825419640">Tillåt att webbplatser och appar automatiskt uppgraderar befintliga konton till att använda nycklar när de är tillgängliga</translation>
 <translation id="2969979262385602596">Det gick inte att logga in. Försök igen senare.</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
 <translation id="2989805286512600854">Öppna i ny flik</translation>
@@ -1117,6 +1115,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5817176759448082654">Lösenordskontroll</translation>
 <translation id="5819208479324046259">Hanteras av <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkroniserar …</translation>
+<translation id="583923961930319521">Använd lösenorden på alla dina enheter</translation>
 <translation id="5844284118433003733">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>
 <translation id="5854790677617711513">Äldre än 30 dagar</translation>
 <translation id="5857770089550859117">Lösenfras krävs för att starta synkroniseringen.</translation>
@@ -1458,7 +1457,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7253951228444156601">Kontrollerar lösenord …</translation>
 <translation id="7261217796641151584">Dela grupp</translation>
 <translation id="7266578100016339897">Detta hjälper dig att hålla ordning. Du kan ändra detta i inställningarna när som helst.</translation>
-<translation id="7271220006028561438">Tillåt automatiska uppgraderingar av nycklar</translation>
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>
 <translation id="7293429513719260019">Välj språk</translation>
 <translation id="7300448350764260141">Lägg till ett extra skydd mot hot online.</translation>
@@ -1692,6 +1690,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8221665793629393739">Påminnelse om att besöka sidan igen</translation>
 <translation id="8230355548492839438">Sök föregående</translation>
 <translation id="8232956427053453090">Behåll data</translation>
+<translation id="8233237502828137700">Stäng bannerkampanj</translation>
 <translation id="8238711781852526820">Dölj Prisbevakning</translation>
 <translation id="8258999165172757081">Tillagt</translation>
 <translation id="8261506727792406068">Radera</translation>

@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">关闭标签页</translation>
-<translation id="230956208401264723">您跟踪的所有包裹都会显示在此轮播界面</translation>
 <translation id="2311077293164383652">关闭固定标签页</translation>
 <translation id="2316129865977710310">不用了，谢谢</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
@@ -471,7 +470,6 @@
 <translation id="2931440415625410757">显示说明</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2962516096219646456">查看所有自动填充数据</translation>
-<translation id="2963044753825419640">允许网站和应用自动将现有账号升级为使用通行密钥（如可用）</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
@@ -1459,7 +1457,6 @@
 <translation id="7253951228444156601">正在检查密码…</translation>
 <translation id="7261217796641151584">分享分组</translation>
 <translation id="7266578100016339897">这有助于您保持井井有条。您随时可以在“设置”中更改此设置。</translation>
-<translation id="7271220006028561438">允许自动升级为通行密钥</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="7300448350764260141">增添一层额外的安全保障，防范在线威胁。</translation>

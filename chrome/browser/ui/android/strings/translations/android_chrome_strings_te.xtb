@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">ఈ సైట్‌లను అనువాదం చేసే సదుపాయాన్ని అందించవద్దు</translation>
 <translation id="1145536944570833626">ఇప్పటికే ఉన్న డేటాను తొలగించండి.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు.</translation>
+<translation id="1154555449933432029">మీరు Google Password Managerలో పాస్‌వర్డ్‌లను సేవ్ చేయలేదు.</translation>
 <translation id="115483310321669804">పాస్‌వర్డ్ <ph name="PASSWORD" />‌ను ఉపయోగించండి</translation>
 <translation id="1173894706177603556">పేరుమార్చు</translation>
 <translation id="1174479719160874822">స్క్రీన్ చిన్నదైనప్పుడు Chrome మొబైల్ సైట్‌ను రిక్వెస్ట్ చేస్తుంది</translation>
@@ -809,6 +810,7 @@
 <translation id="4777866634702576038">ట్యాబ్ గ్రూప్‌ను తొలగించాలా?</translation>
 <translation id="4778653490315793244">ఇప్పటికైతే చూపడానికి ఏమీ లేవు</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> మీ డిజిటల్ వాలెట్ నుండి వ్యక్తిగత సమాచారాన్ని ఉపయోగించాలనుకుంటోంది.</translation>
 <translation id="4787736314074622408">మీరు <ph name="ITEM_TITLE" />‌ను తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="4793679854893018356">Chrome మిమ్మల్ని ఎలా సురక్షితంగా ఉంచుతుందో తెలుసుకోండి</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -932,6 +934,7 @@
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="5375374982898812658">మీరు వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అది మీ అన్ని పరికరాల నుండి తొలగించబడుతుంది</translation>
 <translation id="5375577065097716013">Google Lens ఇమేజ్ సెర్చ్ <ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /></translation>
+<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> మీ డిజిటల్ వాలెట్ నుండి వ్యక్తిగత సమాచారాన్ని ఉపయోగించాలనుకుంటోంది. మీరు ఈ సైట్‌ను విశ్వసిస్తేనే మాత్రమే కొనసాగించండి. ప్రమాదకరమైన సైట్‌లు మీ చట్టపరమైన పేరు లేదా ID నంబర్ వంటి విషయాలను బహిర్గతం చేసేలా మిమ్మల్ని మోసం చేయవచ్చు.</translation>
 <translation id="5394331612381306435">అజ్ఞాత మోడ్ నుండి మారండి</translation>
 <translation id="5395376160638294582">మీరు మీ Google ఖాతాలోని Chrome డేటాను ఎల్లప్పుడూ ఉపయోగించగలరని నిర్ధారించుకోండి</translation>
 <translation id="539881862970320163">శక్తివంతమైన పాస్‌వర్డ్‌ను సూచించడం జరిగింది. కీబోర్డ్ దాచబడింది.</translation>
@@ -1367,10 +1370,12 @@
 <translation id="7224097611345298931">Chrome కోసం, <ph name="CHROME_CHANNEL" /> కోసం ఈ పరికరంలో మాత్రమే సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లు విలీనం (మెర్జ్) చేయబడ్డాయి. సేవ్ చేసిన మీ పాస్‌వర్డ్‌లన్నింటినీ మీరు రెండు యాప్‌లలోనూ ఆటోఫిల్ చేయవచ్చు.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ పెండింగ్‌లో ఉంది}other{# డౌన్‌లోడ్‌లు పెండింగ్‌లో ఉన్నాయి}}</translation>
 <translation id="7230064152164845085">అజ్ఞాత మోడ్‌కు మారండి</translation>
+<translation id="7237724030342645845">Google Password Manager పనిచేయడం ఆగిపోయింది</translation>
 <translation id="72415438529550637">పాస్‌వర్డ్ సూచన మూసివేయబడింది.</translation>
 <translation id="7260367682327802201">మీ Android పరికరం ఇటువంటి సెట్టింగ్‌ను కలిగి ఉండవచ్చు. Chromeలో, మీ Android పరికరంలో యాడ్ మెజర్‌మెంట్‌ను ఆన్ చేస్తే, మీరు చూసే వెబ్ సైట్‌లు, ఉపయోగించే యాప్‌ల అంతటా యాడ్ ప్రభావం ఎలా ఉంది అనే దానిని కంపెనీ అంచనా వేసే అవకాశం ఉంది.</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />‌కు <ph name="ONE_TIME_CODE" />‌ను సమర్పించాలా?</translation>
 <translation id="7274013316676448362">బ్లాక్ చేసిన సైట్</translation>
+<translation id="7276868533747677875">మీరు గతంలో పాస్‌వర్డ్‌లను ఎగుమతి చేసి ఉంటే, మీ పరికరంలో CSV ఫైల్ కోసం చూసి, వాటిని మీకు నచ్చిన పాస్‌వర్డ్ మేనేజర్‌కు దిగుమతి చేసుకోండి.</translation>
 <translation id="7289049772085228972">మీ వద్ద Chrome తాలూకు శక్తివంతమైన సెక్యూరిటీ ఉంది</translation>
 <translation id="7289303553784750393">మీరు ఆన్‌లైన్‌లో ఉన్నప్పటికీ ఈ సమస్య అలాగే కొనసాగుతూ ఉంటే, మీరు <ph name="SITE_ETLD_PLUS_ONE" />లో కొనసాగించడానికి ఇతర మార్గాలను ట్రై చేయవచ్చు.</translation>
 <translation id="7290209999329137901">పేరు మార్పు అందుబాటులో లేదు</translation>
@@ -1545,6 +1550,7 @@
 <translation id="8027395186860110042">త్వరలో పాస్‌వర్డ్‌లకు మీరు యాక్సెస్‌ను కోల్పోయే అవకాశం ఉంది</translation>
 <translation id="8027863900915310177">ఎక్కడ డౌన్‌లోడ్ చేయాలో ఎంచుకోండి</translation>
 <translation id="8030852056903932865">ఆమోదించు</translation>
+<translation id="8031805944372049238">Google Password Managerతో పాస్‌వర్డ్‌లను సేవ్ చేయడం, ఉపయోగించడం ప్రారంభించడానికి, Google Play సర్వీసులను అప్‌డేట్ చేయండి.</translation>
 <translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> రోజులు మిగిలి ఉంది</translation>
 <translation id="8037801708772278989">ఇప్పుడే చెక్ చేసింది</translation>
@@ -1801,6 +1807,7 @@
 <translation id="9148126808321036104">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" />‌లో కొనసాగడానికి ఖాతాను ఎంచుకోండి</translation>
 <translation id="9158770349521403363">కంటెంట్‌ను మాత్రమే షేర్ చేయండి</translation>
+<translation id="9161172953291434881">మీ డేటా విషయంలో మీరు ఈ సైట్‌ను విశ్వసిస్తారా?</translation>
 <translation id="9168847423516963845">అడ్రస్ బార్‌ను కిందికి తరలించండి</translation>
 <translation id="9169507124922466868">నావిగేషన్ హిస్టరీ సగం తెరిచి ఉంది</translation>
 <translation id="918419812064856259">బీటా Chrome</translation>

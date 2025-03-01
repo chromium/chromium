@@ -81,6 +81,7 @@
 <translation id="131461803491198646">ഹോം നെറ്റ്‍വര്‍ക്ക്, റോമിംഗ് അല്ല</translation>
 <translation id="1327977588028644528">ഗേറ്റ്‌വേ</translation>
 <translation id="1328223165223065150">വാൾപേപ്പറിനിന്റെ നിറം</translation>
+<translation id="1329478709358066995">ട്രാൻസ്‌ക്രിപ്റ്റ് ചെയ്യുക:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
 <translation id="1343442362630695901">സാൾട്ട് ലേക്ക്</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">പശ്ചാത്തലത്തെ കുറിച്ച്</translation>
 <translation id="6939667434404433010">റെക്കോർഡിംഗ് പേര് തിരയുക</translation>
 <translation id="6939766318048400022">കഫേ</translation>
+<translation id="6942253772720771875">നിങ്ങളുടെ ഫീഡ്ബാക്ക് പങ്കിടുക അല്ലെങ്കിൽ പ്രശ്നം വിവരിക്കുക</translation>
 <translation id="6943893908656559156">റിമോട്ട് ഐഡന്റിറ്റി (ഓപ്‌ഷണൽ)</translation>
 <translation id="6953137545147683679">സ്വർണ്ണം</translation>
 <translation id="6957231940976260713">സേവനത്തിന്‍റെ പേര്</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">ഈ <ph name="DEVICE_TYPE" /> എന്റർപ്രൈസ് മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="8398927464629426868">ഉപകരണം നിലവിൽ ചാർജ് ചെയ്യുന്നതോ ഡിസ്‌ചാർജ് ചെയ്യുന്നതോ ആയ റേറ്റ്</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> സ്റ്റൈലിലുള്ള <ph name="ART_FEATURE" /> എന്നതിന്റെ പെയിന്റിംഗ്</translation>
+<translation id="8409219750150841791">ജനറേറ്റ് ചെയ്ത സംഗ്രഹം:</translation>
 <translation id="8410244574650205435">സ്വയമേവ കണ്ടെത്തി</translation>
 <translation id="8420955526972171689">ഹാര്‍ഡ്‍വെയര്‍ പ്രശ്‌നങ്ങൾ കണ്ടെത്താൻ ടെസ്റ്റുകളും ട്രബിള്‍ഷൂട്ടിംഗും റൺ ചെയ്യുക</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="86356131183441916">ഇളം പർപ്പിൾ</translation>
 <translation id="8647595191512746911">ഓഡിയോ ട്രാൻസ്‌ക്രിപ്ഷൻ</translation>
+<translation id="8648578954147795914">ജനറേറ്റ് ചെയ്ത പേരുകൾ:</translation>
 <translation id="8650852232143958317">Gmail, Google Drive ഫയലുകൾ കൈമാറൂ</translation>
 <translation id="8651481478098336970">വോളിയം മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="8655295600908251630">ചാനല്‍</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">അറിയാവുന്ന APN-കൾ കാണിക്കുക</translation>
 <translation id="932327136139879170">ഹോം</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">മൈക്ക് കണക്റ്റ് ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക അല്ലെങ്കിൽ Chromebook റീസ്റ്റാർട്ട് ചെയ്ത് നോക്കുക</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> എന്നതിനുള്ള കീ നൽകിയിട്ടില്ല. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">റെക്കോർഡിംഗിലുടനീളമുള്ള ശബ്ദങ്ങൾ താരതമ്യം ചെയ്യുക, അതുവഴി ട്രാൻസ്ക്രിപ്റ്റ് ഓരോ സ്പീക്കറും എന്ത് പറഞ്ഞുവെന്നതും എപ്പോൾ പറഞ്ഞുവെന്നതും പ്രതിഫലിപ്പിക്കുന്നു</translation>

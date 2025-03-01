@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Hjemmenettverk, datastreifing ikke aktivert</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Bakgrunnsfarge</translation>
+<translation id="1329478709358066995">Transkribering:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpass til skanneområdet</translation>
 <translation id="1343442362630695901">saltsjø</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">Om bakgrunnen</translation>
 <translation id="6939667434404433010">Søk på opptaksnavn</translation>
 <translation id="6939766318048400022">Kafé</translation>
+<translation id="6942253772720771875">Del tilbakemeldingen, eller beskriv problemet</translation>
 <translation id="6943893908656559156">Ekstern identitet (valgfritt)</translation>
 <translation id="6953137545147683679">gull</translation>
 <translation id="6957231940976260713">Tjenestenavn</translation>
@@ -1598,6 +1600,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" />-enheten er bedriftsadministrert</translation>
 <translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
 <translation id="8403988360557588704">Et maleri av <ph name="ART_FEATURE" /> i stilen <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Generert sammendrag:</translation>
 <translation id="8410244574650205435">Identifisert automatisk</translation>
 <translation id="8420955526972171689">Kjør tester og feilsøking for maskinvareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8626489604350149811">Flere handlinger for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lys lilla</translation>
 <translation id="8647595191512746911">Transkripsjon av lyd</translation>
+<translation id="8648578954147795914">Genererte navn:</translation>
 <translation id="8650852232143958317">Ta med deg Gmail- og Google Disk-filene dine</translation>
 <translation id="8651481478098336970">kutt lyden</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -1784,6 +1788,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="9218016617214286986">Vis kjente APN</translation>
 <translation id="932327136139879170">Gå til startsiden</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Sjekk at mikrofonen er koblet til, eller prøv å starte Chromebooken på nytt</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="950520315903467048">Tasten mangler for <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">sammenligne stemmene i opptaket, slik at transkripsjonen gjenspeiler hva hver enkelt person sier, og når</translation>

@@ -321,7 +321,6 @@
 <translation id="2299218006564889602">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Nr. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2309265394777270359">Tab schließen</translation>
-<translation id="230956208401264723">In diesem Karussell kannst du dir alle deine verfolgten Pakete ansehen</translation>
 <translation id="2311077293164383652">Angepinnten Tab schließen</translation>
 <translation id="2316129865977710310">Nein danke</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
@@ -471,7 +470,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2931440415625410757">Anleitung einblenden</translation>
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2962516096219646456">Alle Autofill-Daten ansehen</translation>
-<translation id="2963044753825419640">Websites und Apps können vorhandene Konten automatisch auf die Verwendung von Passkeys umstellen, wenn diese Option verfügbar ist</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
 <translation id="2989805286512600854">In neuem Tab öffnen</translation>
@@ -1117,6 +1115,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5817176759448082654">Passwortcheck</translation>
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Wird synchronisiert…</translation>
+<translation id="583923961930319521">Passwörter auf allen deinen Geräten verwenden</translation>
 <translation id="5844284118433003733">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, beispielsweise durch erhöhten Schutz in Gmail nach einem Sicherheitsvorfall.</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5857770089550859117">Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
@@ -1458,7 +1457,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7253951228444156601">Passwörter werden geprüft…</translation>
 <translation id="7261217796641151584">Gruppe teilen</translation>
 <translation id="7266578100016339897">So behältst du den Überblick. Das kannst du in den Einstellungen jederzeit ändern.</translation>
-<translation id="7271220006028561438">Automatische Passkey-Upgrades zulassen</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="7300448350764260141">Füge zusätzlichen Schutz vor Onlinebedrohungen hinzu.</translation>
@@ -1692,6 +1690,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8221665793629393739">Erinnerung zum erneuten Besuch dieser Webseite</translation>
 <translation id="8230355548492839438">Vorherige suchen</translation>
 <translation id="8232956427053453090">Daten aufbewahren</translation>
+<translation id="8233237502828137700">Werbebanner schließen</translation>
 <translation id="8238711781852526820">„Preis-Tracking“ ausblenden</translation>
 <translation id="8258999165172757081">Hinzugefügt</translation>
 <translation id="8261506727792406068">Löschen</translation>

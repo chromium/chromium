@@ -81,6 +81,7 @@
 <translation id="131461803491198646">घरगुती नेटवर्क, रोमिंग नाही</translation>
 <translation id="1327977588028644528">गेटवे</translation>
 <translation id="1328223165223065150">वॉलपेपरचा रंग</translation>
+<translation id="1329478709358066995">ट्रान्स्क्रिप्ट:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कॅन क्षेत्रावर फिट करा</translation>
 <translation id="1343442362630695901">सॉल्ट लेक</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">बॅकग्राउंडविषयी</translation>
 <translation id="6939667434404433010">रेकॉर्डिंगचे नाव शोधा</translation>
 <translation id="6939766318048400022">कॅफे</translation>
+<translation id="6942253772720771875">तुमचा फीडबॅक शेअर करा किंवा तुमच्या समस्येचे वर्णन करा</translation>
 <translation id="6943893908656559156">रिमोट आयडेंटिटी (पर्यायी)</translation>
 <translation id="6953137545147683679">सोनेरी</translation>
 <translation id="6957231940976260713">सेवेचे नाव</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">हे <ph name="DEVICE_TYPE" /> एंटरप्राइझद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="8398927464629426868">ज्या गतीने डिव्हाइस सध्या चार्ज किंवा डिस्चार्ज होत आहे</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> शैलीमध्ये <ph name="ART_FEATURE" /> याचे पेंटिंग</translation>
+<translation id="8409219750150841791">जनरेट केलेला सारांश:</translation>
 <translation id="8410244574650205435">आपोआप डिटेक्ट केले</translation>
 <translation id="8420955526972171689">हार्डवेअरशी संबंधित समस्यांसाठी चाचण्या आणि ट्रबलशूटिंग रन करा</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> साठी आणखी कृती</translation>
 <translation id="86356131183441916">फिकट जांभळा</translation>
 <translation id="8647595191512746911">ऑडिओ ट्रान्स्क्रिप्शन</translation>
+<translation id="8648578954147795914">जनरेट केलेली नावे:</translation>
 <translation id="8650852232143958317">तुमच्या Gmail आणि Google Drive फाइल तुमच्यासोबत घ्या</translation>
 <translation id="8651481478098336970">आवाज म्यूट करा</translation>
 <translation id="8655295600908251630">खाडी</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">माहीत असलेली APNs दाखवा</translation>
 <translation id="932327136139879170">होम</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">तुमचा माइक कनेक्ट केलेला असल्याची खात्री करा किंवा तुमचे Chromebook रीस्टार्ट करून पहा</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> साठी की उपलब्ध नाही. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">संपूर्ण रेकॉर्डिंगमधील आवाजांची तुलना करा, जेणेकरून प्रत्येक स्पीकर काय आणि केव्हा म्हणाला ते ट्रान्स्क्रिप्ट दाखवेल</translation>
