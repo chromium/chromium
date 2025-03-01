@@ -147,9 +147,7 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
 
 }  // namespace
 
-H265ScalingListData::H265ScalingListData() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265ScalingListData::H265ScalingListData() = default;
 
 uint8_t H265ScalingListData::GetScalingList4x4EntryInRasterOrder(
     size_t matrix_id,
@@ -203,49 +201,27 @@ uint8_t H265ScalingListData::GetScalingList32x32EntryInRasterOrder(
   return scaling_list_32x32[matrix_id][up_right_diag_idx];
 }
 
-H265StRefPicSet::H265StRefPicSet() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
-
-H265SPS::H265SPS() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265SPS::H265SPS() = default;
 
 H265SPS::H265SPS(H265SPS&&) noexcept = default;
 
-H265ProfileTierLevel::H265ProfileTierLevel() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265ProfileTierLevel::H265ProfileTierLevel() = default;
 
-H265VUIParameters::H265VUIParameters() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265VUIParameters::H265VUIParameters() = default;
 
 H265VUIParameters::H265VUIParameters(H265VUIParameters&&) noexcept = default;
 
-H265PPS::H265PPS() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265PPS::H265PPS() = default;
 
 H265PPS::H265PPS(H265PPS&&) noexcept = default;
 
-H265VPS::H265VPS() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265VPS::H265VPS() = default;
 
 H265VPS::H265VPS(H265VPS&&) noexcept = default;
 
-H265RefPicListsModifications::H265RefPicListsModifications() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265PredWeightTable::H265PredWeightTable() = default;
 
-H265PredWeightTable::H265PredWeightTable() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
-
-H265SliceHeader::H265SliceHeader() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265SliceHeader::H265SliceHeader() = default;
 
 H265SEI::H265SEI() = default;
 
@@ -2060,9 +2036,8 @@ H265Parser::Result H265Parser::ParsePredWeightTable(
         pred_weight_table->luma_log2_weight_denom;
     IN_RANGE_OR_RETURN(pred_weight_table->chroma_log2_weight_denom, 0, 7);
   }
-  bool luma_weight_flag[kMaxRefIdxActive];
-  bool chroma_weight_flag[kMaxRefIdxActive];
-  memset(chroma_weight_flag, 0, sizeof(chroma_weight_flag));
+  bool luma_weight_flag[kMaxRefIdxActive] = {};
+  bool chroma_weight_flag[kMaxRefIdxActive] = {};
   for (int i = 0; i <= shdr.num_ref_idx_l0_active_minus1; ++i) {
     READ_BOOL_OR_RETURN(&luma_weight_flag[i]);
   }
