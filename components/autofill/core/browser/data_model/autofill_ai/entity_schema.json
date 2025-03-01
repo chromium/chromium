@@ -18,15 +18,6 @@
     "syncable": false
   },
   {
-    "name": "Loyalty Card",
-    "attributes": [ "Program", "Provider", "Member ID" ],
-    "import constraints": [
-      [ "Program", "Member ID" ]
-    ],
-    "merge constraints": "import constraints",
-    "syncable": true
-  },
-  {
     "name": "Vehicle",
     "attributes": [ "Owner", "License plate", "VIN", "Make", "Model" ],
     "import constraints": [

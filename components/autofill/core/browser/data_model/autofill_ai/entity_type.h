@@ -100,12 +100,6 @@ constexpr FieldType AttributeType::field_type() const {
       return PASSPORT_EXPIRATION_DATE_TAG;
     case AttributeTypeName::kPassportIssueDate:
       return PASSPORT_ISSUE_DATE_TAG;
-    case AttributeTypeName::kLoyaltyCardProgram:
-      return LOYALTY_MEMBERSHIP_PROGRAM;
-    case AttributeTypeName::kLoyaltyCardProvider:
-      return LOYALTY_MEMBERSHIP_PROVIDER;
-    case AttributeTypeName::kLoyaltyCardMemberId:
-      return LOYALTY_MEMBERSHIP_ID;
     case AttributeTypeName::kVehicleOwner:
       return VEHICLE_OWNER_TAG;
     case AttributeTypeName::kVehicleLicensePlate:

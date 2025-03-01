@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
   ASSERT_TRUE(RunAutofillSubtest("loadUpdatedEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("removeEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
-  // Test that retrieving general entity information works.
+  //  Test that retrieving general entity information works.
   ASSERT_TRUE(RunAutofillSubtest("getAllEntityTypes"));
   ASSERT_TRUE(RunAutofillSubtest("getAllAttributeTypesForEntity"));
 }

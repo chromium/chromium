@@ -54,15 +54,6 @@ std::u16string AttributeType::GetNameForI18n() const {
     case AttributeTypeName::kPassportIssueDate:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME);
-    case AttributeTypeName::kLoyaltyCardProgram:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_LOYALTY_CARD_PROGRAM_ATTRIBUTE_NAME);
-    case AttributeTypeName::kLoyaltyCardProvider:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_LOYALTY_CARD_PROVIDER_ATTRIBUTE_NAME);
-    case AttributeTypeName::kLoyaltyCardMemberId:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_LOYALTY_CARD_MEMBER_ID_ATTRIBUTE_NAME);
     case AttributeTypeName::kVehicleOwner:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME);
@@ -105,12 +96,10 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
     switch (t.name()) {
       case EntityTypeName::kPassport:
         return 1;
-      case EntityTypeName::kLoyaltyCard:
-        return 2;
       case EntityTypeName::kVehicle:
-        return 3;
+        return 2;
       case EntityTypeName::kDriversLicense:
-        return 4;
+        return 3;
     }
   };
   return rank(lhs) < rank(rhs);
@@ -120,9 +109,6 @@ std::u16string EntityType::GetNameForI18n() const {
   switch (name()) {
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME);
-    case EntityTypeName::kLoyaltyCard:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_LOYALTY_CARD_ENTITY_NAME);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME);
     case EntityTypeName::kDriversLicense:

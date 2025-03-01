@@ -33,8 +33,6 @@ std::string GetAddEntityStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY);
-    case EntityTypeName::kLoyaltyCard:
-      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_LOYALTY_CARD_ENTITY);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY);
     case EntityTypeName::kDriversLicense:
@@ -48,8 +46,6 @@ std::string GetEditEntityStringForI18n(EntityType entity_type) {
   switch (entity_type.name()) {
     case EntityTypeName::kPassport:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY);
-    case EntityTypeName::kLoyaltyCard:
-      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_LOYALTY_CARD_ENTITY);
     case EntityTypeName::kVehicle:
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY);
     case EntityTypeName::kDriversLicense:

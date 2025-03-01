@@ -90,7 +90,6 @@ TEST(AutofillEntityTypeTest, DisambiguationOrder) {
 TEST(AutofillEntityTypeTest, Syncable) {
   using enum EntityTypeName;
   EXPECT_FALSE(EntityType(kPassport).syncable());
-  EXPECT_TRUE(EntityType(kLoyaltyCard).syncable());
 }
 
 TEST(AutofillEntityTypeTest, EntityGetNameForI18n) {

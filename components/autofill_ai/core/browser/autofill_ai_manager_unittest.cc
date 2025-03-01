@@ -628,13 +628,13 @@ TEST_F(AutofillAiManagerImportFormTest,
 // already contained in one of the entities.
 TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {autofill::LOYALTY_MEMBERSHIP_ID, autofill::LOYALTY_MEMBERSHIP_PROGRAM});
-  EntityInstance entity = autofill::test::GetLoyaltyCardEntityInstance();
+      {autofill::DRIVERS_LICENSE_NAME_TAG, autofill::DRIVERS_LICENSE_NUMBER});
+  EntityInstance entity = autofill::test::GetDriversLicenseEntityInstance();
   // Set the filled values to be the same as the ones already stored.
   form->field(0)->set_value(GetValueFromEntityForFieldType(
-      entity, autofill::LOYALTY_MEMBERSHIP_ID, /*app_locale=*/""));
+      entity, autofill::DRIVERS_LICENSE_NAME_TAG, /*app_locale=*/""));
   form->field(1)->set_value(GetValueFromEntityForFieldType(
-      entity, autofill::LOYALTY_MEMBERSHIP_PROGRAM, /*app_locale=*/""));
+      entity, autofill::DRIVERS_LICENSE_NUMBER, /*app_locale=*/""));
   AddOrUpdateEntityInstance(entity);
 
   base::test::TestFuture<std::unique_ptr<FormStructure>, bool>

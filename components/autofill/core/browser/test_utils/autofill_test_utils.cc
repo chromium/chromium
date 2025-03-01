@@ -901,26 +901,39 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
       base::Time::FromTimeT(options.date_modified.ToTimeT()));
 }
 
-EntityInstance GetLoyaltyCardEntityInstance(LoyaltyCardEntityOptions options) {
+EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
-  if (options.program) {
-    attributes.emplace_back(AttributeType(kLoyaltyCardProgram));
-    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_PROGRAM, options.program,
+  if (options.name) {
+    attributes.emplace_back(AttributeType(kDriversLicenseName));
+    attributes.back().SetInfo(DRIVERS_LICENSE_NAME_TAG, options.name,
+                              /*app_locale=*/"");
+    attributes.back().FinalizeInfo();
+  }
+  if (options.region) {
+    attributes.emplace_back(AttributeType(kDriversLicenseRegion));
+    attributes.back().SetInfo(DRIVERS_LICENSE_REGION, options.region,
+                              /*app_locale=*/"en-US");
+  }
+  if (options.number) {
+    attributes.emplace_back(AttributeType(kDriversLicenseNumber));
+    attributes.back().SetInfo(DRIVERS_LICENSE_NUMBER, options.number,
                               /*app_locale=*/"");
   }
-  if (options.provider) {
-    attributes.emplace_back(AttributeType(kLoyaltyCardProvider));
-    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_PROVIDER, options.provider,
+  if (options.expiration_date) {
+    attributes.emplace_back(AttributeType(kDriversLicenseExpirationDate));
+    attributes.back().SetInfo(DRIVERS_LICENSE_EXPIRATION_DATE_TAG,
+                              options.expiration_date,
                               /*app_locale=*/"");
   }
-  if (options.member_id) {
-    attributes.emplace_back(AttributeType(kLoyaltyCardMemberId));
-    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_ID, options.member_id,
+  if (options.issue_date) {
+    attributes.emplace_back(AttributeType(kDriversLicenseIssueDate));
+    attributes.back().SetInfo(DRIVERS_LICENSE_ISSUE_DATE_TAG,
+                              options.issue_date,
                               /*app_locale=*/"");
   }
   return EntityInstance(
-      EntityType(EntityTypeName::kLoyaltyCard), std::move(attributes),
+      EntityType(EntityTypeName::kDriversLicense), std::move(attributes),
       base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
       base::Time::FromTimeT(options.date_modified.ToTimeT()));
 }

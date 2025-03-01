@@ -301,8 +301,6 @@ Suggestion::Icon GetSuggestionIcon(
   switch (triggering_field_entity_type.name()) {
     case autofill::EntityTypeName::kPassport:
       return Suggestion::Icon::kIdCard;
-    case autofill::EntityTypeName::kLoyaltyCard:
-      return Suggestion::Icon::kLoyalty;
     case autofill::EntityTypeName::kDriversLicense:
       return Suggestion::Icon::kIdCard;
     case autofill::EntityTypeName::kVehicle:

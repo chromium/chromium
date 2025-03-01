@@ -194,14 +194,9 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
       case autofill::EntityTypeName::kPassport:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
-
       case autofill::EntityTypeName::kDriversLicense:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
-
-      case autofill::EntityTypeName::kLoyaltyCard:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_SAVE_LOYALTY_CARD_ENTITY_DIALOG_TITLE);
     }
   } else {
     switch (new_entity_->type().name()) {
@@ -211,17 +206,11 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
       case autofill::EntityTypeName::kPassport:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE);
-
       case autofill::EntityTypeName::kDriversLicense:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
-
-      case autofill::EntityTypeName::kLoyaltyCard:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_UPDATE_LOYALTY_CARD_ENTITY_DIALOG_TITLE);
     }
   }
-
   NOTREACHED();
 }
 
