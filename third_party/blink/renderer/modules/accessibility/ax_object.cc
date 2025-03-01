@@ -2435,8 +2435,9 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     SerializeMarkerAttributes(node_data);
 #if BUILDFLAG(IS_ANDROID)
-    // On Android, style attributes are only serialized for snapshots.
-    if (is_snapshot) {
+    // On Android, style attributes are only serialized for snapshots, or, when
+    // the experimental feature flag for text formatting data is enabled.
+    if (is_snapshot || ::features::IsAccessibilityTextFormattingEnabled()) {
       SerializeStyleAttributes(node_data);
     }
 #else
