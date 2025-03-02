@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Slaptažodis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">Atidarykite naują skirtuką naršyklėje „Chrome“</translation>
 <translation id="1166460004393506534">Naršymo duomenų ištrynimas naršyklėje „Chrome“.</translation>
+<translation id="1171255741903316750">Įjunkite parinktį „Užrakinti inkognito skirtukus uždarius „Chrome“</translation>
 <translation id="1179527450541388808">Greičiau pasiekite „Chrome“ naudodami „iPad“ pagrindinio ekrano doką.</translation>
 <translation id="1180362651362502943">Toliau naudokite „Chrome“ duomenis „Google“ paskyroje.</translation>
 <translation id="1200396280085622191">Naudokite „Chrome“ bet kada palietę nuorodas pranešimuose ir kitose programose.</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chrome“ bei kitų šiame įrenginyje įdiegtų „Google“ programų.</translation>
 <translation id="1919130412786645364">Leisti „Chrome“ prisijungti</translation>
 <translation id="1965935827552890526">Pabaikite tai, ką darėte, kitame atidarytame „Chrome“ lange.</translation>
+<translation id="1973910962341002002">„<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ nustatymuose įjunkite „Chrome“</translation>
 <translation id="1984705450038014246">„Chrome“ duomenų sinchronizavimas</translation>
 <translation id="1987779152850321833">Atlikite toliau nurodytus siūlomus veiksmus, kad išnaudotumėte visas „Chrome“ galimybes.</translation>
 <translation id="2055826352861631739">„Chrome“, skirtos „iPad“, naudojimas pagal numatytuosius nustatymus</translation>
@@ -96,10 +98,13 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3303503998967553377">„Chrome“ veiksmų naudojimas „iOS“ įrenginyje</translation>
 <translation id="3348862487678490430">Pridėti skaitymo sąrašo elementą prie „Chrome“</translation>
+<translation id="3357827134511189025">Prisijunkite naudodami išsaugotus slaptažodžius ir prieigos raktus iš bet kurios programos naudodami „Chrome“ automatinio pildymo funkciją</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutę}one{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutę}few{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutes}many{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutės}other{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minučių}}</translation>
 <translation id="3367797402528056312">Užbaikite „Chrome“ sąranką</translation>
 <translation id="3371064404604898522">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="3399930248910934354">Atidarykite „Chrome“ nustatymus</translation>
+<translation id="3440830787838130530">„Google“ slaptažodžių tvarkyklėje lengva ir saugu slaptažodžio kopiją bendrinti su šeimos grupe</translation>
+<translation id="3460369101684070455">Lengvai gaukite išsaugotus slaptažodžius kitose programose pasirinkę automatinio pildymo funkciją naršyklėje „Chrome“</translation>
 <translation id="3472587960215700950">„Chrome“ naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>
 <translation id="3503014945441706099">Taip pat naudokite Sustiprintą saugų naršymą šiame „Chrome“ profilyje</translation>
 <translation id="3522659714780527202">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, įjunkite sinchronizavimą</translation>
@@ -181,6 +186,7 @@ Pabandykite palaukti kelias minutes prieš perjungdami paskyras. Jei dabar perju
 <translation id="5998675059699164418">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chrome“.</translation>
 <translation id="6021312115739110405">„Google“ sukurtas tinkintas jums skirtas sklaidos kanalas. Įskaitant naujienas, sportą ir orų prognozę.</translation>
 <translation id="6022659036123304283">Suasmeninkite „Chrome“</translation>
+<translation id="6132075343662013154">„Chrome“ pasiūlys išsaugoti slaptažodį</translation>
 <translation id="6132149203299792222">Prisijunkite naudodami „Google“ paskyrą, kad sinchronizuotumėte slaptažodžius, žymes ir kt.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Paieška naršyklėje „Chrome“</translation>
@@ -228,6 +234,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7061455974939528301">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="7065813315247345131">„Chrome“ perkėlimas į doką</translation>
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
+<translation id="7145599899567697473">Išsaugoti ir automatiškai pildyti slaptažodžius naršyklėje „Chrome“</translation>
 <translation id="7161390184744336561">„Google Chrome“ versija yra pasenusi</translation>
 <translation id="7165736900384873061">Prad. naudoti „Google Chrome“ QR skait.</translation>
 <translation id="7175129790242719365">„Chrome“ patarimas: prisijunkite prie „Chrome“</translation>
@@ -261,6 +268,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7693590760643069321">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="7698568245838009292">„Chrome“ nori pasiekti fotoaparatą</translation>
 <translation id="7707877166818730835">Atidaryti naujausią skirtuką naršyklėje „Chrome“</translation>
+<translation id="7747746207470479571">Lengvai pasiekite slaptažodžius ir prieigos raktus naudodami automatinio pildymo funkciją naršyklėje „Chrome“</translation>
 <translation id="776305366874821582">Greičiau pasiekite „Chrome“ naudodami „iPhone“ pagrindinio ekrano doką.</translation>
 <translation id="7780154209050837198">Jei norite išnaudoti visas „Chrome“ galimybes, prisijunkite prie „Chrome“ naudodami „Google“ paskyrą.</translation>
 <translation id="7787205077729386167">Atidarykite „Chrome“ nustatymus sistemoje „iOS“, tada palieskite „Numatytoji naršyklės programa“ ir pasirinkite „Chrome“.</translation>
@@ -281,6 +289,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="8136856065410661948">Šie duomenys bus naudojami įvykiams programoje „Apple Calendar“ kurti naudojant „Chrome“ ir „Google Lens“.</translation>
 <translation id="8154120522323162874">Naudokitės visomis „Chrome“ galimybėmis, užbaigę naršyklės sąranką.</translation>
 <translation id="8160472928944011082">Nepavyko atnaujinti „Chrome“</translation>
+<translation id="8245080522851805544">Užtikrinkite privatų naršymą naudodami įrenginio autentifikavimą uždarę „Chrome“</translation>
 <translation id="8248887045858762645">„Chrome“ patarimas</translation>
 <translation id="8265730590513812063">Atidaryti „Chrome“ meniu</translation>
 <translation id="8317674518145175158">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.

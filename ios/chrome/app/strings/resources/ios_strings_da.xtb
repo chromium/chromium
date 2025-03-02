@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Hold fingeren på startskærmen</translation>
 <translation id="1832848789136765277">Verificer din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{Bogmærket er gemt på din Google-konto, {email}}other{Bogmærkerne er gemt på din Google-konto, {email}}}</translation>
+<translation id="1838089197478136166">Vil du åbne i Wallet?</translation>
 <translation id="183878838231635348">Dette kort viser eventuelle privatlivs- eller sikkerhedsproblemer, som Sikkerhedstjek automatisk registrerer for dig.</translation>
 <translation id="1845230888742614096">Behold gruppen</translation>
 <translation id="1854463785401910334">Søg i åbne faner</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">Din iPad blev for nylig gendannet, hvilket muligvis har ændret din standardbrowser.</translation>
 <translation id="1901366738768303267">Hvordan bruger jeg denne funktion?</translation>
 <translation id="1901600657316773839">Behold valg</translation>
+<translation id="1902277226107477495">Adresseregistrering er deaktiveret. Aktivér det igen under Indstillinger.</translation>
 <translation id="1904580727789512086">De webadresser, du besøger, gemmes på din Google-konto</translation>
 <translation id="1911619930368729126">Upload til Google Drev</translation>
 <translation id="1923342640370224680">Den seneste time</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2240256190924001613">Der er en tilgængelig konfigurationsprofil</translation>
+<translation id="2244080985779413662">Dette website vil gerne downloade en fil og åbne den i Wallet.</translation>
 <translation id="2245007488813216650">Oversætter…</translation>
 <translation id="2249119578464404734">Tryk på søgeikonet øverst på skærmen</translation>
 <translation id="2251686759395008410">Menu → Historik</translation>
@@ -1361,6 +1364,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6779455296366983087">Dine browserdata slettes</translation>
 <translation id="6790502149545262384">Du får snart vist historier fra <ph name="CHANNEL_NAME" />, når du åbner en ny fane.</translation>
+<translation id="6794476726485507147">Vælg en dato og et tidspunkt for at få en notifikation med en påmindelse om at vende tilbage til denne side</translation>
 <translation id="681368974849482173">Elementet blev oprettet</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{{count} bogmærke er gemt på din Google-konto, {email}}other{{count} bogmærker er gemt på din Google-konto, {email}}}</translation>
 <translation id="6830728435402077660">Ikke sikker</translation>
@@ -1488,6 +1492,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7425053386765766120">Tilføj betalingsmetode…</translation>
 <translation id="7425346204213733349">Ændringer af dine bogmærker, din historik, dine adgangskoder og andre indstillinger synkroniseres ikke længere til din Google-konto. Dine eksisterende data er dog stadig gemt på din Google-konto.</translation>
 <translation id="742664698522525515">Vil du beholde gruppen?</translation>
+<translation id="7431851541687113774">Deaktiver adresseregistrering</translation>
 <translation id="7431991332293347422">Bestem selv, hvordan din browserhistorik skal bruges til at personligt tilpasse søgeresultater m.m.</translation>
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7438481509621345350">Du får nu vist historier fra <ph name="CHANNEL_NAME" />, når du åbner en ny fane.</translation>
@@ -1641,6 +1646,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8023170444051056234">Du mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle dine enheder</translation>
 <translation id="8023878949384262191">Udvider sektionen.</translation>
 <translation id="8027581147000338959">Åbn i nyt vindue</translation>
+<translation id="8029092694585014252">Indstil påmindelse</translation>
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8035133914807600019">Ny mappe…</translation>
 <translation id="8035412398498507358">Fotos</translation>

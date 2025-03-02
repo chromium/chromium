@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Hjemmenetværk, uden roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Baggrundsfarve</translation>
+<translation id="1329478709358066995">Transskription:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1343442362630695901">saltsø</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">Om baggrunden</translation>
 <translation id="6939667434404433010">Søg efter navnet på optagelsen</translation>
 <translation id="6939766318048400022">Café</translation>
+<translation id="6942253772720771875">Del din feedback, eller beskriv dit problem</translation>
 <translation id="6943893908656559156">Fjernidentitet (valgfrit)</translation>
 <translation id="6953137545147683679">guld</translation>
 <translation id="6957231940976260713">Tjenestens navn</translation>
@@ -1598,6 +1600,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" /> administreres af en virksomhed</translation>
 <translation id="8398927464629426868">Den aktuelle hastighed for opladning eller afladning på enheden</translation>
 <translation id="8403988360557588704">Et maleri af <ph name="ART_FEATURE" /> inden for stilarten <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Genereret opsummering:</translation>
 <translation id="8410244574650205435">Fundet automatisk</translation>
 <translation id="8420955526972171689">Kør tests og fejlfinding af hardwareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8626489604350149811">Flere handlinger for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lys violet</translation>
 <translation id="8647595191512746911">Lydtransskription</translation>
+<translation id="8648578954147795914">Genererede navne:</translation>
 <translation id="8650852232143958317">Tag dine Gmail- og Google Drev-filer med dig</translation>
 <translation id="8651481478098336970">slå lyden fra</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -1784,6 +1788,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="9218016617214286986">Vis kendte APN'er</translation>
 <translation id="932327136139879170">Start</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Sørg for, at din mikrofon er tilknyttet, eller prøv at genstarte din Chromebook</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="950520315903467048">Du mangler at angive tasten til handlingen <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Sammenlign stemmer i optagelsen, så det fremgår af transskriptionen, hvad hver person sagde, og hvornår de sagde det</translation>
