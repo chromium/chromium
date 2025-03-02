@@ -25,11 +25,6 @@ declare_args() {
   # Meant to be used during local development only (requires a local checkout
   # and build) with the runtime --load-webui-from-disk command line switch.
   load_webui_from_disk = false
-
-  # Enable generation of compiled JS bytecode for opted-in WebUI scripts.
-  # TODO(crbug.com/399764218): Enable this build-step on cross-compiled builds.
-  enable_webui_generate_code_cache =
-      host_toolchain == current_toolchain && (is_linux || is_mac || is_win)
 }
 
 if (load_webui_from_disk) {
