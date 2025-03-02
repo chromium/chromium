@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/numerics/ranges.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -135,7 +136,7 @@ class PhysicsModelUnittest : public ::testing::Test {
 std::ostream& operator<<(std::ostream& os, const PhysicsModel::Result& r) {
   os << "foreground offset: " << r.foreground_offset_physical
      << " background offset: " << r.background_offset_physical
-     << " done: " << (r.done ? "true" : "false");
+     << " done: " << base::ToString(r.done);
   return os;
 }
 

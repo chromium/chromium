@@ -26,6 +26,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -1943,9 +1944,9 @@ class RedirectHeuristicGrantTest
     std::string grant_time_string =
         GetParam().write_redirect_grants ? "60s" : "0s";
     std::string require_aba_flow_string =
-        GetParam().require_aba_flow ? "true" : "false";
+        base::ToString(GetParam().require_aba_flow);
     std::string require_current_interaction_string =
-        GetParam().require_current_interaction ? "true" : "false";
+        base::ToString(GetParam().require_current_interaction);
 
     enabled_features_.push_back(
         {content_settings::features::kTpcdHeuristicsGrants,

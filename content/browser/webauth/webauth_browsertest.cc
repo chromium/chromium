@@ -30,6 +30,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -254,14 +255,14 @@ struct CreateParameters {
 
 std::string BuildCreateCallWithParameters(const CreateParameters& parameters) {
   std::vector<std::string> substitutions;
-  substitutions.push_back(parameters.require_resident_key ? "true" : "false");
+  substitutions.push_back(base::ToString(parameters.require_resident_key));
   substitutions.push_back(parameters.user_verification);
   substitutions.push_back(parameters.rp_id);
   substitutions.push_back(parameters.algorithm_identifier);
   substitutions.push_back(parameters.authenticator_attachment);
   substitutions.push_back(parameters.attestation);
   substitutions.push_back(parameters.exclude_credentials);
-  substitutions.push_back(parameters.is_payment ? "true" : "false");
+  substitutions.push_back(base::ToString(parameters.is_payment));
   substitutions.push_back(parameters.extra_extension);
 
   std::string result;

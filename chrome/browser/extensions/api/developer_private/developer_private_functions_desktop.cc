@@ -129,7 +129,6 @@ ExtensionService* GetExtensionService(content::BrowserContext* context) {
   return ExtensionSystem::Get(context)->extension_service();
 }
 
-
 std::string ReadFileToString(const base::FilePath& path) {
   std::string data;
   // This call can fail, but it doesn't matter for our purposes. If it fails,
@@ -1336,95 +1335,6 @@ DeveloperPrivateUpdateExtensionCommandFunction::Run() {
   }
 
   return RespondNow(NoArguments());
-}
-
-DeveloperPrivateUpdateSiteAccessFunction::
-    DeveloperPrivateUpdateSiteAccessFunction() = default;
-DeveloperPrivateUpdateSiteAccessFunction::
-    ~DeveloperPrivateUpdateSiteAccessFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateUpdateSiteAccessFunction::Run() {
-  std::optional<developer::UpdateSiteAccess::Params> params =
-      developer::UpdateSiteAccess::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  URLPattern parsed_site(Extension::kValidHostPermissionSchemes);
-  if (parsed_site.Parse(params->site) != URLPattern::ParseResult::kSuccess) {
-    return RespondNow(Error("Invalid site: " + params->site));
-  }
-
-  base::RepeatingClosure done_callback = base::BarrierClosure(
-      params->updates.size(),
-      base::BindOnce(
-          &DeveloperPrivateUpdateSiteAccessFunction::OnSiteSettingsUpdated,
-          base::RetainedRef(this)));
-
-  // To ensure that this function is atomic, return with an error if any
-  // extension specified does not exist or cannot have its host permissions
-  // changed.
-  PermissionsManager* const permissions_manager =
-      PermissionsManager::Get(browser_context());
-  std::vector<std::pair<const Extension&, developer::HostAccess>>
-      extensions_to_modify;
-  extensions_to_modify.reserve(params->updates.size());
-  for (const auto& update : params->updates) {
-    const Extension* extension = GetExtensionById(update.id);
-    if (!extension) {
-      return RespondNow(Error(kNoSuchExtensionError));
-    }
-    if (!permissions_manager->CanAffectExtension(*extension)) {
-      return RespondNow(Error(kCannotChangeHostPermissions));
-    }
-
-    extensions_to_modify.emplace_back(*extension, update.site_access);
-  }
-
-  for (const auto& update : extensions_to_modify) {
-    const Extension& extension = update.first;
-
-    std::unique_ptr<const PermissionSet> permissions;
-    ScriptingPermissionsModifier modifier(browser_context(), &extension);
-    bool has_withheld_permissions =
-        permissions_manager->HasWithheldHostPermissions(extension);
-    switch (update.second) {
-      case developer::HostAccess::kOnClick:
-        // If the extension has no withheld permissions and can run on all of
-        // its requested hosts, withhold all of its host permissions as a
-        // blocklist based model for runtime host permissions (i.e. run on all
-        // sites except these) is not currently supported.
-        if (!has_withheld_permissions) {
-          modifier.SetWithholdHostPermissions(true);
-          modifier.RemoveAllGrantedHostPermissions();
-          done_callback.Run();
-        } else {
-          modifier.RemoveHostPermissions(parsed_site, done_callback);
-        }
-        break;
-      case developer::HostAccess::kOnSpecificSites:
-        // If the extension has no withheld host permissions and can run on
-        // all of its requested hosts, withhold all of its permissions
-        // before granting `site`.
-        if (!has_withheld_permissions) {
-          modifier.SetWithholdHostPermissions(true);
-          modifier.RemoveAllGrantedHostPermissions();
-        }
-        modifier.GrantHostPermission(parsed_site, done_callback);
-        break;
-      case developer::HostAccess::kOnAllSites:
-        modifier.SetWithholdHostPermissions(false);
-        done_callback.Run();
-        break;
-      case developer::HostAccess::kNone:
-        NOTREACHED();
-    }
-  }
-
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void DeveloperPrivateUpdateSiteAccessFunction::OnSiteSettingsUpdated() {
-  Respond(NoArguments());
 }
 
 DeveloperPrivateRemoveMultipleExtensionsFunction::

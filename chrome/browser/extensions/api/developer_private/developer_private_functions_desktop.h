@@ -431,26 +431,6 @@ class DeveloperPrivateUpdateExtensionCommandFunction
   ResponseAction Run() override;
 };
 
-class DeveloperPrivateUpdateSiteAccessFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.updateSiteAccess",
-                             DEVELOPERPRIVATE_UPDATESITEACCESS)
-  DeveloperPrivateUpdateSiteAccessFunction();
-
-  DeveloperPrivateUpdateSiteAccessFunction(
-      const DeveloperPrivateUpdateSiteAccessFunction&) = delete;
-  DeveloperPrivateUpdateSiteAccessFunction& operator=(
-      const DeveloperPrivateUpdateSiteAccessFunction&) = delete;
-
- private:
-  ~DeveloperPrivateUpdateSiteAccessFunction() override;
-
-  ResponseAction Run() override;
-
-  void OnSiteSettingsUpdated();
-};
-
 class DeveloperPrivateRemoveMultipleExtensionsFunction
     : public DeveloperPrivateAPIFunction {
  public:

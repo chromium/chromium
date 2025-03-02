@@ -5,6 +5,7 @@
 #include "content/browser/btm/btm_navigation_flow_detector.h"
 
 #include "base/base64.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -58,14 +59,14 @@ std::vector<url::Origin> GetOrigins(const AttributionData& data) {
   return origins;
 }
 
-const char* StringifyBooleanMetric(ukm::TestAutoSetUkmRecorder* ukm_recorder,
+std::string StringifyBooleanMetric(ukm::TestAutoSetUkmRecorder* ukm_recorder,
                                    const ukm::mojom::UkmEntry* entry,
                                    std::string metric_name) {
   const std::int64_t* metric = ukm_recorder->GetEntryMetric(entry, metric_name);
   if (metric == nullptr) {
     return "null";
   }
-  return *metric ? "true" : "false";
+  return base::ToString(*metric);
 }
 
 const std::string StringifyNumericMetric(

@@ -42,8 +42,6 @@ DEFINE_EMPTY_FUNC(DeveloperPrivateSetShortcutHandlingSuspendedFunction,
                   "developerPrivate.setShortcutHandlingSuspended")
 DEFINE_EMPTY_FUNC(DeveloperPrivateUpdateExtensionCommandFunction,
                   "developerPrivate.updateExtensionCommand")
-DEFINE_EMPTY_FUNC(DeveloperPrivateUpdateSiteAccessFunction,
-                  "developerPrivate.updateSiteAccess")
 DEFINE_EMPTY_FUNC(DeveloperPrivateRemoveMultipleExtensionsFunction,
                   "developerPrivate.removeMultipleExtensions")
 DEFINE_EMPTY_FUNC(

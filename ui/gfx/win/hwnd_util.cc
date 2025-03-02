@@ -212,26 +212,27 @@ bool IsWindowVisibleAndFullyOpaque(HWND hwnd, Rect* window_rect) {
 
   if (window_rect) {
     *window_rect = Rect(win_rect);
-  }
 
-  WINDOWPLACEMENT window_placement = {0};
-  window_placement.length = sizeof(WINDOWPLACEMENT);
-  ::GetWindowPlacement(hwnd, &window_placement);
-  if (window_placement.showCmd == SW_MAXIMIZE) {
-    // If the window is maximized the window border extends beyond the visible
-    // region of the screen.  Adjust the maximized window rect to fit the
-    // screen dimensions to ensure that fullscreen windows, which do not extend
-    // beyond the screen boundaries since they typically have no borders, will
-    // occlude maximized windows underneath them.
-    HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
-    if (hmon) {
-      MONITORINFO mi;
-      mi.cbSize = sizeof(mi);
-      if (GetMonitorInfo(hmon, &mi)) {
-        (*window_rect).AdjustToFit(gfx::Rect(mi.rcWork));
+    WINDOWPLACEMENT window_placement = {0};
+    window_placement.length = sizeof(WINDOWPLACEMENT);
+    ::GetWindowPlacement(hwnd, &window_placement);
+    if (window_placement.showCmd == SW_MAXIMIZE) {
+      // If the window is maximized the window border extends beyond the visible
+      // region of the screen. Adjust the maximized window rect to fit the
+      // screen dimensions to ensure that fullscreen windows, which do not
+      // extend beyond the screen boundaries since they typically have no
+      // borders, will occlude maximized windows underneath them.
+      HMONITOR hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+      if (hmon) {
+        MONITORINFO mi;
+        mi.cbSize = sizeof(mi);
+        if (GetMonitorInfo(hmon, &mi)) {
+          (*window_rect).AdjustToFit(gfx::Rect(mi.rcWork));
+        }
       }
     }
   }
+
   return true;
 }
 

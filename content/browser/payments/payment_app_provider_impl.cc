@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/token.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
@@ -185,7 +186,7 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
         {"Payment Handler Name", app_name},
         {"Service Worker JavaScript File URL", sw_js_url.spec()},
         {"Service Worker Scope", sw_scope.spec()},
-        {"Service Worker Uses Cache", sw_use_cache ? "true" : "false"},
+        {"Service Worker Uses Cache", base::ToString(sw_use_cache)},
     };
     dev_tools->LogBackgroundServiceEvent(
         /*service_worker_registration_id=*/-1,
@@ -377,7 +378,7 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
           GetDevTools(sw_origin)) {
     std::map<std::string, std::string> data = {
         {"Payment Handler Install Success",
-         registration_id >= 0 ? "true" : "false"},
+         base::ToString(registration_id >= 0)},
     };
     dev_tools->LogBackgroundServiceEvent(
         registration_id, blink::StorageKey::CreateFirstParty(sw_origin),

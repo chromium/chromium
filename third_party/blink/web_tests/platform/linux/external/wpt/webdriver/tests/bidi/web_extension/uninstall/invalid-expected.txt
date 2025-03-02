@@ -11,5 +11,7 @@ This is a wdspec test.
   webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
 [FAIL] test_params_extension_invalid_type[value4]
   webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
+[FAIL] test_params_extension_invalid_value
+  webdriver.bidi.error.UnknownErrorException: unknown error (Method webExtension.uninstall is not implemented.)
 Harness: the test ran to completion.
 

@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_browsertest.h"
 #include "content/public/test/browser_test.h"
@@ -86,8 +87,8 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
   const bool is_ac3_eac3_supported =
       media::IsDecoderSupportedAudioType({media::AudioCodec::kAC3});
   ExecuteTest(base::StringPrintf("testMp4Variants(true, %s, %s)",
-                                 is_hevc_supported ? "true" : "false",
-                                 is_ac3_eac3_supported ? "true" : "false"));
+                                 base::ToString(is_hevc_supported),
+                                 base::ToString(is_ac3_eac3_supported)));
 #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -287,9 +288,9 @@ int RendererWebAudioDeviceImpl::MaxChannelCount() {
 
 void RendererWebAudioDeviceImpl::SetDetectSilence(
     bool enable_silence_detection) {
-  SendLogMessage(
-      base::StringPrintf("%s({enable_silence_detection=%s})", __func__,
-                         enable_silence_detection ? "true" : "false"));
+  SendLogMessage(base::StringPrintf("%s({enable_silence_detection=%s})",
+                                    __func__,
+                                    base::ToString(enable_silence_detection)));
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (silent_sink_suspender_)

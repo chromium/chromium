@@ -84,6 +84,7 @@ class ExternalProviderInterface {
   // Gets details of an extension by its id.  Output params will be set only
   // if they are not NULL.  If an output parameter is not specified by the
   // provider type, it will not be changed.
+  // This function is no longer used outside unit tests.
   virtual bool GetExtensionDetails(
       const std::string& id,
       mojom::ManifestLocation* location,

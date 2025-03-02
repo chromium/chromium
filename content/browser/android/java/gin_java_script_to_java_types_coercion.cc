@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/common/android/gin_java_bridge_value.h"
 
@@ -215,7 +216,7 @@ jvalue CoerceJavaScriptBooleanToJavaValue(JNIEnv* env,
       break;
     case JavaType::TypeString:
       result.l = coerce_to_string ? ConvertUTF8ToJavaString(
-                                        env, boolean_value ? "true" : "false")
+                                        env, base::ToString(boolean_value))
                                         .Release()
                                   : nullptr;
       break;
