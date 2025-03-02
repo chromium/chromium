@@ -391,7 +391,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   TextPainter text_painter(context, paint_info.GetSvgContextPaints(), *font,
-                           visual_rect, text_origin, is_horizontal);
+                           visual_rect, text_origin);
   TextDecorationPainter decoration_painter(text_painter, inline_context_,
                                            paint_info, style, text_style,
                                            rotated_box, selection);
@@ -471,7 +471,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // overlays are active, but paint shadows in full <https://crbug.com/1147859>
   if (ShouldPaintEmphasisMark(style, *layout_object, text_item)) {
     text_painter.SetEmphasisMark(style.TextEmphasisMarkString(),
-                                 style.GetTextEmphasisPosition());
+                                 style.GetTextEmphasisLineLogicalSide());
   }
 
   DOMNodeId node_id = kInvalidDOMNodeId;

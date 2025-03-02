@@ -401,6 +401,7 @@ enum class TextEmphasisPosition : unsigned {
   kOverLeft,
   kUnderRight,
   kUnderLeft,
+  kAuto,
 };
 
 enum class StyleViewTransitionCaptureMode : unsigned { kFlat, kLayered };

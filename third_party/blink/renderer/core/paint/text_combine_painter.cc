@@ -29,8 +29,7 @@ TextCombinePainter::TextCombinePainter(
                   svg_context_paints,
                   *style.GetFont(),
                   visual_rect,
-                  text_origin,
-                  /* horizontal */ false),
+                  text_origin),
       style_(style) {}
 
 TextCombinePainter::~TextCombinePainter() = default;
@@ -125,7 +124,7 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
                                            const Font& emphasis_mark_font) {
   DCHECK_NE(style_.GetTextEmphasisMark(), TextEmphasisMark::kNone);
   SetEmphasisMark(style_.TextEmphasisMarkString(),
-                  style_.GetTextEmphasisPosition());
+                  style_.GetTextEmphasisLineLogicalSide());
   DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
   DCHECK(emphasis_mark());
   const SimpleFontData* const font_data = font().PrimaryFont();

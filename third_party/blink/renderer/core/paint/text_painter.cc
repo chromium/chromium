@@ -462,19 +462,18 @@ void TextPainter::PaintSelectedText(
 }
 
 void TextPainter::SetEmphasisMark(const AtomicString& emphasis_mark,
-                                  TextEmphasisPosition position) {
+                                  LineLogicalSide emphasis_line_side) {
   emphasis_mark_ = emphasis_mark;
   const SimpleFontData* font_data = font_.PrimaryFont();
   DCHECK(font_data);
 
   if (!font_data || emphasis_mark.IsNull()) {
     emphasis_mark_offset_ = 0;
-  } else if ((horizontal_ && IsOver(position)) ||
-             (!horizontal_ && IsRight(position))) {
+  } else if (emphasis_line_side == LineLogicalSide::kOver) {
     emphasis_mark_offset_ = -font_data->GetFontMetrics().Ascent() -
                             font_.EmphasisMarkDescent(emphasis_mark);
   } else {
-    DCHECK(!IsOver(position) || position == TextEmphasisPosition::kOverLeft);
+    DCHECK(emphasis_line_side == LineLogicalSide::kUnder);
     emphasis_mark_offset_ = font_data->GetFontMetrics().Descent() +
                             font_.EmphasisMarkAscent(emphasis_mark);
   }

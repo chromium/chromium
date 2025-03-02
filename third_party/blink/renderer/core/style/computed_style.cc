@@ -2022,6 +2022,23 @@ const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
 
 LineLogicalSide ComputedStyle::GetTextEmphasisLineLogicalSide() const {
   TextEmphasisPosition position = GetTextEmphasisPosition();
+  if (RuntimeEnabledFeatures::TextEmphasisPositionAutoEnabled() &&
+      position == TextEmphasisPosition::kAuto) {
+    if (IsHorizontalWritingMode()) {
+      return LineLogicalSide::kOver;
+    }
+    switch (GetWritingMode()) {
+      case WritingMode::kVerticalRl:
+      case WritingMode::kVerticalLr:
+      case WritingMode::kSidewaysRl:
+        return LineLogicalSide::kOver;
+      case WritingMode::kSidewaysLr:
+        return LineLogicalSide::kUnder;
+      default:
+        NOTREACHED();
+    }
+  }
+
   if (IsHorizontalWritingMode()) {
     return IsOver(position) ? LineLogicalSide::kOver : LineLogicalSide::kUnder;
   }

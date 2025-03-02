@@ -4371,6 +4371,11 @@
       status: "stable",
     },
     {
+      // crbug.com/368657256
+      name: "TextEmphasisPositionAuto",
+      status: "experimental",
+    },
+    {
       name: "TextFragmentAPI",
       status: "experimental",
     },

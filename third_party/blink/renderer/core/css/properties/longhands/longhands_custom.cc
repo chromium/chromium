@@ -11049,12 +11049,18 @@ const CSSValue* TextEmphasisColor::CSSValueFromComputedStyleInternal(
       style, style.TextEmphasisColor(), value_phase);
 }
 
-// [ over | under ] && [ right | left ]?
+// auto | ([ over | under ] && [ right | left ]?)
 // If [ right | left ] is omitted, it defaults to right.
 const CSSValue* TextEmphasisPosition::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
+  if (RuntimeEnabledFeatures::TextEmphasisPositionAutoEnabled() &&
+      stream.Peek().Id() == CSSValueID::kAuto) {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*css_parsing_utils::ConsumeIdent(stream));
+    return list;
+  }
   CSSIdentifierValue* values[2] = {
       css_parsing_utils::ConsumeIdent<CSSValueID::kOver, CSSValueID::kUnder,
                                       CSSValueID::kRight, CSSValueID::kLeft>(
@@ -11124,6 +11130,11 @@ const CSSValue* TextEmphasisPosition::CSSValueFromComputedStyleInternal(
     case blink::TextEmphasisPosition::kUnderLeft:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kLeft));
+      break;
+    case blink::TextEmphasisPosition::kAuto:
+      if (RuntimeEnabledFeatures::TextEmphasisPositionAutoEnabled()) {
+        list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+      }
       break;
   }
   return list;
