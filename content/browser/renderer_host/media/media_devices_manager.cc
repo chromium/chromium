@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -547,8 +548,8 @@ void MediaDevicesManager::EnumerateAndRankDevices(
       "EnumerateDevices({render_process_id=%d}, {render_frame_id=%d}, "
       "{request_audio=%s}, {request_video=%s})",
       render_frame_host_id.child_id, render_frame_host_id.frame_routing_id,
-      request_audio_input_capabilities ? "true" : "false",
-      request_video_input_capabilities ? "true" : "false"));
+      base::ToString(request_audio_input_capabilities),
+      base::ToString(request_video_input_capabilities)));
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

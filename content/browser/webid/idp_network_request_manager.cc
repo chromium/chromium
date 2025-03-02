@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
@@ -1146,7 +1147,7 @@ void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     MetricsEndpointErrorCode error_code) {
   std::string url_encoded_post_data = base::StringPrintf(
       "outcome=failure&error_code=%d&did_show_ui=%s",
-      static_cast<int>(error_code), did_show_ui ? "true" : "false");
+      static_cast<int>(error_code), base::ToString(did_show_ui));
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateUncredentialedResourceRequest(metrics_endpoint_url,
                                           /*send_origin=*/false);

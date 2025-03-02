@@ -47,6 +47,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -276,7 +277,7 @@ BASE_FEATURE(kUseThreadPoolForMediaTaskRunner,
 void UpdateForegroundCrashKey(bool foreground) {
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "renderer_foreground", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(crash_key, foreground ? "true" : "false");
+  base::debug::SetCrashKeyString(crash_key, base::ToString(foreground));
 }
 
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(

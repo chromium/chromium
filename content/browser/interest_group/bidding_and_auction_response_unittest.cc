@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/browser/interest_group/interest_group_features.h"
@@ -113,7 +114,7 @@ std::ostream& operator<<(std::ostream& os,
                          const BiddingAndAuctionResponse& response) {
   os << "BiddingAndAuctionResponse(";
   os << "nonce: " << testing::PrintToString(response.nonce) << ",";
-  os << "is_chaff: " << (response.is_chaff ? "true" : "false") << ", ";
+  os << "is_chaff: " << base::ToString(response.is_chaff) << ", ";
   os << "ad_render_url: " << response.ad_render_url << ", ";
   os << "ad_components: [";
   for (const auto& component : response.ad_components) {

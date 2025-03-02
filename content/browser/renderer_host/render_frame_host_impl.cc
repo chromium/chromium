@@ -44,6 +44,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -16375,59 +16376,56 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
 
   // Temporary instrumentation to debug the root cause of renderer process
   // terminations. See https://crbug.com/931895.
-  auto bool_to_crash_key = [](bool b) { return b ? "true" : "false"; };
-
   static auto* const navigation_url_key = base::debug::AllocateCrashKeyString(
       "navigation_url", base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(navigation_url_key, url.spec());
 
   static auto* const is_same_document_key = base::debug::AllocateCrashKeyString(
       "is_same_document", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(
-      is_same_document_key, bool_to_crash_key(is_same_document_navigation));
+  base::debug::SetCrashKeyString(is_same_document_key,
+                                 base::ToString(is_same_document_navigation));
 
   static auto* const is_main_frame_key = base::debug::AllocateCrashKeyString(
       "is_main_frame", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_main_frame_key,
-                                 bool_to_crash_key(is_main_frame()));
+                                 base::ToString(is_main_frame()));
 
   static auto* const is_outermost_frame_key =
       base::debug::AllocateCrashKeyString("is_outermost_frame",
                                           base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_outermost_frame_key,
-                                 bool_to_crash_key(IsOutermostMainFrame()));
+                                 base::ToString(IsOutermostMainFrame()));
 
   static auto* const is_cross_process_subframe_key =
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",
                                           base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_cross_process_subframe_key,
-                                 bool_to_crash_key(IsCrossProcessSubframe()));
+                                 base::ToString(IsCrossProcessSubframe()));
 
   static auto* const is_local_root_key = base::debug::AllocateCrashKeyString(
       "is_local_root", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_local_root_key,
-                                 bool_to_crash_key(is_local_root()));
+                                 base::ToString(is_local_root()));
 
   static auto* const is_opaque_origin_key = base::debug::AllocateCrashKeyString(
       "is_opaque_origin", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_opaque_origin_key,
-                                 bool_to_crash_key(origin.opaque()));
+                                 base::ToString(origin.opaque()));
 
   static auto* const is_file_origin_key = base::debug::AllocateCrashKeyString(
       "is_file_origin", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(
-      is_file_origin_key,
-      bool_to_crash_key(origin.scheme() == url::kFileScheme));
+      is_file_origin_key, base::ToString(origin.scheme() == url::kFileScheme));
 
   static auto* const is_data_url_key = base::debug::AllocateCrashKeyString(
       "is_data_url", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(
-      is_data_url_key, bool_to_crash_key(url.SchemeIs(url::kDataScheme)));
+      is_data_url_key, base::ToString(url.SchemeIs(url::kDataScheme)));
 
   static auto* const is_srcdoc_url_key = base::debug::AllocateCrashKeyString(
       "is_srcdoc_url", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_srcdoc_url_key,
-                                 bool_to_crash_key(url.IsAboutSrcdoc()));
+                                 base::ToString(url.IsAboutSrcdoc()));
 
   static auto* const is_loaddatawithbaseurl_key =
       base::debug::AllocateCrashKeyString("is_loaddatawithbaseurl_navrequest",
@@ -16435,7 +16433,7 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
   bool is_loaddatawithbaseurl =
       navigation_request && navigation_request->IsLoadDataWithBaseURL();
   base::debug::SetCrashKeyString(is_loaddatawithbaseurl_key,
-                                 bool_to_crash_key(is_loaddatawithbaseurl));
+                                 base::ToString(is_loaddatawithbaseurl));
 
   static auto* const is_loaddatawithbaseurl_samedoc_key =
       base::debug::AllocateCrashKeyString("is_loaddatawithbaseurl_samedoc",
@@ -16445,7 +16443,7 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
       renderer_url_info_.was_loaded_from_load_data_with_base_url;
   base::debug::SetCrashKeyString(
       is_loaddatawithbaseurl_samedoc_key,
-      bool_to_crash_key(is_loaddatawithbaseurl_samedoc));
+      base::ToString(is_loaddatawithbaseurl_samedoc));
 
   static auto* const site_lock_key = base::debug::AllocateCrashKeyString(
       "site_lock", base::debug::CrashKeySize::Size256);
@@ -16463,7 +16461,7 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
                                           base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(
       is_process_locked_key,
-      bool_to_crash_key(GetProcess()->GetProcessLock().is_locked_to_site()));
+      base::ToString(GetProcess()->GetProcessLock().is_locked_to_site()));
 
   if (!GetSiteInstance()->IsDefaultSiteInstance()) {
     static auto* const original_url_origin_key =
@@ -16478,7 +16476,7 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
       base::debug::AllocateCrashKeyString("is_mhtml_document",
                                           base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_mhtml_document_key,
-                                 bool_to_crash_key(is_mhtml_document()));
+                                 base::ToString(is_mhtml_document()));
 
   static auto* const last_committed_url_origin_key =
       base::debug::AllocateCrashKeyString("last_committed_url_origin",
@@ -16499,7 +16497,7 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
                                           base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(
       is_on_initial_empty_document_key,
-      bool_to_crash_key(frame_tree_node_->is_on_initial_empty_document()));
+      base::ToString(frame_tree_node_->is_on_initial_empty_document()));
 
   static auto* const origin_calculation_debug_info_key =
       base::debug::AllocateCrashKeyString("origin_calculation_debug_info",
@@ -16513,34 +16511,33 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
                                             base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
         is_renderer_initiated_key,
-        bool_to_crash_key(navigation_request->IsRendererInitiated()));
+        base::ToString(navigation_request->IsRendererInitiated()));
 
     static auto* const is_server_redirect_key =
         base::debug::AllocateCrashKeyString("is_server_redirect",
                                             base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
         is_server_redirect_key,
-        bool_to_crash_key(navigation_request->WasServerRedirect()));
+        base::ToString(navigation_request->WasServerRedirect()));
 
     static auto* const is_form_submission_key =
         base::debug::AllocateCrashKeyString("is_form_submission",
                                             base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
         is_form_submission_key,
-        bool_to_crash_key(navigation_request->IsFormSubmission()));
+        base::ToString(navigation_request->IsFormSubmission()));
 
     static auto* const is_error_page_key = base::debug::AllocateCrashKeyString(
         "is_error_page", base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
-        is_error_page_key,
-        bool_to_crash_key(navigation_request->IsErrorPage()));
+        is_error_page_key, base::ToString(navigation_request->IsErrorPage()));
 
     static auto* const from_begin_navigation_key =
         base::debug::AllocateCrashKeyString("from_begin_navigation",
                                             base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
         from_begin_navigation_key,
-        bool_to_crash_key(navigation_request->from_begin_navigation()));
+        base::ToString(navigation_request->from_begin_navigation()));
 
     static auto* const net_error_key = base::debug::AllocateCrashKeyString(
         "net_error", base::debug::CrashKeySize::Size32);
@@ -16580,7 +16577,7 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
             base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
         does_recomputed_site_instance_match_key,
-        bool_to_crash_key(dest_instance == GetSiteInstance()));
+        base::ToString(dest_instance == GetSiteInstance()));
   }
 }
 
@@ -17215,7 +17212,6 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
 
   // Temporary instrumentation to debug the root cause of
   // https://crbug.com/923144.
-  auto bool_to_crash_key = [](bool b) { return b ? "true" : "false"; };
 
   static auto* const target_url_key = base::debug::AllocateCrashKeyString(
       "target_url", base::debug::CrashKeySize::Size256);
@@ -17262,13 +17258,13 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
 
   static auto* const is_same_document_key = base::debug::AllocateCrashKeyString(
       "is_same_document", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(
-      is_same_document_key, bool_to_crash_key(is_same_document_navigation));
+  base::debug::SetCrashKeyString(is_same_document_key,
+                                 base::ToString(is_same_document_navigation));
 
   static auto* const is_subframe_key = base::debug::AllocateCrashKeyString(
       "is_subframe", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_subframe_key,
-                                 bool_to_crash_key(GetMainFrame() != this));
+                                 base::ToString(GetMainFrame() != this));
 
   static auto* const lifecycle_state_key = base::debug::AllocateCrashKeyString(
       "lifecycle_state", base::debug::CrashKeySize::Size32);
@@ -17277,18 +17273,18 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
 
   static auto* const is_active_key = base::debug::AllocateCrashKeyString(
       "is_active", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(is_active_key, bool_to_crash_key(IsActive()));
+  base::debug::SetCrashKeyString(is_active_key, base::ToString(IsActive()));
 
   static auto* const is_cross_process_subframe_key =
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",
                                           base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_cross_process_subframe_key,
-                                 bool_to_crash_key(IsCrossProcessSubframe()));
+                                 base::ToString(IsCrossProcessSubframe()));
 
   static auto* const is_local_root_key = base::debug::AllocateCrashKeyString(
       "is_local_root", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(is_local_root_key,
-                                 bool_to_crash_key(is_local_root()));
+                                 base::ToString(is_local_root()));
 
   if (navigation_request && navigation_request->IsNavigationStarted()) {
     static auto* const is_renderer_initiated_key =
@@ -17296,27 +17292,26 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
                                             base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
         is_renderer_initiated_key,
-        bool_to_crash_key(navigation_request->IsRendererInitiated()));
+        base::ToString(navigation_request->IsRendererInitiated()));
 
     static auto* const is_server_redirect_key =
         base::debug::AllocateCrashKeyString("is_server_redirect",
                                             base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
         is_server_redirect_key,
-        bool_to_crash_key(navigation_request->WasServerRedirect()));
+        base::ToString(navigation_request->WasServerRedirect()));
 
     static auto* const is_form_submission_key =
         base::debug::AllocateCrashKeyString("is_form_submission",
                                             base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
         is_form_submission_key,
-        bool_to_crash_key(navigation_request->IsFormSubmission()));
+        base::ToString(navigation_request->IsFormSubmission()));
 
     static auto* const is_error_page_key = base::debug::AllocateCrashKeyString(
         "is_error_page", base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
-        is_error_page_key,
-        bool_to_crash_key(navigation_request->IsErrorPage()));
+        is_error_page_key, base::ToString(navigation_request->IsErrorPage()));
 
     static auto* const initiator_origin_key =
         base::debug::AllocateCrashKeyString("initiator_origin",

@@ -34,6 +34,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -4753,10 +4754,10 @@ class ServiceWorkerWarmUpByPointerBrowserTest
                "10"},
               {blink::features::kSpeculativeServiceWorkerWarmUpOnPointerover
                    .name,
-               GetParam().enable_warm_up_by_pointerover ? "true" : "false"},
+               base::ToString(GetParam().enable_warm_up_by_pointerover)},
               {blink::features::kSpeculativeServiceWorkerWarmUpOnPointerdown
                    .name,
-               GetParam().enable_warm_up_by_pointerdown ? "true" : "false"},
+               base::ToString(GetParam().enable_warm_up_by_pointerdown)},
           }}},
         {});
   }

@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1124,7 +1125,7 @@ class BoostRenderProcessForLoadingBrowserTest
              {"prioritize_renderer_initiated", "false"},
              {blink::features::kBoostRenderProcessForLoadingPrioritizeRestore
                   .name,
-              GetParam().prioritize_restore ? "true" : "false"}}}},
+              base::ToString(GetParam().prioritize_restore)}}}},
           {});
     } else {
       feature_list_.InitAndDisableFeature(

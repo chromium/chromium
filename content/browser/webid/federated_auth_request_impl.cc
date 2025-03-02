@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -196,7 +197,7 @@ std::string ComputeUrlEncodedTokenPostData(
   // Shares with IdP that whether the identity credential was automatically
   // selected. This could help developers to better comprehend the token
   // request and segment metrics accordingly.
-  std::string is_auto_selected = is_auto_reauthn ? "true" : "false";
+  std::string is_auto_selected = base::ToString(is_auto_reauthn);
   if (!query.empty()) {
     query += "&";
   }

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
+#include "base/strings/to_string.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -201,7 +202,7 @@ std::ostream& operator<<(std::ostream& os,
         network::mojom::SharedStorageSetMethodPtr& set_method =
             method_with_options->method->get_set_method();
         os << "; Method: Set(" << set_method->key << "," << set_method->value
-           << "," << (set_method->ignore_if_present ? "true" : "false") << ")";
+           << "," << base::ToString(set_method->ignore_if_present) << ")";
         break;
       }
       case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {

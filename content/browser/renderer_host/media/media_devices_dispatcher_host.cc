@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -464,7 +465,7 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
   MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
       "MDDH::GetVideoInputDeviceFormats({hashed_device_id=%s}, "
       "{try_in_use_first=%s})",
-      hashed_device_id.c_str(), try_in_use_first ? "true" : "false"));
+      hashed_device_id.c_str(), base::ToString(try_in_use_first)));
   GetRawDeviceIDForMediaStreamHMAC(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
       hashed_device_id, base::SequencedTaskRunner::GetCurrentDefault(),
