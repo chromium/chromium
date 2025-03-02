@@ -467,7 +467,9 @@ void HWNDMessageHandler::Init(HWND parent, const gfx::Rect& bounds) {
 }
 
 void HWNDMessageHandler::InitModalType(ui::mojom::ModalType modal_type) {
-  if (modal_type == ui::mojom::ModalType::kNone) {
+  // Windows only knows about window-level modality. Ignore other modalities:
+  // Child-modal is handled by the client. System-modal is not supported on Win.
+  if (modal_type != ui::mojom::ModalType::kWindow) {
     return;
   }
   // We implement modality by crawling up the hierarchy of windows starting
