@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">මෙම අඩවි පරිවර්තනය කිරීමට පිරිනමන්න එපා</translation>
 <translation id="1145536944570833626">පවතින දත්ත මකන්න.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome තුළ විවෘත වනු ඇත. ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියම<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />Google Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_LINK2" /> සමග එකඟ වේ.</translation>
+<translation id="1154555449933432029">ඔබ Google මුරපද කළමනාකරු තුළ සුරකින ලද මුරපද නොමැත.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> මුරපදය භාවිත කරන්න</translation>
 <translation id="1173894706177603556">ප්‍රතිනම්</translation>
 <translation id="1174479719160874822">තිරය පටු වූ විට Chrome ජංගම අඩවිය ඉල්ලනු ඇත</translation>
@@ -1371,10 +1372,12 @@
 <translation id="7224097611345298931">Chrome සහ <ph name="CHROME_CHANNEL" /> සඳහා මෙම උපාංගයට පමණක් සුරකින ලද සියලුම මුරපද ඒකාබද්ධ කරන ලදි. ඔබට යෙදුම් දෙකම මත ඔබේ සුරැකි මුරපද සියල්ල ස්වයං පිරවිය හැක.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{බාගැනීම් 1ක් පොරොත්තුවෙන්}one{බාගැනීම් #ක් පොරොත්තුවෙන්}other{බාගැනීම් #ක් පොරොත්තුවෙන්}}</translation>
 <translation id="7230064152164845085">අප්‍රසිද්ධ වෙත මාරු වන්න</translation>
+<translation id="7237724030342645845">Google මුරපද කළමනාකරු ක්‍රියා කිරීම නැවතී ඇත</translation>
 <translation id="72415438529550637">මුරපද යෝජනාව වසා ඇත.</translation>
 <translation id="7260367682327802201">ඔබේ Android උපාංගයට සමාන සැකසීමක් ඇතුළත් විය හැක. Chrome සහ ඔබේ Android උපාංගයේ දැන්වීම් මිනුම් ක්‍රියාත්මක කර ඇත්නම්, ඔබ පිවිසෙන වෙබ් අඩවි සහ ඔබ භාවිතා කරන යෙදුම් හරහා දැන්වීමක සඵලතාවය මැනීමට සමාගමකට හැකි විය හැක.</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> <ph name="ORIGIN" /> වෙත ඉදිරිපත් කරන්නද?</translation>
 <translation id="7274013316676448362">අවහිර කළ අඩවිය</translation>
+<translation id="7276868533747677875">ඔබ පෙරදී මුරපද නිර්යාත කළේ නම්, ඔබේ උපාංගයේ CSV ගොනුවක් සොයා ඒවා ඔබ කැමති මුරපද කළමනාකරු වෙත ආයාත කරන්න.</translation>
 <translation id="7289049772085228972">ඔබට Chrome හි ප්‍රබලම ආරක්ෂාව ඇත</translation>
 <translation id="7289303553784750393">ඔබ සබැඳිව සිටින නමුත් මෙම ගැටලුව දිගටම පවතී නම්, <ph name="SITE_ETLD_PLUS_ONE" /> මත ඉදිරියට යාමට ඔබට වෙනත් ක්‍රම උත්සාහ කළ හැක.</translation>
 <translation id="7290209999329137901">යළි නම් කිරීම නොලැබේ</translation>
@@ -1549,6 +1552,7 @@
 <translation id="8027395186860110042">මුරපද ඉක්මනින් වැඩ කිරීම නතර විය හැක</translation>
 <translation id="8027863900915310177">බාගන්නා ස්ථානය තෝරා ගන්න</translation>
 <translation id="8030852056903932865">අනුමත කරන්න</translation>
+<translation id="8031805944372049238">Google මුරපද කළමනාකරු සමග මුරපද සුරැකීම සහ භාවිත කිරීම ආරම්භ කිරීමට, Google Play සේවා යාවත්කාලීන කරන්න.</translation>
 <translation id="8032569120109842252">අනුගමනය කරයි</translation>
 <translation id="8037750541064988519">දින <ph name="DAYS" />ක් ඉතිරියි</translation>
 <translation id="8037801708772278989">මේ දැන් පරීක්ෂා කරන ලදි</translation>

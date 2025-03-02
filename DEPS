@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'ad64415050aad9bfcd963e42cebef691121750e2',
+  'skia_revision': '101eee8fce596ef55173d24e91949438f6be0e5a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'a344d5cc21ec48f533bbdd27bb6527609303a1ed',
+  'devtools_frontend_revision': '9f267c00f44302ffdb5bd7345f516c2663ed8daf',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '8101243597d12e8782b842a0aa8a858382f4c184',
+    'e628095abe23491ec8eaf00f97ca60594cbfdce0',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1682,7 +1682,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/error_prone',
-               'version': 'nMr_RGT4rigGBhQsXW9PYfo20Zi0ABB1XBIdMvKrtkoC',
+               'version': 'yV2AWEuHgVYgavFYLJw7j7TY-u0ti8S84sQtfQ_2Wo0C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1715,7 +1715,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': 'kSLW7TCDnPXiA8K_534GKlsaIZOkGd_CSDf1sBwb-3cC',
+               'version': 'DIy35BIO4jvsL0DDQvMnUdDC1rep8uWzgKeSHejYdKAC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2943,7 +2943,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'DV-jU1Bbtz6MRHK3RVeF06UZP-1tQ3pSYYaXlkDwLBUC',
+        'version': 'Ptdcbr3P22rgM9CLXDciukV-XcRyEErwDAA1_wXxILwC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2954,7 +2954,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'ZiKfg_HJMw0POMpllEj0W__IqtUyvereAyzC4e5eXPEC',
+        'version': 'fFeCJhbF1gXfVNMgxpkzGumrboNALDpGy82EAhBFLRQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

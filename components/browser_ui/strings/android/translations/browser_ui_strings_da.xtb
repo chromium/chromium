@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
 <translation id="3658847490588580244">Felt i bunden med standardbrowser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="RWS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
+<translation id="3676777756440746804">Websites kan ikke anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3697164069658504920">Når dette er slået til, kan websites anmode om tilladelse til at bruge USB-enheder. Når dette er slået fra, kan websites ikke anvende USB-enheder.</translation>
 <translation id="3707034683772193706">Et website, du besøger, kan gemme en lille mængde oplysninger i Chrome, primært for at tjekke, at du ikke er en bot</translation>
 <translation id="3709818294139939629">Websitets adgang til filen er fjernet</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Åbn Indstillinger på din telefon</translation>
 <translation id="3933121352599513978">Skjul uønskede anmodninger (anbefales)</translation>
 <translation id="3955193568934677022">Tillad, at websites afspiller beskyttet indhold (anbefales)</translation>
+<translation id="3965467402665811906">Websites kan anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> kan bruge dine oplysninger, når du browser</translation>
 <translation id="3992684624889376114">Om denne side</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4046123991198612571">Næste nummer</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
 <translation id="4936863036653376783">Du finder dine grupper i sektionen for fanegrupper på alle dine enheder</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> er blokeret, så det ikke kan bruge dine oplysninger på</translation>
 <translation id="4953688446973710931">Når dette er slået til, kan websites anmode om tilladelse til automatisk at downloade flere filer. Når dette er slået fra, kan websites ikke downloade flere filer automatisk.</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="8541410041357371550">Dette website henter dine annonceemner fra Chrome for at vise dig mere relevante annoncer</translation>
+<translation id="854876774113449365">De websites, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Disse andre websites kan anmode om tilladelse til at bruge de oplysninger, de har gemt om dig, når du besøger websitet. <ph name="BEGIN_LINK" />Få flere oplysninger om indlejret indhold<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Visning af anmodninger</translation>
 <translation id="8558480467877843976">Du kan nu bruge Chrome, hver gang du browser eller trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
+<translation id="8593422116412089302">Når indstillingen er aktiveret, kan websites anmode om tilladelse til at bruge de oplysninger, de har gemt om dig. Når indstillingen er deaktiveret, kan websites ikke anmode om tilladelse til at bruge de oplysninger, de har gemt om dig.</translation>
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8617611086246832542">Når dette er slået til, anvendes computervenlig visning af websites. Når dette er slået fra, anvendes mobilvenlig visning af websites.</translation>
 <translation id="8670078035093027626">Feltet i bunden med standardbrowseren er åbnet i fuld højde</translation>

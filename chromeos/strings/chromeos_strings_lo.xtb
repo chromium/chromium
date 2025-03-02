@@ -81,6 +81,7 @@
 <translation id="131461803491198646">ເຄືອຂ່າຍພາຍໃນ, ບໍ່ໂຣມມິງ</translation>
 <translation id="1327977588028644528">​ເກດ​ເວ</translation>
 <translation id="1328223165223065150">ສີຮູບພື້ນຫຼັງ</translation>
+<translation id="1329478709358066995">ຖອດຂໍ້ຄວາມຈາກສຽງ:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ພໍດີກັບພື້ນທີ່ສະແກນ</translation>
 <translation id="1343442362630695901">ຊໍລທ໌ເລກ</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">ກ່ຽວກັບພາບພື້ນຫຼັງ</translation>
 <translation id="6939667434404433010">ຊອກຫາຊື່ການບັນທຶກ</translation>
 <translation id="6939766318048400022">ຄາເຟ່</translation>
+<translation id="6942253772720771875">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ</translation>
 <translation id="6943893908656559156">ຂໍ້ມູນປະຈຳຕົວໄລຍະໄກ (ບໍ່ບັງຄັບ)</translation>
 <translation id="6953137545147683679">ຄຳ</translation>
 <translation id="6957231940976260713">ຊື່ການບໍລິການ</translation>
@@ -1599,6 +1601,7 @@
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ຈັດການໂດຍວິສາຫະກິດ</translation>
 <translation id="8398927464629426868">ອັດຕາການສາກ ຫຼື ຄາຍປະຈຸຂອງອຸປະກອນໃນປັດຈຸບັນ</translation>
 <translation id="8403988360557588704">ຮູບແຕ້ມ <ph name="ART_FEATURE" /> ໃນຮູບແບບ <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">ສະຫຼຸບທີ່ສ້າງຂຶ້ນ:</translation>
 <translation id="8410244574650205435">ກວດສອບອັດຕະໂນມັດ</translation>
 <translation id="8420955526972171689">ທົດສອບ ແລະ ແກ້ໄຂບັນຫາຮາດແວ</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1643,6 +1646,7 @@
 <translation id="8626489604350149811">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">ສີມ່ວງອ່ອນ</translation>
 <translation id="8647595191512746911">ການຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
+<translation id="8648578954147795914">ຊື່ທີ່ສ້າງຂຶ້ນ:</translation>
 <translation id="8650852232143958317">ນຳເອົາໄຟລ໌ Gmail ແລະ Google Drive ຂອງທ່ານໄປກັບທ່ານ</translation>
 <translation id="8651481478098336970">ປິດ​ສຽງ</translation>
 <translation id="8655295600908251630">ຊ່ອງ</translation>
@@ -1785,6 +1789,7 @@
 <translation id="9218016617214286986">ສະແດງ APN ທີ່ຮູ້ຈັກ</translation>
 <translation id="932327136139879170">ບ້ານ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">ກວດສອບວ່າໄມຂອງທ່ານເຊື່ອມຕໍ່ຢູ່ ຫຼື ລອງຣີສະຕາດ Chromebook ຂອງທ່ານ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="950520315903467048">ບໍ່ມີປຸ່ມສຳລັບ <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ປຽບທຽບສຽງໃນສຽງທີ່ບັນທຶກໄວ້ຕັ້ງແຕ່ຕົ້ນຈົນຈົບເພື່ອໃຫ້ຂໍ້ຄວາມຖອດສຽງສະແດງຂໍ້ຄວາມຂອງຜູ້ເວົ້າແຕ່ລະຄົນ ແລະ ເວລາທີ່ເວົ້າ</translation>

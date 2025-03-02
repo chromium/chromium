@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="1070329623210597193">Failai, kuriuos ši svetainė gali peržiūrėti arba redaguoti</translation>
 <translation id="1073417869336441572">Padėkite mums tobulinti „Chrome“ nurodydami, kodėl leidote trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Galite prašyti peržiūrėti svetainių versiją staliniams kompiuteriams</translation>
 <translation id="1085696779717592361">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> svetainė}one{<ph name="SITE_COUNT" /> svetainė}few{<ph name="SITE_COUNT" /> svetainės}many{<ph name="SITE_COUNT" /> svetainės}other{<ph name="SITE_COUNT" /> svetainių}}</translation>
 <translation id="1500473259453106018">Slėpti sumažintų kainų skirtukuose kortelę</translation>
 <translation id="1510341833810331442">Svetainėms neleidžiama išsaugoti duomenų įrenginyje</translation>
+<translation id="1538031354170655462">Paprastai svetainėse naudojamas artimojo lauko ryšys (angl. „near-field communication“, NFC), kad būtų galima dirbti su netoliese esančiais sekikliais ar įrenginiais, pvz., nuskaitant ženklelius ar mokant bekontakčiu būdu</translation>
 <translation id="1547123415014299762">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="1593426485665524382">Nauji veiksmai pasiekiami netoli ekrano viršaus</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -211,12 +213,14 @@
 <translation id="3955193568934677022">Leisti svetainėms paleisti apsaugotą turinį (rekomenduojama)</translation>
 <translation id="3965467402665811906">Svetainės gali prašyti naudoti savo išsaugotą informaciją apie jus</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
+<translation id="3981465354637804599">Paprastai svetainėse rodomi skelbimai, kad būtų galima be piniginio mokėjimo teikti turinį ar paslaugas. Bet žinoma, kad kai kuriose svetainėse rodomi nepageidaujami arba klaidinantys skelbimai.</translation>
 <translation id="3987993985790029246">Kop. nuor.</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> iš ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> gali naudoti jūsų informaciją, kai naršote</translation>
 <translation id="3992684624889376114">Apie šį puslapį</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4046123991198612571">Kitas takelis</translation>
+<translation id="4077310749977440510">Paprastai svetainėse nuskaitoma jūsų iškarpinė ieškant tam tikrų funkcijų, pvz., norint išlaikyti nukopijuoto teksto formatavimą</translation>
 <translation id="4149890623864272035">Ar tikrai norite ištrinti visus vietinius duomenis, įskaitant slapukus, ir iš naujo nustatyti visus šios svetainės leidimus?</translation>
 <translation id="4149994727733219643">Supaprastinta tinklalapių peržiūra</translation>
 <translation id="4151930093518524179">Numatytasis mastelis</translation>
@@ -224,6 +228,7 @@
 <translation id="4169549551965910670">Prisijungta prie USB įrenginio</translation>
 <translation id="4194328954146351878">Klausti prieš leidžiant svetainėms peržiūrėti ir keisti informaciją NFC įrenginiuose (rekomenduojama)</translation>
 <translation id="4200726100658658164">Atidaryti vietovės nustatymus</translation>
+<translation id="421742575134139848">Svetainėse galima leisti garsą norint teikti muzikos, vaizdo įrašų ir kitos medijos garso įrašus</translation>
 <translation id="4226663524361240545">Gavus pranešimą įrenginys gali vibruoti</translation>
 <translation id="4259722352634471385">Naršymas užblokuotas: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Išėjus iš svetainės, joje gali būti toliau sinchronizuojama, kad būtų užbaigtos užduotys, pvz., įkeltos nuotraukos arba išsiųstas pokalbio pranešimas</translation>
@@ -247,6 +252,7 @@
 <translation id="4566417217121906555">Nutildyti mikrofoną</translation>
 <translation id="4570913071927164677">Išsami informacija</translation>
 <translation id="4598549027014564149">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie jūsų naršymo veiklą skirtingose ar susijusiose svetainėse. Jūsų naršymo veikla nenaudojama skelbimams suasmeninti. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
+<translation id="461356340001513807">Leidžiama prisijungti prie svetainių naudojant tapatybės paslaugos paskyrą</translation>
 <translation id="4619615317237390068">Skirtukai iš kitų įrenginių</translation>
 <translation id="4644713492825682049">Ištrinti ir nustatyti iš naujo</translation>
 <translation id="4645575059429386691">Tvarko vienas iš jūsų tėvų</translation>
@@ -430,6 +436,7 @@
 <translation id="7000754031042624318">Išjungta „Android“ nustatymuose</translation>
 <translation id="702275896380648118">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines. Ši svetainė taip pat gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus.</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
+<translation id="7055552182600664515">Norint leisti autorių teisių apsaugotą turinį, svetainėse gali būti reikalinga turinio apsaugos paslauga. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Pasirinktas 1 elementas}one{Pasirinktas # elementas}few{Pasirinkti # elementai}many{Pasirinkta # elemento}other{Pasirinkta # elementų}}</translation>
 <translation id="708014373017851679">„<ph name="APP_NAME" />“ pasenusi. Atnaujinkite programą.</translation>
 <translation id="7087918508125750058">Pasirinkta: <ph name="ITEM_COUNT" />. Parinktys pasiekiamos netoli ekrano viršaus</translation>

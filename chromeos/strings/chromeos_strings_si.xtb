@@ -81,6 +81,7 @@
 <translation id="131461803491198646">නිවෙස් ජාලය, සංක්‍රමණයේ නොවේ</translation>
 <translation id="1327977588028644528">වාහල</translation>
 <translation id="1328223165223065150">වෝල්පේපර වර්ණය</translation>
+<translation id="1329478709358066995">අනුපත:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ස්කෑන් කළ හැකි ප්‍රදේශයට ගළපන්න</translation>
 <translation id="1343442362630695901">ලුණු විල</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">පසුබිම ගැන</translation>
 <translation id="6939667434404433010">පටිගත කිරීමේ නම සොයන්න</translation>
 <translation id="6939766318048400022">කැෆේ</translation>
+<translation id="6942253772720771875">ඔබේ ප්‍රතිපෝෂණය බෙදා ගන්න හෝ ඔබේ ගැටලුව විස්තර කරන්න</translation>
 <translation id="6943893908656559156">දුරස්ථ අනන්‍යතාව (විකල්පමය)</translation>
 <translation id="6953137545147683679">රන්</translation>
 <translation id="6957231940976260713">සේවා නාමය</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">මෙම <ph name="DEVICE_TYPE" /> ව්‍යවසාය කළමනාකරණය කෙරේ</translation>
 <translation id="8398927464629426868">උපාංගය දැනට ආරෝපණය වන හෝ විසර්ජනය වන වේගය</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" />යෙන් <ph name="ART_FEATURE" />ක සිතුවමක්</translation>
+<translation id="8409219750150841791">ජනනය කළ සාරාංශය:</translation>
 <translation id="8410244574650205435">ස්වයංක්‍රියව අනාවරණය කර ගන්නා ලද</translation>
 <translation id="8420955526972171689">දෘඪාංග ගැටළු සඳහා පරීක්ෂණ සහ දෝෂාවේක්ෂය ධාවනය කරන්න</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> සඳහා තවත් ක්‍රියා</translation>
 <translation id="86356131183441916">ලා දම්</translation>
 <translation id="8647595191512746911">ශ්‍රව්‍ය අනුපත</translation>
+<translation id="8648578954147795914">ජනනය කළ නම්:</translation>
 <translation id="8650852232143958317">ඔබේ Gmail සහ Google Drive ගොනු ඔබ සමග රැගෙන යන්න</translation>
 <translation id="8651481478098336970">හඬ පරිමාව නිහඬ කිරීම</translation>
 <translation id="8655295600908251630">නාලිකාව</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">දන්නා APN පෙන්වන්න</translation>
 <translation id="932327136139879170">මුල් පිටුව</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">ඔබේ මයික්‍රෝෆෝනය සම්බන්ධ වී ඇති බවට වග බලා ගන්න හෝ ඔබේ Chromebook නැවත ආරම්භ කිරීමට උත්සාහ කරන්න</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> සඳහා යතුර මඟ හැරී ඇත. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">එක් එක් කථිකයා පැවසූ දේ සහ කවදා ද යන්න පිටපත පිළිබිඹු කරන පරිදි පටිගත කිරීම පුරාම හඬ සසඳන්න</translation>
