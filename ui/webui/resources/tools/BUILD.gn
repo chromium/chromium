@@ -5,9 +5,15 @@ import("//testing/test.gni")
 
 script_test("webui_resources_tools_python_unittests") {
   script = "//testing/scripts/run_isolated_script_test.py"
-  args = [ "@WrappedPath(" + rebase_path(
-               "//ui/webui/resources/tools/run_webui_resources_tools_tests.py",
-               root_build_dir) + ")" ]
+  args = [
+    "@WrappedPath(" + rebase_path(
+            "//ui/webui/resources/tools/run_webui_resources_tools_tests.py",
+            root_build_dir) + ")",
+    "--starting-directory",
+    "@WrappedPath(../../ui/webui/resources/tools)",
+    "--chromium-build-directory",
+    "@WrappedPath(.)",
+  ]
 
   data = [
     "//ui/webui/resources/tools/",
