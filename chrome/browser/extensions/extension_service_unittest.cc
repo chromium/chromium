@@ -6263,41 +6263,9 @@ TEST_F(ExtensionServiceTest, ExternalUninstall) {
   base::FilePath test_data_dir = data_dir().AppendASCII("good");
   ExtensionServiceInitParams params;
   ASSERT_TRUE(params.SetPrefsContentFromFile(
-      test_data_dir.AppendASCII("PreferencesExternalPref")));
+      test_data_dir.AppendASCII("PreferencesExternal")));
   params.extensions_dir = test_data_dir.AppendASCII("Extensions");
   InitializeExtensionService(std::move(params));
-  service()->Init();
-
-  ASSERT_EQ(0u, GetErrors().size());
-  ASSERT_EQ(0u, loaded_extensions().size());
-}
-
-// Tests that external extensions get uninstalled when the external extension
-// providers can't account for them, even if other provides can, but with a
-// different location value. Regression test for https://crbug.com/397903880.
-TEST_F(ExtensionServiceTest, ExternalUninstallDifferentLocation) {
-  // Start the extensions service with one external extension already installed.
-  // The extension's location is set to kExternalComponent, although no provider
-  // acknowledges it.
-  base::FilePath test_data_dir = data_dir().AppendASCII("good");
-  ExtensionServiceInitParams params;
-  ASSERT_TRUE(params.SetPrefsContentFromFile(
-      test_data_dir.AppendASCII("PreferencesExternalComponent")));
-  params.extensions_dir = test_data_dir.AppendASCII("Extensions");
-  InitializeExtensionService(std::move(params));
-
-  // Install an external extension as ManifestLocation::kExternalPref with the
-  // same id. It's expected that the extension will be uninstalled regardless of
-  // this provider, since the location doesn't match.
-  base::FilePath path = data_dir().AppendASCII("good.crx");
-  std::string version_str = "1.0.0.0";
-  std::unique_ptr<ExternalInstallInfoFile> info = CreateExternalExtension(
-      good_crx, version_str, path, ManifestLocation::kExternalPref,
-      Extension::NO_FLAGS);
-  MockExternalProvider* provider =
-      AddMockExternalProvider(ManifestLocation::kExternalPref);
-  provider->UpdateOrAddExtension(std::move(info));
-
   service()->Init();
 
   ASSERT_EQ(0u, GetErrors().size());
