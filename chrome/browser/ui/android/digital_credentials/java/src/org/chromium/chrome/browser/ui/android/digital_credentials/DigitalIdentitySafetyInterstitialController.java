@@ -9,6 +9,8 @@ import android.content.res.Resources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.webid.DigitalIdentityInterstitialType;
@@ -21,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.Origin;
 
 /** Shows modal dialog asking user whether they want to share their identity with website. */
+@NullMarked
 public class DigitalIdentitySafetyInterstitialController {
     private PropertyModel mDialogModel;
     private Origin mOrigin;
@@ -29,6 +32,7 @@ public class DigitalIdentitySafetyInterstitialController {
         mOrigin = origin;
     }
 
+    @Initializer
     public void show(
             ModalDialogManager modalDialogManager,
             @DigitalIdentityInterstitialType int interstitialType,

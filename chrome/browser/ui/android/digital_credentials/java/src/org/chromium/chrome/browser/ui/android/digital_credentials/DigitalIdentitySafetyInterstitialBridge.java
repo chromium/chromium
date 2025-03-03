@@ -10,6 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.digital_credentials.DigitalIdentityInterstitialClosedReason;
 import org.chromium.content_public.browser.webid.DigitalIdentityInterstitialType;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
@@ -23,10 +25,11 @@ import org.chromium.url.Origin;
  * Initiates showing modal dialog asking user whether they want to share their identity with
  * website.
  */
+@NullMarked
 public class DigitalIdentitySafetyInterstitialBridge {
     private long mNativeDigitalIdentitySafetyInterstitialBridgeAndroid;
 
-    private DigitalIdentitySafetyInterstitialController mController;
+    private @Nullable DigitalIdentitySafetyInterstitialController mController;
 
     private DigitalIdentitySafetyInterstitialBridge(
             long digitalIdentitySafetyInterstitialBridgeAndroid) {

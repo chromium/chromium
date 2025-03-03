@@ -11,10 +11,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** View for the for an individual list item in the What's New page's feature list. */
+@NullMarked
 public class WhatsNewListItemView extends RelativeLayout {
     private TextView mTitle;
     private TextView mDescription;
@@ -26,7 +28,7 @@ public class WhatsNewListItemView extends RelativeLayout {
      * @param context The {@link Context} to use.
      * @param attrs Attributes from the XML layout inflation.
      */
-    public WhatsNewListItemView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public WhatsNewListItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

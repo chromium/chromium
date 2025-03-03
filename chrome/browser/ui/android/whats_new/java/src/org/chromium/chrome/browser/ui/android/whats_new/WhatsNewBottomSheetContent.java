@@ -8,16 +8,17 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ViewFlipper;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.android.whats_new.WhatsNewProperties.ViewState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Bottom sheet content of the What's New Page. */
+@NullMarked
 public class WhatsNewBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final ViewFlipper mViewFlipperView;
@@ -75,9 +76,8 @@ public class WhatsNewBottomSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -125,7 +125,7 @@ public class WhatsNewBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.whats_new_page_description);
     }
 
