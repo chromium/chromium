@@ -423,7 +423,7 @@ class SharedStorageManagerTest : public testing::Test {
   // Return the relative file path in the "storage/" subdirectory of test data
   // for the SQL file from which to initialize an async shared storage database
   // instance.
-  virtual std::string GetRelativeFilePath() { return nullptr; }
+  virtual std::string GetRelativeFilePath() { return ""; }
 
   virtual DBType GetType() { return DBType::kInMemory; }
 

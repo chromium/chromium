@@ -246,7 +246,7 @@ std::string JNI_AwBrowserContextStore_GetNamedContextPathForTesting(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AwBrowserContextStore* store = AwBrowserContextStore::GetInstance();
   if (!store->Exists(name)) {
-    return nullptr;
+    return "";
   }
   base::FilePath path = store->GetRelativePathForTesting(name);
   return path.value();
