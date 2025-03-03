@@ -103,8 +103,18 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
       StringView text,
       bool normalize_canvas_space);
 
+  void SegmentText(const TextRun& run,
+                   bool bidi_overridden,
+                   const Font& font,
+                   bool supports_bidi);
+  void SegmentWord(wtf_size_t start_offset,
+                   wtf_size_t run_length,
+                   TextDirection direction,
+                   const Font& font);
+
   String text_content_;
   PlainTextItemList item_list_;
+  bool normalize_space_ = false;
   TextDirection base_direction_ = TextDirection::kLtr;
 };
 
