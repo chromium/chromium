@@ -77,7 +77,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
   function dumpState() {
     TestRunner.addResult('Editing: ' + UIModule.UIUtils.isEditing())
-    TestRunner.addResult(Platform.DOMUtilities.deepActiveElement(document).textContent);
+    TestRunner.addResult(Platform.DOMUtilities.deepActiveElement(document).innerText);
     TestRunner.addResult('');
   }
 
