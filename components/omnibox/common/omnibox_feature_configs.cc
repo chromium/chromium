@@ -184,4 +184,21 @@ SuggestionAnswerMigration::SuggestionAnswerMigration() {
   enabled = base::FeatureList::IsEnabled(kOmniboxSuggestionAnswerMigration);
 }
 
+BASE_FEATURE(UrlSuggestionsOnFocus::kUrlSuggestionsOnFocus,
+             "UrlSuggestionsOnFocus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+UrlSuggestionsOnFocus::UrlSuggestionsOnFocus() {
+  enabled = base::FeatureList::IsEnabled(kUrlSuggestionsOnFocus);
+  max_suggestions = base::FeatureParam<size_t>(&kUrlSuggestionsOnFocus,
+                                               "OnFocusMaxSearchSuggestions", 8)
+                        .Get();
+  max_search_suggestions =
+      base::FeatureParam<size_t>(&kUrlSuggestionsOnFocus,
+                                 "OnFocusMaxSearchSuggestions", 4)
+          .Get();
+  max_url_suggestions =
+      base::FeatureParam<size_t>(&kUrlSuggestionsOnFocus,
+                                 "OnFocusMaxUrlSuggestions", 4)
+          .Get();
+}
 }  // namespace omnibox_feature_configs

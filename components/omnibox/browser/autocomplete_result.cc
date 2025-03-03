@@ -423,6 +423,20 @@ void AutocompleteResult::SortAndCull(
                   [&](const auto& match) { return match.relevance == 0; });
   }
 
+  // Used to determine how many search / url suggestions should appear in zps
+  // if kUrlSuggestionsOnFocus is enabled.
+  auto url_suggestions_on_focus_config =
+      omnibox_feature_configs::UrlSuggestionsOnFocus::Get();
+  size_t max_search_suggestions = 8u;
+  size_t max_url_suggestions = 0u;
+  size_t max_suggestions = 8u;
+  if (url_suggestions_on_focus_config.enabled) {
+    max_search_suggestions =
+        url_suggestions_on_focus_config.max_search_suggestions;
+    max_url_suggestions = url_suggestions_on_focus_config.max_url_suggestions;
+    max_suggestions = url_suggestions_on_focus_config.max_suggestions;
+  }
+
   // If at zero suggest or `kGroupingFrameworkForNonZPS` is enabled and the
   // current input & platform are supported, delegate to the framework.
   if (is_zero_suggest) {
@@ -502,8 +516,8 @@ void AutocompleteResult::SortAndCull(
           }
         }
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
-        sections.push_back(
-            std::make_unique<DesktopSRPZpsSection>(suggestion_groups_map_));
+        sections.push_back(std::make_unique<DesktopSRPZpsSection>(
+            suggestion_groups_map_, max_suggestions, max_search_suggestions));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {
@@ -513,8 +527,8 @@ void AutocompleteResult::SortAndCull(
         }
 #endif
       } else {
-        sections.push_back(
-            std::make_unique<DesktopWebZpsSection>(suggestion_groups_map_));
+        sections.push_back(std::make_unique<DesktopWebZpsSection>(
+            suggestion_groups_map_, max_suggestions, max_url_suggestions));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {

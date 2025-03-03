@@ -42,6 +42,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -2566,6 +2567,100 @@ TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
 }
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+// Tests zps grouping for most visited sites and backfills with different
+// suggestion limits.
+TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::UrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+
+  const auto group1 = omnibox::GROUP_MOST_VISITED;
+  const auto group2 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+  TestData data[] = {
+      {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {2, 1, 480, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {3, 1, 470, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {4, 1, 460, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+      {5, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+      {6, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+      {7, 1, 430, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+      {8, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+      {9, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+  };
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, std::size(data), &matches);
+
+  // Suggestion groups have the omnibox::SECTION_DEFAULT by default.
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group1];
+  suggestion_groups_map[group2];
+
+  // Set up input for zero-prefix suggestions from the srp omnibox.
+  AutocompleteInput omnibox_srp_zps_input(
+      u"",
+      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+      TestSchemeClassifier());
+  omnibox_srp_zps_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  {
+    SCOPED_TRACE("Query from omnibox in srp");
+
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(omnibox_srp_zps_input, &template_url_service(),
+                       triggered_feature_service());
+
+    // There should be 8 total suggestions, 4 from the group2 and 4 from group1.
+    // Group 1 should follow group 2 since this is a search results page.
+    const std::array<TestData, 8> expected_data{{
+        {5, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {6, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {7, 1, 430, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {8, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+        {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+        {2, 1, 480, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+        {3, 1, 470, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+    }};
+    AssertResultMatches(result, expected_data);
+  }
+
+  // Lower max suggestion and max url suggestion amount.
+  scoped_config.Get().max_suggestions = 6U;
+  scoped_config.Get().max_url_suggestions = 2U;
+  // This shouldn't be applied since search results backfill url results.
+  scoped_config.Get().max_search_suggestions = 2U;
+
+  // Set up input for zero-prefix suggestions from a web page.
+  AutocompleteInput web_zps_input(u"", metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
+  web_zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  {
+    SCOPED_TRACE("Query from web page");
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(web_zps_input, &template_url_service(),
+                       triggered_feature_service());
+
+    // There should be 6 suggestions total, 2 from group1 (url) and 4 from
+    // group2 (search), since search suggestions backfill url suggestions.
+    const std::array<TestData, 6> expected_data{{
+        {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+        {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+        {5, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {6, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {7, 1, 430, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {8, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+    }};
+    AssertResultMatches(result, expected_data);
+  }
+}
 
 void VerifyTriggeredFeatures(
     OmniboxTriggeredFeatureService* triggered_feature_service,

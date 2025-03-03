@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -53,6 +54,10 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       // Custom search engines cannot be used on mobile.
       AutocompleteProvider::TYPE_KEYWORD | AutocompleteProvider::TYPE_OPEN_TAB |
       AutocompleteProvider::TYPE_FEATURED_SEARCH |
+      // Most visited sites for desktop.
+      (omnibox_feature_configs::UrlSuggestionsOnFocus::Get().enabled
+           ? AutocompleteProvider::TYPE_MOST_VISITED_SITES
+           : 0) |
 #else
       AutocompleteProvider::TYPE_CLIPBOARD |
       AutocompleteProvider::TYPE_MOST_VISITED_SITES |

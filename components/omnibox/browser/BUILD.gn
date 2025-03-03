@@ -833,6 +833,7 @@ source_set("unit_tests") {
     "keyword_provider_unittest.cc",
     "local_history_zero_suggest_provider_unittest.cc",
     "location_bar_model_impl_unittest.cc",
+    "most_visited_sites_provider_unittest.cc",
     "omnibox_controller_unittest.cc",
     "omnibox_edit_model_unittest.cc",
     "omnibox_field_trial_unittest.cc",
@@ -864,10 +865,6 @@ source_set("unit_tests") {
     "zero_suggest_provider_unittest.cc",
     "zero_suggest_verbatim_match_provider_unittest.cc",
   ]
-
-  if (is_android || is_ios) {
-    sources += [ "most_visited_sites_provider_unittest.cc" ]
-  }
 
   if ((!is_android || enable_vr) && !is_ios) {
     sources += [ "location_bar_model_util_unittest.cc" ]

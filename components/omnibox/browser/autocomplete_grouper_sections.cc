@@ -302,22 +302,31 @@ DesktopSecondaryNTPZpsSection::DesktopSecondaryNTPZpsSection(
                  omnibox::GroupConfig_SideType_SECONDARY) {}
 
 DesktopSRPZpsSection::DesktopSRPZpsSection(
-    omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(8,
-                 {
-                     {8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
-                     {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                 },
-                 group_configs) {}
+    omnibox::GroupConfigMap& group_configs,
+    size_t max_suggestions,
+    size_t search_limit)
+    : ZpsSection(
+          max_suggestions,
+          {{
+               search_limit,
+               {{omnibox::GROUP_PREVIOUS_SEARCH_RELATED, {search_limit}},
+                {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, {search_limit}}},
+           },
+           {max_suggestions, omnibox::GROUP_MOST_VISITED}},
+          group_configs) {}
 
 DesktopWebZpsSection::DesktopWebZpsSection(
-    omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(8,
-                 {
-                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
-                     {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                 },
-                 group_configs) {}
+    omnibox::GroupConfigMap& group_configs,
+    size_t max_suggestions,
+    size_t url_limit)
+    : ZpsSection(
+          max_suggestions,
+          {
+              {url_limit, omnibox::GROUP_MOST_VISITED},
+              {max_suggestions, omnibox::GROUP_VISITED_DOC_RELATED},
+              {max_suggestions, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+          },
+          group_configs) {}
 
 DesktopLensContextualZpsSection::DesktopLensContextualZpsSection(
     omnibox::GroupConfigMap& group_configs)

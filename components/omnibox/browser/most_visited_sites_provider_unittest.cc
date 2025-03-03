@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -88,8 +89,6 @@ class FakeTopSites : public history::TopSites {
 };
 
 constexpr const auto* WEB_URL = u"https://example.com/";
-constexpr const auto* SRP_URL = u"https://www.google.com/?q=flowers";
-constexpr const auto* FTP_URL = u"ftp://just.for.filtering.com";
 
 enum class ExpectedUiType {
   kAggregateMatch,
@@ -139,6 +138,11 @@ class MostVisitedSitesProviderTest : public testing::Test,
   // the supplied list of History URLs.
   void CheckMatchesEquivalentTo(const std::vector<TestData>& data,
                                 ExpectedUiType ui_type);
+
+  // Iterate over all matches offered by the Provider and verify these against
+  // the supplied list of History URLs for desktop.
+  void CheckDesktopMatchesEquivalentTo(const std::vector<TestData>& data,
+                                       size_t url_limit);
 
   // Returns total number of all NAVSUGGEST and TILE_NAVSUGGEST elements.
   size_t NumMostVisitedMatches();
@@ -253,6 +257,37 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
   }
 }
 
+void MostVisitedSitesProviderTest::CheckDesktopMatchesEquivalentTo(
+    const std::vector<TestData>& data,
+    size_t url_limit) {
+  // Compare the AutocompleteResult against a set of URLs that we expect to see.
+  // Note that additional matches may be offered if other providers are also
+  // registered in the same category as MostVisitedSitesProvider.
+  // We ignore all matches that are not ours.
+  const auto& result = provider_->matches();
+
+  size_t match_index = 0;
+  ASSERT_EQ(url_limit, NumMostVisitedMatches())
+      << "Unexpected number of TILE matches";
+  int expected_relevance = 1600;  // kMostVisitedTilesIndividualHighRelevance
+  for (const auto& match : result) {
+    EXPECT_EQ(match.type, AutocompleteMatchType::TILE_MOST_VISITED_SITE);
+    EXPECT_TRUE(match.subtypes.contains(
+        omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS));
+    EXPECT_TRUE(match.subtypes.contains(omnibox::SUBTYPE_URL_BASED));
+
+    EXPECT_EQ(data[match_index].entry.url, match.destination_url)
+        << "Invalid Match URL at position " << match_index;
+    EXPECT_EQ(data[match_index].entry.title, match.description)
+        << "Invalid Match Title at position " << match_index;
+    EXPECT_EQ(expected_relevance, match.relevance)
+        << "Invalid Match Relevance at position " << match_index;
+    EXPECT_EQ(omnibox::GROUP_MOST_VISITED, match.suggestion_group_id);
+    ++match_index;
+    --expected_relevance;
+  }
+}
+
 void MostVisitedSitesProviderTest::SetUp() {
   task_environment_ =
       std::make_unique<base::test::SingleThreadTaskEnvironment>();
@@ -269,6 +304,11 @@ void MostVisitedSitesProviderTest::OnProviderUpdate(
     const AutocompleteProvider* provider) {
   provider_update_count_++;
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+constexpr const auto* SRP_URL = u"https://www.google.com/?q=flowers";
+constexpr const auto* FTP_URL = u"ftp://just.for.filtering.com";
 
 TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   base::test::ScopedFeatureList features;
@@ -484,3 +524,24 @@ TEST_F(MostVisitedSitesProviderTest,
   EXPECT_TRUE(top_sites_->EmitURLs(test_data));
   CheckMatchesEquivalentTo(test_data, ExpectedUiType::kIndividualTiles);
 }
+
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedSitesDesktopMatches) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::UrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+
+  provider_->Start(BuildAutocompleteInputForWebOnFocus(), true);
+
+  EXPECT_EQ(0u, NumMostVisitedMatches());
+  // Accept only direct TopSites data.
+  auto test_data = DefaultTestData();
+  EXPECT_TRUE(top_sites_->EmitURLs(test_data));
+  CheckDesktopMatchesEquivalentTo(test_data,
+                                  scoped_config.Get().max_url_suggestions);
+}
+
+#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
