@@ -18815,6 +18815,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Permissions.PrivacySensitive.UseCounter">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-team@google.com</owner>
+  <summary>
+    Collects once-per-page statistics on usage of privacy sensitive permission
+    policy APIs to better understand if restricting access to these APIs in some
+    situations would result in an acceptable breaking change or not.
+  </summary>
+  <metric name="PrivateFeatureCalledWithAdScriptInStack" enum="FeatureObserver">
+    <summary>
+      If a privacy-sensitive labeled feature backed by a permission policy was
+      requested and granted, whether ad-script was in the stack at the time of
+      grant. This is only recorded once per page load.
+    </summary>
+  </metric>
+</event>
+
 <event name="PermissionUsage">
   <owner>engedy@chromium.org</owner>
   <owner>ravjit@chromium.org</owner>

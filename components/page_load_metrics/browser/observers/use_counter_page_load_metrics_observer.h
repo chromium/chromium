@@ -56,6 +56,10 @@ class UseCounterMetricsRecorder {
   // Records WebDXFeatures that are based on other WebFeature use counters.
   void RecordWebDXFeatures(ukm::SourceId ukm_source_id);
 
+  // Records privacy sensitive WebFeatures that have been observed in the page
+  // while ad script was running.
+  void RecordPrivacySensitiveFeatures(ukm::SourceId ukm_source_id);
+
   using UkmFeatureList = base::flat_set<blink::mojom::WebFeature>;
 
   // Allow test access to assert each user defined feature is mapped correctly

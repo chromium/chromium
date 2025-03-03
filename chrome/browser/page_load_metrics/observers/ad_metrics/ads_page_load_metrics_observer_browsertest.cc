@@ -1655,6 +1655,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   auto main_html_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1737,6 +1738,9 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
       network::mojom::PermissionsPolicyFeature::kUsb, 1);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Permissions_PrivacySensitive_UseCounter::kEntryName);
+  EXPECT_EQ(9u, entries.size());
 }
 
 // Verify that per-resource metrics are recorded correctly.

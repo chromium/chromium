@@ -310,6 +310,21 @@ void UseCounterMetricsRecorder::RecordWebDXFeatures(
       static_cast<size_t>(WebDXFeature::kMaxValue));
 }
 
+void UseCounterMetricsRecorder::RecordPrivacySensitiveFeatures(
+    ukm::SourceId ukm_source_id) {
+  if (!uma_permissions_policy_enabled_private_) {
+    return;
+  }
+  auto used_features =
+      uma_permissions_policy_enabled_private_->GetRecordedValues();
+  for (auto feature : used_features) {
+    ukm::builders::Permissions_PrivacySensitive_UseCounter(ukm_source_id)
+        .SetPrivateFeatureCalledWithAdScriptInStack(
+            static_cast<size_t>(feature))
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 // WebDXFeature use counter mappings have been moved to
 // components/page_load_metrics/browser/observers/use_counter/webdx_feature_maps.cc
 UseCounterPageLoadMetricsObserver::UseCounterPageLoadMetricsObserver() =
@@ -423,6 +438,7 @@ void UseCounterPageLoadMetricsObserver::OnComplete(
   auto source_id = GetDelegate().GetPageUkmSourceId();
   recorder_->RecordWebDXFeatures(source_id);
   recorder_->RecordWebFeatures(source_id);
+  recorder_->RecordPrivacySensitiveFeatures(source_id);
 }
 
 void UseCounterPageLoadMetricsObserver::OnFailedProvisionalLoad(
