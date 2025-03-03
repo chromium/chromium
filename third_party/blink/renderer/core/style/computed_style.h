@@ -1936,6 +1936,10 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Table layout utility functions.
   bool IsFixedTableLayout() const {
+    if (RuntimeEnabledFeatures::TableIsAutoFixedLayoutEnabled()) {
+      // https://github.com/w3c/csswg-drafts/issues/10937
+      return TableLayout() == ETableLayout::kFixed && !LogicalWidth().IsAuto();
+    }
     // https://www.w3.org/TR/css-tables-3/#table-layout-property
     return TableLayout() == ETableLayout::kFixed &&
            (!LogicalWidth().HasAuto() && !LogicalWidth().HasMaxContent());
