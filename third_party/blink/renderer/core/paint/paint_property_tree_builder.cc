@@ -261,6 +261,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateTransform();
   ALWAYS_INLINE void UpdateTransformForSVGChild(CompositingReasons);
   ALWAYS_INLINE bool NeedsEffect() const;
+  ALWAYS_INLINE bool NeedsEffectFor2DScaleTransform() const;
   ALWAYS_INLINE bool EffectCanUseCurrentClipAsOutputClip() const;
   ALWAYS_INLINE void UpdateViewTransitionSubframeRootEffect();
   ALWAYS_INLINE void UpdateViewTransitionEffect();
@@ -422,6 +423,12 @@ class FragmentPaintPropertyTreeBuilder {
   // These are updated in UpdateClipPathClip() and used in UpdateEffect() if
   // needs_mask_base_clip_path_ is true.
   bool needs_mask_based_clip_path_ = false;
+  // True if, among all transform-relaed properties, there is a
+  // non-identity transform that *is* a 2D scale.
+  bool has_scale2d_transform_ = false;
+  // True if, among all transform-relaed properties, there is a
+  // non-identity transform that *is not* a 2D scale.
+  bool has_non_scale2d_transform_ = false;
   std::optional<gfx::RectF> clip_path_bounding_box_;
 };
 
@@ -1239,6 +1246,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         state.transform_and_origin =
             TransformAndOriginState(box, reference_box, compute_matrix);
 
+        has_non_scale2d_transform_ =
+            has_non_scale2d_transform_ ||
+            (!state.transform_and_origin.matrix.IsScale2d() &&
+             !state.transform_and_origin.matrix.IsIdentity());
+        has_scale2d_transform_ =
+            has_scale2d_transform_ ||
+            (state.transform_and_origin.matrix.IsScale2d() &&
+             !state.transform_and_origin.matrix.IsIdentity());
+
         // If a node with transform-style: preserve-3d does not exist in an
         // existing rendering context, it establishes a new one.
         state.rendering_context_id = context_.rendering_context_id;
@@ -1479,7 +1495,18 @@ static bool NeedsEffectForViewTransition(const LayoutObject& object) {
          !object.IsLayoutView();
 }
 
-static bool NeedsEffectIgnoringClipPath(
+// Scale transforms need effects, so that they can be considered for
+// promotion to render surfaces if possible to improve quality of
+// renerdering. See crbug.com/40084005.
+bool FragmentPaintPropertyTreeBuilder::NeedsEffectFor2DScaleTransform() const {
+  if (!RuntimeEnabledFeatures::RenderSurfaceFor2DScaleTransformEnabled() ||
+      object_.IsLayoutReplaced()) {
+    return false;
+  }
+  return has_scale2d_transform_ && !has_non_scale2d_transform_;
+}
+
+static bool NeedsEffectIgnoringClipPathAnd2DScale(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
   if (object.IsText()) {
@@ -1539,12 +1566,6 @@ static bool NeedsEffectIgnoringClipPath(
     return true;
   }
 
-  if (RuntimeEnabledFeatures::RenderSurfaceForScaleTransformEnabled() &&
-      (direct_compositing_reasons &
-       CompositingReason::k2DScaleTransformWithCompositedDescendants)) {
-    return true;
-  }
-
   return false;
 }
 
@@ -1553,8 +1574,11 @@ bool FragmentPaintPropertyTreeBuilder::NeedsEffect() const {
   // A mask-based clip-path needs an effect node, similar to a normal mask.
   if (needs_mask_based_clip_path_)
     return true;
-  return NeedsEffectIgnoringClipPath(object_,
-                                     full_context_.direct_compositing_reasons);
+  if (NeedsEffectFor2DScaleTransform()) {
+    return true;
+  }
+  return NeedsEffectIgnoringClipPathAnd2DScale(
+      object_, full_context_.direct_compositing_reasons);
 }
 
 // An effect node can use the current clip as its output clip if the clip won't
@@ -1656,6 +1680,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         }
       }
 
+      state.has_2d_scale_transform = NeedsEffectFor2DScaleTransform();
+
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReason::kDirectReasonsForEffectProperty;
@@ -1665,10 +1691,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       state.direct_compositing_reasons |=
           (full_context_.direct_compositing_reasons &
            CompositingReason::kAdditionalEffectCompositingTrigger);
-
-      state.direct_compositing_reasons |=
-          (full_context_.direct_compositing_reasons &
-           CompositingReason::k2DScaleTransformWithCompositedDescendants);
 
       // We may begin to composite our subtree prior to an animation starts, but
       // a compositor element ID is only needed when an animation is current.
@@ -3447,8 +3469,8 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
        NeedsScale(object_, context_.direct_compositing_reasons) ||
        NeedsOffset(object_, context_.direct_compositing_reasons) ||
        NeedsTransform(object_, context_.direct_compositing_reasons) ||
-       NeedsEffectIgnoringClipPath(object_,
-                                   context_.direct_compositing_reasons) ||
+       NeedsEffectIgnoringClipPathAnd2DScale(
+           object_, context_.direct_compositing_reasons) ||
        NeedsClipPathClipOrMask(object_) ||
        NeedsTransformForSVGChild(object_,
                                  context_.direct_compositing_reasons) ||
@@ -3790,7 +3812,7 @@ bool PaintPropertyTreeBuilder::ScheduleDeferredOpacityNodeUpdate(
   return false;
 }
 
-// Fast-path for directly updating transforms. Returns true if successful. This
+// Fast-path for directly updating transforms. This
 // is similar to |FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform|.
 void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
     const LayoutObject& object) {

@@ -30,7 +30,6 @@
     {
       "name": "LayoutBlockFlow (relative positioned) DIV id='child4' class='child scale'",
       "bounds": [1, 1],
-      "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 8
     },

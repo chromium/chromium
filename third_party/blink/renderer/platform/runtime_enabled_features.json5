@@ -3626,7 +3626,8 @@
       // Allocates a render surface for 2D scale transforms, to prevent
       // composited pixel alignment issues. See
       // https://crbug.com/40084005
-      name: "RenderSurfaceForScaleTransform",
+      name: "RenderSurfaceFor2DScaleTransform",
+      status: "experimental",
     },
     {
       name: "ReportEventTimingAtVisibilityChange",
