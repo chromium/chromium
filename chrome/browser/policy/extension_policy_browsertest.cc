@@ -71,6 +71,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -286,6 +287,10 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
     return system->extension_service();
   }
 
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(browser()->profile());
+  }
+
   extensions::ExtensionRegistry* extension_registry() {
     return extensions::ExtensionRegistry::Get(browser()->profile());
   }
@@ -474,6 +479,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallBlocklistWildcard) {
   // Verify that a wildcard blocklist takes effect.
   EXPECT_TRUE(InstallExtension(kSimpleWithIconCrxName));
   extensions::ExtensionService* service = extension_service();
+  extensions::ExtensionRegistrar* registrar = extension_registrar();
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_FALSE(registry->GetExtensionById(
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
@@ -488,12 +494,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallBlocklistWildcard) {
 
   // "simple_with_icon" should be disabled.
   EXPECT_TRUE(registry->disabled_extensions().GetByID(kSimpleWithIconCrxId));
-  EXPECT_FALSE(service->IsExtensionEnabled(kSimpleWithIconCrxId));
+  EXPECT_FALSE(registrar->IsExtensionEnabled(kSimpleWithIconCrxId));
 
   // It shouldn't be possible to re-enable "simple_with_icon", until it
   // satisfies management policy.
   service->EnableExtension(kSimpleWithIconCrxId);
-  EXPECT_FALSE(service->IsExtensionEnabled(kSimpleWithIconCrxId));
+  EXPECT_FALSE(registrar->IsExtensionEnabled(kSimpleWithIconCrxId));
 
   // It shouldn't be possible to install good.crx.
   EXPECT_FALSE(InstallExtension(kGoodCrxName));
@@ -775,9 +781,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
             ManifestLocation::kInternal);
 
   // The user is allowed to disable the added extension.
-  EXPECT_TRUE(extension_service()->IsExtensionEnabled(kGoodCrxId));
+  EXPECT_TRUE(extension_registrar()->IsExtensionEnabled(kGoodCrxId));
   DisableExtension(kGoodCrxId);
-  EXPECT_FALSE(extension_service()->IsExtensionEnabled(kGoodCrxId));
+  EXPECT_FALSE(extension_registrar()->IsExtensionEnabled(kGoodCrxId));
 
   // Explicitly re-enable the extension.
   extension_service()->EnableExtension(kGoodCrxId);
@@ -1866,7 +1872,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   base::win::ScopedDomainStateForTesting scoped_domain(true);
 #endif
 
-  extensions::ExtensionService* service = extension_service();
+  extensions::ExtensionRegistrar* registrar = extension_registrar();
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_FALSE(registry->GetExtensionById(
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
@@ -1893,9 +1899,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   UninstallExtension(kGoodCrxId, false);
 
   // But the user is allowed to disable them.
-  EXPECT_TRUE(service->IsExtensionEnabled(kGoodCrxId));
+  EXPECT_TRUE(registrar->IsExtensionEnabled(kGoodCrxId));
   DisableExtension(kGoodCrxId);
-  EXPECT_FALSE(service->IsExtensionEnabled(kGoodCrxId));
+  EXPECT_FALSE(registrar->IsExtensionEnabled(kGoodCrxId));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionAllowedTypes) {
@@ -2210,7 +2216,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionBlockedHostWhenDisabled) {
                                           extensions::URLPatternSet()));
   }
 
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
 
   ASSERT_TRUE(
       extension->permissions_data()->CanAccessPage(test_url, tab_id, error));
@@ -2464,12 +2470,14 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
 
     profile2_ = CreateProfile(&profile2_policy_);
 
-    service1_ = CreateExtensionService(profile1_);
-    service2_ = CreateExtensionService(profile2_);
-    service1_->updater()->SetExtensionCacheForTesting(
+    auto* service1 = CreateExtensionService(profile1_);
+    auto* service2 = CreateExtensionService(profile2_);
+    service1->updater()->SetExtensionCacheForTesting(
         test_extension_cache1_.get());
-    service2_->updater()->SetExtensionCacheForTesting(
+    service2->updater()->SetExtensionCacheForTesting(
         test_extension_cache2_.get());
+    registrar1_ = extensions::ExtensionRegistrar::Get(profile1_);
+    registrar2_ = extensions::ExtensionRegistrar::Get(profile2_);
     registry1_ = CreateExtensionRegistry(profile1_);
     registry2_ = CreateExtensionRegistry(profile2_);
   }
@@ -2477,8 +2485,8 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   void TearDownOnMainThread() override {
     registry2_ = nullptr;
     registry1_ = nullptr;
-    service2_ = nullptr;
-    service1_ = nullptr;
+    registrar2_ = nullptr;
+    registrar1_ = nullptr;
     profile2_ = nullptr;
     profile1_ = nullptr;
     PolicyTest::TearDownOnMainThread();
@@ -2507,10 +2515,14 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   Profile* GetProfile1() { return browser()->profile(); }
   Profile* GetProfile2() { return profile2_; }
   Browser* GetBrowser1() { return browser(); }
+  extensions::ExtensionRegistrar* GetExtensionRegistrar1() {
+    return registrar1_;
+  }
+  extensions::ExtensionRegistrar* GetExtensionRegistrar2() {
+    return registrar2_;
+  }
   extensions::ExtensionRegistry* GetExtensionRegistry1() { return registry1_; }
   extensions::ExtensionRegistry* GetExtensionRegistry2() { return registry2_; }
-  extensions::ExtensionService* GetExtensionService1() { return service1_; }
-  extensions::ExtensionService* GetExtensionService2() { return service2_; }
 
  private:
   // Creates a Profile for testing. The Profile is returned.
@@ -2549,10 +2561,10 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   raw_ptr<Profile> profile2_ = nullptr;
   MockConfigurationPolicyProvider profile1_policy_;
   MockConfigurationPolicyProvider profile2_policy_;
+  raw_ptr<extensions::ExtensionRegistrar> registrar1_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistrar> registrar2_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry> registry1_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry> registry2_ = nullptr;
-  raw_ptr<extensions::ExtensionService> service1_ = nullptr;
-  raw_ptr<extensions::ExtensionService> service2_ = nullptr;
 };
 
 // Verifies that default policy host block/allow settings are applied as
@@ -2574,8 +2586,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest2Contexts,
   SetTabSpecificPermissionsForURL(app2, tab_id, test_url,
                                   URLPattern::SCHEME_ALL);
 
-  ASSERT_TRUE(GetExtensionService1()->IsExtensionEnabled(app1->id()));
-  ASSERT_TRUE(GetExtensionService2()->IsExtensionEnabled(app2->id()));
+  ASSERT_TRUE(GetExtensionRegistrar1()->IsExtensionEnabled(app1->id()));
+  ASSERT_TRUE(GetExtensionRegistrar2()->IsExtensionEnabled(app2->id()));
 
   ASSERT_TRUE(app1->permissions_data()->CanAccessPage(test_url, tab_id, error));
   ASSERT_TRUE(app2->permissions_data()->CanAccessPage(test_url, tab_id, error));
