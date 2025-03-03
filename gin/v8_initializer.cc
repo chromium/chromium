@@ -292,6 +292,7 @@ void SetFlags(IsolateHolder::ScriptMode mode,
 void SetDefaultEnabledFeatureFlags() {
   SetV8Flags("--js-float16array");
   SetV8Flags("--js-explicit-resource-management");
+  SetV8Flags("--js-regexp-escape");
 }
 
 // Sets feature controlled V8 flags.

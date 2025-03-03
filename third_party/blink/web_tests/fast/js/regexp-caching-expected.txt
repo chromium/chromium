@@ -30,6 +30,8 @@ $_: {}
 
 $`: {}
 
+escape: {function escape() { [native code] }}
+
 input: {}
 
 lastMatch: {}
@@ -75,6 +77,8 @@ $9: {9}
 $_: {<1234567890>}
 
 $`: {<}
+
+escape: {function escape() { [native code] }}
 
 input: {<1234567890>}
 
@@ -132,6 +136,8 @@ $_: {0}
 
 $`: {<}
 
+escape: {function escape() { [native code] }}
+
 input: {0}
 
 lastMatch: {1234567890}
@@ -180,6 +186,8 @@ $_: {<1234567890>}
 
 $`: {<}
 
+escape: {function escape() { [native code] }}
+
 input: {<1234567890>}
 
 lastMatch: {1234567890}
@@ -227,6 +235,8 @@ $9: {9}
 $_: {<1234567890>}
 
 $`: {<}
+
+escape: {function escape() { [native code] }}
 
 input: {<1234567890>}
 
