@@ -33,18 +33,18 @@ import java.lang.annotation.RetentionPolicy;
  * users who perceive it as one of the 'pages' managed by Chrome.
  */
 public interface Tab extends TabLifecycle {
-    public static final @TabId int INVALID_TAB_ID = -1;
-    public static final long INVALID_TIMESTAMP = -1;
+    @TabId int INVALID_TAB_ID = -1;
+    long INVALID_TIMESTAMP = -1;
 
     @IntDef({TabLoadStatus.PAGE_LOAD_FAILED, TabLoadStatus.DEFAULT_PAGE_LOAD})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface TabLoadStatus {
+    @interface TabLoadStatus {
         int PAGE_LOAD_FAILED = 0;
         int DEFAULT_PAGE_LOAD = 1;
     }
 
     /** The result of the loadUrl. */
-    public static class LoadUrlResult {
+    class LoadUrlResult {
         /** Tab load status. */
         public final @TabLoadStatus int tabLoadStatus;
 
