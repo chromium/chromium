@@ -131,8 +131,6 @@ dictionary SetHTMLUnsafeOptions {
     // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
     [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
 
-    // TODO(sunyunjia): Add default value for scrollIntoView() once
-    // crbug.com/734599 is fixed.
     void scrollIntoView(optional (ScrollIntoViewOptions or boolean) arg = {});
     [ImplementedAs=scrollTo] void scroll(optional ScrollToOptions options = {});
     [ImplementedAs=scrollTo] void scroll(unrestricted double x, unrestricted double y);
