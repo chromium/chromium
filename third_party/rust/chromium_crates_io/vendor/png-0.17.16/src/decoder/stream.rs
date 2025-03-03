@@ -974,7 +974,7 @@ impl StreamingDecoder {
 
     fn parse_chunk(&mut self, type_str: ChunkType) -> Result<Decoded, DecodingError> {
         self.state = Some(State::new_u32(U32ValueKind::Crc(type_str)));
-        let parse_result = match type_str {
+        let mut parse_result = match type_str {
             IHDR => self.parse_ihdr(),
             chunk::sBIT => self.parse_sbit(),
             chunk::PLTE => self.parse_plte(),
@@ -997,8 +997,7 @@ impl StreamingDecoder {
             _ => Ok(Decoded::PartialChunk(type_str)),
         };
 
-        parse_result.map_err(|e| {
-            self.state = None;
+        parse_result = parse_result.map_err(|e| {
             match e {
                 // `parse_chunk` is invoked after gathering **all** bytes of a chunk, so
                 // `UnexpectedEof` from something like `read_be` is permanent and indicates an
@@ -1011,7 +1010,37 @@ impl StreamingDecoder {
                 }
                 e => e,
             }
-        })
+        });
+
+        // Ignore benign errors in some auxiliary chunks.  `LimitsExceeded`, `Parameter`
+        // and other error kinds are *not* treated as benign.  We only ignore errors in *some*
+        // auxiliary chunks (i.e. we don't use `chunk::is_critical`), because for chunks like
+        // `fcTL` or `fdAT` the fallback to the static/non-animated image has to be implemented
+        // *on top* of the `StreamingDecoder` API.
+        //
+        // TODO: Consider supporting a strict mode where even benign errors are reported up.
+        // See https://github.com/image-rs/image-png/pull/569#issuecomment-2642062285
+        if matches!(parse_result.as_ref(), Err(DecodingError::Format(_)))
+            && matches!(
+                type_str,
+                chunk::cHRM
+                    | chunk::gAMA
+                    | chunk::iCCP
+                    | chunk::pHYs
+                    | chunk::sBIT
+                    | chunk::sRGB
+                    | chunk::tRNS
+            )
+        {
+            parse_result = Ok(Decoded::Nothing);
+        }
+
+        // Clear the parsing state to enforce that parsing can't continue after an error.
+        if parse_result.is_err() {
+            self.state = None;
+        }
+
+        parse_result
     }
 
     fn parse_fctl(&mut self) -> Result<Decoded, DecodingError> {
