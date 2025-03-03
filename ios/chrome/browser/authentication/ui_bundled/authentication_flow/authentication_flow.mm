@@ -900,9 +900,11 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 - (void)didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue {
-  // TODO(crbug.com/375604649): Need to abort sign-in if `acceptToContinue` is
-  // `NO`.
-  [self continueFlow];
+  if (acceptToContinue) {
+    [self continueFlow];
+  } else {
+    [self cancelFlowWithReason:CancelationReason::kUserCanceled];
+  }
 }
 
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
