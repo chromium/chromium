@@ -19,6 +19,8 @@ namespace tracing {
 class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
     : public perfetto::DataSource<MetadataDataSource> {
  public:
+  static constexpr bool kRequiresCallbacksUnderLock = false;
+
   static void Register();
 
   void OnStart(const StartArgs&) override;

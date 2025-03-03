@@ -186,6 +186,8 @@ class PreferenceManagerImpl
 class BackgroundMetadataDataSource
     : public perfetto::DataSource<BackgroundMetadataDataSource> {
  public:
+  static constexpr bool kRequiresCallbacksUnderLock = false;
+
   static void Register() {
     perfetto::DataSourceDescriptor desc;
     desc.set_name("org.chromium.background_scenario_metadata");
@@ -200,6 +202,8 @@ class BackgroundMetadataDataSource
       packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
       auto* chrome_metadata = packet->set_chrome_metadata();
       scenario->GenerateMetadataProto(chrome_metadata);
+      packet->Finalize();
+      ctx.Flush();
     });
   }
 };
