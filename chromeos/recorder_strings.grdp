@@ -50,6 +50,15 @@
   <message desc="Error message for general error in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_GENERAL_LABEL">
     Something went wrong
   </message>
+  <message desc="Button to download summary and name creation model again in the generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_MODEL_DOWNLOAD_BUTTON">
+    Download
+  </message>
+  <message desc="Accessibility label of the button to download summary and name creation model again in the generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_MODEL_DOWNLOAD_BUTTON_ARIA_LABEL">
+    Download summary and name creation model
+  </message>
+  <message desc="Error message for model load error in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_MODEL_LOAD_FAILURE_LABEL">
+    Can't download. Try again or restart your Chromebook.
+  </message>
   <message desc="Error message for unsupported transcript language input for summary." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_LANGUAGE_UNSUPPORTED_LABEL">
     Can’t create summary for this transcript language
   </message>
