@@ -66,6 +66,17 @@ _OVERRIDES = [
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
 ]
 
+_FILES_TO_COMMIT = [
+    'additional_readme_paths.json',
+    'bill_of_materials.json',
+    'BUILD.gn',
+    'build.gradle',
+]
+_CIPD_DATA_FILES = _FILES_TO_COMMIT + [
+    'VERSION.txt',
+    'to_commit.zip',
+]
+
 
 def _build_snapshot_repository_url(version):
     return _SNAPSHOT_REPOSITORY_URL.replace('{{version}}', version)
@@ -213,14 +224,7 @@ def _write_cipd_yaml(libs_dir,
     if not lib_dirs:
         raise Exception('No generated libraries in {}'.format(libs_dir))
 
-    data_files = [
-        'BUILD.gn',
-        'VERSION.txt',
-        'bill_of_materials.json',
-        'additional_readme_paths.json',
-        'build.gradle',
-        'to_commit.zip',
-    ]
+    cipd_lib_files = []
     for lib_dir in lib_dirs:
         abs_lib_dir = os.path.join(libs_dir, lib_dir)
         androidx_rel_lib_dir = os.path.relpath(abs_lib_dir, _CIPD_PATH)
@@ -233,7 +237,7 @@ def _write_cipd_yaml(libs_dir,
         for lib_file in lib_files:
             if lib_file == 'cipd.yaml':
                 continue
-            data_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
+            cipd_lib_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
 
     if experimental:
         package = 'experimental/google.com/' + os.getlogin() + '/androidx'
@@ -248,7 +252,7 @@ def _write_cipd_yaml(libs_dir,
         'description: androidx',
         'data:',
     ]
-    contents.extend('- file: ' + f for f in data_files)
+    contents.extend('- file: ' + f for f in cipd_lib_files + _CIPD_DATA_FILES)
 
     with open(cipd_yaml_path, 'w') as out:
         out.write('\n'.join(contents))
@@ -311,7 +315,7 @@ def main():
         os.path.join(_ANDROIDX_PATH, 'build.gradle.template'),
         os.path.join(_CIPD_PATH, 'build.gradle'),
         androidx_snapshot_repository_url, version_map_str)
-    shutil.copyfile(os.path.join(_ANDROIDX_PATH, 'BUILD.gn.template'),
+    shutil.copyfile(os.path.join(_ANDROIDX_PATH, 'BUILD.gn'),
                     os.path.join(_CIPD_PATH, 'BUILD.gn'))
 
     fetch_all_cmd = [
@@ -357,13 +361,7 @@ def main():
             file_path_in_committed = os.path.relpath(file_path, _CIPD_PATH)
             to_commit_paths.append((file_path, file_path_in_committed))
 
-    files_in_tree = [
-        'additional_readme_paths.json',
-        'bill_of_materials.json',
-        'BUILD.gn',
-        'build.gradle',
-    ]
-    for file in files_in_tree:
+    for file in _FILES_TO_COMMIT:
         file_path = os.path.join(_CIPD_PATH, file)
         to_commit_paths.append(
             (file_path, f'CHROMIUM_SRC/third_party/androidx/{file}'))
