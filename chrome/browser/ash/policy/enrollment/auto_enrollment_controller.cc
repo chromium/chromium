@@ -204,7 +204,6 @@ AutoEnrollmentController::AutoEnrollmentController(
               ->browser_policy_connector_ash()
               ->GetStateKeysBroker(),
           ash::NetworkHandler::Get()->network_state_handler(),
-          std::make_unique<AutoEnrollmentClientImpl::FactoryImpl>(),
           base::BindRepeating(&policy::psm::RlweDmserverClientImpl::Create),
           base::BindRepeating(EnrollmentStateFetcher::Create),
           shared_url_loader_factory) {}
@@ -214,8 +213,6 @@ AutoEnrollmentController::AutoEnrollmentController(
     DeviceManagementService* device_management_service,
     ServerBackedStateKeysBroker* state_keys_broker,
     ash::NetworkStateHandler* network_state_handler,
-    std::unique_ptr<AutoEnrollmentClient::Factory>
-        auto_enrollment_client_factory,
     RlweClientFactory psm_rlwe_client_factory,
     EnrollmentStateFetcher::Factory enrollment_state_fetcher_factory,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
@@ -225,7 +222,7 @@ AutoEnrollmentController::AutoEnrollmentController(
       enrollment_fwmp_helper_(std::make_unique<EnrollmentFwmpHelper>(
           ash::InstallAttributesClient::Get())),
       auto_enrollment_client_factory_(
-          std::move(auto_enrollment_client_factory)),
+          std::make_unique<AutoEnrollmentClientImpl::FactoryImpl>()),
       psm_rlwe_client_factory_(std::move(psm_rlwe_client_factory)),
       enrollment_state_fetcher_factory_(
           std::move(enrollment_state_fetcher_factory)),

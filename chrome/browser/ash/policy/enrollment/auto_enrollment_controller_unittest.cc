@@ -10,15 +10,17 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chromeos/ash/components/dbus/device_management/fake_install_attributes_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -46,9 +48,6 @@ constexpr auto kPortalStateToStateString =
           shill::kStateNoConnectivity},
          {ash::NetworkState::PortalState::kOnline, shill::kStateOnline}});
 
-constexpr char kTestStateKey[] = "test-state-key";
-constexpr int kMaxRequestStateKeysTries = 10;
-
 constexpr base::TimeDelta kSafeguardTimeout = base::Seconds(90);
 
 class TestingNetwork : public ash::NetworkStateTestHelper {
@@ -74,70 +73,6 @@ class TestingNetwork : public ash::NetworkStateTestHelper {
   std::string wifi_path_;
 };
 
-class MockAutoEnrollmentClient {
- public:
-  MOCK_METHOD(void, Start, ());
-  MOCK_METHOD(void, Retry, ());
-
-  void ReportAutoEnrollmentState(AutoEnrollmentState state) {
-    DCHECK(!callback_.is_null());
-
-    callback_.Run(state);
-  }
-
-  void SetProgressCallback(AutoEnrollmentClient::ProgressCallback callback) {
-    callback_ = std::move(callback);
-  }
-
- private:
-  AutoEnrollmentClient::ProgressCallback callback_;
-};
-
-class ProxyAutoEnrollmentClient : public AutoEnrollmentClient {
- public:
-  explicit ProxyAutoEnrollmentClient(MockAutoEnrollmentClient* mock)
-      : mock_(mock) {}
-  void Start() override { mock_->Start(); }
-  void Retry() override { mock_->Retry(); }
-
- private:
-  raw_ptr<MockAutoEnrollmentClient> mock_{nullptr};
-};
-
-class ProxyAutoEnrollmentClientFactory : public AutoEnrollmentClient::Factory {
- public:
-  explicit ProxyAutoEnrollmentClientFactory(MockAutoEnrollmentClient* mock)
-      : mock_(mock) {}
-
-  std::unique_ptr<AutoEnrollmentClient> CreateForFRE(
-      const AutoEnrollmentClient::ProgressCallback& progress_callback,
-      DeviceManagementService* device_management_service,
-      PrefService* local_state,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const std::string& server_backed_state_key,
-      int power_initial,
-      int power_limit) override {
-    mock_->SetProgressCallback(progress_callback);
-    return std::make_unique<ProxyAutoEnrollmentClient>(mock_);
-  }
-
-  std::unique_ptr<AutoEnrollmentClient> CreateForInitialEnrollment(
-      const AutoEnrollmentClient::ProgressCallback& progress_callback,
-      DeviceManagementService* device_management_service,
-      PrefService* local_state,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const std::string& device_serial_number,
-      const std::string& device_brand_code,
-      std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client,
-      ash::OobeConfiguration* oobe_config) override {
-    mock_->SetProgressCallback(progress_callback);
-    return std::make_unique<ProxyAutoEnrollmentClient>(mock_);
-  }
-
- private:
-  raw_ptr<MockAutoEnrollmentClient> mock_{nullptr};
-};
-
 class MockDeviceSettingsService : public ash::DeviceSettingsService {
  public:
   MOCK_METHOD(void,
@@ -154,6 +89,8 @@ class MockStateKeyBroker : public ServerBackedStateKeysBroker {
   MOCK_METHOD(void, RequestStateKeys, (StateKeysCallback), (override));
 };
 
+// This exists only to access the protected AutoEnrollmentController
+// constructor.
 class AutoEnrollmentControllerForTesting : public AutoEnrollmentController {
  public:
   template <class... Args>
@@ -171,98 +108,75 @@ class ScopedFakeClientInitializer {
   ~ScopedFakeClientInitializer() { DbusClient::Shutdown(); }
 };
 
-void SetDevBootFlag(ash::FakeInstallAttributesClient* client,
-                    bool is_disabled) {
-  const int fwmp_flags =
-      is_disabled ? cryptohome::DEVELOPER_DISABLE_BOOT : cryptohome::NONE;
-  ::device_management::SetFirmwareManagementParametersRequest request;
-  request.mutable_fwmp()->set_flags(fwmp_flags);
-  base::test::TestFuture<
-      std::optional<::device_management::SetFirmwareManagementParametersReply>>
-      future_fwmp;
-  client->SetFirmwareManagementParameters(request, future_fwmp.GetCallback());
-  ASSERT_TRUE(future_fwmp.Get());
-}
-
-void ClearDevBootFlag(ash::FakeInstallAttributesClient* client) {
-  base::test::TestFuture<std::optional<
-      ::device_management::RemoveFirmwareManagementParametersReply>>
-      future_removed_fwmp;
-  client->RemoveFirmwareManagementParameters(
-      ::device_management::RemoveFirmwareManagementParametersRequest(),
-      future_removed_fwmp.GetCallback());
-
-  ASSERT_TRUE(future_removed_fwmp.Get());
-}
-
 }  // namespace
 
-class EnrollmentFwmpHelperTest : public testing::Test {
- protected:
-  ash::FakeInstallAttributesClient* install_attributes_client() const {
-    return ash::FakeInstallAttributesClient::Get();
+class MockEnrollmentStateFetcher : public EnrollmentStateFetcher {
+ public:
+  MOCK_METHOD(void, Start, ());
+
+  base::WeakPtr<MockEnrollmentStateFetcher> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment;
-
-  ScopedFakeClientInitializer<ash::FakeInstallAttributesClient>
-      scoped_fake_install_attributes_client_initializer_;
+  base::WeakPtrFactory<MockEnrollmentStateFetcher> weak_ptr_factory_{this};
 };
 
-TEST_F(EnrollmentFwmpHelperTest, NoAvailability) {
-  // Fake unavailability of install attributes.
-  install_attributes_client()->SetServiceIsAvailable(false);
-  install_attributes_client()->ReportServiceIsNotAvailable();
+class MockEnrollmentStateFetcherFactory {
+ public:
+  // Create a state fetcher before it is requested by the
+  // `AutoEnrollmentController`. This allows interacting with the mocked `Start`
+  // method.
+  void PreCreate() {
+    prepared_state_fetcher_ = std::make_unique<MockEnrollmentStateFetcher>();
+    weak_state_fetcher_ = prepared_state_fetcher_->GetWeakPtr();
+  }
 
-  // Verify that EnrollmentFwmpHelper yields `false`.
-  EnrollmentFwmpHelper helper(install_attributes_client());
-  base::test::TestFuture<bool> future_result_holder;
-  helper.DetermineDevDisableBoot(future_result_holder.GetCallback());
-  EXPECT_FALSE(future_result_holder.Get());
-}
+  // Factory method that can be used by `AutoEnrollmentController`.
+  // If a fetcher has been created beforehand, it will be returned. Otherwise a
+  // new fetcher will be created.
+  std::unique_ptr<EnrollmentStateFetcher> Create(
+      base::OnceCallback<void(AutoEnrollmentState)> report_result,
+      PrefService* local_state,
+      EnrollmentStateFetcher::RlweClientFactory rlwe_client_factory,
+      DeviceManagementService* device_management_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      ServerBackedStateKeysBroker* state_key_broker,
+      ash::DeviceSettingsService* device_settings_service,
+      ash::OobeConfiguration* oobe_configuration) {
+    report_result_ = std::move(report_result);
+    auto state_fetcher = prepared_state_fetcher_
+                             ? std::move(prepared_state_fetcher_)
+                             : std::make_unique<MockEnrollmentStateFetcher>();
+    weak_state_fetcher_ = state_fetcher->GetWeakPtr();
+    return state_fetcher;
+  }
 
-TEST_F(EnrollmentFwmpHelperTest, NoFwmpParameters) {
-  // Fake FWMP starts out unset.
-  ClearDevBootFlag(install_attributes_client());
-  EnrollmentFwmpHelper helper(install_attributes_client());
-  base::test::TestFuture<bool> future_result_holder;
-  helper.DetermineDevDisableBoot(future_result_holder.GetCallback());
-  EXPECT_FALSE(future_result_holder.Get());
-}
+  // Get a raw pointer to the current state fetcher.
+  // Note that this /could/ be NULL if the fetcher was destroyed.
+  MockEnrollmentStateFetcher* Get() { return weak_state_fetcher_.get(); }
 
-TEST_F(EnrollmentFwmpHelperTest, NoDevDisableBoot) {
-  // Fake FWMP.dev_disable_boot == 0.
-  SetDevBootFlag(install_attributes_client(), /*is_disabled=*/false);
+  // Run the `report_result_` callback provided by the `Create` method.
+  void ReportResult(AutoEnrollmentState state) {
+    std::move(report_result_).Run(state);
+  }
 
-  // Verify that EnrollmentFwmpHelper yields `false`.
-  EnrollmentFwmpHelper helper(install_attributes_client());
-  base::test::TestFuture<bool> future_result_holder;
-  helper.DetermineDevDisableBoot(future_result_holder.GetCallback());
-  EXPECT_FALSE(future_result_holder.Get());
-}
+ private:
+  std::unique_ptr<MockEnrollmentStateFetcher> prepared_state_fetcher_;
+  base::WeakPtr<MockEnrollmentStateFetcher> weak_state_fetcher_;
+  base::OnceCallback<void(AutoEnrollmentState)> report_result_;
+};
 
-TEST_F(EnrollmentFwmpHelperTest, DevDisableBoot) {
-  // Fake FWMP.dev_disable_boot == 1.
-  SetDevBootFlag(install_attributes_client(), /*is_disabled=*/true);
-
-  // Verify that EnrollmentFwmpHelper yields `true`.
-  EnrollmentFwmpHelper helper(install_attributes_client());
-  base::test::TestFuture<bool> future_result;
-  helper.DetermineDevDisableBoot(future_result.GetCallback());
-  EXPECT_TRUE(future_result.Get());
-}
-
-class AutoEnrollmentControllerBaseTest : public testing::Test {
+class AutoEnrollmentControllerTest : public testing::Test {
  protected:
   AutoEnrollmentControllerForTesting CreateController() {
     return AutoEnrollmentControllerForTesting(
         &mock_device_settings_service_, &fake_dm_service_,
         &mock_state_keys_broker_, testing_network_.network_state_handler(),
-        std::make_unique<ProxyAutoEnrollmentClientFactory>(
-            &mock_auto_enrollment_client_),
         AutoEnrollmentController::RlweClientFactory(),
-        EnrollmentStateFetcher::Factory(),
+        // The factory will stay alive until the test is destroyed.
+        base::BindRepeating(&MockEnrollmentStateFetcherFactory::Create,
+                            base::Unretained(&state_fetcher_factory_)),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
   }
@@ -278,21 +192,6 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
     ASSERT_TRUE(future.Wait());
   }
 
-  void RunAndExpectNoStateUpdate(AutoEnrollmentController& controller,
-                                 base::OnceClosure callback) {
-    bool state_updated = false;
-    auto subscription =
-        controller.RegisterProgressCallback(base::BindLambdaForTesting(
-            [&state_updated](AutoEnrollmentState) { state_updated = true; }));
-
-    std::move(callback).Run();
-    // We test negative branch (expecting no call) so there is no
-    // synchronization point, just wait until all async calls are done.
-    base::RunLoop().RunUntilIdle();
-
-    EXPECT_FALSE(state_updated);
-  }
-
   void SetupUnifiedStateDetermination(bool enabled) {
     const std::string_view switch_value =
         enabled ? AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways
@@ -302,74 +201,15 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
         switch_value);
   }
 
-  void SetupForcedReenrollmentCheckType() {
-    fake_statistics_provider_.SetVpdStatus(
-        ash::system::StatisticsProvider::VpdStatus::kValid);
-    fake_statistics_provider_.SetMachineStatistic(ash::system::kActivateDateKey,
-                                                  "activated");
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kCheckEnrollmentKey, "1");
-
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnableForcedReEnrollment,
-        AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnrollmentInitialModulus, "10");
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnrollmentModulusLimit, "20");
-  }
-
-  void SetupReenrollmentCheckType() {
-    fake_statistics_provider_.SetVpdStatus(
-        ash::system::StatisticsProvider::VpdStatus::kValid);
-    fake_statistics_provider_.SetMachineStatistic(ash::system::kActivateDateKey,
-                                                  "activated");
-
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnableForcedReEnrollment,
-        AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnrollmentInitialModulus, "10");
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnrollmentModulusLimit, "20");
-  }
-
-  void SetupDevBoot(bool is_disabled) {
-    ash::FakeInstallAttributesClient::Get()->SetServiceIsAvailable(true);
-    SetDevBootFlag(ash::FakeInstallAttributesClient::Get(), is_disabled);
-  }
-
-  void SetupOwnership(ash::DeviceSettingsService::OwnershipStatus status) {
-    ON_CALL(mock_device_settings_service_, GetOwnershipStatusAsync)
-        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
-            ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone));
-  }
-
-  void SetupSystemClock(bool synchronized) {
-    fake_system_clock_.SetNetworkSynchronized(synchronized);
-  }
-
-  void SetupStateKeysAvailable() {
-    ON_CALL(mock_state_keys_broker_, RequestStateKeys)
-        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
-            std::vector<std::string>{kTestStateKey}));
-  }
-
-  void SetupCorrectFwmpRemoval() {
-    ash::FakeInstallAttributesClient::Get()->SetServiceIsAvailable(true);
-  }
-
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  MockEnrollmentStateFetcherFactory state_fetcher_factory_;
+
   TestingNetwork testing_network_;
 
   base::test::ScopedCommandLine command_line_;
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-
-  ash::FakeSystemClockClient fake_system_clock_;
-
   testing::NiceMock<MockDeviceSettingsService> mock_device_settings_service_;
 
   testing::NiceMock<MockJobCreationHandler> mock_job_creation_handler_;
@@ -377,12 +217,8 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
 
   testing::NiceMock<MockStateKeyBroker> mock_state_keys_broker_;
 
-  testing::NiceMock<MockAutoEnrollmentClient> mock_auto_enrollment_client_;
-
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  ash::ScopedStubInstallAttributes fake_install_attributes_{
-      ash::StubInstallAttributes::CreateUnset()};
   ScopedFakeClientInitializer<ash::FakeInstallAttributesClient>
       scoped_fake_install_attributes_client_initializer_;
 
@@ -390,7 +226,7 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
       scoped_fake_session_manager_client_initializer_;
 };
 
-TEST_F(AutoEnrollmentControllerBaseTest, NoEarlyGuestMode) {
+TEST_F(AutoEnrollmentControllerTest, NoEarlyGuestMode) {
   auto controller = CreateController();
 
   // Guest signin should not be allowed before finishing state determination.
@@ -399,38 +235,34 @@ TEST_F(AutoEnrollmentControllerBaseTest, NoEarlyGuestMode) {
   EXPECT_FALSE(controller.IsGuestSigninAllowed());
 }
 
-class AutoEnrollmentControllerSafeguardTimeoutTest
-    : public AutoEnrollmentControllerBaseTest {
- protected:
-  AutoEnrollmentControllerSafeguardTimeoutTest() {
-    SetupUnifiedStateDetermination(/*enabled=*/false);
-    SetupDevBoot(/*is_disabled=*/false);
-    SetupSystemClock(/*synchronized=*/true);
-    SetupOwnership(ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone);
-  }
-};
-
-// Tests that the controller times out with connection error when it performs
-// forced re-enrollment check.
-TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
-       ReportsErrorForForcedReenrollment) {
-  SetupForcedReenrollmentCheckType();
-  // Simulate long running request for state keys by doing nothing. We need to
-  // preserve the callback as it holds weak pointer to controller which makes
-  // sure that callback is not executed.
-  ServerBackedStateKeysBroker::StateKeysCallback state_keys_callback;
-  EXPECT_CALL(mock_state_keys_broker_, RequestStateKeys)
-      .WillOnce([&state_keys_callback](
-                    ServerBackedStateKeysBroker::StateKeysCallback callback) {
-        state_keys_callback = std::move(callback);
-      });
-
+// Tests that the controller does not start Unified State Determination if it is
+// disabled by command line switch.
+TEST_F(AutoEnrollmentControllerTest, NoUsdIfDisabled) {
+  SetupUnifiedStateDetermination(/*enabled=*/false);
   auto controller = CreateController();
 
   EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
 
   // Start auto-enrollment check and kick-off the tasks.
+  state_fetcher_factory_.PreCreate();
+  EXPECT_CALL(*state_fetcher_factory_.Get(), Start).Times(0);
   controller.Start();
+}
+
+// Tests that the controller times out with timeout error when unified state
+// determination takes too long.
+TEST_F(AutoEnrollmentControllerTest, ReportsSafeguardTimeout) {
+  SetupUnifiedStateDetermination(/*enabled=*/true);
+  auto controller = CreateController();
+
+  EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
+
+  // Start auto-enrollment check and kick-off the tasks.
+  {
+    state_fetcher_factory_.PreCreate();
+    EXPECT_CALL(*state_fetcher_factory_.Get(), Start).Times(1);
+    controller.Start();
+  }
   task_environment_.FastForwardBy(base::TimeDelta());
 
   EXPECT_FALSE(controller.state().has_value());
@@ -448,70 +280,20 @@ TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
                                     AutoEnrollmentSafeguardTimeoutError{})));
 }
 
-// Tests that the controller times out with no enrollment state when it performs
-// non-forced re-enrollment check.
-TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
-       ReportsNoEnrollmentForReenrollment) {
-  SetupReenrollmentCheckType();
-  // Simulate long running request for state keys by doing nothing. We need to
-  // preserve the callback as it holds weak pointer to controller which makes
-  // sure that callback is not executed.
-  ServerBackedStateKeysBroker::StateKeysCallback state_keys_callback;
-  EXPECT_CALL(mock_state_keys_broker_, RequestStateKeys)
-      .WillOnce([&state_keys_callback](
-                    ServerBackedStateKeysBroker::StateKeysCallback callback) {
-        state_keys_callback = std::move(callback);
-      });
-
+// Tests that the Safeguard Timeout is stopped in case state determination
+// reports an error, e.g. missing state keys.
+TEST_F(AutoEnrollmentControllerTest, TimeoutInterruptedByOtherError) {
+  SetupUnifiedStateDetermination(/*enabled=*/true);
   auto controller = CreateController();
 
   EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
 
   // Start auto-enrollment check and kick-off the tasks.
-  controller.Start();
-  task_environment_.FastForwardBy(base::TimeDelta());
-
-  EXPECT_FALSE(controller.state().has_value());
-  EXPECT_TRUE(controller.SafeguardTimerForTesting().IsRunning());
-
-  RunAndWaitForStateUpdate(controller, base::BindLambdaForTesting([this]() {
-                             task_environment_.FastForwardBy(kSafeguardTimeout);
-                           }));
-
-  EXPECT_EQ(controller.auto_enrollment_check_type(),
-            AutoEnrollmentTypeChecker::CheckType::
-                kForcedReEnrollmentImplicitlyRequired);
-  EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
-  EXPECT_EQ(controller.state(), AutoEnrollmentResult::kNoEnrollment);
-}
-
-// Tests that the controller times out with connection error when runs out of
-// attempts to retry state keys retrieval.
-TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
-       TimesOutWithErrorWhenCannotObtainStateKeys) {
-  SetupForcedReenrollmentCheckType();
-  ServerBackedStateKeysBroker::StateKeysCallback last_state_keys_callback;
-
-  // Capture state keys callback with the last attempt to request state keys.
-  EXPECT_CALL(mock_state_keys_broker_, RequestStateKeys)
-      .WillOnce([&last_state_keys_callback](
-                    ServerBackedStateKeysBroker::StateKeysCallback callback) {
-        last_state_keys_callback = std::move(callback);
-      });
-  // Fail state keys request for all the previous attempts by returning empty
-  // state keys vector.
-  EXPECT_CALL(mock_state_keys_broker_, RequestStateKeys)
-      .Times(kMaxRequestStateKeysTries - 1)
-      .WillRepeatedly(
-          base::test::RunOnceCallbackRepeatedly<0>(std::vector<std::string>{}))
-      .RetiresOnSaturation();
-
-  auto controller = CreateController();
-
-  EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
-
-  // Start auto-enrollment check and kick-off the tasks.
-  controller.Start();
+  {
+    state_fetcher_factory_.PreCreate();
+    EXPECT_CALL(*state_fetcher_factory_.Get(), Start).Times(1);
+    controller.Start();
+  }
   task_environment_.FastForwardBy(base::TimeDelta());
 
   EXPECT_EQ(controller.auto_enrollment_check_type(),
@@ -519,33 +301,20 @@ TEST_F(AutoEnrollmentControllerSafeguardTimeoutTest,
                 kForcedReEnrollmentExplicitlyRequired);
   EXPECT_FALSE(controller.state().has_value());
   EXPECT_TRUE(controller.SafeguardTimerForTesting().IsRunning());
-  ASSERT_TRUE(last_state_keys_callback);
 
-  // Run out of state keys attempts and check that timeout is triggered.
-  std::move(last_state_keys_callback).Run({});
+  state_fetcher_factory_.ReportResult(
+      base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
 
   EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
   EXPECT_EQ(controller.state(), base::unexpected(AutoEnrollmentError(
-                                    AutoEnrollmentSafeguardTimeoutError{})));
+                                    AutoEnrollmentStateKeysRetrievalError{})));
 }
-
-class AutoEnrollmentControllerNetworkTest
-    : public AutoEnrollmentControllerBaseTest {
- protected:
-  AutoEnrollmentControllerNetworkTest() {
-    SetupUnifiedStateDetermination(/*enabled=*/false);
-    SetupForcedReenrollmentCheckType();
-    SetupDevBoot(/*is_disabled=*/false);
-    SetupSystemClock(/*synchronized=*/true);
-    SetupOwnership(ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone);
-    SetupStateKeysAvailable();
-  }
-};
 
 // Tests that network changes do not trigger auto-enrollment check.
-TEST_F(AutoEnrollmentControllerNetworkTest, DoesNotStartWhenGoesOnline) {
-  EXPECT_CALL(mock_auto_enrollment_client_, Start).Times(0);
-  EXPECT_CALL(mock_auto_enrollment_client_, Retry).Times(0);
+TEST_F(AutoEnrollmentControllerTest, DoesNotStartWhenGoesOnline) {
+  SetupUnifiedStateDetermination(/*enabled=*/true);
+  state_fetcher_factory_.PreCreate();
+  EXPECT_CALL(*state_fetcher_factory_.Get(), Start).Times(0);
 
   testing_network_.GoOffline();
 
@@ -560,41 +329,41 @@ TEST_F(AutoEnrollmentControllerNetworkTest, DoesNotStartWhenGoesOnline) {
   EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
 }
 
-// Tests that the controller retries when the network goes online.
-TEST_F(AutoEnrollmentControllerNetworkTest, RetriesWhenGoesOnline) {
+// Tests that the controller retries after failure when the network goes online.
+TEST_F(AutoEnrollmentControllerTest, RetriesWhenGoesOnline) {
+  SetupUnifiedStateDetermination(/*enabled=*/true);
+
   testing_network_.GoOnline();
   auto controller = CreateController();
 
   // Start auto-enrollment check.
   {
-    EXPECT_CALL(mock_auto_enrollment_client_, Start).Times(1);
-    EXPECT_CALL(mock_auto_enrollment_client_, Retry).Times(0);
+    state_fetcher_factory_.PreCreate();
+    EXPECT_CALL(*state_fetcher_factory_.Get(), Start).Times(1);
 
     controller.Start();
     task_environment_.FastForwardBy(base::TimeDelta());
 
-    testing::Mock::VerifyAndClearExpectations(&mock_auto_enrollment_client_);
     EXPECT_FALSE(controller.state().has_value());
     EXPECT_TRUE(controller.SafeguardTimerForTesting().IsRunning());
   }
 
-  // Flip-flop the network state and check that retry is triggered.
+  // Flip-flop the network state and check that it has no effect as the state
+  // fetcher is still running.
   {
-    EXPECT_CALL(mock_auto_enrollment_client_, Start).Times(0);
-    EXPECT_CALL(mock_auto_enrollment_client_, Retry).Times(1);
+    EXPECT_CALL(*state_fetcher_factory_.Get(), Start).Times(0);
 
     testing_network_.GoOffline();
     testing_network_.GoOnline();
     task_environment_.FastForwardBy(base::TimeDelta());
 
-    testing::Mock::VerifyAndClearExpectations(&mock_auto_enrollment_client_);
     EXPECT_FALSE(controller.state().has_value());
     EXPECT_TRUE(controller.SafeguardTimerForTesting().IsRunning());
   }
 
   // Stop the client with a response error so the controller can retry.
   {
-    mock_auto_enrollment_client_.ReportAutoEnrollmentState(
+    state_fetcher_factory_.ReportResult(
         base::unexpected(AutoEnrollmentStateRetrievalResponseError{}));
 
     EXPECT_EQ(controller.state(),
@@ -604,20 +373,11 @@ TEST_F(AutoEnrollmentControllerNetworkTest, RetriesWhenGoesOnline) {
 
   // Flip-flop the network state and check that retry is triggered.
   {
-    EXPECT_CALL(mock_auto_enrollment_client_, Start).Times(0);
-    EXPECT_CALL(mock_auto_enrollment_client_, Retry).Times(1);
+    state_fetcher_factory_.PreCreate();
+    EXPECT_CALL(*state_fetcher_factory_.Get(), Start).Times(1);
 
-    RunAndWaitForStateUpdate(
-        controller, base::BindLambdaForTesting([this]() {
-          testing_network_.GoOffline();
-          testing_network_.GoOnline();
-
-          mock_auto_enrollment_client_.ReportAutoEnrollmentState(
-              AutoEnrollmentResult::kNoEnrollment);
-        }));
-
-    testing::Mock::VerifyAndClearExpectations(&mock_auto_enrollment_client_);
-    EXPECT_EQ(controller.state(), AutoEnrollmentResult::kNoEnrollment);
+    testing_network_.GoOffline();
+    testing_network_.GoOnline();
   }
 }
 

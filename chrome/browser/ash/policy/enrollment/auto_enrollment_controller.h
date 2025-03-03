@@ -166,8 +166,6 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
       DeviceManagementService* device_management_service,
       ServerBackedStateKeysBroker* state_keys_broker,
       ash::NetworkStateHandler* network_state_handler,
-      std::unique_ptr<AutoEnrollmentClient::Factory>
-          auto_enrollment_client_factory,
       RlweClientFactory psm_rlwe_client_factory,
       EnrollmentStateFetcher::Factory enrollment_state_fetcher_factory,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
