@@ -6222,7 +6222,6 @@ crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/se
 
 # Flaky on headless_shell_wpt_tests
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure Pass ]
-crbug.com/396119250 external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Failure Pass ]
 
 crbug.com/362922565 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-type-to-search.tentative.html [ Failure ]
 crbug.com/362922565 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-type-to-search.tentative.html [ Failure ]
