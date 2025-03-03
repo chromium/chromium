@@ -40,7 +40,7 @@ class TranslatePageActionController
 
   void UpdatePageAction();
 
-  raw_ref<tabs::TabInterface> tab_interface_;
+  const raw_ref<tabs::TabInterface> tab_interface_;
 
   base::CallbackListSubscription will_discard_contents_subscription_;
 
