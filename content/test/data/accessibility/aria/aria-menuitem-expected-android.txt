@@ -1,8 +1,8 @@
 android.webkit.WebView focusable focused
-++android.view.View role_description='menu'
-++++android.view.MenuItem role_description='menu item' clickable focusable interesting name='File'
-++++android.view.MenuItem role_description='menu item' clickable focusable interesting name='Edit' item_index=1 row_index=1
-++++android.view.MenuItem role_description='menu item' clickable focusable interesting name='Complex menuitem' item_index=2 row_index=2
+++android.view.View role_description='menu' collection item_count=3 row_count=3 column_count=1
+++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='File'
+++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Edit' item_index=1 row_index=1
+++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Complex menuitem' item_index=2 row_index=2
 ++++++android.widget.TextView name='Complex '
 ++++++android.widget.EditText clickable editable_text focusable interesting input_type=1
 ++++++android.widget.TextView name=' menuitem'
