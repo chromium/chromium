@@ -237,18 +237,6 @@ void LoginAsh::SetDataForNextLoginAttempt(
   std::move(callback).Run();
 }
 
-void LoginAsh::AddLacrosCleanupTriggeredObserver(
-    mojo::PendingRemote<mojom::LacrosCleanupTriggeredObserver> observer) {
-  mojo::Remote<mojom::LacrosCleanupTriggeredObserver> remote(
-      std::move(observer));
-  lacros_cleanup_triggered_observers_.Add(std::move(remote));
-}
-
-mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>&
-LoginAsh::GetCleanupTriggeredObservers() {
-  return lacros_cleanup_triggered_observers_;
-}
-
 void LoginAsh::AddExternalLogoutRequestObserver(
     mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer) {
   mojo::Remote<mojom::ExternalLogoutRequestObserver> remote(

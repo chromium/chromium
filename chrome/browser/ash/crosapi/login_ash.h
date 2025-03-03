@@ -54,9 +54,6 @@ class LoginAsh : public mojom::Login {
   void SetDataForNextLoginAttempt(
       const std::string& data_for_next_login_attempt,
       SetDataForNextLoginAttemptCallback callback) override;
-  void AddLacrosCleanupTriggeredObserver(
-      mojo::PendingRemote<mojom::LacrosCleanupTriggeredObserver> observer)
-      override;
   void AddExternalLogoutRequestObserver(
       mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer)
       override;
@@ -134,11 +131,8 @@ class LoginAsh : public mojom::Login {
   // Notifies the external logout observers with the
   // `login.onRequestExternalLogout` event. It is called from the login screen
   // extension running on the lock screen (ash-chrome). The in-session extension
-  // (lacros/ash-chrome) listens for the dispatched event.
+  // listens for the dispatched event.
   void NotifyOnRequestExternalLogout();
-
-  mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>&
-  GetCleanupTriggeredObservers();
 
  private:
   void OnScreenLockerAuthenticate(OptionalErrorCallback callback, bool success);
@@ -155,8 +149,6 @@ class LoginAsh : public mojom::Login {
   mojo::ReceiverSet<mojom::Login> receivers_;
 
   // Support any number of observers.
-  mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>
-      lacros_cleanup_triggered_observers_;
   mojo::RemoteSet<mojom::ExternalLogoutRequestObserver>
       external_logout_request_observers_;
   base::ObserverList<ExternalLogoutDoneObserver>

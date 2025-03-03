@@ -19,8 +19,6 @@ static_library("cleanup") {
     "extension_cleanup_handler.h",
     "files_cleanup_handler.cc",
     "files_cleanup_handler.h",
-    "lacros_cleanup_handler.cc",
-    "lacros_cleanup_handler.h",
     "pinned_apps_cleanup_handler.cc",
     "pinned_apps_cleanup_handler.h",
     "print_jobs_cleanup_handler.cc",
@@ -42,7 +40,6 @@ static_library("cleanup") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
-    "//chromeos/crosapi/mojom",
     "//components/app_constants",
     "//components/prefs",
     "//components/services/app_service",
@@ -75,7 +72,6 @@ source_set("unit_tests") {
   sources = [
     "cleanup_manager_unittest.cc",
     "extension_cleanup_handler_unittest.cc",
-    "lacros_cleanup_handler_unittest.cc",
     "print_jobs_cleanup_handler_unittest.cc",
   ]
 
@@ -95,7 +91,6 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
-    "//chromeos/crosapi/mojom",
     "//components/history/core/test",
     "//components/keyed_service/core",
     "//components/prefs",
