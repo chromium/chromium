@@ -70,6 +70,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsSeekControl() const;
   bool IsSelected() const;
   bool IsSlider() const;
+  bool IsSubscript() const;
+  bool IsSuperscript() const;
   bool IsTableHeader() const;
   bool IsVisibleToUser() const;
   bool ShouldUsePaneTitle() const;
@@ -156,6 +158,15 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::u16string GetRoleDescription() const;
 
   std::string GetCSSDisplay() const;
+
+  // Various methods for text styling that are added to the Android
+  // accessibility tree as Spannables, we also include the subscript and
+  // superscript from the methods above.
+  float GetTextSize() const;
+  int GetTextStyle() const;
+  int GetTextColor() const;
+  int GetTextBackgroundColor() const;
+  std::string GetFontFamily() const;
 
   int GetItemIndex() const;
   int GetItemCount() const;

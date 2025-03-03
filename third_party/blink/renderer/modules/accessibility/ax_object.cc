@@ -1428,6 +1428,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     // do not ensure that elements that change foreground/background color are
     // included in the tree. Could this lead to errors?
     // See All/DumpAccess*.AccessibilityCSSBackgroundColorTransparent/blink.
+
     SerializeColorAttributes(node_data);  // Blends using all nodes' values.
   }
 

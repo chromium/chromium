@@ -91,11 +91,22 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
+import android.text.style.SubscriptSpan;
 import android.text.style.SuggestionSpan;
+import android.text.style.SuperscriptSpan;
+import android.text.style.TextAppearanceSpan;
+import android.text.style.TypefaceSpan;
+import android.text.style.UnderlineSpan;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.LargeTest;
@@ -120,10 +131,14 @@ import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -322,7 +337,7 @@ public class WebContentsAccessibilityTest {
         int vvid = waitForNodeMatching(sClassNameMatcher, "android.widget.Button");
         mNodeInfo = createAccessibilityNodeInfo(vvid);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Expand All", mNodeInfo.getText());
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Expand All", mNodeInfo.getText().toString());
 
         // Run JS code to expand comboboxes.
         executeJS("expandComboboxes()");
@@ -359,7 +374,7 @@ public class WebContentsAccessibilityTest {
         int vvid = waitForNodeMatching(sClassNameMatcher, "android.widget.Button");
         mNodeInfo = createAccessibilityNodeInfo(vvid);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Expand All", mNodeInfo.getText());
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Expand All", mNodeInfo.getText().toString());
 
         // Run JS code to expand comboboxes.
         executeJS("expandComboboxes()");
@@ -2673,6 +2688,236 @@ public class WebContentsAccessibilityTest {
                 mNodeInfo.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
     }
 
+    // ------------------ Misc tests that cannot be done as tree/event tests ------------------ //
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+    public void testAccessibilityNodeInfo_textFormatting() throws Throwable {
+        // Build a simple web page with a variety of text formatting options.
+        setupTestFromFile("content/test/data/android/accessibility_text_formatting_examples.html");
+
+        // Define test cases
+        Map<String, Map<SpanType, Object>> testCases = new HashMap<>();
+        testCases.put("Example Text 1 - Serif Font", Map.of(SpanType.TYPEFACE_SPAN, "Noto Serif"));
+        testCases.put("Example Text 2 - Sans-Serif Font", Map.of(SpanType.TYPEFACE_SPAN, "Roboto"));
+        testCases.put(
+                "Example Text 3 - Monospace Font",
+                Map.of(SpanType.TYPEFACE_SPAN, "Droid Sans Mono"));
+
+        testCases.put("Example Text 4 - Small Font Size", Map.of(SpanType.TEXTAPPEARANCE_SPAN, 12));
+        testCases.put("Example Text 5 - Large Font Size", Map.of(SpanType.TEXTAPPEARANCE_SPAN, 24));
+        testCases.put(
+                "Example Text 6 - Font Size in Pixels", Map.of(SpanType.TEXTAPPEARANCE_SPAN, 20));
+
+        testCases.put(
+                "Example Text 7 - Red Text Color",
+                Map.of(SpanType.FOREGROUNDCOLOR_SPAN, 0xFFFF0000));
+        testCases.put(
+                "Example Text 8 - Hex Code Text Color",
+                Map.of(SpanType.FOREGROUNDCOLOR_SPAN, 0xFF008000));
+        testCases.put(
+                "Example Text 9 - RGBA Text Color",
+                Map.of(SpanType.FOREGROUNDCOLOR_SPAN, 0xB30000FF));
+
+        testCases.put(
+                "Example Text 10 - Yellow Background Color",
+                Map.of(SpanType.BACKGROUNDCOLOR_SPAN, 0xFFFFFF00));
+        testCases.put(
+                "Example Text 11 - Yellow Background Color (Hex)",
+                Map.of(SpanType.BACKGROUNDCOLOR_SPAN, 0xFFFFFF00));
+
+        testCases.put("Example Text 12 - Bold Text", Map.of(SpanType.STYLE_SPAN, Typeface.BOLD));
+        testCases.put(
+                "Example Text 13 - Italic Text", Map.of(SpanType.STYLE_SPAN, Typeface.ITALIC));
+
+        testCases.put("Example Text 14 - Underlined Text", Map.of(SpanType.UNDERLINE_SPAN, true));
+        testCases.put(
+                "Example Text 15 - Strikethrough Text", Map.of(SpanType.STRIKETHROUGH_SPAN, true));
+        testCases.put("Superscripted Text", Map.of(SpanType.SUPERSCRIPT_SPAN, true));
+        testCases.put("Subscripted Text", Map.of(SpanType.SUBSCRIPT_SPAN, true));
+
+        testCases.put(
+                "Example Text 18 - Bold and Italic",
+                Map.of(SpanType.STYLE_SPAN, Typeface.BOLD_ITALIC));
+        testCases.put(
+                "Example Text 19 - Underline and Strikethrough",
+                Map.of(SpanType.UNDERLINE_SPAN, true, SpanType.STRIKETHROUGH_SPAN, true));
+        testCases.put(
+                "Example Text 20 - Red and Bold",
+                Map.of(
+                        SpanType.FOREGROUNDCOLOR_SPAN,
+                        0xFFFF0000,
+                        SpanType.STYLE_SPAN,
+                        Typeface.BOLD));
+        testCases.put(
+                "Example Text 21 - Sans-Serif, Large, Blue",
+                Map.of(
+                        SpanType.TYPEFACE_SPAN,
+                        "Roboto",
+                        SpanType.FOREGROUNDCOLOR_SPAN,
+                        0xFF0000FF));
+        testCases.put(
+                "Example Text 22 - Yellow Background, Bold, Italic",
+                Map.of(
+                        SpanType.BACKGROUNDCOLOR_SPAN,
+                        0xFFFFFF00,
+                        SpanType.STYLE_SPAN,
+                        Typeface.BOLD_ITALIC));
+        testCases.put(
+                "Example Text 23 - Monospace, RGBA, BG Hex, Bold",
+                Map.of(
+                        SpanType.TYPEFACE_SPAN,
+                        "Droid Sans Mono",
+                        SpanType.FOREGROUNDCOLOR_SPAN,
+                        0xB30000FF,
+                        SpanType.BACKGROUNDCOLOR_SPAN,
+                        0xFFFFFF00,
+                        SpanType.STYLE_SPAN,
+                        Typeface.BOLD));
+
+        // TODO(mschillaci): These test cases are currently disabled because of crbug.com/399652531.
+        // testCases.put(
+        //     "Example Text 24 - Monospace Font inside a contenteditable",
+        //     Map.of(SpanType.TYPEFACE_SPAN, "Droid Sans Mono"));
+        // testCases.put(
+        //     "Example Text 25 - Bold Text inside a contenteditable",
+        //     Map.of(SpanType.STYLE_SPAN, Typeface.BOLD));
+        // testCases.put(
+        //     "Example Text 26 - Small red superscript inside content editable",
+        //     Map.of(SpanType.FOREGROUNDCOLOR_SPAN, 0xFFFF0000, SpanType.SUPERSCRIPT_SPAN, true));
+        // testCases.put(
+        //     "Example Text 27 - Large bold italic strikethrough underlined serif in
+        // contenteditable",
+        //     Map.of(SpanType.TYPEFACE_SPAN, "Noto Serif",
+        //         SpanType.UNDERLINE_SPAN, true, SpanType.STRIKETHROUGH_SPAN, true,
+        //         SpanType.STYLE_SPAN, Typeface.BOLD_ITALIC,
+        //         SpanType.TEXTAPPEARANCE_SPAN, 24));
+
+        // Iterate over test cases
+        for (Entry<String, Map<SpanType, Object>> entry : testCases.entrySet()) {
+            String testString = entry.getKey();
+            Map<SpanType, Object> expectedSpans = entry.getValue();
+
+            // Find node matching test string for this test case
+            int vvid = waitForNodeMatching(sTextMatcher, testString);
+            mNodeInfo = createAccessibilityNodeInfo(vvid);
+            Assert.assertNotNull("Could not find node for: " + testString, mNodeInfo);
+            SpannableString spannableUnderTest = new SpannableString(mNodeInfo.getText());
+
+            // For each of the expected Spannables in our expectations, check they are present.
+            for (Entry<SpanType, Object> spanType : expectedSpans.entrySet()) {
+                SpanType expectedSpanType = spanType.getKey();
+                Object value = spanType.getValue();
+
+                // Switch over the SpanType and perform each type of check separately.
+                switch (expectedSpanType) {
+                    case STYLE_SPAN -> {
+                        StyleSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), StyleSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of StyleSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                        Assert.assertEquals(
+                                "Did not find correct StyleSpan value on: " + testString,
+                                (int) value,
+                                spans[0].getStyle());
+                    }
+                    case UNDERLINE_SPAN -> {
+                        UnderlineSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), UnderlineSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of UnderlineSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                    }
+                    case STRIKETHROUGH_SPAN -> {
+                        StrikethroughSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), StrikethroughSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of StrikethroughSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                    }
+                    case SUBSCRIPT_SPAN -> {
+                        SubscriptSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), SubscriptSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of SubscriptSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                    }
+                    case SUPERSCRIPT_SPAN -> {
+                        SuperscriptSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), SuperscriptSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of SuperscriptSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                    }
+                    case TYPEFACE_SPAN -> {
+                        TypefaceSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), TypefaceSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of TypefaceSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                        Assert.assertEquals(
+                                "Did not find correct TypefaceSpan value on: " + testString,
+                                (String) value,
+                                spans[0].getFamily());
+                    }
+                    case FOREGROUNDCOLOR_SPAN -> {
+                        ForegroundColorSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), ForegroundColorSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of ForegroundColorSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                        Assert.assertEquals(
+                                "Did not find correct ForegroundColorSpan value on: " + testString,
+                                (int) value,
+                                spans[0].getForegroundColor());
+                    }
+                    case BACKGROUNDCOLOR_SPAN -> {
+                        BackgroundColorSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), BackgroundColorSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of BackgroundColorSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                        Assert.assertEquals(
+                                "Did not find correct BackgroundColorSpan value on: " + testString,
+                                (int) value,
+                                spans[0].getBackgroundColor());
+                    }
+                    case TEXTAPPEARANCE_SPAN -> {
+                        TextAppearanceSpan[] spans =
+                                spannableUnderTest.getSpans(
+                                        0, spannableUnderTest.length(), TextAppearanceSpan.class);
+                        Assert.assertEquals(
+                                "Incorrect number of TextAppearanceSpan's on text: " + testString,
+                                1,
+                                spans.length);
+                        Assert.assertEquals(
+                                "Did not find correct TextAppearanceSpan value on: " + testString,
+                                (int) value,
+                                spans[0].getTextSize());
+                    }
+                }
+            }
+        }
+    }
+
     private void assertActionsContainNoScrolls(AccessibilityNodeInfoCompat nodeInfo) {
         Assert.assertFalse(nodeInfo.getActionList().contains(ACTION_SCROLL_FORWARD));
         Assert.assertFalse(nodeInfo.getActionList().contains(ACTION_SCROLL_BACKWARD));
@@ -2721,5 +2966,18 @@ public class WebContentsAccessibilityTest {
         // Force recording of UMA histograms.
         mActivityTestRule.mWcax.forceRecordUMAHistogramsForTesting();
         mActivityTestRule.mWcax.forceRecordCacheUMAHistogramsForTesting();
+    }
+
+    // Helper enum for mapping values to reduce boilerplate code.
+    enum SpanType {
+        STYLE_SPAN,
+        UNDERLINE_SPAN,
+        STRIKETHROUGH_SPAN,
+        SUBSCRIPT_SPAN,
+        SUPERSCRIPT_SPAN,
+        TYPEFACE_SPAN,
+        FOREGROUNDCOLOR_SPAN,
+        BACKGROUNDCOLOR_SPAN,
+        TEXTAPPEARANCE_SPAN
     }
 }

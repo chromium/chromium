@@ -1169,18 +1169,41 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
 
   bool is_link = ui::IsLink(node->GetRole());
-  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
-      env, obj, info,
-      base::android::ConvertUTF16ToJavaString(env, node->GetTextContentUTF16()),
-      is_link
-          ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
-          : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
-      is_link, node->IsTextField(),
-      GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
-                                     ax::mojom::StringAttribute::kLanguage)),
-      suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
-      base::android::ConvertUTF16ToJavaString(env,
-                                              node->GetStateDescription()));
+  if (::features::IsAccessibilityTextFormattingEnabled()) {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
+        env, obj, info,
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetTextContentUTF16()),
+        is_link
+            ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
+            : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
+        is_link, node->IsTextField(),
+        GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
+                                       ax::mojom::StringAttribute::kLanguage)),
+        suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetStateDescription()),
+        node->GetTextSize(), node->GetTextStyle(), node->GetTextColor(),
+        node->GetTextBackgroundColor(),
+        GetCanonicalJNIString(env, node->GetFontFamily()), node->IsSubscript(),
+        node->IsSuperscript()
+
+    );
+  } else {
+    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
+        env, obj, info,
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetTextContentUTF16()),
+        is_link
+            ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
+            : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
+        is_link, node->IsTextField(),
+        GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
+                                       ax::mojom::StringAttribute::kLanguage)),
+        suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetStateDescription()));
+  }
 
   std::u16string element_id;
   if (node->GetString16Attribute(ax::mojom::StringAttribute::kHtmlId,
