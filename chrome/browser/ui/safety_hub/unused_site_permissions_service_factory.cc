@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/common/chrome_features.h"
@@ -37,6 +38,7 @@ UnusedSitePermissionsServiceFactory::UnusedSitePermissionsServiceFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
 UnusedSitePermissionsServiceFactory::~UnusedSitePermissionsServiceFactory() =
