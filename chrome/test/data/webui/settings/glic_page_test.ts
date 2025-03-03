@@ -388,4 +388,38 @@ suite('GlicPage', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(page.i18n('glicActivityButtonUrl'), url);
   });
+
+  // Ensure that the info collapse is initialized correctly when the tab context
+  // pref is enabled when the page is created.
+  test('InfoCollapseInitializiedOpen', async () => {
+    // Clear and re-create a new page rather than using the one initialized in
+    // setup().
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-glic-page');
+    page.prefs = settingsPrefs.prefs;
+    page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
+    Router.getInstance().navigateTo(routes.GEMINI);
+    document.body.appendChild(page);
+
+    await flushTasks();
+
+    const infoCard = $<CrCollapseElement>('tabAccessInfoCollapse');
+    assertTrue(!!infoCard);
+    assertTrue(infoCard.opened);
+  });
+
+  test('InfoCollapseInitializiedClosed', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-glic-page');
+    page.prefs = settingsPrefs.prefs;
+    page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
+    Router.getInstance().navigateTo(routes.GEMINI);
+    document.body.appendChild(page);
+
+    await flushTasks();
+
+    const infoCard = $<CrCollapseElement>('tabAccessInfoCollapse');
+    assertTrue(!!infoCard);
+    assertFalse(infoCard.opened);
+  });
 });

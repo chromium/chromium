@@ -96,6 +96,11 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   override async connectedCallback() {
     super.connectedCallback();
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
+    await CrSettingsPrefs.initialized;
+    this.tabAccessToggleExpanded_ =
+        this.getPref<boolean>(
+                SettingsGlicPageFeaturePrefName.TAB_CONTEXT_ENABLED)
+            .value;
   }
 
   private onGlicPageClick_() {
@@ -153,8 +158,9 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
                .value === 0;
   }
 
-  private onTabAccessToggleChange_(event: CustomEvent<{value: boolean}>) {
-    this.tabAccessToggleExpanded_ = event.detail.value;
+  private onTabAccessToggleChange_(event: CustomEvent) {
+    const target = event.target as SettingsToggleButtonElement;
+    this.tabAccessToggleExpanded_ = target.checked;
   }
 
   private onActivityRowClick_() {
