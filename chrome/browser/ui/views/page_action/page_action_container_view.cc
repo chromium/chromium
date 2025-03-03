@@ -49,10 +49,13 @@ PageActionContainerView::PageActionContainerView(
     page_action_view_initial_indices_[action_item->GetActionId().value()] =
         initial_index++;
 
-    view->SetProperty(views::kFlexBehaviorKey,
-                      views::FlexSpecification(
-                          views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
-                          views::MaximumFlexSizeRule::kPreferred));
+    view->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(
+            params.hide_icon_on_space_constraint
+                ? views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero
+                : views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
+            views::MaximumFlexSizeRule::kPreferred));
   }
 }
 

@@ -157,6 +157,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
         // The toolbar button container already sets spacing between child
         // views.
         .should_bridge_containers = false,
+        // On space constraint, the page action should get hidden.
+        .hide_icon_on_space_constraint = true,
     };
     page_action_container_ =
         AddChildView(std::make_unique<page_actions::PageActionContainerView>(

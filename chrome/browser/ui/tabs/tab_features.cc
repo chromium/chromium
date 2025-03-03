@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/translate/translate_page_action_controller.h"
+#include "chrome/browser/ui/views/zoom/zoom_page_action_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -197,6 +198,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     intent_picker_view_page_action_controller_ =
         std::make_unique<IntentPickerViewPageActionController>(tab);
+
+    zoom_page_action_controller_ =
+        std::make_unique<zoom::ZoomPageActionController>(tab);
   }
 
   customize_chrome_side_panel_controller_ =
