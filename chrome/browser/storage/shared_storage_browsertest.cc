@@ -84,7 +84,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
 
@@ -5278,7 +5278,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will remove the "Sec-Shared-Storage-Data-Origin"
   // request header.
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/std::nullopt));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
@@ -5343,7 +5343,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will remove the "Sec-Shared-Storage-Data-Origin"
   // request header.
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/std::nullopt));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
@@ -5411,7 +5411,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will modify the "Sec-Shared-Storage-Data-Origin"
   // request header value to "https://google.com".
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/"https://google.com"));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
@@ -5483,7 +5483,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will modify the "Sec-Shared-Storage-Data-Origin"
   // request header value to "https://google.com".
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/"https://google.com"));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage(
       {kCrossOriginHost});
@@ -5559,7 +5559,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will add the "Sec-Shared-Storage-Data-Origin"
   // request header.
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/origin_str));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage({});
 
@@ -5637,7 +5637,7 @@ IN_PROC_BROWSER_TEST_F(
   // Install extension that will add the "Sec-Shared-Storage-Data-Origin"
   // request header.
   ASSERT_TRUE(InstallExtension(/*value_to_set=*/origin_str));
-  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension_->id()));
+  ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension_->id()));
 
   AttestMainHostPlusAdditionalSitesThenNavigateToMainHostPage({});
 
