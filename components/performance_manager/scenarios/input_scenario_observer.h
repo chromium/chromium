@@ -34,7 +34,8 @@ class InputScenarioObserver : public FrameInputStateObserver,
   void OnTakenFromGraph(Graph* graph) override;
 
  private:
-  std::map<const ProcessNode*, int> process_input_scenarios_count_;
+  std::map<const ProcessNode*, size_t> process_input_scenarios_count_;
+  size_t global_input_scenarios_count_ = 0;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

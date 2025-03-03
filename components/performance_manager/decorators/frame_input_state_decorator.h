@@ -28,6 +28,9 @@ class FrameInputStateDecorator
     : public FrameNodeObserver,
       public GraphOwnedAndRegistered<FrameInputStateDecorator> {
  public:
+  static constexpr base::TimeDelta kInactivityTimeoutForTyping =
+      base::Seconds(3);
+
   FrameInputStateDecorator();
   FrameInputStateDecorator(const FrameInputStateDecorator&) = delete;
   FrameInputStateDecorator& operator=(const FrameInputStateDecorator&) = delete;

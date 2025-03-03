@@ -361,6 +361,7 @@ source_set("unit_tests") {
 
   sources = [
     "decorators/decorators_utils_unittest.cc",
+    "decorators/frame_input_state_decorator_unittest.cc",
     "decorators/frame_visibility_decorator_unittest.cc",
     "decorators/important_frame_decorator_unittest.cc",
     "decorators/page_aggregator_unittest.cc",
@@ -420,6 +421,7 @@ source_set("unit_tests") {
     "resource_attribution/type_helpers_unittest.cc",
     "resource_attribution/worker_context_unittest.cc",
     "scenarios/browser_performance_scenarios_unittest.cc",
+    "scenarios/input_scenario_observer_unittest.cc",
     "scenarios/loading_scenario_observer_unittest.cc",
     "test_support/mock_graphs_unittest.cc",
     "user_tuning/prefs_unittest.cc",
@@ -442,6 +444,7 @@ source_set("unit_tests") {
     "test_support:test_support",
     "test_support:test_support_common",
     "//base/test:test_support",
+    "//components/input",
     "//components/memory_pressure:test_support",
     "//components/performance_manager/scenario_api",
     "//components/prefs:test_support",
