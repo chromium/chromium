@@ -531,7 +531,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self setMinimumHeight];
   }
 
-  [self updateAccessibilityElements];
+  [self updateAccessibilityElementsForSwitchControl];
 }
 
 - (void)willUpdateSnapshot {
@@ -1346,6 +1346,10 @@ const CGFloat kFeedContainerExtraHeight = 500;
              selector:@selector(deviceOrientationDidChange)
                  name:UIDeviceOrientationDidChangeNotification
                object:nil];
+  [center addObserver:self
+             selector:@selector(updateAccessibilityElementsForSwitchControl)
+                 name:UIAccessibilitySwitchControlStatusDidChangeNotification
+               object:nil];
 }
 
 // Handles device rotation.
@@ -1558,16 +1562,23 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
 }
 
-// Updates the accessibilityElements used by VoiceOver / Switch Control to
-// iterate through on-screen elements. The feed collectionView does not seem to
-// include non-feed items in its `accessibilityElements` so they are added here.
-- (void)updateAccessibilityElements {
+// The default behavior of Switch Control does not iterate through elements
+// added to the collection view by default; manually setting
+// `accessibilityElements` for these elements to be recognized by Switch
+// Control.
+- (void)updateAccessibilityElementsForSwitchControl {
+  if (!UIAccessibilityIsSwitchControlRunning()) {
+    // Reset to `nil` after switch control has been turned off. Other a11y
+    // features can handle the iteration correctly.
+    self.containerView.accessibilityElements = nil;
+    return;
+  }
   NSMutableArray* elements = [[NSMutableArray alloc] init];
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
     [elements addObject:viewController.view];
   }
   [elements addObject:self.collectionView];
-  self.view.accessibilityElements = elements;
+  self.containerView.accessibilityElements = elements;
 }
 
 // Calculate the scroll position that should be saved in the NTP state and
