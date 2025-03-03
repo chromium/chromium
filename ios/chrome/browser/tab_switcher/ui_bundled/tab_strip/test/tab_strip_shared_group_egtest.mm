@@ -90,8 +90,8 @@ void AddSharedGroup() {
 
   // `fakeIdentity2` joins shared groups as member.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  if ([self isRunningTest:@selector
-            (FLAKY_testTabStripSharedGroupDeleteSharedGroup)] ||
+  if ([self
+          isRunningTest:@selector(testTabStripSharedGroupDeleteSharedGroup)] ||
       [self isRunningTest:@selector
             (testTabStripLastTabCloseInSharedGroupAlertAsOwner)]) {
     // `fakeIdentity2` joins shared groups as owner.
@@ -107,8 +107,7 @@ void AddSharedGroup() {
 }
 
 // Tests that deleting a shared tab group from tab strip works.
-// TODO: (crbug.com/399571650): Flaky on simulator and device.
-- (void)FLAKY_testTabStripSharedGroupDeleteSharedGroup {
+- (void)testTabStripSharedGroupDeleteSharedGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -116,6 +115,11 @@ void AddSharedGroup() {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"This test fails on iPad devices.");
+  }
+#endif
   AddSharedGroup();
 
   // Long press the group.
