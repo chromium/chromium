@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v2.1.1...chromium-bidi-v2.1.2) (2025-03-03)
+
+
+### Bug Fixes
+
+* update handling of extension data types ([#3169](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3169)) ([dcd7316](https://github.com/GoogleChromeLabs/chromium-bidi/commit/dcd7316b51cf7c3a5c68a2e99a305d6d618a28ab))
+
 ## [2.1.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v2.1.0...chromium-bidi-v2.1.1) (2025-02-28)
 
 
