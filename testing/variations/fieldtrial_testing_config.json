@@ -14012,6 +14012,33 @@
             ]
         }
     ],
+    "MaliciousApkDownloadCheck": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "//0": "This config is the intended feature to launch.",
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MaliciousApkDownloadCheck"
+                    ]
+                },
+                {
+                    "//0": "This config is an intermediate experimental state.",
+                    "name": "EnabledTelemetryOnly",
+                    "params": {
+                        "sample_percentage": "1",
+                        "telemetry_only": "true"
+                    },
+                    "enable_features": [
+                        "MaliciousApkDownloadCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "ManagedProfileRequiredInterstitial": [
         {
             "platforms": [
