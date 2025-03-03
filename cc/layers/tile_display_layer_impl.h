@@ -143,13 +143,6 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
     is_backdrop_filter_mask_ = is_backdrop_filter_mask;
   }
-  void SetContentsResourceId(viz::ResourceId resource_id,
-                             gfx::Size texture_size,
-                             gfx::SizeF uv_size) {
-    resource_id_ = resource_id;
-    texture_size_ = texture_size;
-    uv_size_ = uv_size;
-  }
 
   // LayerImpl overrides:
   mojom::LayerType GetLayerType() const override;

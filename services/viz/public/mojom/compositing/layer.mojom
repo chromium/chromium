@@ -91,11 +91,6 @@ struct Layer {
   // Will be set to true for PictureLayers that are backdrop filter masks.
   bool is_backdrop_filter_mask;
 
-  // Will be set for PictureLayers that are backdrop filter masks.
-  ResourceId? resource_id;
-  gfx.mojom.Size? texture_size;
-  gfx.mojom.SizeF? uv_size;
-
   // Optional stable identifier that may be referenced in property trees and
   // animations. Identifies a client-side object which can be represented by
   // multiple layers over time but only by a single layer at once.

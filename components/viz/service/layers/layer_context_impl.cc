@@ -381,11 +381,6 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
     auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);
     tile_display_layer.SetSolidColor(wire.solid_color);
     tile_display_layer.SetIsBackdropFilterMask(wire.is_backdrop_filter_mask);
-    if (wire.is_backdrop_filter_mask) {
-      tile_display_layer.SetContentsResourceId(wire.resource_id.value(),
-                                               wire.texture_size.value(),
-                                               wire.uv_size.value());
-    }
   }
 
   const cc::PropertyTrees& property_trees =
