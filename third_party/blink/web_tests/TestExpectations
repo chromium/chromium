@@ -8542,6 +8542,10 @@ crbug.com/349554230 http/tests/devtools/animation/animation-group-matching.js [ 
 # Skipped to land crrev.com/c/5961996
 crbug.com/375562183 http/tests/devtools/animation/animation-empty-web-animations.js [ Failure Skip ]
 
+# TODO(crrev.com/c/6300607): Re-enable after landing CL.
+crbug.com/398040368 http/tests/devtools/profiler/heap-snapshot-summary-sorting.js [ Failure Skip ]
+crbug.com/398040368 http/tests/devtools/profiler/heap-snapshot-summary-show-ranges.js [ Failure Skip ]
+
 crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure ]
 
 # The overlapping navigation behavior is flaky.
