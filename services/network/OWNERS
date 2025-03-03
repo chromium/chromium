@@ -17,8 +17,6 @@ morlovich@chromium.org
 reillyg@chromium.org
 toyoshim@chromium.org
 
-per-file cert_verifier_with_trust_anchors*=file://chromeos/ash/components/policy/OWNERS
-
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 
