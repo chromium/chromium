@@ -187,6 +187,31 @@ TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithSunfishSessionButton) {
                                      kLauncherShownWithSunfishSessionButton, 1);
 }
 
+TEST_F(ScannerMetricsTest, ClamshellLauncherButtonClicked) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  auto* delegate = static_cast<FakeScannerProfileScopedDelegate*>(
+      scanner_controller->delegate_for_testing()->GetProfileScopedDelegate());
+  ON_CALL(*delegate, CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  ASSERT_TRUE(CanShowSunfishOrScannerUi());
+
+  // Open the app list by clicking on the home button.
+  LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
+  AppListBubbleView* bubble_view = GetAppListBubbleView();
+  ASSERT_TRUE(bubble_view);
+  views::ImageButton* sunfish_button =
+      bubble_view->search_box_view()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  ASSERT_TRUE(sunfish_button->GetVisible());
+  LeftClickOn(sunfish_button);
+
+  histogram_tester.ExpectBucketCount("Ash.ScannerFeature.UserState",
+                                     kSunfishSessionStartedFromLauncherButton,
+                                     1);
+}
+
 TEST_F(ScannerMetricsTest, TabletLauncherShownWithoutSunfishSessionButton) {
   base::HistogramTester histogram_tester;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
@@ -233,6 +258,31 @@ TEST_F(ScannerMetricsTest, TabletLauncherShownWithSunfishSessionButton) {
 
   histogram_tester.ExpectBucketCount("Ash.ScannerFeature.UserState",
                                      kLauncherShownWithSunfishSessionButton, 1);
+}
+
+TEST_F(ScannerMetricsTest, TabletLauncherButtonClicked) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  auto* delegate = static_cast<FakeScannerProfileScopedDelegate*>(
+      scanner_controller->delegate_for_testing()->GetProfileScopedDelegate());
+  ON_CALL(*delegate, CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  ASSERT_TRUE(CanShowSunfishOrScannerUi());
+
+  // The app list should be open by default when we enter tablet mode.
+  SwitchToTabletMode();
+  AppListView* app_list_view = GetAppListView();
+  ASSERT_TRUE(app_list_view);
+  views::ImageButton* sunfish_button =
+      app_list_view->search_box_view()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  ASSERT_TRUE(sunfish_button->GetVisible());
+  LeftClickOn(sunfish_button);
+
+  histogram_tester.ExpectBucketCount("Ash.ScannerFeature.UserState",
+                                     kSunfishSessionStartedFromLauncherButton,
+                                     1);
 }
 
 }  // namespace
