@@ -4351,6 +4351,22 @@ constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
     "disable-facilitated-payments-merchant-allowlist";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+
+const char kHistoryOptInEntryPointVariationFeatures[] =
+    "HistoryOptInEntryPoints,"
+    "HistoryOptInPromoCtaStringVariation";
+
+const FeatureEntry::Choice kHistoryOptInEntryPointChoices[] = {
+    {"Default", "", ""},
+    {"Enabled with Turn On promo CTA", "enable-features",
+     "HistoryOptInEntryPoints"},
+    {"Enabled with Continue promo CTA", "enable-features",
+     kHistoryOptInEntryPointVariationFeatures},
+    {"Disabled", "disable-features", kHistoryOptInEntryPointVariationFeatures},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10866,7 +10882,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"history-opt-in-entry-points",
      flag_descriptions::kHistoryOptInEntryPointsName,
      flag_descriptions::kHistoryOptInEntryPointsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kHistoryOptInEntryPoints)},
+     MULTI_VALUE_TYPE(kHistoryOptInEntryPointChoices)},
 
     {"supervised-force-signin-with-capabilities",
      flag_descriptions::kSupervisedUserForceSigninWithCapabilitiesName,

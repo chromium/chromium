@@ -23,6 +23,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kDeferWebSigninTrackerCreation,
     &switches::kForceSupervisedSigninWithCapabilities,
     &switches::kHistoryOptInEntryPoints,
+    &switches::kHistoryOptInPromoCtaStringVariation,
     &switches::kHistoryOptInIph,
     &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kUnoForAuto,
