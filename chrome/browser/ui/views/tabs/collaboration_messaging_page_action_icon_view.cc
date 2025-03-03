@@ -95,11 +95,13 @@ void CollaborationMessagingPageActionIconView::UpdateContent(
       NOTREACHED();
   }
 
+  collaboration_messaging_tab_data_ =
+      collaboration_messaging_tab_data->GetWeakPtr();
+
   // Label is always visible.
   SetLabel(label_text);
   label()->SetVisible(true);
 
-  avatar_image_ = collaboration_messaging_tab_data->page_action_avatar();
   UpdateIconImage();
 }
 
@@ -126,12 +128,17 @@ CollaborationMessagingPageActionIconView::GetBubble() const {
 
 const gfx::VectorIcon& CollaborationMessagingPageActionIconView::GetVectorIcon()
     const {
+  // In practice, this should never be used since we use a fallback icon
+  // when the avatar is unavailable.
   return kPersonFilledPaddedSmallIcon;
 }
 
 ui::ImageModel CollaborationMessagingPageActionIconView::GetSizedIconImage(
     int icon_size) const {
-  return avatar_image_;
+  if (!collaboration_messaging_tab_data_) {
+    return ui::ImageModel();
+  }
+  return collaboration_messaging_tab_data_->GetPageActionImage(GetWidget());
 }
 
 BEGIN_METADATA(CollaborationMessagingPageActionIconView)

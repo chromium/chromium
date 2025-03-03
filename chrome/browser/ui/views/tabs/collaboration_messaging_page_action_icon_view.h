@@ -56,7 +56,8 @@ class CollaborationMessagingPageActionIconView : public PageActionIconView {
       CollaborationMessagingTabData* collaboration_messaging_tab_data);
 
   raw_ptr<Profile> profile_ = nullptr;
-  ui::ImageModel avatar_image_;
+  base::WeakPtr<CollaborationMessagingTabData>
+      collaboration_messaging_tab_data_ = nullptr;
   RecentActivityBubbleCoordinator bubble_coordinator_;
   base::CallbackListSubscription message_changed_callback_;
 };

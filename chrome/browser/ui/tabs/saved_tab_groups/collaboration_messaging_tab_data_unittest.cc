@@ -116,7 +116,7 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
   EXPECT_TRUE(tab_data().HasMessage());
   EXPECT_EQ(tab_data().given_name(), base::UTF8ToUTF16(given_name));
   EXPECT_EQ(tab_data().collaboration_event(), CollaborationEvent::TAB_ADDED);
-  EXPECT_FALSE(tab_data().page_action_avatar().IsEmpty());
+  EXPECT_FALSE(tab_data().get_avatar_for_testing()->IsEmpty());
 
   // Overwrite with a new message.
   std::string given_name2 = "User2";
@@ -148,7 +148,7 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
   EXPECT_TRUE(tab_data().HasMessage());
   EXPECT_EQ(tab_data().given_name(), base::UTF8ToUTF16(given_name2));
   EXPECT_EQ(tab_data().collaboration_event(), CollaborationEvent::TAB_UPDATED);
-  EXPECT_TRUE(tab_data().page_action_avatar().IsEmpty());
+  EXPECT_TRUE(tab_data().get_avatar_for_testing()->IsEmpty());
 
   tab_data().ClearMessage(message2);
   EXPECT_FALSE(tab_data().HasMessage());
