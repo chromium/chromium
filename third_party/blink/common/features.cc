@@ -1182,7 +1182,6 @@ BASE_FEATURE(kAttributionReportingInBrowserMigration,
              "AttributionReportingInBrowserMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Killswitch M135.
 BASE_FEATURE(kLimitLayerMergeDistance,
              "LimitLayerMergeDistance",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1190,7 +1189,7 @@ BASE_FEATURE_PARAM(size_t,
                    kLayerMergeDistanceLimit,
                    &kLimitLayerMergeDistance,
                    "limit",
-                   16);
+                   0x10000000);
 
 BASE_FEATURE(kLCPCriticalPathPredictor,
              "LCPCriticalPathPredictor",
