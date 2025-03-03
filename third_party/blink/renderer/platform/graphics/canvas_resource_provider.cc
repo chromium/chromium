@@ -230,6 +230,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       shared_image_interface_provider_;
 
   bool IsSharedBitmapGpuChannelLost() const override {
+    if (!is_software_) {
+      return false;
+    }
+
     return !shared_image_interface_provider_ ||
            !shared_image_interface_provider_->SharedImageInterface();
   }
