@@ -30,9 +30,7 @@ void PrintingTask::UpdateTitle() {
 }
 
 void PrintingTask::UpdateFavicon() {
-  const gfx::ImageSkia* icon =
-      RendererTask::GetFaviconFromWebContents(web_contents());
-  set_icon(icon ? *icon : gfx::ImageSkia());
+  DefaultUpdateFaviconImpl();
 }
 
 }  // namespace task_manager

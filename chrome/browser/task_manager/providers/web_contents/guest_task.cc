@@ -21,8 +21,7 @@ void GuestTask::UpdateTitle() {
 }
 
 void GuestTask::UpdateFavicon() {
-  const gfx::ImageSkia* icon = GetFaviconFromWebContents(web_contents());
-  set_icon(icon ? *icon : gfx::ImageSkia());
+  DefaultUpdateFaviconImpl();
 }
 
 Task::Type GuestTask::GetType() const {
@@ -33,9 +32,7 @@ std::u16string GuestTask::GetCurrentTitle(
     content::WebContents* web_contents) const {
   DCHECK(web_contents);
 
-  guest_view::GuestViewBase* guest =
-      guest_view::GuestViewBase::FromWebContents(web_contents);
-
+  auto* guest = guest_view::GuestViewBase::FromWebContents(web_contents);
   if (!guest) {
     // This can happen when an AppWindowContentsImpl is destroyed. It emits a
     // DidFinishNavigation() events to the WebContentsObservers which triggers a
@@ -44,11 +41,9 @@ std::u16string GuestTask::GetCurrentTitle(
     return title();
   }
 
-  std::u16string title = l10n_util::GetStringFUTF16(
+  return l10n_util::GetStringFUTF16(
       guest->GetTaskPrefix(),
       RendererTask::GetTitleFromWebContents(web_contents));
-
-  return title;
 }
 
 }  // namespace task_manager
