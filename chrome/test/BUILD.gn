@@ -10629,7 +10629,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/about_flags_browsertest.cc",
       "../browser/browser_keyevents_browsertest.cc",
       "../browser/chrome_render_widget_host_browsertests.cc",
-      "../browser/contextual_cueing/contextual_cueing_helper_interactive_uitest.cc",
       "../browser/controlled_frame/controlled_frame_interactive_browsertest.cc",
       "../browser/devtools/devtools_interactive_browsertest.cc",
       "../browser/download/download_interactive_uitest.cc",
@@ -11542,8 +11541,11 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enable_glic) {
+      sources += [ "../browser/contextual_cueing/contextual_cueing_helper_interactive_uitest.cc" ]
+
       deps += [
         "//chrome/browser/background/glic:interactive_ui_tests",
+        "//chrome/browser/glic:glic",
         "//chrome/browser/glic:interactive_ui_tests",
       ]
       data_deps += [
