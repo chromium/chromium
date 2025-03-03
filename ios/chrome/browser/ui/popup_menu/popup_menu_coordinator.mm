@@ -286,7 +286,7 @@ using base::UserMetricsAction;
     mediator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
     mediator.bookmarksHandler =
         HandlerForProtocol(dispatcher, BookmarksCommands);
-    if (IsLensOverlayAvailable()) {
+    if (IsLensOverlayAvailable(profile->GetPrefs())) {
       mediator.lensOverlayHandler =
           HandlerForProtocol(dispatcher, LensOverlayCommands);
     }

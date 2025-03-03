@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -168,7 +169,8 @@
 
 // Checks if the user is navigating back to the Lens Overlay.
 - (BOOL)navigatingBackToLensOverlay {
-  if (!IsLensOverlaySameTabNavigationEnabled() ||
+  if (!IsLensOverlaySameTabNavigationEnabled(
+          self.browser->GetProfile()->GetPrefs()) ||
       IsCompactHeight(self.baseViewController)) {
     return NO;
   }

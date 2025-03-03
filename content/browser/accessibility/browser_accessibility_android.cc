@@ -211,6 +211,8 @@ bool BrowserAccessibilityAndroid::IsCollection() const {
     case ax::mojom::Role::kList:
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kTree:
+    case ax::mojom::Role::kMenu:
+    case ax::mojom::Role::kMenuBar:
       return true;
     default:
       return ui::IsTableLike(GetRole());
@@ -223,6 +225,9 @@ bool BrowserAccessibilityAndroid::IsCollectionItem() const {
     case ax::mojom::Role::kListItem:
     case ax::mojom::Role::kTerm:
     case ax::mojom::Role::kTreeItem:
+    case ax::mojom::Role::kMenuItem:
+    case ax::mojom::Role::kMenuItemCheckBox:
+    case ax::mojom::Role::kMenuItemRadio:
       return true;
     default:
       return ui::IsCellOrTableHeader(GetRole());
@@ -355,6 +360,18 @@ bool BrowserAccessibilityAndroid::IsSelected() const {
 
 bool BrowserAccessibilityAndroid::IsSlider() const {
   return GetRole() == ax::mojom::Role::kSlider;
+}
+
+bool BrowserAccessibilityAndroid::IsSubscript() const {
+  return static_cast<ax::mojom::TextPosition>(
+             GetIntAttribute(ax::mojom::IntAttribute::kTextPosition)) ==
+         ax::mojom::TextPosition::kSubscript;
+}
+
+bool BrowserAccessibilityAndroid::IsSuperscript() const {
+  return static_cast<ax::mojom::TextPosition>(
+             GetIntAttribute(ax::mojom::IntAttribute::kTextPosition)) ==
+         ax::mojom::TextPosition::kSuperscript;
 }
 
 bool BrowserAccessibilityAndroid::IsTableHeader() const {
@@ -1315,6 +1332,26 @@ std::string BrowserAccessibilityAndroid::GetCSSDisplay() const {
   return std::string();
 }
 
+float BrowserAccessibilityAndroid::GetTextSize() const {
+  return GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize);
+}
+
+int BrowserAccessibilityAndroid::GetTextStyle() const {
+  return GetIntAttribute(ax::mojom::IntAttribute::kTextStyle);
+}
+
+int BrowserAccessibilityAndroid::GetTextColor() const {
+  return GetIntAttribute(ax::mojom::IntAttribute::kColor);
+}
+
+int BrowserAccessibilityAndroid::GetTextBackgroundColor() const {
+  return GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor);
+}
+
+std::string BrowserAccessibilityAndroid::GetFontFamily() const {
+  return GetStringAttribute(ax::mojom::StringAttribute::kFontFamily);
+}
+
 int BrowserAccessibilityAndroid::GetItemIndex() const {
   int index = 0;
   if (IsRangeControlWithoutAriaValueText()) {
@@ -1712,11 +1749,14 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
     return 0;
   }
 
-  // For <ol> and <ul> elements on Android (e.g. role kList), the AX
-  // code will consider these 0 columns, but on Android they are 1.
+  // For <ol> and <ul> elements on Android (e.g. role kList, kListBox, kMenu and
+  // kMenuBar), the AX code will consider these 0 columns, but on Android they
+  // are 1.
   int ax_cols = node()->GetTableColCount().value_or(0);
   if (GetRole() == ax::mojom::Role::kList ||
-      GetRole() == ax::mojom::Role::kListBox) {
+      GetRole() == ax::mojom::Role::kListBox ||
+      GetRole() == ax::mojom::Role::kMenu ||
+      GetRole() == ax::mojom::Role::kMenuBar) {
     DCHECK_EQ(ax_cols, 0);
     ax_cols = 1;
   }

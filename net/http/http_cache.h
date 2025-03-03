@@ -274,37 +274,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
       const HttpRequestInfo* request,
       const GURL& url);
 
-  enum class ExperimentMode {
-    // No additional partitioning is done for top-level navigations.
-    kStandard,
-    // A boolean is incorporated into the cache key that is true for
-    // renderer-initiated main frame navigations when the request initiator site
-    // is cross-site to the URL being navigated to.
-    kCrossSiteInitiatorBoolean,
-    // The request initiator site is incorporated into the cache key for
-    // renderer-initiated main frame navigations when the request initiator site
-    // is cross-site to the URL being navigated to. If the request initiator
-    // site is opaque, then no caching is performed of the navigated-to
-    // document.
-    kMainFrameNavigationInitiator,
-    // The request initiator site is incorporated into the cache key for all
-    // renderer-initiated navigations (including subframe navigations) when the
-    // request initiator site is cross-site to the URL being navigated to. If
-    // the request initiator site is opaque, then no caching is performed of the
-    // navigated-to document. When this scheme is used, the
-    // `is-subframe-document-resource` boolean is not incorporated into the
-    // cache key, since incorporating the initiator site for subframe
-    // navigations
-    // should be sufficient for mitigating the attacks that the
-    // `is-subframe-document-resource` mitigates.
-    kNavigationInitiator,
-  };
-
-  // Returns the HTTP Cache partitioning experiment mode currently in use. Only
-  // one experiment mode feature flag should be enabled at a time, but if
-  // multiple are enabled then `ExperimentMode::kStandard` will be returned.
-  static ExperimentMode GetExperimentMode();
-
   // Enable split cache feature if not already overridden in the feature list.
   // Should only be invoked during process initialization before the HTTP
   // cache is initialized.
@@ -773,6 +742,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   static const char kDoubleKeyPrefix[];
   static const char kDoubleKeySeparator[];
   static const char kSubframeDocumentResourcePrefix[];
+  static const char kCrossSiteMainFrameNavigationPrefix[];
 
   // Used for single-keyed entries if the cache is split.
   static const char kSingleKeyPrefix[];

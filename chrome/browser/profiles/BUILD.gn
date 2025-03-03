@@ -122,7 +122,6 @@ source_set("profile_util") {
     "//components/enterprise/common/proto:upload_request_response",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/password_store:password_store_interface",
-    "//components/user_annotations:user_annotations",
     "//device/fido:fido",
     "//mojo/public/cpp/bindings",
     "//services/preferences/public/mojom",
@@ -195,10 +194,7 @@ source_set("profile_util_impl") {
   ]
 
   if (!is_android) {
-    deps += [
-      "//chrome/browser/ui:browser_list",
-      "//chrome/browser/user_annotations:user_annotations",
-    ]
+    deps += [ "//chrome/browser/ui:browser_list" ]
   }
 
   if (is_chromeos) {
@@ -316,7 +312,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:login",
-      "//chrome/browser/user_annotations",
     ]
   }
 

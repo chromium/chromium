@@ -142,4 +142,33 @@ TEST(ReportingUtilsTest, TestEventLocalIp) {
   }
 }
 
+TEST(ReportingUtilsTest, TestMaskUserName) {
+  EXPECT_EQ(MaskUsername(u"fakeuser"), "*****");
+  EXPECT_EQ(MaskUsername(u"fakeuser@gmail.com"), "*****@gmail.com");
+}
+
+TEST(ReportingUtilsTest, TestUrlMatchingForOptInEventReturnsTrue) {
+  ReportingSettings settings;
+  std::map<std::string, std::vector<std::string>> enabled_opt_in_events;
+  enabled_opt_in_events["passwordBreachEvent"].push_back("*");
+  settings.enabled_opt_in_events.insert(enabled_opt_in_events.begin(),
+                                        enabled_opt_in_events.end());
+
+  auto url_matcher = CreateURLMatcherForOptInEvent(std::move(settings),
+                                                   kKeyPasswordBreachEvent);
+  EXPECT_TRUE(IsUrlMatched(url_matcher.get(), GURL("gmail.com")));
+}
+
+TEST(ReportingUtilsTest, TestUrlMatchingForOptInEventReturnsFalse) {
+  ReportingSettings settings;
+  std::map<std::string, std::vector<std::string>> enabled_opt_in_events;
+  enabled_opt_in_events["passwordBreachEvent"].push_back("https://google.com/");
+  settings.enabled_opt_in_events.insert(enabled_opt_in_events.begin(),
+                                        enabled_opt_in_events.end());
+
+  auto url_matcher = CreateURLMatcherForOptInEvent(std::move(settings),
+                                                   kKeyPasswordBreachEvent);
+  EXPECT_FALSE(IsUrlMatched(url_matcher.get(), GURL("gmail.com")));
+}
+
 }  // namespace enterprise_connectors

@@ -3896,6 +3896,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_PROMO_DESCRIPTION_RECENT_TABS" desc="This string is the body of a card that appears when the user opens Chrome's recent tabs. The user may be signed in to Chrome, but has not opted in for syncing History and Tabs. This message means that the user can see some of their recent tabs from their computer on their phone, and their phone's recent tabs on their computer once opted in history and tabs syncing. We want users to read this card and tap the 'Turn on' button and turn on History and Tabs syncing. The tone should be inviting. There's no character limit but try to keep the translation under 120 characters.">
         To see tabs from your other devices, sync your tabs and history
       </message>
+      <message name="IDS_SIGNIN_PROMO_TITLE_HISTORY_PAGE" desc="This string is the headline of a card that appears when the user opens Chrome's history page. The user is signed in to Chrome, but has not opted in for syncing History and Tabs. We want users to read this card and tap the button below to turn on history and tabs syncing. The tone should be inviting. [CHAR_LIMIT=70]">
+        See your history on other devices
+      </message>
+      <message name="IDS_SIGNIN_PROMO_DESCRIPTION_HISTORY_PAGE" desc="This string is the body of a card that appears when the user opens Chrome's history page. The user is signed in to Chrome, but has not opted in for syncing History and Tabs. We want users to read this card and tap the button below to turn on History and Tabs syncing. The tone should be inviting. There's no character limit but try to keep the translation under 120 characters.">
+        To easily pick up where you left off, sync your history and tabs
+      </message>
       <message name="IDS_SIGNIN_PROMO_CHOOSE_ANOTHER_ACCOUNT" desc="Button that the user can press if they want to select a different account before signing in. This button is shown below 'Continue as Joe Doe' button that signs user in with default account.">
         Choose another account
       </message>

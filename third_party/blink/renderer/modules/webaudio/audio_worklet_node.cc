@@ -52,7 +52,8 @@ AudioWorkletNode::AudioWorkletNode(
       param_automation_rate = AudioParamHandler::AutomationRate::kControl;
     }
     AudioParam* audio_param = AudioParam::Create(
-        context, Uuid(), AudioParamHandler::kParamTypeAudioWorklet,
+        context, Uuid(),
+        AudioParamHandler::AudioParamType::kParamTypeAudioWorklet,
         param_info.DefaultValue(), param_automation_rate,
         AudioParamHandler::AutomationRateMode::kVariable, param_info.MinValue(),
         param_info.MaxValue());

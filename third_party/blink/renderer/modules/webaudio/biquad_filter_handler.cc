@@ -30,7 +30,7 @@ BiquadFilterHandler::BiquadFilterHandler(AudioNode& node,
                                          AudioParamHandler& gain,
                                          AudioParamHandler& detune)
     : AudioBasicProcessorHandler(
-          kNodeTypeBiquadFilter,
+          NodeType::kNodeTypeBiquadFilter,
           node,
           sample_rate,
           std::make_unique<BiquadProcessor>(

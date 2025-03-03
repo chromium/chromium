@@ -148,7 +148,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
-    public void testCreateInputContext_TabGroupPromoCard() {
+    public void testCreateInputContext_TabGroupPromoCard_TabGroupExists() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
         InputContext inputContext =
@@ -156,7 +156,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                         ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(2, inputContext.getSizeForTesting());
 
-        // Test signal "tab_group_exists".
         when(mNormalFilter.getTabGroupCount()).thenReturn(0);
         when(mIncognitoFilter.getTabGroupCount()).thenReturn(0);
         inputContext =
@@ -170,8 +169,18 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(1, inputContext.getEntryForTesting("tab_group_exists").floatValue, 0.01);
+    }
 
-        // Test signal "number_of_tabs".
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
+    public void testCreateInputContext_TabGroupPromoCard_NumberOfTabs() {
+        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
+
+        InputContext inputContext;
+
+        // Test cases when tab state is already initialized.
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mNormalModel.getCount()).thenReturn(0);
         when(mIncognitoModel.getCount()).thenReturn(0);
         inputContext =
@@ -199,6 +208,21 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(20, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
+
+        // Test cases when tab state is not initialized.
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        when(mActionDelegate.getTabCountForRelaunchFromSharedPrefs()).thenReturn(10);
+        inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
+        assertEquals(10, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
+
+        when(mActionDelegate.getTabCountForRelaunchFromSharedPrefs()).thenReturn(15);
+        inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
+        assertEquals(15, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
     }
 
     @Test

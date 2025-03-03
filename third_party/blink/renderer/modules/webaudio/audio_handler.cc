@@ -98,50 +98,50 @@ BaseAudioContext* AudioHandler::Context() const {
 
 String AudioHandler::NodeTypeName() const {
   switch (node_type_) {
-    case kNodeTypeDestination:
+    case NodeType::kNodeTypeDestination:
       return "AudioDestinationNode";
-    case kNodeTypeOscillator:
+    case NodeType::kNodeTypeOscillator:
       return "OscillatorNode";
-    case kNodeTypeAudioBufferSource:
+    case NodeType::kNodeTypeAudioBufferSource:
       return "AudioBufferSourceNode";
-    case kNodeTypeMediaElementAudioSource:
+    case NodeType::kNodeTypeMediaElementAudioSource:
       return "MediaElementAudioSourceNode";
-    case kNodeTypeMediaStreamAudioDestination:
+    case NodeType::kNodeTypeMediaStreamAudioDestination:
       return "MediaStreamAudioDestinationNode";
-    case kNodeTypeMediaStreamAudioSource:
+    case NodeType::kNodeTypeMediaStreamAudioSource:
       return "MediaStreamAudioSourceNode";
-    case kNodeTypeScriptProcessor:
+    case NodeType::kNodeTypeScriptProcessor:
       return "ScriptProcessorNode";
-    case kNodeTypeBiquadFilter:
+    case NodeType::kNodeTypeBiquadFilter:
       return "BiquadFilterNode";
-    case kNodeTypePanner:
+    case NodeType::kNodeTypePanner:
       return "PannerNode";
-    case kNodeTypeStereoPanner:
+    case NodeType::kNodeTypeStereoPanner:
       return "StereoPannerNode";
-    case kNodeTypeConvolver:
+    case NodeType::kNodeTypeConvolver:
       return "ConvolverNode";
-    case kNodeTypeDelay:
+    case NodeType::kNodeTypeDelay:
       return "DelayNode";
-    case kNodeTypeGain:
+    case NodeType::kNodeTypeGain:
       return "GainNode";
-    case kNodeTypeChannelSplitter:
+    case NodeType::kNodeTypeChannelSplitter:
       return "ChannelSplitterNode";
-    case kNodeTypeChannelMerger:
+    case NodeType::kNodeTypeChannelMerger:
       return "ChannelMergerNode";
-    case kNodeTypeAnalyser:
+    case NodeType::kNodeTypeAnalyser:
       return "AnalyserNode";
-    case kNodeTypeDynamicsCompressor:
+    case NodeType::kNodeTypeDynamicsCompressor:
       return "DynamicsCompressorNode";
-    case kNodeTypeWaveShaper:
+    case NodeType::kNodeTypeWaveShaper:
       return "WaveShaperNode";
-    case kNodeTypeIIRFilter:
+    case NodeType::kNodeTypeIIRFilter:
       return "IIRFilterNode";
-    case kNodeTypeConstantSource:
+    case NodeType::kNodeTypeConstantSource:
       return "ConstantSourceNode";
-    case kNodeTypeAudioWorklet:
+    case NodeType::kNodeTypeAudioWorklet:
       return "AudioWorkletNode";
-    case kNodeTypeUnknown:
-    case kNodeTypeEnd:
+    case NodeType::kNodeTypeUnknown:
+    case NodeType::kNodeTypeEnd:
     default:
       NOTREACHED();
   }
@@ -150,9 +150,9 @@ String AudioHandler::NodeTypeName() const {
 void AudioHandler::SetNodeType(NodeType type) {
   // Don't allow the node type to be changed to a different node type, after
   // it's already been set.  And the new type can't be unknown or end.
-  DCHECK_EQ(node_type_, kNodeTypeUnknown);
-  DCHECK_NE(type, kNodeTypeUnknown);
-  DCHECK_NE(type, kNodeTypeEnd);
+  DCHECK_EQ(node_type_, NodeType::kNodeTypeUnknown);
+  DCHECK_NE(type, NodeType::kNodeTypeUnknown);
+  DCHECK_NE(type, NodeType::kNodeTypeEnd);
 
   node_type_ = type;
 
@@ -555,10 +555,10 @@ void AudioHandler::UpdateChannelInterpretation() {
 unsigned AudioHandler::NumberOfOutputChannels() const {
   // This should only be called for ScriptProcessorNodes which are the only
   // nodes where you can have an output with 0 channels.  All other nodes have
-  // have at least one output channel, so there's no reason other nodes should
+  // at least one output channel, so there's no reason other nodes should
   // ever call this function.
   DCHECK(0) << "numberOfOutputChannels() not valid for node type "
-            << GetNodeType();
+            << NodeTypeName();
   return 1;
 }
 

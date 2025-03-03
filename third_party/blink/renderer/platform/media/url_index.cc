@@ -261,13 +261,13 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
       task_runner_(std::move(task_runner)) {}
 
 UrlIndex::~UrlIndex() {
-#if DCHECK_IS_ON()
-  // Verify that only |this| holds reference to UrlData instances.
-  auto dcheck_has_one_ref = [](const UrlDataMap::value_type& entry) {
+  auto stop_url_data = [](const UrlDataMap::value_type& entry) {
+    // Verify that only |this| holds reference to UrlData instances.
     DCHECK(entry.value->HasOneRef());
+
+    entry.value->StopWriters();
   };
-  std::ranges::for_each(indexed_data_, dcheck_has_one_ref);
-#endif
+  std::ranges::for_each(indexed_data_, stop_url_data);
 }
 
 void UrlIndex::RemoveUrlData(const scoped_refptr<UrlData>& url_data) {

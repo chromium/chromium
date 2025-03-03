@@ -13,45 +13,41 @@
 #import "ui/base/device_form_factor.h"
 
 // Returns whether the lens overlay is allowed by policy.
-bool IsLensOverlayAllowedByPolicy() {
-  // Local state can be null in tests.
-  if (!GetApplicationContext()->GetLocalState()) {
-    return true;
-  }
-  int policyRawValue = GetApplicationContext()->GetLocalState()->GetInteger(
-      lens::prefs::kLensOverlaySettings);
+bool IsLensOverlayAllowedByPolicy(const PrefService* prefs) {
+  CHECK(prefs, kLensOverlayNotFatalUntil);
+  int policyRawValue = prefs->GetInteger(lens::prefs::kLensOverlaySettings);
   return policyRawValue ==
          static_cast<int>(
              lens::prefs::LensOverlaySettingsPolicyValue::kEnabled);
 }
 
 // Returns whether the lens overlay is enabled.
-bool IsLensOverlayAvailable() {
+bool IsLensOverlayAvailable(const PrefService* prefs) {
   bool featureEnabled = base::FeatureList::IsEnabled(kEnableLensOverlay);
   bool forceIPadEnabled =
       base::FeatureList::IsEnabled(kLensOverlayEnableIPadCompatibility);
   bool isIPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
   return featureEnabled && (forceIPadEnabled || isIPhone) &&
-         IsLensOverlayAllowedByPolicy();
+         IsLensOverlayAllowedByPolicy(prefs);
 }
 
-bool IsLensOverlaySameTabNavigationEnabled() {
-  return IsLensOverlayAvailable() &&
+bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {
+  return IsLensOverlayAvailable(prefs) &&
          base::FeatureList::IsEnabled(kLensOverlayEnableSameTabNavigation);
 }
 
-bool IsLVFUnifiedExperienceEnabled() {
-  return IsLensOverlayAvailable() &&
+bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs) {
+  return IsLensOverlayAvailable(prefs) &&
          base::FeatureList::IsEnabled(kEnableLensViewFinderUnifiedExperience);
 }
 
-bool IsLensOverlayLandscapeOrientationEnabled() {
-  return IsLensOverlayAvailable() &&
+bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs) {
+  return IsLensOverlayAvailable(prefs) &&
          base::FeatureList::IsEnabled(kLensOverlayEnableLandscapeCompatibility);
 }
 
-bool IsLVFEscapeHatchEnabled() {
-  return IsLensOverlayAvailable() &&
+bool IsLVFEscapeHatchEnabled(const PrefService* prefs) {
+  return IsLensOverlayAvailable(prefs) &&
          base::FeatureList::IsEnabled(kLensOverlayEnableLVFEscapeHatch);
 }
 

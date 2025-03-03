@@ -477,6 +477,14 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     }
     return {};
   }
+
+  glicBrowserSetSyntheticExperimentState(request: {
+    trialName: string,
+    groupName: string,
+  }) {
+    return this.handler.setSyntheticExperimentState(
+        request.trialName, request.groupName);
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {

@@ -2256,8 +2256,6 @@ class DownloadTestSplitCacheEnabledBase : public DownloadTest {
 enum class SplitCacheTestCase {
   kEnabledTripleKeyed,
   kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator
 };
 
 const struct {
@@ -2266,10 +2264,7 @@ const struct {
 } kTestCaseToFeatureMapping[] = {
     {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
      net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator}};
+};
 
 std::string GetSplitCacheTestName(SplitCacheTestCase test_case) {
   switch (test_case) {
@@ -2277,10 +2272,6 @@ std::string GetSplitCacheTestName(SplitCacheTestCase test_case) {
       return "TripleKeyed";
     case (SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool):
       return "TriplePlusCrossSiteMainFrameNavigationBool";
-    case (SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator):
-      return "TriplePlusMainFrameNavigationInitiator";
-    case (SplitCacheTestCase::kEnabledTriplePlusNavInitiator):
-      return "TriplePlusNavigationInitiator";
   }
 }
 
@@ -2302,9 +2293,7 @@ INSTANTIATE_TEST_SUITE_P(
     DownloadTestSplitCacheEnabled,
     testing::ValuesIn(
         {SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-         SplitCacheTestCase::kEnabledTriplePlusNavInitiator}),
+         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       return GetSplitCacheTestName(info.param);
     });
@@ -2919,9 +2908,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),
         testing::ValuesIn(
             {SplitCacheTestCase::kEnabledTripleKeyed,
-             SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-             SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-             SplitCacheTestCase::kEnabledTriplePlusNavInitiator})),
+             SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool})),
     [](const testing::TestParamInfo<std::tuple<bool, SplitCacheTestCase>>&
            info) {
       std::string test_prefix =

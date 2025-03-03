@@ -317,7 +317,7 @@ std::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
     }
     return base::apple::NSStringToFilePath(library_paths[0])
         .Append(IsSystemInstall(scope) ? "LaunchDaemons" : "LaunchAgents")
-        .AppendASCII(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
+        .Append(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
   }
 }
 
@@ -373,7 +373,7 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
                             kExecutableSuffix, ".app"}))
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"))
-      .AppendASCII(base::StrCat(
+      .Append(base::StrCat(
           {BROWSER_NAME_STRING, "EnterpriseCompanion", kExecutableSuffix}));
 }
 

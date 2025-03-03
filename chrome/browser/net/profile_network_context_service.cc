@@ -1244,24 +1244,6 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
   current_field_trial_status +=
       (field_trial ? field_trial->group_name() : "None");
 
-  // For the HTTP Cache keying experiments, if a flag indicates that the user is
-  // in an experiment group, modify `current_field_trial_status` to ensure that
-  // the cache gets cleared. If the user is not a part of the experiment, don't
-  // make any changes so as not to invalidate the existing cache.
-  if (base::FeatureList::IsEnabled(
-          net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean)) {
-    current_field_trial_status += " 20240814-CrossSiteNavBool";
-  } else if (base::FeatureList::IsEnabled(
-                 net::features::kSplitCacheByMainFrameNavigationInitiator)) {
-    current_field_trial_status += " 20240814-MainFrameNavigationInitiator";
-  } else if (base::FeatureList::IsEnabled(
-                 net::features::kSplitCacheByNavigationInitiator)) {
-    current_field_trial_status += " 20240814-NavigationInitiator";
-  } else if (base::FeatureList::IsEnabled(
-                 net::features::kHttpCacheKeyingExperimentControlGroup2024)) {
-    current_field_trial_status += " 20240814-ExperimentControlGroup";
-  }
-
   if (disk_cache::InBackendExperiment()) {
     if (disk_cache::InSimpleBackendExperimentGroup()) {
       current_field_trial_status += " 20241007-DiskCache-Simple";
@@ -1560,6 +1542,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
             .InitWithNewPipeAndPassRemote());
     network_context_params->enable_ip_protection =
         ipp_core_host->IsIpProtectionEnabled();
+    network_context_params->ip_protection_incognito =
+        profile_->IsIncognitoProfile();
   }
 
   network_context_params->device_bound_sessions_enabled =

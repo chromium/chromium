@@ -176,6 +176,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
+  self.viewController.profilePrefs = self.browser->GetProfile()->GetPrefs();
   self.viewController.delegate = self;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.

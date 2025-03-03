@@ -142,6 +142,12 @@ export declare interface HostRequestTypes {
   glicBrowserScrollTo: {
     request: {params: ScrollToParams},
   };
+  glicBrowserSetSyntheticExperimentState: {
+    request: {
+      trialName: string,
+      groupName: string,
+    },
+  };
 }
 
 // Types of requests to the GlicWebClient.

@@ -68,7 +68,7 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
   }
 
   bool HasNewExtension() {
-    return service()->pending_extension_manager()->IsIdPending(kNewId) ||
+    return PendingExtensionManager::Get(profile())->IsIdPending(kNewId) ||
            registry()->GetInstalledExtension(kNewId);
   }
 };

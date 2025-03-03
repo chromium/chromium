@@ -31,7 +31,7 @@ DynamicsCompressorHandler::DynamicsCompressorHandler(
     AudioParamHandler& ratio,
     AudioParamHandler& attack,
     AudioParamHandler& release)
-    : AudioHandler(kNodeTypeDynamicsCompressor, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeDynamicsCompressor, node, sample_rate),
       threshold_(&threshold),
       knee_(&knee),
       ratio_(&ratio),

@@ -59,6 +59,8 @@ source_set("container_presenter") {
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/device_orientation",
     "//ui/base",
   ]

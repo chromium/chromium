@@ -21,6 +21,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/overlay_layer_id.h"
 
 namespace viz {
 namespace {
@@ -133,8 +134,10 @@ float ResolvedFrameData::device_scale_factor() const {
   return surface_->device_scale_factor();
 }
 
-uint32_t ResolvedFrameData::GetClientNamespaceId() const {
-  return static_cast<uint32_t>(child_resource_id_);
+gfx::OverlayLayerId::NamespaceId ResolvedFrameData::GetClientNamespaceId()
+    const {
+  return {surface_id_.frame_sink_id().client_id(),
+          surface_id_.frame_sink_id().sink_id()};
 }
 
 void ResolvedFrameData::ForceReleaseResource() {

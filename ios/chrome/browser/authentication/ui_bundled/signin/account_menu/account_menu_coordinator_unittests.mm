@@ -286,7 +286,6 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testSignOut) {
   OCMExpect([mock_snackbar_commands_handler_
       showSnackbarMessageOverBrowserToolbar:[OCMArg isNotNil]]);
   [coordinator_ signOutFromTargetRect:rect
-                            forSwitch:NO
                            completion:^(BOOL success) {
                              EXPECT_TRUE(success);
                              assertOpenAndInterrupt();
@@ -314,7 +313,6 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
   base::RepeatingClosure closure = run_loop.QuitClosure();
   CGRect rect = CGRect();
   [coordinator_ signOutFromTargetRect:rect
-                            forSwitch:NO
                            completion:^(BOOL success) {
                              EXPECT_TRUE(success);
                              closure.Run();
@@ -329,6 +327,7 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testSignin) {
   base::RepeatingClosure closure = run_loop.QuitClosure();
   AuthenticationFlow* authentication_flow = [coordinator_
       triggerSigninWithSystemIdentity:kSecondaryIdentity
+                           anchorRect:CGRectNull
                            completion:^(SigninCoordinatorResult result) {
                              EXPECT_EQ(result,
                                        SigninCoordinatorResult::

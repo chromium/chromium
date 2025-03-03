@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TimeUtils;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.RequestStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.List;
@@ -126,17 +126,17 @@ public class AuxiliarySearchControllerImpl
     }
 
     @Override
-    public void onBackgroundTaskStart(
-            @NonNull List<AuxiliarySearchEntry> tabs,
-            @NonNull Map<AuxiliarySearchEntry, Bitmap> tabToFaviconMap,
+    public <T> void onBackgroundTaskStart(
+            @NonNull List<T> entries,
+            @NonNull Map<T, Bitmap> entryToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMillis) {
         if (!mDonor.canDonate()) return;
 
         // mDonor will cache the donation list if the initialization of the donor is in progress.
         mDonor.donateFavicons(
-                tabs,
-                tabToFaviconMap,
+                entries,
+                entryToFaviconMap,
                 (success) -> {
                     callback.onResult(success);
                     AuxiliarySearchMetrics.recordScheduledDonateTime(
@@ -182,86 +182,11 @@ public class AuxiliarySearchControllerImpl
             tabs.sort(AuxiliarySearchProvider.sComparator);
         }
 
-        Callback<Boolean> onDonationCompleteCallback =
-                (success) -> {
-                    AuxiliarySearchMetrics.recordDonateTime(TimeUtils.uptimeMillis() - startTimeMs);
-                    AuxiliarySearchMetrics.recordDonationRequestStatus(
-                            success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL);
-                };
-
-        // Donates the list of tabs without favicons.
-        mDonor.donateEntries(tabs, onDonationCompleteCallback);
-
-        if (!mIsFaviconEnabled) {
-            return;
-        }
-
-        mTaskFinishedCount = 0;
-        Map<Tab, Bitmap> tabToFaviconMap = new HashMap<>();
-        int zeroStateFaviconFetchedNumber =
-                mIsFaviconEnabled ? Math.min(tabs.size(), mZeroStateFaviconNumber) : 0;
-
-        long faviconStartTimeMs = TimeUtils.uptimeMillis();
-        // When donating favicon is enabled, Chrome only donates the favicons of the most
-        // recently visited tabs in the first round.
-        for (int i = 0; i < zeroStateFaviconFetchedNumber; i++) {
-            Tab tab = tabs.get(i);
-
-            mFaviconHelper.getLocalFaviconImageForURL(
-                    mProfile,
-                    tab.getUrl(),
-                    mDefaultFaviconSize,
-                    (image, url) -> {
-                        mTaskFinishedCount++;
-                        if (image != null) {
-                            tabToFaviconMap.put(tab, image);
-                        }
-
-                        // Once all favicon fetching is completed, donates all tabs with favicons if
-                        // exists.
-                        if (mTaskFinishedCount == zeroStateFaviconFetchedNumber) {
-                            AuxiliarySearchMetrics.recordFaviconFirstDonationCount(
-                                    tabToFaviconMap.size());
-                            AuxiliarySearchMetrics.recordQueryFaviconTime(
-                                    TimeUtils.uptimeMillis() - faviconStartTimeMs);
-
-                            if (!tabToFaviconMap.isEmpty()) {
-                                mDonor.donateEntries(tabToFaviconMap, onDonationCompleteCallback);
-                            }
-                        }
-                    });
-        }
-
-        int remainingFaviconFetchCount = tabs.size() - zeroStateFaviconFetchedNumber;
-        if (mIsFaviconEnabled && remainingFaviconFetchCount > 0) {
-
-            // Saves the metadata of tabs in a local file.
-            mAuxiliarySearchProvider.saveTabMetadataToFile(
-                    AuxiliarySearchUtils.getTabDonateFile(mContext),
-                    tabs,
-                    zeroStateFaviconFetchedNumber,
-                    remainingFaviconFetchCount);
-
-            // Schedules a background task to donate favicons of the remaining tabs.
-            mAuxiliarySearchProvider.scheduleBackgroundTask(
-                    sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs.getValue(),
-                    TimeUtils.uptimeMillis());
-        }
+        onNonSensitiveDataAvailable(tabs, startTimeMs);
     }
 
-    /**
-     * Called when a list of up to 100 non sensitive Tabs is available.
-     *
-     * @param entries A list of non sensitive Tabs.
-     * @param startTimeMs The starting time to query the tab list.
-     */
     @VisibleForTesting
-    public void onNonSensitiveHistoryDataAvailable(
-            @Nullable List<AuxiliarySearchDataEntry> entries, long startTimeMs) {
-        AuxiliarySearchMetrics.recordQueryTabTime(TimeUtils.uptimeMillis() - startTimeMs);
-
-        if (entries == null || entries.isEmpty()) return;
-
+    <T> void onNonSensitiveDataAvailable(List<T> entries, long startTimeMs) {
         Callback<Boolean> onDonationCompleteCallback =
                 (success) -> {
                     AuxiliarySearchMetrics.recordDonateTime(TimeUtils.uptimeMillis() - startTimeMs);
@@ -272,7 +197,85 @@ public class AuxiliarySearchControllerImpl
         // Donates the list of entries without favicons.
         mDonor.donateEntries(entries, onDonationCompleteCallback);
 
-        // TODO(https://397457989): Implement the remaining fetch of favicons.
+        if (!mIsFaviconEnabled) {
+            return;
+        }
+
+        mTaskFinishedCount = 0;
+        Map<T, Bitmap> entryToFaviconMap = new HashMap<>();
+        int zeroStateFaviconFetchedNumber = Math.min(entries.size(), mZeroStateFaviconNumber);
+
+        long faviconStartTimeMs = TimeUtils.uptimeMillis();
+        int metaDataVersion = AuxiliarySearchUtils.getMetadataVersion(entries.get(0));
+
+        // When donating favicon is enabled, Chrome only donates the favicons of the most
+        // recently visited tabs in the first round.
+        for (int i = 0; i < zeroStateFaviconFetchedNumber; i++) {
+            T entry = entries.get(i);
+
+            GURL entryUrl;
+            if (entry instanceof Tab tab) {
+                entryUrl = tab.getUrl();
+            } else {
+                entryUrl = ((AuxiliarySearchDataEntry) entry).url;
+            }
+            mFaviconHelper.getLocalFaviconImageForURL(
+                    mProfile,
+                    entryUrl,
+                    mDefaultFaviconSize,
+                    (image, url) -> {
+                        mTaskFinishedCount++;
+                        if (image != null) {
+                            entryToFaviconMap.put(entry, image);
+                        }
+
+                        // Once all favicon fetching is completed, donates all entries with favicons
+                        // if exists.
+                        if (mTaskFinishedCount == zeroStateFaviconFetchedNumber) {
+                            AuxiliarySearchMetrics.recordFaviconFirstDonationCount(
+                                    entryToFaviconMap.size());
+                            AuxiliarySearchMetrics.recordQueryFaviconTime(
+                                    TimeUtils.uptimeMillis() - faviconStartTimeMs);
+
+                            if (!entryToFaviconMap.isEmpty()) {
+                                mDonor.donateEntries(entryToFaviconMap, onDonationCompleteCallback);
+                            }
+                        }
+                    });
+        }
+
+        int remainingFaviconFetchCount = entries.size() - zeroStateFaviconFetchedNumber;
+        if (remainingFaviconFetchCount > 0) {
+
+            // Saves the metadata of entries in a local file.
+            mAuxiliarySearchProvider.saveTabMetadataToFile(
+                    AuxiliarySearchUtils.getTabDonateFile(mContext),
+                    metaDataVersion,
+                    entries,
+                    zeroStateFaviconFetchedNumber,
+                    remainingFaviconFetchCount);
+
+            // Schedules a background task to donate favicons of the remaining entries.
+            mAuxiliarySearchProvider.scheduleBackgroundTask(
+                    sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs.getValue(),
+                    TimeUtils.uptimeMillis());
+        }
+    }
+
+    /**
+     * Called when a list of up to 100 non sensitive entries is available.
+     *
+     * @param entries A list of non sensitive entries.
+     * @param startTimeMs The starting time to query the data.
+     */
+    @VisibleForTesting
+    public void onNonSensitiveHistoryDataAvailable(
+            @Nullable List<AuxiliarySearchDataEntry> entries, long startTimeMs) {
+        AuxiliarySearchMetrics.recordQueryTabTime(TimeUtils.uptimeMillis() - startTimeMs);
+
+        if (entries == null || entries.isEmpty()) return;
+
+        onNonSensitiveDataAvailable(entries, startTimeMs);
     }
 
     private void deleteAllTabs() {

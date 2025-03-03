@@ -34,7 +34,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       MaskedDomainListManager* masked_domain_list_manager,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
-      bool use_regular_mdl = false);
+      bool ip_protection_incognito);
   ~IpProtectionCoreImplMojo() override;
 
   // Create an instance with parameters for IpProtectionCoreImpl and a
@@ -46,7 +46,8 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
           ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
-      bool is_ip_protection_enabled);
+      bool is_ip_protection_enabled,
+      bool ip_protection_incognito);
 
   // `CoreControl` implementation.
   void VerifyIpProtectionCoreHostForTesting(
@@ -67,7 +68,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
           ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
-      bool use_regular_mdl = false);
+      bool ip_protection_incognito);
 
   void OnIpProtectionConfigAvailableForTesting(
       VerifyIpProtectionCoreHostForTestingCallback callback);

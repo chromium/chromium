@@ -5,21 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_AVAILABILITY_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_AVAILABILITY_H_
 
+class PrefService;
+
 // Returns whether the lens overlay is enabled.
-bool IsLensOverlayAvailable();
+bool IsLensOverlayAvailable(const PrefService* prefs);
 
 // Whether the landscape orientation is allowed for Lens Overlay.
-bool IsLensOverlayLandscapeOrientationEnabled();
+bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs);
 
 // Returns whether the lens overlay should open navigation in the same tab
 // instead of new tab.
-bool IsLensOverlaySameTabNavigationEnabled();
+bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs);
 
 // Returns whether LVF unified experience is enabled.
-bool IsLVFUnifiedExperienceEnabled();
+bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs);
 
 // Returns whether the escape hatch to LVF is enabled.
-bool IsLVFEscapeHatchEnabled();
+bool IsLVFEscapeHatchEnabled(const PrefService* prefs);
 
 // Represents the possible onboarding treatments of Lens Overlay.
 enum class LensOverlayOnboardingTreatment {

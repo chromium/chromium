@@ -8,9 +8,10 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN label='Test 1: Flash the screen '
 ++++++++++UNKNOWN focusable actions='{DEFAULT}' value='2'
 ++++++++++++UNKNOWN hidden
-++++++++++++++UNKNOWN hidden focusable label='1' actions='{DEFAULT}'
-++++++++++++++UNKNOWN focusable selected label='2' actions='{DEFAULT}'
-++++++++++++++UNKNOWN hidden focusable label='3' actions='{DEFAULT}'
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden focusable label='1' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN focusable selected label='2' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN hidden focusable label='3' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label=' times.'
 ++++++++++++UNKNOWN label=' times.'
 ++++++UNKNOWN
@@ -32,9 +33,10 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN label='Test 3: Flash the screen '
 ++++++++++UNKNOWN focusable actions='{DEFAULT}' value='two'
 ++++++++++++UNKNOWN hidden
-++++++++++++++UNKNOWN hidden focusable label='1' actions='{DEFAULT}'
-++++++++++++++UNKNOWN focusable selected label='two' actions='{DEFAULT}'
-++++++++++++++UNKNOWN hidden focusable label='3' actions='{DEFAULT}'
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden focusable label='1' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN focusable selected label='two' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN hidden focusable label='3' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label=' times.'
 ++++++++++++UNKNOWN label=' times.'
 ++++++UNKNOWN

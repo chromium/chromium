@@ -113,7 +113,11 @@ bool IsPopularLanguage(SupportedLanguage supported_language) {
          supported_language == SupportedLanguage::kTr ||
          supported_language == SupportedLanguage::kHi ||
          supported_language == SupportedLanguage::kVi ||
-         supported_language == SupportedLanguage::kBn;
+         supported_language == SupportedLanguage::kBn ||
+         supported_language == SupportedLanguage::kKn ||
+         supported_language == SupportedLanguage::kTa ||
+         supported_language == SupportedLanguage::kTe ||
+         supported_language == SupportedLanguage::kMr;
 }
 
 // Converts a SupportedLanguage to a language code.

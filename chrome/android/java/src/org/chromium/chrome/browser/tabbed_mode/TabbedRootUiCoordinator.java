@@ -1387,9 +1387,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
             @Override
             public void openTabGroupWithTabId(int tabId) {
-                // TODO(crbug.com/395847973): calling navigateToTabSwitcher is a stopgap until
-                // DataSharingTabManager#initiateJoinFlow() properly waits on
-                // ChromeTabbedActivity#doRunnableOnTabSwitcher() to finish before proceeding.
+                // Due to crbug.com/396159718 (see also crbug.com/395847973) it was possible to
+                // reach this method without the tab switcher being open. For now this will
+                // remain as a safegaurd against bugs as internally it will noop if the tab switcher
+                // is already opened. It could be removed in the future with some care taken to add
+                // an assert and verify no callers are using it in an unexpected flow.
                 TabSwitcherUtils.navigateToTabSwitcher(
                         mLayoutManager,
                         /* animate= */ false,

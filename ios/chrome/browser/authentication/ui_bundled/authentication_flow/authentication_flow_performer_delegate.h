@@ -17,8 +17,9 @@
 // Handles completion of AuthenticationFlowPerformer steps.
 @protocol AuthenticationFlowPerformerDelegate <NSObject>
 
-// Indicates that a profile was signed out.
-- (void)didSignOut;
+// Indicates that a profile was signed out, after calling
+// `signOutForAccountSwitchWithProfile`.
+- (void)didSignOutForAccountSwitch;
 
 // Indicates that browsing data finished clearing.
 - (void)didClearData;

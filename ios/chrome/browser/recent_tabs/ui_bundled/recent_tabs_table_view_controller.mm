@@ -405,6 +405,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   historyItem.textColor = [UIColor colorNamed:kBlueColor];
   historyItem.accessibilityIdentifier =
       kRecentTabsShowFullHistoryCellAccessibilityIdentifier;
+  historyItem.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:historyItem
       toSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
 }

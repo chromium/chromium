@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -20,12 +21,15 @@ const CGFloat kMinimumWidth = 44;
 
 }  // namespace
 
-@implementation LensOverlayEntrypointButton
+@implementation LensOverlayEntrypointButton {
+  raw_ptr<const PrefService> _profilePrefs;
+}
 
-- (instancetype)init {
+- (instancetype)initWithProfilePrefs:(const PrefService*)profilePrefs {
   self = [super init];
 
   if (self) {
+    _profilePrefs = profilePrefs;
     self.pointerInteractionEnabled = YES;
     self.minimumDiameter = kMinimumWidth;
     self.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
@@ -76,7 +80,7 @@ const CGFloat kMinimumWidth = 44;
 #pragma mark - private
 
 - (void)setEnabledOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  if (IsLensOverlayLandscapeOrientationEnabled()) {
+  if (IsLensOverlayLandscapeOrientationEnabled(_profilePrefs)) {
     return;
   }
 

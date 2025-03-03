@@ -921,7 +921,7 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
       web_state->GetNavigationManager();
   int initial_index = navigation_manager->GetLastCommittedItemIndex();
 
-  if (IsLensOverlayAvailable()) {
+  if (IsLensOverlayAvailable(profile_->GetPrefs())) {
     OCMExpect([mock_page_side_swipe_commands_handler_
         navigateBackWithSideSwipeAnimationIfNeeded]);
   }
@@ -929,7 +929,7 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
   [provider_ keyCommand_back];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 1);
 
-  if (IsLensOverlayAvailable()) {
+  if (IsLensOverlayAvailable(profile_->GetPrefs())) {
     OCMExpect([mock_page_side_swipe_commands_handler_
         navigateBackWithSideSwipeAnimationIfNeeded]);
   }
@@ -943,7 +943,7 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
   [provider_ keyCommand_forward];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index);
 
-  if (IsLensOverlayAvailable()) {
+  if (IsLensOverlayAvailable(profile_->GetPrefs())) {
     EXPECT_OCMOCK_VERIFY(mock_page_side_swipe_commands_handler_);
   }
 }

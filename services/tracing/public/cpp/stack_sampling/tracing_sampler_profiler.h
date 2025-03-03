@@ -62,6 +62,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
       : public perfetto::DataSource<DataSource> {
    public:
     static constexpr bool kSupportsMultipleInstances = false;
+    static constexpr bool kRequiresCallbacksUnderLock = false;
+
     using TraceContext = perfetto::DataSource<DataSource>::TraceContext;
 
     DataSource() = default;

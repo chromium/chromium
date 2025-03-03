@@ -184,7 +184,7 @@ class BtmNavigationFlowDetectorTest : public ContentBrowserTest {
   }
 
   GURL GetSetCookieUrlForSite(std::string_view site) {
-    // Path set in dips_test_utils.cc's NavigateToSetCookie().
+    // Path set in btm_test_utils.cc's NavigateToSetCookie().
     return embedded_https_test_server_.GetURL(site, "/set-cookie?name=value");
   }
 
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
   ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, url);
   ukm_recorder().ExpectEntryMetric(
       direct_navigation_entry, "NavigationSource",
-      static_cast<int64_t>(dips::DirectNavigationSource::kOmnibar));
+      static_cast<int64_t>(btm::DirectNavigationSource::kOmnibar));
 }
 
 IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
   ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, url);
   ukm_recorder().ExpectEntryMetric(
       direct_navigation_entry, "NavigationSource",
-      static_cast<int64_t>(dips::DirectNavigationSource::kBookmark));
+      static_cast<int64_t>(btm::DirectNavigationSource::kBookmark));
 }
 
 IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
                                          redirector_url);
   ukm_recorder().ExpectEntryMetric(
       direct_navigation_entry, "NavigationSource",
-      static_cast<int64_t>(dips::DirectNavigationSource::kOmnibar));
+      static_cast<int64_t>(btm::DirectNavigationSource::kOmnibar));
 }
 
 IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
   ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, initial_url);
   ukm_recorder().ExpectEntryMetric(
       direct_navigation_entry, "NavigationSource",
-      static_cast<int64_t>(dips::DirectNavigationSource::kOmnibar));
+      static_cast<int64_t>(btm::DirectNavigationSource::kOmnibar));
   // Implied assert: no DirectNavigation UKM entry for link_target_url.
 }
 

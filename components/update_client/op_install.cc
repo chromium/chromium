@@ -199,6 +199,7 @@ base::OnceClosure InstallOperation(
     std::unique_ptr<Unzipper> unzipper,
     crx_file::VerifierFormat crx_format,
     const std::string& id,
+    const std::string& file_hash,
     const std::vector<uint8_t>& pk_hash,
     scoped_refptr<CrxInstaller> installer,
     std::unique_ptr<CrxInstaller::InstallParams> install_params,
@@ -208,7 +209,7 @@ base::OnceClosure InstallOperation(
     base::OnceCallback<void(const CrxInstaller::Result&)> callback,
     const base::FilePath& crx_file) {
   crx_cache->Put(
-      crx_file, id, next_fp,
+      crx_file, id, file_hash, next_fp,
       base::BindOnce(
           &Unpack,
           base::BindOnce(&Install,

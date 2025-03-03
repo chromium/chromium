@@ -116,7 +116,7 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
   ExtensionSystem* system = ExtensionSystem::Get(browser_context_);
   ManagementPolicy* management_policy = system->management_policy();
   PendingExtensionManager* pending_extension_manager =
-      system->extension_service()->pending_extension_manager();
+      PendingExtensionManager::Get(browser_context_);
   // We only show the error UI for the enabled set. This means that an
   // extension that is blocked while browser is not running will never
   // be displayed in the UI.

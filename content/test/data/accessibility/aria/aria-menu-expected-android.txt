@@ -1,10 +1,10 @@
 android.webkit.WebView focusable focused
-++android.view.View role_description='menu bar'
-++++android.view.MenuItem role_description='menu item' clickable interesting name='File'
-++++android.view.MenuItem role_description='menu item' clickable interesting name='Edit' item_index=1 row_index=1
-++++android.view.MenuItem role_description='menu item' clickable interesting name='View' item_index=2 row_index=2
-++android.view.View role_description='menu' name='File'
-++++android.view.MenuItem role_description='menu item' clickable interesting name='New'
-++++android.view.MenuItem role_description='menu item' clickable interesting name='Open' item_index=1 row_index=1
-++++android.view.MenuItem role_description='menu item' clickable interesting name='Save' item_index=2 row_index=2
-++++android.view.MenuItem role_description='menu item' clickable interesting name='Quit' item_index=3 row_index=3
+++android.view.View role_description='menu bar' collection item_count=3 row_count=3 column_count=1
+++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='File'
+++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Edit' item_index=1 row_index=1
+++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='View' item_index=2 row_index=2
+++android.view.View role_description='menu' collection name='File' item_count=4 row_count=4 column_count=1
+++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='New'
+++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Open' item_index=1 row_index=1
+++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Save' item_index=2 row_index=2
+++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Quit' item_index=3 row_index=3

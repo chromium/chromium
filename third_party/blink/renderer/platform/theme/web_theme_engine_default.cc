@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_features.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace blink {

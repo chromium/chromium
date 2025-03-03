@@ -279,14 +279,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
                 Field(&AutocompleteMatch::contents, u"abc"),
                 Field(&AutocompleteMatch::description, u"Aggregator Search"),
                 Field(&AutocompleteMatch::destination_url,
-                      GURL("https://www.aggregator.com/search?q=abc")), ),
-          AllOf(
-              Field(&AutocompleteMatch::type,
-                    AutocompleteMatchType::SEARCH_SUGGEST),
-              Field(&AutocompleteMatch::contents, u"Document 1"),
-              Field(&AutocompleteMatch::description, u""),
-              Field(&AutocompleteMatch::destination_url,
-                    GURL("https://www.aggregator.com/search?q=Document+1")), ),
+                      GURL("https://www.aggregator.com/search?q=abc"))),
+          AllOf(Field(&AutocompleteMatch::type,
+                      AutocompleteMatchType::SEARCH_SUGGEST),
+                Field(&AutocompleteMatch::contents, u"Document 1"),
+                Field(&AutocompleteMatch::description, u""),
+                Field(&AutocompleteMatch::destination_url,
+                      GURL("https://www.aggregator.com/search?q=Document+1"))),
           AllOf(Field(&AutocompleteMatch::type,
                       AutocompleteMatchType::NAVSUGGEST),
                 Field(&AutocompleteMatch::contents, u"john@example.com"),
@@ -295,13 +294,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
                       GURL("https://www.aggregator.com/"
                            "search?q=john%40example.com")),
                 Field(&AutocompleteMatch::image_url,
-                      GURL("https://example.com/image.png")), ),
+                      GURL("https://example.com/image.png"))),
           AllOf(Field(&AutocompleteMatch::type,
                       AutocompleteMatchType::NAVSUGGEST),
                 Field(&AutocompleteMatch::contents, u""),
                 Field(&AutocompleteMatch::description, u"Critical Crash"),
                 Field(&AutocompleteMatch::destination_url,
-                      GURL("https://www.example.com/")), ),
+                      GURL("https://www.example.com/"))),
       })));
 }
 

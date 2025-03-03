@@ -83,16 +83,16 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_coordinator.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
+#import "ios/chrome/browser/download/coordinator/ar_quick_look_coordinator.h"
+#import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_coordinator.h"
+#import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
+#import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
+#import "ios/chrome/browser/download/coordinator/safari_download_coordinator.h"
+#import "ios/chrome/browser/download/coordinator/vcard_coordinator.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
-#import "ios/chrome/browser/download/ui_bundled/ar_quick_look_coordinator.h"
-#import "ios/chrome/browser/download/ui_bundled/auto_deletion/auto_deletion_coordinator.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_coordinator.h"
-#import "ios/chrome/browser/download/ui_bundled/features.h"
-#import "ios/chrome/browser/download/ui_bundled/pass_kit_coordinator.h"
-#import "ios/chrome/browser/download/ui_bundled/safari_download_coordinator.h"
-#import "ios/chrome/browser/download/ui_bundled/vcard_coordinator.h"
+#import "ios/chrome/browser/download/ui/features.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
@@ -1144,7 +1144,7 @@ enum class ToolbarKind {
       componentFactory:[[NewTabPageComponentFactory alloc] init]];
   _NTPCoordinator.toolbarDelegate = _toolbarCoordinator;
 
-  if (IsLVFUnifiedExperienceEnabled()) {
+  if (IsLVFUnifiedExperienceEnabled(profile->GetPrefs())) {
     _lensViewFinderCoordinator =
         [[LensViewFinderCoordinator alloc] initWithBrowser:self.browser];
   } else {
@@ -1204,7 +1204,7 @@ enum class ToolbarKind {
   // The Lens coordinator needs to be started before the primary toolbar
   // coordinator so that the LensCommands dispatcher is correctly registered in
   // time.
-  if (IsLVFUnifiedExperienceEnabled()) {
+  if (IsLVFUnifiedExperienceEnabled(self.browser->GetProfile()->GetPrefs())) {
     _lensViewFinderCoordinator.baseViewController = viewController;
     [_lensViewFinderCoordinator start];
   } else {
@@ -1297,7 +1297,7 @@ enum class ToolbarKind {
   [_lensCoordinator stop];
   _lensCoordinator = nil;
 
-  if (IsLVFUnifiedExperienceEnabled()) {
+  if (IsLVFUnifiedExperienceEnabled(self.browser->GetProfile()->GetPrefs())) {
     [_lensViewFinderCoordinator stop];
     _lensViewFinderCoordinator = nil;
   } else {
@@ -1450,7 +1450,7 @@ enum class ToolbarKind {
   _dockingPromoCoordinator.promosUIHandler = _promosManagerCoordinator;
   [_dockingPromoCoordinator start];
 
-  if (IsLensOverlayAvailable()) {
+  if (IsLensOverlayAvailable(self.browser->GetProfile()->GetPrefs())) {
     _lensOverlayCoordinator = [[LensOverlayCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
@@ -3425,7 +3425,8 @@ enum class ToolbarKind {
   LensOverlayTabHelper* lensOverlayTabHelper =
       LensOverlayTabHelper::FromWebState(webState);
   bool isLensOverlayAvailable =
-      IsLensOverlayAvailable() && lensOverlayTabHelper;
+      IsLensOverlayAvailable(self.browser->GetProfile()->GetPrefs()) &&
+      lensOverlayTabHelper;
 
   bool isBuildingLensOverlay =
       isLensOverlayAvailable &&
@@ -3482,7 +3483,8 @@ enum class ToolbarKind {
     return @[];
   }
 
-  WebStateList* webStateList = self.browser->GetWebStateList();
+  Browser* browser = self.browser;
+  WebStateList* webStateList = browser->GetWebStateList();
 
   if (webStateList->GetIndexOfWebState(webState) ==
       WebStateList::kInvalidIndex) {
@@ -3491,14 +3493,15 @@ enum class ToolbarKind {
 
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
 
-  if (IsLensOverlayAvailable()) {
+  PrefService* prefs = browser->GetProfile()->GetPrefs();
+  if (IsLensOverlayAvailable(prefs)) {
     LensOverlayTabHelper* lensOverlayTabHelper =
         LensOverlayTabHelper::FromWebState(webState);
 
     if (lensOverlayTabHelper) {
       BOOL isLensOverlayCurrentlyInvoked;
 
-      if (IsLensOverlaySameTabNavigationEnabled()) {
+      if (IsLensOverlaySameTabNavigationEnabled(prefs)) {
         isLensOverlayCurrentlyInvoked =
             lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
       } else {

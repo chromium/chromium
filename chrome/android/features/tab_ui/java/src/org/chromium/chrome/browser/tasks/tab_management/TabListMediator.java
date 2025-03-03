@@ -1626,7 +1626,8 @@ class TabListMediator implements TabListNotificationHandler {
      * Span count is computed based on screen width for tablets and orientation for phones. When in
      * multi-window mode on phone, the span count is fixed to 2 to keep tab card size reasonable.
      */
-    private int getSpanCount(int screenWidthDp) {
+    @VisibleForTesting
+    int getSpanCount(int screenWidthDp) {
         if (XrUtils.isXrDevice()) {
             // The layout span count is restricted to medium on XR immersive devices to display
             // larger tab thumbnails, despite the large screen width.
@@ -2850,9 +2851,5 @@ class TabListMediator implements TabListNotificationHandler {
         var oldValue = mActionsOnAllRelatedTabs;
         mActionsOnAllRelatedTabs = actionOnAllRelatedTabs;
         ResettersForTesting.register(() -> mActionsOnAllRelatedTabs = oldValue);
-    }
-
-    int getSpanCountForTesting(int screenWidthDp) {
-        return getSpanCount(screenWidthDp);
     }
 }

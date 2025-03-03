@@ -477,18 +477,9 @@ std::optional<ui::ImageModel> ToolbarController::GetMenuIcon(
                 pinned_icon_image.IsVectorIcon()) {
               ui::VectorIconModel vector_icon_model =
                   pinned_icon_image.GetVectorIcon();
-
-              if (vector_icon_model.has_color()) {
                 return std::make_optional(ui::ImageModel::FromVectorIcon(
                     *vector_icon_model.vector_icon(), vector_icon_model.color(),
                     ui::SimpleMenuModel::kDefaultIconSize));
-
-              } else {
-                return std::make_optional(ui::ImageModel::FromVectorIcon(
-                    *vector_icon_model.vector_icon(),
-                    vector_icon_model.color_id(),
-                    ui::SimpleMenuModel::kDefaultIconSize));
-              }
             } else {
               return std::make_optional(pinned_icon_image);
             }
@@ -812,7 +803,7 @@ void ToolbarController::ActionItemChanged(actions::ActionItem* action_item) {
       ui::VectorIconModel vector_icon_model = pinned_icon_image.GetVectorIcon();
 
       menu_item->icon_view()->SetImage(ui::ImageModel::FromVectorIcon(
-          *vector_icon_model.vector_icon(), vector_icon_model.color_id(),
+          *vector_icon_model.vector_icon(), vector_icon_model.color(),
           ui::SimpleMenuModel::kDefaultIconSize));
     }
     status_indicator->Hide();

@@ -477,6 +477,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.EnumeratePrinters.BasicInfo.Registry"
+    enum="BooleanSuccess" expires_after="2025-07-27">
+  <owner>awscreen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    When enumerating the list of printers on Windows, records an instance for
+    using the Windows registry to fill in extra printer details that are
+    unavailable from the fast Print Spooler API call. Each instance is
+    successful only if a registry entry for a printer is located that
+    corresponds with the printer returned by the Print Spooler API.
+  </summary>
+</histogram>
+
 <histogram name="Printing.Oop.PrintResult" enum="PrintOopResult"
     expires_after="2025-08-24">
   <owner>awscreen@chromium.org</owner>

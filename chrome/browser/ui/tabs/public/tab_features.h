@@ -56,6 +56,10 @@ namespace memory_saver {
 class MemorySaverChipController;
 }
 
+namespace zoom {
+class ZoomPageActionController;
+}
+
 namespace permissions {
 class PermissionIndicatorsTabData;
 }  // namespace permissions
@@ -271,6 +275,9 @@ class TabFeatures {
   // Responsible for managing the "Translate" page action.
   std::unique_ptr<TranslatePageActionController>
       translate_page_action_controller_;
+
+  // Responsible for managing the "Zoom" page action.
+  std::unique_ptr<zoom::ZoomPageActionController> zoom_page_action_controller_;
 
   // Contains the recent collaboration message for a shared tab.
   std::unique_ptr<tab_groups::CollaborationMessagingTabData>

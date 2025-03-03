@@ -264,6 +264,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PasswordRequirementsServiceFactory",
     "PolicyBlocklist",
     "PolicyClipboardRestriction",
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ReportingEventRouter",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "SafeSearch",
     "WebDataService",
 
@@ -305,6 +308,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "OmniboxSuggestionsWatcher",
     "PolicyBlocklist",
     "PolicyClipboardRestriction",
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ReportingEventRouter",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "SafeSearch",
 
     // in chrome: using `BrowserContextKeyedServiceShutdownNotifierFactory`:

@@ -1557,16 +1557,6 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SHA1IsDefaultDisabled) {
       AuthState::SHOWING_INTERSTITIAL);
 }
 
-// By default, trust in Symantec's Legacy PKI should be disabled. Unfortunately,
-// there is currently no way to simulate navigation to a page that will
-// meaningfully test that Symantec enforcement is actually applied to the
-// request.
-IN_PROC_BROWSER_TEST_F(SSLUITest, SymantecEnforcementIsNotDisabled) {
-  EXPECT_FALSE(last_ssl_config_.symantec_enforcement_disabled);
-  EXPECT_FALSE(CreateDefaultNetworkContextParams()
-                   ->initial_ssl_config->symantec_enforcement_disabled);
-}
-
 // Visit a HTTP page which request WSS connection to a server providing invalid
 // certificate. Close the page while WSS connection waits for SSLManager's
 // response from UI thread.

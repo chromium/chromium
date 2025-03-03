@@ -21,9 +21,11 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/zoom/page_zoom.h"
@@ -340,9 +342,15 @@ std::u16string ZoomBubbleView::GetAccessibleWindowTitle() const {
   if (!browser) {
     return {};
   }
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar_button_provider()
-      ->GetPageActionIconView(PageActionIconType::kZoom)
+
+  ToolbarButtonProvider* provider =
+      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
+
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    return provider->GetPageActionView(kActionZoomNormal)->GetAccessibleName();
+  }
+
+  return provider->GetPageActionIconView(PageActionIconType::kZoom)
       ->GetTextForTooltipAndAccessibleName();
 }
 

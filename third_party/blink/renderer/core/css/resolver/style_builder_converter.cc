@@ -25,11 +25,6 @@
  */
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -1426,7 +1421,7 @@ GridPosition StyleBuilderConverter::ConvertGridPosition(
   if (current_identifier_value &&
       current_identifier_value->GetValueID() == CSSValueID::kSpan) {
     is_span_position = true;
-    ++it;
+    UNSAFE_TODO(++it);
     current_value = it != values.end() ? it->Get() : nullptr;
   }
 
@@ -1434,14 +1429,14 @@ GridPosition StyleBuilderConverter::ConvertGridPosition(
   if (current_primitive_value && current_primitive_value->IsNumber()) {
     grid_line_number = current_primitive_value->ComputeInteger(
         state.CssToLengthConversionData());
-    ++it;
+    UNSAFE_TODO(++it);
     current_value = it != values.end() ? it->Get() : nullptr;
   }
 
   auto* current_ident_value = DynamicTo<CSSCustomIdentValue>(current_value);
   if (current_ident_value) {
     grid_line_name = current_ident_value->Value();
-    ++it;
+    UNSAFE_TODO(++it);
   }
 
   DCHECK_EQ(it, values.end());
@@ -1581,10 +1576,10 @@ void StyleBuilderConverter::ConvertGridTrackList(
     computed_grid_track_list.axis_type = GridAxisType::kSubgriddedAxis;
     track_list.SetAxisType(GridAxisType::kSubgriddedAxis);
     is_subgrid = true;
-    ++curr_value;
+    UNSAFE_TODO(++curr_value);
   }
 
-  for (; curr_value != values.end(); ++curr_value) {
+  for (; curr_value != values.end(); UNSAFE_TODO(++curr_value)) {
     if (auto* grid_auto_repeat_value =
             DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value->Get())) {
       Vector<GridTrackSize, 1> repeated_track_sizes;
@@ -2528,24 +2523,6 @@ StyleViewTransitionGroup StyleBuilderConverter::ConvertViewTransitionGroup(
   }
   return StyleViewTransitionGroup::Create(
       ConvertCustomIdent(state, value)->GetName());
-}
-
-StyleViewTransitionCaptureMode
-StyleBuilderConverter::ConvertViewTransitionCaptureMode(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
-    switch (ident->GetValueID()) {
-      case CSSValueID::kLayered:
-        return StyleViewTransitionCaptureMode::kLayered;
-      case CSSValueID::kFlat:
-        return StyleViewTransitionCaptureMode::kFlat;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  return StyleViewTransitionCaptureMode::kLayered;
 }
 
 StyleViewTransitionName* StyleBuilderConverter::ConvertViewTransitionName(

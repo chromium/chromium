@@ -106,21 +106,49 @@ enum class NoticeActionBehavior {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeActionBehavior)
 
-// TODO(crbug.com/392088228): Remove other actions once the new event fields are
-// written to. Stores information about profile interactions on a notice.
-struct PrivacySandboxNoticeData {
+class PrivacySandboxNoticeData {
+ public:
   PrivacySandboxNoticeData();
   PrivacySandboxNoticeData& operator=(const PrivacySandboxNoticeData&);
   ~PrivacySandboxNoticeData();
   PrivacySandboxNoticeData(const PrivacySandboxNoticeData& data);
-  int schema_version = 0;
-  std::string chrome_version;
-  NoticeActionTaken notice_action_taken = NoticeActionTaken::kNotSet;
-  base::Time notice_action_taken_time;
-  base::Time notice_first_shown;
-  base::Time notice_last_shown;
-  base::TimeDelta notice_shown_duration;
-  std::vector<std::pair<NoticeEvent, base::Time>> notice_events;
+
+  int GetSchemaVersion() const;
+  std::string GetChromeVersion() const;
+  std::vector<std::pair<NoticeEvent, base::Time>> GetNoticeEvents() const;
+
+  void SetSchemaVersion(int schema_version);
+  void SetChromeVersion(std::string_view chrome_version);
+  void SetNoticeEvents(
+      const std::vector<std::pair<NoticeEvent, base::Time>>& events);
+
+  // Gets the timestamp when the notice was first shown. If the notice was never
+  // shown, the default timestamp will be returned.
+  std::optional<base::Time> GetNoticeFirstShownFromEvents();
+
+  // Gets the timestamp when the notice was last shown. If the notice was never
+  // shown, the default timestamp will be returned.
+  std::optional<base::Time> GetNoticeLastShownFromEvents();
+
+  // Gets the notice action taken and when it was taken the first time the
+  // notice was shown. If the notice hasn't been shown for the first time, or
+  // there was no action associated, no value is returned. If there are multiple
+  // actions associated, only the last action is returned.
+  std::optional<std::pair<NoticeEvent, base::Time>>
+  GetNoticeActionTakenForFirstShownFromEvents();
+
+  // TODO(crbug.com/392088228): Remove other actions once the new event fields
+  // are written to. Stores information about profile interactions on a notice.
+  NoticeActionTaken notice_action_taken_ = NoticeActionTaken::kNotSet;
+  base::Time notice_action_taken_time_;
+  base::Time notice_first_shown_;
+  base::Time notice_last_shown_;
+  base::TimeDelta notice_shown_duration_;
+
+ private:
+  int schema_version_ = 0;
+  std::string chrome_version_;
+  std::vector<std::pair<NoticeEvent, base::Time>> notice_events_;
 };
 
 // Stores pre-migration interactions on a notice in the v1 schema.

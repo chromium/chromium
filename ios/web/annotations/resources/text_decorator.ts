@@ -49,7 +49,7 @@ const HIGHLIGHT_BACKGROUND_COLOR = 'rgba(20,111,225,0.25)';
 // 5. An untouched node, deleted and gc collected.
 //    Will be ignored and not decorated.
 
-class TextDecorator {
+export class TextDecorator {
   constructor(private styler: TextStyler) {}
 
   // The key is a unique `number` tagged on the original node and replacememnt
@@ -331,7 +331,3 @@ class TextDecorator {
     });
   }
 }
-
-export {
-  TextDecorator,
-};

@@ -4,8 +4,7 @@
 
 #include "components/performance_manager/scenarios/input_scenario_observer.h"
 
-#include "components/performance_manager/public/render_frame_host_proxy.h"
-#include "content/public/browser/render_frame_host.h"
+#include "base/check.h"
 
 namespace performance_manager {
 
@@ -16,22 +15,30 @@ void InputScenarioObserver::OnInputScenarioChanged(
     const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* data = FrameInputStateDecorator::Data::Get(frame_node);
-  content::RenderFrameHost* rfh = frame_node->GetRenderFrameHostProxy().Get();
-  if (!rfh || !data) {
-    return;
-  }
+  CHECK(data, base::NotFatalUntil::M136);
 
   const ProcessNode* process_node = frame_node->GetProcessNode();
+  size_t& process_input_count = process_input_scenarios_count_[process_node];
   if (data->input_scenario() == InputScenario::kNoInput) {
-    process_input_scenarios_count_[process_node] -= 1;
-    if (process_input_scenarios_count_[process_node] == 0) {
-      // TODO(crbug.com/365586676): This should also call
-      // SetGlobalInputScenario.
-      SetInputScenarioForProcessNode(data->input_scenario(), process_node);
+    CHECK_GT(process_input_count, 0u);
+    CHECK_GT(global_input_scenarios_count_, 0u);
+    process_input_count -= 1;
+    global_input_scenarios_count_ -= 1;
+    if (process_input_count == 0) {
+      SetInputScenarioForProcessNode(InputScenario::kNoInput, process_node);
+    }
+    if (global_input_scenarios_count_ == 0) {
+      SetGlobalInputScenario(InputScenario::kNoInput);
     }
   } else {
-    process_input_scenarios_count_[process_node] += 1;
-    SetInputScenarioForProcessNode(data->input_scenario(), process_node);
+    process_input_count += 1;
+    global_input_scenarios_count_ += 1;
+    if (process_input_count == 1) {
+      SetInputScenarioForProcessNode(data->input_scenario(), process_node);
+    }
+    if (global_input_scenarios_count_ == 1) {
+      SetGlobalInputScenario(data->input_scenario());
+    }
   }
 }
 

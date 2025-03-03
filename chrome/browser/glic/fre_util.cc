@@ -30,6 +30,9 @@ GURL GetFreURL(Profile* profile) {
       GURL(has_glic_fre_url
                ? command_line->GetSwitchValueASCII(::switches::kGlicFreURL)
                : features::kGlicFreURL.Get());
+  if (base_url.is_empty()) {
+    LOG(ERROR) << "No glic fre url";
+  }
 
   // Add the hotkey configuration to the URL as a query parameter.
   std::string hotkey_param_value = GetHotkeyString();

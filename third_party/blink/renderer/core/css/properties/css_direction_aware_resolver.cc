@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -78,13 +74,13 @@ template <size_t size>
 const CSSProperty& CSSDirectionAwareResolver::Group<size>::GetProperty(
     size_t index) const {
   DCHECK_LT(index, size);
-  return *properties_[index];
+  return UNSAFE_TODO(*properties_[index]);
 }
 
 template <size_t size>
 bool CSSDirectionAwareResolver::Group<size>::Contains(CSSPropertyID id) const {
   for (size_t i = 0; i < size; ++i) {
-    if (properties_[i]->IDEquals(id)) {
+    if (UNSAFE_TODO(properties_[i]->IDEquals(id))) {
       return true;
     }
   }

@@ -310,6 +310,25 @@
             ]
         }
     ],
+    "AlwaysBlock3pcsIncognito": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AlwaysBlock3pcsIncognito"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAnimateSuggestionsListAppearance": [
         {
             "platforms": [
@@ -670,6 +689,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidTabDeclutterArchiveDuplicateTabs"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidUseFrameIntervalDecider": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseFrameIntervalDecider"
                     ]
                 }
             ]
@@ -14012,6 +14046,33 @@
             ]
         }
     ],
+    "MaliciousApkDownloadCheck": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "//0": "This config is the intended feature to launch.",
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MaliciousApkDownloadCheck"
+                    ]
+                },
+                {
+                    "//0": "This config is an intermediate experimental state.",
+                    "name": "EnabledTelemetryOnly",
+                    "params": {
+                        "sample_percentage": "1",
+                        "telemetry_only": "true"
+                    },
+                    "enable_features": [
+                        "MaliciousApkDownloadCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "ManagedProfileRequiredInterstitial": [
         {
             "platforms": [
@@ -22860,33 +22921,6 @@
                     "name": "CrossSiteMainFrameNavigationBoolean_CANARY_DEV_20240916",
                     "enable_features": [
                         "SplitCacheByCrossSiteMainFrameNavigationBoolean"
-                    ],
-                    "disable_features": [
-                        "HttpCacheKeyingExperimentControlGroup2024",
-                        "SplitCacheByMainFrameNavigationInitiator",
-                        "SplitCacheByNavigationInitiator"
-                    ]
-                },
-                {
-                    "name": "MainFrameNavigationInitiator_CANARY_DEV_20240916",
-                    "enable_features": [
-                        "SplitCacheByMainFrameNavigationInitiator"
-                    ],
-                    "disable_features": [
-                        "HttpCacheKeyingExperimentControlGroup2024",
-                        "SplitCacheByCrossSiteMainFrameNavigationBoolean",
-                        "SplitCacheByNavigationInitiator"
-                    ]
-                },
-                {
-                    "name": "NavigationInitiator_CANARY_DEV_20240916",
-                    "enable_features": [
-                        "SplitCacheByNavigationInitiator"
-                    ],
-                    "disable_features": [
-                        "HttpCacheKeyingExperimentControlGroup2024",
-                        "SplitCacheByCrossSiteMainFrameNavigationBoolean",
-                        "SplitCacheByMainFrameNavigationInitiator"
                     ]
                 }
             ]

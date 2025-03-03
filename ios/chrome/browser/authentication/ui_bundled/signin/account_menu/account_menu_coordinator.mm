@@ -249,7 +249,6 @@
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
-                    forSwitch:(BOOL)forSwitch
                    completion:(void (^)(BOOL))completion {
   if (!_authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
@@ -258,9 +257,7 @@
     return;
   }
   signin_metrics::ProfileSignout metricSignOut =
-      forSwitch
-          ? signin_metrics::ProfileSignout::kChangeAccountInAccountMenu
-          : signin_metrics::ProfileSignout::kUserClickedSignoutInAccountMenu;
+      signin_metrics::ProfileSignout::kUserClickedSignoutInAccountMenu;
   _signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
@@ -268,7 +265,6 @@
                             view:_viewController.view
         forceSnackbarOverToolbar:YES
                       withSource:metricSignOut];
-  _signoutActionSheetCoordinator.accountSwitch = forSwitch;
   __weak __typeof(self) weakSelf = self;
   _signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf stopSignoutActionSheetCoordinator];
@@ -293,6 +289,7 @@
 
 - (AuthenticationFlow*)
     triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
+                         anchorRect:(CGRect)anchorRect
                          completion:
                              (signin_ui::SigninCompletionCallback)completion {
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
@@ -301,8 +298,8 @@
                    accessPoint:signin_metrics::AccessPoint::kAccountMenu
              postSignInActions:PostSignInActionSet()
       presentingViewController:_navigationController
-                    anchorView:nil
-                    anchorRect:CGRectNull];
+                    anchorView:_viewController.view
+                    anchorRect:anchorRect];
 
   [authenticationFlow
       startSignInWithCompletion:^(SigninCoordinatorResult result) {

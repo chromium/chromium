@@ -71,6 +71,7 @@ class MicrosoftFilesPageHandler
       std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
           unsorted_suggestions);
   std::string CreateJustificationTextForRecentFile(base::Time opened_time);
+  std::string CreateJustificationTextForSharedFile(std::string shared_by);
   mojo::Receiver<file_suggestion::mojom::MicrosoftFilesPageHandler> handler_;
   raw_ptr<MicrosoftAuthService> microsoft_auth_service_;
   raw_ptr<PrefService> pref_service_;

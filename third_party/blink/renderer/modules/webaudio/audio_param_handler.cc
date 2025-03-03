@@ -117,77 +117,77 @@ void AudioParamHandler::SetParamType(AudioParamType param_type) {
 }
 
 void AudioParamHandler::SetCustomParamName(const String name) {
-  DCHECK(param_type_ == kParamTypeAudioWorklet);
+  DCHECK(param_type_ == AudioParamType::kParamTypeAudioWorklet);
   custom_param_name_ = name;
 }
 
 String AudioParamHandler::GetParamName() const {
   switch (GetParamType()) {
-    case kParamTypeAudioBufferSourcePlaybackRate:
+    case AudioParamType::kParamTypeAudioBufferSourcePlaybackRate:
       return "AudioBufferSource.playbackRate";
-    case kParamTypeAudioBufferSourceDetune:
+    case AudioParamType::kParamTypeAudioBufferSourceDetune:
       return "AudioBufferSource.detune";
-    case kParamTypeBiquadFilterFrequency:
+    case AudioParamType::kParamTypeBiquadFilterFrequency:
       return "BiquadFilter.frequency";
-    case kParamTypeBiquadFilterQ:
+    case AudioParamType::kParamTypeBiquadFilterQ:
       return "BiquadFilter.Q";
-    case kParamTypeBiquadFilterGain:
+    case AudioParamType::kParamTypeBiquadFilterGain:
       return "BiquadFilter.gain";
-    case kParamTypeBiquadFilterDetune:
+    case AudioParamType::kParamTypeBiquadFilterDetune:
       return "BiquadFilter.detune";
-    case kParamTypeDelayDelayTime:
+    case AudioParamType::kParamTypeDelayDelayTime:
       return "Delay.delayTime";
-    case kParamTypeDynamicsCompressorThreshold:
+    case AudioParamType::kParamTypeDynamicsCompressorThreshold:
       return "DynamicsCompressor.threshold";
-    case kParamTypeDynamicsCompressorKnee:
+    case AudioParamType::kParamTypeDynamicsCompressorKnee:
       return "DynamicsCompressor.knee";
-    case kParamTypeDynamicsCompressorRatio:
+    case AudioParamType::kParamTypeDynamicsCompressorRatio:
       return "DynamicsCompressor.ratio";
-    case kParamTypeDynamicsCompressorAttack:
+    case AudioParamType::kParamTypeDynamicsCompressorAttack:
       return "DynamicsCompressor.attack";
-    case kParamTypeDynamicsCompressorRelease:
+    case AudioParamType::kParamTypeDynamicsCompressorRelease:
       return "DynamicsCompressor.release";
-    case kParamTypeGainGain:
+    case AudioParamType::kParamTypeGainGain:
       return "Gain.gain";
-    case kParamTypeOscillatorFrequency:
+    case AudioParamType::kParamTypeOscillatorFrequency:
       return "Oscillator.frequency";
-    case kParamTypeOscillatorDetune:
+    case AudioParamType::kParamTypeOscillatorDetune:
       return "Oscillator.detune";
-    case kParamTypeStereoPannerPan:
+    case AudioParamType::kParamTypeStereoPannerPan:
       return "StereoPanner.pan";
-    case kParamTypePannerPositionX:
+    case AudioParamType::kParamTypePannerPositionX:
       return "Panner.positionX";
-    case kParamTypePannerPositionY:
+    case AudioParamType::kParamTypePannerPositionY:
       return "Panner.positionY";
-    case kParamTypePannerPositionZ:
+    case AudioParamType::kParamTypePannerPositionZ:
       return "Panner.positionZ";
-    case kParamTypePannerOrientationX:
+    case AudioParamType::kParamTypePannerOrientationX:
       return "Panner.orientationX";
-    case kParamTypePannerOrientationY:
+    case AudioParamType::kParamTypePannerOrientationY:
       return "Panner.orientationY";
-    case kParamTypePannerOrientationZ:
+    case AudioParamType::kParamTypePannerOrientationZ:
       return "Panner.orientationZ";
-    case kParamTypeAudioListenerPositionX:
+    case AudioParamType::kParamTypeAudioListenerPositionX:
       return "AudioListener.positionX";
-    case kParamTypeAudioListenerPositionY:
+    case AudioParamType::kParamTypeAudioListenerPositionY:
       return "AudioListener.positionY";
-    case kParamTypeAudioListenerPositionZ:
+    case AudioParamType::kParamTypeAudioListenerPositionZ:
       return "AudioListener.positionZ";
-    case kParamTypeAudioListenerForwardX:
+    case AudioParamType::kParamTypeAudioListenerForwardX:
       return "AudioListener.forwardX";
-    case kParamTypeAudioListenerForwardY:
+    case AudioParamType::kParamTypeAudioListenerForwardY:
       return "AudioListener.forwardY";
-    case kParamTypeAudioListenerForwardZ:
+    case AudioParamType::kParamTypeAudioListenerForwardZ:
       return "AudioListener.forwardZ";
-    case kParamTypeAudioListenerUpX:
+    case AudioParamType::kParamTypeAudioListenerUpX:
       return "AudioListener.upX";
-    case kParamTypeAudioListenerUpY:
+    case AudioParamType::kParamTypeAudioListenerUpY:
       return "AudioListener.upY";
-    case kParamTypeAudioListenerUpZ:
+    case AudioParamType::kParamTypeAudioListenerUpZ:
       return "AudioListener.upZ";
-    case kParamTypeConstantSourceOffset:
+    case AudioParamType::kParamTypeConstantSourceOffset:
       return "ConstantSource.offset";
-    case kParamTypeAudioWorklet:
+    case AudioParamType::kParamTypeAudioWorklet:
       return custom_param_name_;
     default:
       NOTREACHED();

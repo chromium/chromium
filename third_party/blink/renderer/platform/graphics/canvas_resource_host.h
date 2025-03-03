@@ -24,6 +24,18 @@ namespace blink {
 class CanvasResourceProvider;
 class SharedContextRateLimiter;
 
+// Specifies whether the provider should rasterize paint commands on the CPU
+// or GPU. This is used to support software raster with GPU compositing.
+enum class RasterMode {
+  kGPU,
+  kCPU,
+};
+
+enum class RasterModeHint {
+  kPreferGPU,
+  kPreferCPU,
+};
+
 class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
  public:
   explicit CanvasResourceHost(gfx::Size size);

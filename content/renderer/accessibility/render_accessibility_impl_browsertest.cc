@@ -24,7 +24,7 @@
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/null_ax_action_target.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 namespace content {
 

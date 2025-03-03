@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_retain_tab_modal_status
+  webdriver.error.NoSuchAlertException: no such alert (404): no such alert
+Harness: the test ran to completion.
+

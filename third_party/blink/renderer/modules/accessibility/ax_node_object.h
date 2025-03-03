@@ -413,8 +413,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
   void AddValidationMessageChild();
   void AddAccessibleNodeChildren();
-  void AddMenuListChildren();
-  void AddMenuListPopupChildren();
   void AddOwnedChildren();
   void AddScrollMarkerGroupChildren();
 #if DCHECK_IS_ON()

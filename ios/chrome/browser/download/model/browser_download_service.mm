@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
-#import "ios/chrome/browser/download/ui_bundled/features.h"
+#import "ios/chrome/browser/download/ui/features.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

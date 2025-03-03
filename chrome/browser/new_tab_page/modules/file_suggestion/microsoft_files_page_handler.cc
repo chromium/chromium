@@ -839,7 +839,7 @@ void MicrosoftFilesPageHandler::CreateRecentlyUsedAndSharedFiles(
       created_file->id = *id;
       created_file->justification_text =
           *response_id == "shared"
-              ? "Shared by " + *shared_by
+              ? CreateJustificationTextForSharedFile(*shared_by)
               : CreateJustificationTextForRecentFile(sort_time);
       GURL icon_url = GetFileIconUrl(*mime_type);
       if (!icon_url.is_valid()) {
@@ -907,10 +907,20 @@ std::string MicrosoftFilesPageHandler::CreateJustificationTextForRecentFile(
 
   switch (num_days_difference) {
     case 0:
-      return "You opened today";
+      return l10n_util::GetStringUTF8(
+          IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_TODAY_JUSTIFICATION_TEXT);
     case 1:
-      return "You opened yesterday";
+      return l10n_util::GetStringUTF8(
+          IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_YESTERDAY_JUSTIFICATION_TEXT);
     default:
-      return "You opened in the past week";
+      return l10n_util::GetStringUTF8(
+          IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_PAST_WEEK_JUSTIFICATION_TEXT);
   }
+}
+
+std::string MicrosoftFilesPageHandler::CreateJustificationTextForSharedFile(
+    std::string shared_by) {
+  return l10n_util::GetStringFUTF8(
+      IDS_NTP_MODULES_MICROSOFT_FILES_SHARED_BY_JUSTIFICATION_TEXT,
+      base::UTF8ToUTF16(shared_by));
 }

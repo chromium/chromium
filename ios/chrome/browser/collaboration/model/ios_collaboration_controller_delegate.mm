@@ -199,12 +199,15 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     const data_sharing::GroupToken& token,
     const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
+  const auto& tab_group_preview = preview_data.shared_tab_group_preview;
+
+  std::string group_title = tab_group_preview ? tab_group_preview->title : "";
   auto callback = base::BindOnce(
       &IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup,
-      weak_ptr_factory_.GetWeakPtr(), token, std::move(result));
+      weak_ptr_factory_.GetWeakPtr(), token, group_title, std::move(result));
 
   // Check if preview data contains shared tab group preview information.
-  if (const auto& tab_group_preview = preview_data.shared_tab_group_preview) {
+  if (tab_group_preview) {
     // If a preview is available, fetch the favicons for the tabs in the
     // preview. Once favicons are fetched and ShareKitPreviewItems are created,
     // the callback block is executed.
@@ -399,11 +402,19 @@ void IOSCollaborationControllerDelegate::FetchPreviewItems(
 
 void IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup(
     const data_sharing::GroupToken& token,
+    const std::string& group_title,
     ResultCallback result,
     NSArray<ShareKitPreviewItem*>* preview_items) {
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
   config.token = token;
   config.baseViewController = base_view_controller_;
+  NSString* group_title_objc = base::SysUTF8ToNSString(group_title);
+  group_title_objc =
+      group_title_objc.length > 0
+          ? group_title_objc
+          : l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER,
+                                          preview_items.count);
+  config.displayName = group_title_objc;
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   config.previewItems = preview_items;

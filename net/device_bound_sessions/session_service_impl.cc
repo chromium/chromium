@@ -73,6 +73,8 @@ SessionServiceImpl::SessionServiceImpl(
       key_service_(key_service),
       context_(request_context),
       session_store_(store) {
+  ignore_refresh_quota_ =
+      !base::FeatureList::IsEnabled(features::kDeviceBoundSessionsRefreshQuota);
   CHECK(context_);
 }
 
@@ -588,6 +590,10 @@ void SessionServiceImpl::RefreshSessionInternal(
 }
 
 bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
+  if (ignore_refresh_quota_) {
+    return false;
+  }
+
   auto it = refresh_times_.find(site);
   if (it == refresh_times_.end()) {
     return false;

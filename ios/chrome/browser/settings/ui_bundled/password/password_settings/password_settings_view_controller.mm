@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
 
+#import <AuthenticationServices/AuthenticationServices.h>
+
 #import <optional>
 
 #import "base/apple/foundation_util.h"
@@ -16,6 +18,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
@@ -40,6 +43,11 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+// Delay before which the "Turn on AutoFill" button associated with the
+// Passwords in Other Apps cell can be re-enabled.
+constexpr base::TimeDelta kReEnableTurnOnPasswordsInOtherAppsButtonDelay =
+    base::Seconds(10);
 
 // Sections of the password settings UI.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -80,6 +88,19 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   ModelIsLoading,
   ModelLoadComplete,
 };
+
+// Helper method that returns the delay before which the "Turn on AutoFill"
+// button can be re-enabled.
+base::TimeDelta GetDelayForReEnablingTurnOnPasswordsInOtherAppsButton() {
+  // Check if the delay has been overridden by a test hook.
+  const base::TimeDelta overridden_delay = tests_hook::
+      GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension();
+  if (overridden_delay != base::Seconds(0)) {
+    return overridden_delay;
+  }
+
+  return kReEnableTurnOnPasswordsInOtherAppsButtonDelay;
+}
 
 // Helper method that returns the string to use as title for `savePasswordsItem`
 // and `managedSavePasswordsItem`.
@@ -442,9 +463,30 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
       }
       break;
     }
-    case ItemTypeTurnOnPasswordsInOtherAppsButton:
-      // TODO(crbug.com/394580626): Handle taps.
+    case ItemTypeTurnOnPasswordsInOtherAppsButton: {
+      if (@available(iOS 18.0, *)) {
+        // Disable the button as the API that's about to be called
+        // (`-requestToTurnOnCredentialProviderExtensionWithCompletionHandler`)
+        // won't accept other requests for the following 10 seconds.
+        [self setTurnOnPasswordsInOtherAppsItemEnabled:NO];
+
+        // Show the prompt that allows setting the app as a credential provider.
+        scoped_refptr<base::SequencedTaskRunner> currentTaskRunner =
+            base::SequencedTaskRunner::GetCurrentDefault();
+        __weak __typeof(self) weakSelf = self;
+        [ASSettingsHelper
+            requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
+                BOOL appWasEnabledForAutoFill) {
+              [weakSelf
+                  handleTurnOnAutofillPromptOutcome:appWasEnabledForAutoFill
+                                  currentTaskRunner:currentTaskRunner];
+            }];
+      } else {
+        // This item shouldn't be shown on iOS versions prior to 18.
+        NOTREACHED();
+      }
       break;
+    }
     case ItemTypeBulkMovePasswordsToAccountButton: {
       if (self.showBulkMovePasswordsToAccount) {
         [self.delegate bulkMovePasswordsToAccountButtonClicked];
@@ -1147,6 +1189,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   }
 
   if (_shouldShowTurnOnPasswordsInOtherAppsItem) {
+    [self setTurnOnPasswordsInOtherAppsItemEnabled:YES];
     [model addItem:self.turnOnPasswordsInOtherAppsItem
         toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
     [self.tableView insertRowsAtIndexPaths:@[
@@ -1170,6 +1213,45 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   return [self.tableViewModel
       indexPathForItemType:ItemTypeTurnOnPasswordsInOtherAppsButton
          sectionIdentifier:SectionIdentifierPasswordsInOtherApps];
+}
+
+// Configures the `turnOnPasswordsInOtherAppsItem` to reflect the provided
+// `enabled` state.
+- (void)setTurnOnPasswordsInOtherAppsItemEnabled:(BOOL)enabled {
+  TableViewTextItem* item = self.turnOnPasswordsInOtherAppsItem;
+  if (enabled) {
+    item.enabled = YES;
+    item.textColor = [UIColor colorNamed:kBlueColor];
+    item.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
+  } else {
+    item.enabled = NO;
+    item.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    item.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+  }
+  [self reconfigureCellsForItems:@[ item ]];
+}
+
+// Handles whether the user accepted the prompt to set the app as a credential
+// provider.
+- (void)handleTurnOnAutofillPromptOutcome:(BOOL)appWasEnabledForAutoFill
+                        currentTaskRunner:
+                            (scoped_refptr<base::SequencedTaskRunner>)
+                                currentTaskRunner {
+  if (appWasEnabledForAutoFill) {
+    // Inform the delegate of the status change. This will have the effect of
+    // removing the `turnOnPasswordsInOtherAppsItem` from the view.
+    [self.delegate passwordAutoFillWasTurnedOn];
+    return;
+  }
+
+  // Delay re-enabling the `turnOnPasswordsInOtherAppsItem` as it will only be
+  // possible to re-trigger the prompt after a 10 seconds delay.
+  __weak __typeof(self) weakSelf = self;
+  currentTaskRunner->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf setTurnOnPasswordsInOtherAppsItemEnabled:YES];
+      }),
+      GetDelayForReEnablingTurnOnPasswordsInOtherAppsButton());
 }
 
 // Updates the UI to present the correct elements for the user's current

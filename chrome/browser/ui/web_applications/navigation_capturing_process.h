@@ -231,6 +231,8 @@ class NavigationCapturingProcess
   std::optional<webapps::AppId> first_navigation_app_id_;
   std::optional<blink::mojom::DisplayMode> first_navigation_app_display_mode_;
 
+  bool navigation_capturing_enabled_ = false;
+
   // This field records the outcome of handling the initial navigation,before
   // any redirects might have happened.
   InitialResult initial_nav_handling_result_ =
@@ -251,6 +253,7 @@ class NavigationCapturingProcess
   // Debug information persisted to chrome://web-app-internals on destruction of
   // this class.
   base::Value::Dict debug_data_;
+  std::optional<int64_t> navigation_handle_id_ = std::nullopt;
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };

@@ -1483,10 +1483,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, LayerIds) {
     ASSERT_EQ(1u, frame.render_pass_list.size());
     auto* render_pass = frame.render_pass_list.back().get();
 
-    uint32_t root_surface_namespace =
+    const gfx::OverlayLayerId::NamespaceId root_surface_namespace =
         aggregator_.GetLatestFrameData(root_surface_id_)
             ->GetClientNamespaceId();
-    uint32_t child_surface_namespace =
+    const gfx::OverlayLayerId::NamespaceId child_surface_namespace =
         aggregator_.GetLatestFrameData(child_surface_id)
             ->GetClientNamespaceId();
 
@@ -1526,10 +1526,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, LayerIds) {
     auto* child_pass = frame.render_pass_list.at(0).get();
     auto* root_pass = frame.render_pass_list.at(1).get();
 
-    uint32_t root_surface_namespace =
+    const gfx::OverlayLayerId::NamespaceId root_surface_namespace =
         aggregator_.GetLatestFrameData(root_surface_id_)
             ->GetClientNamespaceId();
-    uint32_t child_surface_namespace =
+    const gfx::OverlayLayerId::NamespaceId child_surface_namespace =
         aggregator_.GetLatestFrameData(child_surface_id)
             ->GetClientNamespaceId();
 

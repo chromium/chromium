@@ -58,4 +58,10 @@ struct KeyDownEvent {
   int context = -1;
 };
 
+struct SettingAccessEvent {
+  int name = -1;
+  int numeric_value = -1;
+  int string_value = -1;
+};
+
 #endif  // CHROME_BROWSER_DEVTOOLS_VISUAL_LOGGING_H_

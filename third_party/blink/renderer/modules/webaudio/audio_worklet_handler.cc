@@ -51,7 +51,7 @@ AudioWorkletHandler::AudioWorkletHandler(
     String name,
     HashMap<String, scoped_refptr<AudioParamHandler>> param_handler_map,
     const AudioWorkletNodeOptions* options)
-    : AudioHandler(kNodeTypeAudioWorklet, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeAudioWorklet, node, sample_rate),
       name_(name),
       param_handler_map_(param_handler_map),
       allow_denormal_in_processing_(base::FeatureList::IsEnabled(

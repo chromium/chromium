@@ -256,8 +256,8 @@ SynchronizeDecision GetSynchronizeDecision(
   }
 
   // Remove if gated on a disabled feature.
-  if (options.gate_on_feature && !IsPreinstalledAppInstallFeatureEnabled(
-                                     *options.gate_on_feature, *profile)) {
+  if (options.gate_on_feature &&
+      !IsPreinstalledAppInstallFeatureEnabled(*options.gate_on_feature)) {
     return {.type = SynchronizeDecision::kUninstall,
             .reason = DisabledReason::kUninstallGatedFeatureNotEnabled,
             .log = base::StrCat({options.install_url.spec(),
@@ -370,7 +370,7 @@ SynchronizeDecision GetSynchronizeDecision(
   // any existing installations alone.
   if (options.gate_on_feature_or_installed &&
       !IsPreinstalledAppInstallFeatureEnabled(
-          *options.gate_on_feature_or_installed, *profile)) {
+          *options.gate_on_feature_or_installed)) {
     return {.type = SynchronizeDecision::kIgnore,
             .reason = DisabledReason::kIgnoreGatedFeatureNotEnabled,
             .log = base::StrCat(

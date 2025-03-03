@@ -59,7 +59,7 @@ struct CommandLineArguments {
 };
 
 void PrintUsageAndExit(const base::CommandLine* cmdline) {
-  std::cerr << "Usage: " << cmdline->GetProgram().MaybeAsASCII()
+  std::cerr << "Usage: " << cmdline->GetProgram().AsUTF8Unsafe()
             << " [--get-tag|set-tag=TAG] [--padded-length=PADDED_LENGTH]"
             << " [--out=OUT] binary.[exe|msi]" << std::endl;
   std::exit(255);

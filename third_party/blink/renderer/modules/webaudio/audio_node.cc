@@ -189,7 +189,8 @@ AudioNode* AudioNode::connect(AudioNode* destination,
   // ScriptProcessorNodes with 0 output channels can't be connected to any
   // destination.  If there are no output channels, what would the destination
   // receive?  Just disallow this.
-  if (Handler().GetNodeType() == AudioHandler::kNodeTypeScriptProcessor &&
+  if (Handler().GetNodeType() ==
+          AudioHandler::NodeType::kNodeTypeScriptProcessor &&
       Handler().NumberOfOutputChannels() == 0) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "cannot connect a ScriptProcessorNode "

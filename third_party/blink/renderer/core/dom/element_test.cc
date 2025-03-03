@@ -15,8 +15,10 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -1285,8 +1287,17 @@ TEST_F(ElementTest, TheCheckMarkPseudoElement) {
   // elements in an appearance:base-select.
   EXPECT_EQ(nullptr, checkmark_pseudo_for("a-div"));
   EXPECT_EQ(nullptr, checkmark_pseudo_for("not-base-option"));
-  EXPECT_NE(nullptr, checkmark_pseudo_for("base-button-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("base-button-option"));
   EXPECT_EQ(nullptr, checkmark_pseudo_for("base-picker-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("target"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("target-option"));
+
+  LocalFrame::NotifyUserActivation(
+      GetDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+  To<HTMLSelectElement>(GetElementById("target"))
+      ->showPicker(ASSERT_NO_EXCEPTION);
+  GetDocument().UpdateStyleAndLayoutTree();
+
   EXPECT_EQ(nullptr, checkmark_pseudo_for("target"));
   EXPECT_NE(nullptr, checkmark_pseudo_for("target-option"));
 }

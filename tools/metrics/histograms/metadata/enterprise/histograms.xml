@@ -3943,8 +3943,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     On Windows: Whether the machine is managed via MDM. On macOS: Whether Chrome
     found a file of managed policies to follow. On Android (OS version
-    Lollipop+): Whether the device has a profile owner app. This check is
-    performed once on application start-up.
+    Lollipop+): Whether the device has a profile owner app. On iOS: whether
+    Chrome is managed via MDM. This check is performed once on application
+    start-up.
   </summary>
 </histogram>
 

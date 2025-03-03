@@ -28,7 +28,7 @@ constexpr unsigned kMaximumOutputChannels = 2;
 StereoPannerHandler::StereoPannerHandler(AudioNode& node,
                                          float sample_rate,
                                          AudioParamHandler& pan)
-    : AudioHandler(kNodeTypeStereoPanner, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeStereoPanner, node, sample_rate),
       pan_(&pan),
       sample_accurate_pan_values_(
           GetDeferredTaskHandler().RenderQuantumFrames()) {

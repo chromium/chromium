@@ -30,6 +30,10 @@ export enum ModelResponseError {
   // General error.
   GENERAL = 'GENERAL',
 
+  // Model fails to load.
+  // TODO: b/366335321 - Add NeedsReboot error.
+  LOAD_FAILURE = 'LOAD_FAILURE',
+
   // The transcription language is not supported.
   UNSUPPORTED_LANGUAGE = 'UNSUPPORTED_LANGUAGE',
 

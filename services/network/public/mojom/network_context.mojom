@@ -448,6 +448,9 @@ struct NetworkContextParams {
   // `SetIpProtectionEnabled` method of the `IpProtectionControl` interface.
   bool enable_ip_protection = false;
 
+  // Signals to IP Protection if this is an incognito network context.
+  bool ip_protection_incognito = false;
+
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
   // lookups that are slow or are blockholed, at the cost of making it more
@@ -1515,9 +1518,9 @@ interface NetworkContext {
 
   // Checks the given certificate against the CertVerifier and CTVerifier.
   VerifyCert(X509Certificate certificate,
-                              HostPortPair host_port,
-                              string ocsp_response,
-                              string sct_list)
+             HostPortPair host_port,
+             string ocsp_response,
+             string sct_list)
       => (int32 error_code, CertVerifyResult cv_result, bool pkp_bypassed);
 
   // Adds explicitly-specified data as if it was processed from an

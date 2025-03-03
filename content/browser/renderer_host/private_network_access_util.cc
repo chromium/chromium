@@ -75,7 +75,11 @@ Policy DerivePrivateNetworkRequestPolicy(
 
 Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
   if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) {
-    // TODO(crbug.com/395895368): Add new LNA specific policy
+    // LNA blocks all local network access requests coming from non-secure
+    // contexts.
+    // See:
+    // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#integration-with-fetch
+    //
     // TODO(crbug.com/395895368): figure out how this interacts with https
     // upgrades.
     return Policy::kBlock;
@@ -117,8 +121,9 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
 
 Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
   if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) {
-    // TODO(crbug.com/395895368): Add new V2 specific policy
-    return Policy::kAllow;
+    // See:
+    // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#permission-prompts
+    return Policy::kPermissionBlock;
   }
 
   // The goal is to eliminate occurrences of this case as much as possible,

@@ -179,7 +179,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/latency/latency_info.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 #if defined(USE_AURA)
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"

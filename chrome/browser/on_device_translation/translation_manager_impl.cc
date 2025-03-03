@@ -346,9 +346,6 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
       IsInAcceptLanguage(accept_languages, source_lang);
   const bool target_lang_is_in_accept_langs =
       IsInAcceptLanguage(accept_languages, target_lang);
-  if (!(source_lang_is_in_accept_langs || target_lang_is_in_accept_langs)) {
-    return false;
-  }
 
   // The other language must be a popular language.
   if (!source_lang_is_in_accept_langs &&

@@ -272,6 +272,8 @@ Result PrivateNetworkAccessChecker::CheckInternal(
       return Result::kBlockedByPolicyPreflightWarn;
     case Policy::kPreflightBlock:
       return Result::kBlockedByPolicyPreflightBlock;
+    case Policy::kPermissionBlock:
+      return Result::kLNABlockedByMissingPermission;
   }
 }
 

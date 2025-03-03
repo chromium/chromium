@@ -87,11 +87,6 @@
       "bounds": [130, 40]
     },
     {
-      "name": "LayoutText #text",
-      "position": [20, 262],
-      "bounds": [682, 42]
-    },
-    {
       "name": "LayoutHTMLCanvas CANVAS id='destination-oversolid color'",
       "position": [145, 263],
       "bounds": [130, 40]
@@ -110,11 +105,6 @@
       "name": "LayoutHTMLCanvas CANVAS id='destination-overvideo'",
       "position": [571, 263],
       "bounds": [130, 40]
-    },
-    {
-      "name": "LayoutText #text",
-      "position": [20, 312],
-      "bounds": [682, 42]
     },
     {
       "name": "LayoutHTMLCanvas CANVAS id='destination-insolid color'",
@@ -137,11 +127,6 @@
       "bounds": [130, 40]
     },
     {
-      "name": "LayoutText #text",
-      "position": [20, 362],
-      "bounds": [682, 42]
-    },
-    {
       "name": "LayoutHTMLCanvas CANVAS id='destination-outsolid color'",
       "position": [145, 363],
       "bounds": [130, 40]
@@ -160,11 +145,6 @@
       "name": "LayoutHTMLCanvas CANVAS id='destination-outvideo'",
       "position": [571, 363],
       "bounds": [130, 40]
-    },
-    {
-      "name": "LayoutText #text",
-      "position": [20, 412],
-      "bounds": [682, 42]
     },
     {
       "name": "LayoutHTMLCanvas CANVAS id='destination-atopsolid color'",
@@ -187,11 +167,6 @@
       "bounds": [130, 40]
     },
     {
-      "name": "LayoutText #text",
-      "position": [20, 462],
-      "bounds": [682, 42]
-    },
-    {
       "name": "LayoutHTMLCanvas CANVAS id='lightersolid color'",
       "position": [145, 463],
       "bounds": [130, 40]
@@ -210,11 +185,6 @@
       "name": "LayoutHTMLCanvas CANVAS id='lightervideo'",
       "position": [571, 463],
       "bounds": [130, 40]
-    },
-    {
-      "name": "LayoutText #text",
-      "position": [20, 512],
-      "bounds": [682, 42]
     },
     {
       "name": "LayoutHTMLCanvas CANVAS id='copysolid color'",
@@ -237,11 +207,6 @@
       "bounds": [130, 40]
     },
     {
-      "name": "LayoutText #text",
-      "position": [20, 562],
-      "bounds": [682, 42]
-    },
-    {
       "name": "LayoutHTMLCanvas CANVAS id='xorsolid color'",
       "position": [145, 563],
       "bounds": [130, 40]
@@ -260,11 +225,6 @@
       "name": "LayoutHTMLCanvas CANVAS id='xorvideo'",
       "position": [571, 563],
       "bounds": [130, 40]
-    },
-    {
-      "name": "LayoutText #text",
-      "position": [15, 620],
-      "bounds": [152, 223]
     },
     {
       "name": "LayoutHTMLCanvas CANVAS id='source-canvas'",

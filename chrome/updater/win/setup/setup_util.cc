@@ -507,7 +507,7 @@ HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal) {
          return {TYPELIB_UPDATER_IDL_USER, TYPELIB_UPDATER_LEGACY_IDL_USER};
        }()) {
     const base::FilePath typelib_path =
-        exe_path.AppendASCII(base::NumberToString(typelib_resource_index));
+        exe_path.AppendUTF8(base::NumberToString(typelib_resource_index));
 
     Microsoft::WRL::ComPtr<ITypeLib> type_lib;
     if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);

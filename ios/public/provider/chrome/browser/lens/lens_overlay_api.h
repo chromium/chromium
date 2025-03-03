@@ -54,7 +54,10 @@ class GURL;
 @property(nonatomic, readonly) BOOL translateFilterActive;
 
 // The layout guide that demarcates the start of the unobstructed area.
-@property(nonatomic) UILayoutGuide* visibleAreaLayoutGuide;
+@property(nonatomic, strong) UILayoutGuide* visibleAreaLayoutGuide;
+
+// The selection rect in the coordinate system of the query image.
+@property(nonatomic, readonly) CGRect selectionRect;
 
 // Sets the delegate for `ChromeLensOverlay`.
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;

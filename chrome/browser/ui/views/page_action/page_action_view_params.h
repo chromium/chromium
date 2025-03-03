@@ -24,6 +24,11 @@ struct PageActionViewParams {
   // TODO(crbug.com/384969003): After the page actions migration, this right
   // spacing will no longer be needed.
   bool should_bridge_containers = true;
+  // Depending on the surface that use the `PageActionContainer`, the
+  // expectation may be different during space constraint. In some cases, the
+  // icon should stay to it minimum size. In some others, the icon size should
+  // become 0.
+  bool hide_icon_on_space_constraint = false;
 };
 
 }  // namespace page_actions

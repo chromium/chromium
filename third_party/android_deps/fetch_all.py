@@ -29,6 +29,8 @@ import textwrap
 import urllib.request
 import zipfile
 
+from typing import Dict
+
 # Assume this script is stored under third_party/android_deps/
 _CHROMIUM_SRC = os.path.normpath(os.path.join(__file__, '..', '..', '..'))
 
@@ -256,9 +258,11 @@ def CopyFileOrDirectory(src_path, dst_path, ignore_extension=None):
         if ignore_extension:
             ignore = shutil.ignore_patterns('*' + ignore_extension)
         shutil.copytree(src_path, dst_path, ignore=ignore)
+        subprocess.run(['chmod', '-R', '+w', dst_path])
     elif not ignore_extension or not re.match(r'.*\.' + ignore_extension[1:],
                                               src_path):
         shutil.copy(src_path, dst_path)
+        subprocess.run(['chmod', '+w', dst_path])
 
 
 def ReadFile(file_path):
@@ -309,16 +313,17 @@ def _ParseSubprojects(subproject_path):
     if not os.path.exists(subproject_path):
         return None
 
-    subprojects = []
+    subprojects = {}
     for subproject in open(subproject_path):
         subproject = subproject.strip()
         if subproject and not subproject.startswith('#'):
-            subprojects.append(subproject)
+            path, name = subproject.split(':')
+            subprojects[name] = path
     return subprojects
 
 
-def _GenerateSettingsGradle(subproject_dirs, settings_template_path,
-                            settings_out_path):
+def _GenerateSettingsGradle(subproject_dirs: Dict[str, str],
+                            settings_template_path, settings_out_path):
     """Generates settings file by replacing "{{subproject_dirs}}" string in template.
 
     Args:
@@ -331,7 +336,10 @@ def _GenerateSettingsGradle(subproject_dirs, settings_template_path,
 
     subproject_dirs_str = ''
     if subproject_dirs:
-        subproject_dirs_str = '\'' + '\',\''.join(subproject_dirs) + '\''
+        mappings = []
+        for name, path in subproject_dirs.items():
+            mappings.append(f'{name}: \'{path}\'')
+        subproject_dirs_str = ', '.join(mappings)
 
     template_content = template_content.replace('{{subproject_dirs}}',
                                                 subproject_dirs_str)
@@ -562,7 +570,8 @@ def main():
     if not os.path.isfile(os.path.join(args.android_deps_dir, _BUILD_GRADLE)):
         raise Exception('--android-deps-dir {} does not contain {}.'.format(
             args.android_deps_dir, _BUILD_GRADLE))
-    is_primary_android_deps = args.android_deps_dir == _PRIMARY_ANDROID_DEPS_DIR
+    is_primary_android_deps = os.path.samefile(args.android_deps_dir,
+                                               _PRIMARY_ANDROID_DEPS_DIR)
     android_deps_subdir = os.path.relpath(args.android_deps_dir, _CHROMIUM_SRC)
 
     with BuildDir(args.build_dir) as build_dir:
@@ -589,17 +598,17 @@ def main():
         else:
             subprojects = _ParseSubprojects(
                 os.path.join(args.android_deps_dir, 'subprojects.txt'))
-        subproject_dirs = []
+        subproject_subdirs = {}
         if subprojects:
-            for (index, subproject) in enumerate(subprojects):
-                subproject_dir = 'subproject{}'.format(index)
-                Copy(args.android_deps_dir, [subproject],
+            for subproject_name, original_path in subprojects.items():
+                subproject_subdir = f'subproject_{subproject_name}'
+                Copy(args.android_deps_dir, [original_path],
                      build_android_deps_dir,
-                     [os.path.join(subproject_dir, 'build.gradle')])
-                subproject_dirs.append(subproject_dir)
+                     [os.path.join(subproject_subdir, 'build.gradle')])
+                subproject_subdirs[subproject_name] = subproject_subdir
 
         _GenerateSettingsGradle(
-            subproject_dirs,
+            subproject_subdirs,
             os.path.join(_PRIMARY_ANDROID_DEPS_DIR,
                          'settings.gradle.template'),
             os.path.join(build_android_deps_dir, 'settings.gradle'))

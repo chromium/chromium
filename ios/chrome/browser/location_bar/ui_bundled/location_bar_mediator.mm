@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -142,9 +143,21 @@
 
 #pragma mark - Private
 
+- (bool)isLensOverlayAvailable {
+  if (_webStateList) {
+    web::WebState* webState = _webStateList->GetActiveWebState();
+    if (webState) {
+      ProfileIOS* profile =
+          ProfileIOS::FromBrowserState(webState->GetBrowserState());
+      return IsLensOverlayAvailable(profile->GetPrefs());
+    }
+  }
+  return false;
+}
+
 /// Updates the placeholder.
 - (void)updatePlaceholderType {
-  if (!IsLensOverlayAvailable()) {
+  if (![self isLensOverlayAvailable]) {
     return;
   }
   if ([self isLensOverlayEntrypointAvailable]) {
@@ -156,7 +169,7 @@
 
 /// Whether the lens overlay entrypoint should be available.
 - (BOOL)isLensOverlayEntrypointAvailable {
-  if (!IsLensOverlayAvailable() ||
+  if (![self isLensOverlayAvailable] ||
       !base::FeatureList::IsEnabled(kLensOverlayEnableLocationBarEntrypoint) ||
       _isIncognito ||
       !search_engines::SupportsSearchImageWithLens(self.templateURLService)) {

@@ -356,6 +356,26 @@ TEST_F(SessionTest, NotDeferredInsecure) {
   EXPECT_FALSE(is_deferred);
 }
 
+TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
+  auto params = CreateValidParams();
+  // Set the credentials attributes field to an empty string. This will use
+  // default cookie attributes.
+  params.credentials = {SessionParams::Credential{"test_cookie",
+                                                  /*attributes=*/""}};
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  bool is_deferred =
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(is_deferred);
+}
+
 class InsecureDelegate : public CookieAccessDelegate {
  public:
   bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override {

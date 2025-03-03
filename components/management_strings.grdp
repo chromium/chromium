@@ -352,19 +352,22 @@
       </message>
 
     <!-- Strings related to Chrome Enterprise Connectors -->
-    <message name="IDS_MANAGEMENT_THREAT_PROTECTION" desc="Title of the Chrome Enterprise Connectors section of the page">
+    <message name="IDS_MANAGEMENT_THREAT_PROTECTION" desc="Title of the Chrome Enterprise Connectors section of the page" formatter_data="android_java">
       Chrome Enterprise Connectors
     </message>
-    <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION" desc="Description of the Chrome Enterprise Connectors section of the page">
+    <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION" desc="Description of the Chrome Enterprise Connectors section of the page" formatter_data="android_java">
       Your administrator has turned on Chrome Enterprise Connectors on your browser. These connectors have access to some of your data.
     </message>
     <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY" desc="Description of the Chrome Enterprise Connectors section of the page">
       <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> has turned on Chrome Enterprise Connectors on your browser. These connectors have access to some of your data.
     </message>
-    <message name="IDS_MANAGEMENT_CONNECTORS_EVENT" desc="Title of a column of the Connectors table showing the event that triggers a Connector">
+    <message name="IDS_MANAGEMENT_THREAT_PROTECTION_MORE" desc="Label of a button to view more details about Chrome Enterprise Connectors" formatter_data="android_java">
+      More about Chrome Enterprise Connectors
+    </message>
+    <message name="IDS_MANAGEMENT_CONNECTORS_EVENT" desc="Title of a column of the Connectors table showing the event that triggers a Connector" formatter_data="android_java">
       Event
     </message>
-    <message name="IDS_MANAGEMENT_CONNECTORS_VISIBLE_DATA" desc="Title of a column of the Connectors table showing the data visible to a Connector">
+    <message name="IDS_MANAGEMENT_CONNECTORS_VISIBLE_DATA" desc="Title of a column of the Connectors table showing the data visible to a Connector" formatter_data="android_java">
       Visible data
     </message>
     <message name="IDS_MANAGEMENT_FILE_ATTACHED_EVENT" desc="Event for the file attachment scanning feature.">
@@ -382,10 +385,10 @@
     <message name="IDS_MANAGEMENT_FILE_TRANSFER_EVENT" desc="Event for the file transfer scanning feature.">
       File is copied or moved
     </message>
-    <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature">
+    <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature" formatter_data="android_java">
       Security event occurs
     </message>
-    <message name="IDS_MANAGEMENT_PAGE_VISITED_EVENT" desc="Event for the real time URL check feature.">
+    <message name="IDS_MANAGEMENT_PAGE_VISITED_EVENT" desc="Event for the real time URL check feature." formatter_data="android_java">
       Page is visited
     </message>
     <message name="IDS_MANAGEMENT_SCREEN_CAPTURE_EVENT" desc="Event for the multi screen capture feature.">
@@ -412,10 +415,10 @@
     <message name="IDS_MANAGEMENT_SCREEN_CAPTURE_DATA" desc="Description of the visible data for the multi screen capture feature.">
       Applications authorized by your administrator can capture all screens attached to your device. This information can be processed locally or uploaded to your organization’s servers.
     </message>
-    <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature">
+    <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature" formatter_data="android_java">
       When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, URLs of pages you copied data from, file names or metadata, browser or tab crashes, and the username that you use to sign in to web based applications, your device and Chrome.
     </message>
-    <message name="IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA" desc="Description of the visible data for the real time URL check feature.">
+    <message name="IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA" desc="Description of the visible data for the real time URL check feature." formatter_data="android_java">
       URLs of pages you visit are sent to Google Cloud or third parties for analysis, and may be visible to your administrator. For example, they might be scanned to detect unsafe websites or filter websites based on rules set by the administrator.
     </message>
     <message name="IDS_MANAGEMENT_EXTENSION_TELEMETRY_VISIBLE_DATA" desc="Description of the visible data for the extension telemetry feature.">

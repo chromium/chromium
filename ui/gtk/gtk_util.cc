@@ -66,6 +66,10 @@ GskRenderNode* GetRenderNodeChild(GskRenderNode* node) {
       return gsk_blur_node_get_child(node);
     case GSK_DEBUG_NODE:
       return gsk_debug_node_get_child(node);
+    case GSK_MASK_NODE:
+      return gsk_mask_node_get_mask(node);
+    case GSK_SUBSURFACE_NODE:
+      return gsk_subsurface_node_get_child(node);
     default:
       return nullptr;
   }
@@ -769,8 +773,19 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
     return nullptr;
   }
 
-  if (gsk_render_node_get_node_type(node) == GSK_TEXTURE_NODE) {
-    return gsk_texture_node_get_texture(node);
+  auto node_type = gsk_render_node_get_node_type(node);
+  if (node_type > GSK_RENDER_NODE_MAX_VALUE) {
+    LOG(ERROR) << "Unexpected node type: " << node_type;
+    return nullptr;
+  }
+
+  switch (node_type) {
+    case GSK_TEXTURE_NODE:
+      return gsk_texture_node_get_texture(node);
+    case GSK_TEXTURE_SCALE_NODE:
+      return gsk_texture_node_get_texture(node);
+    default:
+      break;
   }
 
   if (auto* texture = GetTextureFromRenderNode(GetRenderNodeChild(node))) {

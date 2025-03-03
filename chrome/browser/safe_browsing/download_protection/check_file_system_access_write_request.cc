@@ -45,7 +45,6 @@ CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
           std::move(database_manager),
           DownloadRequestMaker::CreateFromFileSystemAccess(
               binary_feature_extractor,
-              service,
               *item)),
       item_(std::move(item)),
       referrer_chain_data_(

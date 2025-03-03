@@ -93,7 +93,8 @@ class MockSigninUiDelegate : public SigninUiDelegateImplDice {
                signin_metrics::PromoAction promo_action,
                const CoreAccountId& account_id,
                TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-               bool is_sync_promo),
+               bool is_sync_promo,
+               bool turn_sync_on_signed_profile),
               ());
 };
 
@@ -131,11 +132,12 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
                         signin_metrics::PromoAction promo_action,
                         const CoreAccountId& account_id,
                         TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-                        bool is_sync_promo) {
-    EXPECT_CALL(
-        mock_delegate_,
-        ShowTurnSyncOnUI(profile(), access_point, promo_action, account_id,
-                         signin_aborted_mode, is_sync_promo));
+                        bool is_sync_promo,
+                        bool turn_sync_on_signed_profile) {
+    EXPECT_CALL(mock_delegate_,
+                ShowTurnSyncOnUI(profile(), access_point, promo_action,
+                                 account_id, signin_aborted_mode, is_sync_promo,
+                                 turn_sync_on_signed_profile));
   }
 
   void ExpectNoSigninStartedHistograms(
@@ -228,7 +230,7 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
     ExpectTurnSyncOn(
         access_point_, signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
         account_id, TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-        /*is_sync_promo=*/true);
+        /*is_sync_promo=*/true, /*turn_sync_on_signed_profile=*/false);
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         /*is_default_promo_account=*/true);
@@ -267,10 +269,10 @@ TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
         is_default_promo_account
             ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
             : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
-    ExpectTurnSyncOn(signin_metrics::AccessPoint::kBookmarkBubble,
-                     expected_promo_action, account_id,
-                     TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                     /*is_sync_promo=*/false);
+    ExpectTurnSyncOn(
+        signin_metrics::AccessPoint::kBookmarkBubble, expected_promo_action,
+        account_id, TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+        /*is_sync_promo=*/false, /*turn_sync_on_signed_profile=*/true);
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         is_default_promo_account);
@@ -809,7 +811,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
         signin_metrics::AccessPoint::kBookmarkBubble, expected_promo_action,
         account_id,
         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
-        /*is_sync_promo=*/false);
+        /*is_sync_promo=*/false, /*turn_sync_on_signed_profile=*/false);
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         is_default_promo_account);

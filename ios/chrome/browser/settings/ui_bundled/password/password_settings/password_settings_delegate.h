@@ -13,6 +13,10 @@
 // enabled.
 - (void)savedPasswordSwitchDidChange:(BOOL)enabled;
 
+// Indicates that the app was set as a credential provider through an in-app
+// prompt.
+- (void)passwordAutoFillWasTurnedOn;
+
 // Indicates that the bulk move passwords to account button was clicked.
 - (void)bulkMovePasswordsToAccountButtonClicked;
 

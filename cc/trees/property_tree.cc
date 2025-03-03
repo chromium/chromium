@@ -1072,7 +1072,7 @@ void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node) {
   // To avoid seams we apply only scale as draw transform instead of raster
   // content transform.
   if (effect_node->render_surface_reason ==
-      RenderSurfaceReason::k2DTransformWithCompositedDescendants) {
+      RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants) {
     // We raster at closest positive integer scale and then apply the rest as
     // the draw transform, e.g scale 3.5 will rastered at 4 and 0.875 (3.5/4)
     // will be applied as draw transform.

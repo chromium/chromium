@@ -1196,7 +1196,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TabClosingWhenRemovingExtension) {
 
 // Open with --app-id=<id>, and see that an application window opens by default.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(BrowserTest, AppIdSwitch) {
+// TODO(https://crbug.com/399807131): Re-enable on chrome win builders.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AppIdSwitch DISABLED_AppIdSwitch
+#else
+#define MAYBE_AppIdSwitch AppIdSwitch
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
   base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 

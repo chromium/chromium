@@ -193,10 +193,9 @@ class QuickDeleteMediatorTest : public PlatformTest {
   void triggerUpdateUICallbackForAutofillResults(int num_suggestions,
                                                  int num_cards,
                                                  int num_addresses) {
-    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr, nullptr,
-                                                   nullptr);
+    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr, nullptr);
     const browsing_data::AutofillCounter::AutofillResult autofillResult(
-        &autofillCounter, num_suggestions, num_cards, num_addresses, 0, false);
+        &autofillCounter, num_suggestions, num_cards, num_addresses, false);
     OCMExpect([consumer_
         setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
                                autofillResult, timeRange())]);
@@ -410,11 +409,11 @@ TEST_F(QuickDeleteMediatorTest, TestAddressesSummary) {
   triggerUpdateUICallbackForPasswordsResults(0);
 
   // clang-format off
-    const struct TestCase {
-        int num_addresses;
-        bool sync_enabled;
-        NSString* expected_output;
-    } kTestCases[] = {
+  const struct TestCase {
+      int num_addresses;
+      bool sync_enabled;
+      NSString* expected_output;
+  } kTestCases[] = {
         {0, true, l10n_util::GetNSString(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {0, false, l10n_util::GetNSString(
@@ -427,14 +426,14 @@ TEST_F(QuickDeleteMediatorTest, TestAddressesSummary) {
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, 2)},
         {2, false, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, 2)},
-    };
+  };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(
-        &counter, 0, 0, test_case.num_addresses, 0, test_case.sync_enabled);
+        &counter, 0, 0, test_case.num_addresses, test_case.sync_enabled);
     OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
     OCMExpect([consumer_
         setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
@@ -462,11 +461,11 @@ TEST_F(QuickDeleteMediatorTest, TestCardsSummary) {
   triggerUpdateUICallbackForPasswordsResults(0);
 
   // clang-format off
-    const struct TestCase {
-        int num_cards;
-        bool sync_enabled;
-        NSString* expected_output;
-    } kTestCases[] = {
+  const struct TestCase {
+      int num_cards;
+      bool sync_enabled;
+      NSString* expected_output;
+  } kTestCases[] = {
         {0, true, l10n_util::GetNSString(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {0, false, l10n_util::GetNSString(
@@ -479,14 +478,14 @@ TEST_F(QuickDeleteMediatorTest, TestCardsSummary) {
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 2)},
         {2, false, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 2)},
-    };
+  };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(
-        &counter, 0, test_case.num_cards, 0, 0, test_case.sync_enabled);
+        &counter, 0, test_case.num_cards, 0, test_case.sync_enabled);
 
     OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
     OCMExpect([consumer_
@@ -516,11 +515,11 @@ TEST_F(QuickDeleteMediatorTest, TestSuggestionsSummary) {
   triggerUpdateUICallbackForPasswordsResults(0);
 
   // clang-format off
-    const struct TestCase {
-        int num_suggestions;
-        bool sync_enabled;
-        NSString* expected_output;
-    } kTestCases[] = {
+  const struct TestCase {
+      int num_suggestions;
+      bool sync_enabled;
+      NSString* expected_output;
+  } kTestCases[] = {
         {0, true, l10n_util::GetNSString(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {0, false, l10n_util::GetNSString(
@@ -535,14 +534,14 @@ TEST_F(QuickDeleteMediatorTest, TestSuggestionsSummary) {
                    2)},
         {2, false, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS, 2)},
-    };
+  };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr, nullptr);
+  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::AutofillCounter::AutofillResult result(
-        &counter, test_case.num_suggestions, 0, 0, 0, test_case.sync_enabled);
+        &counter, test_case.num_suggestions, 0, 0, test_case.sync_enabled);
     OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
     OCMExpect([consumer_
         setAutofillSummary:quick_delete_util::GetCounterTextFromResult(

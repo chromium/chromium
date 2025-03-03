@@ -27,7 +27,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   AXPlatformNodeTextProviderWin();
   ~AXPlatformNodeTextProviderWin();
 
-  static AXPlatformNodeTextProviderWin* Create(AXPlatformNodeWin* owner);
+  static Microsoft::WRL::ComPtr<AXPlatformNodeTextProviderWin> Create(
+      AXPlatformNodeWin* owner);
   static void CreateIUnknown(AXPlatformNodeWin* owner, IUnknown** unknown);
 
   //

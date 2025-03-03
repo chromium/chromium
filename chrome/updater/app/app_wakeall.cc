@@ -44,7 +44,7 @@ void AppWakeAll::FirstTaskRun() {
             base::FileEnumerator(*base, false,
                                  base::FileEnumerator::DIRECTORIES)
                 .ForEach([&scope](const base::FilePath& name) {
-                  if (!base::Version(name.BaseName().MaybeAsASCII())
+                  if (!base::Version(name.BaseName().AsUTF8Unsafe())
                            .IsValid()) {
                     return;
                   }

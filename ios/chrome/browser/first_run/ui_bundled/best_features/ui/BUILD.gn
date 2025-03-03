@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "best_features_item.h",
+    "best_features_item.mm",
+    "best_features_screen_consumer.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+  ]
+}

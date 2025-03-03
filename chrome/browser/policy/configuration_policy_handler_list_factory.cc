@@ -1892,12 +1892,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // !BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  { key::kThirdPartyBlockingEnabled,
-    prefs::kThirdPartyBlockingEnabled,
-    base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   { key::kPrintPdfAsImageAvailability,
     prefs::kPrintPdfAsImageAvailability,

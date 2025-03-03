@@ -4779,18 +4779,15 @@ public class TabListMediatorUnitTest {
         // Perform action and validate for compact width.
         assertEquals(
                 TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
-                mMediator.getSpanCountForTesting(
-                        TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1));
+                mMediator.getSpanCount(TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1));
         // Perform action and validate for medium width.
         assertEquals(
                 TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
-                mMediator.getSpanCountForTesting(
-                        TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP - 1));
+                mMediator.getSpanCount(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP - 1));
         // Perform action and validate for large width.
         assertEquals(
                 TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
-                mMediator.getSpanCountForTesting(
-                        TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1));
+                mMediator.getSpanCount(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1));
         XrUtils.resetXrDeviceForTesting();
     }
 

@@ -963,39 +963,6 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
-void SafeBrowsingPrivateEventRouter::OnLoginEvent(
-    const GURL& url,
-    bool is_federated,
-    const url::SchemeHostPort& federated_origin,
-    const std::u16string& username) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  std::optional<enterprise_connectors::ReportingSettings> settings =
-      reporting_client_->GetReportingSettings();
-  if (!settings.has_value()) {
-    return;
-  }
-
-  std::unique_ptr<url_matcher::URLMatcher> matcher =
-      CreateURLMatcherForOptInEvent(settings.value(),
-                                    enterprise_connectors::kKeyLoginEvent);
-  if (!IsOptInEventEnabled(matcher.get(), url)) {
-    return;
-  }
-
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyIsFederated, is_federated);
-  if (is_federated) {
-    event.Set(kKeyFederatedOrigin, federated_origin.Serialize());
-  }
-  event.Set(kKeyLoginUserName, MaskUsername(username));
-
-  reporting_client_->ReportRealtimeEvent(enterprise_connectors::kKeyLoginEvent,
-                                         std::move(settings.value()),
-                                         std::move(event));
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-}
-
 void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
     const std::string& trigger,
     const std::vector<std::pair<GURL, std::u16string>>& identities) {

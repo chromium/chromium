@@ -376,6 +376,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesOutlookCalendarInfo", IDS_NTP_MODULES_OUTLOOK_CALENDAR_INFO},
       {"modulesCalendarJoinMeetingButtonText",
        IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_TEXT},
+      {"modulesCalendarJoinMeetingButtonAcc",
+       IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_ACCNAME},
       {"modulesCalendarInProgress", IDS_NTP_MODULES_CALENDAR_IN_PROGRESS},
       {"modulesCalendarInXMin", IDS_NTP_MODULES_CALENDAR_IN_X_MIN},
       {"modulesCalendarInXHr", IDS_NTP_MODULES_CALENDAR_IN_X_HR},

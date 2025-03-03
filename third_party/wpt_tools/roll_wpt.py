@@ -11,10 +11,8 @@ import subprocess
 import sys
 import time
 
-BUG_QUERY_URLS = ["https://issues.chromium.org/issues?"
-                  "q=status:open%20componentid:1456176%20customfield1223031:WPT-Tooling-Roll",
-                  "https://issues.chromium.org/issues?"
-                  "q=status:open%20componentid:1456176%20customfield1223031:WPT-JS-Roll"]
+BUG_QUERY_URLS = ["https://issues.chromium.org/issues?q=status:open%20customfield1223031:WPT-Tooling-Roll",
+                  "https://issues.chromium.org/issues?q=status:open%20customfield1223031:WPT-JS-Roll"]
 
 
 def main():

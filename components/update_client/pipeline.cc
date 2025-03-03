@@ -379,7 +379,7 @@ void MakePipeline(
   RepeatingOperation install = base::BindRepeating(
       [](scoped_refptr<Configurator> config, scoped_refptr<CrxCache> crx_cache,
          crx_file::VerifierFormat crx_format, const std::string& id,
-         const std::vector<uint8_t>& pk_hash,
+         const std::string& file_hash, const std::vector<uint8_t>& pk_hash,
          scoped_refptr<CrxInstaller> installer, const std::string& run,
          const std::string& arguments, const std::string& install_data,
          const std::string& fingerprint,
@@ -394,7 +394,7 @@ void MakePipeline(
         state_tracker.Run(ComponentState::kUpdating);
         return InstallOperation(
             crx_cache, config->GetUnzipperFactory()->Create(), crx_format, id,
-            pk_hash, installer,
+            file_hash, pk_hash, installer,
             run.empty() ? nullptr
                         : std::make_unique<CrxInstaller::InstallParams>(
                               run, arguments, install_data),
@@ -415,7 +415,8 @@ void MakePipeline(
                 .Then(std::move(callback)),
             file);
       },
-      config, crx_cache, crx_format, id, pk_hash, installer,
+      config, crx_cache, crx_format, id,
+      result.manifest.packages[0].hash_sha256, pk_hash, installer,
       result.manifest.run, result.manifest.arguments,
       [&]() -> std::string {
         if (install_data_index.empty() || result.data.empty()) {
@@ -429,8 +430,8 @@ void MakePipeline(
       result.manifest.packages[0].fingerprint, state_tracker, event_adder,
       install_progress_callback, install_complete_callback);
 
-  crx_cache->Get(
-      id, result.manifest.packages[0].fingerprint,
+  crx_cache->GetByFp(
+      result.manifest.packages[0].fingerprint,
       base::BindOnce(
           [](scoped_refptr<CrxCache> crx_cache, const std::string& id,
              const std::string& prev_fp,
@@ -438,8 +439,8 @@ void MakePipeline(
                  base::expected<base::FilePath, UnpackerError>,
                  base::expected<base::FilePath, UnpackerError>)> callback,
              base::expected<base::FilePath, UnpackerError> installer) {
-            crx_cache->Get(id, prev_fp,
-                           base::BindOnce(std::move(callback), installer));
+            crx_cache->GetByFp(prev_fp,
+                               base::BindOnce(std::move(callback), installer));
           },
           crx_cache, id, prev_fp,
           base::BindOnce(&AssemblePipeline, std::move(download_diff),

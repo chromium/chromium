@@ -3525,7 +3525,9 @@ using UserFeedbackDataCallback =
 
   // Refrain from reusing the same tab for Lens Overlay initiated requests.
   BOOL initiatedByLensOverlay = false;
-  if (IsLensOverlayAvailable() && currentWebState) {
+  if (IsLensOverlayAvailable(
+          targetInterface.browser->GetProfile()->GetPrefs()) &&
+      currentWebState) {
     if (LensOverlayTabHelper* lensOverlayTabHelper =
             LensOverlayTabHelper::FromWebState(currentWebState)) {
       initiatedByLensOverlay =

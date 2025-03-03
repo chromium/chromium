@@ -21,7 +21,7 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "x64_builder",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -56,7 +56,7 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "x64_builder",
                 "target_bits": 64,
                 "target_platform": "android"
               },

@@ -650,7 +650,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   }
 
   void SetTableColumnGeometries(
-      const TableFragmentData::ColumnGeometries& table_column_geometries) {
+      const TableColumnGeometries& table_column_geometries) {
     table_column_geometries_ = table_column_geometries;
   }
 
@@ -659,7 +659,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   }
 
   void SetTableCollapsedBordersGeometry(
-      std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
+      std::unique_ptr<CollapsedTableBordersGeometry>
           table_collapsed_borders_geometry) {
     table_collapsed_borders_geometry_ =
         std::move(table_collapsed_borders_geometry);
@@ -836,9 +836,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // Table specific types.
   std::optional<LogicalRect> table_grid_rect_;
-  TableFragmentData::ColumnGeometries table_column_geometries_;
+  TableColumnGeometries table_column_geometries_;
   const TableBorders* table_collapsed_borders_ = nullptr;
-  std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
+  std::unique_ptr<CollapsedTableBordersGeometry>
       table_collapsed_borders_geometry_;
   std::optional<wtf_size_t> table_column_count_;
 

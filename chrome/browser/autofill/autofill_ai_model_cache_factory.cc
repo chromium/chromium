@@ -49,7 +49,9 @@ AutofillAiModelCacheFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<AutofillAiModelCacheImpl>(
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
-      profile->GetPath());
+      profile->GetPath(),
+      autofill::features::kAutofillAiServerModelCacheSize.Get(),
+      autofill::features::kAutofillAiServerModelCacheAge.Get());
 }
 
 bool AutofillAiModelCacheFactory::ServiceIsCreatedWithBrowserContext() const {

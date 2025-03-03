@@ -66,7 +66,6 @@ CreateCounterForProfileAndPref(ProfileIOS* profile,
         autofill::PersonalDataManagerFactory::GetForProfile(profile),
         ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        /*user_annotations_service=*/nullptr,
         SyncServiceFactory::GetForProfile(profile));
   }
 

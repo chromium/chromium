@@ -9,7 +9,6 @@
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
-#include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/network_interfaces.h"
 
@@ -33,19 +32,6 @@ using InterstitialReason = ::chrome::cros::reporting::proto::
 using ProtoEventResult = ::chrome::cros::reporting::proto::EventResult;
 
 const char kMaskedUsername[] = "*****";
-
-// Do a best-effort masking of `username`. If it's an email address (such as
-// foo@example.com), everything before @ should be masked. Otherwise, the entire
-// username should be masked.
-std::string MaskUsername(const std::u16string& username) {
-  size_t pos = username.find(u"@");
-  if (pos == std::string::npos) {
-    return kMaskedUsername;
-  }
-
-  return base::StrCat(
-      {kMaskedUsername, base::UTF16ToUTF8(username.substr(pos))});
-}
 
 TriggerType GetTriggerType(const std::string& trigger) {
   TriggerType type;
@@ -79,13 +65,18 @@ ProtoEventResult GetEventResult(EventResult event_result) {
   }
 }
 
-// Create a URLMatcher representing the filters in
-// `settings.enabled_opt_in_events` for `event_type`. This field of the
-// reporting settings connector contains a map where keys are event types and
-// values are lists of URL patterns specifying on which URLs the events are
-// allowed to be reported. An event is generated iff its event type is present
-// in the opt-in events field and the URL it relates to matches at least one of
-// the event type's filters.
+}  // namespace
+
+std::string MaskUsername(const std::u16string& username) {
+  size_t pos = username.find(u"@");
+  if (pos == std::string::npos) {
+    return kMaskedUsername;
+  }
+
+  return base::StrCat(
+      {kMaskedUsername, base::UTF16ToUTF8(username.substr(pos))});
+}
+
 std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
     const enterprise_connectors::ReportingSettings& settings,
     const char* event_type) {
@@ -103,11 +94,9 @@ std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
   return matcher;
 }
 
-bool IsOptInEventEnabled(url_matcher::URLMatcher* matcher, const GURL& url) {
+bool IsUrlMatched(url_matcher::URLMatcher* matcher, const GURL& url) {
   return matcher && !matcher->MatchURL(url).empty();
 }
-
-}  // namespace
 
 std::optional<proto::PasswordBreachEvent> GetPasswordBreachEvent(
     const std::string& trigger,
@@ -122,7 +111,7 @@ std::optional<proto::PasswordBreachEvent> GetPasswordBreachEvent(
   proto::PasswordBreachEvent event;
   std::vector<proto::PasswordBreachEvent::Identity> converted_identities;
   for (const std::pair<GURL, std::u16string>& i : identities) {
-    if (!IsOptInEventEnabled(matcher.get(), i.first)) {
+    if (!IsUrlMatched(matcher.get(), i.first)) {
       continue;
     }
     proto::PasswordBreachEvent::Identity identity;

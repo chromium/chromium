@@ -20,7 +20,7 @@ constexpr unsigned kNumberOfChannels = 1;
 
 WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
     : AudioBasicProcessorHandler(
-          kNodeTypeWaveShaper,
+          NodeType::kNodeTypeWaveShaper,
           node,
           sample_rate,
           std::make_unique<WaveShaperProcessor>(

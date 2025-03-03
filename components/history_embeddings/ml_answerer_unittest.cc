@@ -8,8 +8,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,11 +47,13 @@ class MockModelExecutor
 class HistoryEmbeddingsMlAnswererTest : public testing::Test {
  public:
   void SetUp() override {
-    ml_answerer_ = std::make_unique<MlAnswerer>(&model_executor_);
+    logs_uploader_ = std::make_unique<
+        optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
+    ml_answerer_ =
+        std::make_unique<MlAnswerer>(&model_executor_, logs_uploader_.get());
     token_limits_ = {
         .min_context_tokens = 1024,
     };
-
 
     ON_CALL(session_1_, GetTokenLimits())
         .WillByDefault([&]() -> optimization_guide::TokenLimits& {
@@ -59,6 +63,12 @@ class HistoryEmbeddingsMlAnswererTest : public testing::Test {
         .WillByDefault([&]() -> optimization_guide::TokenLimits& {
           return GetTokenLimits();
         });
+  }
+
+  void TearDown() override {
+    // Reset the logs uploader to avoid keeping a dangling pointer to the local
+    // state during destruction.
+    logs_uploader_ = nullptr;
   }
 
   optimization_guide::TokenLimits& GetTokenLimits() { return token_limits_; }
@@ -77,6 +87,9 @@ class HistoryEmbeddingsMlAnswererTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<MockModelExecutor> model_executor_;
+  std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
+      logs_uploader_;
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<MlAnswerer> ml_answerer_;
   testing::NiceMock<optimization_guide::MockSession> session_1_, session_2_;
   optimization_guide::TokenLimits token_limits_;

@@ -12,15 +12,12 @@ test("ui_unittests") {
     "//base/test:test_support",
     "//testing/gtest",
     "//ui/base",
+    "//ui/color:unit_tests",
     "//ui/menus:unit_tests",
   ]
 
   if (!is_ios && !is_android && !is_castos) {
     deps += [ "//ui/actions:unit_tests" ]
-  }
-
-  if (use_blink) {
-    deps += [ "//ui/color:unit_tests" ]
   }
 
   if (is_mac) {

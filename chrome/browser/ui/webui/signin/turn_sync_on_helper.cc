@@ -182,13 +182,15 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode,
     std::unique_ptr<Delegate> delegate,
-    base::OnceClosure callback)
+    base::OnceClosure callback,
+    bool turn_sync_on_signed_profile)
     : delegate_(std::move(delegate)),
       profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       signin_access_point_(signin_access_point),
       signin_promo_action_(signin_promo_action),
       signin_aborted_mode_(signin_aborted_mode),
+      turn_sync_on_signed_profile_(turn_sync_on_signed_profile),
       account_info_(
           identity_manager_->FindExtendedAccountInfoByAccountId(account_id)),
       scoped_callback_runner_(std::move(callback)),
@@ -222,16 +224,19 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     signin_metrics::PromoAction signin_promo_action,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode,
-    bool is_sync_promo)
-    : TurnSyncOnHelper(
-          profile,
-          signin_access_point,
-          signin_promo_action,
-          account_id,
-          signin_aborted_mode,
-          std::make_unique<TurnSyncOnHelperDelegateImpl>(browser,
-                                                         is_sync_promo),
-          base::OnceClosure()) {
+    bool is_sync_promo,
+    bool turn_sync_on_signed_profile)
+    : TurnSyncOnHelper(profile,
+                       signin_access_point,
+                       signin_promo_action,
+                       account_id,
+                       signin_aborted_mode,
+                       std::make_unique<TurnSyncOnHelperDelegateImpl>(
+                           browser,
+                           is_sync_promo,
+                           turn_sync_on_signed_profile),
+                       base::OnceClosure(),
+                       turn_sync_on_signed_profile) {
   // If this is a promo, the account should not be removed on abort.
   CHECK(!is_sync_promo ||
         signin_aborted_mode == SigninAbortedMode::KEEP_ACCOUNT);
@@ -323,6 +328,8 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
       if (delegate_->IsProfileCreationRequiredByPolicy() &&
           !enterprise_util::UserAcceptedAccountManagement(profile_)) {
         signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
+      } else if (!turn_sync_on_signed_profile_) {
+        signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY;
       }
       base::RecordAction(
           base::UserMetricsAction("Signin_EnterpriseAccountPrompt_Cancel"));

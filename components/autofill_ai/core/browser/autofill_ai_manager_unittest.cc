@@ -41,7 +41,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 // TODO(crbug.com/389629573): Refactor this test to handle only the
-// implementation under `autofill::features::kAutofillAiWithDataSchema` flag.
+// implementation under `autofill::features::kAutofillAiWithDataSchema`
+// flag.
 namespace autofill_ai {
 namespace {
 
@@ -708,7 +709,8 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
 
   // The current entity however does not.
   EntityInstance existing_entity_without_issue_and_expiry_dates =
-      GetPassportEntityInstance({.expiry_date = u"", .issue_date = nullptr});
+      GetPassportEntityInstance(
+          {.expiry_date = nullptr, .issue_date = nullptr});
   AddOrUpdateEntityInstance(existing_entity_without_issue_and_expiry_dates);
 
   // Set the filled values to be the same as the ones already stored in the
@@ -720,9 +722,9 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
       existing_entity_without_issue_and_expiry_dates, autofill::PASSPORT_NUMBER,
       /*app_locale=*/""));
   // Issue date
-  form->field(2)->set_value(u"01/02/2016");
+  form->field(2)->set_value(u"2016-02-01");
   // Expirty date
-  form->field(3)->set_value(u"01/02/2020");
+  form->field(3)->set_value(u"2020-02-01");
 
   std::optional<EntityInstance> entity;
   std::optional<EntityInstance> old_entity;
@@ -735,7 +737,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
 
   // This is an update bubble, `old_entity` should exist.
-  EXPECT_TRUE(old_entity.has_value());
+  ASSERT_TRUE(old_entity.has_value());
   EXPECT_EQ(*old_entity, existing_entity_without_issue_and_expiry_dates);
 
   // Tell the caller the bubble was shown.
@@ -758,11 +760,11 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
                 saved_entity, AttributeTypeName::kPassportIssueDate,
                 /*app_locale=*/""),
-            u"01/02/2016");
+            u"2016-02-01");
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
                 saved_entity, AttributeTypeName::kPassportExpiryDate,
                 /*app_locale=*/""),
-            u"01/02/2020");
+            u"2020-02-01");
 }
 
 class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {

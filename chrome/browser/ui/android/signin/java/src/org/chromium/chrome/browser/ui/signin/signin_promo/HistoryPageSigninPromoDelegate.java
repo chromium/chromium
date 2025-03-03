@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -64,14 +66,12 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTitle() {
-        // TODO(crbug.com/388201374): Use final strings when they'll be available.
-        return mContext.getString(R.string.signin_promo_title_recent_tabs);
+        return mContext.getString(R.string.signin_promo_title_history_page);
     }
 
     @Override
     String getDescription() {
-        // TODO(crbug.com/388201374): Use final strings when they'll be available.
-        return mContext.getString(R.string.signin_promo_description_recent_tabs);
+        return mContext.getString(R.string.signin_promo_description_history_page);
     }
 
     @Override
@@ -117,8 +117,11 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
-        // TODO(crbug.com/388201374): Update CTA string.
-        return mContext.getString(R.string.signin_promo_turn_on);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_OPT_IN_PROMO_CTA_STRING_VARIATION)) {
+            return mContext.getString(R.string.signin_continue);
+        } else {
+            return mContext.getString(R.string.signin_promo_turn_on);
+        }
     }
 
     @Override

@@ -772,6 +772,7 @@ targets.bundle(
     targets = [
         "private_code_failure_test",
         "android_chrome_wpt_tests",
+        "android_webdriver_wpt_tests",
         "android_webview_wpt_tests",
     ],
     per_test_modifications = {
@@ -784,6 +785,13 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 4,
             ),
+        ),
+        "android_webdriver_wpt_tests": targets.mixin(
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 15,
+            ),
+            experiment_percentage = 20,
         ),
     },
 )

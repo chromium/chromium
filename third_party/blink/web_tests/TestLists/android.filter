@@ -10,6 +10,9 @@
 # Further documentation:
 # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
+# Running webdriver tests with Chrome Android
+external/wpt/webdriver/tests/
+
 external/wpt/virtual-keyboard/
 external/wpt/visual-viewport/
 

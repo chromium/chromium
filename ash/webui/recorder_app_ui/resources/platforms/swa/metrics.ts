@@ -227,6 +227,9 @@ function convertToModelResultStatus(
 
   switch (responseError) {
     case ModelResponseError.GENERAL:
+    case ModelResponseError.LOAD_FAILURE:
+      // Currently there's no plan to have specific error type for loading
+      // error.
       return CrOSEvents_RecorderAppModelResultStatus.GENERAL_ERROR;
     case ModelResponseError.UNSAFE:
       return CrOSEvents_RecorderAppModelResultStatus.UNSAFE;

@@ -90,7 +90,6 @@ using CompositingReasons = uint64_t;
   V(LinkHighlight)                                                             \
   V(DevToolsOverlay)                                                           \
   V(ViewTransitionContent)                                                     \
-  V(2DScaleTransformWithCompositedDescendants)
 
 class PLATFORM_EXPORT CompositingReason {
   DISALLOW_NEW();

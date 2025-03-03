@@ -10,5 +10,5 @@ import org.chromium.android_webview.common.Lifetime;
 public interface PrefetchOperationCallback {
     void onSuccess();
 
-    void onError(PrefetchException prefetchException);
+    void onError(@PrefetchOperationStatusCode int errorCode, String message, int networkErrorCode);
 }

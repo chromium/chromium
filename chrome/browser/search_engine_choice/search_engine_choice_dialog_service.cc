@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -74,7 +75,9 @@ bool SearchEngineChoiceDialogService::BrowserRegistry::RegisterBrowser(
   if (IsRegistered(browser)) {
     // TODO(crbug.com/347223092): Investigating whether re-registrations
     // are a cause of multi-prompts.
-    NOTREACHED(base::NotFatalUntil::M131);
+    SCOPED_CRASH_KEY_BOOL("ChoiceService", "browser_has_open_dialog",
+                          HasOpenDialog(browser));
+    NOTREACHED(base::NotFatalUntil::M138);
     return false;
   }
 
@@ -145,6 +148,20 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
   SCOPED_CRASH_KEY_NUMBER("ChoiceService", "prepopulate_id", prepopulate_id);
   SCOPED_CRASH_KEY_NUMBER("ChoiceService", "entry_point",
                           static_cast<int>(entry_point));
+  SCOPED_CRASH_KEY_STRING32("ChoiceService", "profile_type",
+                            profile_->IsGuestSession()   ? "guest"
+                            : profile_->IsOffTheRecord() ? "otr"
+                                                         : "regular");
+
+  // Expected to be `kEligible` if we are about to notify that the choice has
+  // been made. If it's not, something weird is happening. We use the more
+  // basic `GetDynamicChoiceScreenConditions()` call to get a profile-wide
+  // assessment instead of browser-specific.
+  SCOPED_CRASH_KEY_NUMBER(
+      "ChoiceService", "pre_record_condition",
+      static_cast<int>(
+          search_engine_choice_service_->GetDynamicChoiceScreenConditions(
+              *template_url_service_)));
 
   TemplateURL* selected_engine = nullptr;
   int selected_engine_index = -1;
@@ -157,44 +174,41 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
     }
   }
 
-  // Checking for states we don't expect to be possible. We are not crashing
-  // the browser immediately due to the criticality of the launch and because
-  // we have a fallback, which is just letting the user proceed without
-  // attempting to apply the choice. Many failure cases come from an unexpected
-  // default being included in the list.
-  // The conditions are explained below, and we set up crash keys to
-  // investigate failures in case they happen.
-  // TODO(https://crbug.com/318824817): Clean this up by M127.
-  if (
-      // The ID associated with the selection was not found in the cached list
-      // of search engines. That could be maybe caused by something like
-      // https://crbug.com/328041262.
-      selected_engine == nullptr ||
-      // A custom search engine would have a `prepopulate_id` of 0, We don't
-      // expect to trigger the choice screen if it was the current default, per
-      // `SearchEngineChoiceService::GetDynamicChoiceScreenConditions`.
-      prepopulate_id == 0 ||
-      // Distribution custom search engines are not part of the prepopulated
-      // data but still have an ID, assigned starting from 1000. We should also
-      // not be prompting when that's the default.
-      // TODO(crbug.com/324880292): Revisit how we should handle them.
-      prepopulate_id > TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
-    SCOPED_CRASH_KEY_BOOL("ChoiceService", "selected_engine_found",
-                          selected_engine != nullptr);
+  const TemplateURL* default_search_provider_for_debug =
+      template_url_service_->GetDefaultSearchProvider();
+  SCOPED_CRASH_KEY_NUMBER(
+      "ChoiceService", "current_dse_id",
+      default_search_provider_for_debug
+          ? default_search_provider_for_debug->prepopulate_id()
+          : -1);
+  SCOPED_CRASH_KEY_STRING64(
+      "ChoiceService", "current_dse_keyword",
+      default_search_provider_for_debug
+          ? base::UTF16ToUTF8(default_search_provider_for_debug->keyword())
+          : "<null>");
 
-    const TemplateURL* default_search_provider =
-        template_url_service_->GetDefaultSearchProvider();
-    SCOPED_CRASH_KEY_NUMBER("ChoiceService", "current_dse_id",
-                            default_search_provider
-                                ? default_search_provider->prepopulate_id()
-                                : -1);
-    SCOPED_CRASH_KEY_STRING64(
-        "ChoiceService", "current_dse_keyword",
-        default_search_provider
-            ? base::UTF16ToUTF8(default_search_provider->keyword())
-            : "<null>");
+  // A custom search engine would have a `prepopulate_id` of 0, We don't expect
+  // to trigger the choice screen if it was the current default, per
+  // `SearchEngineChoiceService::GetDynamicChoiceScreenConditions`.
+  CHECK_GT(prepopulate_id, 0);
 
-    NOTREACHED(base::NotFatalUntil::M127);
+  // Distribution custom search engines are not part of the prepopulated
+  // data but still have an ID, assigned starting from 1000. We should also
+  // not be prompting when that's the default.
+  // TODO(b:302675777): Revisit how we should handle them.
+  CHECK_LE(prepopulate_id,
+           TemplateURLPrepopulateData::kMaxPrepopulatedEngineID);
+
+  if (selected_engine == nullptr) {
+    // The ID associated with the selection was not found in the cached list
+    // of search engines. That could be maybe caused by something like a race
+    // with enterprise policies, see https://crbug.com/328041262.
+    // We have a way to recover for it, by just letting the user proceed without
+    // attempting to apply the choice, so we don't immediately crash the
+    // browser.
+    // TODO(crbug.com/400119363): Investigate whether we can more formally
+    // handle this.
+    NOTREACHED(base::NotFatalUntil::M138);
   } else {
     bool is_guest_mode_propagation_allowed =
         search_engine_choice_service_
@@ -249,13 +263,10 @@ bool SearchEngineChoiceDialogService::RegisterDialog(
   auto condition = ComputeDialogConditions(browser);
   SCOPED_CRASH_KEY_NUMBER("ChoiceService", "dialog_condition",
                           static_cast<int>(condition));
-  if (condition !=
-      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
-    // We expect the caller to have verified that the dialog can actually be
-    // shown before attempting to register it.
-    NOTREACHED(base::NotFatalUntil::M131);
-    return false;
-  }
+  // We expect the caller to have verified that the dialog can actually be
+  // shown before attempting to register it.
+  CHECK_EQ(condition,
+           search_engines::SearchEngineChoiceScreenConditions::kEligible);
 
   return browser_registry_.RegisterBrowser(browser,
                                            std::move(close_dialog_callback));
@@ -336,14 +347,9 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
         kFeatureSuppressed;
   }
 
-  if (browser_registry_.IsRegistered(browser)) {
-    if (browser_registry_.HasOpenDialog(browser)) {
-      return search_engines::SearchEngineChoiceScreenConditions::
-          kAlreadyBeingShown;
-    }
-
+  if (browser_registry_.HasOpenDialog(browser)) {
     return search_engines::SearchEngineChoiceScreenConditions::
-        kAlreadyCompleted;
+        kAlreadyBeingShown;
   }
 
   if (search_engine_choice_service_->GetSavedSearchEngineBetweenGuestSessions()
@@ -387,15 +393,8 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
   }
 
   // Respect common conditions with other platforms.
-  search_engines::SearchEngineChoiceScreenConditions dynamic_conditions =
-      search_engine_choice_service_->GetDynamicChoiceScreenConditions(
-          *template_url_service_);
-  if (dynamic_conditions !=
-      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
-    return dynamic_conditions;
-  }
-
-  return search_engines::SearchEngineChoiceScreenConditions::kEligible;
+  return search_engine_choice_service_->GetDynamicChoiceScreenConditions(
+      *template_url_service_);
 }
 
 bool SearchEngineChoiceDialogService::CanSuppressPrivacySandboxPromo() const {

@@ -527,7 +527,7 @@ TEST_F(DownloadRequestMakerTest, CreatesFromFileSystemAccess) {
 
   std::unique_ptr<DownloadRequestMaker> request_maker =
       DownloadRequestMaker::CreateFromFileSystemAccess(mock_feature_extractor_,
-                                                       nullptr, item);
+                                                       item);
 
   EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
       .WillOnce(Return());

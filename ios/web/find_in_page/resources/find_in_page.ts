@@ -138,7 +138,7 @@ function isElementVisible(elem: HTMLElement): boolean {
  * contains only one Node, it means the match is found within one HTML TEXT
  * Node, otherwise the match involves multiple HTML TEXT Nodes.
  */
-class Match {
+export class Match {
   nodes: HTMLElement[] = [];
 
   /**
@@ -181,7 +181,7 @@ class Match {
  * |allText_| is [begin, end). Exactly one <chrome_find> will be created for
  * each PartialMatch.
  */
-class PartialMatch {
+export class PartialMatch {
   /**
    * @param {number} matchId ID of the Match to which this PartialMatch belongs.
    * @param {number} begin Beginning index of partial match text in |allText_|.
@@ -198,7 +198,7 @@ class PartialMatch {
  * <chrome_find> nodes for highlighted parts. This operation will be executed
  * reversely when clearing current highlights for next FindInPage action.
  */
-class Replacement {
+export class Replacement {
   /**
    * @param {Node} HTMLElement The HTML Node containing search result.
    * @param {Array<Node>} newNodes New HTML Nodes created for
@@ -245,7 +245,7 @@ class Replacement {
  * A Section contains the info of one TEXT node in the |allText_|. The node's
  * textContent is [begin, end) of |allText_|.
  */
-class Section {
+export class Section {
   /**
    * @param {number} begin Beginning index of |node|.textContent in |allText_|.
    * @param {number} end Ending index of |node|.textContent in |allText_|.
@@ -258,7 +258,7 @@ class Section {
 /**
  * A timer that checks timeout for long tasks.
  */
-class Timer {
+export class Timer {
   private beginTime = Date.now();
 
   /**
@@ -273,5 +273,3 @@ class Timer {
     return Date.now() - this.beginTime > this.timeoutMs;
   }
 }
-
-export {Match, PartialMatch, Replacement, Section, Timer};

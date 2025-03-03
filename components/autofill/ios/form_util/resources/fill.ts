@@ -368,7 +368,10 @@ function formOrFieldsetsToFormData(
  When called from the page world, the last generated token in the isolated world
  is returned.
  */
-function getChildFrameRemoteToken(frame: HTMLIFrameElement): string|null {
+function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
+  if (!frame) {
+    return null;
+  }
   // Either register a new token when in the isolated world or read the last
   // registered token from the page content world.
   return gCrWeb.remoteFrameRegistration?.registerChildFrame(frame) ??

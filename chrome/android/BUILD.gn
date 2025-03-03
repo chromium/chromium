@@ -2666,11 +2666,6 @@ if (current_toolchain == default_toolchain) {
     args = _common_web_test_options + [
              "--product",
              "chrome_android",
-             "--test-type",
-             "testharness",
-             "reftest",
-             "crashtest",
-             "print-reftest",
              "--zero-tests-executed-ok",
            ]
     data = [

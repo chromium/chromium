@@ -161,7 +161,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)setPlaceholderType:(LocationBarPlaceholderType)placeholderType {
-  CHECK(IsLensOverlayAvailable());
+  CHECK(IsLensOverlayAvailable(_profilePrefs));
   if (placeholderType == _placeholderType) {
     return;
   }
@@ -238,8 +238,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   DCHECK(self.badgeView) << "The badge view must be set at this point";
   [self.locationBarSteadyView setBadgeView:self.badgeView];
 
-  if (IsLensOverlayAvailable()) {
-    _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc] init];
+  if (IsLensOverlayAvailable(_profilePrefs)) {
+    _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc]
+        initWithProfilePrefs:_profilePrefs];
     [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView
                                 underName:kLensOverlayEntrypointGuide];
 
@@ -403,7 +404,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)attemptShowingLensOverlayIPH {
-  if (IsLensOverlayAvailable() &&
+  if (IsLensOverlayAvailable(_profilePrefs) &&
       !self.locationBarSteadyView.badgesContainerView.placeholderView.hidden) {
     [self.helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];

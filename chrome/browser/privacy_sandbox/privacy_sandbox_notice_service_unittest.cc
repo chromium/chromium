@@ -82,10 +82,10 @@ TEST_F(PrivacySandboxNoticeServiceTest,
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
       prefs(), GetTopicsNoticeName());
-  EXPECT_EQ(result->schema_version, 1);
-  EXPECT_EQ(result->notice_action_taken,
+  EXPECT_EQ(result->GetSchemaVersion(), 1);
+  EXPECT_EQ(result->notice_action_taken_,
             NoticeActionTaken::kUnknownActionPreMigration);
-  EXPECT_EQ(base::TimeToValue(result->notice_action_taken_time), "0");
+  EXPECT_EQ(base::TimeToValue(result->notice_action_taken_time_), "0");
 }
 
 TEST_F(PrivacySandboxNoticeServiceTest,
@@ -110,9 +110,9 @@ TEST_F(PrivacySandboxNoticeServiceTest,
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
       prefs(), GetTopicsNoticeName());
-  EXPECT_EQ(result->schema_version, 1);
-  EXPECT_EQ(result->notice_action_taken, NoticeActionTaken::kOptIn);
-  EXPECT_EQ(result->notice_action_taken_time,
+  EXPECT_EQ(result->GetSchemaVersion(), 1);
+  EXPECT_EQ(result->notice_action_taken_, NoticeActionTaken::kOptIn);
+  EXPECT_EQ(result->notice_action_taken_time_,
             base::Time::FromMillisecondsSinceUnixEpoch(100));
 }
 
@@ -127,9 +127,9 @@ TEST_F(PrivacySandboxNoticeServiceTest,
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
       prefs(), GetTopicsNoticeName());
-  EXPECT_EQ(result->schema_version, 1);
-  EXPECT_EQ(result->notice_action_taken, NoticeActionTaken::kOptOut);
-  EXPECT_EQ(result->notice_action_taken_time,
+  EXPECT_EQ(result->GetSchemaVersion(), 1);
+  EXPECT_EQ(result->notice_action_taken_, NoticeActionTaken::kOptOut);
+  EXPECT_EQ(result->notice_action_taken_time_,
             base::Time::FromMillisecondsSinceUnixEpoch(100));
 }
 
@@ -219,9 +219,9 @@ TEST_F(PrivacySandboxNoticeServiceTest,
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
       prefs(), GetProtectedAudienceMeasurementNoticeName());
-  EXPECT_EQ(result->schema_version, 1);
-  EXPECT_EQ(result->notice_action_taken, NoticeActionTaken::kAck);
-  EXPECT_EQ(result->notice_action_taken_time, base::Time());
+  EXPECT_EQ(result->GetSchemaVersion(), 1);
+  EXPECT_EQ(result->notice_action_taken_, NoticeActionTaken::kAck);
+  EXPECT_EQ(result->notice_action_taken_time_, base::Time());
 }
 
 // Clank specific tests.
@@ -299,9 +299,9 @@ TEST_F(PrivacySandboxNoticeServiceTest,
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
       prefs(), GetThreeAdsAPIsNoticeName());
-  EXPECT_EQ(result->schema_version, 1);
-  EXPECT_EQ(result->notice_action_taken, NoticeActionTaken::kAck);
-  EXPECT_EQ(result->notice_action_taken_time, base::Time());
+  EXPECT_EQ(result->GetSchemaVersion(), 1);
+  EXPECT_EQ(result->notice_action_taken_, NoticeActionTaken::kAck);
+  EXPECT_EQ(result->notice_action_taken_time_, base::Time());
 }
 
 // Clank specific tests.
@@ -375,9 +375,9 @@ TEST_F(PrivacySandboxNoticeServiceTest,
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
       prefs(), GetMeasurementNoticeName());
-  EXPECT_EQ(result->schema_version, 1);
-  EXPECT_EQ(result->notice_action_taken, NoticeActionTaken::kAck);
-  EXPECT_EQ(result->notice_action_taken_time, base::Time());
+  EXPECT_EQ(result->GetSchemaVersion(), 1);
+  EXPECT_EQ(result->notice_action_taken_, NoticeActionTaken::kAck);
+  EXPECT_EQ(result->notice_action_taken_time_, base::Time());
 }
 
 // Clank specific tests.

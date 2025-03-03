@@ -18,7 +18,7 @@ const DECORATION_DEFAULT_COLOR = 'blue';
 const DECORATION_STYLES_FOR_SPACE = 'white-space: pre';
 
 // Class to add style to annotations `Element`.
-class TextStyler {
+export class TextStyler {
   // Adds style on given `element`.
   style(parentNode: Node, element: HTMLElement, type: string): void {
     let textColor: string = DECORATION_DEFAULT_COLOR;
@@ -41,7 +41,3 @@ class TextStyler {
     element.style.cssText = DECORATION_STYLES_FOR_SPACE;
   }
 }
-
-export {
-  TextStyler,
-};

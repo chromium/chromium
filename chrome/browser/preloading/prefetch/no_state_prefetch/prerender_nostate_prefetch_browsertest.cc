@@ -113,8 +113,6 @@ enum class SplitCacheTestCase {
   kDisabled,
   kEnabledTripleKeyed,
   kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator
 };
 
 const struct {
@@ -122,12 +120,7 @@ const struct {
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
     {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator}};
-
+     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
 }  // namespace
 
 namespace prerender {
@@ -669,8 +662,6 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
       expected_navigation_request_count = 1;
       break;
     case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
       expected_navigation_request_count = 2;
       break;
   }
@@ -714,9 +705,7 @@ INSTANTIATE_TEST_SUITE_P(
     NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
     testing::ValuesIn(
         {SplitCacheTestCase::kDisabled, SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-         SplitCacheTestCase::kEnabledTriplePlusNavInitiator}),
+         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case (SplitCacheTestCase::kDisabled):
@@ -725,10 +714,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "TripleKeyed";
         case (SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool):
           return "TriplePlusCrossSiteMainFrameNavigationBool";
-        case (SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator):
-          return "TriplePlusMainFrameNavigationInitiator";
-        case (SplitCacheTestCase::kEnabledTriplePlusNavInitiator):
-          return "TriplePlusNavigationInitiator";
       }
     });
 
@@ -1020,8 +1005,6 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
       EXPECT_EQ(std::string::npos, html_content.find("cookie_A=A"));
       break;
     case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
       // For schemes that partition cross-site renderer-initiated navigations
       // separately from browser-initiated navigations, we'll expect the latter
       // to result in a cache miss.

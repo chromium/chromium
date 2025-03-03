@@ -894,8 +894,8 @@ class PolicyManagersTest : public ::testing::Test {
 #if BUILDFLAG(IS_MAC)
     const base::FilePath policy_file_path =
         GetLibraryFolderPath(UpdaterScope::kSystem)
-            ->AppendASCII("Managed Preferences")
-            .AppendASCII(LEGACY_GOOGLE_UPDATE_APPID ".plist");
+            ->AppendUTF8("Managed Preferences")
+            .AppendUTF8(LEGACY_GOOGLE_UPDATE_APPID ".plist");
 
     if (!base::PathExists(policy_file_path)) {
       RunCommand(std::vector<std::string>({"/usr/bin/sudo", "/usr/bin/plutil",

@@ -36,7 +36,6 @@ bool StructTraits<cert_verifier::mojom::CertVerifierConfigDataView,
   config->require_rev_checking_local_anchors =
       data.require_rev_checking_local_anchors();
   config->enable_sha1_local_anchors = data.enable_sha1_local_anchors();
-  config->disable_symantec_enforcement = data.disable_symantec_enforcement();
   return true;
 }
 

@@ -57,6 +57,17 @@ BASE_FEATURE(kAutofillAiServerModel,
              "AutofillAiServerModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// The maximum duration for which an AutofillAI server model response is kept in
+// the local cache. NOTE: It is advisable to choose a value that is at least as
+// large as the cache duration for Autofill server responses to limit cases in
+// which the model is run multiple times for the same form.
+const base::FeatureParam<base::TimeDelta> kAutofillAiServerModelCacheAge{
+    &kAutofillAiServerModel, "autofill_ai_model_cache_age", base::Days(7)};
+
+// The maximum size of the AutofillAI server model cache.
+const base::FeatureParam<int> kAutofillAiServerModelCacheSize{
+    &kAutofillAiServerModel, "autofill_ai_model_cache_size", 100};
+
 // Enables the second iteration AutofillAI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
 BASE_FEATURE(kAutofillAiWithDataSchema,

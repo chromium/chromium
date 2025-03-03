@@ -79,7 +79,7 @@ std::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope) {
   if (!base) {
     return std::nullopt;
   }
-  return base->DirName().AppendASCII(kDevOverrideFileName);
+  return base->DirName().AppendUTF8(kDevOverrideFileName);
 }
 
 ExternalConstantsOverrider::ExternalConstantsOverrider(

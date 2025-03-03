@@ -81,7 +81,6 @@ class ProfileStatisticsAggregatorTest : public testing::Test {
     return std::make_unique<ProfileStatisticsAggregator>(
         autofill_web_data_service_, &personal_data_manager_, &bookmark_model_,
         &history_service_, profile_password_store_, &pref_service_,
-        /*user_annotations_service=*/nullptr,
         /*platform_credential_store=*/nullptr, std::move(done_callback));
   }
 

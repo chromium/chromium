@@ -6,7 +6,6 @@
 #define BASE_STRINGS_TO_STRING_H_
 
 #include <concepts>
-#include <ios>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -19,26 +18,16 @@
 
 namespace base {
 
-template <typename... Ts>
-std::string ToString(const Ts&... values);
+template <typename T>
+std::string ToString(const T& values);
 
 namespace internal {
-
-// I/O manipulators are function pointers, but should be sent directly to the
-// `ostream` instead of being cast to `const void*` like other function
-// pointers.
-template <typename T>
-constexpr bool IsIomanip = false;
-template <typename T>
-  requires(std::derived_from<T, std::ios_base>)
-constexpr bool IsIomanip<T&(T&)> = true;
 
 // Function pointers implicitly convert to `bool`, so use this to avoid printing
 // function pointers as "true"/"false".
 template <typename T>
 concept WillBeIncorrectlyStreamedAsBool =
-    std::is_function_v<std::remove_pointer_t<T>> &&
-    !IsIomanip<std::remove_pointer_t<T>>;
+    std::is_function_v<std::remove_pointer_t<T>>;
 
 // Fallback case when there is no better representation.
 template <typename T>
@@ -136,14 +125,12 @@ struct ToStringHelper<std::tuple<T...>> {
 }  // namespace internal
 
 // Converts any type to a string, preferring defined operator<<() or ToString()
-// methods if they exist. If multiple `values` are given, returns the
-// concatenation of the result of applying `ToString` to each value.
-template <typename... Ts>
-std::string ToString(const Ts&... values) {
+// methods if they exist.
+template <typename T>
+std::string ToString(const T& value) {
   std::ostringstream ss;
-  (...,
-   internal::ToStringHelper<std::remove_cvref_t<decltype(values)>>::Stringify(
-       values, ss));
+  internal::ToStringHelper<std::remove_cvref_t<decltype(value)>>::Stringify(
+      value, ss);
   return ss.str();
 }
 

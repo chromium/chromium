@@ -114,6 +114,11 @@ namespace content {
 
 void ChildProcessEnterSandbox() {
   base::SysInfo::IsLowEndDevice();
+
+  // Request the local time before entering the sandbox since that causes a
+  // crash after the sandbox is entered.
+  base::Time::Now().LocalMidnight();
+
   [g_swift_process applySandbox];
 }
 

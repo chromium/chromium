@@ -18,7 +18,7 @@ class InertTextStyler extends TextStyler {
       void {}
 }
 
-class TestTextDecorator extends TestSuite {
+export class TestTextDecorator extends TestSuite {
   // Mark: Utils
 
   annotation(
@@ -386,5 +386,3 @@ class TestTextDecorator extends TestSuite {
     expectEq(newHTML, document.body.innerHTML);
   }
 }
-
-export {TestTextDecorator};

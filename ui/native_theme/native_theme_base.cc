@@ -37,8 +37,8 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_features.h"
 
 namespace {
 

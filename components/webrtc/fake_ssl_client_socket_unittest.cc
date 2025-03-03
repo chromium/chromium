@@ -229,8 +229,7 @@ class FakeSSLClientSocketTest : public testing::Test {
         // Use a fixed index for repeatability.
         size_t index = 100 % writes.size();
         writes[index].result = error;
-        writes[index].data = NULL;
-        writes[index].data_len = 0;
+        writes[index].data = std::string_view();
         writes.resize(index + 1);
         reads.clear();
         break;
@@ -240,12 +239,10 @@ class FakeSSLClientSocketTest : public testing::Test {
         size_t index = 50 % reads.size();
         if (error == ERR_MALFORMED_SERVER_HELLO) {
           static const char kBadData[] = "BAD_DATA";
-          reads[index].data = kBadData;
-          reads[index].data_len = std::size(kBadData);
+          reads[index].data = std::string_view(kBadData, std::size(kBadData));
         } else {
           reads[index].result = error;
-          reads[index].data = NULL;
-          reads[index].data_len = 0;
+          reads[index].data = std::string_view();
         }
         reads.resize(index + 1);
         if (error == net::ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ) {

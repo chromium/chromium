@@ -48,7 +48,7 @@ base::FilePath AppIDToPath(const std::string& app_id) {
   EXPECT_TRUE(application_support_dir);
   return (*application_support_dir)
       .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
-      .AppendASCII(base::StrCat({"UpdateUsageStatsTaskTest_", app_id}));
+      .AppendUTF8(base::StrCat({"UpdateUsageStatsTaskTest_", app_id}));
 }
 #endif
 
@@ -102,7 +102,7 @@ class UpdateUsageStatsTaskTest : public testing::Test {
     base::CreateDirectory(AppIDToPath(app_id));
     std::unique_ptr<crashpad::CrashReportDatabase> database =
         crashpad::CrashReportDatabase::Initialize(
-            AppIDToPath(app_id).AppendASCII("Crashpad"));
+            AppIDToPath(app_id).AppendUTF8("Crashpad"));
     ASSERT_TRUE(database);
     database->GetSettings()->SetUploadsEnabled(enabled);
 #endif  // BUILDFLAG(IS_MAC)

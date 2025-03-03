@@ -190,16 +190,16 @@ bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
       !CreateEmptyPlistFile(
           GetLibraryFolderPath(scope)
               ->Append("LaunchDaemons")
-              .AppendASCII(base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
-                                              ".daemon.plist")))) {
+              .Append(base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
+                                         ".daemon.plist")))) {
     return false;
   }
 
   base::FilePath launch_agent_dir =
       GetLibraryFolderPath(scope)->Append("LaunchAgents");
-  return CreateEmptyPlistFile(launch_agent_dir.AppendASCII(
+  return CreateEmptyPlistFile(launch_agent_dir.Append(
              base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".agent.plist"))) &&
-         CreateEmptyPlistFile(launch_agent_dir.AppendASCII(base::ToLowerASCII(
+         CreateEmptyPlistFile(launch_agent_dir.Append(base::ToLowerASCII(
              LEGACY_GOOGLE_UPDATE_APPID ".xpcservice.plist")));
 }
 

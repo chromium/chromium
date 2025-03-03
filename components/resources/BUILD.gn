@@ -85,6 +85,10 @@ grit("components_resources") {
     "//components/security_interstitials/core/browser/resources:bundle_js",
   ]
 
+  if (enable_supervised_users) {
+    deps += [ "//components/supervised_user/core/browser/resources:bundle_js" ]
+  }
+
   if (use_blink) {
     deps += [ "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf" ]
   }

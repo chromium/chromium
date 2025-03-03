@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/public/common/cdm_info.h"
 #include "media/base/cdm_capability.h"
@@ -24,9 +25,11 @@ const char kUnsupportedKeySystem[] = "keysystem.test.unsupported";
 // not appear to be available during testing.
 
 TEST(KeySystemSupportAndroidTest, SoftwareSecureWidevine) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      media::kAllowMediaCodecCallsInSeparateProcess);
+  scoped_feature_list.InitWithFeatureStates(
+      {{media::kAllowMediaCodecCallsInSeparateProcess, false},
+       {media::kUseSecurityLevelWhenCheckingMediaDrmVersion, false}});
 
   base::test::TestFuture<media::CdmCapabilityOrStatus> capability;
   GetAndroidCdmCapability(kWidevineKeySystem,
@@ -35,14 +38,17 @@ TEST(KeySystemSupportAndroidTest, SoftwareSecureWidevine) {
 
   // As the capabilities depend on the device this is running on, just check
   // that we get something back. All Android devices should support some
-  // form of Widevine for software secure operation.
+  // form of Widevine for software secure operation. Different devices may not
+  // return a version string for Widevine, so not checking the version.
   ASSERT_TRUE(capability.Get<media::CdmCapabilityOrStatus>().has_value());
 }
 
 TEST(KeySystemSupportAndroidTest, HardwareSecureWidevine) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      media::kAllowMediaCodecCallsInSeparateProcess);
+  scoped_feature_list.InitWithFeatureStates(
+      {{media::kAllowMediaCodecCallsInSeparateProcess, false},
+       {media::kUseSecurityLevelWhenCheckingMediaDrmVersion, false}});
 
   base::test::TestFuture<media::CdmCapabilityOrStatus> capability;
   GetAndroidCdmCapability(kWidevineKeySystem,
@@ -56,16 +62,18 @@ TEST(KeySystemSupportAndroidTest, HardwareSecureWidevine) {
 }
 
 TEST(KeySystemSupportAndroidTest, UnknownKeySystem) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      media::kAllowMediaCodecCallsInSeparateProcess);
+  scoped_feature_list.InitWithFeatureStates(
+      {{media::kAllowMediaCodecCallsInSeparateProcess, false},
+       {media::kUseSecurityLevelWhenCheckingMediaDrmVersion, false}});
 
   base::test::TestFuture<media::CdmCapabilityOrStatus> capability;
   GetAndroidCdmCapability(kUnsupportedKeySystem,
                           CdmInfo::Robustness::kSoftwareSecure,
                           capability.GetCallback());
 
-  // Keysystem should not exist, so no capabilities should be found.
+  // Key system should not exist, so no capabilities should be found.
   auto cdm_capability_or_status = capability.Get();
   ASSERT_FALSE(cdm_capability_or_status.has_value());
   ASSERT_TRUE(std::move(cdm_capability_or_status).error() ==

@@ -408,6 +408,12 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("Chrome.MultiInstance.IsIncognitoSelected.*");
     public static final KeyPrefix MULTI_INSTANCE_TAB_COUNT =
             new KeyPrefix("Chrome.MultiInstance.TabCount.*"); // Normal tab count
+
+    // The total tab count at the time Chrome is shut down for use during relaunch. This value may
+    // not be accurate if Chrome remains active in the foreground or background without being
+    // terminated.
+    public static final KeyPrefix MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH =
+            new KeyPrefix("Chrome.MultiInstance.TabCountForRelaunch.*");
     public static final KeyPrefix MULTI_INSTANCE_TITLE =
             new KeyPrefix("Chrome.MultiInstance.Title.*");
     public static final KeyPrefix MULTI_INSTANCE_LAST_ACCESSED_TIME =
@@ -1016,6 +1022,7 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_LAST_ACCESSED_TIME.pattern(),
                 MULTI_INSTANCE_START_TIME,
                 MULTI_INSTANCE_TAB_COUNT.pattern(),
+                MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.pattern(),
                 MULTI_INSTANCE_TASK_MAP.pattern(),
                 MULTI_INSTANCE_TITLE.pattern(),
                 MULTI_INSTANCE_URL.pattern(),

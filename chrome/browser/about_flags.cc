@@ -250,7 +250,7 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/ui_features.h"
 #include "url/url_features.h"
 
@@ -577,7 +577,7 @@ const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableOpenInBrowser[] = {
     {"voice", "false"}};
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableVoice[] = {
     {"open_in_browser", "false"},
-    {"cct_voice", "true"}};
+    {"voice", "true"}};
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableBoth[] = {
     {"open_in_browser", "true"},
     {"voice", "true"}};
@@ -4351,6 +4351,22 @@ constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
     "disable-facilitated-payments-merchant-allowlist";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+
+const char kHistoryOptInEntryPointVariationFeatures[] =
+    "HistoryOptInEntryPoints,"
+    "HistoryOptInPromoCtaStringVariation";
+
+const FeatureEntry::Choice kHistoryOptInEntryPointChoices[] = {
+    {"Default", "", ""},
+    {"Enabled with Turn On promo CTA", "enable-features",
+     "HistoryOptInEntryPoints"},
+    {"Enabled with Continue promo CTA", "enable-features",
+     kHistoryOptInEntryPointVariationFeatures},
+    {"Disabled", "disable-features", kHistoryOptInEntryPointVariationFeatures},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5665,10 +5681,6 @@ const FeatureEntry kFeatureEntries[] = {
          "disallowFetchForDocWrittenScriptsInMainFrame=true",
          blink::switches::kBlinkSettings,
          "disallowFetchForDocWrittenScriptsInMainFrame=false")},
-    {"view-transition-layered-capture",
-     flag_descriptions::kViewTransitionLayeredCaptureName,
-     flag_descriptions::kViewTransitionLayeredCaptureDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kViewTransitionLayeredCapture)},
     {"view-transition-on-navigation",
      flag_descriptions::kViewTransitionOnNavigationName,
      flag_descriptions::kViewTransitionOnNavigationDescription, kOsAll,
@@ -7097,6 +7109,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) ||BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+    {"fast-enumerate-printers", flag_descriptions::kFastEnumeratePrintersName,
+     flag_descriptions::kFastEnumeratePrintersDescription, kOsWin,
+     FEATURE_VALUE_TYPE(printing::features::kFastEnumeratePrinters)},
+
     {"print-with-postscript-type42-fonts",
      flag_descriptions::kPrintWithPostScriptType42FontsName,
      flag_descriptions::kPrintWithPostScriptType42FontsDescription, kOsWin,
@@ -7767,11 +7783,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"fast-pair-debug-metadata", flag_descriptions::kFastPairDebugMetadataName,
      flag_descriptions::kFastPairDebugMetadataDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairDebugMetadata)},
-
-    {"fast-pair-devices-bluetooth-settings",
-     flag_descriptions::kFastPairDevicesBluetoothSettingsName,
-     flag_descriptions::kFastPairDevicesBluetoothSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFastPairDevicesBluetoothSettings)},
 
     {"fast-pair-handshake-long-term-refactor",
      flag_descriptions::kFastPairHandshakeLongTermRefactorName,
@@ -10866,7 +10877,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"history-opt-in-entry-points",
      flag_descriptions::kHistoryOptInEntryPointsName,
      flag_descriptions::kHistoryOptInEntryPointsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kHistoryOptInEntryPoints)},
+     MULTI_VALUE_TYPE(kHistoryOptInEntryPointChoices)},
 
     {"supervised-force-signin-with-capabilities",
      flag_descriptions::kSupervisedUserForceSigninWithCapabilitiesName,

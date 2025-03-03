@@ -43,13 +43,24 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEM
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.LocaleSpan;
+import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
+import android.text.style.SubscriptSpan;
 import android.text.style.SuggestionSpan;
+import android.text.style.SuperscriptSpan;
+import android.text.style.TextAppearanceSpan;
+import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -57,10 +68,14 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.ax.mojom.TextStyle;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 
 import java.util.Collections;
 import java.util.List;
@@ -121,6 +136,9 @@ public class AccessibilityNodeInfoBuilder {
     public static final String EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY =
             "AccessibilityNodeInfo.requestImageData";
     public static final String EXTRAS_KEY_IMAGE_DATA = "AccessibilityNodeInfo.imageData";
+
+    public static final String ACCESSIBILITY_SPANNABLE_CREATION_TIME =
+            "Accessibility.Android.Performance.SpannableCreationTime";
 
     // Static instances of the two types of extra data keys that can be added to nodes.
     private static final List<String> sTextCharacterLocation =
@@ -448,6 +466,8 @@ public class AccessibilityNodeInfoBuilder {
             int[] suggestionEnds,
             String[] suggestions,
             String stateDescription) {
+        long now = SystemClock.elapsedRealtime();
+
         CharSequence computedText =
                 computeText(
                         text,
@@ -470,6 +490,73 @@ public class AccessibilityNodeInfoBuilder {
         } else {
             node.setText(computedText);
         }
+
+        recordTimeToCreateSpannables(now);
+    }
+
+    @CalledByNative
+    protected void setAccessibilityNodeInfoText(
+            AccessibilityNodeInfoCompat node,
+            String text,
+            String targetUrl,
+            boolean annotateAsLink,
+            boolean isEditableText,
+            String language,
+            int[] suggestionStarts,
+            int[] suggestionEnds,
+            String[] suggestions,
+            String stateDescription,
+            float textSize,
+            int textStyle,
+            int textColor,
+            int textBackgroundColor,
+            String fontFamily,
+            boolean isSubscript,
+            boolean isSuperscript) {
+        assert AccessibilityFeaturesMap.isEnabled(
+                        AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+                : "setAccessibilityNodeInfoText with text styling information was called when"
+                        + " feature was not enabled.";
+
+        long now = SystemClock.elapsedRealtime();
+
+        CharSequence computedText =
+                computeText(
+                        text,
+                        targetUrl,
+                        annotateAsLink,
+                        language,
+                        suggestionStarts,
+                        suggestionEnds,
+                        suggestions,
+                        textSize,
+                        textStyle,
+                        textColor,
+                        textBackgroundColor,
+                        fontFamily,
+                        isSubscript,
+                        isSuperscript);
+
+        // We add the stateDescription attribute when it is non-null and not empty.
+        if (stateDescription != null && !stateDescription.isEmpty()) {
+            node.setStateDescription(stateDescription);
+        }
+
+        // We expose the nested structure of links, which results in the roles of all nested nodes
+        // being read. Use content description in the case of links to prevent verbose TalkBack
+        if (annotateAsLink) {
+            node.setContentDescription(computedText);
+        } else {
+            node.setText(computedText);
+        }
+
+        recordTimeToCreateSpannables(now);
+    }
+
+    private void recordTimeToCreateSpannables(long startTime) {
+        // TODO(mschillaci): Check initial data and change time range/buckets if needed.
+        RecordHistogram.recordTimesHistogram(
+                ACCESSIBILITY_SPANNABLE_CREATION_TIME, SystemClock.elapsedRealtime() - startTime);
     }
 
     @CalledByNative
@@ -606,6 +693,102 @@ public class AccessibilityNodeInfoBuilder {
         // TODO(mschillaci): Consider if we can remove the `needsSpannable` check above and always
         // return a SpannableString instead of sometimes a String without a performance impact.
         return text;
+    }
+
+    private CharSequence computeText(
+            String text,
+            String targetUrl,
+            boolean annotateAsLink,
+            String language,
+            int[] suggestionStarts,
+            int[] suggestionEnds,
+            String[] suggestions,
+            float textSize,
+            int textStyle,
+            int textColor,
+            int textBackgroundColor,
+            String fontFamily,
+            boolean isSubscript,
+            boolean isSuperscript) {
+        assert AccessibilityFeaturesMap.isEnabled(
+                        AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+                : "computeText with text styling information was called when feature was not"
+                        + " enabled.";
+
+        // The TextStyle from Blink is communicated as a bit flag. A piece of text can have multiple
+        // styles, these are applied to nodes as an IntAttribute by bit-shifting 1 by the value of
+        // the enum for that style.
+        // For example, a bold piece of text would have textStyle=2, and a piece of text that is
+        // bold, italic, and underline would have a value textStyle=14.
+        //
+        // There are 3 possible Spannables we may need to use here:
+        //    - StyleSpan - used for bold, italic, and bold+italic
+        //    - UnderlineSpan - used for underlines
+        //    - StrikethroughSpan - used for strikethroughs ("linethrough" in Blink)
+        //
+        // We do not have any use-cases for OVERLINE, and we do not use any Spannables for NONE.
+        boolean needsStyleSpan =
+                (textStyle & ((1 << TextStyle.BOLD) | (1 << TextStyle.ITALIC))) != 0;
+        boolean needsUnderlineSpan = (textStyle & (1 << TextStyle.UNDERLINE)) != 0;
+        boolean needsStrikethroughSpan = (textStyle & (1 << TextStyle.LINE_THROUGH)) != 0;
+
+        // We previously would only create a SpannableString if needed, and would check each of
+        // these specific cases within a separate if statement. Since every piece of text must have
+        // a color, size, background color, etc, we are always making spans so we have removed that
+        // extra check and will always return a Spannable.
+        SpannableString spannable = new SpannableString(text);
+        if (annotateAsLink) {
+            spannable.setSpan(new URLSpan(targetUrl), 0, spannable.length(), 0);
+        }
+        if (!language.isEmpty() && !language.equals(mDelegate.getLanguageTag())) {
+            Locale locale = Locale.forLanguageTag(language);
+            spannable.setSpan(new LocaleSpan(locale), 0, spannable.length(), 0);
+        }
+        if (suggestionStarts != null && suggestionStarts.length > 0) {
+            addSuggestionSpans(spannable, suggestionStarts, suggestionEnds, suggestions);
+        }
+        if (needsStyleSpan) {
+            boolean isBold = (textStyle & (1 << TextStyle.BOLD)) != 0;
+            boolean isItalic = (textStyle & (1 << TextStyle.ITALIC)) != 0;
+
+            if (isBold && isItalic) {
+                spannable.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, spannable.length(), 0);
+            } else if (isBold) {
+                spannable.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable.length(), 0);
+            } else if (isItalic) {
+                spannable.setSpan(new StyleSpan(Typeface.ITALIC), 0, spannable.length(), 0);
+            }
+        }
+        if (needsUnderlineSpan) {
+            spannable.setSpan(new UnderlineSpan(), 0, spannable.length(), 0);
+        }
+        if (needsStrikethroughSpan) {
+            spannable.setSpan(new StrikethroughSpan(), 0, spannable.length(), 0);
+        }
+        // Subscript and superscript are mutually exclusive.
+        if (isSubscript) {
+            spannable.setSpan(new SubscriptSpan(), 0, spannable.length(), 0);
+        } else if (isSuperscript) {
+            spannable.setSpan(new SuperscriptSpan(), 0, spannable.length(), 0);
+        }
+        if (fontFamily != null && !fontFamily.isEmpty()) {
+            spannable.setSpan(new TypefaceSpan(fontFamily), 0, spannable.length(), 0);
+        }
+
+        spannable.setSpan(new ForegroundColorSpan(textColor), 0, spannable.length(), 0);
+        spannable.setSpan(new BackgroundColorSpan(textBackgroundColor), 0, spannable.length(), 0);
+        spannable.setSpan(
+                new TextAppearanceSpan(
+                        fontFamily,
+                        0,
+                        (int) textSize,
+                        ColorStateList.valueOf(textColor),
+                        ColorStateList.valueOf(0)),
+                0,
+                spannable.length(),
+                0);
+
+        return spannable;
     }
 
     private void addSuggestionSpans(

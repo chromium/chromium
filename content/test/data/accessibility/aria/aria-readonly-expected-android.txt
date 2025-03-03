@@ -22,7 +22,7 @@ android.webkit.WebView focusable focused
 ++android.widget.RadioGroup role_description='radio group' disabled interesting name='Readonly radiogroup'
 ++android.widget.SeekBar role_description='slider' clickable disabled range interesting name='50, Readonly slider' item_index=50 item_count=100 range_max=100 range_current_value=50
 ++android.widget.EditText role_description='spin button' clickable disabled range interesting name='0, Readonly spinbutton' item_count=100
-++android.view.MenuItem role_description='checkbox' checkable clickable disabled interesting name='Readonly menuitemcheckbox'
-++android.view.MenuItem role_description='radio button' checkable clickable disabled interesting name='Readonly menuitemradio'
+++android.view.MenuItem role_description='checkbox' checkable clickable collection_item disabled interesting name='Readonly menuitemcheckbox'
+++android.view.MenuItem role_description='radio button' checkable clickable collection_item disabled interesting name='Readonly menuitemradio'
 ++android.widget.EditText role_description='search text field' clickable disabled editable_text interesting hint='Readonly searchbox'
 ++android.widget.ToggleButton role_description='switch' checkable clickable disabled interesting name='Readonly switch' state_description='Off'

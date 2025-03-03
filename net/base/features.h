@@ -160,34 +160,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByIncludeCredentials);
 // available.
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByNetworkIsolationKey);
 
-// The following flags are used as part of an experiment to modify the HTTP
-// cache key scheme to better protect against leaks via navigations.
-// These flags are mutually exclusive, and for each flag the HTTP cache will be
-// cleared when the flag first transitions from being disabled to being enabled.
-//
 // This flag incorporates a boolean into the cache key that is true for
 // renderer-initiated main frame navigations when the request initiator site is
-// cross-site to the URL being navigated to.
+// cross-site to the URL being navigated to. This provides protections against
+// certain cross-site leak attacks involving cross-site navigations.
 NET_EXPORT BASE_DECLARE_FEATURE(
     kSplitCacheByCrossSiteMainFrameNavigationBoolean);
-// This flag incorporates the request initiator site into the cache key for
-// renderer-initiated main frame navigations when the request initiator site is
-// cross-site to the URL being navigated to. If the request initiator site is
-// opaque, then no caching is performed of the navigated-to document.
-NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByMainFrameNavigationInitiator);
-// This flag incorporates the request initiator site into the cache key for all
-// renderer-initiated navigations (including subframe navigations) when the
-// request initiator site is cross-site to the URL being navigated to. If the
-// request initiator is opaque, then no caching is performed of the navigated-to
-// document. When this scheme is used, the `is-subframe-document-resource`
-// boolean is not incorporated into the cache key, since incorporating the
-// initiator site for subframe navigations should be sufficient for mitigating
-// the attacks that the `is-subframe-document-resource` mitigates.
-NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByNavigationInitiator);
-// This flag doesn't result in changes to the HTTP cache scheme but provides an
-// experiment control group that mitigates the differences inherent in changing
-// cache key schemes.
-NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheKeyingExperimentControlGroup2024);
 
 // Splits the generated code cache by the request's NetworkIsolationKey if one
 // is available. Note that this feature is also gated behind
@@ -609,6 +587,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
 // across restarts. This feature is only valid if `kDeviceBoundSessions` is
 // enabled.
 NET_EXPORT BASE_DECLARE_FEATURE(kPersistDeviceBoundSessions);
+// This feature enables the Device Bound Session Credentials refresh quota.
+// This behavior is expected by default; disabling it should only be for
+// testing purposes.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsRefreshQuota);
 
 // When enabled, all proxies in a proxy chain are partitioned by the NAK for the
 // endpoint of the connection. When disabled, proxies carrying tunnels to other

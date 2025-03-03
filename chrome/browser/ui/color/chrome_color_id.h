@@ -679,7 +679,6 @@
   E_CPONLY(kColorHoverCardTabAlertMediaRecordingIcon) \
   E_CPONLY(kColorHoverCardTabAlertPipPlayingIcon) \
   E_CPONLY(kColorHoverCardTabAlertAudioPlayingIcon) \
-  E_CPONLY(kColorHoverCardTabAlertUserAvatarFallbackIcon) \
   /* Tab colors. */ \
   E_CPONLY(kColorTabBackgroundActiveFrameActive) \
   E_CPONLY(kColorTabBackgroundActiveFrameInactive) \

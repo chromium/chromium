@@ -67,10 +67,8 @@ class GlicButtonControllerTest : public testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
-    profile_ = testing_profile_manager_->CreateTestingProfile("profile");
-    ForceSigninAndModelExecutionCapability(profile_);
-
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    profile_ = testing_profile_manager_->CreateTestingProfile("profile");
 
     mock_glic_service_ = std::make_unique<MockGlicKeyedService>(
         profile_, identity_test_environment.identity_manager(),
@@ -78,6 +76,7 @@ class GlicButtonControllerTest : public testing::Test {
 
     glic_button_controller_ = std::make_unique<GlicButtonController>(
         profile_, &mock_glic_controller_delegate_, mock_glic_service_.get());
+    ForceSigninAndModelExecutionCapability(profile_);
   }
 
   void TearDown() override {

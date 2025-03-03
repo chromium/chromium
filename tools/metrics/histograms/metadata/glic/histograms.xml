@@ -32,6 +32,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ChromeClient.MultiProfileSyntheticTrialConflictDetected"
+    enum="BooleanEnabled" expires_after="2026-01-15">
+  <owner>birnie@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Recorded when different Chrome profiles using glic attempt to register
+    conflicting synthetic field trial groups in the same log file. This should
+    only happen on multi profile installs that use glic on different profiles in
+    quick succession. When analyzing metrics from a synthetic field trial this
+    histogram will allow us to create custom queries to filter out users who may
+    have contaminated logs from multiple profiles.
+  </summary>
+</histogram>
+
 <histogram name="Glic.EntryPoint.Impression" enum="GlicEntryPointImpression"
     expires_after="2026-01-15">
   <owner>erikchen@chromium.org</owner>

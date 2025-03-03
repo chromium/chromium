@@ -153,9 +153,7 @@ bool SyncExtensionHelper::IsExtensionPendingInstallForSync(
     Profile* profile,
     const std::string& id) const {
   const extensions::PendingExtensionManager* pending_extension_manager =
-      extensions::ExtensionSystem::Get(profile)
-          ->extension_service()
-          ->pending_extension_manager();
+      extensions::PendingExtensionManager::Get(profile);
   const extensions::PendingExtensionInfo* info =
       pending_extension_manager->GetById(id);
   if (!info) {
@@ -172,9 +170,7 @@ void SyncExtensionHelper::InstallExtensionsPendingForSync(Profile* profile) {
   // We make a copy here since InstallExtension() removes the
   // extension from the extensions service's copy.
   const extensions::PendingExtensionManager* pending_extension_manager =
-      extensions::ExtensionSystem::Get(profile)
-          ->extension_service()
-          ->pending_extension_manager();
+      extensions::PendingExtensionManager::Get(profile);
 
   std::list<std::string> pending_crx_ids =
       pending_extension_manager->GetPendingIdsForUpdateCheck();
@@ -241,7 +237,7 @@ SyncExtensionHelper::ExtensionStateMap SyncExtensionHelper::GetExtensionStates(
   }
 
   const extensions::PendingExtensionManager* pending_extension_manager =
-      extension_service->pending_extension_manager();
+      extensions::PendingExtensionManager::Get(profile);
 
   std::list<std::string> pending_crx_ids =
       pending_extension_manager->GetPendingIdsForUpdateCheck();

@@ -386,14 +386,27 @@ void AILanguageModel::PromptGetInputSizeCompletion(
 }
 
 AILanguageModel::MultimodalResponder::MultimodalResponder(
+    AILanguageModel* model,
+    mojo::PendingReceiver<on_device_model::mojom::StreamingResponder>
+        response_receiver,
+    mojo::PendingReceiver<on_device_model::mojom::ContextClient>
+        context_receiver,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder)
-    : responder_(std::move(responder)) {}
+    : model_(model),
+      response_receiver_(this, std::move(response_receiver)),
+      context_receiver_(this, std::move(context_receiver)),
+      responder_(std::move(responder)) {
+  responder_.set_disconnect_handler(base::BindOnce(
+      &MultimodalResponder::OnDisconnect, base::Unretained(this)));
+  response_receiver_.set_disconnect_handler(base::BindOnce(
+      &MultimodalResponder::OnDisconnect, base::Unretained(this)));
+}
 
-AILanguageModel::MultimodalResponder::~MultimodalResponder() = default;
-
-mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
-AILanguageModel::MultimodalResponder::BindRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
+AILanguageModel::MultimodalResponder::~MultimodalResponder() {
+  if (responder_) {
+    responder_->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorCancelled);
+  }
 }
 
 void AILanguageModel::MultimodalResponder::OnResponse(
@@ -409,9 +422,30 @@ void AILanguageModel::MultimodalResponder::OnResponse(
 
 void AILanguageModel::MultimodalResponder::OnComplete(
     on_device_model::mojom::ResponseSummaryPtr summary) {
+  if (model_->session_) {
+    auto append_options = on_device_model::mojom::AppendOptions::New();
+    append_options->input = on_device_model::mojom::Input::New();
+    append_options->input->pieces.push_back(current_response_);
+    append_options->input->pieces.push_back(ml::Token::kEnd);
+    append_options->max_tokens = model_->context_->max_tokens();
+    model_->session_->GetSession().Append(std::move(append_options), {});
+  }
   // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  // Add one extra for the end token after model output.
   responder_->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
-      /*fake_input_token_count=*/999 + summary->output_token_count));
+      tokens_processed_ + summary->output_token_count + 1));
+  responder_.reset();
+}
+
+void AILanguageModel::MultimodalResponder::OnComplete(
+    uint32_t tokens_processed) {
+  tokens_processed_ = tokens_processed;
+  context_receiver_.reset();
+}
+
+void AILanguageModel::MultimodalResponder::OnDisconnect() {
+  // Deletes `this`.
+  model_->multimodal_responder_ = nullptr;
 }
 
 void AILanguageModel::Prompt(
@@ -427,24 +461,30 @@ void AILanguageModel::Prompt(
   }
 
   // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  // This lacks history integration, token counting, overflow handling, etc.
+  // This lacks overflow handling, etc.
   if (base::FeatureList::IsEnabled(
           blink::features::kAIPromptAPIMultimodalInput)) {
+    mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
+        response_remote;
+    mojo::PendingRemote<on_device_model::mojom::ContextClient> context_remote;
+    multimodal_responder_ = std::make_unique<MultimodalResponder>(
+        this, response_remote.InitWithNewPipeAndPassReceiver(),
+        context_remote.InitWithNewPipeAndPassReceiver(),
+        std::move(pending_responder));
     auto append_options = on_device_model::mojom::AppendOptions::New();
     append_options->input = std::move(input);
     append_options->max_tokens = context_->max_tokens();
-    session_->GetSession().Append(std::move(append_options), {});
-    auto responder =
-        std::make_unique<MultimodalResponder>(std::move(pending_responder));
-    auto remote = responder->BindRemote();
-    multimodal_responders_.push_back(std::move(responder));
+    // Append the model token to make sure the model knows to give output.
+    append_options->input->pieces.push_back(ml::Token::kModel);
+    session_->GetSession().Append(std::move(append_options),
+                                  std::move(context_remote));
     auto generate_options = on_device_model::mojom::GenerateOptions::New();
     const optimization_guide::SamplingParams sampling_param =
         session_->GetSamplingParams();
     generate_options->top_k = sampling_param.top_k;
     generate_options->temperature = sampling_param.temperature;
     session_->GetSession().Generate(std::move(generate_options),
-                                    std::move(remote));
+                                    std::move(response_remote));
     return;
   }
 
@@ -518,7 +558,7 @@ void AILanguageModel::Destroy() {
   }
 
   responder_set_.Clear();
-  multimodal_responders_.clear();
+  multimodal_responder_ = nullptr;
 }
 
 blink::mojom::AILanguageModelInstanceInfoPtr

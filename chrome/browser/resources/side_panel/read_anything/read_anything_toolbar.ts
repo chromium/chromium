@@ -9,7 +9,7 @@ import './menus/color_menu.js';
 import './menus/line_spacing_menu.js';
 import './menus/letter_spacing_menu.js';
 import './menus/highlight_menu.js';
-import './read_anything_toolbar.css.js';
+import './toolbar_styles_shared.css.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';

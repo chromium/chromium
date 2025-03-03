@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_scale[default]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_scale[twice]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_scale[half]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+Harness: the test ran to completion.
+

@@ -8,7 +8,7 @@ found in the LICENSE file.
     android:id="@+id/tab_group_favicon_cluster"
     android:layout_width="@dimen/tab_group_cluster_size"
     android:layout_height="@dimen/tab_group_cluster_size"
-    android:layout_marginStart="16dp"
+    android:layout_marginStart="@dimen/tab_group_list_first_element_left_right_margin"
     android:background="@drawable/tab_group_start_icon_bg">
   <!-- Inflation logic will adjust these to occupy different corners. -->
   <include layout="@layout/tab_group_favicon_quarter" />

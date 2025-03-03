@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_LOG_H_
 
 #include <list>
+#include <optional>
+#include <string_view>
 
 namespace base {
 class Value;
@@ -20,7 +22,9 @@ class NavigationCapturingLog {
   NavigationCapturingLog();
   ~NavigationCapturingLog();
 
-  void StoreNavigationCapturedDebugData(base::Value value);
+  void LogData(std::string_view source,
+               base::Value value,
+               std::optional<int64_t> navigation_handle_id);
 
   // This cannot be used for any production logic.
   base::Value GetLog() const;

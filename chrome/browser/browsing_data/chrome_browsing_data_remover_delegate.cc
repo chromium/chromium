@@ -185,14 +185,12 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1104,13 +1102,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           FROM_HERE, base::DoNothing(),
           CreateTaskCompletionClosure(TracingDataType::kAutofillData));
     }
-#if !BUILDFLAG(IS_ANDROID)
-    if (auto* user_annotations_service =
-            UserAnnotationsServiceFactory::GetForProfile(profile_)) {
-      user_annotations_service->RemoveAnnotationsInRange(delete_begin_,
-                                                         delete_end_);
-    }
-#endif
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -497,6 +497,10 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  [_consumer setUserEmail:base::SysUTF8ToNSString(
+                              _syncService->GetAccountInfo().email)];
+  [self providePasswordsToConsumer];
+
   if ([self shouldDisplayShareButton]) {
     [_consumer setupRightShareButton:
                    _prefService->GetBoolean(

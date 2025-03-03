@@ -2217,13 +2217,29 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("custom-select-open.html"));
 }
 
+// TODO(crbug.com/400473838): Re-enable test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityCustomSelectMixedOptions \
+  DISABLED_AccessibilityCustomSelectMixedOptions
+#else
+#define MAYBE_AccessibilityCustomSelectMixedOptions \
+  AccessibilityCustomSelectMixedOptions
+#endif
 IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
-                       AccessibilityCustomSelectMixedOptions) {
+                       MAYBE_AccessibilityCustomSelectMixedOptions) {
   RunHtmlTest(FILE_PATH_LITERAL("custom-select-mixed-options.html"));
 }
 
+// TODO(crbug.com/400473838): Re-enable test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityCustomSelectLabelElement \
+  DISABLED_AccessibilityCustomSelectLabelElement
+#else
+#define MAYBE_AccessibilityCustomSelectLabelElement \
+  AccessibilityCustomSelectLabelElement
+#endif
 IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
-    AccessibilityCustomSelectLabelElement) {
+                       MAYBE_AccessibilityCustomSelectLabelElement) {
   RunHtmlTest(FILE_PATH_LITERAL("custom-select-label-element.html"));
 }
 

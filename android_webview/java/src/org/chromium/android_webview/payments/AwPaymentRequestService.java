@@ -49,17 +49,26 @@ import java.util.List;
     @Nullable private PaymentRequestService mPaymentRequestService;
     private final List<PaymentApp> mApps = new ArrayList<>();
 
-    // Whether the correct value for response to PaymentRequest.canMakePayment() is known. This
+    // Whether the correct values for responses to the "pre-purchase queries"
+    // (PaymentRequest.canMakePayment() and PaymentRequest.hasEnrolledInstrument()) are known. This
     // becomes true after all matching payment apps have been found and verified.
-    private boolean mIsReadyToSendCanMakePaymentResponseToRenderer;
+    private boolean mIsReadyToSendPrePurchaseQueryResponsesToRenderer;
 
     // The value for response to PaymentRequest.canMakePayment() as calculated by the
     // mPaymentRequestService, which contains the common (not specific to WebView) implementation of
     // the PaymentRequest service.
     private boolean mPaymentRequestCanMakePaymentResponse;
 
-    // The method for sending the response to the renderer process.
-    Callback<Boolean> mSenderOfCanMakePaymentResponseToRenderer;
+    // The value for response to PaymentRequest.hasEnrolledInstrument() as calculated by the
+    // mPaymentRequestService, which contains the common (not specific to WebView) implementation of
+    // the PaymentRequest service.
+    private boolean mPaymentRequestHasEnrolledInstrumentResponse;
+
+    // The method for sending the canMakePayment() response to the renderer process.
+    @Nullable Callback<Boolean> mSenderOfCanMakePaymentResponseToRenderer;
+
+    // The method for sending the hasEnrolledInstrument() response to the renderer process.
+    @Nullable Callback<Boolean> mSenderOfHasEnrolledInstrumentResponseToRenderer;
 
     /**
      * Constructs the WebView part of the PaymentRequest service.
@@ -149,8 +158,8 @@ import java.util.List;
     @Override
     public void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
         mApps.addAll(pendingApps);
-        mIsReadyToSendCanMakePaymentResponseToRenderer = true;
-        maybeSendCanMakePaymentResponseToRendererIfReady();
+        mIsReadyToSendPrePurchaseQueryResponsesToRenderer = true;
+        maybeSendPrePurchaseQueryResponsesToRendererIfReady();
     }
 
     // BrowserPaymentRequest:
@@ -228,20 +237,41 @@ import java.util.List;
     public void maybeOverrideCanMakePaymentResponse(boolean response, Callback<Boolean> sender) {
         mPaymentRequestCanMakePaymentResponse = response;
         mSenderOfCanMakePaymentResponseToRenderer = sender;
-        maybeSendCanMakePaymentResponseToRendererIfReady();
+        maybeSendPrePurchaseQueryResponsesToRendererIfReady();
+    }
+
+    // BrowserPaymentRequest:
+    @Override
+    public void maybeOverrideHasEnrolledInstrumentResponse(
+            boolean response, Callback<Boolean> sender) {
+        mPaymentRequestHasEnrolledInstrumentResponse = response;
+        mSenderOfHasEnrolledInstrumentResponseToRenderer = sender;
+        maybeSendPrePurchaseQueryResponsesToRendererIfReady();
     }
 
     /**
-     * Sends the response for the JavaScript API call PaymentRequest.canMakePayment() to the
-     * renderer, if needed, while ensuring to send "false" if the number of matching payment
-     * apps is not exactly equal to 1.
+     * Sends the response for the JavaScript API "pre-purchase queries"
+     * (PaymentRequest.canMakePayment() and PaymentRequest.hasEnrolledInstrument()) to the renderer,
+     * if needed, while ensuring to send "false" if the number of matching payment apps is not
+     * exactly equal to 1.
      */
-    private void maybeSendCanMakePaymentResponseToRendererIfReady() {
-        if (mIsReadyToSendCanMakePaymentResponseToRenderer
-                && mSenderOfCanMakePaymentResponseToRenderer != null) {
+    private void maybeSendPrePurchaseQueryResponsesToRendererIfReady() {
+        if (!mIsReadyToSendPrePurchaseQueryResponsesToRenderer) {
+            return;
+        }
+
+        boolean isExactlyOneApp = mApps.size() == 1;
+
+        if (mSenderOfCanMakePaymentResponseToRenderer != null) {
             mSenderOfCanMakePaymentResponseToRenderer.onResult(
-                    mPaymentRequestCanMakePaymentResponse && mApps.size() == 1);
+                    mPaymentRequestCanMakePaymentResponse && isExactlyOneApp);
             mSenderOfCanMakePaymentResponseToRenderer = null;
+        }
+
+        if (mSenderOfHasEnrolledInstrumentResponseToRenderer != null) {
+            mSenderOfHasEnrolledInstrumentResponseToRenderer.onResult(
+                    mPaymentRequestHasEnrolledInstrumentResponse && isExactlyOneApp);
+            mSenderOfHasEnrolledInstrumentResponseToRenderer = null;
         }
     }
 

@@ -71,7 +71,7 @@ std::optional<base::FilePath> CreateScriptFile(
   }
 
   const base::FilePath script_path =
-      working_dir.AppendASCII("TestAppSetup")
+      working_dir.AppendUTF8("TestAppSetup")
           .AddExtension(ExtensionFromResourceName(name));
   return resource.WriteToDisk(script_path.value().c_str())
              ? std::make_optional(script_path)

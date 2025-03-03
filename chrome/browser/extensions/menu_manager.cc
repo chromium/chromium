@@ -673,11 +673,6 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
 
   WebViewGuest* webview_guest =
       WebViewGuest::FromRenderFrameHost(render_frame_host);
-  if (webview_guest) {
-    // This is used in web_view_internalcustom_bindings.js.
-    // The property is not exposed to developer API.
-    properties.Set("webviewInstanceId", webview_guest->view_instance_id());
-  }
 
   base::Value::List args;
   args.Append(std::move(properties));
@@ -731,6 +726,14 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
   {
     // Dispatch to menu item's .onclick handler (this is the legacy API, from
     // before chrome.contextMenus.onClicked existed).
+    auto args_cloned = args.Clone();
+    if (webview_guest) {
+      // This is used in
+      // extensions/renderer/resources/context_menus_handlers.js.
+      // The property is not exposed to developer API.
+      args_cloned[0].GetDict().Set("webviewInstanceId",
+                                   webview_guest->view_instance_id());
+    }
     auto event = std::make_unique<Event>(
         webview_guest ? events::WEB_VIEW_INTERNAL_CONTEXT_MENUS
                       : events::CONTEXT_MENUS,
@@ -738,7 +741,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                              ? "controlledFrameInternal.contextMenus"
                              : kOnWebviewContextMenus)
                       : kOnContextMenus,
-        args.Clone(), context);
+        std::move(args_cloned), context);
     event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
     if (webview_guest) {
       event->filter_info->has_instance_id = true;

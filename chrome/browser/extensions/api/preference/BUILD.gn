@@ -22,7 +22,7 @@ source_set("preference") {
     "//chrome/browser/profiles",
     "//components/autofill/core/common",
     "//components/prefs",
-    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//components/privacy_sandbox:features",
     "//extensions/browser",
     "//extensions/browser/api/content_settings",
     "//extensions/common",

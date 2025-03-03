@@ -163,7 +163,7 @@ TEST_F(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
   // Expect sign-out request.
   __block std::unique_ptr<base::RunLoop> run_loop =
       std::make_unique<base::RunLoop>();
-  OCMExpect([performer_mock_ signOutProfile:profile_.get()])
+  OCMExpect([performer_mock_ signOutForAccountSwitchWithProfile:profile_.get()])
       .andDo(^(NSInvocation* invocation) {
         run_loop->Quit();
       });
@@ -183,7 +183,7 @@ TEST_F(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
   OCMExpect([performer_mock_ completePostSignInActions:PostSignInActionSet()
                                           withIdentity:identity1_
                                                browser:browser_.get()]);
-  [GetAuthenticationFlowPerformerDelegate() didSignOut];
+  [GetAuthenticationFlowPerformerDelegate() didSignOutForAccountSwitch];
   EXPECT_EQ(future.Take(),
             SigninCoordinatorResult::SigninCoordinatorResultSuccess);
 }

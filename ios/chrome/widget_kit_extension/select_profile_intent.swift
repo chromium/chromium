@@ -46,6 +46,8 @@ struct ProfileDetail: AppEntity {
 
     var profilesDetail: [ProfileDetail] = []
 
+    profilesDetail.append(ProfileDetail(id: "No account", gaia: "Default"))
+
     for (key, value) in profiles {
       if let email = value["email"] as? String {
         profilesDetail.append(ProfileDetail(id: email, gaia: key))

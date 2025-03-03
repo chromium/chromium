@@ -334,6 +334,13 @@ export declare interface GlicBrowserHost {
    * @throws {ScrollToError} on failure.
    */
   scrollTo?(params: ScrollToParams): Promise<void>;
+
+  /**
+   * Enrolls the Chrome client in the synthetic experiment group specified by
+   * trial_name.group_name. Enrollment will only start when the API is called
+   * and end when Chrome closes.
+   */
+  setSyntheticExperimentState?(trialName: string, groupName: string): void;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */

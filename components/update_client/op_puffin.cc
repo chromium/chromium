@@ -133,8 +133,8 @@ base::OnceClosure PuffOperation(
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
-  crx_cache->Get(
-      id, prev_fp,
+  crx_cache->GetByFp(
+      prev_fp,
       base::BindOnce(&CacheLookupDone, event_adder, patcher, patch_file,
                      patch_file.DirName(), std::move(callback)));
   return base::DoNothing();

@@ -451,7 +451,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.IneligibilityReason"
-    enum="ShoppingFeatureIneligibilityReason" expires_after="2025-03-09">
+    enum="ShoppingFeatureIneligibilityReason" expires_after="2025-07-27">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

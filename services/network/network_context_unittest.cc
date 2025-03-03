@@ -8006,8 +8006,6 @@ static ResourceRequest CreateResourceRequest(const char* method,
 enum class SplitCacheTestCase {
   kEnabledTripleKeyed,
   kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator
 };
 
 const struct {
@@ -8015,11 +8013,7 @@ const struct {
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
     {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator}};
+     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
 
 class NetworkContextSplitCacheTest
     : public NetworkContextTest,
@@ -8132,19 +8126,13 @@ INSTANTIATE_TEST_SUITE_P(
     NetworkContextSplitCacheTest,
     testing::ValuesIn(
         {SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-         SplitCacheTestCase::kEnabledTriplePlusNavInitiator}),
+         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case SplitCacheTestCase::kEnabledTripleKeyed:
           return "SplitCacheEnabledTripleKeyed";
         case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
           return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
-        case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-          return "SplitCacheEnabledTriplePlusMainFrameNavigationInitiator";
-        case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-          return "SplitCacheEnabledTriplePlusNavigationInitiator";
       }
     });
 
@@ -8242,8 +8230,6 @@ TEST_P(NetworkContextSplitCacheTest,
                           /*was_cached=*/true);
       break;
     case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
       // When the initiator is incorporated into the HTTP cache key, the
       // redirect means that it will share a different partition than if we
       // tried to load the redirected URL directly.
@@ -8351,23 +8337,6 @@ TEST_P(NetworkContextSplitCacheTest,
   navigation_request_info.url = kUrl;
   navigation_request_info.network_isolation_key = kNetworkIsolationKey;
   navigation_request_info.is_subframe_document_resource = true;
-  switch (GetParam()) {
-    case SplitCacheTestCase::kEnabledTripleKeyed:
-    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-      // The `is_subframe_document_resource` being true is enough to cause a
-      // different cache partition to be used.
-      break;
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-      // The `is_subframe_document_resource` bit is not used, in favor of using
-      // the request initiator. Note that with this partitioning scheme a
-      // navigation and a resource will share a cache partition if the
-      // navigation has a same-site initiator, so for this test set a cross-site
-      // initiator.
-      navigation_request_info.initiator =
-          url::Origin::Create(GURL("http://b.com"));
-      break;
-  }
   disk_cache::EntryResult navigation_result = backend->OpenOrCreateEntry(
       *net::HttpCache::GenerateCacheKeyForRequest(&navigation_request_info),
       net::LOWEST, base::BindOnce([](disk_cache::EntryResult) {}));

@@ -221,7 +221,6 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service_factory.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
@@ -516,10 +515,11 @@
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #endif
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
 #endif
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -828,16 +828,15 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   enterprise_connectors::BrowserCrashEventRouterFactory::GetInstance();
+  enterprise_connectors::ExtensionInstallEventRouterFactory::GetInstance();
+  enterprise_connectors::ExtensionTelemetryEventRouterFactory::GetInstance();
+  enterprise_connectors::ReportingEventRouterFactory::GetInstance();
 #endif
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance();
   enterprise_connectors::DeviceTrustServiceFactory::GetInstance();
-#endif
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-  enterprise_connectors::ExtensionInstallEventRouterFactory::GetInstance();
-  enterprise_connectors::ExtensionTelemetryEventRouterFactory::GetInstance();
 #endif
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS) &&                    \
@@ -1339,7 +1338,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   UsbChooserContextFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   UsbConnectionTrackerFactory::GetInstance();
-  UserAnnotationsServiceFactory::GetInstance();
   UserEducationServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -187,7 +187,7 @@ Installer::Result Installer::InstallHelper(
   // The task sequencing guarantees that the prefs will be updated by the
   // time another CrxDataCallback is invoked, which needs updated values.
   return RunApplicationInstaller(
-      app_info_, unpack_path.AppendASCII(install_params->run),
+      app_info_, unpack_path.AppendUTF8(install_params->run),
       install_params->arguments,
       WriteInstallerDataToTempFile(unpack_path,
                                    client_install_data_.empty()

@@ -2,7 +2,7 @@
 <grit-part>
  <!-- Milestone specific strings -->
 <message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_TITLE" desc="LensSearchWhatYouSee Title displayed in What's New. [iOS only]">
-        Search what you see with Google Lens
+        Search what you see
 </message>
 <message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_SUBTITLE" desc="LensSearchWhatYouSee Subtitle displayed in What's New. [iOS only]">
         Draw, highlight, or tap to select anything you want to search and get results without leaving your tab

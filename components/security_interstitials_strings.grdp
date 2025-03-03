@@ -348,8 +348,8 @@
   <message name="IDS_CONNECTION_HELP_SPECIFIC_ERROR_HEADING" desc="Heading for individual errors section in chrome://connection-help. Matches the heading for the specific error section in https://support.google.com/chrome/answer/6098869">
     Get help with a specific error message
   </message>
-  <message name="IDS_CONNECTION_HELP_CONNECTION_NOT_PRIVATE_TITLE" desc="Title for your connection is not private section in chrome://connection-help. Matches the heading for the fourth section in https://support.google.com/chrome/answer/6098869, with the addition of ERR_CERT_SYMANTEC_LEGACY.">
-    "Your connection is not private" or "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" or "SSL certificate error"
+  <message name="IDS_CONNECTION_HELP_CONNECTION_NOT_PRIVATE_TITLE" desc="Title for your connection is not private section in chrome://connection-help. Matches the heading for the fourth section in https://support.google.com/chrome/answer/6098869.">
+    "Your connection is not private" or "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" or "SSL certificate error"
   </message>
   <message name="IDS_CONNECTION_HELP_CONNECT_TO_NETWORK_TITLE" desc="Title for connect to network section in chrome://connection-help. Matches the heading for the fifth section in https://support.google.com/chrome/answer/6098869">
     "Connect to network"

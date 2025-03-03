@@ -29,6 +29,8 @@ class COMPONENT_EXPORT(TRACING_CPP) HistogramSamplesDataSource
     : public perfetto::DataSource<HistogramSamplesDataSource,
                                   HistogramSamplesTraits> {
  public:
+  static constexpr bool kRequiresCallbacksUnderLock = false;
+
   static void Register();
 
   HistogramSamplesDataSource();

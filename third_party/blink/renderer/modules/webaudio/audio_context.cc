@@ -256,7 +256,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
                            std::optional<float> sample_rate,
                            WebAudioSinkDescriptor sink_descriptor,
                            bool update_echo_cancellation_on_first_start)
-    : BaseAudioContext(&window, kRealtimeContext),
+    : BaseAudioContext(&window, ContextType::kRealtimeContext),
       FrameVisibilityObserver(GetLocalFrame()),
       context_id_(context_id++),
       audio_context_manager_(&window),

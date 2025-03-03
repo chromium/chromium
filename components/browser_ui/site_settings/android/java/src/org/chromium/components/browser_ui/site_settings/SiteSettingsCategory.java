@@ -393,7 +393,8 @@ public class SiteSettingsCategory {
         if (mCategory == Type.AUTOMATIC_DOWNLOADS
                 || mCategory == Type.BACKGROUND_SYNC
                 || mCategory == Type.JAVASCRIPT
-                || mCategory == Type.POPUPS) {
+                || mCategory == Type.POPUPS
+                || mCategory == Type.JAVASCRIPT_OPTIMIZER) {
             return WebsitePreferenceBridge.isContentSettingManaged(
                     getBrowserContextHandle(), getContentSettingsType());
         } else if (mCategory == Type.DEVICE_LOCATION

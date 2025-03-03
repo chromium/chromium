@@ -29,7 +29,7 @@ struct CookieAccessDetails;
 class NavigationHandle;
 class RenderFrameHost;
 
-namespace dips {
+namespace btm {
 
 // Should match DIPSDirectNavigationSource in tools/metrics/histograms/enums.xml
 enum class DirectNavigationSource {
@@ -60,9 +60,9 @@ struct PageVisitInfo {
 struct EntrypointInfo {
   // Used when the entrypoint has a server redirect exit.
   explicit EntrypointInfo(const BtmRedirectInfo& server_redirect_info,
-                          const dips::PageVisitInfo& exit_page_info);
+                          const btm::PageVisitInfo& exit_page_info);
   // Used when the entrypoint has a client redirect exit.
-  explicit EntrypointInfo(const dips::PageVisitInfo& client_redirector_info);
+  explicit EntrypointInfo(const btm::PageVisitInfo& client_redirector_info);
 
   const std::string site;
   ukm::SourceId source_id;
@@ -78,8 +78,7 @@ enum class FlowStatus {
 
 class InFlowSuccessorInteractionState {
  public:
-  explicit InFlowSuccessorInteractionState(
-      dips::EntrypointInfo flow_entrypoint);
+  explicit InFlowSuccessorInteractionState(btm::EntrypointInfo flow_entrypoint);
   ~InFlowSuccessorInteractionState();
 
   void RecordTriggeringStorageAccessByEntrypoint();
@@ -87,7 +86,7 @@ class InFlowSuccessorInteractionState {
   void RecordSuccessorInteractionAtCurrentFlowIndex();
   bool IsAtSuccessor() const;
 
-  const dips::EntrypointInfo& flow_entrypoint() const {
+  const btm::EntrypointInfo& flow_entrypoint() const {
     return flow_entrypoint_;
   }
   size_t flow_index() const { return flow_index_; }
@@ -96,12 +95,12 @@ class InFlowSuccessorInteractionState {
   }
 
  private:
-  dips::EntrypointInfo flow_entrypoint_;
+  btm::EntrypointInfo flow_entrypoint_;
   size_t flow_index_ = 0;
   std::vector<size_t> successor_interaction_indices_;
 };
 
-}  // namespace dips
+}  // namespace btm
 
 // Detects possible navigation flows with the aim of discovering how to
 // distinguish user-interest navigation flows from navigational tracking.
@@ -133,9 +132,9 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   void MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(int32_t flow_id);
   bool CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() const;
   bool CanEmitSuspectedTrackerFlowUkm(
-      const dips::PageVisitInfo& referrer_page_info,
-      const dips::EntrypointInfo& entrypoint_info,
-      const dips::PageVisitInfo& exit_page_info) const;
+      const btm::PageVisitInfo& referrer_page_info,
+      const btm::EntrypointInfo& entrypoint_info,
+      const btm::PageVisitInfo& exit_page_info) const;
 
   void MaybeEmitInFlowInteraction(int32_t flow_id);
 
@@ -145,7 +144,7 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   // So WebContentsUserData::CreateForWebContents can call the constructor.
   friend class WebContentsUserData<BtmNavigationFlowDetector>;
 
-  dips::FlowStatus FlowStatusAfterNavigation(
+  btm::FlowStatus FlowStatusAfterNavigation(
       bool did_most_recent_navigation_start_new_flow) const;
   // Returns whether the entrypoint was set or not.
   bool MaybeInitializeSuccessorInteractionTrackingState();
@@ -174,17 +173,17 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   void OnNavigationCommitted(NavigationHandle* navigation_handle) override;
   // end RedirectChainDetector::Observer overrides
 
-  std::optional<dips::PageVisitInfo> two_pages_ago_visit_info_;
-  std::optional<dips::PageVisitInfo> previous_page_visit_info_;
-  std::optional<dips::PageVisitInfo> current_page_visit_info_;
+  std::optional<btm::PageVisitInfo> two_pages_ago_visit_info_;
+  std::optional<btm::PageVisitInfo> previous_page_visit_info_;
+  std::optional<btm::PageVisitInfo> current_page_visit_info_;
 
   // The status of a flow for the purposes of InFlowSuccessorInteraction, after
   // the most recent primary page change.
-  dips::FlowStatus flow_status_ = dips::FlowStatus::kInvalidated;
+  btm::FlowStatus flow_status_ = btm::FlowStatus::kInvalidated;
   // Data needed for emitting DIPS.TrustIndicator.InFlowSuccessorInteraction.
   // Set only when there's an ongoing flow that's possibly valid (we can't know
   // for sure until it ends or is invalidated).
-  std::optional<dips::InFlowSuccessorInteractionState>
+  std::optional<btm::InFlowSuccessorInteractionState>
       successor_interaction_tracking_state_;
 
   // Tracks a navigational cookie access notification that is received before

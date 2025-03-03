@@ -236,7 +236,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   autofill::EntityInstance passport = MakePassportWithRandomGuid();
 
   autofill::EntityInstance passport_a_with_different_expiry_date =
-      MakePassportWithRandomGuid({.expiry_date = u"01/12/2001"});
+      MakePassportWithRandomGuid({.expiry_date = u"2001-12-01"});
 
   autofill::EntityInstance passport_a_without_an_expiry_date =
       MakePassportWithRandomGuid({.expiry_date = nullptr});
@@ -374,7 +374,7 @@ TEST_F(AutofillAiSuggestionsTest,
   autofill::EntityInstance passport_entity_b =
       MakePassportWithRandomGuid({.country = u"Brazil"});
   autofill::EntityInstance passport_entity_c =
-      MakePassportWithRandomGuid({.expiry_date = u"12/2018"});
+      MakePassportWithRandomGuid({.expiry_date = u"2018-12-31"});
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   // Note that `autofill::PASSPORT_ISSUING_COUNTRY_TAG` appears twice in the
@@ -390,15 +390,18 @@ TEST_F(AutofillAiSuggestionsTest,
   ASSERT_EQ(CountFillingSuggestions(suggestions), 3u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden · 12/2019");
+  EXPECT_EQ(suggestions[0].labels[0][0].value,
+            u"Passport · Sweden · 2019-08-30");
 
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Brazil · 12/2019");
+  EXPECT_EQ(suggestions[1].labels[0][0].value,
+            u"Passport · Brazil · 2019-08-30");
 
   EXPECT_EQ(suggestions[2].labels.size(), 1u);
   EXPECT_EQ(suggestions[2].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[2].labels[0][0].value, u"Passport · Sweden · 12/2018");
+  EXPECT_EQ(suggestions[2].labels[0][0].value,
+            u"Passport · Sweden · 2018-12-31");
 }
 
 TEST_F(
@@ -442,7 +445,7 @@ TEST_F(
     LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_AddDifferentiatingLabel) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b =
-      MakePassportWithRandomGuid({.expiry_date = u"12/2018"});
+      MakePassportWithRandomGuid({.expiry_date = u"2018-12-29"});
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
@@ -455,11 +458,11 @@ TEST_F(
   ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · 12/2019");
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · 2019-08-30");
 
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · 12/2018");
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · 2018-12-29");
 }
 
 TEST_F(

@@ -15,6 +15,7 @@ import org.gradle.api.tasks.TaskAction
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.*
+import java.time.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -45,6 +46,10 @@ class BuildConfigGenerator extends DefaultTask {
     /* groovylint-disable-next-line LineLength */
     // https://source.chromium.org/chromium/infra/infra/+/master:recipes/recipe_modules/support_3pp/resolved_spec.py?q=symbol:PACKAGE_EPOCH&ss=chromium
     private static final String THREEPP_EPOCH = '2'
+
+    // Used to disable breaking changes while the migration to autorolling
+    // portions of android_deps is complete. See http://crbug.com/40774645
+    private static final boolean AUTOROLL_MIGRATION_IN_PROGRESS = true
 
     // Use this to exclude a dep from being depended upon but keep the target.
     private static final List<String> DISALLOW_DEPS = [
@@ -403,7 +408,9 @@ No modifications.
         String normalisedRepoPath = normalisePath(repositoryPath)
 
         // 1. Parse the dependency data
-        graph.collectDependencies()
+        graph.timeIt("** Collecting all dependencies info") {
+            graph.collectDependencies()
+        }
 
         // 2. Import artifacts into the local repository
         List<String> dependencyDirectories = []
@@ -419,7 +426,7 @@ No modifications.
             // jsonDump() throws StackOverflowError for ResolvedArtifact.
             dependencyForLogging.artifact = null
 
-            logger.debug "Processing ${dependency.name}: \n${jsonDump(dependencyForLogging)}"
+            logger.debug "Processing ${dependency.id}: \n${jsonDump(dependencyForLogging)}"
             String depDir = BuildConfigGenerator.computeDepDir(dependency)
             String absoluteDepDir = "${normalisedRepoPath}/${depDir}"
 
@@ -438,12 +445,10 @@ No modifications.
                 logger.quiet("${dependency.id} exists, skipping.")
                 return
             }
-
             project.copy {
                 from dependency.artifact.file
                 into absoluteDepDir
             }
-
             new File("${absoluteDepDir}/README.chromium").write(makeReadme(dependency))
             // fetch_all.py parses cipd.yaml to get information about each dep, even if cipd.yaml isn't needed (e.g. androidx).
             new File("${absoluteDepDir}/cipd.yaml").write(makeCipdYaml(dependency, cipdBucket, repositoryPath))
@@ -660,23 +665,26 @@ No modifications.
 
     boolean isInDifferentRepo(ChromiumDepGraph.DependencyDescription dependency) {
         boolean isAndroidxRepository = repositoryPath.startsWith('third_party/androidx')
+        boolean isAutorolledRepository = repositoryPath.startsWith('third_party/android_deps/autorolled')
         boolean isAndroidxDependency = dependency.id.startsWith('androidx')
-        if (isAndroidxRepository != isAndroidxDependency) {
-            return true
+        if (isAndroidxRepository || isAndroidxDependency) {
+            // Androidx targets always go to the androidx project regardless of
+            // dep.isAutorolled
+            return isAndroidxRepository != isAndroidxDependency
+        } else {
+            if (AUTOROLL_MIGRATION_IN_PROGRESS) {
+                // During the migration, keep the autorolled targets in the main
+                // BUILD.gn until the migration is complete.
+                return isAutorolledRepository && !dependency.isAutorolled
+            }
+            return dependency.isAutorolled != isAutorolledRepository
         }
-        if (repositoryPath == AUTOROLLED_REPO_PATH) {
-            String targetName = translateTargetName(dependency.id) + '_java'
-            return !isTargetAutorolled(targetName)
-        }
-        return false
     }
 
     /** If |dependency| should be a java_group(), returns target to forward to. Returns null otherwise. */
     List<String> computeJavaGroupForwardingTargets(ChromiumDepGraph.DependencyDescription dependency) {
         String targetName = translateTargetName(dependency.id) + '_java'
-        if (repositoryPath != AUTOROLLED_REPO_PATH && isTargetAutorolled(targetName)) {
-            return ["//${AUTOROLLED_REPO_PATH}:${targetName}"]
-        } else if (dependency.extension == 'group') {
+        if (dependency.extension == 'group') {
             return dependency.children
         }
         return []
@@ -1012,15 +1020,6 @@ No modifications.
             throw new IllegalStateException('DEPS insertion point not found.')
         }
         depsFile.write(matcher.replaceFirst("${DEPS_TOKEN_START}\n${sb}\n  ${DEPS_TOKEN_END}"))
-    }
-
-    private boolean isTargetAutorolled(String targetName) {
-        for (String autorolledLibPrefix in AUTOROLLED_LIB_PREFIXES) {
-            if (targetName.startsWith(autorolledLibPrefix)) {
-                return true
-            }
-        }
-        return false
     }
 
     private String normalisePath(String pathRelativeToChromiumRoot) {

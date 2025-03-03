@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -21,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
@@ -36,6 +40,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -148,6 +153,19 @@ bool IsGenericContainer(
   if (const auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
     if (element->HasTagName(html_names::kFigureTag)) {
       return true;
+    }
+
+    if (element->IsFocused()) {
+      return true;
+    }
+  }
+
+  if (AXObjectCache* ax_object_cache =
+          object.GetDocument().ExistingAXObjectCache()) {
+    if (Node* ax_focused_node = ax_object_cache->GetAccessibilityFocus()) {
+      if (object.GetNode() == ax_focused_node) {
+        return true;
+      }
     }
   }
 
@@ -291,8 +309,7 @@ void ProcessTextNode(const LayoutText& layout_text,
 }
 
 void ProcessImageNode(const LayoutImage& layout_image,
-                      mojom::blink::AIPageContentAttributes& attributes,
-                      const ComputedStyle& document_style) {
+                      mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kImage;
   CHECK(IsVisible(layout_image));
 
@@ -314,8 +331,7 @@ void ProcessImageNode(const LayoutImage& layout_image,
 }
 
 void ProcessAnchorNode(const HTMLAnchorElement& anchor_element,
-                       mojom::blink::AIPageContentAttributes& attributes,
-                       const ComputedStyle& document_style) {
+                       mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kAnchor;
   if (!IsVisible(*anchor_element.GetLayoutObject())) {
     return;
@@ -330,8 +346,7 @@ void ProcessAnchorNode(const HTMLAnchorElement& anchor_element,
 }
 
 void ProcessTableNode(const LayoutTable& layout_table,
-                      mojom::blink::AIPageContentAttributes& attributes,
-                      const ComputedStyle& document_style) {
+                      mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kTable;
   if (!IsVisible(layout_table)) {
     return;
@@ -356,8 +371,7 @@ void ProcessTableNode(const LayoutTable& layout_table,
 }
 
 void ProcessFormNode(const HTMLFormElement& form_element,
-                     mojom::blink::AIPageContentAttributes& attributes,
-                     const ComputedStyle& document_style) {
+                     mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kForm;
   if (!IsVisible(*form_element.GetLayoutObject())) {
     return;
@@ -370,8 +384,7 @@ void ProcessFormNode(const HTMLFormElement& form_element,
 }
 
 void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
-                            mojom::blink::AIPageContentAttributes& attributes,
-                            const ComputedStyle& document_style) {
+                            mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type =
       mojom::blink::AIPageContentAttributeType::kFormControl;
   if (!IsVisible(*form_control_element.GetLayoutObject())) {
@@ -420,8 +433,7 @@ mojom::blink::AIPageContentTableRowType GetTableRowType(
 }
 
 void ProcessTableRowNode(const LayoutTableRow& layout_table_row,
-                         mojom::blink::AIPageContentAttributes& attributes,
-                         const ComputedStyle& document_style) {
+                         mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type =
       mojom::blink::AIPageContentAttributeType::kTableRow;
   if (!IsVisible(layout_table_row)) {
@@ -627,13 +639,14 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
     return nullptr;
   }
 
-  ContentBuilder builder(options);
-  return builder.Build(*frame);
+  auto* builder = MakeGarbageCollected<ContentBuilder>(options);
+  return builder->Build(*frame);
 }
 
 AIPageContentAgent::ContentBuilder::ContentBuilder(
     const mojom::blink::AIPageContentOptions& options)
-    : options_(options) {}
+    : options_(options),
+      content_node_id_map_(MakeGarbageCollected<ContentNodeIdMap>()) {}
 
 AIPageContentAgent::ContentBuilder::~ContentBuilder() = default;
 
@@ -684,22 +697,23 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
 
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
-  uint32_t content_node_id_counter = 0;
-  auto root_node = MaybeGenerateContentNode(*layout_view, *document_style,
-                                            &content_node_id_counter);
+  auto root_node = MaybeGenerateContentNode(*layout_view, *document_style);
   CHECK(root_node);
 
-  WalkChildren(*layout_view, *root_node, *document_style,
-               &content_node_id_counter);
+  WalkChildren(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
+
+  // Must add page and frame interaction info after the entire tree is built.
+  AddPageInteractionInfo(document, *page_content);
+  AddFrameInteractionInfo(frame, *page_content);
+
   return page_content;
 }
 
 bool AIPageContentAgent::ContentBuilder::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
-    const ComputedStyle& document_style,
-    uint32_t* content_node_id_counter) const {
+    const ComputedStyle& document_style) const {
   if (object.ChildPrePaintBlockedByDisplayLock()) {
     return false;
   }
@@ -714,8 +728,7 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     has_visible_content |= IsVisible(*child);
 
     bool child_has_visible_content = false;
-    auto child_content_node = MaybeGenerateContentNode(*child, document_style,
-                                                       content_node_id_counter);
+    auto child_content_node = MaybeGenerateContentNode(*child, document_style);
     if (child_content_node &&
         child_content_node->content_attributes->attribute_type ==
             mojom::blink::AIPageContentAttributeType::kIframe) {
@@ -723,8 +736,8 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     } else {
       auto& node_for_child =
           child_content_node ? *child_content_node : content_node;
-      child_has_visible_content = WalkChildren(
-          *child, node_for_child, document_style, content_node_id_counter);
+      child_has_visible_content =
+          WalkChildren(*child, node_for_child, document_style);
       has_visible_content |= child_has_visible_content;
     }
 
@@ -740,8 +753,7 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
 
 void AIPageContentAgent::ContentBuilder::ProcessIframe(
     const LayoutIFrame& object,
-    mojom::blink::AIPageContentNode& content_node,
-    uint32_t* content_node_id_counter) const {
+    mojom::blink::AIPageContentNode& content_node) const {
   CHECK(IsVisible(object));
 
   content_node.content_attributes->attribute_type =
@@ -761,24 +773,28 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
     // Add a node for the iframe's LayoutView for consistency with remote
     // frames.
     auto child_content_node = MaybeGenerateContentNode(
-        *child_layout_view, *child_layout_view->Style(),
-        content_node_id_counter);
+        *child_layout_view, *child_layout_view->Style());
     CHECK(child_content_node);
 
     // We could consider removing an iframe with no visible content. But this is
     // likely not common and should be done in the browser so it's consistently
     // done for local and remote frames.
     WalkChildren(*child_layout_view, *child_content_node,
-                 *child_layout_view->Style(), content_node_id_counter);
+                 *child_layout_view->Style());
     content_node.children_nodes.emplace_back(std::move(child_content_node));
+  }
+
+  if (local_frame) {
+    // Must add frame interaction info after the entire frame subtree is built.
+    AddFrameInteractionInfo(*local_frame,
+                            *content_node.content_attributes->iframe_data);
   }
 }
 
 mojom::blink::AIPageContentNodePtr
 AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     const LayoutObject& object,
-    const ComputedStyle& document_style,
-    uint32_t* content_node_id_counter) const {
+    const ComputedStyle& document_style) const {
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
@@ -795,7 +811,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     if (!IsVisible(object)) {
       return nullptr;
     }
-    ProcessIframe(*iframe, *content_node, content_node_id_counter);
+    ProcessIframe(*iframe, *content_node);
   } else if (object.IsLayoutView()) {
     attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kRoot;
   } else if (object.IsText()) {
@@ -811,23 +827,23 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     if (!IsVisible(object)) {
       return nullptr;
     }
-    ProcessImageNode(To<LayoutImage>(object), attributes, document_style);
+    ProcessImageNode(To<LayoutImage>(object), attributes);
   } else if (const auto* anchor_element =
                  DynamicTo<HTMLAnchorElement>(object.GetNode())) {
-    ProcessAnchorNode(*anchor_element, attributes, document_style);
+    ProcessAnchorNode(*anchor_element, attributes);
   } else if (object.IsTable()) {
-    ProcessTableNode(To<LayoutTable>(object), attributes, document_style);
+    ProcessTableNode(To<LayoutTable>(object), attributes);
   } else if (object.IsTableRow()) {
-    ProcessTableRowNode(To<LayoutTableRow>(object), attributes, document_style);
+    ProcessTableRowNode(To<LayoutTableRow>(object), attributes);
   } else if (object.IsTableCell()) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kTableCell;
   } else if (const auto* form_element =
                  DynamicTo<HTMLFormElement>(object.GetNode())) {
-    ProcessFormNode(*form_element, attributes, document_style);
+    ProcessFormNode(*form_element, attributes);
   } else if (const auto* form_control =
                  DynamicTo<HTMLFormControlElement>(object.GetNode())) {
-    ProcessFormControlNode(*form_control, attributes, document_style);
+    ProcessFormControlNode(*form_control, attributes);
   } else if (element && IsHeadingTag(*element)) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kHeading;
@@ -858,9 +874,11 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   }
 
   // Set the content node id once it is clear that the node will be generated.
-  CHECK(content_node_id_counter);
-  attributes.content_node_id = *content_node_id_counter;
-  (*content_node_id_counter)++;
+  attributes.content_node_id = content_node_id_counter_;
+  content_node_id_counter_++;
+  if (Node* node = object.GetNode()) {
+    content_node_id_map_->insert(node, attributes.content_node_id);
+  }
 
   if (auto dom_node_id = AddDomNodeId(object, attributes)) {
     attributes.common_ancestor_dom_node_id = *dom_node_id;
@@ -908,39 +926,129 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
       object.Style()->GetPosition() == EPosition::kSticky;
 }
 
+void AIPageContentAgent::ContentBuilder::AddPageInteractionInfo(
+    const Document& document,
+    mojom::blink::AIPageContent& page_content) const {
+  page_content.page_interaction_info =
+      mojom::blink::AIPageContentPageInteractionInfo::New();
+  mojom::blink::AIPageContentPageInteractionInfo& page_interaction_info =
+      *page_content.page_interaction_info;
+
+  // Focused element
+  if (Element* element = document.FocusedElement()) {
+    auto focused_node_id = content_node_id_map_->find(element);
+    if (focused_node_id != content_node_id_map_->end()) {
+      page_interaction_info.focused_node_id = focused_node_id->value;
+    }
+  }
+
+  // Accessibility focus
+  if (AXObjectCache* ax_object_cache = document.ExistingAXObjectCache()) {
+    if (Node* ax_focused_node = ax_object_cache->GetAccessibilityFocus()) {
+      auto accessibility_focused_node_id =
+          content_node_id_map_->find(ax_focused_node);
+      if (accessibility_focused_node_id != content_node_id_map_->end()) {
+        page_interaction_info.accessibility_focused_node_id =
+            accessibility_focused_node_id->value;
+      }
+    }
+  }
+
+  // Mouse location
+  LocalFrame* frame = document.GetFrame();
+  CHECK(frame);
+  EventHandler& event_handler = frame->GetEventHandler();
+  page_interaction_info.mouse_position =
+      gfx::ToRoundedPoint(event_handler.LastKnownMousePositionInRootFrame());
+}
+
+void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
+    const LocalFrame& frame,
+    mojom::blink::AIPageContent& page_content) const {
+  page_content.main_frame_interaction_info =
+      mojom::blink::AIPageContentFrameInteractionInfo::New();
+  mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info =
+      *page_content.main_frame_interaction_info;
+  AddFrameInteractionInfo(frame, frame_interaction_info);
+}
+
+void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
+    const LocalFrame& frame,
+    mojom::blink::AIPageContentIframeData& iframe_data) const {
+  iframe_data.frame_interaction_info =
+      mojom::blink::AIPageContentFrameInteractionInfo::New();
+  mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info =
+      *iframe_data.frame_interaction_info;
+  AddFrameInteractionInfo(frame, frame_interaction_info);
+}
+
+void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
+    const LocalFrame& frame,
+    mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info)
+    const {
+  // Selection
+  if (!frame.SelectedText().empty()) {
+    frame_interaction_info.selection =
+        mojom::blink::AIPageContentSelection::New();
+    mojom::blink::AIPageContentSelection& selection =
+        *frame_interaction_info.selection;
+    selection.selected_text = frame.SelectedText();
+
+    const SelectionInDOMTree& frame_selection =
+        frame.Selection().GetSelectionInDOMTree();
+    const Position& start_position = frame_selection.ComputeStartPosition();
+    const Position& end_position = frame_selection.ComputeEndPosition();
+    Node* start_node = start_position.ComputeContainerNode();
+    Node* end_node = end_position.ComputeContainerNode();
+    auto start_node_id = content_node_id_map_->find(start_node);
+    auto end_node_id = content_node_id_map_->find(end_node);
+    if (start_node_id != content_node_id_map_->end()) {
+      selection.start_node_id = start_node_id->value;
+      selection.start_offset = start_position.ComputeOffsetInContainerNode();
+    }
+    if (end_node_id != content_node_id_map_->end()) {
+      selection.end_node_id = end_node_id->value;
+      selection.end_offset = end_position.ComputeOffsetInContainerNode();
+    }
+  }
+}
+
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
-  attributes.interaction_info =
-      mojom::blink::AIPageContentInteractionInfo::New();
-  mojom::blink::AIPageContentInteractionInfo& interaction_info =
-      *attributes.interaction_info;
+  attributes.node_interaction_info =
+      mojom::blink::AIPageContentNodeInteractionInfo::New();
+  mojom::blink::AIPageContentNodeInteractionInfo& node_interaction_info =
+      *attributes.node_interaction_info;
   const ComputedStyle& style = *object.Style();
-  interaction_info.scrolls_overflow_x = style.ScrollsOverflowX();
-  interaction_info.scrolls_overflow_y = style.ScrollsOverflowY();
+  node_interaction_info.scrolls_overflow_x = style.ScrollsOverflowX();
+  node_interaction_info.scrolls_overflow_y = style.ScrollsOverflowY();
   bool is_selectable = object.IsSelectable();
-  interaction_info.is_selectable = is_selectable;
+  node_interaction_info.is_selectable = is_selectable;
 
   if (auto* node = object.GetNode()) {
-    interaction_info.is_editable = IsEditable(*node);
+    node_interaction_info.is_editable = IsEditable(*node);
   }
 
   if (auto* box = DynamicTo<LayoutBox>(object)) {
     if (box->CanResize()) {
       EResize resize = style.UsedResize();
-      interaction_info.can_resize_vertical =
+      node_interaction_info.can_resize_vertical =
           resize == EResize::kVertical || resize == EResize::kBoth;
-      interaction_info.can_resize_horizontal =
+      node_interaction_info.can_resize_horizontal =
           resize == EResize::kHorizontal || resize == EResize::kBoth;
     }
   }
 
   if (auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
-    interaction_info.is_focusable = element->IsFocusable();
-    interaction_info.is_focused = element->IsFocused();
-    interaction_info.is_draggable = element->draggable();
-    interaction_info.is_clickable = element->IsMaybeClickable();
+    node_interaction_info.is_focusable = element->IsFocusable();
+    node_interaction_info.is_draggable = element->draggable();
+    node_interaction_info.is_clickable = element->IsMaybeClickable();
   }
+}
+
+void AIPageContentAgent::ContentBuilder::Trace(Visitor* visitor) const {
+  visitor->Trace(content_node_id_map_);
 }
 
 }  // namespace blink

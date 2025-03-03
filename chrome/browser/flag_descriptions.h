@@ -667,9 +667,6 @@ extern const char kDebugShortcutsDescription[];
 extern const char kDisallowDocWrittenScriptsUiName[];
 extern const char kDisallowDocWrittenScriptsUiDescription[];
 
-extern const char kViewTransitionLayeredCaptureName[];
-extern const char kViewTransitionLayeredCaptureDescription[];
-
 extern const char kViewTransitionOnNavigationName[];
 extern const char kViewTransitionOnNavigationDescription[];
 
@@ -3231,6 +3228,12 @@ extern const char kLaunchWindowsNativeHostsDirectlyDescription[];
 #endif  // ENABLE_EXTENSIONS
 
 #if BUILDFLAG(ENABLE_PRINTING)
+inline constexpr char kFastEnumeratePrintersName[] =
+    "Use faster method for printer enumeration";
+inline constexpr char kFastEnumeratePrintersDescription[] =
+    "When enumerating printers, use a faster method to acquire the basic "
+    "information for each printer.";
+
 extern const char kPrintWithPostScriptType42FontsName[];
 extern const char kPrintWithPostScriptType42FontsDescription[];
 
@@ -3655,9 +3658,6 @@ extern const char kFastPairKeyboardsDescription[];
 
 extern const char kFastPairPwaCompanionName[];
 extern const char kFastPairPwaCompanionDescription[];
-
-extern const char kFastPairDevicesBluetoothSettingsName[];
-extern const char kFastPairDevicesBluetoothSettingsDescription[];
 
 extern const char kFrameSinkDesktopCapturerInCrdName[];
 extern const char kFrameSinkDesktopCapturerInCrdDescription[];

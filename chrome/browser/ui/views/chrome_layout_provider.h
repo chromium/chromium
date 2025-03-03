@@ -32,6 +32,10 @@ enum ChromeInsetsMetric {
 enum ChromeDistanceMetric {
   // Default minimum width of a button.
   DISTANCE_BUTTON_MINIMUM_WIDTH = views::VIEWS_DISTANCE_END,
+  // Size of the Collaboration Messaging fallback icon padding.
+  DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_PADDING,
+  // Size of the Collaboration Messaging fallback icon border.
+  DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_BORDER_SIZE,
   // Vertical spacing at the beginning and end of a content list (a vertical
   // stack of composite views that behaves like a menu) containing one item.
   DISTANCE_CONTENT_LIST_VERTICAL_SINGLE,

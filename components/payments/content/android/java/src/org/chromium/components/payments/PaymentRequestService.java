@@ -1102,8 +1102,8 @@ public class PaymentRequestService
     }
 
     /** Responds to the HasEnrolledInstrument query from the merchant page. */
-    public void respondHasEnrolledInstrumentQuery() {
-        if (mClient == null) return;
+    private void respondHasEnrolledInstrumentQuery() {
+        if (mBrowserPaymentRequest == null) return;
 
         // The pref is checked in onDoneCreatingPaymentApps, but we explicitly want to measure
         // calls to hasEnrolledInstrument() that are affected by it.
@@ -1113,7 +1113,19 @@ public class PaymentRequestService
                     mDelegate.prefsCanMakePayment());
         }
 
-        boolean response = mHasEnrolledInstrument;
+        mBrowserPaymentRequest.maybeOverrideHasEnrolledInstrumentResponse(
+                mHasEnrolledInstrument, this::sendHasEnrolledInstrumentResponseToRenderer);
+    }
+
+    /**
+     * Sends the given response to the renderer process in order to resolve the pending JavaScript
+     * promise for the PaymentRequest.hasEnrolledInstrument() API call.
+     *
+     * @param response The value to be returned from the PaymentRequest.hasEnrolledInstrument() API
+     *     call in JavaScript.
+     */
+    private void sendHasEnrolledInstrumentResponseToRenderer(boolean response) {
+        if (mClient == null) return;
         mIsHasEnrolledInstrumentResponsePending = false;
 
         int result;

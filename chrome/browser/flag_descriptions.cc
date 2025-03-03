@@ -1138,13 +1138,6 @@ const char kDisallowDocWrittenScriptsUiDescription[] =
     "Disallows fetches for third-party parser-blocking scripts inserted into "
     "the main frame via document.write.";
 
-const char kViewTransitionLayeredCaptureName[] =
-    "CSS view transition layered capture";
-const char kViewTransitionLayeredCaptureDescription[] =
-    "Controls the way view transition elements are captured. "
-    "When enabled, view transition borders, backgrounds, effects etc. "
-    "are captured as style instead of being baked into the image.";
-
 const char kViewTransitionOnNavigationName[] =
     "viewTransition API for navigations";
 const char kViewTransitionOnNavigationDescription[] =
@@ -6238,12 +6231,6 @@ const char kFastPairKeyboardsDescription[] =
 const char kFastPairPwaCompanionName[] = "Enable Fast Pair Web Companion";
 const char kFastPairPwaCompanionDescription[] =
     "Enables Fast Pair Web Companion link after device pairing.";
-
-const char kFastPairDevicesBluetoothSettingsName[] =
-    "Enable Fast Pair Devices in Bluetooth Settings";
-const char kFastPairDevicesBluetoothSettingsDescription[] =
-    "Enables the Fast Pair Bluetooth Settings page to display a list of the "
-    "user's devices available for Subsequent Pairing.";
 
 const char kFrameSinkDesktopCapturerInCrdName[] =
     "Enable FrameSinkDesktopCapturer in CRD";

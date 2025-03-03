@@ -111,9 +111,14 @@ public class EducationalTipCardProviderSignalHandler {
     /** Returns the total number of tabs across both regular and incognito browsing modes. */
     private static float getCurrentTabCount(EducationTipModuleActionDelegate actionDelegate) {
         TabModelSelector tabModelSelector = actionDelegate.getTabModelSelector();
-        TabModel normalModel = tabModelSelector.getModel(/* incognito= */ false);
-        TabModel incognitoModel = tabModelSelector.getModel(/* incognito= */ true);
-        return normalModel.getCount() + incognitoModel.getCount();
+
+        if (tabModelSelector.isTabStateInitialized()) {
+            TabModel normalModel = tabModelSelector.getModel(/* incognito= */ false);
+            TabModel incognitoModel = tabModelSelector.getModel(/* incognito= */ true);
+            return normalModel.getCount() + incognitoModel.getCount();
+        }
+
+        return actionDelegate.getTabCountForRelaunchFromSharedPrefs();
     }
 
     /** Returns a value of 1.0f if a synced tab group exists. Otherwise, it returns 0.0f. */

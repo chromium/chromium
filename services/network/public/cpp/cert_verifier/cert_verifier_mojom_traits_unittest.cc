@@ -44,13 +44,12 @@ bool ConfigsEqual(const net::CertVerifier::Config& config1,
                   const net::CertVerifier::Config& config2) {
   if (std::tie(config1.enable_rev_checking,
                config1.require_rev_checking_local_anchors,
-               config1.enable_sha1_local_anchors,
-               config1.disable_symantec_enforcement) !=
+               config1.enable_sha1_local_anchors) !=
       std::tie(config2.enable_rev_checking,
                config2.require_rev_checking_local_anchors,
-               config2.enable_sha1_local_anchors,
-               config2.disable_symantec_enforcement))
+               config2.enable_sha1_local_anchors, )) {
     return false;
+  }
 
   return true;
 }
@@ -70,7 +69,6 @@ TEST(CertVerifierMojomTraitsTest, ConfigTrue) {
   config.enable_rev_checking = true;
   config.require_rev_checking_local_anchors = true;
   config.enable_sha1_local_anchors = true;
-  config.disable_symantec_enforcement = true;
 
   net::CertVerifier::Config out_config;
 

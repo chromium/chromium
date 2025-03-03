@@ -275,7 +275,8 @@ void FedCmMetrics::RecordRequestTokenStatus(
     std::optional<FedCmUseOtherAccountResult> use_other_account_result,
     std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
     FedCmThirdPartyCookiesStatus tpc_status,
-    const FedCmRequesterFrameType& requester_frame_type) {
+    const FedCmRequesterFrameType& requester_frame_type,
+    std::optional<bool> has_signin_account) {
   // The following check is to avoid double recording in the following scenario:
   // 1. The request has failed but we have not yet rejected the promise, e.g.
   // when the API is disabled. We record a metric immediately but only post a
@@ -313,6 +314,9 @@ void FedCmMetrics::RecordRequestTokenStatus(
           static_cast<int>(*verifying_dialog_result));
     }
     ukm_builder.SetFrameType(static_cast<int>(requester_frame_type));
+    if (has_signin_account.has_value()) {
+      ukm_builder.SetHasSigninAccount(*has_signin_account);
+    }
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
@@ -349,6 +353,10 @@ void FedCmMetrics::RecordRequestTokenStatus(
   if (verifying_dialog_result.has_value()) {
     base::UmaHistogramEnumeration("Blink.FedCm.VerifyingDialogResult",
                                   *verifying_dialog_result);
+  }
+  if (has_signin_account.has_value()) {
+    base::UmaHistogramBoolean("Blink.FedCm.HasSigninAccount",
+                              *has_signin_account);
   }
   // Reset the `session_id_`. We expect no more metrics from this API call.
   session_id_ = -1;

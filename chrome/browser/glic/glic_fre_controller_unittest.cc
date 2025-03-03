@@ -11,6 +11,7 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,11 +34,16 @@ class GlicFreControllerTest : public testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     identity_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     profile_ = testing_profile_manager_->CreateTestingProfile("profile");
 
     glic_fre_controller_ = std::make_unique<GlicFreController>(
         profile_, identity_env_->identity_manager());
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
   }
 
   Profile* profile() { return profile_; }

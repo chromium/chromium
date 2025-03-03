@@ -24,7 +24,7 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_platform": "android"
               },

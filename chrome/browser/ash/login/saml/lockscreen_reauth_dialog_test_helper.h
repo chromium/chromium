@@ -15,6 +15,10 @@ namespace content {
 class WebContents;
 }
 
+namespace base {
+class WallClockTimer;
+}
+
 namespace ash {
 
 class LockScreenStartReauthDialog;
@@ -138,6 +142,8 @@ class LockScreenReauthDialogTestHelper {
   void ExpectAutoReloadEnabled();
   void ExpectAutoReloadDisabled();
   void ResumeAutoReloadTimer();
+  base::WallClockTimer* GetAutoReloadTimer();
+  void TriggerNetworkUpdateState();
 
  private:
   // Instantiate using public static factory methods.

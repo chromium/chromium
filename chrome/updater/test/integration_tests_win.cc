@@ -532,17 +532,16 @@ bool BuildTestAppInstaller(const base::FilePath& installer_script,
   if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
     return false;
   }
-  const base::FilePath installer_dir = exe_path.AppendASCII("test_installer");
+  const base::FilePath installer_dir = exe_path.Append(L"test_installer");
 #if defined(ADDRESS_SANITIZER)
   static const char kAsanRuntime[] = "clang_rt.asan_dynamic-x86_64.dll";
-  const base::FilePath asan_runtime = exe_path.AppendASCII(kAsanRuntime);
+  const base::FilePath asan_runtime = exe_path.AppendUTF8(kAsanRuntime);
   EXPECT_TRUE(base::CopyFile(
-      asan_runtime, output_installer.DirName().AppendASCII(kAsanRuntime)));
+      asan_runtime, output_installer.DirName().AppendUTF8(kAsanRuntime)));
 #endif
-  base::CommandLine command(
-      installer_dir.AppendASCII("embed_install_scripts.py"));
-  command.AppendSwitchPath(
-      "--installer", installer_dir.AppendASCII("test_meta_installer.exe"));
+  base::CommandLine command(installer_dir.Append(L"embed_install_scripts.py"));
+  command.AppendSwitchPath("--installer",
+                           installer_dir.Append(L"test_meta_installer.exe"));
   command.AppendSwitchPath("--output", output_installer);
   command.AppendSwitchPath("--script", installer_script);
   return RunVPythonCommand(command) == 0;
@@ -584,7 +583,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   // Create a batch file as the installer script, which creates some registry
   // values as the installation artifacts.
   const base::FilePath batch_script_path(
-      offline_app_scripts_dir.AppendASCII("AppSetup.bat"));
+      offline_app_scripts_dir.Append(L"AppSetup.bat"));
 
   // Create a shared event to be waited for in this process and signaled in the
   // test process. If the test is running elevated with UAC on, the test will
@@ -635,7 +634,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   }()));
 
   const base::FilePath& app_installer =
-      offline_app_dir.AppendASCII(kAppInstallerName);
+      offline_app_dir.AppendUTF8(kAppInstallerName);
   EXPECT_TRUE(BuildTestAppInstaller(batch_script_path, app_installer));
   base::FilePath manifest_path = offline_dir.Append(manifest_filename);
   std::optional<int64_t> app_installer_size = base::GetFileSize(app_installer);
@@ -739,7 +738,7 @@ base::FilePath GetSetupExecutablePath() {
   if (!base::PathService::Get(base::DIR_EXE, &out_dir)) {
     return base::FilePath();
   }
-  return out_dir.AppendASCII("UpdaterSetup_test.exe");
+  return out_dir.Append(L"UpdaterSetup_test.exe");
 }
 
 void Clean(UpdaterScope scope) {
@@ -1705,7 +1704,7 @@ std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
       supported_archs, std::back_inserter(updater_versions),
       [&](const std::string& arch) -> TestUpdaterVersion {
         const base::FilePath updater_setup_path =
-            old_updater_path.AppendASCII(base::StrCat({arch, arch_suffix}))
+            old_updater_path.AppendUTF8(base::StrCat({arch, arch_suffix}))
                 .Append(path_suffix);
         return {updater_setup_path,
                 base::Version(base::UTF16ToUTF8(

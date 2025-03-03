@@ -482,9 +482,7 @@ TEST_F(ThemeSyncableServiceTest, SetCurrentThemeCustomTheme_Extension_Install) {
   // The theme is not installed yet and thus, the default theme is still used.
   EXPECT_TRUE(fake_theme_service_->UsingDefaultTheme());
   EXPECT_TRUE(HasThemeSyncTriggeredExtensionInstallation());
-  EXPECT_TRUE(extensions::ExtensionSystem::Get(profile_.get())
-                  ->extension_service()
-                  ->pending_extension_manager()
+  EXPECT_TRUE(extensions::PendingExtensionManager::Get(profile_.get())
                   ->HasPendingExtensionFromSync());
 }
 
@@ -2737,6 +2735,57 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
   ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
 }
 
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ShouldNotCommitAnythingElseWithExtensionTheme) {
+  // Local extension theme.
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service());
+    theme_service()->SetTheme(theme_extension());
+    waiter.WaitForThemeChanged();
+  }
+  ASSERT_TRUE(theme_service()->UsingExtensionTheme());
+
+  sync_pb::ThemeSpecifics expected_theme_specifics;
+  expected_theme_specifics.set_use_custom_theme(true);
+  expected_theme_specifics.set_browser_color_scheme(
+      expected_theme_specifics.SYSTEM);
+  expected_theme_specifics.set_use_system_theme_by_default(false);
+  expected_theme_specifics.set_custom_theme_name(kCustomThemeName);
+  expected_theme_specifics.set_custom_theme_id(kCustomThemeId);
+  expected_theme_specifics.set_custom_theme_update_url(kCustomThemeUrl);
+  EXPECT_THAT(
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
+      base::test::EqualsProto(expected_theme_specifics));
+
+  // Set custom ntp background pref.
+  {
+    ScopedDictPrefUpdate dict(
+        profile()->GetPrefs(),
+        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    dict->Set(kNtpCustomBackgroundURL, kTestUrl);
+  }
+  task_environment()->RunUntilIdle();
+  // Local extension theme is still there.
+  ASSERT_TRUE(theme_service()->UsingExtensionTheme());
+
+  theme_sync_service()->MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(sync_pb::ThemeSpecifics()),
+      std::unique_ptr<syncer::SyncChangeProcessor>(
+          new syncer::SyncChangeProcessorWrapperForTest(
+              fake_change_processor())));
+
+  // ThemeSpecifics should be valid, i.e. should not contain ntp background when
+  // there is an extension theme.
+  EXPECT_THAT(
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
+      base::test::EqualsProto(expected_theme_specifics));
+  // Nothing committed to the server.
+  ASSERT_EQ(fake_change_processor()->changes().size(), 1u);
+  EXPECT_THAT(
+      fake_change_processor()->changes()[0].sync_data().GetSpecifics().theme(),
+      base::test::EqualsProto(expected_theme_specifics));
+}
+
 class ThemeSyncableServiceVerifyFinalStateTest
     : public ThemeSyncableServiceWithMigrationFlagEnabledTest,
       public testing::WithParamInterface<sync_pb::ThemeSpecifics> {
@@ -3461,9 +3510,11 @@ class ThemeSyncableServiceTestForThemeExtension
     ASSERT_FALSE(
         extensions::ExtensionRegistry::Get(profile())->GetExtensionById(
             kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
-    ASSERT_FALSE(service_->pending_extension_manager()->HasPendingExtensions());
+    ASSERT_FALSE(extensions::PendingExtensionManager::Get(profile())
+                     ->HasPendingExtensions());
 
-    pending_extension_manager_ = service_->pending_extension_manager();
+    pending_extension_manager_ =
+        extensions::PendingExtensionManager::Get(profile());
     extension_registry_ = extensions::ExtensionRegistry::Get(profile());
   }
 

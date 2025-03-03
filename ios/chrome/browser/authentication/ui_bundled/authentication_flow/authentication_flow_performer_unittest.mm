@@ -6,6 +6,7 @@
 
 #import <objc/runtime.h>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -93,6 +94,30 @@ TEST_F(AuthenticationFlowPerformerTest,
                  completion_called = YES;
                }];
   EXPECT_TRUE(completion_called);
+}
+
+// Tests `-[AuthenticationFlowPerformer signOutForAccountSwitchWithProfile:]`.
+TEST_F(AuthenticationFlowPerformerTest, SignoutForSwitch) {
+  base::HistogramTester histogram_tester;
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
+  authentication_service->SignIn(fake_identity_,
+                                 signin_metrics::AccessPoint::kStartPage);
+  __block std::unique_ptr<base::RunLoop> run_loop_ =
+      std::make_unique<base::RunLoop>();
+  OCMExpect(
+      [authentication_flow_performer_delegate_mock_ didSignOutForAccountSwitch])
+      .andDo(^(NSInvocation*) {
+        run_loop_->Quit();
+      });
+  [authentication_flow_performer_
+      signOutForAccountSwitchWithProfile:profile_.get()];
+  run_loop_->Run();
+  EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignoutProfile",
+      signin_metrics::ProfileSignout::kChangeAccountInAccountMenu, 1);
 }
 
 }  // namespace

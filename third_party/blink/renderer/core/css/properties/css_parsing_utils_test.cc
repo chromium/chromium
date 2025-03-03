@@ -71,7 +71,7 @@ TEST(CSSParsingUtilsTest, ConsumeAngles) {
 
   EXPECT_EQ(kMaxDegreeValue, ConsumeAngleValue("calc(infinity * 1deg)"));
   EXPECT_EQ(-kMaxDegreeValue, ConsumeAngleValue("calc(-infinity * 1deg)"));
-  EXPECT_EQ(kMaxDegreeValue, ConsumeAngleValue("calc(NaN * 1deg)"));
+  EXPECT_EQ(0, ConsumeAngleValue("calc(NaN * 1deg)"));
 
   // Math function with min and max ranges
 

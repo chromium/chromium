@@ -80,7 +80,7 @@
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/download/ui_bundled/features.h"
+#import "ios/chrome/browser/download/ui/features.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"

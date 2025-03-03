@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"  // nogncheck https://crbug.com/377760841
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
+#include "chrome/browser/web_applications/navigation_capturing_log.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -427,7 +429,16 @@ ChromeOsReimplNavigationCapturingThrottle::MaybeCreate(
 }
 
 ChromeOsReimplNavigationCapturingThrottle::
-    ~ChromeOsReimplNavigationCapturingThrottle() = default;
+    ~ChromeOsReimplNavigationCapturingThrottle() {
+  if (debug_data_.empty()) {
+    return;
+  }
+  web_app::WebAppProvider::GetForWebApps(&profile_.get())
+      ->navigation_capturing_log()
+      .LogData(GetNameForLogging(), base::Value(std::move(debug_data_)),
+               navigation_handle() ? navigation_handle()->GetNavigationId()
+                                   : std::optional<int64_t>(std::nullopt));
+}
 
 const char* ChromeOsReimplNavigationCapturingThrottle::GetNameForLogging() {
   return "ChromeOsReimplNavigationCapturingThrottle";
@@ -463,12 +474,26 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  bool is_for_prerender = handle->IsInPrerenderedMainFrame();
+  base::Value::Dict* debug_data = &debug_data_;
+  if (is_for_prerender) {
+    debug_data = debug_data_.EnsureDict("prerender");
+  }
+  base::Value::List* candidates_debug_data =
+      debug_data->EnsureList("app_candidate");
+  for (const std::string& candidate : app_candidates) {
+    candidates_debug_data->Append(candidate);
+  }
+  debug_data->Set("preferred", *app_ids_to_launch.preferred);
+
   const std::string launch_app_id = *app_ids_to_launch.preferred;
   const AppType app_type = proxy->AppRegistryCache().GetAppType(launch_app_id);
 
   // Only automatically launch supported app types.
+  bool system_web_app = IsSystemWebApp(&profile_.get(), launch_app_id);
+  debug_data->Set("system_web_app", system_web_app);
   if (app_type != AppType::kArc && app_type != AppType::kWeb &&
-      !IsSystemWebApp(&profile_.get(), launch_app_id)) {
+      !system_web_app) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -482,6 +507,10 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
   bool is_capturable = does_projector_swa_handle_url ||
                        ShouldThrottleCaptureNavigation(
                            app_type, app_ids_to_launch, is_link_click, handle);
+  debug_data->Set("does_projector_swa_handle_url",
+                  does_projector_swa_handle_url);
+  debug_data->Set("is_link_click", is_link_click);
+  debug_data->Set("is_capturable", is_capturable);
   if (!is_capturable) {
     return content::NavigationThrottle::PROCEED;
   }
@@ -496,23 +525,26 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
   // they are captured via the NavigationCapturingProcess or not (as prerender
   // runs without calling browser_navigator.cc, so this throttle is created &
   // used).
-  if (handle->IsInPrerenderedMainFrame()) {
+  if (is_for_prerender) {
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
 
   auto launch_source = IsNavigateFromNonFormNonContextMenuLink(handle)
                            ? LaunchSource::kFromLink
                            : LaunchSource::kFromOmnibox;
+  debug_data->Set("launch_source", base::ToString(launch_source));
   GURL redirected_url =
       does_projector_swa_handle_url
           ? RedirectUrlIfProjectorApp(&profile_.get(), launch_app_id,
                                       handle->GetURL())
           : handle->GetURL();
+  debug_data->Set("redirected_url", redirected_url.possibly_invalid_spec());
 
   // Close existing web contents if it is around.
   std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
   if (IsEmptyDanglingWebContentsAfterLinkCapture()) {
+    debug_data->Set("web_contents_will_dangle", true);
     browser_keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_LAUNCH, KeepAliveRestartOption::ENABLED);
     if (!profile_->IsOffTheRecord()) {

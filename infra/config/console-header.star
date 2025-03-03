@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders")
 load("//lib/headers.star", "headers")
 load(".//project.star", "ACTIVE_MILESTONES", "settings")
 
@@ -461,15 +460,6 @@ HEADER = headers.header(
     tree_name = "chromium" if settings.is_main else None,
 )
 
-# A WIP header to potentially replace the existing one.
-def get_rotation_names():
-    rotations = [getattr(builders.gardener_rotations, a) for a in dir(builders.gardener_rotations)]
-    rotation_names = []
-    for rotation in rotations:
-        if rotation and len(rotation) > 0:
-            rotation_names.append(builders.gardener_rotation_name(rotation[0]))
-    return rotation_names
-
 # TODO(crbug.com/40873502): Replace the normal header after this is approved
 DEV_HEADER = headers.header(
     oncalls = [
@@ -851,7 +841,17 @@ DEV_HEADER = headers.header(
                     text = "Gardener Rotations",
                     url = "https://chromium-status.appspot.com/",
                 ),
-                console_ids = ["chromium/{}".format(r) for r in get_rotation_names()],
+                console_ids = [
+                    "chromium/android rotation",
+                    "chromium/angle rotation",
+                    "chromium/cft rotation",
+                    "chromium/chromium rotation",
+                    "chromium/chromium.gpu rotation",
+                    "chrome/chrome.perf",
+                    "chromium/dawn rotation",
+                    "chromium/fuchsia rotation",
+                    "chromium/ios rotation",
+                ],
             ),
         ],
     ) or [

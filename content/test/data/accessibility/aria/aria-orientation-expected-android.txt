@@ -5,12 +5,12 @@ android.webkit.WebView focusable focused
 ++android.widget.ListView role_description='list box' clickable collection interesting column_count=1
 ++android.widget.ListView role_description='list box' clickable collection interesting column_count=1
 ++android.widget.ListView role_description='list box' clickable collection interesting column_count=1
-++android.view.View role_description='menu'
-++android.view.View role_description='menu'
-++android.view.View role_description='menu'
-++android.view.View role_description='menu bar'
-++android.view.View role_description='menu bar'
-++android.view.View role_description='menu bar'
+++android.view.View role_description='menu' collection column_count=1
+++android.view.View role_description='menu' collection column_count=1
+++android.view.View role_description='menu' collection column_count=1
+++android.view.View role_description='menu bar' collection column_count=1
+++android.view.View role_description='menu bar' collection column_count=1
+++android.view.View role_description='menu bar' collection column_count=1
 ++android.widget.RadioGroup role_description='radio group'
 ++android.widget.RadioGroup role_description='radio group'
 ++android.widget.RadioGroup role_description='radio group'

@@ -257,4 +257,20 @@ public interface BrowserPaymentRequest {
         // By default, there is no override of the `response` value.
         sender.onResult(response);
     }
+
+    /**
+     * Send the given response to the renderer process to resolve the pending JavaScript promise for
+     * the PaymentRequest.hasEnrolledInstrument() API call, potentially overriding the calculated
+     * value.
+     *
+     * @param response The response to the JavaScript PaymentRequest.hasEnrolledInstrument() API
+     *     call. Can be potentially overridden.
+     * @param sender The method for sending the response to the renderer process. May be invoked
+     *     either synchronously or asynchronously.
+     */
+    default void maybeOverrideHasEnrolledInstrumentResponse(
+            boolean response, Callback<Boolean> sender) {
+        // By default, there is no override of the `response` value.
+        sender.onResult(response);
+    }
 }

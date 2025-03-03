@@ -2,9 +2,11 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++comboBoxSelect collapsed value='button'
-++++++++button ignored invisible
-++++++++++staticText ignored invisible
-++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++button ignored invisible
 ++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
 ++++++++menuListPopup invisible ispopup=auto
-++++++++++menuListOption name='option' selected=true
+++++++++++genericContainer invisible
+++++++++++++menuListOption name='option' selected=true

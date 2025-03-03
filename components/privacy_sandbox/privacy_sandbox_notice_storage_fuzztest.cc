@@ -19,18 +19,18 @@ void CheckConvertsV1SchemaSuccessfully(int notice_action_taken,
   data_v1.notice_last_shown = notice_last_shown;
   PrivacySandboxNoticeData data_v2 =
       PrivacySandboxNoticeStorage::ConvertV1SchemaToV2Schema(data_v1);
-  EXPECT_EQ(data_v2.schema_version, 2);
+  EXPECT_EQ(data_v2.GetSchemaVersion(), 2);
   if (notice_action_taken) {
     auto notice_event = PrivacySandboxNoticeStorage::NoticeActionToNoticeEvent(
         static_cast<NoticeActionTaken>(notice_action_taken));
     if (notice_event.has_value()) {
-      EXPECT_THAT(data_v2.notice_events,
+      EXPECT_THAT(data_v2.GetNoticeEvents(),
                   testing::IsSupersetOf(
                       {std::make_pair(*notice_event, notice_taken_time)}));
     }
   }
   if (notice_last_shown != base::Time()) {
-    EXPECT_THAT(data_v2.notice_events,
+    EXPECT_THAT(data_v2.GetNoticeEvents(),
                 testing::IsSupersetOf(
                     {std::make_pair(NoticeEvent::kShown, notice_last_shown)}));
   }

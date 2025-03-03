@@ -318,18 +318,7 @@ std::u16string GetCounterTextFromResult(
         NOTREACHED();
     }
 
-    AutofillCounter::ResultInt num_user_annotations =
-        autofill_result->num_user_annotation_entries();
-    if (num_user_annotations) {
-      return l10n_util::GetStringFUTF16(
-          IDS_DEL_AUTOFILL_SYNCABLE_NON_SYNCABLE_COMBINATION,
-          payment_methods_addresses_autocomplete_entries_part,
-          l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_USER_ANNOTATION_ENTRIES,
-              num_user_annotations));
-    } else {
-      return payment_methods_addresses_autocomplete_entries_part;
-    }
+    return payment_methods_addresses_autocomplete_entries_part;
   }
 
   NOTREACHED();

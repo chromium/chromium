@@ -4471,20 +4471,17 @@
     "expiry_milestone": 138
   },
   {
+    "name": "fast-enumerate-printers",
+    "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "fast-pair-debug-metadata",
     "owners": [
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
     "expiry_milestone": 145
-  },
-  {
-    "name": "fast-pair-devices-bluetooth-settings",
-    "owners": [
-      "//ash/quick_pair/OWNERS",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 133
   },
   {
     "name": "fast-pair-handshake-long-term-refactor",
@@ -9172,11 +9169,6 @@
     "name": "video-picture-in-picture-controls-update-2024",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 145
-  },
-  {
-    "name": "view-transition-layered-capture",
-    "owners": [ "nrosenthal@chromium.org", "khushalsagar@chromium.org", "vmpstr@chromium.org"],
-    "expiry_milestone" : 150
   },
   {
     "name": "view-transition-on-navigation",

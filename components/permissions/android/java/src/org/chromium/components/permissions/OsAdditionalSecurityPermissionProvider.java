@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import android.content.Context;
+
 /**
  * Placeholder provider class to query whether the operating system has granted various security
  * permissions.
@@ -14,4 +16,12 @@ public abstract class OsAdditionalSecurityPermissionProvider {
      * Implementations must allow querying from any thread.
      */
     public abstract boolean hasJavascriptOptimizerPermission();
+
+    /**
+     * Returns message to display in site settings explaining why the operating system has denied
+     * the javascript-optimizer permission.
+     */
+    public String getJavascriptOptimizerMessage(Context context) {
+        return "";
+    }
 }

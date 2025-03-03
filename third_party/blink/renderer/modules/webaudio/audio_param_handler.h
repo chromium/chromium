@@ -40,7 +40,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // if warnings or other messages need to be printed. It's useful to know what
   // the AudioParam represents.  The name should include the node type and the
   // name of the AudioParam.
-  enum AudioParamType {
+  enum class AudioParamType {
     kParamTypeAudioBufferSourcePlaybackRate,
     kParamTypeAudioBufferSourceDetune,
     kParamTypeBiquadFilterFrequency,

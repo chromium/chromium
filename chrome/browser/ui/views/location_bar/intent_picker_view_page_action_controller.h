@@ -23,7 +23,7 @@ class Browser;
 class IntentPickerViewPageActionController {
  public:
   explicit IntentPickerViewPageActionController(
-      tabs::TabInterface* tab_interface);
+      tabs::TabInterface& tab_interface);
 
   ~IntentPickerViewPageActionController() = default;
 
@@ -42,7 +42,7 @@ class IntentPickerViewPageActionController {
   // Hides the Intent Picker page action icon and closes any associated bubble.
   void HideIcon();
 
-  raw_ref<tabs::TabInterface> tab_interface_;
+  const raw_ref<tabs::TabInterface> tab_interface_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_

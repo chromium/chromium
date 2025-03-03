@@ -152,13 +152,12 @@ void AuthenticationFlowAutoReloadManager::SetClockForTesting(
   tick_clock_for_testing = tick_clock;
 }
 
-void AuthenticationFlowAutoReloadManager::ResumeTimerForTesting() {
-  if (auto_reload_timer_ && auto_reload_timer_->IsRunning()) {
-    auto_reload_timer_->OnResume();
-  }
+base::WallClockTimer*
+AuthenticationFlowAutoReloadManager::GetTimerForTesting() {
+  return auto_reload_timer_.get();
 }
 
-bool AuthenticationFlowAutoReloadManager::IsActiveForTesting() {
+bool AuthenticationFlowAutoReloadManager::IsAutoReloadActive() {
   return auto_reload_timer_->IsRunning() && idle_state_observer_.IsObserving();
 }
 

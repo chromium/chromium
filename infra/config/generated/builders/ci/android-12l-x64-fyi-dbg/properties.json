@@ -24,7 +24,7 @@
                   "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
-                "config": "android",
+                "config": "x64_builder_mb",
                 "target_bits": 64,
                 "target_platform": "android"
               },

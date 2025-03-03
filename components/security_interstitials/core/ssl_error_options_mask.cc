@@ -24,7 +24,6 @@ int IsCertErrorFatal(int cert_error) {
     case net::ERR_CERT_NAME_CONSTRAINT_VIOLATION:
     case net::ERR_CERT_VALIDITY_TOO_LONG:
     case net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED:
-    case net::ERR_CERT_SYMANTEC_LEGACY:
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
     case net::ERR_CERT_SELF_SIGNED_LOCAL_NETWORK:
       return false;

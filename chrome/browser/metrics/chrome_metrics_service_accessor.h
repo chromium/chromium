@@ -12,9 +12,14 @@
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
+#include "chrome/common/buildflags.h"
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/variations/synthetic_trials.h"
 #include "ppapi/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_synthetic_trial_manager.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "chrome/common/ppapi_metrics.mojom.h"
@@ -175,6 +180,9 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainExtraPartsGpu;
   friend class Browser;
   friend class BrowserProcessImpl;
+#if BUILDFLAG(ENABLE_GLIC)
+  friend class glic::GlicSyntheticTrialManager;
+#endif
   friend class OptimizationGuideKeyedService;
   friend class WebUITabStripFieldTrial;
   friend class feed::FeedServiceDelegateImpl;

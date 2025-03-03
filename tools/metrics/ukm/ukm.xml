@@ -3770,6 +3770,15 @@ be describing additional metrics about the same event.
       category.
     </summary>
   </metric>
+  <metric name="HasSigninAccount" enum="Boolean">
+    <summary>
+      Records whether a user is signing up with the API. Records once per
+      successful account fetch from the IdP server after the accounts filtering.
+      If there are multiple accounts, record the user as sign-in if IdP claims
+      at least one of the accounts is sign-in. If an IdP does not share the
+      user's sign-in state, record the state stored in the browser.
+    </summary>
+  </metric>
   <metric name="LoginHint.NumMatchingAccounts" enum="FedCmNumAccounts">
     <summary>
       Records the number of accounts that match a login hint. Records at the
@@ -4050,6 +4059,15 @@ be describing additional metrics about the same event.
       iframe, where the site of the caller frame is compared with the site of
       the main frame. Same-origin iframes are recorded under the same-site
       category.
+    </summary>
+  </metric>
+  <metric name="HasSigninAccount" enum="Boolean">
+    <summary>
+      Records whether a user is signing up with the API. Records once per
+      successful account fetch from the IdP server after the accounts filtering.
+      If there are multiple accounts, record the user as sign-in if IdP claims
+      at least one of the accounts is sign-in. If an IdP does not share the
+      user's sign-in state, record the state stored in the browser.
     </summary>
   </metric>
   <metric name="MismatchDialogShown" enum="BooleanHit">
@@ -5563,23 +5581,6 @@ be describing additional metrics about the same event.
     <summary>
       The number of unique context domains have requested the topics. Rounded to
       the nearest exponential bucket (with a bucket ratio of 1.15).
-    </summary>
-  </metric>
-</event>
-
-<event name="BrowsingTopics.TopicsRedirectChainDetected">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records the redirect state related to Topics. Recorded when a page is
-    detected to have initiated a chain of redirects, and at least two pages
-    within that chain invoke the Topics API, suggesting potential misuse of the
-    API. This event can be logged multiple times for the same page if the
-    redirect chain continues to grow.
-  </summary>
-  <metric name="NumberOfPagesCallingTopics">
-    <summary>
-      The number of pages that invoked the Topics API in the redirect chain.
     </summary>
   </metric>
 </event>
@@ -7630,8 +7631,8 @@ be describing additional metrics about the same event.
   <metric name="HasStickyActivation" enum="BooleanHasUserActivation">
     <summary>
       Populated for client redirects only. Whether the user interacted with the
-      page (See the HTML spec for a definition). This info is persistem within
-      DIPS for a duration of `dips::kInteractionTtl`.
+      page (See the HTML spec for a definition). This info is persisted within
+      BTM for a duration of `btm::kInteractionTtl`.
     </summary>
   </metric>
   <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
@@ -7683,8 +7684,8 @@ be describing additional metrics about the same event.
       enum="BooleanWebAuthnAssertionRequestSucceeded">
     <summary>
       Populated for client redirects only. Whether the user triggered a
-      successful web authn assertion. This info is persistem within DIPS for a
-      duration of `dips::kInteractionTtl`.
+      successful web authn assertion. This info is persisted within BTM for a
+      duration of `btm::kInteractionTtl`.
     </summary>
   </metric>
 </event>
@@ -18810,6 +18811,23 @@ be describing additional metrics about the same event.
     <summary>
       An enum of type ElementAnchoredBubbleVariant. The screen that the user has
       currently taken action on.
+    </summary>
+  </metric>
+</event>
+
+<event name="Permissions.PrivacySensitive.UseCounter">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-team@google.com</owner>
+  <summary>
+    Collects once-per-page statistics on usage of privacy sensitive permission
+    policy APIs to better understand if restricting access to these APIs in some
+    situations would result in an acceptable breaking change or not.
+  </summary>
+  <metric name="PrivateFeatureCalledWithAdScriptInStack" enum="FeatureObserver">
+    <summary>
+      If a privacy-sensitive labeled feature backed by a permission policy was
+      requested and granted, whether ad-script was in the stack at the time of
+      grant. This is only recorded once per page load.
     </summary>
   </metric>
 </event>

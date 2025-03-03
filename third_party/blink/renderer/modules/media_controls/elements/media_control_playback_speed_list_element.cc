@@ -254,9 +254,7 @@ void MediaControlPlaybackSpeedListElement::CenterCheckedItem() {
     return;
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
   options->setBlock("center");
-  auto* arg =
-      MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  checked_item_->scrollIntoView(arg);
+  checked_item_->scrollIntoViewWithOptions(options);
   checked_item_->Focus(FocusParams(FocusTrigger::kUserGesture));
 }
 

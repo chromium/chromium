@@ -44,8 +44,6 @@ function getFavicons(): FaviconData[] {
   return favicons;
 }
 
-function sendFaviconUrls(): void {
+export function sendFaviconUrls(): void {
   sendWebKitMessage('FaviconUrlsHandler', getFavicons());
 }
-
-export {sendFaviconUrls};

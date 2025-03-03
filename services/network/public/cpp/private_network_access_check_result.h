@@ -67,8 +67,11 @@ enum class PrivateNetworkAccessCheckResult {
   // Private network request: allowed because same origin.
   kAllowedPotentiallyTrustworthySameOrigin = 12,
 
+  // Local network access request: blocked by absence of user permission.
+  kLNABlockedByMissingPermission = 13,
+
   // Required for UMA histogram logging.
-  kMaxValue = kAllowedPotentiallyTrustworthySameOrigin,
+  kMaxValue = kLNABlockedByMissingPermission,
 };
 
 // Returns a human-readable string representing `result`, suitable for logging.

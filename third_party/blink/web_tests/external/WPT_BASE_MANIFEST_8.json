@@ -183986,6 +183986,19 @@
        {}
       ]
      ],
+     "host-is-006.html": [
+      "fca86d0184babd62cdce0cd332887972262d8e54",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "host-multiple-001.html": [
       "c8833c4b5b7abb52a6c336ea6b6f24e546cfed62",
       [
@@ -184040,19 +184053,6 @@
      ],
      "host-multiple-005.html": [
       "d834954f3b3fd29fff1749b0b33755d83980004b",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-multiple-006.html": [
-      "c3f76a5091861a79ed18fda1a6b845d5385d03d6",
       [
        null,
        [
@@ -362572,10 +362572,6 @@
        []
       ]
      },
-     "inheritance-expected.txt": [
-      "312fe13cf654ae8e3c4e6c70095c955033ab56ad",
-      []
-     ],
      "invalidation": {
       "reference": {
        "selection-pseudo-with-decoration-invalidation-001-ref.html": [
@@ -362625,12 +362621,8 @@
        "9dd2d506bbfb822d00f39b3cbcd9fd77d86cfd1e",
        []
       ],
-      "text-emphasis-position-computed-expected.txt": [
-       "a11394c3e325f2ddf2c6ed1df9411734e53ae9ad",
-       []
-      ],
       "text-emphasis-position-valid-expected.txt": [
-       "5d2dcdf890919d342a397a52a1da7eeb87741d79",
+       "08d5ae4e8f6cb0fd5794ccdb719f90ee41c74a15",
        []
       ]
      },
@@ -374514,6 +374506,10 @@
       "be34f0783f61824dcaf7d1da03cb9cd524ded29c",
       []
      ],
+     "ElementInternals-validation-expected.txt": [
+      "e0d355813c3dcabc59b55daee14e3b5dff9e0fa3",
+      []
+     ],
      "WEB_FEATURES.yml": [
       "e40f6e12ae43b8399cf2f67824609c9050460812",
       []
@@ -376982,6 +376978,14 @@
      ],
      "insertText_white-space=pre-wrap-expected.txt": [
       "3b8e124da160e2e2aed0aa8e7fd67a21485e0119",
+      []
+     ],
+     "paste-when-nested-with-contenteditable-true.https-expected.txt": [
+      "bc50cb74eb1313fdddfa9e9d94cc31521fbade7e",
+      []
+     ],
+     "plaintext-only-in-designMode-expected.txt": [
+      "ddba5c61ff472bbcec598039be3d11e122367687",
       []
      ],
      "styling-commands_styleWithCSS=false-expected.txt": [
@@ -391761,6 +391765,14 @@
        "innertext-setter-tests.js": [
         "99ae5ec18516ed7b25176da2da49478587ec084f",
         []
+       ],
+       "innertext-with-white-spaces_white-space=normal_contenteditable=plaintext-only-expected.txt": [
+        "1f939f054132e4d7a5f4bffc86b1eff781577a1e",
+        []
+       ],
+       "innertext-with-white-spaces_white-space=pre-line_contenteditable=plaintext-only-expected.txt": [
+        "25b8d8912b9411c03dd96a5929bb738fc2722c04",
+        []
        ]
       },
       "wai-aria": {
@@ -406489,7 +406501,7 @@
     ]
    },
    "lint.ignore": [
-    "a91efc0cf1ab543a9ae4e99df1ac5ad396029269",
+    "d9acac627aef6582a35b6698dc3c5ad9515df999",
     []
    ],
    "loading": {
@@ -415116,6 +415128,10 @@
      ],
      "custom-property-ref.html": [
       "66e29cde65026e330ad07728ef498edb675682f3",
+      []
+     ],
+     "effect-updateTiming-expected.txt": [
+      "5889ab4f45660ae88f42ee149b4e20267362b278",
       []
      ],
      "progress-based-effect-delay-ref.html": [
@@ -427069,7 +427085,7 @@
         []
        ],
        "conftest.py": [
-        "c68da8696e21c20e10f52c4517a1b19f203a48a7",
+        "e59af399b07c343b504a28f5ee8f1eb7ebd3df9f",
         []
        ],
        "install": {
@@ -427679,6 +427695,10 @@
       ],
       "webextensions": {
        "chrome": {
+        "packed.crx": [
+         "618c307bfbaa1c5b36d6261cae08dd5c68eb511e",
+         []
+        ],
         "unpacked": {
          "manifest.json": [
           "cf45e92803f0b30afd0f8428b7b3ad1794cd41d8",
@@ -428378,10 +428398,6 @@
      ],
      "h265-level-id.https-expected.txt": [
       "423280ea55b093a9544ebb1f69373dd843f952fd",
-      []
-     ],
-     "rtx-codecs.https-expected.txt": [
-      "82ed679b1ec2799179a08cac8f2ee8eebd2ecd4e",
       []
      ],
      "simulcast-answer-expected.txt": [
@@ -528087,7 +528103,7 @@
       ]
      ],
      "ElementInternals-validation.html": [
-      "2b8fd6afadfdd718fbc32956825fb682530a30fd",
+      "b5904cbd4a4a7f150bea6c85b1cb8751f819f05e",
       [
        null,
        {}
@@ -538732,6 +538748,26 @@
        }
       ]
      ],
+     "nested-with-contenteditable-true.html": [
+      "d94cca9b1e5812bf8279d5cd5bf28ab668ad407c",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "paste-when-nested-with-contenteditable-true.https.html": [
+      "b521c5522faced48ebd8a522d7b5b5ab9d4cedc1",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "paste.https.html": [
       "191a83ff8f05f6817388c814832578c4d1a409ef",
       [
@@ -538757,6 +538793,16 @@
       ],
       [
        "editing/plaintext-only/paste.https.html?white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "plaintext-only-in-designMode.html": [
+      "9209f6e58fa89b2f094cc58b7e40e6322927fffd",
+      [
+       null,
        {
         "testdriver": true,
         "timeout": "long"
@@ -627045,6 +627091,57 @@
          {}
         ]
        ],
+       "innertext-with-white-spaces.html": [
+        "8619fce019a74b1742e14377bcf5301d2fdd8973",
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=normal",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=normal&contenteditable=plaintext-only",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=normal&contenteditable=true",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre&contenteditable=plaintext-only",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre&contenteditable=true",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre-line",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre-line&contenteditable=plaintext-only",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre-line&contenteditable=true",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre-wrap",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre-wrap&contenteditable=plaintext-only",
+         {}
+        ],
+        [
+         "html/dom/elements/the-innertext-and-outertext-properties/innertext-with-white-spaces.html?white-space=pre-wrap&contenteditable=true",
+         {}
+        ]
+       ],
        "multiple-text-nodes.window.js": [
         "07c55e966933924d49ef82d98f35e639e5659669",
         [
@@ -692952,7 +693049,7 @@
       ]
      ],
      "effect-updateTiming.html": [
-      "0c7a546572149de772eb2ab7ce753106a0d1774f",
+      "d0cd84872b62817e6a227aaa308191f7bf79949b",
       [
        null,
        {}
@@ -774291,7 +774388,7 @@
       ]
      ],
      "RTCEncodedFrame-timestamps.html": [
-      "0ae67a3592c8f30bee63f6f08e3bde9bb2f82a14",
+      "d5b2a956805b2676a38b0574b53e9287bbe1fd24",
       [
        null,
        {}
@@ -814049,7 +814146,7 @@
       "web_extension": {
        "install": {
         "install.py": [
-         "a6f54dfe10bf068fac730a067114a18939541502",
+         "fe856844f748ce8d9fd01a812a3f1264f06b06dc",
          [
           null,
           {}

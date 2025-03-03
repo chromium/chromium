@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 namespace ui {
 

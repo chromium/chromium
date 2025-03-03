@@ -372,6 +372,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   scrollTo(params: ScrollToParams): Promise<void> {
     return this.sender.requestWithResponse('glicBrowserScrollTo', {params});
   }
+
+  setSyntheticExperimentState(trialName: string, groupName: string): void {
+    this.sender.requestNoResponse(
+        'glicBrowserSetSyntheticExperimentState', {trialName, groupName});
+  }
 }
 
 class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {

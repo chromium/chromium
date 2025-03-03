@@ -78,6 +78,8 @@ source_set("base") {
     "directory_service_client.h",
     "fqdn.cc",
     "fqdn.h",
+    "instance_identity_token.cc",
+    "instance_identity_token.h",
     "instance_identity_token_getter.cc",
     "instance_identity_token_getter.h",
     "internal_headers.h",

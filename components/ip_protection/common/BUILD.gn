@@ -75,6 +75,7 @@ source_set("ip_protection_core_impl") {
     ":masked_domain_list_manager",
     ":probabilistic_reveal_token_registry",
     "//components/content_settings/core/common",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -92,6 +93,7 @@ source_set("ip_protection_core_impl_unittest") {
     "//base/test:test_support",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//net",
+    "//services/network/public/cpp",
     "//testing/gtest",
   ]
 }

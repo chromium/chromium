@@ -1077,6 +1077,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/392927981
+      name: "CssDecoratingBoxPseudoFix",
+      status: "stable",
+    },
+    {
       name: "CSSDynamicRangeLimit",
       status: "experimental",
     },
@@ -2046,10 +2051,6 @@
     {
       name: "FindFirstMisspellingEndWhenNonEditable",
       status: "stable",
-    },
-    {
-      name: "FindTextInReadonlyTextInput",
-      status: "experimental",
     },
     {
       name: "Fledge",
@@ -3621,7 +3622,8 @@
       // Allocates a render surface for 2D scale transforms, to prevent
       // composited pixel alignment issues. See
       // https://crbug.com/40084005
-      name: "RenderSurfaceForScaleTransform",
+      name: "RenderSurfaceFor2DScaleTransform",
+      status: "experimental",
     },
     {
       name: "ReportEventTimingAtVisibilityChange",
@@ -3687,7 +3689,7 @@
     },
     {
       name: "RTCEncodedFrameTimestamps",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RTCEncodedVideoFrameAdditionalMetadata",
@@ -4295,6 +4297,10 @@
       name: "SystemWakeLock",
       status: "experimental",
     },
+    {
+      name: "TableIsAutoFixedLayout",
+      status: "stable",
+    },
     // For unit tests.
     {
       // This is for testing copied_from_base_feature_if.
@@ -4573,8 +4579,7 @@
     },
     // Fix for https://crbug.com/41329214.
     {
-      name: "UpdateSelectionOnNodeInsertion",
-      status: "stable"
+      name: "UpdateSelectionOnNodeInsertion"
     },
     {
       name: "URLPatternCompareComponent",
@@ -4667,9 +4672,6 @@
     {
       name: "ViewTransitionDisableSnapBrowserControlsOnHidden",
       status: "stable",
-    },
-    {
-      name: "ViewTransitionLayeredCapture",
     },
     {
       name: "ViewTransitionLongCallbackTimeoutForTesting",

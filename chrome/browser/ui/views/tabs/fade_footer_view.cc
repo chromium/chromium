@@ -192,18 +192,7 @@ void FadeCollaborationMessagingFooterRow::SetData(
     return;
   }
 
-  if (!data_.avatar.IsEmpty()) {
-    // Use avatar, if supplied.
-    SetContent(data_.avatar, data_.text);
-    return;
-  }
-
-  // Fallback to using an icon.
-  SetContent(
-      ui::ImageModel::FromVectorIcon(
-          kTabGroupSharingIcon, kColorHoverCardTabAlertUserAvatarFallbackIcon,
-          GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
-      data_.text);
+  SetContent(data_.avatar, data_.text);
 }
 
 CollaborationMessagingRowData::CollaborationMessagingRowData() = default;

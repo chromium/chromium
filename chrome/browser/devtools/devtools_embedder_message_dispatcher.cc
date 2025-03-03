@@ -244,6 +244,28 @@ bool GetValue(const base::Value& value, KeyDownEvent* event) {
   return true;
 }
 
+bool GetValue(const base::Value& value, SettingAccessEvent* event) {
+  if (!value.is_dict()) {
+    return false;
+  }
+
+  std::optional<int> name = value.GetDict().FindInt("name");
+  if (name) {
+    event->name = *name;
+  }
+
+  std::optional<int> numeric_value = value.GetDict().FindInt("numeric_value");
+  if (numeric_value) {
+    event->numeric_value = *numeric_value;
+  }
+
+  std::optional<int> string_value = value.GetDict().FindInt("string_value");
+  if (string_value) {
+    event->string_value = *string_value;
+  }
+  return true;
+}
+
 template <typename T>
 struct StorageTraits {
   using StorageType = T;
@@ -435,6 +457,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandler("recordDrag", &Delegate::RecordDrag, delegate);
   d->RegisterHandler("recordChange", &Delegate::RecordChange, delegate);
   d->RegisterHandler("recordKeyDown", &Delegate::RecordKeyDown, delegate);
+  d->RegisterHandler("recordSettingAccess", &Delegate::RecordSettingAccess,
+                     delegate);
   d->RegisterHandlerWithCallback("sendJsonRequest",
                                  &Delegate::SendJsonRequest, delegate);
   d->RegisterHandler("registerPreference", &Delegate::RegisterPreference,

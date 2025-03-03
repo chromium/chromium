@@ -219,7 +219,7 @@ std::optional<gfx::Rect> CalculateClipRect(
 // - |dest_render_pass| is where the new SharedQuadState will be created.
 SharedQuadState* CopyAndScaleSharedQuadState(
     const SharedQuadState* source_sqs,
-    uint32_t client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& client_namespace_id,
     const gfx::Transform& quad_to_target_transform,
     const gfx::Transform& target_transform,
     const gfx::Rect& quad_layer_rect,
@@ -254,7 +254,7 @@ SharedQuadState* CopyAndScaleSharedQuadState(
 // into it. See CopyAndScaleSharedQuadState() for full documentation.
 SharedQuadState* CopySharedQuadState(
     const SharedQuadState* source_sqs,
-    uint32_t client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& client_namespace_id,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> added_clip_rect,
     const MaskFilterInfoExt& mask_filter_info,
@@ -751,7 +751,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
 void SurfaceAggregator::HandleSurfaceQuad(
     const CompositorRenderPass& source_pass,
     const SurfaceDrawQuad* surface_quad,
-    uint32_t embedder_client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
     float parent_device_scale_factor,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> added_clip_rect,
@@ -839,7 +839,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     ResolvedFrameData& resolved_frame,
     float parent_device_scale_factor,
     const SurfaceDrawQuad* surface_quad,
-    uint32_t embedder_client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> added_clip_rect,
     const std::optional<gfx::Rect> dest_root_target_clip_rect,
@@ -1119,7 +1119,7 @@ void SurfaceAggregator::EmitSurfaceContent(
 
 void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
     const SurfaceDrawQuad* surface_quad,
-    uint32_t embedder_client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> clip_rect,
     AggregatedRenderPass* dest_pass,
@@ -1144,7 +1144,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const gfx::Rect& primary_rect,
     const gfx::Rect& fallback_rect,
     const SharedQuadState* primary_shared_quad_state,
-    uint32_t embedder_client_namespace_id,
+    const gfx::OverlayLayerId::NamespaceId& embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const std::optional<gfx::Rect> clip_rect,
     SkColor4f background_color,
@@ -1424,7 +1424,8 @@ void SurfaceAggregator::CopyQuadsToPass(
   size_t quad_index = 0;
   auto& resolved_draw_quads = resolved_pass.draw_quads();
 
-  uint32_t client_namespace_id = resolved_frame.GetClientNamespaceId();
+  const gfx::OverlayLayerId::NamespaceId client_namespace_id =
+      resolved_frame.GetClientNamespaceId();
 
   for (auto* quad : source_quad_list) {
     const ResolvedQuadData& quad_data = resolved_draw_quads[quad_index++];

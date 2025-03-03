@@ -488,8 +488,7 @@ void StatefulSSLHostStateDelegate::RevokeUserAllowExceptionsHard(
 }
 
 void StatefulSSLHostStateDelegate::DidDisplayErrorPage(int error) {
-  if (error != net::ERR_CERT_SYMANTEC_LEGACY &&
-      error != net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
+  if (error != net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
     return;
   }
   RecurrentInterstitialMode mode_param = GetRecurrentInterstitialMode();

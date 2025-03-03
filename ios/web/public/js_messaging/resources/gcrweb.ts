@@ -22,6 +22,4 @@ if (!(window as WindowWithGcrWeb).__gCrWeb) {
   (window as WindowWithGcrWeb).__gCrWeb = {};
 }
 
-const gCrWeb: any = (window as WindowWithGcrWeb).__gCrWeb;
-
-export {gCrWeb};
+export const gCrWeb: any = (window as WindowWithGcrWeb).__gCrWeb;

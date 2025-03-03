@@ -7,8 +7,8 @@ import 'chrome://profile-picker/profile_picker.js';
 import type {ProfileCardMenuElement, ProfileState, Statistics, StatisticsResult} from 'chrome://profile-picker/profile_picker.js';
 import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
@@ -49,6 +49,32 @@ suite('ProfileCardMenuTest', function() {
   test('ProfileCardMenuActionMenu', function() {
     assertFalse(profileCardMenuElement.$.actionMenu.open);
     assertFalse(profileCardMenuElement.$.removeConfirmationDialog.open);
+    assertTrue(isVisible(profileCardMenuElement.$.moreActionsButton));
+    assertStringContains(
+        profileCardMenuElement.$.moreActionsButton.ariaLabel!, 'profile');
+    profileCardMenuElement.$.moreActionsButton.click();
+    assertTrue(profileCardMenuElement.$.actionMenu.open);
+    assertFalse(profileCardMenuElement.$.removeConfirmationDialog.open);
+    const menuButtons = profileCardMenuElement.shadowRoot.querySelectorAll(
+        '#actionMenu > .dropdown-item');
+    assertEquals(menuButtons.length, 2);
+  });
+
+  // Checks that profile names containing "<" characters can be correctly
+  // displayed.
+  // This is a regression test for https://crbug.com/400338974.
+  test('ProfileCardMenuActionMenuProfileNameHasHtmlTag', async function() {
+    const updatedProfileState: ProfileState =
+        Object.assign({}, profileCardMenuElement.profileState);
+    updatedProfileState.localProfileName = '<name>';
+    profileCardMenuElement.profileState = updatedProfileState;
+    await microtasksFinished();
+
+    assertFalse(profileCardMenuElement.$.actionMenu.open);
+    assertFalse(profileCardMenuElement.$.removeConfirmationDialog.open);
+    assertTrue(isVisible(profileCardMenuElement.$.moreActionsButton));
+    assertStringContains(
+        profileCardMenuElement.$.moreActionsButton.ariaLabel!, '<name>');
     profileCardMenuElement.$.moreActionsButton.click();
     assertTrue(profileCardMenuElement.$.actionMenu.open);
     assertFalse(profileCardMenuElement.$.removeConfirmationDialog.open);

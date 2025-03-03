@@ -19,8 +19,6 @@
 
 namespace safe_browsing {
 
-class DownloadProtectionService;
-
 // This class encapsulate the process of populating all the fields in a Safe
 // Browsing download ping.
 class DownloadRequestMaker {
@@ -41,7 +39,6 @@ class DownloadRequestMaker {
 
   static std::unique_ptr<DownloadRequestMaker> CreateFromFileSystemAccess(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-      DownloadProtectionService* service,
       const content::FileSystemAccessWriteItem& item);
 
   DownloadRequestMaker(

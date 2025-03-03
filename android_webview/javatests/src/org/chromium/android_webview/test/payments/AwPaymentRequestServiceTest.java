@@ -244,6 +244,28 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
     /**
      * If the merchant website supports more than one payment method in PaymentRequest API, but the
+     * user has only one matching payment app (and this app has an enrolled instrument), then
+     * WebView should indicate that the user has an enrolled instrument by returning "true" from the
+     * hasEnrolledInstrument() API call.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestHasEnrolledInstrumentWhenMerchantSupportsMultiplePaymentMethods()
+            throws Exception {
+        installPaymentApps(/* multipleApps= */ false);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+
+        Assert.assertEquals(
+                "PaymentRequest has enrolled instrument.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * If the merchant website supports more than one payment method in PaymentRequest API, but the
      * user has only one matching payment app on the device, then WebView can invoke this one
      * payment app.
      */
@@ -281,6 +303,28 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
         Assert.assertEquals(
                 "PaymentRequest cannot make payments.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * If more than one app matches the PaymentRequest parameters from the merchant, then WebView
+     * should indicate that the user has no enrolled instruments by returning "false" from the
+     * hasEnrolledInstrument() API call. This lets the merchant website gracefully fallback to
+     * different PaymentRequest parameters or to skip using PaymentRequest API altogether.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestHasNoEnrolledInstrumentWithMoreThaOneAppAtOnce()
+            throws Exception {
+        installPaymentApps(/* multipleApps= */ true);
+        loadMerchantCheckoutPage(/* multiplePaymentMethods= */ true);
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+
+        Assert.assertEquals(
+                "PaymentRequest does not have enrolled instrument.",
                 mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 

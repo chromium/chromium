@@ -2070,6 +2070,19 @@ void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
           .SetSessionId(session_id_for_logging_.GetLowForSerialization()));
 }
 
+void DevToolsUIBindings::RecordSettingAccess(const SettingAccessEvent& event) {
+  if (!MaybeStartLogging()) {
+    return;
+  }
+  metrics::structured::StructuredMetricsClient::Record(
+      metrics::structured::events::v2::dev_tools::SettingAccess()
+          .SetName(event.name)
+          .SetNumericValue(event.numeric_value)
+          .SetStringValue(event.string_value)
+          .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
+          .SetSessionId(session_id_for_logging_.GetLowForSerialization()));
+}
+
 void DevToolsUIBindings::SendJsonRequest(DispatchCallback callback,
                                          const std::string& browser_id,
                                          const std::string& url) {

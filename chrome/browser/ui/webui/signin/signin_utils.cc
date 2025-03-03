@@ -35,6 +35,7 @@ const int kMinorModeRestrictionsFetchDeadlineMs = 1000;
 EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
     AccountInfo account_info,
     bool is_oidc_account,
+    bool turn_sync_on_signed_profile,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     SigninChoiceCallbackVariant process_user_choice_callback,
@@ -42,6 +43,7 @@ EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
     base::RepeatingClosure retry_callback)
     : account_info(account_info),
       is_oidc_account(is_oidc_account),
+      turn_sync_on_signed_profile(turn_sync_on_signed_profile),
       profile_creation_required_by_policy(profile_creation_required_by_policy),
       show_link_data_option(show_link_data_option),
       process_user_choice_callback(std::move(process_user_choice_callback)),

@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused
-++android.view.View role_description='menu'
-++++android.view.MenuItem role_description='checkbox' checkable clickable interesting name='Menu item 1'
-++++android.view.MenuItem role_description='checkbox' checkable checked clickable interesting name='Menu item 2' item_index=1 row_index=1
-++++android.view.MenuItem role_description='checkbox' checkable clickable interesting name='Menu item 3' state_description='Partially Checked' item_index=2 row_index=2
+++android.view.View role_description='menu' collection item_count=3 row_count=3 column_count=1
+++++android.view.MenuItem role_description='checkbox' checkable clickable collection_item interesting name='Menu item 1'
+++++android.view.MenuItem role_description='checkbox' checkable checked clickable collection_item interesting name='Menu item 2' item_index=1 row_index=1
+++++android.view.MenuItem role_description='checkbox' checkable clickable collection_item interesting name='Menu item 3' state_description='Partially Checked' item_index=2 row_index=2

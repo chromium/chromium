@@ -453,8 +453,8 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   for (auto& entry : expected) {
-    entry.second =
-        entry.first.is_web_secure_context ? Policy::kAllow : Policy::kBlock;
+    entry.second = entry.first.is_web_secure_context ? Policy::kPermissionBlock
+                                                     : Policy::kBlock;
   }
   TestPolicyMap(expected);
 }

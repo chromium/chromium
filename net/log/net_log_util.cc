@@ -166,7 +166,7 @@ base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
   }
 
   {
-    static_assert(CertVerifyProc::VERIFY_FLAGS_LAST == (1 << 4),
+    static_assert(CertVerifyProc::VERIFY_FLAGS_LAST == (1 << 3),
                   "Update with new flags");
     constants_dict.Set(
         "certVerifyFlags",
@@ -177,8 +177,6 @@ base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
                  CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS)
             .Set("VERIFY_ENABLE_SHA1_LOCAL_ANCHORS",
                  CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS)
-            .Set("VERIFY_DISABLE_SYMANTEC_ENFORCEMENT",
-                 CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT)
             .Set("VERIFY_DISABLE_NETWORK_FETCHES",
                  CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES));
   }

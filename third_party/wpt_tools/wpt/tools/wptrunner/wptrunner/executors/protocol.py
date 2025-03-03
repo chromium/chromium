@@ -355,7 +355,8 @@ class BidiBluetoothProtocolPart(ProtocolPart):
     @abstractmethod
     async def simulate_adapter(self,
                                context: str,
-                               state: str) -> None:
+                               state: str,
+                               type_: str) -> None:
         """
         Creates a simulated bluetooth adapter.
         :param context: Browsing context to set the simulated adapter to.

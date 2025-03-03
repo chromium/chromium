@@ -11,12 +11,12 @@ import type {TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 import {LiveTaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 
 // Consumer of CHROME_ANNOTATION `HTMLElement` taps.
-interface AnnotationsTapConsumer {
+export interface AnnotationsTapConsumer {
   (element: HTMLElement, cancel: boolean): void;
 }
 
 // Delay while checking for DOM mutations.
-const DOM_MUTATION_DELAY_MS = 300;
+export const DOM_MUTATION_DELAY_MS = 300;
 
 // Monitors DOM mutations between instance construction until a call to
 // `stopObserving`.
@@ -89,7 +89,7 @@ class MutationsTracker {
 }
 
 // Class to monitor taps on CHROME_ANNOTATION elements.
-class TextClick {
+export class TextClick {
   private mutationObserver: MutationsTracker|null = null;
 
   constructor(
@@ -190,9 +190,3 @@ class TextClick {
     }
   }
 }
-
-export {
-  DOM_MUTATION_DELAY_MS,
-  AnnotationsTapConsumer,
-  TextClick,
-};

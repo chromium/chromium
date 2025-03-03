@@ -12,9 +12,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.MetaDataVersion;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
 
 import java.io.ByteArrayOutputStream;
@@ -24,10 +27,7 @@ public class AuxiliarySearchUtils {
     @VisibleForTesting static final String TAB_DONATE_FILE_NAME = "tabs_donate";
     @VisibleForTesting static final int MODULE_SHOWN_MAX_IMPRESSIONS = 3;
 
-    // TODO(crbug.com/373902543): Clean up after downstream changes.
-    @VisibleForTesting
-    static final int DEFAULT_TTL_HOURS =
-            ChromeFeatureList.sAndroidAppIntegrationV2ContentTtlHours.getDefaultValue();
+    @VisibleForTesting static final int DEFAULT_TTL_HOURS = 168;
 
     @VisibleForTesting
     static final BooleanCachedFeatureParam SKIP_DEVICE_CHECK =
@@ -136,6 +136,19 @@ public class AuxiliarySearchUtils {
         return AuxiliarySearchUtils.SKIP_DEVICE_CHECK.getValue()
                 ? !AuxiliarySearchUtils.SHOW_THIRD_PARTY_CARD.getValue()
                 : AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs();
+    }
+
+    /**
+     * Returns the metadata version based on the entry's type.
+     *
+     * @param entry The data item for donation.
+     * @param <T> The type of the entry data for donation.
+     */
+    static <T> @MetaDataVersion int getMetadataVersion(T entry) {
+        if (entry instanceof Tab || entry instanceof AuxiliarySearchEntry) {
+            return MetaDataVersion.V1;
+        }
+        return MetaDataVersion.MULTI_TYPE_V2;
     }
 
     public static void resetSharedPreferenceForTesting() {

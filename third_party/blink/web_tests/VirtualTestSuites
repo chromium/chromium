@@ -43,7 +43,7 @@
     ],
     "args": ["--enable-features=AlignSurfaceLayerImplToPixelGrid"],
     "owners": ["wjmaclean@chromium.org", "pdr@chromium.org"],
-    "expires": "Mar 1, 2025"
+    "expires": "Sep 1, 2025"
   },
   {
     "prefix": "pna-permission",
@@ -373,6 +373,7 @@
     "prefix": "composite-clip-path-animation",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-masking/clip-path/animations",
+              "external/wpt/intersection-observer/clip-path-animation.html",
               "animations/responsive/interpolation/clip-path-responsive.html",
               "css3/masking/clip-path-animation.html",
               "css3/masking/clip-path-animation-stress.html",
@@ -389,6 +390,7 @@
     "prefix": "main-thread-clip-path-animation",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-masking/clip-path/animations",
+              "external/wpt/intersection-observer/clip-path-animation.html",
               "animations/responsive/interpolation/clip-path-responsive.html",
               "css3/masking/clip-path-animation.html",
               "fast/css/clip-path-crash.html",
@@ -1112,7 +1114,7 @@
     "bases":[
       "http/tests/inspector-protocol/issues/port-mismatch-exclusion.js",
       "http/tests/inspector-protocol/network/blocked-cookie-port-mismatch.js"],
-    "expires": "Mar 1, 2025",
+    "expires": "Mar 1, 2026",
     "exclusive_tests": "ALL",
     "args": [ "--enable-features=EnablePortBoundCookies"],
     "owners": ["amarjotgill@chromium.org"]
@@ -1124,7 +1126,7 @@
     "bases":[
       "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js",
       "http/tests/inspector-protocol/network/blocked-cookie-scheme-mismatch.js"],
-    "expires": "Mar 1, 2025",
+    "expires": "Mar 1, 2026",
     "exclusive_tests": "ALL",
     "args": [ "--enable-features=EnableSchemeBoundCookies"],
     "owners": ["amarjotgill@chromium.org"]
@@ -1205,20 +1207,6 @@
     "args": ["--enable-threaded-compositing", "--disable-gpu"],
     "exclusive_tests": "ALL",
     "expires": "never"
-  },
-  "This virtual test suite ensures the ViewTransition feature works correctly",
-  "with the new capture mode (layered) enabled by default. A lot of the existing tests rely on flat capture,",
-  "will consolidate this once the spec settles",
-  {
-    "prefix": "view-transition-layered-capture",
-    "platforms": ["Linux", "Mac", "Win"],
-    "owners": ["view-transitions-api@chromium.org"],
-    "bases": ["external/wpt/css/css-view-transitions/layered-capture/"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-threaded-compositing",
-             "--enable-blink-features=ViewTransitionLayeredCapture",
-             "--enable-blink-features=SerializeViewTransitionStateInSPA"],
-    "expires": "April 1, 2025"
   },
 
   "This virtual test suite ensures the ViewTransition feature works correctly",
@@ -1649,7 +1637,7 @@
       "fast/preloader"
     ],
     "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts"],
-    "expires": "Dec 5, 2024"
+    "expires": "Dec 5, 2025"
   },
   {
     "prefix": "coop-restrict-properties",
@@ -4097,7 +4085,7 @@
     ],
     "args": ["--disable-blink-features=CSSRelativeColorPreserveNone"],
     "owners": ["kbabbitt@microsoft.com"],
-    "expires": "Mar 1, 2025"
+    "expires": "Sep 1, 2025"
   },
   {
     "prefix": "partitioned-popins-disabled",
@@ -4190,7 +4178,9 @@
     "bases": ["external/wpt/device-bound-session-credentials"],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions"],
+      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions",
+      "--disable-features=DeviceBoundSessionsRefreshQuota"
+    ],
     "expires": "never"
   },
   {

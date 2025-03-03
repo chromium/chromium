@@ -10,7 +10,7 @@ import type {AnnotationsTapConsumer} from '//ios/web/annotations/resources/text_
 import {TextClick} from '//ios/web/annotations/resources/text_click.js';
 import {expectEq, FakeTaskTimer, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextClick extends TestSuite {
+export class TestTextClick extends TestSuite {
   // Mark:  AnnotationsTapConsumer
 
   tappedAnnotation?: HTMLElement;
@@ -180,5 +180,3 @@ class TestTextClick extends TestSuite {
     clicker.stop();
   }
 }
-
-export {TestTextClick};

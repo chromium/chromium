@@ -229,6 +229,10 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 6;
     case DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL:
       return 8;
+    case DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_PADDING:
+      return 2;
+    case DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_BORDER_SIZE:
+      return 1;
   }
   NOTREACHED();
 }

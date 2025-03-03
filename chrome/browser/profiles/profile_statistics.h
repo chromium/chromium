@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/user_annotations/user_annotations_service.h"
 #include "device/fido/platform_credential_store.h"
 
 class PrefService;
@@ -45,7 +44,6 @@ class ProfileStatistics : public KeyedService {
       scoped_refptr<password_manager::PasswordStoreInterface>
           profile_password_store,
       PrefService* pref_service,
-      user_annotations::UserAnnotationsService* user_annotations_service,
       std::unique_ptr<device::fido::PlatformCredentialStore>
           platform_credential_store);
   ~ProfileStatistics() override;
@@ -69,8 +67,6 @@ class ProfileStatistics : public KeyedService {
   const scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store_;
   const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<user_annotations::UserAnnotationsService>
-      user_annotations_service_;
 
   std::unique_ptr<device::fido::PlatformCredentialStore>
       platform_credential_store_;

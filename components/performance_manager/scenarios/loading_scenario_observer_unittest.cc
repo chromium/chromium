@@ -48,7 +48,7 @@ LoadingScenario CurrentProcessLoadingScenario() {
 }
 
 TEST_F(LoadingScenarioObserverTest, LoadingStateOnePage) {
-  MockMultiplePagesInSingleProcessGraph mock_graph(graph());
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
   EXPECT_EQ(GlobalLoadingScenario(), LoadingScenario::kNoPageLoading);
 
   mock_graph.page->SetLoadingState(PageNode::LoadingState::kLoading);

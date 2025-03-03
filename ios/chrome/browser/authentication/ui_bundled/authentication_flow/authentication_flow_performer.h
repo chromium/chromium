@@ -96,9 +96,9 @@ using OnProfileSwitchCompletion =
 // Converts the personal profile to a managed one and attaches `identity` to it.
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity;
 
-// Signs out of `profile` and sends `didSignOut` to the delegate when
-// complete.
-- (void)signOutProfile:(ProfileIOS*)profile;
+// Signs out of `profile` and sends `didSignOutForAccountSwitch` to the delegate
+// when complete.
+- (void)signOutForAccountSwitchWithProfile:(ProfileIOS*)profile;
 
 // Immediately signs out `profile` without waiting for dependent services.
 - (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile;

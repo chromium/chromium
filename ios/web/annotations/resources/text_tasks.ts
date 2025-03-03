@@ -7,14 +7,14 @@
  */
 
 // Interface for all real time operations. Can be mocked easily.
-interface TaskTimer {
+export interface TaskTimer {
   clear(id: number): void;
   reset(then: Function, ms: number): number;
   now(): number;
 }
 
 // Real time TaskTimer.
-class LiveTaskTimer implements TaskTimer {
+export class LiveTaskTimer implements TaskTimer {
   clear(id: number): void {
     clearTimeout(id);
   }
@@ -27,16 +27,16 @@ class LiveTaskTimer implements TaskTimer {
 }
 
 // Minimum delay between two tasks.
-const TASK_SEPARATOR_MS = 50;
+export const TASK_SEPARATOR_MS = 50;
 
 // Minimum delay after user activity.
-const TASK_ACTIVITY_DELAY_MS = 300;
+export const TASK_ACTIVITY_DELAY_MS = 300;
 
 // Task manager wrapper `TaskTimer`. It also monitors user's activity and pushes
 // back the timer if needed.
 // TODO(crbug.com/40936184): replace by requestIdleCallback when available or
 // move to general ts utilities.
-class IdleTaskTracker {
+export class IdleTaskTracker {
   // The events to monitor for user activity.
   private eventNames = [
     'gesturechange',
@@ -179,11 +179,3 @@ class IdleTaskTracker {
     this.lastActivityMs = this.taskTimer.now();
   };
 }
-
-export {
-  TASK_SEPARATOR_MS,
-  TASK_ACTIVITY_DELAY_MS,
-  TaskTimer,
-  LiveTaskTimer,
-  IdleTaskTracker,
-};

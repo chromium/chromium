@@ -3,38 +3,44 @@
 ++++[combo box] name='Currency for purchase' expandable haspopup:menu posinset:3 setsize:5
 ++++++[menu] setsize:5
 ++++++++[section]
-++++++++++[menu item] name='EUR Euro' selectable posinset:1 setsize:5
-++++++++++++[image] name=''
-++++++++++++[section]
+++++++++++[section]
+++++++++++++[menu item] name='EUR Euro' selectable
 ++++++++++++++[section]
-++++++++++++++++[static] name='EUR'
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='EUR'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='Euro'
+++++++++++++[menu item] name='GBP Great British Pound' selectable
 ++++++++++++++[section]
-++++++++++++++++[static] name='Euro'
-++++++++++[menu item] name='GBP Great British Pound' selectable posinset:2 setsize:5
-++++++++++++[image] name=''
-++++++++++++[section]
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='GBP'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='Great British Pound'
+++++++++++++[menu item] name='USD United States Dollar' selectable selected posinset:1 setsize:5
 ++++++++++++++[section]
-++++++++++++++++[static] name='GBP'
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='USD'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='United States Dollar'
+++++++++++++[menu item] name='JPY Japanese Yen' selectable
 ++++++++++++++[section]
-++++++++++++++++[static] name='Great British Pound'
-++++++++++[menu item] name='USD United States Dollar' selectable selected posinset:3 setsize:5
-++++++++++++[image] name=''
-++++++++++++[section]
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='JPY'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='Japanese Yen'
+++++++++++++[menu item] name='BTC Bitcoin' selectable
 ++++++++++++++[section]
-++++++++++++++++[static] name='USD'
-++++++++++++++[section]
-++++++++++++++++[static] name='United States Dollar'
-++++++++++[menu item] name='JPY Japanese Yen' selectable posinset:4 setsize:5
-++++++++++++[image] name=''
-++++++++++++[section]
-++++++++++++++[section]
-++++++++++++++++[static] name='JPY'
-++++++++++++++[section]
-++++++++++++++++[static] name='Japanese Yen'
-++++++++++[menu item] name='BTC Bitcoin' selectable posinset:5 setsize:5
-++++++++++++[image] name=''
-++++++++++++[section]
-++++++++++++++[section]
-++++++++++++++++[static] name='BTC'
-++++++++++++++[section]
-++++++++++++++++[static] name='Bitcoin'
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='BTC'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='Bitcoin'

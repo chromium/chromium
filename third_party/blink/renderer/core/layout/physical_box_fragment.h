@@ -180,7 +180,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return rare_data_->GetField(FieldId::kTableGridRect)->table_grid_rect;
   }
 
-  const TableFragmentData::ColumnGeometries* TableColumnGeometries() const {
+  const TableColumnGeometries* TableColumnGeometries() const {
     return rare_data_->table_column_geometries_.Get();
   }
 
@@ -188,8 +188,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return rare_data_ ? rare_data_->table_collapsed_borders_.Get() : nullptr;
   }
 
-  const TableFragmentData::CollapsedBordersGeometry*
-  TableCollapsedBordersGeometry() const {
+  const CollapsedTableBordersGeometry* TableCollapsedBordersGeometry() const {
     if (const auto* field =
             GetRareField(FieldId::kTableCollapsedBordersGeometry)) {
       return field->table_collapsed_borders_geometry.get();

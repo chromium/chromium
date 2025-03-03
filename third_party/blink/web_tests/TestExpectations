@@ -337,11 +337,6 @@ crbug.com/333739950 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/
 crbug.com/333739950 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
 crbug.com/333739950 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
 
-# View transition: tests that work only in layered capture mode. Remove this once we settle the spec.
-crbug.com/373759981 virtual/threaded/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
-crbug.com/373759981 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
-crbug.com/373759981 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
-
 # Flaky on Mac
 crbug.com/40946176 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 crbug.com/40946176 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
@@ -2630,6 +2625,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/400504661 [ Mac ] external/wpt/editing/plaintext-only/nested-with-contenteditable-true.html [ Failure ]
 crbug.com/399763756 [ Mac ] external/wpt/editing/whitespaces/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
 crbug.com/399769591 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/device-with-name.https.window.html [ Failure Timeout ]
 crbug.com/399763757 [ Mac14-arm64 ] external/wpt/soft-navigation-heuristics/first-interaction-not-softnav.tentative.html [ Timeout ]
@@ -2763,8 +2759,6 @@ crbug.com/390459301 [ Mac15 ] virtual/threaded/wpt_internal/view-transition/brow
 crbug.com/390459301 [ Mac12 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-old.html [ Crash Failure ]
 crbug.com/390459301 [ Mac14 ] virtual/view-transition-wide-gamut/wpt_internal/view-transition/browser-controls-root-offset-old.html [ Crash Failure Skip ]
 crbug.com/390459301 [ Win ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-old.html [ Crash Failure ]
-crbug.com/388319476 [ Mac15 ] virtual/view-transition-layered-capture/external/wpt/css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=visible&margin=0&contain=paint&radius=0 [ Crash ]
-crbug.com/388319476 [ Win ] virtual/view-transition-layered-capture/external/wpt/css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=visible&margin=0&contain=paint&radius=0 [ Crash ]
 [ Mac15 ] virtual/view-transition-mpa-serialization/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Crash ]
 [ Win ] virtual/view-transition-mpa-serialization/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Crash ]
 crbug.com/388319476 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/parsing/pseudo-elements-invalid.html [ Crash ]
@@ -6087,6 +6081,9 @@ crbug.com/384009734 external/wpt/html/browsers/browsing-the-web/navigating-acros
 # Marked as failing due to different failure output on headless vs content_shell
 crbug.com/341935362 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-close-via-attribute.tentative.html [ Failure ]
 
+# unicode-bidi invalidation bug
+crbug.com/391865300 fast/forms/select/menulist-appearance-rtl.html [ Failure ]
+
 # CustomizableSelect
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]
@@ -6106,7 +6103,6 @@ crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-open-invalidation.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure ]
-crbug.com/40146374 virtual/customizable-select-disabled/fast/forms/select-popup/popup-menu-nested-option.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-behavior.tentative.html [ Failure ]
@@ -6149,6 +6145,8 @@ crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semant
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-click-drag-option.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/fast/forms/select-popup/popup-menu-nested-option.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/fast/forms/select-popup/popup-menu-nested-option.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-popover-exit-animation.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-focus-visible-with-mouse.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-focus-visible-with-mouse.tentative.html [ Failure ]
@@ -6222,7 +6220,6 @@ crbug.com/40146374 virtual/select-parser-relaxation-opt-out/external/wpt/html/se
 
 # Flaky on headless_shell_wpt_tests
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure Pass ]
-crbug.com/396119250 external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Failure Pass ]
 
 crbug.com/362922565 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-type-to-search.tentative.html [ Failure ]
 crbug.com/362922565 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-type-to-search.tentative.html [ Failure ]
@@ -7135,6 +7132,9 @@ crbug.com/1502709 external/wpt/html/browsers/browsing-the-web/navigating-across-
 # TODO(crbug.com/1443872): Re-enable this test
 crbug.com/1443872 [ Fuchsia ] editing/selection/4402375.html [ Failure ]
 crbug.com/1443872 [ Fuchsia ] paint/invalidation/selection/selection-in-composited-scrolling-container.html [ Failure ]
+
+# TODO(crbug.com/396359045): Re-enable this test when crash is reproduced
+crbug.com/396359045 editing/selection/update-selection-on-node-insertion.html [ Failure ]
 
 # Disable test temporarily to allow DevTools change to pass
 crbug.com/1294251 http/tests/devtools/elements/styles-3/styles-add-invalid-property.js [ Failure Pass Timeout ]

@@ -61,9 +61,10 @@ void CrashpadLinux::LogCrashReportInfo(
   std::string id = report.id;
   // |id| will only be assigned if the report has been successfully uploaded.
   if (id.empty()) {
-    id = "<unassigned>";
+    HOST_LOG << "  Crash id: <unassigned>";
+  } else {
+    HOST_LOG << "  Crash id: " << id << " (http://go/crash/" << id << ")";
   }
-  HOST_LOG << "  Crash id: " << id << " (http://go/crash/" << id << ")";
   HOST_LOG << "    path: " << report.file_path;
   HOST_LOG << "    uuid: " << report.uuid.ToString();
   HOST_LOG << "    created: " << base::Time::FromTimeT(report.creation_time);
@@ -101,17 +102,15 @@ void CrashpadLinux::CleanupOldCrashReports(
   if (num_reports > kMaxReportsToRetain) {
     HOST_LOG << "Too many crash reports in database. Retaining most recent "
              << kMaxReportsToRetain;
-    for (size_t i = 0; i < num_reports; ++i) {
-      if (i > kMaxReportsToRetain) {
-        const auto& report = sorted_reports[i];
-        HOST_LOG << "  Deleting crash report: " << report.id << " ("
-                 << report.uuid.ToString() << ") "
-                 << base::Time::FromTimeT(report.creation_time);
-        auto status = database_->DeleteReport(report.uuid);
-        if (status != CrashReportDatabase::OperationStatus::kNoError) {
-          LOG(ERROR) << "  Unable to delete crash report: " << status << " "
-                     << report.id << " (" << report.uuid.ToString() << ")";
-        }
+    for (size_t i = kMaxReportsToRetain; i < num_reports; ++i) {
+      const auto& report = sorted_reports[i];
+      HOST_LOG << "  Deleting crash report: " << report.id << " ("
+               << report.uuid.ToString() << ") "
+               << base::Time::FromTimeT(report.creation_time);
+      auto status = database_->DeleteReport(report.uuid);
+      if (status != CrashReportDatabase::OperationStatus::kNoError) {
+        LOG(ERROR) << "  Unable to delete crash report: " << status << " "
+                   << report.id << " (" << report.uuid.ToString() << ")";
       }
     }
     sorted_reports.resize(kMaxReportsToRetain);

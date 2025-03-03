@@ -186,6 +186,8 @@ class PreferenceManagerImpl
 class BackgroundMetadataDataSource
     : public perfetto::DataSource<BackgroundMetadataDataSource> {
  public:
+  static constexpr bool kRequiresCallbacksUnderLock = false;
+
   static void Register() {
     perfetto::DataSourceDescriptor desc;
     desc.set_name("org.chromium.background_scenario_metadata");
@@ -200,6 +202,8 @@ class BackgroundMetadataDataSource
       packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
       auto* chrome_metadata = packet->set_chrome_metadata();
       scenario->GenerateMetadataProto(chrome_metadata);
+      packet->Finalize();
+      ctx.Flush();
     });
   }
 };
@@ -554,7 +558,6 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DisableScenarios();
 
   bool enable_privacy_filter = (data_filtering != NO_DATA_FILTERING);
   bool enable_package_name_filter =
@@ -568,6 +571,16 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
     if (!scenario) {
       continue;
     }
+
+    if (auto it = preset_scenarios_.find(scenario->scenario_name());
+        it != preset_scenarios_.end()) {
+      if (active_scenario_ == it->second.get()) {
+        active_scenario_->Abort();
+      } else {
+        it->second->Disable();
+      }
+    }
+
     added_scenarios.push_back(scenario->scenario_name());
     preset_scenarios_[scenario->scenario_name()] = std::move(scenario);
   }

@@ -27,7 +27,7 @@ constexpr uint32_t kMaxChannelCountSupported = 8;
 MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
     AudioNode& node,
     uint32_t number_of_channels)
-    : AudioHandler(kNodeTypeMediaStreamAudioDestination,
+    : AudioHandler(NodeType::kNodeTypeMediaStreamAudioDestination,
                    node,
                    node.context()->sampleRate()),
       source_(static_cast<MediaStreamAudioDestinationNode&>(node).source()),

@@ -193,7 +193,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 #pragma mark - Commands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
-  if (lens_availability::IsLensContextMenuUnifiedExperienceEnabled()) {
+  if (lens_availability::IsLensContextMenuUnifiedExperienceEnabled(
+          self.browser->GetProfile()->GetPrefs())) {
     id<LensOverlayCommands> handler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), LensOverlayCommands);
     [handler searchImageWithLens:command.image

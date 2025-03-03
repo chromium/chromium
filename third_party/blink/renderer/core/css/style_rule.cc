@@ -1014,6 +1014,7 @@ StyleRuleFunction::StyleRuleFunction(
 void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
   visitor->Trace(parameters_);
+  visitor->Trace(layer_);
 }
 
 StyleRuleMixin::StyleRuleMixin(AtomicString name, StyleRule* fake_parent_rule)

@@ -241,7 +241,6 @@ class MockService : public TestExtensionService {
       TestExtensionPrefs* prefs,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : prefs_(prefs),
-        pending_extension_manager_(prefs->profile()),
         corrupted_extension_reinstaller_(prefs->profile()),
         downloader_delegate_override_(nullptr),
         test_shared_url_loader_factory_(url_loader_factory) {}
@@ -250,12 +249,6 @@ class MockService : public TestExtensionService {
   MockService& operator=(const MockService&) = delete;
 
   ~MockService() override = default;
-
-  PendingExtensionManager* pending_extension_manager() override {
-    ADD_FAILURE() << "Subclass should override this if it will "
-                  << "be accessed by a test.";
-    return &pending_extension_manager_;
-  }
 
   Profile* profile() { return prefs_->profile(); }
 
@@ -315,7 +308,6 @@ class MockService : public TestExtensionService {
 
  protected:
   const raw_ptr<TestExtensionPrefs, DanglingUntriaged> prefs_;
-  PendingExtensionManager pending_extension_manager_;
   CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
 
  private:
@@ -397,8 +389,8 @@ class ServiceForManifestTests : public MockService {
 
   ~ServiceForManifestTests() override = default;
 
-  PendingExtensionManager* pending_extension_manager() override {
-    return &pending_extension_manager_;
+  PendingExtensionManager* pending_extension_manager() {
+    return PendingExtensionManager::Get(profile());
   }
 
   const Extension* GetPendingExtensionUpdate(
@@ -459,8 +451,8 @@ class ServiceForDownloadTests : public MockService {
     return nullptr;
   }
 
-  PendingExtensionManager* pending_extension_manager() override {
-    return &pending_extension_manager_;
+  PendingExtensionManager* pending_extension_manager() {
+    return PendingExtensionManager::Get(profile());
   }
 
   CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
@@ -651,7 +643,7 @@ class ExtensionUpdaterTest : public testing::Test {
     std::string update_url("http://foo.com/bar");
     ExtensionList extensions;
     PendingExtensionManager* pending_extension_manager =
-        service.pending_extension_manager();
+        PendingExtensionManager::Get(service.profile());
     if (pending) {
       SetupPendingExtensionManagerForTest(1, GURL(update_url),
                                           pending_extension_manager);
@@ -1022,7 +1014,7 @@ class ExtensionUpdaterTest : public testing::Test {
     ExtensionDownloaderTestHelper helper;
     ServiceForManifestTests service(prefs_.get(), helper.url_loader_factory());
     PendingExtensionManager* pending_extension_manager =
-        service.pending_extension_manager();
+        PendingExtensionManager::Get(service.profile());
     SetupPendingExtensionManagerForTest(3, GURL(), pending_extension_manager);
 
     MockExtensionDownloaderDelegate& delegate = helper.delegate();
@@ -1526,7 +1518,7 @@ class ExtensionUpdaterTest : public testing::Test {
       const bool kMarkAcknowledged = false;
       const bool kRemoteInstall = false;
       PendingExtensionManager* pending_extension_manager =
-          service->pending_extension_manager();
+          PendingExtensionManager::Get(service->profile());
       pending_extension_manager->AddForTesting(PendingExtensionInfo(
           id, std::string(), test_url, version, &ShouldAlwaysInstall,
           kIsFromSync, ManifestLocation::kInternal, Extension::NO_FLAGS,
@@ -2669,10 +2661,6 @@ TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
       for (auto extension : extensions) {
         registry_->AddEnabled(extension);
       }
-    }
-
-    PendingExtensionManager* pending_extension_manager() override {
-      return &pending_extension_manager_;
     }
 
     const Extension* GetPendingExtensionUpdate(

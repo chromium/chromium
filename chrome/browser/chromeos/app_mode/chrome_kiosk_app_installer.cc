@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -48,33 +49,34 @@ const std::string_view kChromeKioskExtensionNoUpdateDurationHistogram =
     "Kiosk.ChromeApp.ExtensionUpdateDuration.NoUpdate";
 
 // Returns true if the app with `id` is pending an install or update.
-bool IsExtensionInstallPending(Profile& profile, const std::string& id) {
-  return extensions::ExtensionSystem::Get(&profile)
-      ->extension_service()
-      ->pending_extension_manager()
+bool IsExtensionInstallPending(content::BrowserContext& browser_context,
+                               const std::string& id) {
+  return extensions::PendingExtensionManager::Get(&browser_context)
       ->IsIdPending(id);
 }
 
-// Returns the `Extension` corresponding to `id` installed in `profile`, or null
-// if the extension is not installed.
+// Returns the `Extension` corresponding to `id` installed in `browser_context`,
+// or null if the extension is not installed.
 const extensions::Extension* FindInstalledExtension(
-    Profile& profile,
+    content::BrowserContext& browser_context,
     const extensions::ExtensionId& id) {
-  return extensions::ExtensionRegistry::Get(&profile)->GetInstalledExtension(
-      id);
+  return extensions::ExtensionRegistry::Get(&browser_context)
+      ->GetInstalledExtension(id);
 }
 
-// Returns true if the extension with `id` is installed in `profile`.
-bool IsExtensionInstalled(Profile& profile, const extensions::ExtensionId& id) {
-  return FindInstalledExtension(profile, id) != nullptr;
+// Returns true if the extension with `id` is installed in `browser_context`.
+bool IsExtensionInstalled(content::BrowserContext& browser_context,
+                          const extensions::ExtensionId& id) {
+  return FindInstalledExtension(browser_context, id) != nullptr;
 }
 
-// Returns true if all extensions in `ids` are installed in `profile`.
-bool AreExtensionsInstalled(Profile& profile,
+// Returns true if all extensions in `ids` are installed in `browser_context`.
+bool AreExtensionsInstalled(content::BrowserContext& browser_context,
                             const std::vector<extensions::ExtensionId>& ids) {
-  return std::ranges::all_of(
-      ids.begin(), ids.end(),
-      [&profile](const auto& id) { return IsExtensionInstalled(profile, id); });
+  return std::ranges::all_of(ids.begin(), ids.end(),
+                             [&browser_context](const auto& id) {
+                               return IsExtensionInstalled(browser_context, id);
+                             });
 }
 
 // Returns true if the secondary apps of `app` contain the given `id`.
@@ -102,24 +104,24 @@ std::vector<extensions::ExtensionId> SecondaryAppIdsOf(
 
 // Returns the subset of `app_ids` that is pending install or update.
 std::vector<extensions::ExtensionId> CopyIdsPendingInstall(
-    Profile& profile,
+    content::BrowserContext& browser_context,
     const std::vector<extensions::ExtensionId>& app_ids) {
   std::vector<extensions::ExtensionId> result;
   std::ranges::copy_if(app_ids, std::back_inserter(result),
-                       [&profile](const auto& id) {
-                         return IsExtensionInstallPending(profile, id);
+                       [&browser_context](const auto& id) {
+                         return IsExtensionInstallPending(browser_context, id);
                        });
   return result;
 }
 
 // Inserts the shared modules `extension` imports into the set of `ids` that are
 // pending install.
-void InsertPendingSharedModules(Profile& profile,
+void InsertPendingSharedModules(content::BrowserContext& browser_context,
                                 base::flat_set<extensions::ExtensionId>& ids,
                                 const extensions::Extension& extension) {
   const auto& imports = extensions::SharedModuleInfo::GetImports(&extension);
   for (const auto& import_info : imports) {
-    if (IsExtensionInstallPending(profile, import_info.extension_id)) {
+    if (IsExtensionInstallPending(browser_context, import_info.extension_id)) {
       ids.insert(import_info.extension_id);
     }
   }

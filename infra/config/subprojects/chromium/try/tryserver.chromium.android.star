@@ -308,6 +308,24 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-15-tablet-landscape-x64-rel",
+    # TODO(crbug.com/376748979 ): Enable on branches once tests are stable
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Chromium tests on Android 15 tablet landscape emulator.",
+    mirrors = [
+        "ci/android-15-tablet-landscape-x64-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-15-tablet-landscape-x64-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-15-x64-fyi-rel",
     mirrors = [
         "ci/android-15-x64-fyi-rel",

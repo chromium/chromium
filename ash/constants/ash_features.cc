@@ -919,11 +919,6 @@ BASE_FEATURE(kFastPairSavedDevicesStrictOptIn,
              "FastPairSavedDevicesStrictOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Fast Pair Devices in Bluetooth Settings page.
-BASE_FEATURE(kFastPairDevicesBluetoothSettings,
-             "FastPairDevicesBluetoothSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, allows the creation of up to 16 desks (default is 8). This flag
 // is intended to be controlled by the feature management module.
 BASE_FEATURE(kFeatureManagement16Desks,
@@ -2044,7 +2039,7 @@ BASE_FEATURE(kOobePersonalizedOnboarding,
 // If enabled, Pre-consent metrics functionality is enabled during OOBE.
 BASE_FEATURE(kOobePreConsentMetrics,
              "OobePreConsentMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Consumer Software Screen will be shown during OOBE.
 BASE_FEATURE(kOobeSoftwareUpdate,
@@ -3584,10 +3579,6 @@ bool IsFastPairBleRotationEnabled() {
 
 bool IsFastPairDebugMetadataEnabled() {
   return base::FeatureList::IsEnabled(kFastPairDebugMetadata);
-}
-
-bool IsFastPairDevicesBluetoothSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairDevicesBluetoothSettings);
 }
 
 bool IsFastPairHandshakeLongTermRefactorEnabled() {

@@ -2876,12 +2876,14 @@ public class SiteSettingsTest {
     @Policies.Add({
         @Policies.Item(key = "DefaultJavaScriptSetting", string = "2"),
         @Policies.Item(key = "DefaultPopupsSetting", string = "2"),
-        @Policies.Item(key = "DefaultGeolocationSetting", string = "2")
+        @Policies.Item(key = "DefaultGeolocationSetting", string = "2"),
+        @Policies.Item(key = "DefaultJavaScriptOptimizerSetting", string = "2")
     })
     public void testAllTwoStateToggleDisabledByPolicy() {
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT);
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.POPUPS);
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.DEVICE_LOCATION);
+        testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
         // TODO(crbug.com/40879457): add a test for sensors once crash in the sensors settings page
         // is
         // resolved.

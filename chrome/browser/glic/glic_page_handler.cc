@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/glic/glic_window_controller.h"
@@ -405,6 +406,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
     annotation_manager_->ScrollTo(std::move(params), std::move(callback));
+  }
+
+  void SetSyntheticExperimentState(const std::string& trial_name,
+                                   const std::string& group_name) override {
+    glic_service_->synthetic_trial_manager()->SetSyntheticExperimentState(
+        trial_name, group_name);
   }
 
   // GlicWindowController::StateObserver implementation.

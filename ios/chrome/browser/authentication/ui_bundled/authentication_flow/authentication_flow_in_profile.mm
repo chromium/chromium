@@ -229,7 +229,7 @@ enum class AuthenticationFlowInProfileState {
       AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
-    [_performer signOutProfile:profile];
+    [_performer signOutForAccountSwitchWithProfile:profile];
     return;
   }
   [self continueFlow];
@@ -354,7 +354,7 @@ enum class AuthenticationFlowInProfileState {
 
 #pragma mark - AuthenticationFlowPerformerDelegate
 
-- (void)didSignOut {
+- (void)didSignOutForAccountSwitch {
   CHECK_EQ(AuthenticationFlowInProfileState::kSignOutIfNeeded, _state,
            base::NotFatalUntil::M138);
   [self continueFlow];

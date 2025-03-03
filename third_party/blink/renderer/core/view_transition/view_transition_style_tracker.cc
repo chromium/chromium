@@ -543,23 +543,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
         PhysicalRect::EnclosingRect(
             transition_state_element
                 .border_box_rect_in_enclosing_layer_css_space),
-        transition_state_element.viewport_matrix,
-        transition_state_element.layered_box_properties
-            ? std::make_optional(ContainerProperties::BoxGeometry{
-                  .content_box = PhysicalRect::EnclosingRect(
-                      transition_state_element.layered_box_properties
-                          ->content_box),
-                  .padding_box = PhysicalRect::EnclosingRect(
-                      transition_state_element.layered_box_properties
-                          ->padding_box),
-                  .box_sizing =
-                      transition_state_element.layered_box_properties
-                                  ->box_sizing ==
-                              mojom::blink::ViewTransitionElementBoxSizing::
-                                  kContentBox
-                          ? EBoxSizing::kContentBox
-                          : EBoxSizing::kBorderBox})
-            : std::nullopt};
+        transition_state_element.viewport_matrix};
     element_data->old_snapshot_id = transition_state_element.snapshot_id;
 
     element_data->element_index = transition_state_element.paint_order;
@@ -1463,7 +1447,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       layout_view_size_in_css_space.Scale(1 / device_pixel_ratio_);
       container_properties = ContainerProperties{
           PhysicalRect(PhysicalOffset(), layout_view_size_in_css_space),
-          gfx::Transform(), std::nullopt};
+          gfx::Transform()};
       visual_overflow_rect_in_layout_space.size = layout_view_size;
     } else {
       ComputeLiveElementGeometry(
@@ -1487,12 +1471,6 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
     for (CSSPropertyID id : kPropertiesToCapture) {
       capture_property(id);
-    }
-
-    if (ViewTransitionUtils::UseLayeredCapture(layout_object->StyleRef())) {
-      for (CSSPropertyID id : kLayeredCaptureProperties) {
-        capture_property(id);
-      }
     }
 
     auto css_properties = std::move(css_property_builder).Finish();
@@ -1599,13 +1577,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
 
   offset_in_css_space.Scale(1.f / device_pixel_ratio_);
 
-  // For layered capture, the reference box might be the content box, based on
-  // box-sizing.
   PhysicalSize border_box_size_in_css_space;
-  const bool use_layered_capture =
-      ViewTransitionUtils::UseLayeredCapture(layout_object.StyleRef());
-
-  std::optional<ContainerProperties::BoxGeometry> box_geometry;
   if (layout_object.IsSVGChild() || IsA<LayoutBox>(layout_object)) {
     // ResizeObserverEntry is created to reuse the logic for parsing object
     // size for different types of LayoutObjects. However, this works only
@@ -1627,19 +1599,6 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
     border_box_size_in_css_space.Scale(1.f / device_pixel_ratio_);
   }
 
-  if (use_layered_capture && layout_object.IsBoxModelObject()) {
-    PhysicalRect padding_box(PhysicalOffset(), border_box_size_in_css_space);
-    padding_box.Contract(
-        To<LayoutBoxModelObject>(layout_object).BorderOutsets());
-    PhysicalRect content_box = padding_box;
-    content_box.Contract(
-        To<LayoutBoxModelObject>(layout_object).PaddingOutsets());
-    box_geometry = ContainerProperties::BoxGeometry{
-        .content_box = content_box,
-        .padding_box = padding_box,
-        .box_sizing = layout_object.StyleRef().BoxSizing()};
-  }
-
   float effective_zoom = layout_object.StyleRef().EffectiveZoom();
 
   // If the object's effective zoom differs from device_pixel_ratio, adjust
@@ -1648,10 +1607,6 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       std::numeric_limits<float>::epsilon()) {
     float device_to_css_pixels_ratio = effective_zoom / device_pixel_ratio_;
     border_box_size_in_css_space.Scale(device_to_css_pixels_ratio);
-    if (box_geometry) {
-      box_geometry->content_box.Scale(device_to_css_pixels_ratio);
-      box_geometry->padding_box.Scale(device_to_css_pixels_ratio);
-    }
   }
 
   snapshot_matrix_in_css_space = ConvertFromTopLeftToCenter(
@@ -1669,7 +1624,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       snapshot_matrix_in_layout_space, *snapshot_root_layout_size_at_capture_);
   container_properties = {
       PhysicalRect(offset_in_css_space, border_box_size_in_css_space),
-      snapshot_matrix_in_css_space, box_geometry};
+      snapshot_matrix_in_css_space};
 }
 
 bool ViewTransitionStyleTracker::HasActiveAnimations() const {
@@ -1912,17 +1867,6 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
                        ->border_box_rect_in_enclosing_layer_css_space);
     element.viewport_matrix =
         element_data->container_properties->snapshot_matrix;
-    if (const auto& box_geometry =
-            element_data->container_properties->box_geometry) {
-      element
-          .layered_box_properties = ViewTransitionElement::LayeredBoxProperties{
-          .content_box = gfx::RectF(box_geometry->content_box),
-          .padding_box = gfx::RectF(box_geometry->padding_box),
-          .box_sizing =
-              box_geometry->box_sizing == EBoxSizing::kContentBox
-                  ? mojom::blink::ViewTransitionElementBoxSizing::kContentBox
-                  : mojom::blink::ViewTransitionElementBoxSizing::kBorderBox};
-    }
     element.overflow_rect_in_layout_space =
         gfx::RectF(element_data->visual_overflow_rect_in_layout_space);
 
@@ -2080,17 +2024,11 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
           containing_group_data->cached_container_properties.snapshot_matrix
               .InverseOrIdentity();
 
-      old_parent_inverse_transform.Translate(
-          -containing_group_data->cached_container_properties.BorderOffset());
-
       if (containing_group_data->container_properties) {
         const auto& new_container_properties =
             *containing_group_data->container_properties;
         new_parent_inverse_transform =
-
             new_container_properties.snapshot_matrix.InverseOrIdentity();
-        new_parent_inverse_transform.Translate(
-            -new_container_properties.BorderOffset());
       }
     }
 
@@ -2196,10 +2134,6 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetReferenceRect(
   const auto& properties =
       use_cached_data ? cached_container_properties : *container_properties;
   PhysicalRect rect = properties.border_box_rect_in_enclosing_layer_css_space;
-  if (properties.box_geometry) {
-    rect = properties.box_geometry->content_box;
-    rect.Move(properties.border_box_rect_in_enclosing_layer_css_space.offset);
-  }
   rect.Scale(device_scale_factor);
   return gfx::RectF(rect);
 }
@@ -2245,9 +2179,7 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
   // coordinate space.
   auto rect =
       box.EnclosingLayer()->LocalBoundingBoxIncludingSelfPaintingDescendants();
-  if (!ViewTransitionUtils::UseLayeredCapture(box.StyleRef())) {
-    rect = box.ApplyFiltersToRect(rect);
-  }
+  rect = box.ApplyFiltersToRect(rect);
 
   // Correct for fractional offset.
   rect.Move(box.FirstFragment().PaintOffset());

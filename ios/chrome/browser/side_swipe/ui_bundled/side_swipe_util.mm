@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -49,7 +50,12 @@ BOOL UseNativeSwipe(web::NavigationItem* item) {
 }
 
 BOOL SwipingBackLeadsToLensOverlay(web::WebState* activeWebState) {
-  if (!IsLensOverlaySameTabNavigationEnabled() || !activeWebState) {
+  if (!activeWebState) {
+    return NO;
+  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(activeWebState->GetBrowserState());
+  if (!IsLensOverlaySameTabNavigationEnabled(profile->GetPrefs())) {
     return NO;
   }
 

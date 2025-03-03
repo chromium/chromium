@@ -4,49 +4,207 @@
 
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 
+#include <ranges>
+
 #include "base/compiler_specific.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/unicodestring.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/dtfmtsym.h"
 
 namespace autofill::data_util {
 
+namespace {
+
+// Advances `input` if it starts with `token`.
+bool Consume(std::u16string_view& input, std::u16string_view token) {
+  if (input.starts_with(token)) {
+    input = input.substr(token.size());
+    return true;
+  }
+  return false;
+}
+
+// Consumes the next sequence of at least `min_num_digits` and at most
+// `max_num_digits` digits from `input` and returns this sequence as `int`.
+// Returns -1 if there is no such sequence. Advances `input` accordingly.
+int ConsumeNumber(std::u16string_view& input,
+                  size_t min_num_digits,
+                  size_t max_num_digits,
+                  bool allow_zero_padding) {
+  size_t offset = 0;
+  while (offset < max_num_digits && offset < input.size() &&
+         base::IsAsciiDigit(input[offset])) {
+    ++offset;
+  }
+  int num = 0;
+  if ((!allow_zero_padding && input.starts_with(u'0')) ||
+      offset < min_num_digits ||
+      !base::StringToInt(input.substr(0, offset), &num)) {
+    return -1;
+  }
+  input = input.substr(offset);
+  return num;
+}
+
+}  // namespace
+
+bool Date::is_valid() const {
+  static constexpr std::array<int, 13> kDaysOfMonth{31, 31, 28, 31, 30, 31, 30,
+                                                    31, 31, 30, 31, 30, 31};
+  auto is_leap_year = [this]() {
+    return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+  };
+  return 0 <= year && year <= 9999 && 0 <= month && month <= 12 && 0 <= day &&
+         day <= kDaysOfMonth[month] + (month == 2 && is_leap_year() ? 1 : 0);
+}
+
+bool IsValidDateFormat(std::u16string_view format) {
+  enum Category { kYear, kMonth, kDay, kMaxValue = kDay };
+
+  // Consumes a year, month, or day in the format `subformat`, if no year,
+  // month, or day, respectively, has been already in an earlier call.
+  auto consume_part = [&format, found = DenseSet<Category>()](
+                          std::u16string_view subformat,
+                          Category category) mutable {
+    if (!found.contains(category) && Consume(format, subformat)) {
+      found.insert(category);
+      return true;
+    }
+    return false;
+  };
+
+  // Consumes a year, month, or day, if no year, month, or day, respectively,
+  // has been consumed in an earlier call.
+  auto consume_any_part = [&consume_part]() {
+    return consume_part(u"YYYY", kYear) || consume_part(u"YY", kYear) ||
+           consume_part(u"MM", kMonth) || consume_part(u"M", kMonth) ||
+           consume_part(u"DD", kDay) || consume_part(u"D", kDay);
+  };
+
+  // Consumes a separator. Subsequent calls only accept the separator that was
+  // matched in the first call.
+  auto consume_separator =
+      [&format, separator = static_cast<const char16_t*>(nullptr)]() mutable {
+        if (!separator) {
+          for (const char16_t* token :
+               {u" / ", u" . ", u" - ", u"/", u".", u"-", u" "}) {
+            if (Consume(format, token)) {
+              separator = token;
+              break;
+            }
+          }
+        } else {
+          Consume(format, separator);
+        }
+      };
+
+  // Matches at least one and at most three part, which must be of distinct
+  // categories. The parts may be separated by the same separator.
+  return consume_any_part() &&
+         (format.empty() || (consume_separator(), consume_any_part())) &&
+         (format.empty() || (consume_separator(), consume_any_part())) &&
+         format.empty();
+}
+
+bool ParseDate(std::u16string_view date,
+               std::u16string_view format,
+               Date& result) {
+  // Consumes `part` (= YYYY, YY, MM, M, DD, or D) from `format` and the
+  // corresponding numeric value from `date`. Returns that numeric value if
+  // successful, and -1 otherwise.
+  auto consume_part = [&date, &format](std::u16string_view part) {
+    if (Consume(format, part)) {
+      size_t min_num_digits = part.size();
+      size_t max_num_digits = part.size() == 1 ? 2 : min_num_digits;
+      bool allow_zero_padding = min_num_digits != 1;
+      return ConsumeNumber(date, min_num_digits, max_num_digits,
+                           allow_zero_padding);
+    }
+    return -1;
+  };
+
+  while (!date.empty() && !format.empty()) {
+    int num = -1;
+    if ((num = consume_part(u"YYYY")) >= 0) {
+      result.year = num;
+    } else if ((num = consume_part(u"YY")) >= 0) {
+      result.year = 2000 + num;
+    } else if ((num = consume_part(u"MM")) >= 0) {
+      result.month = num;
+    } else if ((num = consume_part(u"M")) >= 0) {
+      result.month = num;
+    } else if ((num = consume_part(u"DD")) >= 0) {
+      result.day = num;
+    } else if ((num = consume_part(u"D")) >= 0) {
+      result.day = num;
+    } else if (!date.empty() && !format.empty() && date[0] == format[0]) {
+      date = date.substr(1);
+      format = format.substr(1);
+    } else {
+      return false;
+    }
+  }
+  return date.empty() && format.empty();
+}
+
+std::u16string FormatDate(Date date, std::u16string_view format) {
+  std::u16string result;
+  result.reserve(format.size());
+  auto append = [&](const std::u16string& number, size_t min_width) {
+    size_t num = number.size();
+    while (++num <= min_width) {
+      result += u'0';
+    }
+    result += number;
+  };
+
+  while (!format.empty()) {
+    if (Consume(format, u"YYYY")) {
+      append(base::NumberToString16(date.year), 4);
+    } else if (Consume(format, u"YY")) {
+      append(base::NumberToString16(date.year % 100), 2);
+    } else if (Consume(format, u"MM")) {
+      append(base::NumberToString16(date.month), 2);
+    } else if (Consume(format, u"M")) {
+      append(base::NumberToString16(date.month), 0);
+    } else if (Consume(format, u"DD")) {
+      append(base::NumberToString16(date.day), 2);
+    } else if (Consume(format, u"D")) {
+      append(base::NumberToString16(date.day), 0);
+    } else {
+      result += format[0];
+      format = format.substr(1);
+    }
+  }
+  return result;
+}
+
 std::u16string Expiration2DigitMonthAsString(int expiration_month) {
   if (expiration_month < 1 || expiration_month > 12)
     return std::u16string();
-
-  std::u16string month = base::NumberToString16(expiration_month);
-  if (expiration_month >= 10)
-    return month;
-
-  std::u16string zero = u"0";
-  return zero.append(month);
+  return FormatDate({.month = expiration_month}, u"MM");
 }
 
 std::u16string Expiration2DigitYearAsString(int expiration_year) {
   if (expiration_year == 0)
     return std::u16string();
-
-  std::u16string year = base::NumberToString16(expiration_year % 100);
-  if (expiration_year >= 10)
-    return year;
-
-  std::u16string zero = u"0";
-  return zero.append(year);
+  return FormatDate({.year = expiration_year}, u"YY");
 }
 
 std::u16string Expiration4DigitYearAsString(int expiration_year) {
   if (expiration_year == 0)
     return std::u16string();
-
-  return base::NumberToString16(expiration_year);
+  return FormatDate({.year = expiration_year}, u"YYYY");
 }
 
 bool ParseExpirationMonth(const std::u16string& text,

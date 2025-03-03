@@ -791,7 +791,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.BoundSessionCredentials.CookieRotationOutageDuration"
-    units="ms" expires_after="2025-03-30">
+    units="ms" expires_after="2025-09-30">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -807,7 +807,7 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.BoundSessionCredentials.CookieRotationResult"
     enum="BoundSessionCredentialsCookieRotationResult"
-    expires_after="2025-03-30">
+    expires_after="2025-09-30">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1234,6 +1234,17 @@ prefs when the profile is loaded.  -->
   <summary>
     Migration status for the explicit signin migration from Dice automatic
     signin. Recorded for each profile when it is loaded.
+  </summary>
+</histogram>
+
+<histogram name="Signin.ExplicitSigninMigration.FromSync" enum="BooleanSuccess"
+    expires_after="2025-07-02">
+  <owner>droger@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <summary>
+    Logs a record in the &quot;Success&quot; bucket when a sync profile is
+    migrated to explicit browser sign-in. Recorded on profile load, before
+    histogram Signin.ExplicitSigninMigration is recorded.
   </summary>
 </histogram>
 

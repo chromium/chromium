@@ -7,6 +7,7 @@
 
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/url_matcher/url_matcher.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -15,6 +16,25 @@ namespace enterprise_connectors {
 // Helper functions that compiles information into event protos. The
 // logic is shared across platforms to ensure event consistency.
 //
+// Do a best-effort masking of `username`. If it's an email address (such as
+// foo@example.com), everything before @ should be masked. Otherwise, the entire
+// username should be masked.
+std::string MaskUsername(const std::u16string& username);
+
+// Verify if the given `matcher` matches the `url`.
+bool IsUrlMatched(url_matcher::URLMatcher* matcher, const GURL& url);
+
+// Create a URLMatcher representing the filters in
+// `settings.enabled_opt_in_events` for `event_type`. This field of the
+// reporting settings connector contains a map where keys are event types and
+// values are lists of URL patterns specifying on which URLs the events are
+// allowed to be reported. An event is generated iff its event type is present
+// in the opt-in events field and the URL it relates to matches at least one of
+// the event type's filters.
+std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
+    const enterprise_connectors::ReportingSettings& settings,
+    const char* event_type);
+
 // PasswordBreachEvent could be empty if none of the `identities` matched a
 // pattern in the URL filters.
 std::optional<chrome::cros::reporting::proto::PasswordBreachEvent>

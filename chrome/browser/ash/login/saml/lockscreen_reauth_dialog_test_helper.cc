@@ -385,15 +385,28 @@ void LockScreenReauthDialogTestHelper::CloseCaptivePortalDialogAndWait() {
 }
 
 void LockScreenReauthDialogTestHelper::ExpectAutoReloadEnabled() {
-  EXPECT_TRUE(main_handler_->GetAutoReloadManager().IsActiveForTesting());
+  EXPECT_TRUE(main_handler_->GetAutoReloadManager().IsAutoReloadActive());
 }
 
 void LockScreenReauthDialogTestHelper::ExpectAutoReloadDisabled() {
-  EXPECT_FALSE(main_handler_->GetAutoReloadManager().IsActiveForTesting());
+  EXPECT_FALSE(main_handler_->GetAutoReloadManager().IsAutoReloadActive());
 }
 
 void LockScreenReauthDialogTestHelper::ResumeAutoReloadTimer() {
-  main_handler_->GetAutoReloadManager().ResumeTimerForTesting();
+  base::WallClockTimer* auto_reload_timer =
+      main_handler_->GetAutoReloadManager().GetTimerForTesting();
+  if (auto_reload_timer && auto_reload_timer->IsRunning()) {
+    auto_reload_timer->OnResume();
+  }
+}
+
+base::WallClockTimer* LockScreenReauthDialogTestHelper::GetAutoReloadTimer() {
+  return main_handler_->GetAutoReloadManager().GetTimerForTesting();
+}
+
+void LockScreenReauthDialogTestHelper::TriggerNetworkUpdateState() {
+  reauth_dialog_->ForceUpdateStateForTesting(
+      NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED);
 }
 
 }  // namespace ash

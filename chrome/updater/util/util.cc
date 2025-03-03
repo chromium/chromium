@@ -75,7 +75,7 @@ std::optional<base::FilePath> GetVersionedInstallDirectory(
   if (!path) {
     return std::nullopt;
   }
-  return path->AppendASCII(version.GetString());
+  return path->AppendUTF8(version.GetString());
 }
 
 std::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope) {
@@ -98,7 +98,7 @@ std::optional<base::FilePath> GetCrxCacheDirectory(UpdaterScope scope) {
   if (!cache_path) {
     return std::nullopt;
   }
-  return std::optional<base::FilePath>(cache_path->AppendASCII("crx_cache"));
+  return std::optional<base::FilePath>(cache_path->AppendUTF8("crx_cache"));
 }
 
 std::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
@@ -107,7 +107,7 @@ std::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
 
 std::optional<base::FilePath> GetCrashDatabasePath(UpdaterScope scope) {
   const std::optional<base::FilePath> path(GetVersionedInstallDirectory(scope));
-  return path ? std::optional<base::FilePath>(path->AppendASCII("Crashpad"))
+  return path ? std::optional<base::FilePath>(path->AppendUTF8("Crashpad"))
               : std::nullopt;
 }
 

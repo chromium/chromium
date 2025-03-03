@@ -15,9 +15,9 @@ namespace on_device_translation {
 
 namespace {
 
-// Limit the number of downloadable language packs to 3 during OT to mitigate
+// Limit the number of downloadable language packs to 5 during OT to mitigate
 // the risk of fingerprinting attacks.
-constexpr size_t kTranslationAPILimitLanguagePackCountMax = 3;
+constexpr size_t kTranslationAPILimitLanguagePackCountMax = 5;
 
 base::FilePath GetPathFromCommandLine(const char* switch_name) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

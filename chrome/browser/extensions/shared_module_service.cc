@@ -94,7 +94,7 @@ SharedModuleService::ImportStatus SharedModuleService::SatisfyImports(
       ExtensionSystem::Get(browser_context_)->extension_service();
 
   PendingExtensionManager* pending_extension_manager =
-      service->pending_extension_manager();
+      PendingExtensionManager::Get(browser_context_);
   DCHECK(pending_extension_manager);
 
   if (status == IMPORT_STATUS_UNSATISFIED) {

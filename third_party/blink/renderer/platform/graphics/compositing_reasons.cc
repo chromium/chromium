@@ -114,8 +114,6 @@ constexpr auto kReasonDescriptionMap = std::to_array<ReasonAndDescription>({
     {CompositingReason::kDevToolsOverlay, "Is DevTools overlay."},
     {CompositingReason::kViewTransitionContent,
      "The layer containing the contents of a view transition element."},
-    {CompositingReason::k2DScaleTransformWithCompositedDescendants,
-     "Has a 2D scale transform with composited descendants."},
 });
 
 }  // anonymous namespace

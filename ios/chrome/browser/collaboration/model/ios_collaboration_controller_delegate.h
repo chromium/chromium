@@ -75,6 +75,7 @@ class IOSCollaborationControllerDelegate
 
   // Configures the shareKit config for the join flow and starts the flow.
   void ConfigureAndJoinTabGroup(const data_sharing::GroupToken& token,
+                                const std::string& group_title,
                                 ResultCallback result,
                                 NSArray<ShareKitPreviewItem*>* preview_items);
 

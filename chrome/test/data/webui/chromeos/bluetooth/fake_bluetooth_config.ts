@@ -33,7 +33,6 @@ export function createDefaultBluetoothDevice(
       imageInfo: null,
     },
     nickname: nickname || null,
-    fastPairableDevicePairingState: null,
   };
 }
 
@@ -84,7 +83,6 @@ export class FakeBluetoothConfig implements CrosBluetoothConfigInterface {
       systemState: BluetoothSystemState.kDisabled,
       modificationState: BluetoothModificationState.kCannotModifyBluetooth,
       pairedDevices: [],
-      fastPairableDevices: [],
     };
   }
 

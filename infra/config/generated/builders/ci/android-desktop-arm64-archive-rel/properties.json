@@ -32,7 +32,7 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"

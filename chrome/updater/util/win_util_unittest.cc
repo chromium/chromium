@@ -318,7 +318,7 @@ TEST(WinUtil, SignalShutdownEvent) {
 TEST(WinUtil, StopProcessesUnderPath) {
   base::FilePath exe_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
-  exe_dir = exe_dir.AppendASCII(test::GetTestName());
+  exe_dir = exe_dir.AppendUTF8(test::GetTestName());
 
   base::CommandLine command_line = GetTestProcessCommandLine(
       GetUpdaterScopeForTesting(), test::GetTestName());

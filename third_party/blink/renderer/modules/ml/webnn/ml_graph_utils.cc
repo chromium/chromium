@@ -87,9 +87,7 @@ DOMArrayBufferView::ViewType GetArrayBufferViewType(
     case webnn::OperandDataType::kFloat32:
       return DOMArrayBufferView::ViewType::kTypeFloat32;
     case webnn::OperandDataType::kFloat16:
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
-      return DOMArrayBufferView::ViewType::kTypeUint16;
+      return DOMArrayBufferView::ViewType::kTypeFloat16;
     case webnn::OperandDataType::kInt32:
       return DOMArrayBufferView::ViewType::kTypeInt32;
     case webnn::OperandDataType::kUint32:

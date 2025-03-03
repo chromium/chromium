@@ -74,7 +74,7 @@ class NavigationState
     for (size_t i = 1; i < navigation_handle.GetRedirectChain().size(); ++i) {
       navigation.server_redirects.emplace_back(
           navigation_handle.GetRedirectChain()[i - 1],
-          dips::GetRedirectSourceId(&navigation_handle, i - 1),
+          btm::GetRedirectSourceId(&navigation_handle, i - 1),
           IsWrite(accesses[i - 1]));
     }
 
@@ -164,7 +164,7 @@ void BtmPageVisitObserver::OnCookiesAccessed(
   // Ignore irrelevant cookie accesses.
   if (details.blocked_by_policy ||
       details.type != CookieAccessDetails::Type::kChange ||
-      !dips::IsOrWasInPrimaryPage(render_frame_host)) {
+      !btm::IsOrWasInPrimaryPage(render_frame_host)) {
     return;
   }
 

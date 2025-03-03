@@ -101,13 +101,16 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
       AttributeInstance country((AttributeType(kPassportCountry)));
       AttributeInstance expiry_date((AttributeType(kPassportExpiryDate)));
       AttributeInstance issue_date((AttributeType(kPassportIssueDate)));
-      number.SetInfo(PASSPORT_NUMBER, u"123", /*app_locale=*/"");
-      name.SetInfo(NAME_FULL, u"Pippi Långstrump", /*app_locale=*/"");
-      country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden", /*app_locale=*/"");
-      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"09/2098",
-                          /*app_locale=*/"");
-      issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"10/1998",
-                         /*app_locale=*/"");
+      number.SetInfo(PASSPORT_NUMBER, u"123", /*app_locale=*/"",
+                     VerificationStatus::kNoStatus);
+      name.SetInfo(NAME_FULL, u"Pippi Långstrump", /*app_locale=*/"",
+                   VerificationStatus::kNoStatus);
+      country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden", /*app_locale=*/"",
+                      VerificationStatus::kNoStatus);
+      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"2098-09-01",
+                          /*app_locale=*/"", VerificationStatus::kNoStatus);
+      issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"1998-10-11",
+                         /*app_locale=*/"", VerificationStatus::kNoStatus);
       table.AddOrUpdateEntityInstance(EntityInstance(
           EntityType(EntityTypeName::kPassport),
           {number, name, country, expiry_date, issue_date},
@@ -417,8 +420,7 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
         std::optional<VerificationStatus> verification_status =
             ToSafeVerificationStatus(underlying_verification_status);
         if (field_type != UNKNOWN_TYPE && verification_status) {
-          attribute.SetRawInfoWithVerificationStatus(field_type, value,
-                                                     *verification_status);
+          attribute.SetRawInfo(field_type, value, *verification_status);
         }
       }
     }

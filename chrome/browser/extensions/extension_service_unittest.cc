@@ -695,7 +695,8 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
   // to complete (successfully or not).
   void WaitForInstallationAttemptToComplete(const std::string& id) {
     service()->CheckForExternalUpdates();
-    PendingRemovalObserver observer(service()->pending_extension_manager(), id);
+    PendingRemovalObserver observer(PendingExtensionManager::Get(profile()),
+                                    id);
     observer.WaitForRemoval();
   }
 
@@ -911,6 +912,10 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
 
+  PendingExtensionManager* pending_extension_manager() {
+    return PendingExtensionManager::Get(profile());
+  }
+
   typedef ExtensionManagementPrefUpdater<
       sync_preferences::TestingPrefServiceSyncable>
       ManagementPrefUpdater;
@@ -1113,7 +1118,7 @@ TEST_F(ExtensionServiceTest, PendingImports) {
   InitializeExtensionService(std::move(params));
 
   // Verify there are no pending extensions initially.
-  EXPECT_FALSE(service()->pending_extension_manager()->HasPendingExtensions());
+  EXPECT_FALSE(pending_extension_manager()->HasPendingExtensions());
 
   service()->Init();
   // Wait for GarbageCollectExtensions task to complete.
@@ -1151,12 +1156,12 @@ TEST_F(ExtensionServiceTest, PendingImports) {
   EXPECT_FALSE(base::PathExists(extensions_install_dir().AppendASCII(
       "behllobkkfkfnphdnhnkndlbkcpglgmj/1.0.0.0")));
 
-  EXPECT_TRUE(service()->pending_extension_manager()->HasPendingExtensions());
+  EXPECT_TRUE(pending_extension_manager()->HasPendingExtensions());
   std::string pending_id("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(pending_id));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(pending_id));
   // Remove it because we are not testing the pending extension manager's
   // ability to download and install extensions.
-  EXPECT_TRUE(service()->pending_extension_manager()->Remove(pending_id));
+  EXPECT_TRUE(pending_extension_manager()->Remove(pending_id));
 }
 
 // Tests that reloading extension with a install delayed due to pending imports
@@ -1200,7 +1205,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
   EXPECT_EQ("1.0.0", extension->VersionString());
 
   // No pending extensions at this point.
-  EXPECT_FALSE(service()->pending_extension_manager()->HasPendingExtensions());
+  EXPECT_FALSE(pending_extension_manager()->HasPendingExtensions());
 
   // Update to version 2 that adds an unsatisfied import.
   PackCRXAndUpdateExtension(id, updated_path, pem_path, ENABLED);
@@ -1220,7 +1225,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
             prefs->GetDelayedInstallReason(id));
 
   const std::string pending_id(32, 'e');
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(pending_id));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(pending_id));
 
   MockExtensionRegistryObserver reload_observer;
   registry()->AddObserver(&reload_observer);
@@ -1251,11 +1256,11 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
   EXPECT_EQ("1.0.0", extension->VersionString());
   EXPECT_EQ(ExtensionPrefs::DelayReason::kWaitForImports,
             prefs->GetDelayedInstallReason(id));
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(pending_id));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(pending_id));
 
   // Remove the pending install because the pending extension manager's
   // ability to download and install extensions is not important for this test.
-  EXPECT_TRUE(service()->pending_extension_manager()->Remove(pending_id));
+  EXPECT_TRUE(pending_extension_manager()->Remove(pending_id));
 }
 
 // Tests that installation fails with extensions disabled.
@@ -1412,18 +1417,18 @@ TEST_F(ExtensionServiceTest, UninstallingExternalExtensions) {
   EXPECT_TRUE(prefs->IsExternalExtensionUninstalled(good_crx));
 
   // Try adding the same extension from an external update URL.
-  ASSERT_FALSE(service()->pending_extension_manager()->AddFromExternalUpdateUrl(
+  ASSERT_FALSE(pending_extension_manager()->AddFromExternalUpdateUrl(
       good_crx, std::string(), GURL("http:://fake.update/url"),
       ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS, false));
 
   // Installation of the same extension through the policy should be successful.
-  ASSERT_TRUE(service()->pending_extension_manager()->AddFromExternalUpdateUrl(
+  ASSERT_TRUE(pending_extension_manager()->AddFromExternalUpdateUrl(
       good_crx, std::string(), GURL("http:://fake.update/url"),
       ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS, false));
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(good_crx));
-  EXPECT_TRUE(service()->pending_extension_manager()->Remove(good_crx));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(good_crx));
+  EXPECT_TRUE(pending_extension_manager()->Remove(good_crx));
 
-  ASSERT_FALSE(service()->pending_extension_manager()->IsIdPending(good_crx));
+  ASSERT_FALSE(pending_extension_manager()->IsIdPending(good_crx));
 }
 
 // Tests that uninstalling an external extension, and then reinstalling the
@@ -1592,7 +1597,7 @@ TEST_F(ExtensionServiceTest, FailOnWrongVersion) {
   ASSERT_FALSE(registry()->enabled_extensions().GetByID(good_crx));
 
   // Try again with the right version. Expect success.
-  service()->pending_extension_manager()->Remove(good_crx);
+  pending_extension_manager()->Remove(good_crx);
   std::unique_ptr<ExternalInstallInfoFile> correct_info =
       CreateExternalExtension(good_crx, "1.0.0.0", path,
                               ManifestLocation::kExternalPref,
@@ -3425,7 +3430,7 @@ TEST_F(ExtensionServiceTest, AddPendingExtensionFromSync) {
   const bool kFakeRemoteInstall(false);
 
   EXPECT_TRUE(
-      service()->pending_extension_manager()->AddFromSync(
+      pending_extension_manager()->AddFromSync(
           kFakeId,
           kFakeUpdateURL,
           base::Version(),
@@ -3434,7 +3439,7 @@ TEST_F(ExtensionServiceTest, AddPendingExtensionFromSync) {
 
   const PendingExtensionInfo* pending_extension_info;
   ASSERT_TRUE((pending_extension_info =
-                   service()->pending_extension_manager()->GetById(kFakeId)));
+                   pending_extension_manager()->GetById(kFakeId)));
   EXPECT_EQ(kFakeUpdateURL, pending_extension_info->update_url());
   EXPECT_EQ(&IsExtension, pending_extension_info->should_allow_install_);
   // Use
@@ -3462,18 +3467,18 @@ const bool kGoodRemoteInstall = false;
 TEST_F(ExtensionServiceTest, UpdatePendingExtension) {
   InitializeEmptyExtensionService();
   EXPECT_TRUE(
-      service()->pending_extension_manager()->AddFromSync(
+      pending_extension_manager()->AddFromSync(
           kGoodId,
           GURL(kGoodUpdateURL),
           base::Version(kGoodVersion),
           &IsExtension,
           kGoodRemoteInstall));
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(kGoodId));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(kGoodId));
 
   base::FilePath path = data_dir().AppendASCII("good.crx");
   UpdateExtension(kGoodId, path, ENABLED);
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodId));
+  EXPECT_FALSE(pending_extension_manager()->IsIdPending(kGoodId));
 
   const Extension* extension =
       registry()->enabled_extensions().GetByID(kGoodId);
@@ -3486,13 +3491,13 @@ TEST_F(ExtensionServiceTest, UpdatePendingExtensionWrongVersion) {
   ASSERT_TRUE(other_version.IsValid());
   ASSERT_NE(other_version, base::Version(kGoodVersion));
   EXPECT_TRUE(
-      service()->pending_extension_manager()->AddFromSync(
+      pending_extension_manager()->AddFromSync(
           kGoodId,
           GURL(kGoodUpdateURL),
           other_version,
           &IsExtension,
           kGoodRemoteInstall));
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(kGoodId));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(kGoodId));
 
   base::FilePath path = data_dir().AppendASCII("good.crx");
   // After installation, the extension should be disabled, because it's missing
@@ -3503,7 +3508,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingExtensionWrongVersion) {
       ExtensionPrefs::Get(profile())->DidExtensionEscalatePermissions(kGoodId));
 
   // It should still have been installed though.
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodId));
+  EXPECT_FALSE(pending_extension_manager()->IsIdPending(kGoodId));
 
   const Extension* extension =
       registry()->disabled_extensions().GetByID(kGoodId);
@@ -3521,14 +3526,14 @@ bool IsTheme(const Extension* extension, content::BrowserContext* context) {
 // Test updating a pending theme.
 TEST_F(ExtensionServiceTest, UpdatePendingTheme) {
   InitializeEmptyExtensionService();
-  EXPECT_TRUE(service()->pending_extension_manager()->AddFromSync(
+  EXPECT_TRUE(pending_extension_manager()->AddFromSync(
       theme_crx, GURL(), base::Version(), &IsTheme, false));
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(theme_crx));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(theme_crx));
 
   base::FilePath path = data_dir().AppendASCII("theme.crx");
   UpdateExtension(theme_crx, path, ENABLED);
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(theme_crx));
+  EXPECT_FALSE(pending_extension_manager()->IsIdPending(theme_crx));
 
   const Extension* extension =
       registry()->enabled_extensions().GetByID(theme_crx);
@@ -3544,16 +3549,16 @@ TEST_F(ExtensionServiceTest, UpdatePendingTheme) {
 // or not.
 TEST_F(ExtensionServiceTest, UpdatePendingExternalCrx) {
   InitializeEmptyExtensionService();
-  EXPECT_TRUE(service()->pending_extension_manager()->AddFromExternalUpdateUrl(
+  EXPECT_TRUE(pending_extension_manager()->AddFromExternalUpdateUrl(
       theme_crx, std::string(), GURL(), ManifestLocation::kExternalPrefDownload,
       Extension::NO_FLAGS, false));
 
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(theme_crx));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(theme_crx));
 
   base::FilePath path = data_dir().AppendASCII("theme.crx");
   UpdateExtension(theme_crx, path, ENABLED);
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(theme_crx));
+  EXPECT_FALSE(pending_extension_manager()->IsIdPending(theme_crx));
 
   const Extension* extension =
       registry()->enabled_extensions().GetByID(theme_crx);
@@ -3573,7 +3578,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingExternalCrxWinsOverSync) {
 
   // Add a crx to be installed from the update mechanism.
   EXPECT_TRUE(
-      service()->pending_extension_manager()->AddFromSync(
+      pending_extension_manager()->AddFromSync(
           kGoodId,
           GURL(kGoodUpdateURL),
           base::Version(),
@@ -3583,24 +3588,24 @@ TEST_F(ExtensionServiceTest, UpdatePendingExternalCrxWinsOverSync) {
   // Check that there is a pending crx, with is_from_sync set to true.
   const PendingExtensionInfo* pending_extension_info;
   ASSERT_TRUE((pending_extension_info =
-                   service()->pending_extension_manager()->GetById(kGoodId)));
+                   pending_extension_manager()->GetById(kGoodId)));
   EXPECT_TRUE(pending_extension_info->is_from_sync());
 
   // Add a crx to be updated, with the same ID, from a non-sync source.
-  EXPECT_TRUE(service()->pending_extension_manager()->AddFromExternalUpdateUrl(
+  EXPECT_TRUE(pending_extension_manager()->AddFromExternalUpdateUrl(
       kGoodId, std::string(), GURL(kGoodUpdateURL),
       ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS, false));
 
   // Check that there is a pending crx, with is_from_sync set to false.
   ASSERT_TRUE((pending_extension_info =
-                   service()->pending_extension_manager()->GetById(kGoodId)));
+                   pending_extension_manager()->GetById(kGoodId)));
   EXPECT_FALSE(pending_extension_info->is_from_sync());
   EXPECT_EQ(ManifestLocation::kExternalPrefDownload,
             pending_extension_info->install_source());
 
   // Add a crx to be installed from the update mechanism.
   EXPECT_FALSE(
-      service()->pending_extension_manager()->AddFromSync(
+      pending_extension_manager()->AddFromSync(
           kGoodId,
           GURL(kGoodUpdateURL),
           base::Version(),
@@ -3609,7 +3614,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingExternalCrxWinsOverSync) {
 
   // Check that the external, non-sync update was not overridden.
   ASSERT_TRUE((pending_extension_info =
-                   service()->pending_extension_manager()->GetById(kGoodId)));
+                   pending_extension_manager()->GetById(kGoodId)));
   EXPECT_FALSE(pending_extension_info->is_from_sync());
   EXPECT_EQ(ManifestLocation::kExternalPrefDownload,
             pending_extension_info->install_source());
@@ -3619,15 +3624,15 @@ TEST_F(ExtensionServiceTest, UpdatePendingExternalCrxWinsOverSync) {
 // the CRX is not a theme.
 TEST_F(ExtensionServiceTest, UpdatePendingCrxThemeMismatch) {
   InitializeEmptyExtensionService();
-  EXPECT_TRUE(service()->pending_extension_manager()->AddFromSync(
+  EXPECT_TRUE(pending_extension_manager()->AddFromSync(
       theme_crx, GURL(), base::Version(), &IsExtension, false));
 
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(theme_crx));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(theme_crx));
 
   base::FilePath path = data_dir().AppendASCII("theme.crx");
   UpdateExtension(theme_crx, path, FAILED_SILENTLY);
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(theme_crx));
+  EXPECT_FALSE(pending_extension_manager()->IsIdPending(theme_crx));
 
   const Extension* extension =
       registry()->GetExtensionById(theme_crx, ExtensionRegistry::EVERYTHING);
@@ -3643,13 +3648,13 @@ TEST_F(ExtensionServiceTest, UpdatePendingExtensionFailedShouldInstallTest) {
   InitializeEmptyExtensionService();
   // Add pending extension with a flipped is_theme.
   EXPECT_TRUE(
-      service()->pending_extension_manager()->AddFromSync(
+      pending_extension_manager()->AddFromSync(
           kGoodId,
           GURL(kGoodUpdateURL),
           base::Version(),
           &IsTheme,
           kGoodRemoteInstall));
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(kGoodId));
+  EXPECT_TRUE(pending_extension_manager()->IsIdPending(kGoodId));
 
   base::FilePath path = data_dir().AppendASCII("good.crx");
   UpdateExtension(kGoodId, path, UPDATED);
@@ -3657,7 +3662,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingExtensionFailedShouldInstallTest) {
   // TODO(akalin): Figure out how to check that the extensions
   // directory is cleaned up properly in OnExtensionInstalled().
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodId));
+  EXPECT_FALSE(pending_extension_manager()->IsIdPending(kGoodId));
 }
 
 // TODO(akalin): Figure out how to test that installs of pending
@@ -3670,7 +3675,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingExtensionNotPending) {
   base::FilePath path = data_dir().AppendASCII("good.crx");
   UpdateExtension(kGoodId, path, UPDATED);
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodId));
+  EXPECT_FALSE(pending_extension_manager()->IsIdPending(kGoodId));
 }
 
 // Test updating a pending extension for one that is already
@@ -3685,14 +3690,14 @@ TEST_F(ExtensionServiceTest, UpdatePendingExtensionAlreadyInstalled) {
   EXPECT_FALSE(good->is_theme());
 
   // Use AddExtensionImpl() as AddFrom*() would balk.
-  service()->pending_extension_manager()->AddExtensionImpl(
+  pending_extension_manager()->AddExtensionImpl(
       good->id(), std::string(), ManifestURL::GetUpdateURL(good),
       base::Version(), &IsExtension, kGoodIsFromSync,
       ManifestLocation::kInternal, Extension::NO_FLAGS, false,
       kGoodRemoteInstall);
   UpdateExtension(good->id(), path, ENABLED);
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodId));
+  EXPECT_FALSE(pending_extension_manager()->IsIdPending(kGoodId));
 }
 
 #if defined(ENABLE_BLOCKLIST_TESTS)
@@ -4643,7 +4648,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionConflictsWithForceInstall) {
 
   // Remove this extension from pending extension manager as we would like to
   // give another attempt later.
-  service()->pending_extension_manager()->Remove(permissions_blocklist);
+  pending_extension_manager()->Remove(permissions_blocklist);
 
   {
     // Clears the permission block list.
@@ -6943,7 +6948,7 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalUpdateUrl) {
   ValidateIntegerPref(good_crx, "location",
                       static_cast<int>(ManifestLocation::kInternal));
 
-  PendingExtensionManager* pending = service()->pending_extension_manager();
+  PendingExtensionManager* pending = pending_extension_manager();
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 
   // Skip install when the location is the same.
@@ -6988,7 +6993,7 @@ TEST_F(ExtensionServiceTest, FailedLocalFileInstallIsNotPending) {
 
   InitializeEmptyExtensionService();
 
-  PendingExtensionManager* pending = service()->pending_extension_manager();
+  PendingExtensionManager* pending = pending_extension_manager();
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 
   ExternalInstallInfoFile info(kGoodId, version, kInvalidPathToCrx,
@@ -7036,7 +7041,7 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
             Manifest::GetHigherPriorityLocation(ManifestLocation::kExternalPref,
                                                 ManifestLocation::kInternal));
 
-  PendingExtensionManager* pending = service()->pending_extension_manager();
+  PendingExtensionManager* pending = pending_extension_manager();
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 
   ExternalInstallInfoFile info(kGoodId, older_version, kInvalidPathToCrx,
@@ -7163,7 +7168,7 @@ TEST_F(ExtensionServiceTest, ConcurrentExternalLocalFile) {
 
   InitializeEmptyExtensionService();
 
-  PendingExtensionManager* pending = service()->pending_extension_manager();
+  PendingExtensionManager* pending = pending_extension_manager();
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 
   // An external provider starts installing from a local crx.
@@ -7244,7 +7249,7 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
 
   // Fake an external source adding a URL to fetch an extension from.
   bool AddPendingExternalPrefUrl() {
-    return service()->pending_extension_manager()->AddFromExternalUpdateUrl(
+    return pending_extension_manager()->AddFromExternalUpdateUrl(
         crx_id_, std::string(), GURL(), ManifestLocation::kExternalPrefDownload,
         Extension::NO_FLAGS, false);
   }
@@ -7259,7 +7264,7 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
 
   // Fake a request from sync to install an extension.
   bool AddPendingSyncInstall() {
-    return service()->pending_extension_manager()->AddFromSync(
+    return pending_extension_manager()->AddFromSync(
         crx_id_,
         GURL(kGoodUpdateURL),
         base::Version(),
@@ -7280,7 +7285,7 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
   ManifestLocation GetPendingLocation() {
     const PendingExtensionInfo* info;
     EXPECT_TRUE(
-        (info = service()->pending_extension_manager()->GetById(crx_id_)));
+        (info = pending_extension_manager()->GetById(crx_id_)));
     return info->install_source();
   }
 
@@ -7288,13 +7293,13 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
   bool GetPendingIsFromSync() {
     const PendingExtensionInfo* info;
     EXPECT_TRUE(
-        (info = service()->pending_extension_manager()->GetById(crx_id_)));
+        (info = pending_extension_manager()->GetById(crx_id_)));
     return info->is_from_sync();
   }
 
   // Is the CRX id these tests use pending?
   bool IsCrxPending() {
-    return service()->pending_extension_manager()->IsIdPending(crx_id_);
+    return pending_extension_manager()->IsIdPending(crx_id_);
   }
 
   // Is an extension installed?
@@ -7534,7 +7539,7 @@ TEST_F(ExtensionServiceTest, MAYBE_ExternalInstallMultiple) {
       theme_crx, "2.0", data_dir().AppendASCII("theme.crx"));
 
   {
-    PendingExtensionManager* pending = service()->pending_extension_manager();
+    PendingExtensionManager* pending = pending_extension_manager();
     PendingRemovalObserver page_action_observer(pending, page_action);
     PendingRemovalObserver good_crx_observer(pending, good_crx);
     PendingRemovalObserver theme_crx_observer(pending, theme_crx);

@@ -5,6 +5,7 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/native_theme/native_theme.h"
@@ -17,7 +18,7 @@ class Size;
 namespace ui {
 
 // Theme support for non-Windows toolkits.
-class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
+class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
  public:
   NativeThemeBase(const NativeThemeBase&) = delete;
   NativeThemeBase& operator=(const NativeThemeBase&) = delete;

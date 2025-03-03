@@ -28,7 +28,9 @@ ${this.expanded ? html`
     <div id="conference" ?hidden="${!this.showConferenceButton_()}">
       <cr-button role="link"
           @click="${this.openVideoConference_}"
-          class="action-button">
+          class="action-button"
+          aria-label="${this.i18n('modulesCalendarJoinMeetingButtonAcc',
+              this.event.title)}">
         $i18n{modulesCalendarJoinMeetingButtonText}
       </cr-button>
     </div>

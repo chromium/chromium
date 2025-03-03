@@ -111,4 +111,9 @@ void WipeProfileIfRequested(int argc, char* argv[]) {
   // Do nothing.
 }
 
+base::TimeDelta
+GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension() {
+  return base::Seconds(0);
+}
+
 }  // namespace tests_hook

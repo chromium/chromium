@@ -8625,10 +8625,10 @@ bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context) {
 
 void ChromeContentBrowserClient::OnDipsServiceCreated(
     content::BrowserContext* browser_context,
-    content::BtmService* dips_service) {
+    content::BtmService* btm_service) {
   // Create BtmBrowserSigninDetector.
   CHECK(BtmBrowserSigninDetector::Get(browser_context));
-  dips::StatefulBounceCounter::CreateFor(dips_service);
+  btm::StatefulBounceCounter::CreateFor(btm_service);
 }
 
 static_assert(content::ContentBrowserClient::kDefaultDipsRemoveMask ==

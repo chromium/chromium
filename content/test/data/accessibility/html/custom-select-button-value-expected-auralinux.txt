@@ -2,4 +2,5 @@
 ++[section]
 ++++[combo box]
 ++++++[menu]
-++++++++[menu item] name='option' selectable selected
+++++++++[section]
+++++++++++[menu item] name='option' selectable selected

@@ -140,6 +140,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       {"deleteLastDialogHeader", IDS_DATA_SHARING_DELETE_LAST_DIALOG_HEADER},
       {"keepGroup", IDS_DATA_SHARING_KEEP_GROUP},
       {"deleteGroup", IDS_DATA_SHARING_DELETE_GROUP},
+      {"deleteFlowHeader", IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE},
+      {"delete", IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM},
 
       // dynamic messages:
       {"shareGroupShareAs", IDS_DATA_SHARING_SHARE_GROUP_SHARE_AS},
@@ -177,6 +179,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
        IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY_2},
       {"memberDeleteLastTimeBody",
        IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_BODY_SINGULAR},
+      {"deleteFlowDescriptionContent",
+       IDS_DATA_SHARING_OWNER_DELETE_DIALOG_BODY},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean(

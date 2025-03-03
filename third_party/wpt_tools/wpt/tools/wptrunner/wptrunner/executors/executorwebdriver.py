@@ -138,9 +138,10 @@ class WebDriverBidiBluetoothProtocolPart(BidiBluetoothProtocolPart):
 
     async def simulate_adapter(self,
           context: str,
-          state: str) -> None:
+          state: str,
+          type_: str) -> None:
         await self.webdriver.bidi_session.bluetooth.simulate_adapter(
-            context=context, state=state)
+            context=context, state=state, type_=type_)
 
     async def simulate_preconnected_peripheral(self,
             context: str,

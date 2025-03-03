@@ -351,7 +351,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
   if (!new_attached_browser && !is_detached) {
     Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
     if (last_active_browser &&
-        IsBrowserGlicCompatible(profile_, last_active_browser) &&
+        IsBrowserGlicAttachable(profile_, last_active_browser) &&
         IsBrowserInForeground(last_active_browser)) {
       new_attached_browser = last_active_browser;
     }
@@ -978,7 +978,7 @@ Browser* GlicWindowController::FindBrowserForAttachment() {
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!IsBrowserGlicCompatible(profile_, browser)) {
+    if (!IsBrowserGlicAttachable(profile_, browser)) {
       continue;
     }
 

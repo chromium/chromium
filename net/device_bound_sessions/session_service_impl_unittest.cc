@@ -5,8 +5,10 @@
 #include "net/device_bound_sessions/session_service_impl.h"
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "net/base/features.h"
 #include "net/device_bound_sessions/mock_session_store.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_store.h"
@@ -113,13 +115,17 @@ class SessionServiceImplTest : public ::testing::Test,
  public:
   SessionServiceImplTest()
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        context_(CreateTestURLRequestContextBuilder()->Build()),
-        service_(*UnexportableKeyServiceFactory::GetInstance()->GetShared(),
-                 context_.get(),
-                 /*store=*/nullptr) {}
+        context_(CreateTestURLRequestContextBuilder()->Build()) {}
+
+  void SetUp() override {
+    service_ = std::make_unique<SessionServiceImpl>(
+        *UnexportableKeyServiceFactory::GetInstance()->GetShared(),
+        context_.get(),
+        /*store=*/nullptr);
+  }
 
   URLRequestContext* context() { return context_.get(); }
-  SessionServiceImpl& service() { return service_; }
+  SessionServiceImpl& service() { return *service_; }
 
   // Take list of <session_id, site_url> to add sessions for testing.
   void AddSessionsForTesting(
@@ -132,7 +138,7 @@ class SessionServiceImplTest : public ::testing::Test,
           GURL(url_str),
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
           "challenge", /*authorization=*/std::nullopt);
-      service_.RegisterBoundSession(
+      service_->RegisterBoundSession(
           base::DoNothing(), std::move(fetch_param),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
           NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
@@ -142,7 +148,18 @@ class SessionServiceImplTest : public ::testing::Test,
  private:
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   std::unique_ptr<URLRequestContext> context_;
-  SessionServiceImpl service_;
+  std::unique_ptr<SessionServiceImpl> service_;
+};
+
+class SessionServiceImplNoRefreshQuotaTest : public SessionServiceImplTest {
+ public:
+  SessionServiceImplNoRefreshQuotaTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kDeviceBoundSessionsRefreshQuota);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SessionServiceImplTest, RegisterSuccess) {
@@ -825,6 +842,28 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
   // succeeds.
   FastForwardBy(base::Minutes(5));
   {
+    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+    TestDeferCompletion defer_completion(
+        future.GetCallback<TestDeferCompletion::CallbackType>());
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  }
+}
+
+TEST_F(SessionServiceImplNoRefreshQuotaTest, SessionRefreshQuotaDisabled) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // The third refresh is not throttled because the refresh quota is disabled.
+  for (size_t i = 0; i < 3; i++) {
     base::test::TestFuture<TestDeferCompletion::CallbackType> future;
     TestDeferCompletion defer_completion(
         future.GetCallback<TestDeferCompletion::CallbackType>());

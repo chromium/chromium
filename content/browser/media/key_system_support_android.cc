@@ -84,7 +84,8 @@ void DetermineKeySystemSupport(const std::string& key_system,
                                bool is_secure,
                                media::CdmCapabilityCB cdm_capability_cb,
                                bool webm_supported,
-                               bool mp4_supported) {
+                               bool mp4_supported,
+                               base::Version version) {
   const std::vector<media::VideoCodecProfile> kAllProfiles = {};
   media::CdmCapability capability;
 
@@ -181,6 +182,8 @@ void DetermineKeySystemSupport(const std::string& key_system,
     capability.session_types.insert(media::CdmSessionType::kPersistentLicense);
   }
 
+  capability.version = version;
+
   std::move(cdm_capability_cb).Run(std::move(capability));
 }
 
@@ -214,7 +217,7 @@ class CheckCdmCompatibility {
 
     DVLOG(1) << __func__ << " calling IsKeySystemSupported for " << key_system_;
     media_drm_service_->IsKeySystemSupported(
-        key_system_,
+        key_system_, is_secure_,
         base::BindOnce(&CheckCdmCompatibility::VerifyKeySystemSupport,
                        base::Unretained(this)));
   }
@@ -232,10 +235,22 @@ class CheckCdmCompatibility {
       return;
     }
 
+    auto version = key_system_support_result->key_system_version;
+    if (!version) {
+      // `version` is null which means that querying the version failed to set
+      // the security level (if enabled). This means that the device does not
+      // support this robustness, so fail the query.
+      std::move(cdm_capability_cb_)
+          .Run(base::unexpected(
+              media::CdmCapabilityQueryStatus::kNoMediaDrmSupport));
+      return;
+    }
+
     DetermineKeySystemSupport(
         key_system_, is_secure_, std::move(cdm_capability_cb_),
         key_system_support_result->key_system_supports_video_webm,
-        key_system_support_result->key_system_supports_video_mp4);
+        key_system_support_result->key_system_supports_video_mp4,
+        version.value());
     delete this;
   }
 
@@ -300,12 +315,31 @@ void GetAndroidCdmCapability(const std::string& key_system,
     return;
   }
 
+  auto security_level = media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
+  if (base::FeatureList::IsEnabled(
+          media::kUseSecurityLevelWhenCheckingMediaDrmVersion)) {
+    security_level = is_secure ? media::MediaDrmBridge::SECURITY_LEVEL_1
+                               : media::MediaDrmBridge::SECURITY_LEVEL_3;
+  }
+  auto version = MediaDrmBridge::GetVersion(key_system, security_level);
+  if (!version.has_value() &&
+      version.error() ==
+          media::CreateCdmStatus::kAndroidFailedL1SecurityLevel) {
+    // Failed to determine version as `security_level` not supported. Currently
+    // only checking for L1.
+    std::move(cdm_capability_cb)
+        .Run(base::unexpected(
+            media::CdmCapabilityQueryStatus::kUnsupportedKeySystem));
+    return;
+  }
+
   bool webm_supported =
       MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/webm");
   bool mp4_supported =
       MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/mp4");
   DetermineKeySystemSupport(key_system, is_secure, std::move(cdm_capability_cb),
-                            webm_supported, mp4_supported);
+                            webm_supported, mp4_supported,
+                            version.value_or(base::Version()));
 }
 
 }  // namespace content

@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android, "Page actions are for desktop platforms only")
+
+source_set("zoom_page_action") {
+  public = [ "zoom_page_action_controller.h" ]
+
+  sources = [ "zoom_page_action_controller.cc" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/views/page_action",
+    "//components/zoom",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "zoom_page_action_browsertest.cc" ]
+
+  deps = [
+    "//chrome/browser/ui:ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+}

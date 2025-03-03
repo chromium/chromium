@@ -20,6 +20,8 @@ class AIUtils {
 
   // Copied from compose::Config::trimmed_inner_text_max_chars.
   static constexpr size_t kTrimmedInnerTextMaxChars = 12000;
+
+  static constexpr int kNormalizedDownloadProgressMax = 0x10000;
 };
 
 #endif  // CHROME_BROWSER_AI_AI_UTILS_H_

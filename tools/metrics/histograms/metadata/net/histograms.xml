@@ -267,9 +267,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskDuration{Priority}"
-    units="ms" expires_after="2025-03-30">
+    units="ms" expires_after="2025-09-30">
   <owner>alexilin@chromium.org</owner>
-  <owner>kristianm@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time that passed between starting a TPM operation on an
     unexportable_keys::UnexportableKeyService and completing the operation
@@ -295,9 +296,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Crypto.UnexportableKeys.BackgroundTaskQueueWaitDuration{Priority}"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-09-30">
   <owner>alexilin@chromium.org</owner>
-  <owner>kristianm@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time spent waiting in a task queue for the subset of TPM
     operations that are asynchronously scheduled through
@@ -320,9 +322,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskResult{TaskType}"
-    enum="UnexportableKeyServiceResult" expires_after="2025-08-10">
+    enum="UnexportableKeyServiceResult" expires_after="2025-09-30">
   <owner>alexilin@chromium.org</owner>
-  <owner>kristianm@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the result of the subset of TPM operations that are scheduled
     asynchronously through unexportable_keys::UnexportableKeyService. In some
@@ -341,9 +344,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskRunDuration{TaskType}"
-    units="ms" expires_after="2025-03-30">
+    units="ms" expires_after="2025-09-30">
   <owner>alexilin@chromium.org</owner>
-  <owner>kristianm@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time that passed between starting executing a TPM operation on a
     background thread and completing the operation (either successfully or not).

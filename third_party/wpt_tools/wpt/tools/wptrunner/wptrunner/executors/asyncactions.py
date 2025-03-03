@@ -55,7 +55,9 @@ class BidiBluetoothSimulateAdapterAction:
             raise ValueError("Unexpected context type: %s" % context)
 
         state = payload["state"]
-        return await self.protocol.bidi_bluetooth.simulate_adapter(context, state)
+        return await self.protocol.bidi_bluetooth.simulate_adapter(context,
+                                                                   state,
+                                                                   type_="create")
 
 class BidiBluetoothSimulatePreconnectedPeripheralAction:
     name = "bidi.bluetooth.simulate_preconnected_peripheral"

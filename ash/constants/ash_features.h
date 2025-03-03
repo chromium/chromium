@@ -301,8 +301,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairSavedDevices);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairSavedDevicesStrictOptIn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kFastPairDevicesBluetoothSettings);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagement16Desks);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementBorealis);
@@ -1119,8 +1117,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairPwaCompanionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSoftwareScanningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesStrictOptInEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsFastPairDevicesBluetoothSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedStringsServiceEnabled();
 
 // TODO revisit structure of feature flags w.r.t. gating task scheduling.

@@ -579,7 +579,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     // so by adding it as a pending extension and then triggering an
     // auto-update cycle.
     const bool kRemoteInstall = false;
-    if (!extension_service->pending_extension_manager()->AddFromSync(
+    if (!extensions::PendingExtensionManager::Get(profile_)->AddFromSync(
             id, update_url, base::Version(), &IsTheme, kRemoteInstall)) {
       LOG(WARNING) << "Could not add pending extension for " << id;
       return ThemeSyncState::kFailed;
@@ -686,6 +686,19 @@ sync_pb::ThemeSpecifics
 ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_use_custom_theme(false);
+  // Set this to `use_system_theme_by_default_` which is the value received from
+  // sync. If this platform supports distinct system theme, the value might be
+  // overridden below depending on the current theme.
+  theme_specifics.set_use_system_theme_by_default(use_system_theme_by_default_);
+
+  const bool set_all_theme_attributes =
+      base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics);
+  // Always set the browser color scheme, to denote that the ThemeSpecifics
+  // contains all the theme attributes.
+  if (set_all_theme_attributes) {
+    theme_specifics.set_browser_color_scheme(
+        BrowserColorSchemeToProtoEnum(theme_service_->GetBrowserColorScheme()));
+  }
 
   const std::string theme_id = theme_service_->GetThemeID();
   const extensions::Extension* current_extension =
@@ -703,9 +716,10 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
     theme_specifics.set_custom_theme_id(current_extension->id());
     theme_specifics.set_custom_theme_update_url(
         extensions::ManifestURL::GetUpdateURL(current_extension).spec());
+    return theme_specifics;
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+  if (set_all_theme_attributes) {
     // Skip setting background in the specifics if the background is set using
     // local resource.
     PrefService* prefs = profile_->GetPrefs();
@@ -747,20 +761,13 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
   if (theme_service_->IsSystemThemeDistinctFromDefaultTheme()) {
     // On platform where system theme is different from default theme, set
     // use_system_theme_by_default to true if system theme is used, false
-    // if default system theme is used. Otherwise restore it to value in sync.
+    // if default system theme is used. Otherwise keep it to the value received
+    // from sync (`use_system_theme_by_default_`).
     if (theme_service_->UsingSystemTheme()) {
       theme_specifics.set_use_system_theme_by_default(true);
     } else if (theme_service_->UsingDefaultTheme()) {
       theme_specifics.set_use_system_theme_by_default(false);
-    } else {
-      theme_specifics.set_use_system_theme_by_default(
-          use_system_theme_by_default_);
     }
-  } else {
-    // Restore use_system_theme_by_default when platform doesn't distinguish
-    // between default theme and system theme.
-    theme_specifics.set_use_system_theme_by_default(
-        use_system_theme_by_default_);
   }
   return theme_specifics;
 }
@@ -913,9 +920,7 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
     MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(), *local_theme_specifics);
     if (remote_extension_theme_pending_install_) {
       extensions::PendingExtensionManager* pending_extension_manager =
-          extensions::ExtensionSystem::Get(profile_)
-              ->extension_service()
-              ->pending_extension_manager();
+          extensions::PendingExtensionManager::Get(profile_);
       // If the theme extension is still pending installation, remove from the
       // queue.
       if (const extensions::PendingExtensionInfo* extension =

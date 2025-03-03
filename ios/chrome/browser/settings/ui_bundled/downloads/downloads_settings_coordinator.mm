@@ -6,7 +6,7 @@
 
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/download/ui_bundled/auto_deletion/auto_deletion_settings_mediator.h"
+#import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_settings_mediator.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_coordinator_delegate.h"

@@ -261,6 +261,7 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
                        "` IP address space."});
       break;
     case CorsError::kPrivateNetworkAccessPermissionDenied:
+    case CorsError::kLocalNetworkAccessPermissionDenied:
       Append(builder, {"Permission was denied for this request to access the `",
                        ShortAddressSpace(status.target_address_space),
                        "` address space."});
@@ -467,6 +468,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
                        "` IP address space."});
       break;
     case CorsError::kPrivateNetworkAccessPermissionDenied:
+    case CorsError::kLocalNetworkAccessPermissionDenied:
       Append(builder, {"Permission was denied for this request to access the `",
                        ShortAddressSpace(status.target_address_space),
                        "` address space."});

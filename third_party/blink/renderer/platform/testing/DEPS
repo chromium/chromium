@@ -45,7 +45,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/wtf",
     "+third_party/blink/renderer/platform/wtf/shared_buffer.h",
-    "+ui/native_theme/native_theme_features.h",
+    "+ui/native_theme/features/native_theme_features.h",
 ]
 
 specific_include_rules = {

@@ -28,6 +28,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace ip_protection {
@@ -79,7 +80,7 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
         ip_protection_token_managers,
     ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
     bool is_ip_protection_enabled,
-    bool use_regular_mdl)
+    bool ip_protection_incognito)
     : masked_domain_list_manager_(masked_domain_list_manager),
       ipp_proxy_config_manager_(std::move(ip_protection_proxy_config_manager)),
       ipp_token_managers_(std::move(ip_protection_token_managers)),
@@ -88,7 +89,13 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
       ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
       enable_token_caching_by_geo_(
           net::features::kIpPrivacyCacheTokensByGeo.Get()) {
-  mdl_type_ = use_regular_mdl ? MdlType::kRegularBrowsing : MdlType::kDefault;
+  // Only set the MDL type if the split MDL feature is enabled. Otherwise,
+  // default to the legacy behavior of using the default MDL type.
+  mdl_type_ = network::features::kSplitMaskedDomainList.Get()
+                  ? (ip_protection_incognito ? MdlType::kDefault
+                                             : MdlType::kRegularBrowsing)
+                  : MdlType::kDefault;
+
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 

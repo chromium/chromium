@@ -35,7 +35,7 @@ DelayHandler::DelayHandler(AudioNode& node,
                            float sample_rate,
                            AudioParamHandler& delay_time,
                            double max_delay_time)
-    : AudioHandler(kNodeTypeDelay, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeDelay, node, sample_rate),
       number_of_channels_(kDefaultNumberOfChannels),
       sample_rate_(sample_rate),
       render_quantum_frames_(

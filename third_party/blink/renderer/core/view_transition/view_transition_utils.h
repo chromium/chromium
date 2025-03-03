@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class ComputedStyle;
 class DOMViewTransition;
 class ViewTransition;
 
@@ -205,9 +204,6 @@ class CORE_EXPORT ViewTransitionUtils {
   // elements in the ViewTransitionStyleTracker.
   static bool IsViewTransitionParticipantFromSupplement(
       const LayoutObject& object);
-  static bool UseLayeredCapture(const ComputedStyle& style);
-  static bool ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(
-      const LayoutObject&);
 };
 
 }  // namespace blink

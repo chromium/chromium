@@ -82,7 +82,15 @@ namespace {
 class LensOverlayMediatorTest : public PlatformTest {
  public:
   LensOverlayMediatorTest() {
-    mediator_ = [[LensOverlayMediator alloc] initWithIsIncognito:NO];
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+
+    mediator_ =
+        [[LensOverlayMediator alloc] initWithProfilePrefs:profile_->GetPrefs()
+                                              isIncognito:NO];
     mediator_.templateURLService =
         search_engines_test_environment_.template_url_service();
     mock_omnibox_coordinator_ =
@@ -104,11 +112,6 @@ class LensOverlayMediatorTest : public PlatformTest {
 
     fake_web_provider_ = [[FakeLensWebProviderImpl alloc] init];
     fake_web_provider_.webState = fake_web_state_.get();
-    TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(
-        ios::TemplateURLServiceFactory::GetInstance(),
-        ios::TemplateURLServiceFactory::GetDefaultFactory());
-    profile_ = std::move(builder).Build();
 
     lens_omnibox_client_ = std::make_unique<LensOmniboxClient>(
         profile_.get(), tracker_.get(), fake_web_provider_, nil);

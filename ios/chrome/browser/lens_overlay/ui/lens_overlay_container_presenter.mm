@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 
 namespace {
@@ -57,7 +59,10 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   }
 
   AppState* appState = sceneState.profileState.appState;
-  if (appState && !IsLensOverlayLandscapeOrientationEnabled()) {
+  ProfileIOS* profile = sceneState.profileState.profile;
+  CHECK(profile, kLensOverlayNotFatalUntil);
+  if (appState && profile &&
+      !IsLensOverlayLandscapeOrientationEnabled(profile->GetPrefs())) {
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
   }
 

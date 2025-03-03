@@ -4,14 +4,11 @@
 
 #include "components/performance_manager/decorators/frame_input_state_decorator.h"
 
+#include "base/check_is_test.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "content/public/browser/render_frame_host.h"
-
-namespace {
-constexpr base::TimeDelta kInactivityTimeoutForTyping = base::Seconds(3);
-}
 
 namespace performance_manager {
 
@@ -118,7 +115,13 @@ FrameInputStateDecorator::InputObserver::InputObserver(
     RenderFrameHostProxy proxy)
     : decorator_(decorator), frame_node_(frame_node) {
   content::RenderFrameHost* rfh = proxy.Get();
-  CHECK(rfh, base::NotFatalUntil::M136);
+  if (!rfh) {
+    // In tests a FrameNode might not be backed by a RenderFrameHost, in which
+    // case this observer does nothing. The test can simulate input by calling
+    // UpdateInputScenario() directly.
+    CHECK_IS_TEST(base::NotFatalUntil::M136);
+    return;
+  }
 
   // Observes the RenderWidgetHost and its input events.
   content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();

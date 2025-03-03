@@ -18,6 +18,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -267,9 +269,75 @@ public class AuxiliarySearchControllerImplUnitTest {
         // Verifies the tabs are sorted based on timestamp.
         assertEquals(mTab2, tabs.get(0));
         assertEquals(mTab1, tabs.get(1));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE
+    })
+    public void testOnNonSensitiveHistoryDataAvailable_EmptyList() {
+        long now = TimeUtils.uptimeMillis();
+        int timeDelta = 50;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Search.AuxiliarySearch.QueryTime.Tabs", timeDelta)
+                        .build();
+
+        // Verifies the case when the entry list is empty.
+        mFakeTime.advanceMillis(timeDelta);
+        List<AuxiliarySearchDataEntry> entries = new ArrayList<>();
+        mAuxiliarySearchControllerImpl.onNonSensitiveHistoryDataAvailable(entries, now);
+
+        histogramWatcher.assertExpected();
+        verify(mAuxiliarySearchDonor, never())
+                .donateEntries(eq(entries), mDonationCompleteCallbackCaptor.capture());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
+    public void testOnNonSensitiveDataAvailable() {
+        long now = TimeUtils.uptimeMillis();
+        int timeDelta = 50;
+
+        when(mTab1.getId()).thenReturn(TAB_ID_1);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab1.getTitle()).thenReturn("Title1");
+        when(mTab1.getTimestampMillis()).thenReturn(now - 2);
+
+        when(mTab2.getId()).thenReturn(TAB_ID_2);
+        when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+        when(mTab2.getTitle()).thenReturn("Title2");
+        when(mTab2.getTimestampMillis()).thenReturn(now - 1);
+
+        List<Tab> tabs = new ArrayList<>();
+        tabs.add(mTab1);
+        tabs.add(mTab2);
+
+        testOnNonSensitiveDataAvailableImpl(tabs, now, timeDelta);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE
+    })
+    public void testOnNonSensitiveDataAvailable_AuxiliarySearchDataEntry() {
+        long now = TimeUtils.uptimeMillis();
+        int timeDelta = 50;
+
+        List<AuxiliarySearchDataEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries(now);
+        testOnNonSensitiveDataAvailableImpl(entries, now, timeDelta);
+    }
+
+    private <T> void testOnNonSensitiveDataAvailableImpl(
+            List<T> entries, long startTime, int timeDelta) {
+        mAuxiliarySearchControllerImpl.onNonSensitiveDataAvailable(entries, startTime);
 
         verify(mAuxiliarySearchDonor)
-                .donateEntries(eq(tabs), mDonationCompleteCallbackCaptor.capture());
+                .donateEntries(eq(entries), mDonationCompleteCallbackCaptor.capture());
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         eq(mProfile),
@@ -284,9 +352,7 @@ public class AuxiliarySearchControllerImplUnitTest {
                         mFaviconImageCallbackCaptor2.capture());
 
         Bitmap bitmap = Bitmap.createBitmap(20, 20, Config.RGB_565);
-        int timeDelta = 50;
         mFakeTime.advanceMillis(timeDelta);
-
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -303,77 +369,11 @@ public class AuxiliarySearchControllerImplUnitTest {
                 .donateEntries(any(Map.class), mDonationCompleteCallbackCaptor.capture());
         histogramWatcher.assertExpected();
 
-        histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Search.AuxiliarySearch.DonateTime", timeDelta)
-                        .expectIntRecords(
-                                "Search.AuxiliarySearch.DonationRequestStatus",
-                                RequestStatus.SUCCESSFUL)
-                        .build();
-
-        mDonationCompleteCallbackCaptor.getValue().onResult(true);
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE
-    })
-    public void testOnNonSensitiveHistoryDataAvailable() {
-        long now = TimeUtils.uptimeMillis();
-        int timeDelta = 50;
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Search.AuxiliarySearch.QueryTime.Tabs", timeDelta)
-                        .build();
-
-        // Verifies the case when the entry list is empty.
-        mFakeTime.advanceMillis(timeDelta);
-        List<AuxiliarySearchDataEntry> entries = new ArrayList<>();
-        mAuxiliarySearchControllerImpl.onNonSensitiveHistoryDataAvailable(entries, now);
-
-        histogramWatcher.assertExpected();
-        verify(mAuxiliarySearchDonor, never())
-                .donateEntries(eq(entries), mDonationCompleteCallbackCaptor.capture());
-
-        // Verifies the case when the entry list isn't empty.
-        mDataEntry1 =
-                new AuxiliarySearchDataEntry(
-                        /* type= */ AuxiliarySearchEntryType.TAB,
-                        /* url= */ JUnitTestGURLs.URL_1,
-                        /* title= */ "Title 1",
-                        /* lastActiveTime= */ now - 2,
-                        /* tabId= */ TAB_ID_1,
-                        /* appId= */ null,
-                        /* visitId= */ -1);
-        mDataEntry2 =
-                new AuxiliarySearchDataEntry(
-                        /* type= */ AuxiliarySearchEntryType.TAB,
-                        /* url= */ JUnitTestGURLs.URL_2,
-                        /* title= */ "Title 2",
-                        /* lastActiveTime= */ now - 1,
-                        /* tabId= */ TAB_ID_2,
-                        /* appId= */ null,
-                        /* visitId= */ -1);
-        entries.add(mDataEntry1);
-        entries.add(mDataEntry2);
-        histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Search.AuxiliarySearch.QueryTime.Tabs", timeDelta * 2)
-                        .build();
-        mFakeTime.advanceMillis(timeDelta);
-        mAuxiliarySearchControllerImpl.onNonSensitiveHistoryDataAvailable(entries, now);
-
-        verify(mAuxiliarySearchDonor)
-                .donateEntries(eq(entries), mDonationCompleteCallbackCaptor.capture());
-        histogramWatcher.assertExpected();
-
         // Verifies the callback is called when the donation completes successfully.
         mFakeTime.advanceMillis(timeDelta);
         histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Search.AuxiliarySearch.DonateTime", timeDelta * 3)
+                        .expectIntRecord("Search.AuxiliarySearch.DonateTime", timeDelta * 2)
                         .expectIntRecords(
                                 "Search.AuxiliarySearch.DonationRequestStatus",
                                 RequestStatus.SUCCESSFUL)

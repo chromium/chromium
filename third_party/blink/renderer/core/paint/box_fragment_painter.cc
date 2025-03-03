@@ -405,9 +405,6 @@ bool ShouldDelegatePaintingToViewTransition(const PhysicalBoxFragment& fragment,
   switch (paint_phase) {
     case PaintPhase::kSelfBlockBackgroundOnly:
     case PaintPhase::kSelfOutlineOnly:
-      return ViewTransitionUtils::
-          ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(
-              *fragment.GetLayoutObject());
     case PaintPhase::kBlockBackground:
     case PaintPhase::kDescendantBlockBackgroundsOnly:
     case PaintPhase::kForcedColorsModeBackplate:

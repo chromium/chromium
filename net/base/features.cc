@@ -132,18 +132,6 @@ BASE_FEATURE(kSplitCacheByCrossSiteMainFrameNavigationBoolean,
              "SplitCacheByCrossSiteMainFrameNavigationBoolean",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSplitCacheByMainFrameNavigationInitiator,
-             "SplitCacheByMainFrameNavigationInitiator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSplitCacheByNavigationInitiator,
-             "SplitCacheByNavigationInitiator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kHttpCacheKeyingExperimentControlGroup2024,
-             "HttpCacheKeyingExperimentControlGroup2024",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSplitCodeCacheByNetworkIsolationKey,
              "SplitCodeCacheByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -587,6 +575,9 @@ BASE_FEATURE(kDeviceBoundSessions,
 BASE_FEATURE(kPersistDeviceBoundSessions,
              "PersistDeviceBoundSessions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDeviceBoundSessionsRefreshQuota,
+             "DeviceBoundSessionsRefreshQuota",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartitionProxyChains,
              "PartitionProxyChains",

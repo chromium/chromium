@@ -8516,6 +8516,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_MICROSOFT_FILES_TRENDING_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
         Suggested for you
       </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_TODAY_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        You opened today
+      </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_YESTERDAY_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        You opened yesterday
+      </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_OPENED_PAST_WEEK_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        You opened in the past week
+      </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_FILES_SHARED_BY_JUSTIFICATION_TEXT" desc="Text shown on the NTP Microsoft files card.">
+        Shared by <ph name="USER_NAME">$1<ex>Megan Bower</ex></ph>
+      </message>
       <message name="IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module that specifies length of time in hours.">
         Hide for <ph name="MODULE_TITLE">$1<ex>5</ex></ph> hours
       </message>
@@ -8563,6 +8575,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_TEXT" desc="Text shown on button on the NTP Calendar cards for joining a video conference." meaning="Click here to join your video conference meetings.">
         Join Meeting
+      </message>
+      <message name="IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_ACCNAME" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the Join Meeting button is focused.">
+        Join meeting <ph name ="MEETING_TITLE">$1<ex>Leads Sync</ex></ph>
       </message>
       <message name="IDS_NTP_MODULES_CALENDAR_IN_PROGRESS" desc="Text displaying that the meeting is in progress." meaning="The meeting is currently in progress.">
         In Progress
@@ -18695,6 +18710,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <if expr="is_chromeos">
       <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_NOTIFICATION_MESSAGE" desc="Message of the notification displayed while launching a user-installed app.">
         Support for Chrome apps will end soon. To learn about your options, contact the app developer or your IT support team.
+      </message>
+    </if>
+
+    <!-- Glic button context menu. -->
+    <if expr="not is_android">
+      <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
+        Unpin
       </message>
     </if>
 

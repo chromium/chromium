@@ -164,7 +164,7 @@ public class TabListEditorManager {
                             ButtonType.ICON_AND_TEXT,
                             IconPosition.START));
             mTabListEditorActions.add(
-                    TabListEditorGroupAction.createAction(
+                    TabListEditorLegacyGroupAction.createAction(
                             mActivity,
                             mTabGroupCreationDialogManager,
                             ShowMode.MENU_ONLY,

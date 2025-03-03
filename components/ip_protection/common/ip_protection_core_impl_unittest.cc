@@ -30,6 +30,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/proxy_config.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,8 @@ constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
 
 constexpr bool kEnableTokenCacheByGeo = true;
 constexpr bool kDisableTokenCacheByGeo = false;
+constexpr bool kEnableSplitMdl = true;
+constexpr bool kDisableSplitMdl = false;
 
 class MockIpProtectionTokenManager : public IpProtectionTokenManager {
  public:
@@ -144,7 +147,7 @@ class IpProtectionCoreImplTest : public testing::Test {
  protected:
   IpProtectionCoreImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    SetTokenCachingByGeoParam(kEnableTokenCacheByGeo);
+    SetFeatureParams(kEnableTokenCacheByGeo, kEnableSplitMdl);
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
@@ -155,19 +158,20 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*ip_protection_proxy_config_manager=*/nullptr,
         std::move(ip_protection_token_managers),
         /*probabilistic_reveal_token_registry=*/nullptr,
-        /*is_ip_protection_enabled=*/true);
+        /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
       MaskedDomainListManager* masked_domain_list_manager,
-      bool use_regular_mdl = false) {
+      bool ip_protection_incognito = false) {
     return std::make_unique<IpProtectionCoreImpl>(
         masked_domain_list_manager,
         /*ip_protection_proxy_config_manager=*/nullptr,
         /*ip_protection_token_managers=*/
         std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
         /*probabilistic_reveal_token_registry=*/nullptr,
-        /*is_ip_protection_enabled=*/true, /*use_regular_mdl=*/use_regular_mdl);
+        /*is_ip_protection_enabled=*/true,
+        /*ip_protection_incognito=*/ip_protection_incognito);
   }
 
   std::unique_ptr<IpProtectionCoreImpl> MakeCore(
@@ -180,7 +184,7 @@ class IpProtectionCoreImplTest : public testing::Test {
         std::move(ip_protection_proxy_config_manager),
         std::move(ip_protection_token_managers),
         /*probabilistic_reveal_token_registry=*/nullptr,
-        /*is_ip_protection_enabled=*/true);
+        /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
   }
 
   // Shortcut to create a ProxyChain from hostnames.
@@ -193,14 +197,21 @@ class IpProtectionCoreImplTest : public testing::Test {
     return net::ProxyChain::ForIpProtection(servers);
   }
 
-  void SetTokenCachingByGeoParam(bool should_enable_feature) {
-    // Set token caching by geo param value.
+  void SetFeatureParams(bool enable_token_cache_by_geo, bool enable_split_mdl) {
     scoped_feature_list_.Reset();
-    std::map<std::string, std::string> parameters;
-    parameters[net::features::kIpPrivacyCacheTokensByGeo.name] =
-        base::ToString(should_enable_feature);
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kEnableIpProtectionProxy, std::move(parameters));
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // IP Protection feature and params.
+        {base::test::FeatureRefAndParams{
+             net::features::kEnableIpProtectionProxy,
+             {{net::features::kIpPrivacyCacheTokensByGeo.name,
+               base::ToString(enable_token_cache_by_geo)}}},
+         // MDL feature and params.
+         base::test::FeatureRefAndParams{
+             network::features::kMaskedDomainList,
+             {{network::features::kSplitMaskedDomainList.name,
+               base::ToString(enable_split_mdl)}}}},
+        {/*disabled_features=*/});
   }
 
   ContentSettingsForOneType CreateSetting(const std::string& first_party_url,
@@ -593,7 +604,7 @@ TEST_F(IpProtectionCoreImplTest,
 
 // When token caching by geo is disabled, `GeoObserved` has no impact.
 TEST_F(IpProtectionCoreImplTest, GeoObservedTokenCachingByGeoDisabledNoImpact) {
-  SetTokenCachingByGeoParam(kDisableTokenCacheByGeo);
+  SetFeatureParams(kDisableTokenCacheByGeo, kEnableSplitMdl);
 
   // Old geo used to set current geo in both the proxy list manager and token
   // cache manager.
@@ -688,10 +699,10 @@ TEST_F(IpProtectionCoreImplTest,
   masked_domain_list_manager.UpdateMaskedDomainList(mdl,
                                                     /*exclusion_list=*/{});
 
-  // The core should be constructed with the default MDL type, so we set
-  // `use_regular_mdl` to false.
+  // The core should be constructed with the default MDL type (i.e. incognito),
+  // so we set `ip_protection_incognito` to true.
   auto ip_protection_core =
-      MakeCore(&masked_domain_list_manager, /*use_regular_mdl=*/false);
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/true);
 
   EXPECT_FALSE(ip_protection_core->RequestShouldBeProxied(
       GURL(base::StrCat({"http://", "irrelevant.com"})),
@@ -721,14 +732,56 @@ TEST_F(IpProtectionCoreImplTest,
                                                     /*exclusion_list=*/{});
 
   // The core should be constructed with the regular browsing MDL type, so we
-  // set `use_regular_mdl` to true.
+  // set `ip_protection_incognito` to false.
   auto ip_protection_core =
-      MakeCore(&masked_domain_list_manager, /*use_regular_mdl=*/true);
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/false);
 
   EXPECT_FALSE(ip_protection_core->RequestShouldBeProxied(
       GURL(base::StrCat({"http://", "irrelevant.com"})),
       net::NetworkAnonymizationKey()));
 
+  EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", example_com})),
+      net::NetworkAnonymizationKey()));
+}
+
+TEST_F(
+    IpProtectionCoreImplTest,
+    RequestShouldBeProxied_SplitMdlDisabled_RegularAndIncognitoMatchDefault) {
+  // Only the split MDL feature is disabled.
+  SetFeatureParams(kEnableTokenCacheByGeo, kDisableSplitMdl);
+
+  // Create a MDL manager w/ a single entry that matches the default MDL type.
+  std::string example_com = "example.com";
+  auto masked_domain_list_manager =
+      MaskedDomainListManager(IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl = masked_domain_list::MaskedDomainList();
+  ResourceOwner* resource_owner = mdl.add_resource_owners();
+  // By not setting an `Experiments` value, the entry is considered 'default'.
+  Resource* resource = resource_owner->add_owned_resources();
+  resource->set_domain(example_com);
+  masked_domain_list_manager.UpdateMaskedDomainList(mdl,
+                                                    /*exclusion_list=*/{});
+
+  // The core should be constructed with the regular browsing MDL type, so we
+  // set `ip_protection_incognito` to false.
+  auto ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/false);
+
+  EXPECT_FALSE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", "irrelevant.com"})),
+      net::NetworkAnonymizationKey()));
+
+  // The default MDL type should match for regular browsing since the split MDL
+  // feature is disabled.
+  EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
+      GURL(base::StrCat({"http://", example_com})),
+      net::NetworkAnonymizationKey()));
+
+  // A IP Protection core should also match during an incognito session since
+  // the split MDL feature is disabled.
+  ip_protection_core =
+      MakeCore(&masked_domain_list_manager, /*ip_protection_incognito=*/true);
   EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
       GURL(base::StrCat({"http://", example_com})),
       net::NetworkAnonymizationKey()));

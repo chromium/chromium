@@ -119,7 +119,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     service_->CheckForExternalUpdates();
     base::RunLoop().RunUntilIdle();
     PendingExtensionManager* const pending_extension_manager =
-        service_->pending_extension_manager();
+        PendingExtensionManager::Get(profile());
     while (pending_extension_manager->IsIdPending(kStandaloneAppId) ||
            pending_extension_manager->IsIdPending(kStandaloneChildAppId)) {
       base::RunLoop().RunUntilIdle();

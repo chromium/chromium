@@ -1136,7 +1136,8 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataSettings) {
     EXPECT_TRUE(registrar()->IsExtensionEnabled(kGoodCrx));
   }
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodCrx));
+  EXPECT_FALSE(extensions::PendingExtensionManager::Get(profile())->IsIdPending(
+      kGoodCrx));
 }
 
 TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNewExtension) {
@@ -1204,10 +1205,12 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNewExtension) {
 
     SyncChangeList list =
         MakeSyncChangeList(kGoodCrx, specifics, SyncChange::ACTION_UPDATE);
+    extensions::PendingExtensionManager* pending_extension_manager =
+        extensions::PendingExtensionManager::Get(profile());
 
     extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
 
-    ASSERT_TRUE(service()->pending_extension_manager()->IsIdPending(kGoodCrx));
+    ASSERT_TRUE(pending_extension_manager->IsIdPending(kGoodCrx));
     UpdateExtension(kGoodCrx, path,
                     test_case.sync_enabled ? ENABLED : DISABLED);
     EXPECT_EQ(test_case.expect_disable_reasons,
@@ -1215,7 +1218,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNewExtension) {
     std::unique_ptr<const PermissionSet> permissions =
         prefs->GetGrantedPermissions(kGoodCrx);
     EXPECT_EQ(test_case.expect_permissions_granted, !permissions->IsEmpty());
-    ASSERT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodCrx));
+    ASSERT_FALSE(pending_extension_manager->IsIdPending(kGoodCrx));
     if (test_case.sync_enabled)
       EXPECT_TRUE(registry()->enabled_extensions().GetByID(kGoodCrx));
     else
@@ -1252,7 +1255,8 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataTerminatedExtension) {
   EXPECT_FALSE(registrar()->IsExtensionEnabled(kGoodCrx));
   EXPECT_TRUE(extensions::util::IsIncognitoEnabled(kGoodCrx, profile()));
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodCrx));
+  EXPECT_FALSE(extensions::PendingExtensionManager::Get(profile())->IsIdPending(
+      kGoodCrx));
 }
 
 TEST_F(ExtensionSyncServiceTest, ProcessSyncDataVersionCheck) {
@@ -1333,7 +1337,8 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataVersionCheck) {
     EXPECT_EQ(new_version, extension_data->version());
   }
 
-  EXPECT_FALSE(service()->pending_extension_manager()->IsIdPending(kGoodCrx));
+  EXPECT_FALSE(extensions::PendingExtensionManager::Get(profile())->IsIdPending(
+      kGoodCrx));
 }
 
 TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNotInstalled) {
@@ -1362,7 +1367,8 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNotInstalled) {
 
   const extensions::PendingExtensionInfo* info;
   EXPECT_TRUE(
-      (info = service()->pending_extension_manager()->GetById(kGoodCrx)));
+      (info = extensions::PendingExtensionManager::Get(profile())->GetById(
+           kGoodCrx)));
   EXPECT_EQ(ext_specifics->update_url(), info->update_url().spec());
   EXPECT_TRUE(info->is_from_sync());
   EXPECT_EQ(ManifestLocation::kInternal, info->install_source());

@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_utils.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
@@ -538,7 +538,8 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     //    using RGBA4444 as color buffer.
     //  - If we are not using Skia's Graphite-Dawn backend, since dawn does not
     //  support RGBA_4444 formats.
-    // TODO(penghuang): query supported formats from GPU process.
+    // TODO(crbug.com/398868042): Instead of Graphite/Vulkan feature checks, add
+    // appropriate shared image capability and check for its support.
     if (!cmd.HasSwitch(switches::kDisableRGBA4444Textures) &&
         base::SysInfo::AmountOfPhysicalMemoryMB() <= 512 &&
         !::features::IsUsingVulkan() &&

@@ -190,8 +190,6 @@ struct MockReadWrite {
   MockReadWrite()
       : mode(SYNCHRONOUS),
         result(0),
-        data(nullptr),
-        data_len(0),
         sequence_number(0),
         tos(0) {}
 
@@ -199,8 +197,6 @@ struct MockReadWrite {
   MockReadWrite(IoMode io_mode, int result)
       : mode(io_mode),
         result(result),
-        data(nullptr),
-        data_len(0),
         sequence_number(0),
         tos(0) {}
 
@@ -208,8 +204,6 @@ struct MockReadWrite {
   MockReadWrite(IoMode io_mode, int result, int seq)
       : mode(io_mode),
         result(result),
-        data(nullptr),
-        data_len(0),
         sequence_number(seq),
         tos(0) {}
 
@@ -217,8 +211,7 @@ struct MockReadWrite {
   explicit MockReadWrite(const char* data)
       : mode(ASYNC),
         result(0),
-        data(data),
-        data_len(strlen(data)),
+        data(data, strlen(data)),
         sequence_number(0),
         tos(0) {}
 
@@ -226,8 +219,7 @@ struct MockReadWrite {
   MockReadWrite(IoMode io_mode, const char* data)
       : mode(io_mode),
         result(0),
-        data(data),
-        data_len(strlen(data)),
+        data(data, strlen(data)),
         sequence_number(0),
         tos(0) {}
 
@@ -235,8 +227,7 @@ struct MockReadWrite {
   MockReadWrite(IoMode io_mode, const char* data, int data_len)
       : mode(io_mode),
         result(0),
-        data(data),
-        data_len(data_len),
+        data(data, data_len),
         sequence_number(0),
         tos(0) {}
 
@@ -244,8 +235,7 @@ struct MockReadWrite {
   MockReadWrite(IoMode io_mode, int seq, const char* data)
       : mode(io_mode),
         result(0),
-        data(data),
-        data_len(strlen(data)),
+        data(data, strlen(data)),
         sequence_number(seq),
         tos(0) {}
 
@@ -253,8 +243,7 @@ struct MockReadWrite {
   MockReadWrite(IoMode io_mode, const char* data, int data_len, int seq)
       : mode(io_mode),
         result(0),
-        data(data),
-        data_len(data_len),
+        data(data, data_len),
         sequence_number(seq),
         tos(0) {}
 
@@ -266,15 +255,25 @@ struct MockReadWrite {
                 uint8_t tos_byte)
       : mode(io_mode),
         result(0),
+        data(data, data_len),
+        sequence_number(seq),
+        tos(tos_byte) {}
+
+  // Read/write with std::string_view.
+  MockReadWrite(IoMode io_mode,
+                std::string_view data,
+                int result = 0,
+                int seq = 0,
+                uint8_t tos_byte = 0)
+      : mode(io_mode),
+        result(result),
         data(data),
-        data_len(data_len),
         sequence_number(seq),
         tos(tos_byte) {}
 
   IoMode mode;
   int result;
-  const char* data;
-  int data_len;
+  std::string_view data;
 
   // For data providers that only allows reads to occur in a particular
   // sequence.  If a read occurs before the given |sequence_number| is reached,
@@ -302,7 +301,7 @@ class SocketDataPrinter {
 
   // Prints the write in |data| using some sort of protocol-specific
   // format.
-  virtual std::string PrintWrite(const std::string& data) = 0;
+  virtual std::string PrintWrite(std::string_view data) = 0;
 };
 
 // The SocketDataProvider is an interface used by the MockClientSocket

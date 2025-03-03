@@ -28,7 +28,7 @@ class ExceptionState;
 
 class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
  public:
-  enum NodeType {
+  enum class NodeType {
     kNodeTypeUnknown = 0,
     kNodeTypeDestination = 1,
     kNodeTypeOscillator = 2,
@@ -248,7 +248,7 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   void SendLogMessage(const char* const function_name, const String& message);
 
   bool is_initialized_ = false;
-  NodeType node_type_ = kNodeTypeUnknown;
+  NodeType node_type_ = NodeType::kNodeTypeUnknown;
 
   // The owner AudioNode. Accessed only on the main thread.
   const WeakPersistent<AudioNode> node_;

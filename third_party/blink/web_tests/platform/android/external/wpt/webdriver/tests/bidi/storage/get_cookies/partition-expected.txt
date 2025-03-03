@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_partition_context
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_partition_user_context
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+Harness: the test ran to completion.
+

@@ -6,7 +6,6 @@ import 'chrome://resources/cros_components/accordion/accordion.js';
 import 'chrome://resources/cros_components/accordion/accordion_item.js';
 import 'chrome://resources/cros_components/badge/badge.js';
 import './cra/cra-icon.js';
-import './cra/cra-icon-button.js';
 import './genai-error.js';
 import './genai-feedback-buttons.js';
 import './genai-placeholder.js';
@@ -29,9 +28,11 @@ import {usePlatformHandler} from '../core/lit/context.js';
 import {
   GenaiResultType,
   ModelResponse,
+  ModelResponseError,
+  ModelState,
 } from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {signal} from '../core/reactive/signal.js';
+import {computed, signal} from '../core/reactive/signal.js';
 import {LanguageCode} from '../core/soda/language_info.js';
 import {Transcription} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
@@ -40,6 +41,7 @@ import {
   assert,
   assertExhaustive,
   assertExists,
+  assertNotReached,
 } from '../core/utils/assert.js';
 
 export class SummarizationView extends ReactiveLitElement {
@@ -186,6 +188,9 @@ export class SummarizationView extends ReactiveLitElement {
 
   private readonly downloadRequested = signal(false);
 
+  private readonly modelState =
+    computed(() => this.platformHandler.summaryModelLoader.state.value);
+
   get summaryContainerForTest(): HTMLDivElement {
     return assertExists(this.summaryContainer.value);
   }
@@ -200,9 +205,8 @@ export class SummarizationView extends ReactiveLitElement {
   }
 
   override updated(): void {
-    const summaryState = this.platformHandler.summaryModelLoader.state;
     if (settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
-        summaryState.value.kind === 'installing') {
+        this.modelState.value.kind === 'installing') {
       this.downloadRequested.value = true;
     }
   }
@@ -267,7 +271,7 @@ export class SummarizationView extends ReactiveLitElement {
     });
   }
 
-  private renderSummaryContent() {
+  private renderSummary() {
     const summary = this.summary.value;
     if (summary === null) {
       return html`
@@ -302,7 +306,8 @@ export class SummarizationView extends ReactiveLitElement {
   }
 
   private onSummaryExpanded() {
-    if (!this.summaryRequested.value) {
+    if (this.modelState.value.kind === 'installed' &&
+        !this.summaryRequested.value) {
       // TODO(pihsun): Better handling for promise.
       void this.requestSummary();
     } else {
@@ -314,17 +319,74 @@ export class SummarizationView extends ReactiveLitElement {
     this.summaryOpened.value = false;
   }
 
-  private renderSummary() {
-    // TODO: b/336963138 - Implement error state.
-    const downloadStatus = html`<spoken-message
-      role="status"
-      aria-live="polite"
-    >
-      ${i18n.summaryDownloadFinishedStatusMessage}
-    </spoken-message>`;
+  private onDownloadClicked() {
+    // TODO: b/399016315 - Have a wrapper to download models together.
+    this.platformHandler.summaryModelLoader.download();
+    this.platformHandler.titleSuggestionModelLoader.download();
+  }
+
+  private renderDownloadStatus(state: ModelState) {
+    switch (state.kind) {
+      case 'installing':
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.summaryDownloadStartedStatusMessage}
+          </spoken-message>`;
+      case 'error':
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.summaryDownloadErrorStatusMessage}
+          </spoken-message>`;
+      case 'installed':
+        if (!this.downloadRequested.value) {
+          return nothing;
+        }
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.summaryDownloadFinishedStatusMessage}
+          </spoken-message>`;
+      case 'notInstalled':
+      case 'unavailable':
+        return assertNotReached();
+      default:
+        return assertExhaustive(state);
+    }
+  }
+
+  private renderAccordionContent(state: ModelState) {
+    switch (state.kind) {
+      case 'installing':
+        return nothing;
+      case 'error':
+        return html`
+          <genai-error
+            .error=${ModelResponseError.LOAD_FAILURE}
+            @download-clicked=${this.onDownloadClicked}
+          ></genai-error>
+        `;
+      case 'installed':
+        return this.renderSummary();
+      case 'notInstalled':
+      case 'unavailable':
+        return assertNotReached();
+      default:
+        return assertExhaustive(state);
+    }
+  }
+
+  private renderSummaryRow(state: ModelState) {
+    // TODO: b/384418702 - Have different tooltip for error state.
     const tooltipLabel = this.summaryOpened.value ?
       i18n.summaryCollapseTooltip :
       i18n.summaryExpandTooltip;
+    let progress: RenderResult = nothing;
+    // TODO: b/384418702 - Render downloading spinner.
+    if (state.kind === 'installing') {
+      progress = html`
+        <span class="progress">
+          ${i18n.summaryDownloadingProgressDescription(state.progress)}
+        </span>
+      `;
+    }
+    // The accordion will automatically expand when model fails to install, and
+    // collapse when switch to other model states.
     return html`
       <cros-accordion variant="compact">
         <cros-accordion-item
@@ -332,47 +394,26 @@ export class SummarizationView extends ReactiveLitElement {
           @cros-accordion-item-collapsed=${this.onSummaryCollapsed}
           show-button-tooltip
           button-tooltip-label=${tooltipLabel}
+          ?disabled=${state.kind === 'installing'}
+          ?expanded=${state.kind === 'error'}
         >
           <cra-icon name="summarize_auto" slot="leading"></cra-icon>
           <div slot="title">
             <span>${i18n.summaryHeader}</span>
             <cros-badge>${i18n.genAiExperimentBadge}</cros-badge>
+            ${progress}
           </div>
-          <div id="main">${this.renderSummaryContent()}</div>
+          <div id="main">${this.renderAccordionContent(state)}</div>
         </cros-accordion-item>
       </cros-accordion>
-      ${this.downloadRequested.value ? downloadStatus : nothing}
-    `;
-  }
-
-  private renderSummaryInstalling(progress: number) {
-    return html`
-      <cros-accordion
-        variant="compact"
-        aria-label=${i18n.summaryDownloadStartedStatusMessage}
-        aria-live="polite"
-        role="status"
-      >
-        <cros-accordion-item disabled>
-          <cra-icon name="summarize_auto" slot="leading"></cra-icon>
-          <div slot="title">
-            <span>${i18n.summaryHeader}</span>
-            <cros-badge>${i18n.genAiExperimentBadge}</cros-badge>
-
-            <span class="progress">
-              ${i18n.summaryDownloadingProgressDescription(progress)}
-            </span>
-          </div>
-        </cros-accordion-item>
-      </cros-accordion>
-    `;
+      ${this.renderDownloadStatus(state)}`;
   }
 
   override render(): RenderResult {
-    const summaryModelState = this.platformHandler.summaryModelLoader.state;
+    const summaryModelState = this.modelState.value;
     const summaryEnabled = settings.value.summaryEnabled;
 
-    if (summaryModelState.value.kind === 'unavailable') {
+    if (summaryModelState.kind === 'unavailable') {
       this.classList.add('empty');
       return nothing;
     }
@@ -384,20 +425,15 @@ export class SummarizationView extends ReactiveLitElement {
       case SummaryEnableState.UNKNOWN:
         return html`<summary-consent-card></summary-consent-card>`;
       case SummaryEnableState.ENABLED:
-        switch (summaryModelState.value.kind) {
-          case 'error':
-            // TODO(pihsun): Handle error
-            return nothing;
+        switch (summaryModelState.kind) {
           case 'installing':
-            return this.renderSummaryInstalling(
-              summaryModelState.value.progress,
-            );
+          case 'error':
           case 'installed':
-            return this.renderSummary();
+            return this.renderSummaryRow(summaryModelState);
           case 'notInstalled':
             return html`<summary-consent-card></summary-consent-card>`;
           default:
-            assertExhaustive(summaryModelState.value.kind);
+            assertExhaustive(summaryModelState.kind);
         }
       // eslint doesn't detect that the above case never reaches here, but tsc
       // prevents us from adding "break;" here since it's unreachable code.

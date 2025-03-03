@@ -111,7 +111,7 @@ class AudioParamTimeline {
  private:
   class ParamEvent {
    public:
-    enum Type {
+    enum class Type {
       kSetValue,
       kLinearRampToValue,
       kExponentialRampToValue,

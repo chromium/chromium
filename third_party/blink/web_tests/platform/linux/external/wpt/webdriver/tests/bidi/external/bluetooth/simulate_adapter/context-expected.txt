@@ -1,5 +1,5 @@
 This is a wdspec test.
 [FAIL] test_contexts_are_isolated
-  TypeError: Bluetooth.simulate_adapter() got an unexpected keyword argument 'type_'
+  assert False is True
 Harness: the test ran to completion.
 

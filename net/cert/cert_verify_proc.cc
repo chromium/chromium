@@ -44,7 +44,6 @@
 #include "net/cert/internal/revocation_checker.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/known_roots.h"
-#include "net/cert/symantec_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_certificate_net_log_param.h"
 #include "net/cert/x509_util.h"
@@ -565,15 +564,6 @@ int CertVerifyProc::Verify(X509Certificate* cert,
     // Avoid replacing a more serious error, such as an OS/library failure,
     // by ensuring that if verification failed, it failed with a certificate
     // error.
-    if (rv == OK || IsCertificateError(rv))
-      rv = MapCertStatusToNetError(verify_result->cert_status);
-  }
-
-  // Distrust Symantec-issued certificates, as described at
-  // https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
-  if (!(flags & VERIFY_DISABLE_SYMANTEC_ENFORCEMENT) &&
-      IsLegacySymantecCert(verify_result->public_key_hashes)) {
-    verify_result->cert_status |= CERT_STATUS_SYMANTEC_LEGACY;
     if (rv == OK || IsCertificateError(rv))
       rv = MapCertStatusToNetError(verify_result->cert_status);
   }

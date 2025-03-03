@@ -101,19 +101,4 @@ bool ViewTransitionUtils::IsViewTransitionParticipantFromSupplement(
   return transition && transition->IsRepresentedViaPseudoElements(object);
 }
 
-// static
-bool ViewTransitionUtils::UseLayeredCapture(const ComputedStyle& style) {
-  return RuntimeEnabledFeatures::ViewTransitionLayeredCaptureEnabled() &&
-         style.ViewTransitionCaptureMode() ==
-             StyleViewTransitionCaptureMode::kLayered;
-}
-
-// static
-bool ViewTransitionUtils::
-    ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(
-        const LayoutObject& object) {
-  return UseLayeredCapture(object.StyleRef()) &&
-         IsViewTransitionParticipantFromSupplement(object);
-}
-
 }  // namespace blink

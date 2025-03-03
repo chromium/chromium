@@ -37,6 +37,11 @@ enum VisualRectFlags : unsigned int {
   // onscreen. This is because we don't sync scroll updates from the main
   // frame's root scroller. See kSkipUnnecessaryRemoteFrameGeometryPropagation.
   kVisualRectApplyRemoteViewportTransform = 1 << 5,
+
+  // Use the real clip-path bounding rect, ignoring any large clip path bounding
+  // rect designed to facilitate painting of composited clip path animations.
+  // Used for intersection observers.
+  kUsePreciseClipPath = 1 << 6
 };
 
 }  // namespace blink

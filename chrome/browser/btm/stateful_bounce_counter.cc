@@ -10,7 +10,7 @@
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace dips {
+namespace btm {
 
 StatefulBounceCounter::StatefulBounceCounter(PassKey,
                                              content::BtmService* dips_service)
@@ -40,4 +40,4 @@ void StatefulBounceCounter::OnStatefulBounce(
 
 const int StatefulBounceCounter::kUserDataKey;
 
-}  // namespace dips
+}  // namespace btm

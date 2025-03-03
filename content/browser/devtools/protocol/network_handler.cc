@@ -2713,6 +2713,10 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
     case network::mojom::CorsError::kPrivateNetworkAccessPermissionDenied:
       return protocol::Network::CorsErrorEnum::
           PrivateNetworkAccessPermissionDenied;
+
+    case network::mojom::CorsError::kLocalNetworkAccessPermissionDenied:
+      return protocol::Network::CorsErrorEnum::
+          LocalNetworkAccessPermissionDenied;
   }
 }
 }  // namespace
@@ -3807,6 +3811,9 @@ String NetworkHandler::BuildPrivateNetworkRequestPolicy(
       return protocol::Network::PrivateNetworkRequestPolicyEnum::PreflightBlock;
     case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::PreflightWarn;
+    case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::
+          PermissionBlock;
   }
 }
 

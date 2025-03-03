@@ -865,7 +865,7 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       position_try_rule->SetCascadeLayer(cascade_layer);
       AddPositionTryRule(position_try_rule);
     } else if (auto* function_rule = DynamicTo<StyleRuleFunction>(rule)) {
-      // TODO(sesse): Set the cascade layer here?
+      function_rule->SetCascadeLayer(cascade_layer);
       AddFunctionRule(function_rule);
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {

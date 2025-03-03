@@ -163,6 +163,12 @@ void SetGetDisplayNameFunction(
 COMPONENT_EXPORT(PRINT_BACKEND)
 std::optional<PrinterBasicInfo> GetBasicPrinterInfo(HANDLE printer);
 
+// Helper to read printer info using both Print Spooler API and the registry.
+// Possibly called by `GetBasicPrinterInfo()`.  Exported to support testing.
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::optional<PrinterBasicInfo> GetBasicPrinterInfoMixedMethodForTesting(
+    HANDLE printer);
+
 COMPONENT_EXPORT(PRINT_BACKEND)
 std::vector<std::string> GetDriverInfo(HANDLE printer);
 

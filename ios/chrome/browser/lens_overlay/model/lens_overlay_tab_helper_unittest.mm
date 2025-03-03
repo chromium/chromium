@@ -41,12 +41,13 @@ class LensOverlayTabHelperTest : public PlatformTest {
 
     feature_list_.InitAndEnableFeature(kEnableLensOverlay);
 
-    GetApplicationContext()->GetLocalState()->SetInteger(
+    profile_->GetPrefs()->SetInteger(
         lens::prefs::kLensOverlaySettings,
         static_cast<int>(
             lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
 
     web_state_ = std::make_unique<web::FakeWebState>();
+    web_state_->SetBrowserState(profile_.get());
 
     id dispatcher = [[CommandDispatcher alloc] init];
     dispatcher_ = dispatcher;

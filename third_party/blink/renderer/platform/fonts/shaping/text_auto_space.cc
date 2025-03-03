@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

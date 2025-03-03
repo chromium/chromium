@@ -58,7 +58,7 @@ class TableSectionPainter {
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& section_paint_offset,
                               const PhysicalRect& columns_paint_rect,
-                              const TableFragmentData::ColumnGeometries&);
+                              const TableColumnGeometries&);
 
  private:
   const PhysicalBoxFragment& fragment_;
@@ -86,7 +86,7 @@ class TableRowPainter {
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& row_paint_offset,
                               const PhysicalRect& columns_paint_rect,
-                              const TableFragmentData::ColumnGeometries&);
+                              const TableColumnGeometries&);
 
  private:
   const PhysicalBoxFragment& fragment_;

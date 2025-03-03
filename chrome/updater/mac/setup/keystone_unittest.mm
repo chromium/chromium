@@ -29,19 +29,19 @@ class KeystoneTest : public testing::Test {
     ASSERT_TRUE(temp_keystone_dir_.CreateUniqueTempDir());
 
     base::FilePath ticket_path =
-        temp_keystone_dir_.GetPath().AppendASCII("TicketStore");
+        temp_keystone_dir_.GetPath().Append("TicketStore");
     ASSERT_TRUE(base::CreateDirectory(ticket_path));
 
     base::FilePath test_data_path;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
-    test_data_path = test_data_path.AppendASCII("updater");
+    test_data_path = test_data_path.Append("updater");
 
+    ASSERT_TRUE(
+        base::CopyFile(test_data_path.Append("Keystone.legacy.ticketstore"),
+                       ticket_path.Append("Keystone.ticketstore")));
     ASSERT_TRUE(base::CopyFile(
-        test_data_path.AppendASCII("Keystone.legacy.ticketstore"),
-        ticket_path.AppendASCII("Keystone.ticketstore")));
-    ASSERT_TRUE(base::CopyFile(
-        test_data_path.AppendASCII("CountingMetrics.plist"),
-        temp_keystone_dir_.GetPath().AppendASCII("CountingMetrics.plist")));
+        test_data_path.Append("CountingMetrics.plist"),
+        temp_keystone_dir_.GetPath().Append("CountingMetrics.plist")));
   }
 
   base::ScopedTempDir temp_keystone_dir_;
@@ -56,8 +56,7 @@ TEST_F(KeystoneTest, CreateEmptyPlistFile) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   // Verify plist file is created if not present.
-  const base::FilePath plist_path =
-      temp_dir.GetPath().AppendASCII("empty.plist");
+  const base::FilePath plist_path = temp_dir.GetPath().Append("empty.plist");
   EXPECT_TRUE(CreateEmptyPlistFile(plist_path));
   EXPECT_TRUE(base::PathExists(plist_path));
   int mode = 0;

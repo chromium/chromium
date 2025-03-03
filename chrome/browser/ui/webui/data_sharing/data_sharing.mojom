@@ -94,6 +94,12 @@ interface PageHandler {
   // Ask Chrome to open the tab group in current browser once the "Join and
   // Open" is pressed from the Join dialog.
   OpenTabGroup(string group_id);
+
+  // Call before stop sharing.
+  AboutToUnShareTabGroup(string tab_group_id);
+
+  // Call after stop sharing succeeded.
+  OnTabGroupUnShareComplete(string tab_group_id);
 };
 
 // WebUI-side handler for requests from the browser.

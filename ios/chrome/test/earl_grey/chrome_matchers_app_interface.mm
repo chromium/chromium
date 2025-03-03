@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
-#import "ios/chrome/browser/download/ui_bundled/download_manager_constants.h"
+#import "ios/chrome/browser/download/ui/download_manager_constants.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"

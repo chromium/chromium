@@ -74,7 +74,8 @@ ResourceMultiBufferDataProvider::~ResourceMultiBufferDataProvider() = default;
 
 void ResourceMultiBufferDataProvider::Start() {
   DVLOG(1) << __func__ << " @ " << byte_pos();
-  if (url_data_->length() > 0 && byte_pos() >= url_data_->length()) {
+  if (invalidated_ ||
+      (url_data_->length() > 0 && byte_pos() >= url_data_->length())) {
     task_runner_->PostTask(
         FROM_HERE, WTF::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
                                  weak_factory_.GetWeakPtr()));
@@ -438,7 +439,7 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
 
   // This request reports something smaller than what we've seen in the past,
   // Maybe it's transient error?
-  if (url_data_->length() != kPositionNotSpecified &&
+  if (!invalidated_ && url_data_->length() != kPositionNotSpecified &&
       size < url_data_->length()) {
     if (retries_ < kMaxRetries) {
       DVLOG(1) << " Partial data received.... @ pos = " << size;
@@ -473,7 +474,7 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
   DCHECK(active_loader_.get());
   active_loader_.reset();
 
-  if (retries_ < kMaxRetries && pos_ != 0) {
+  if (!invalidated_ && retries_ < kMaxRetries && pos_ != 0) {
     retries_++;
     task_runner_->PostDelayedTask(
         FROM_HERE,
@@ -486,6 +487,10 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
     // Note that calling Fail() will most likely delete this object.
     url_data_->Fail();
   }
+}
+
+void ResourceMultiBufferDataProvider::Invalidate() {
+  invalidated_ = true;
 }
 
 bool ResourceMultiBufferDataProvider::ParseContentRange(

@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_overflow_menu_delegate.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -23,6 +24,7 @@ const CGFloat kMenuSymbolSize = 18;
 #endif
 
 @implementation LensOverlayOverflowMenuFactory {
+  raw_ptr<Browser> _browser;
   BrowserActionFactory* _actionFactory;
   __weak id<LensOverlayOverflowMenuDelegate> _overflowMenuDelegate;
 }
@@ -32,6 +34,7 @@ const CGFloat kMenuSymbolSize = 18;
                (id<LensOverlayOverflowMenuDelegate>)overflowMenuDelegate {
   self = [super init];
   if (self) {
+    _browser = browser;
     _actionFactory = [[BrowserActionFactory alloc]
         initWithBrowser:browser
                scenario:kMenuScenarioHistogramHistoryEntry];
@@ -50,7 +53,8 @@ const CGFloat kMenuSymbolSize = 18;
       CustomSymbolWithPointSize(kGoogleIconSymbol, kMenuSymbolSize));
 #endif
 
-  if (IsLensOverlaySameTabNavigationEnabled()) {
+  if (IsLensOverlaySameTabNavigationEnabled(
+          _browser->GetProfile()->GetPrefs())) {
     return [self openURLInTheSameTabAction:GURL(kMyActivityURL)
                                      title:title
                                      image:image];
@@ -70,7 +74,8 @@ const CGFloat kMenuSymbolSize = 18;
       DefaultSymbolWithPointSize(kInfoCircleSymbol, kMenuSymbolSize));
 #endif
 
-  if (IsLensOverlaySameTabNavigationEnabled()) {
+  if (IsLensOverlaySameTabNavigationEnabled(
+          _browser->GetProfile()->GetPrefs())) {
     return [self openURLInTheSameTabAction:GURL(kLearnMoreLensURL)
                                      title:title
                                      image:image];
