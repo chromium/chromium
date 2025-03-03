@@ -8,10 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -71,6 +75,17 @@ class HomeButtonTapOverlayTest
     assistant_state->NotifyFeatureAllowed(
         assistant::AssistantAllowedState::ALLOWED);
     assistant_state->NotifyStatusChanged(assistant::AssistantStatus::READY);
+
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    // Disable Sunfish and Scanner via enterprise policies.
+    auto* capture_mode_controller = CaptureModeController::Get();
+    auto* test_capture_mode_delegate = static_cast<TestCaptureModeDelegate*>(
+        capture_mode_controller->delegate_for_testing());
+    test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+    prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
+                      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+    ASSERT_FALSE(CanShowSunfishOrScannerUi());
 
     const TestVariant test_variant = GetParam();
     switch (test_variant) {
