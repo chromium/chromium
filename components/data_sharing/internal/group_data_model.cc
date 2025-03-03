@@ -116,6 +116,12 @@ GroupDataModel::GetPossiblyRemovedGroupMember(
     }
   }
 
+  for (const auto& member : group_data_opt->former_members) {
+    if (member.gaia_id == member_gaia_id) {
+      return GroupMemberPartialData::FromGroupMember(member);
+    }
+  }
+
   // TODO(crbug.com/373628741): attempt to read the data from the database with
   // removed members once it is implemented.
   return std::nullopt;

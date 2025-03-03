@@ -998,14 +998,6 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
                     collaboration_pb::COLLABORATION_MEMBER_ADDED,
                     DirtyType::kMessageOnly, event_time);
   message.set_affected_user_gaia_id(member_gaia_id.ToString());
-  std::optional<std::string> user_display_name =
-      GetDisplayNameForUserInGroup(group_data.group_token.group_id,
-                                   member_gaia_id, group_data, std::nullopt);
-
-  if (user_display_name) {
-    message.mutable_collaboration_data()->set_affected_user_name(
-        *user_display_name);
-  }
   store_->AddMessage(message);
 
   if (instant_message_delegate_) {
@@ -1030,13 +1022,6 @@ void MessagingBackendServiceImpl::OnGroupMemberRemoved(
                     collaboration_pb::COLLABORATION_MEMBER_REMOVED,
                     DirtyType::kNone, event_time);
   message.set_affected_user_gaia_id(member_gaia_id.ToString());
-  std::optional<std::string> user_display_name =
-      GetDisplayNameForUserInGroup(group_data.group_token.group_id,
-                                   member_gaia_id, group_data, std::nullopt);
-  if (user_display_name) {
-    message.mutable_collaboration_data()->set_affected_user_name(
-        *user_display_name);
-  }
   store_->AddMessage(message);
 }
 
@@ -1066,9 +1051,7 @@ void MessagingBackendServiceImpl::AddActivityLogForTesting(
 std::optional<std::string>
 MessagingBackendServiceImpl::GetDisplayNameForUserInGroup(
     const data_sharing::GroupId& group_id,
-    const GaiaId& gaia_id,
-    const std::optional<data_sharing::GroupData>& group_data,
-    const std::optional<collaboration_pb::Message>& db_message) {
+    const GaiaId& gaia_id) {
   std::optional<data_sharing::GroupMemberPartialData> group_member_data =
       data_sharing_service_->GetPossiblyRemovedGroupMember(group_id, gaia_id);
   // Try given name from live data first.
@@ -1076,42 +1059,9 @@ MessagingBackendServiceImpl::GetDisplayNameForUserInGroup(
     return group_member_data->given_name;
   }
 
-  // Then try given name from provided data.
-  if (group_data) {
-    for (const data_sharing::GroupMember& member : group_data->members) {
-      if (member.gaia_id == gaia_id) {
-        if (member.given_name.empty()) {
-          break;
-        }
-        return member.given_name;
-      }
-    }
-  }
-
-  // Then try given name from stored data.
-  if (db_message) {
-    if (db_message->affected_user_gaia_id() == gaia_id.ToString()) {
-      if (!db_message->collaboration_data().affected_user_name().empty()) {
-        return db_message->collaboration_data().affected_user_name();
-      }
-    }
-  }
-
   // Then try display name from live data.
   if (group_member_data && !group_member_data->display_name.empty()) {
     return group_member_data->display_name;
-  }
-
-  // Then try display name from provided data.
-  if (group_data) {
-    for (const data_sharing::GroupMember& member : group_data->members) {
-      if (member.gaia_id == gaia_id) {
-        if (member.display_name.empty()) {
-          break;
-        }
-        return member.display_name;
-      }
-    }
   }
 
   return std::nullopt;
@@ -1166,8 +1116,8 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
 
   std::optional<std::string> user_name_for_display;
   if (gaia_id) {
-    user_name_for_display = GetDisplayNameForUserInGroup(
-        collaboration_group_id, *gaia_id, std::nullopt, message);
+    user_name_for_display =
+        GetDisplayNameForUserInGroup(collaboration_group_id, *gaia_id);
   }
 
   bool is_self =
