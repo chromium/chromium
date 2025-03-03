@@ -694,6 +694,21 @@
             ]
         }
     ],
+    "AndroidUseFrameIntervalDecider": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseFrameIntervalDecider"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseFrameIntervalDeciderNewAndroidFeatures": [
         {
             "platforms": [
