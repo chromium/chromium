@@ -23,8 +23,5 @@ class ShortcutCustomizationSystemAppDelegate
   gfx::Size GetMinimumWindowSize() const override;
   bool IsAppEnabled() const override;
 };
-// Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForShortcutCustomizationSystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_SHORTCUT_CUSTOMIZATION_SYSTEM_WEB_APP_INFO_H_

@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppHandlesIntents) {
         }));
   }
 
-  auto media_app_info = CreateWebAppInfoForMediaWebApp();
+  auto media_app_info = MediaSystemAppDelegate(profile()).GetWebAppInfo();
 
   // Ensure that Media App is returned as a handler for every mime type listed
   // in its file handlers.

@@ -28,7 +28,4 @@ class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
   gfx::Size GetMinimumWindowSize() const override;
 };
 
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager();
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_FILE_MANAGER_WEB_APP_INFO_H_

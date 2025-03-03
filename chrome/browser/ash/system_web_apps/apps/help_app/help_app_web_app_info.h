@@ -40,12 +40,6 @@ class HelpAppSystemAppDelegate : public SystemWebAppDelegate {
       const apps::AppLaunchParams& params) const override;
 };
 
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForHelpWebApp();
-
-// Returns the default bounds.
-gfx::Rect GetDefaultBoundsForHelpApp(Browser*);
-
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_HELP_APP_HELP_APP_WEB_APP_INFO_H_

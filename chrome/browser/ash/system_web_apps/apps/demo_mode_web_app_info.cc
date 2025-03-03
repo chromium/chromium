@@ -22,7 +22,14 @@ constexpr int kDemoModeAppMinimumWidth = 800;
 constexpr int kDemoModeAppMinimumHeight = 600;
 }  // namespace
 
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
+DemoModeSystemAppDelegate::DemoModeSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::DEMO_MODE,
+                                "DemoMode",
+                                GURL(ash::kChromeUntrustedUIDemoModeAppURL),
+                                profile) {}
+
+std::unique_ptr<web_app::WebAppInstallInfo>
+DemoModeSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(ash::kChromeUntrustedUIDemoModeAppIndexURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -40,19 +47,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
   info->background_color = info->theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
   return info;
-}
-
-DemoModeSystemAppDelegate::DemoModeSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::DEMO_MODE,
-                                "DemoMode",
-                                GURL(ash::kChromeUntrustedUIDemoModeAppURL),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-DemoModeSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForDemoModeApp();
 }
 
 bool DemoModeSystemAppDelegate::ShouldCaptureNavigations() const {

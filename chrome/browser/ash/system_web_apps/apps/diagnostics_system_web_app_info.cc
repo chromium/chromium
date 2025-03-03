@@ -18,8 +18,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+DiagnosticsSystemAppDelegate::DiagnosticsSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::DIAGNOSTICS,
+                                "Diagnostics",
+                                GURL("chrome://diagnostics"),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForDiagnosticsSystemWebApp() {
+DiagnosticsSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(ash::kChromeUIDiagnosticsAppUrl);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -38,19 +44,7 @@ CreateWebAppInfoForDiagnosticsSystemWebApp() {
   info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
   return info;
-}
-
-DiagnosticsSystemAppDelegate::DiagnosticsSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::DIAGNOSTICS,
-                                "Diagnostics",
-                                GURL("chrome://diagnostics"),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-DiagnosticsSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForDiagnosticsSystemWebApp();
 }
 
 bool DiagnosticsSystemAppDelegate::ShouldShowInLauncher() const {

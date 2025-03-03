@@ -31,8 +31,4 @@ class PersonalizationSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldAnimateThemeChanges() const override;
 };
 
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForPersonalizationApp();
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_SYSTEM_APP_DELEGATE_H_

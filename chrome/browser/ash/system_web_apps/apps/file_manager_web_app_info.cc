@@ -56,7 +56,14 @@ void AppendFileHandler(web_app::WebAppInstallInfo& info,
 
 }  // namespace
 
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
+FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::FILE_MANAGER,
+                                "File Manager",
+                                GURL(kChromeUIFileManagerURL),
+                                profile) {}
+
+std::unique_ptr<web_app::WebAppInstallInfo>
+FileManagerSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url(kChromeUIFileManagerURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -135,17 +142,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "import-crostini-image", {"tini"});
 
   return info;
-}
-
-FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::FILE_MANAGER,
-                                "File Manager",
-                                GURL(kChromeUIFileManagerURL),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-FileManagerSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForFileManager();
 }
 
 bool FileManagerSystemAppDelegate::ShouldCaptureNavigations() const {

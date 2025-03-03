@@ -235,7 +235,26 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
   PhotosExperienceSurveyTrigger::Register(profile);
 }
 
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
+base::flat_map<std::string, std::string> HatsProductSpecificDataForMediaApp() {
+  ash::MediaAppUserActions actions =
+      ash::GetMediaAppUserActionsForHappinessTracking();
+  return base::flat_map<std::string, std::string>(
+      {{"did_open_image_in_gallery",
+        base::NumberToString(g_did_open_image_in_gallery)},
+       {"did_open_video_in_gallery",
+        base::NumberToString(g_did_open_video_in_gallery)},
+       {"clicked_edit_image_in_photos",
+        base::NumberToString(actions.clicked_edit_image_in_photos)},
+       {"clicked_edit_video_in_photos",
+        base::NumberToString(actions.clicked_edit_video_in_photos)}});
+}
+
+void SetPhotosExperienceSurveyTriggerAppIdForTesting(const char* app_id) {
+  PhotosExperienceSurveyTrigger::google_photos_app_id = app_id;
+}
+
+std::unique_ptr<web_app::WebAppInstallInfo>
+MediaSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(ash::kChromeUIMediaAppURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -292,29 +311,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   // LaunchAndNavigateSystemWebApp().
   info->file_handlers.push_back(std::move(pdf_handler));
   return info;
-}
-
-base::flat_map<std::string, std::string> HatsProductSpecificDataForMediaApp() {
-  ash::MediaAppUserActions actions =
-      ash::GetMediaAppUserActionsForHappinessTracking();
-  return base::flat_map<std::string, std::string>(
-      {{"did_open_image_in_gallery",
-        base::NumberToString(g_did_open_image_in_gallery)},
-       {"did_open_video_in_gallery",
-        base::NumberToString(g_did_open_video_in_gallery)},
-       {"clicked_edit_image_in_photos",
-        base::NumberToString(actions.clicked_edit_image_in_photos)},
-       {"clicked_edit_video_in_photos",
-        base::NumberToString(actions.clicked_edit_video_in_photos)}});
-}
-
-void SetPhotosExperienceSurveyTriggerAppIdForTesting(const char* app_id) {
-  PhotosExperienceSurveyTrigger::google_photos_app_id = app_id;
-}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-MediaSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForMediaWebApp();
 }
 
 base::FilePath MediaSystemAppDelegate::GetLaunchDirectory(

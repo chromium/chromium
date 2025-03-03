@@ -31,10 +31,4 @@ class FirmwareUpdateSystemAppDelegate : public ash::SystemWebAppDelegate {
   gfx::Rect GetDefaultBounds(Browser*) const override;
 };
 
-// Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForFirmwareUpdateSystemWebApp();
-
-gfx::Rect GetDefaultBoundsForFirmwareUpdateApp(Browser*);
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_FIRMWARE_UPDATE_SYSTEM_WEB_APP_INFO_H_

@@ -35,9 +35,6 @@ class MediaSystemAppDelegate : public ash::SystemWebAppDelegate {
       const apps::AppLaunchParams& params) const override;
 };
 
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForMediaWebApp();
-
 // Returns a snapshot of the product-specific data that is attached to HaTS for
 // the MediaApp.
 base::flat_map<std::string, std::string> HatsProductSpecificDataForMediaApp();

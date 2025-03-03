@@ -22,6 +22,4 @@ class DemoModeSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool IsAppEnabled() const override;
 };
 
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForDemoModeApp();
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_DEMO_MODE_WEB_APP_INFO_H_

@@ -16,8 +16,14 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
 
+CroshSystemAppDelegate::CroshSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CROSH,
+                                "Crosh",
+                                GURL(chrome::kChromeUIUntrustedCroshURL),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForCroshSystemWebApp() {
+CroshSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url(chrome::kChromeUIUntrustedCroshURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -28,17 +34,6 @@ CreateWebAppInfoForCroshSystemWebApp() {
   info->background_color = 0xFF202124;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
-}
-
-CroshSystemAppDelegate::CroshSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CROSH,
-                                "Crosh",
-                                GURL(chrome::kChromeUIUntrustedCroshURL),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-CroshSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForCroshSystemWebApp();
 }
 
 bool CroshSystemAppDelegate::ShouldShowInLauncher() const {
