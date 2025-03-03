@@ -554,7 +554,6 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DisableScenarios();
 
   bool enable_privacy_filter = (data_filtering != NO_DATA_FILTERING);
   bool enable_package_name_filter =
@@ -568,6 +567,16 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
     if (!scenario) {
       continue;
     }
+
+    if (auto it = preset_scenarios_.find(scenario->scenario_name());
+        it != preset_scenarios_.end()) {
+      if (active_scenario_ == it->second.get()) {
+        active_scenario_->Abort();
+      } else {
+        it->second->Disable();
+      }
+    }
+
     added_scenarios.push_back(scenario->scenario_name());
     preset_scenarios_[scenario->scenario_name()] = std::move(scenario);
   }
