@@ -28,6 +28,7 @@
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -39,6 +40,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
@@ -1268,15 +1270,16 @@ void SearchBoxView::SunfishButtonPressed() {
     view_delegate_->DismissAppList();
   }
 
-  if (!CanShowSunfishOrScannerUi()) {
+  SunfishScannerFeatureWatcher* feature_watcher =
+      Shell::Get()->sunfish_scanner_feature_watcher();
+  feature_watcher->UpdateFeatureStates();
+
+  if (!feature_watcher->CanShowSunfishOrScannerUi()) {
     // The Sunfish-session allowed state changed between when the launcher was
-    // shown and when the the button was clicked. Hide the Sunfish-session
-    // button immediately for tablet mode.
-    AppListModelProvider::Get()
-        ->search_model()
-        ->search_box()
-        ->SetSunfishButtonVisibility(
-            SearchBoxModel::SunfishButtonVisibility::kHidden);
+    // shown and when the the button was clicked.
+    // No need to manually hide the Sunfish button here -
+    // `AppListControllerImpl` should have hidden the icon already from the
+    // `UpdateFeatureStates()` call.
     return;
   }
 

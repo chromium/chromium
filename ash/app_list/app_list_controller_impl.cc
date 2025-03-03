@@ -31,6 +31,7 @@
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/capture_mode/capture_mode_constants.h"
+#include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -289,12 +290,13 @@ bool IsAssistantExitPointInsideLauncher(
          exit_point == AssistantExitPoint::kLauncherSearchIphChip;
 }
 
-SearchBoxModel::SunfishButtonVisibility GetSunfishButtonVisibility() {
-  if (CanShowSunfishUi()) {
+SearchBoxModel::SunfishButtonVisibility GetSunfishButtonVisibility(
+    const SunfishScannerFeatureWatcher& feature_watcher) {
+  if (feature_watcher.CanShowSunfishUi()) {
     return SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon;
   }
 
-  if (ScannerController::CanShowUiForShell()) {
+  if (feature_watcher.CanShowScannerUi()) {
     return SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon;
   }
 
@@ -320,6 +322,11 @@ AppListControllerImpl::AppListControllerImpl()
   OnSessionStateChanged(session_controller->GetSessionState());
 
   Shell* shell = Shell::Get();
+  sunfish_scanner_feature_observation_.Observe(
+      shell->sunfish_scanner_feature_watcher());
+  // Get the initial Sunfish-session button state.
+  OnSunfishScannerFeatureStatesChanged(
+      *sunfish_scanner_feature_observation_.GetSource());
   WallpaperController::Get()->AddObserver(this);
   shell->AddShellObserver(this);
   shell->overview_controller()->AddObserver(this);
@@ -537,6 +544,12 @@ void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
   if (features::IsLauncherNudgeSessionResetEnabled()) {
     AppListNudgeController::ResetPrefsForNewUserSession(prefs);
   }
+}
+
+void AppListControllerImpl::OnSunfishScannerFeatureStatesChanged(
+    SunfishScannerFeatureWatcher& source) {
+  GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+      GetSunfishButtonVisibility(source));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1805,8 +1818,7 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
       // Recalculate the Sunfish-session button visibility every time the
       // launcher will be shown, as there are too many variables that can
       // control it and not all of them can be observed for changes.
-      GetSearchModel()->search_box()->SetSunfishButtonVisibility(
-          GetSunfishButtonVisibility());
+      sunfish_scanner_feature_observation_.GetSource()->UpdateFeatureStates();
     }
   }
 }
@@ -1825,7 +1837,8 @@ SearchModel* AppListControllerImpl::GetSearchModel() {
 void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
   SearchBoxModel* search_box_model = GetSearchModel()->search_box();
   search_box_model->SetShowAssistantButton(IsAssistantAllowedAndEnabled());
-  search_box_model->SetSunfishButtonVisibility(GetSunfishButtonVisibility());
+  OnSunfishScannerFeatureStatesChanged(
+      *sunfish_scanner_feature_observation_.GetSource());
 
   if (!client_) {
     return;

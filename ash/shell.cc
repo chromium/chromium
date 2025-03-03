@@ -49,6 +49,7 @@
 #include "ash/booting/booting_animation_controller.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_delegate.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -1615,6 +1616,14 @@ void Shell::Init(
       std::make_unique<AmbientController>(std::move(ambient_fingerprint));
 
   multi_capture_service_ = std::make_unique<MultiCaptureService>();
+
+  // Depends on `session_controller_` (instantiated in the constructor).
+  // Must be instantiated before `capture_mode_controller_`,
+  // `scanner_controller_` and `app_list_controller_` (controllers which may use
+  // the watcher), and additionally before `Shelf` is initialised in the
+  // `WindowTreeHostManager::InitHosts` call.
+  sunfish_scanner_feature_watcher_ =
+      std::make_unique<SunfishScannerFeatureWatcher>(*session_controller_);
 
   // |tablet_mode_controller_| |mru_window_tracker_|, and
   // |assistant_controller_| are put before |app_list_controller_| as they are
