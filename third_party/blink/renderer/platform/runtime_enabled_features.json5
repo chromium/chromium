@@ -791,11 +791,6 @@
       base_feature_status: "enabled",
     },
     {
-      // crbug.com/40702380
-      name: "CheckIfHighestRootContainsPositionAnchorNode",
-      status: "stable",
-    },
-    {
       name: "CheckVisibilityExtraProperties",
       status: "stable",
     },
