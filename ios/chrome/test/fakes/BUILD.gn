@@ -33,7 +33,7 @@ source_set("fakes") {
     "//components/language/ios/browser",
     "//components/translate/core/common",
     "//ios/chrome/browser/download/model",
-    "//ios/chrome/browser/download/ui_bundled",
+    "//ios/chrome/browser/download/ui",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/settings/ui_bundled/utils",

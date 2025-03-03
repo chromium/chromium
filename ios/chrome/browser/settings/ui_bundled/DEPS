@@ -50,7 +50,8 @@ include_rules = [
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
   "+ios/chrome/browser/web/model/features.h",
   "+ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h",
-  "+ios/chrome/browser/download/ui_bundled/auto_deletion"
+  "+ios/chrome/browser/download/ui/auto_deletion",
+  "+ios/chrome/browser/download/coordinator/auto_deletion",
 ]
 
 specific_include_rules = {

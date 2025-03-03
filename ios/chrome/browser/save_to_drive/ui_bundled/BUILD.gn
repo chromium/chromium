@@ -134,7 +134,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen:account_picker_screen",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
-    "//ios/chrome/browser/download/ui_bundled:constants",
+    "//ios/chrome/browser/download/ui:constants",
     "//ios/chrome/browser/drive/model:policy",
     "//ios/chrome/browser/drive/model:test_constants",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",

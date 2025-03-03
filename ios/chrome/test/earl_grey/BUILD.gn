@@ -121,7 +121,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/device_sharing/model:eg_app_support+eg2",
-    "//ios/chrome/browser/download/ui_bundled:constants",
+    "//ios/chrome/browser/download/ui:constants",
     "//ios/chrome/browser/drive_file_picker/test:eg_app_support+eg2",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/find_bar/ui_bundled:eg_app_support+eg2",

@@ -69,7 +69,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/download/model",
-    "//ios/chrome/browser/download/ui_bundled:features",
+    "//ios/chrome/browser/download/ui:features",
     "//ios/chrome/browser/drive/model:drive_tab_helper",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/find_in_page/model",
