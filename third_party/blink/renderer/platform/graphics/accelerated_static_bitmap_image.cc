@@ -74,7 +74,7 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id, size,
-      viz::ToClosestSkColorType(format), alpha_type, std::move(sk_color_space),
+      format, alpha_type, std::move(sk_color_space),
       ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
       context_thread_ref, std::move(context_task_runner),
       std::move(release_callback)));
@@ -118,7 +118,8 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       shared_gpu_context, shared_image);
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, 0u, size, sk_color_type, alpha_type,
+      std::move(shared_image), sync_token, 0u, size,
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type), alpha_type,
       std::move(sk_color_space), ImageOrientationEnum::kDefault,
       shared_gpu_context, base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
@@ -130,7 +131,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
     const gfx::Size& size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     sk_sp<SkColorSpace> sk_color_space,
     const ImageOrientation& orientation,
@@ -141,7 +142,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     : StaticBitmapImage(orientation),
       shared_image_(std::move(shared_image)),
       size_(size),
-      format_(viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type)),
+      format_(format),
       alpha_type_(alpha_type),
       sk_color_space_(std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
