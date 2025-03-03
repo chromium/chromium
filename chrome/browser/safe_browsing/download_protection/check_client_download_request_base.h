@@ -38,6 +38,8 @@ class SimpleURLLoader;
 
 namespace safe_browsing {
 
+class DownloadProtectionService;
+
 class CheckClientDownloadRequestBase {
  public:
   CheckClientDownloadRequestBase(

@@ -127,7 +127,6 @@ DownloadRequestMaker::CreateFromDownloadItem(
 std::unique_ptr<DownloadRequestMaker>
 DownloadRequestMaker::CreateFromFileSystemAccess(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-    DownloadProtectionService* service,
     const content::FileSystemAccessWriteItem& item) {
   ClientDownloadRequest::Resource resource;
   resource.set_url(
