@@ -253,11 +253,13 @@ namespace developerPrivate {
     DisableReasons disableReasons;
     AccessModifier errorCollection;
     AccessModifier fileAccess;
+    boolean fileAccessPendingChange;
     HomePage homePage;
     DOMString iconUrl;
     DOMString id;
     AccessModifier incognitoAccess;
     AccessModifier userScriptsAccess;
+    boolean incognitoAccessPendingChange;
     DOMString[] installWarnings;
     boolean isCommandRegistrationHandledExternally;
     DOMString? launchUrl;
