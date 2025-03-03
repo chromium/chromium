@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/common/signatures.h"
@@ -32,12 +33,12 @@ inline constexpr base::FilePath::StringViewType
 // `AutofillAiModelCacheImpl` implements `AutofillAiModelCache` using a
 // LevelDB as a persistence layer and a map as an in-memory cache to allow
 // synchronous access.
-// TODO(crbug.com/389631477): Implement a maximum size of the cache.
-// TODO(crbug.com/389631477): Implement a maximum lifetime for cache entries.
 class AutofillAiModelCacheImpl : public AutofillAiModelCache {
  public:
   AutofillAiModelCacheImpl(leveldb_proto::ProtoDatabaseProvider* db_provider,
-                           const base::FilePath& profile_path);
+                           const base::FilePath& profile_path,
+                           size_t max_cache_size,
+                           base::TimeDelta max_cache_age);
   AutofillAiModelCacheImpl(const AutofillAiModelCacheImpl&) = delete;
   AutofillAiModelCacheImpl& operator=(const AutofillAiModelCacheImpl&) = delete;
   AutofillAiModelCacheImpl(AutofillAiModelCacheImpl&&) = delete;
@@ -51,6 +52,9 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
  private:
   using CacheEntryWithMetadata = AutofillAiModelCacheEntryWithMetadata;
 
+  // Removes expired cache entries and limits the cache size to `max_cache_size`
+  // by removing the oldest entries.
+  void TrimEntries();
   void UpdateInDatabase(FormSignature form_signature,
                         const CacheEntryWithMetadata& entry);
 
@@ -62,6 +66,9 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
   base::WeakPtr<AutofillAiModelCacheImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  const size_t max_cache_size_;
+  const base::TimeDelta max_cache_age_;
 
   // An in-memory cache that allows for synchronous access. Should contain the
   // same content as the database.

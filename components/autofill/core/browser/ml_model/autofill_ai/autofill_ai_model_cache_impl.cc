@@ -4,12 +4,13 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache_impl.h"
 
-#include <iterator>
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,9 +21,21 @@
 
 namespace autofill {
 
+namespace {
+
+// A helper for serializing time used in this DB.
+constexpr int64_t SerializeTime(base::Time time) {
+  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
+}  // namespace
+
 AutofillAiModelCacheImpl::AutofillAiModelCacheImpl(
     leveldb_proto::ProtoDatabaseProvider* db_provider,
-    const base::FilePath& profile_path) {
+    const base::FilePath& profile_path,
+    size_t max_cache_size,
+    base::TimeDelta max_cache_age)
+    : max_cache_size_(max_cache_size), max_cache_age_(max_cache_age) {
   auto database_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
@@ -41,14 +54,59 @@ void AutofillAiModelCacheImpl::Update(FormSignature form_signature,
                                       CacheEntry entry) {
   CacheEntryWithMetadata entry_with_metadata;
   *entry_with_metadata.mutable_server_response() = std::move(entry);
-  entry_with_metadata.set_creation_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  entry_with_metadata.set_creation_time(SerializeTime(base::Time::Now()));
   UpdateInDatabase(form_signature, entry_with_metadata);
   in_memory_cache_[form_signature] = std::move(entry_with_metadata);
+  TrimEntries();
 }
 
 bool AutofillAiModelCacheImpl::Contains(FormSignature form_signature) const {
-  return in_memory_cache_.contains(form_signature);
+  auto it = in_memory_cache_.find(form_signature);
+  return it != in_memory_cache_.end() &&
+         it->second.creation_time() >=
+             SerializeTime(base::Time::Now() - max_cache_age_);
+}
+
+void AutofillAiModelCacheImpl::TrimEntries() {
+  // Transform the cache into an ordered list of (creation_time, FormSignature)
+  // pairs.
+  std::vector<std::pair<int64_t, FormSignature>> entries_by_creation_time =
+      base::ToVector(in_memory_cache_,
+                     [](const std::pair<FormSignature, CacheEntryWithMetadata>&
+                            map_entry) {
+                       const auto& [signature, cache_entry] = map_entry;
+                       return std::pair(cache_entry.creation_time(), signature);
+                     });
+  std::ranges::sort(entries_by_creation_time);
+
+  // Entries with a time stamp smaller than `cut_off_time` should be removed.
+  const int64_t cut_off_time =
+      SerializeTime(base::Time::Now() - max_cache_age_);
+  const size_t deletions_due_to_time_cutoff = std::distance(
+      entries_by_creation_time.begin(),
+      std::ranges::lower_bound(entries_by_creation_time, cut_off_time, {},
+                               &std::pair<int64_t, FormSignature>::first));
+  // The remaining cache should at most have size `max_cache_size_`.
+  size_t deletions_overall = deletions_due_to_time_cutoff;
+  if (entries_by_creation_time.size() - deletions_overall > max_cache_size_) {
+    deletions_overall = entries_by_creation_time.size() - max_cache_size_;
+  }
+
+  if (deletions_overall == 0) {
+    return;
+  }
+
+  auto entries_to_save = std::make_unique<
+      leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>::KeyEntryVector>();
+  auto keys_to_remove = std::make_unique<std::vector<std::string>>();
+  keys_to_remove->reserve(deletions_overall);
+  for (const auto [_, signature_to_delete] :
+       base::span(entries_by_creation_time).first(deletions_overall)) {
+    in_memory_cache_.erase(signature_to_delete);
+    keys_to_remove->emplace_back(base::NumberToString(*signature_to_delete));
+  }
+  db_->UpdateEntries(std::move(entries_to_save), std::move(keys_to_remove),
+                     /*callback=*/base::DoNothing());
 }
 
 void AutofillAiModelCacheImpl::UpdateInDatabase(
@@ -88,10 +146,12 @@ void AutofillAiModelCacheImpl::OnDatabaseLoadKeysAndEntries(
   for (auto& [signature_str, entry] : *entries) {
     uint64_t signature_uint64;
     if (!base::StringToUint64(signature_str, &signature_uint64)) {
+      // TODO(crbug.com/389631477): Clean up malformed entries.
       continue;
     }
     in_memory_cache_[FormSignature(signature_uint64)] = std::move(entry);
   }
+  TrimEntries();
 }
 
 }  // namespace autofill
