@@ -543,6 +543,7 @@ suite('FirstPartySetsUIDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       firstPartySetsUIEnabled: false,
+      isAlwaysBlock3pcsIncognitoEnabled: false,
       // FirstPartySetsUI does not exist in 3PCD.
       is3pcdCookieSettingsRedesignEnabled: false,
     });
