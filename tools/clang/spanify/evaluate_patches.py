@@ -255,7 +255,8 @@ try:
                                     capture_output=True,
                                     text=True)
         except subprocess.CalledProcessError as e:
-            error_msg = str(e) + " !!! exception(stderr): " + str(e.stderr)
+            error_msg = ("\"" + str(e) + " !!! exception(stderr): " +
+                         str(e.stderr) + "\"")
             with open(scratch_dir + "/evaluation.csv", "a") as f:
                 f.write(f"{index}, fail, {error_msg}\n")
 
@@ -270,9 +271,11 @@ try:
                 error_msg,
                 diff,
             ])
+            run("git restore .", "Failed to restore after failed patch.")
 
-            shutil.copy(scratch_dir + f"/patch_{index}.out",
-                        scratch_dir + f"/patch_{index}.fail")
+            with open(scratch_dir + f"/patch_{index}.fail", "w+") as f:
+                f.write(str(e.stderr))
+                f.write(str(e.stdout))
             continue
 
 
