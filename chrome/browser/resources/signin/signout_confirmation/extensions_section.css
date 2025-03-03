@@ -39,7 +39,7 @@
   margin-top: 4px;
 }
 
-#title {
+#title-container {
   color: var(--cr-secondary-text-color);
   font-size: 13px;
   line-height: 20px;

@@ -35,7 +35,7 @@ suite('SignoutConfirmationViewTest', function() {
 
     // All header elements should be visible by default.
     assertTrue(isChildVisible(extensionsSection, '#checkbox'));
-    assertTrue(isChildVisible(extensionsSection, '#title'));
+    assertTrue(isChildVisible(extensionsSection, '#title-container'));
     assertTrue(isChildVisible(extensionsSection, '#tooltip-icon'));
     assertTrue(isChildVisible(extensionsSection, '#expandButton'));
   });

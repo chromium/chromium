@@ -29,6 +29,12 @@ SignoutConfirmationUI::SignoutConfirmationUI(content::WebUI* web_ui)
       source, kSigninSignoutConfirmationResources,
       IDR_SIGNIN_SIGNOUT_CONFIRMATION_SIGNOUT_CONFIRMATION_HTML);
 
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"extensionsSectionTooltipAriaLabel",
+       IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TOOLTIP_ICON_ARIA_LABEL},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
+
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   plural_string_handler->AddLocalizedString(
