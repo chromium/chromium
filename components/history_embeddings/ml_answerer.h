@@ -9,16 +9,19 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/mock_answerer.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 
 namespace history_embeddings {
 
 using optimization_guide::OptimizationGuideModelExecutor;
+using optimization_guide::ModelQualityLogsUploaderService;
 using Session = optimization_guide::OptimizationGuideModelExecutor::Session;
 
 class MlAnswerer : public Answerer {
  public:
-  explicit MlAnswerer(OptimizationGuideModelExecutor* model_executor);
+  explicit MlAnswerer(OptimizationGuideModelExecutor* model_executor,
+                      ModelQualityLogsUploaderService* logs_uploader);
   ~MlAnswerer() override;
 
   int64_t GetModelVersion() override;
@@ -41,6 +44,8 @@ class MlAnswerer : public Answerer {
   // `model_executor_` is owned by OptimizationGuideKeyedServiceFactory,
   // which HistoryEmbeddingsServiceFactory depends on.
   raw_ptr<OptimizationGuideModelExecutor> model_executor_;
+  base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
+    logs_uploader_;
   std::unique_ptr<SessionManager> session_manager_;
 };
 

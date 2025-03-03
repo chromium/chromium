@@ -140,7 +140,9 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   if (history_embeddings::IsHistoryEmbeddingsAnswersFeatureEnabled()) {
     if (history_embeddings::GetFeatureParameters().use_ml_answerer) {
       answerer = std::make_unique<history_embeddings::MlAnswerer>(
-          optimization_guide_keyed_service);
+          optimization_guide_keyed_service,
+          optimization_guide_keyed_service
+              ->GetModelQualityLogsUploaderService());
     } else {
       answerer = std::make_unique<history_embeddings::MockAnswerer>();
     }
