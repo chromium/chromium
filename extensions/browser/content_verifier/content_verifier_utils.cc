@@ -4,7 +4,9 @@
 
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 
+#include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace extensions {
 namespace content_verifier_utils {
@@ -34,7 +36,13 @@ CanonicalRelativePath CanonicalizeRelativePath(
   base::FilePath::StringType canonical_path =
       relative_path.NormalizePathSeparatorsTo('/').value();
   if (!IsFileAccessCaseSensitive()) {
-    canonical_path = base::ToLowerASCII(canonical_path);
+#if BUILDFLAG(IS_WIN)
+    canonical_path =
+        base::AsWString(base::i18n::ToLower(base::AsString16(canonical_path)));
+#else
+    canonical_path = base::UTF16ToUTF8(
+        base::i18n::ToLower(base::UTF8ToUTF16(canonical_path)));
+#endif  // BUILDFLAG(IS_WIN)
   }
 
 #if BUILDFLAG(IS_WIN)
