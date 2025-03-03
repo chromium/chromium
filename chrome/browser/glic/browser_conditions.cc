@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/browser_conditions.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic_enabling.h"
@@ -64,26 +65,29 @@ bool IsBrowserWindowTopmostWindow(Browser* browser) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-}  // namespace
-
 bool IsBrowserGlicCompatible(Profile* profile, Browser* browser) {
   // A browser is not compatible if it:
   // - is not a TYPE_NORMAL browser
   // - is from a glic-disabled profile
-  // - is not visible
   // - uses a different Profile from glic
   // WARNING: updating these conditions will require updating
   // BrowserAttachObservation.
   return GlicEnabling::IsEnabledForProfile(browser->profile()) &&
-         browser->is_type_normal() && browser->window()->IsVisible() &&
-         browser->profile() == profile;
+         browser->is_type_normal() && browser->profile() == profile;
+}
+
+}  // namespace
+
+bool IsBrowserGlicAttachable(Profile* profile, Browser* browser) {
+  return IsBrowserGlicCompatible(profile, browser) &&
+         browser->window()->IsVisible();
 }
 
 Browser* FindBrowserForAttachment(Profile* profile) {
   // TODO (crbug.com/390472495) Determine which browser to attach to. Currently
   // attaches to the last focused glic-compatible browser.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (IsBrowserGlicCompatible(profile, browser)) {
+    if (IsBrowserGlicAttachable(profile, browser)) {
       return browser;
     }
   }
@@ -114,14 +118,12 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
       : profile_(profile),
         observer_(observer),
         browser_list_observation_(this),
-        browser_widget_observation_(this) {
-    browser_list_observation_.Observe(BrowserList::GetInstance());
-    Browser* browser = FindBrowserForAttachment(profile_);
-    current_value_ = browser;
-    if (browser) {
-      browser_widget_observation_.Observe(
-          browser->GetBrowserView().GetWidget());
+        browser_widget_observations_(this) {
+    for (auto browser : *BrowserList::GetInstance()) {
+      OnBrowserAdded(browser);
     }
+    browser_list_observation_.Observe(BrowserList::GetInstance());
+    current_value_ = FindBrowserForAttachment(profile_);
   }
 
   bool CanAttachToBrowser() const override { return current_value_ != nullptr; }
@@ -132,7 +134,12 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
     // `CheckForChange` will find the correct browser.
     CheckForChange();
   }
-
+  void OnBrowserAdded(Browser* browser) override {
+    if (IsBrowserGlicCompatible(profile_, browser)) {
+      browser_widget_observations_.AddObservation(
+          browser->GetBrowserView().GetWidget());
+    }
+  }
   void OnBrowserRemoved(Browser* browser) override {
     if (current_value_ == browser) {
       // BrowserList updates the active browser list before this call, so
@@ -150,6 +157,14 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
         base::BindOnce(&BrowserAttachObservationImpl::CheckForChange,
                        base::Unretained(this)));
   }
+  void OnWidgetDestroyed(views::Widget* widget) override {
+    // Note: widget observer removal has to be done at widget destruction time
+    // because when OnBrowserRemoved is called, the widget has already
+    // been destroyed.
+    if (browser_widget_observations_.IsObservingSource(widget)) {
+      browser_widget_observations_.RemoveObservation(widget);
+    }
+  }
 
  private:
   void CheckForChange() {
@@ -160,17 +175,12 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
     if (current_value_ == browser) {
       return;
     }
-    browser_widget_observation_.Reset();
     bool could_attach = current_value_ != nullptr;
     bool can_attach = browser != nullptr;
     current_value_ = browser;
     observer_->BrowserForAttachmentChanged(browser);
     if (could_attach != can_attach) {
       observer_->CanAttachToBrowserChanged(can_attach);
-    }
-    if (current_value_) {
-      browser_widget_observation_.Observe(
-          current_value_->GetBrowserView().GetWidget());
     }
   }
 
@@ -180,8 +190,8 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
   base::OneShotTimer check_for_change_timer_;
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      browser_widget_observation_;
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      browser_widget_observations_;
 };
 
 std::unique_ptr<BrowserAttachObservation> ObserveBrowserForAttachment(

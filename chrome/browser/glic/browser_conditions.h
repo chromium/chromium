@@ -16,8 +16,9 @@ namespace glic {
 // the attach button on the window. Returns null if attachment is not possible.
 Browser* FindBrowserForAttachment(Profile* profile);
 
-// Returns whether `browser` is compatible with glic for the given profile.
-bool IsBrowserGlicCompatible(Profile* profile, Browser* browser);
+// Returns whether `browser` can be used for attaching the glic panel for the
+// given profile.
+bool IsBrowserGlicAttachable(Profile* profile, Browser* browser);
 
 // Returns whether 'browser' is in the foreground. This is based on active
 // state and on windows includes a occlusion check.
