@@ -43,9 +43,18 @@ PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     select_url_max_bits_per_site_ =
         features::kSharedStorageSelectURLBitBudgetPerSitePerPageLoad.Get();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  page_proxy_ = std::make_unique<PageProxy>(this);
+#endif
 }
 
 PageImpl::~PageImpl() {
+#if BUILDFLAG(IS_ANDROID)
+  page_proxy_->WillDeletePage(GetMainDocument().IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+#endif
+
   // As SupportsUserData is a base class of PageImpl, Page members will be
   // destroyed before running ~SupportsUserData, which would delete the
   // associated PageUserData objects. Avoid this by calling ClearAllUserData
@@ -118,6 +127,12 @@ void PageImpl::SetResizable(std::optional<bool> resizable) {
 std::optional<bool> PageImpl::GetResizable() {
   return resizable_;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+const base::android::JavaRef<jobject>& PageImpl::GetJavaPage() {
+  return page_proxy_->java_page();
+}
+#endif
 
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;

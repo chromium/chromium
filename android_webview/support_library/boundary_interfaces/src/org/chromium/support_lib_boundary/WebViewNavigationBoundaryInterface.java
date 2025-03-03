@@ -5,6 +5,9 @@
 package org.chromium.support_lib_boundary;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for WebViewNavigation. */
 @NullMarked
@@ -30,4 +33,6 @@ public interface WebViewNavigationBoundaryInterface extends IsomorphicObjectBoun
     boolean didCommitErrorPage();
 
     int getStatusCode();
+
+    /* WebViewPage */ @Nullable InvocationHandler getPage();
 }

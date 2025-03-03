@@ -182,7 +182,8 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
 
   if (render_frame_host->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_didFinishLoadInPrimaryMainFrame(
-        env, java_observer_, render_frame_host->GetProcess()->GetDeprecatedID(),
+        env, java_observer_, render_frame_host->GetPage().GetJavaPage(),
+        render_frame_host->GetProcess()->GetDeprecatedID(),
         render_frame_host->GetRoutingID(),
         url::GURLAndroid::FromNativeGURL(env, url), assume_valid,
         static_cast<jint>(render_frame_host->GetLifecycleState()));

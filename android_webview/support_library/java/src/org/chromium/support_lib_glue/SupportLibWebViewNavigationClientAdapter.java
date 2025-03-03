@@ -5,6 +5,7 @@ package org.chromium.support_lib_glue;
 
 import org.chromium.android_webview.AwNavigation;
 import org.chromium.android_webview.AwNavigationClient;
+import org.chromium.android_webview.AwPage;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.WebViewNavigationClientBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
@@ -69,4 +70,16 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationClient {
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                         new SupportLibWebViewNavigationAdapter(navigation)));
     }
+
+    @Override
+    public void onPageDeleted(AwPage page) {}
+
+    @Override
+    public void onPageLoadEventFired(AwPage page) {}
+
+    @Override
+    public void onPageDOMContentLoadedEventFired(AwPage page) {}
+
+    @Override
+    public void onFirstContentfulPaint(AwPage page) {}
 }

@@ -27,6 +27,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
 
@@ -109,6 +110,7 @@ public class PolicyAuditorBridgeTest {
                 new WebContentsObserver() {
                     @Override
                     public void didFinishLoadInPrimaryMainFrame(
+                            Page page,
                             GlobalRenderFrameHostId rfhId,
                             GURL url,
                             boolean isKnownValid,

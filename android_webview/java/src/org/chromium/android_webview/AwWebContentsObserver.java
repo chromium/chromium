@@ -8,9 +8,11 @@ import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -53,6 +55,8 @@ public class AwWebContentsObserver extends WebContentsObserver {
     //   but there's no need for them to do that here: strongly referencing the object doesn't
     //   leak the WebView or anything.
     WeakHashMap<NavigationHandle, WeakReference<AwNavigation>> mNavigationMap;
+    // Similar reason as above, but between Page and AwPage.
+    WeakHashMap<Page, WeakReference<AwPage>> mPageMap;
 
     // Whether this webcontents has ever committed any navigation.
     private boolean mCommittedNavigation;
@@ -86,13 +90,34 @@ public class AwWebContentsObserver extends WebContentsObserver {
                 return awNavigation;
             }
         }
-        AwNavigation awNavigation = new AwNavigation(navigation);
+        AwNavigation awNavigation =
+                new AwNavigation(navigation, getAwPageFor(navigation.getCommittedPage()));
         mNavigationMap.put(navigation, new WeakReference<>(awNavigation));
         return awNavigation;
     }
 
+    private @Nullable AwPage getAwPageFor(@Nullable Page page) {
+        if (page == null) {
+            return null;
+        }
+        WeakReference<AwPage> awPageRef = mPageMap.get(page);
+        if (awPageRef != null) {
+            AwPage awPage = awPageRef.get();
+            if (awPage != null) {
+                return awPage;
+            }
+        }
+        AwPage awPage = new AwPage(page);
+        // We only keep track of pages that have been the primary page (either the current primary
+        // page, or a previously primary but now bfcached / pending deletion page).
+        assert !awPage.isPrerendering();
+        mPageMap.put(page, new WeakReference<>(awPage));
+        return awPage;
+    }
+
     @Override
     public void didFinishLoadInPrimaryMainFrame(
+            Page page,
             GlobalRenderFrameHostId rfhId,
             GURL url,
             boolean isKnownValid,
@@ -101,6 +126,14 @@ public class AwWebContentsObserver extends WebContentsObserver {
         String validatedUrl = isKnownValid ? url.getSpec() : url.getPossiblyInvalidSpec();
         if (getClientIfNeedToFireCallback(validatedUrl) != null) {
             mLastDidFinishLoadUrl = validatedUrl;
+        }
+
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient client = awContents.getNavigationClient();
+            if (client != null) {
+                client.onPageLoadEventFired(getAwPageFor(page));
+            }
         }
     }
 

@@ -6,12 +6,17 @@ package org.chromium.support_lib_glue;
 
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.android_webview.AwNavigation;
 import org.chromium.android_webview.AwSupportLibIsomorphic;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebViewNavigationBoundaryInterface;
+import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
+
+import java.lang.reflect.InvocationHandler;
 
 /**
  * Adapter between WebViewNavigationBoundaryInterface and AwNavigation.
@@ -126,6 +131,15 @@ class SupportLibWebViewNavigationAdapter extends IsomorphicAdapter
                 TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_GET_STATUS_CODE")) {
             recordApiCall(ApiCall.NAVIGATION_GET_STATUS_CODE);
             return mNavigation.getStatusCode();
+        }
+    }
+
+    @Override
+    public /* WebViewPage */ @Nullable InvocationHandler getPage() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_GET_PAGE")) {
+            recordApiCall(ApiCall.NAVIGATION_GET_PAGE);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibWebViewPageAdapter(mNavigation.getPage()));
         }
     }
 }

@@ -154,12 +154,15 @@ public abstract class WebContentsObserver {
 
     /**
      * Notifies that a load has finished for the primary main frame.
+     *
+     * @param page The Page that has finished loading.
      * @param rfhId Identifier of the navigating frame.
      * @param url The validated URL that is being navigated to.
      * @param isKnownValid Whether the URL is known to be valid.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
     public void didFinishLoadInPrimaryMainFrame(
+            Page page,
             GlobalRenderFrameHostId rfhId,
             GURL url,
             boolean isKnownValid,

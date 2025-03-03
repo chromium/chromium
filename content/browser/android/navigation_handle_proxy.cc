@@ -122,7 +122,8 @@ void NavigationHandleProxy::DidFinish() {
       cpp_navigation_handle_->IsPdf(),
       base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
       GetContentClient()->browser()->IsSaveableNavigation(
-          cpp_navigation_handle_));
+          cpp_navigation_handle_),
+      cpp_navigation_handle_->GetWebContents()->GetPrimaryPage().GetJavaPage());
 }
 
 NavigationHandleProxy::~NavigationHandleProxy() {

@@ -643,6 +643,7 @@ chromium-metrics-reviews@google.com.
       label="ServiceWorkerControllerCompat.setAsyncShouldInterceptRequest"/>
   <int value="138" label="WebViewCompat.WebResponseCallback.doNotIntercept"/>
   <int value="139" label="WebViewCompat.WebResponseCallback.intercept"/>
+  <int value="140" label="Navigation.getPage"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
