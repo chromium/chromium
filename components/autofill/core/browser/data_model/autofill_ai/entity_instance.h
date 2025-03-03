@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/country_info.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/date_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -67,8 +68,9 @@ class EntityTable;
 // `AttributeInstance::GetNormalizedType()` and the getter/setter methods for
 // how this problem is handled.
 class AttributeInstance final {
-  // TODO(crbug.com/389625753): Also add support for states and dates.
-  using InfoStructure = absl::variant<CountryInfo, NameInfo, std::u16string>;
+  // TODO(crbug.com/389625753): Also add support for states.
+  using InfoStructure =
+      absl::variant<CountryInfo, DateInfo, NameInfo, std::u16string>;
 
  public:
   // Transparent less-than relation based on the AttributeType.
@@ -101,7 +103,9 @@ class AttributeInstance final {
 
   // Returns the value stored in this attribute instance for a specific `type`,
   // formatted according to a given `app_locale`.
-  std::u16string GetInfo(FieldType type, const std::string& app_locale) const;
+  std::u16string GetInfo(FieldType type,
+                         const std::string& app_locale,
+                         std::u16string_view format_string = u"") const;
 
   class GetRawInfoPassKey {
     constexpr GetRawInfoPassKey() = default;
@@ -109,19 +113,24 @@ class AttributeInstance final {
     friend class EntityInstance;
     friend class EntityTable;
   };
+
   // Same as `GetInfo` but returns the value as stored with no formatting
   // whatsoever.
   std::u16string GetRawInfo(GetRawInfoPassKey pass_key, FieldType type) const;
+
   // Returns the verification status of a value stored in this attribute
   // instance for a specific `type`.
   VerificationStatus GetVerificationStatus(FieldType type) const;
+
   // Populates the attribute with a value for a specific `type`, according to a
   // given `app_locale`.
   void SetInfo(FieldType type,
                const std::u16string& value,
                const std::string& app_locale);
+
   // Similar to `SetInfo` but also assigns a verification status to the set
   // value.
+  // TODO(crbug.com/396325496): Add `format_string` parameter.
   void SetInfoWithVerificationStatus(FieldType type,
                                      const std::u16string& value,
                                      const std::string& app_locale,
@@ -135,6 +144,7 @@ class AttributeInstance final {
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status);
+
   // Returns the set of `FieldType`s for which the setter/getter functions above
   // may be called.
   FieldTypeSet GetSupportedTypes() const;

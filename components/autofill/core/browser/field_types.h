@@ -662,6 +662,8 @@ constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
   return fields;
 }();
 
+bool IsDateFieldType(FieldType field_type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_

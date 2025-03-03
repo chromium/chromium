@@ -152,6 +152,8 @@ static_library("browser") {
     "data_model/addresses/phone_number.h",
     "data_model/autofill_ai/country_info.cc",
     "data_model/autofill_ai/country_info.h",
+    "data_model/autofill_ai/date_info.cc",
+    "data_model/autofill_ai/date_info.h",
     "data_model/autofill_ai/entity_instance.cc",
     "data_model/autofill_ai/entity_instance.h",
     "data_model/autofill_ai/entity_type.cc",

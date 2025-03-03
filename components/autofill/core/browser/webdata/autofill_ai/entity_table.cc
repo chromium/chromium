@@ -104,9 +104,9 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
       number.SetInfo(PASSPORT_NUMBER, u"123", /*app_locale=*/"");
       name.SetInfo(NAME_FULL, u"Pippi Långstrump", /*app_locale=*/"");
       country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden", /*app_locale=*/"");
-      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"09/2098",
+      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"2098-09-01",
                           /*app_locale=*/"");
-      issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"10/1998",
+      issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"1998-10-11",
                          /*app_locale=*/"");
       table.AddOrUpdateEntityInstance(EntityInstance(
           EntityType(EntityTypeName::kPassport),

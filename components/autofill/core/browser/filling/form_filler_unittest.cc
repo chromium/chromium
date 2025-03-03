@@ -1556,8 +1556,8 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   EXPECT_EQ(filled_fields[1].value(), u"Pippi");
   EXPECT_EQ(filled_fields[2].value(), u"Långstrump");
   EXPECT_EQ(filled_fields[3].value(), u"Sweden");
-  EXPECT_EQ(filled_fields[4].value(), u"01/2010");
-  EXPECT_EQ(filled_fields[5].value(), u"12/2019");
+  EXPECT_EQ(filled_fields[4].value(), u"2010-09-01");
+  EXPECT_EQ(filled_fields[5].value(), u"2019-08-30");
 }
 
 // Test that we can still fill a form when a field has been removed from it.

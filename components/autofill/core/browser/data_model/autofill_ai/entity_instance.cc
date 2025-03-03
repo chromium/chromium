@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -30,9 +31,13 @@ AttributeInstance::AttributeInstance(AttributeType type) : type_(type) {
     case AttributeTypeName::kPassportCountry:
       info_ = CountryInfo();
       break;
-    case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kPassportExpiryDate:
     case AttributeTypeName::kPassportIssueDate:
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      info_ = DateInfo();
+      break;
+    case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kVehicleOwner:
     case AttributeTypeName::kVehicleLicensePlate:
     case AttributeTypeName::kVehicleVin:
@@ -40,8 +45,6 @@ AttributeInstance::AttributeInstance(AttributeType type) : type_(type) {
     case AttributeTypeName::kVehicleModel:
     case AttributeTypeName::kDriversLicenseRegion:
     case AttributeTypeName::kDriversLicenseNumber:
-    case AttributeTypeName::kDriversLicenseExpirationDate:
-    case AttributeTypeName::kDriversLicenseIssueDate:
       info_ = u"";
       break;
   }
@@ -54,8 +57,10 @@ AttributeInstance::AttributeInstance(AttributeInstance&&) = default;
 AttributeInstance& AttributeInstance::operator=(AttributeInstance&&) = default;
 AttributeInstance::~AttributeInstance() = default;
 
-std::u16string AttributeInstance::GetInfo(FieldType type,
-                                          const std::string& app_locale) const {
+std::u16string AttributeInstance::GetInfo(
+    FieldType type,
+    const std::string& app_locale,
+    std::u16string_view format_string) const {
   type = GetNormalizedType(type);
   if (type == UNKNOWN_TYPE) {
     return u"";
@@ -64,6 +69,13 @@ std::u16string AttributeInstance::GetInfo(FieldType type,
       base::Overloaded{[&](const CountryInfo& country) {
                          CHECK_EQ(type, ADDRESS_HOME_COUNTRY);
                          return country.GetCountryName(app_locale);
+                       },
+                       [&](const DateInfo& date) {
+                         if (format_string.empty()) {
+                           // TODO(crbug.com/396325496): Consider using locale.
+                           format_string = u"YYYY-MM-DD";
+                         }
+                         return date.GetDate(format_string);
                        },
                        [&](const NameInfo& name) {
                          return GetRawInfo(/*pass_key=*/{}, type);
@@ -86,6 +98,10 @@ std::u16string AttributeInstance::GetRawInfo(GetRawInfoPassKey,
             CHECK_EQ(type, ADDRESS_HOME_COUNTRY);
             return base::UTF8ToUTF16(country.GetCountryCode());
           },
+          [&](const DateInfo& date) {
+            CHECK(IsDateFieldType(type));
+            return date.GetDate(u"YYYY-MM-DD");
+          },
           [&](const NameInfo& name) { return name.GetRawInfo(type); },
           [&](const std::u16string& value) {
             CHECK_EQ(type, type_.field_type());
@@ -102,6 +118,10 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
   }
   return absl::visit(base::Overloaded{[&](const CountryInfo& country) {
                                         CHECK_EQ(type, ADDRESS_HOME_COUNTRY);
+                                        return VerificationStatus::kNoStatus;
+                                      },
+                                      [&](const DateInfo& date) {
+                                        CHECK(IsDateFieldType(type));
                                         return VerificationStatus::kNoStatus;
                                       },
                                       [&](const NameInfo& name) {
@@ -144,6 +164,9 @@ void AttributeInstance::SetInfoWithVerificationStatus(
                       country = CountryInfo();
                     }
                   },
+                  [&](DateInfo& date) {
+                    SetRawInfoWithVerificationStatus(type, value, status);
+                  },
                   [&](NameInfo& name) {
                     name.SetInfoWithVerificationStatus(type, value, app_locale,
                                                        status);
@@ -172,6 +195,15 @@ void AttributeInstance::SetRawInfoWithVerificationStatus(
                       country = CountryInfo();
                     }
                   },
+                  [&](DateInfo& date) {
+                    CHECK(IsDateFieldType(type));
+                    if (data_util::Date result;
+                        ParseDate(value, u"YYYY-MM-DD", result)) {
+                      date.SetDate(std::move(result));
+                    } else {
+                      date.SetDate({});
+                    }
+                  },
                   [&](NameInfo& name) {
                     name.SetRawInfoWithVerificationStatus(type, value, status);
                   },
@@ -188,6 +220,9 @@ FieldTypeSet AttributeInstance::GetSupportedTypes() const {
           [&](const CountryInfo&) {
             return FieldTypeSet{ADDRESS_HOME_COUNTRY};
           },
+          [&](const DateInfo& date) {
+            return FieldTypeSet{type_.field_type()};
+          },
           [&](const NameInfo& name) { return name.GetSupportedTypes(); },
           [&](const std::u16string&) {
             return FieldTypeSet{type_.field_type()};
@@ -201,6 +236,7 @@ FieldTypeSet AttributeInstance::GetDatabaseStoredTypes() const {
           [&](const CountryInfo&) {
             return FieldTypeSet{ADDRESS_HOME_COUNTRY};
           },
+          [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const NameInfo&) { return NameInfo::kDatabaseStoredTypes; },
           [&](const std::u16string&) {
             return FieldTypeSet{type_.field_type()};
@@ -212,6 +248,7 @@ FieldType AttributeInstance::GetTopLevelType() const {
   return absl::visit(
       base::Overloaded{
           [&](const CountryInfo&) { return ADDRESS_HOME_COUNTRY; },
+          [&](const DateInfo& date) { return type_.field_type(); },
           [&](const NameInfo&) { return NAME_FULL; },
           [&](const std::u16string&) { return type_.field_type(); }},
       info_);
@@ -237,9 +274,10 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
 
 void AttributeInstance::FinalizeInfo() {
   absl::visit(
-      base::Overloaded{[&](const CountryInfo& country) { return; },
+      base::Overloaded{[&](const CountryInfo& country) {},
+                       [&](const DateInfo& date) {},
                        [&](NameInfo& name) { name.FinalizeAfterImport(); },
-                       [&](const std::u16string&) { return; }},
+                       [&](const std::u16string&) {}},
       info_);
 }
 
