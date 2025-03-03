@@ -4190,7 +4190,9 @@
     "bases": ["external/wpt/device-bound-session-credentials"],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions"],
+      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions",
+      "--disable-features=DeviceBoundSessionsRefreshQuota"
+    ],
     "expires": "never"
   },
   {

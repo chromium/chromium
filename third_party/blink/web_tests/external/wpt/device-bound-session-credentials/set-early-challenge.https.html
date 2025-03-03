@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC create a basic session</title>
+<title>DBSC early challenge set</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="helper.js" type="module"></script>
 
 <script type="module">
-  import { expireCookie, documentHasCookie, waitForCookie, addCookieAndSessionCleanup, setupShardedServerState } from "./helper.js";
+  import { expireCookie, waitForCookie, addCookieAndSessionCleanup, configureServer, setupShardedServerState } from "./helper.js";
 
   promise_test(async t => {
     await setupShardedServerState();
@@ -15,20 +15,21 @@
     const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
     addCookieAndSessionCleanup(t, expectedCookieAndAttributes);
 
+    // Configure server send back an authorization header for registration.
+    configureServer({ sendChallengeEarly: true });
+
     // Prompt starting a session, and wait until registration completes.
     const login_response = await fetch('login.py');
     assert_equals(login_response.status, 200);
     assert_true(await waitForCookie(expectedCookieAndValue));
 
-    // Confirm that a request has the cookie set.
+    // Set up a challenge in advance.
+    const challenge_response = await fetch('request_early_challenge.py');
+    assert_equals(challenge_response.status, 200);
+
+    // Trigger a refresh. The server will confirm the early challenge matches.
+    expireCookie(expectedCookieAndAttributes);
     const auth_response = await fetch('verify_authenticated.py');
     assert_equals(auth_response.status, 200);
-
-    // Confirm that expiring the cookie still leads to a request with the cookie set (refresh occurs).
-    expireCookie(expectedCookieAndAttributes);
-    assert_false(documentHasCookie(expectedCookieAndValue));
-    const auth_response_after_expiry = await fetch('verify_authenticated.py');
-    assert_equals(auth_response_after_expiry.status, 200);
-    assert_true(documentHasCookie(expectedCookieAndValue));
-  }, "An established session can refresh a cookie");
+  }, "A challenge can be set ahead of time");
 </script>

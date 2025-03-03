@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC create a basic session</title>
+<title>DBSC session ended with Clear-Site-Data: 'cookies'</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -10,7 +10,7 @@
   import { expireCookie, documentHasCookie, waitForCookie, addCookieAndSessionCleanup, setupShardedServerState } from "./helper.js";
 
   promise_test(async t => {
-    await setupShardedServerState();
+    const testId = await setupShardedServerState();
     const expectedCookieAndValue = "auth_cookie=abcdef0123";
     const expectedCookieAndAttributes = `${expectedCookieAndValue};Domain=${get_host_info().ORIGINAL_HOST};Path=/device-bound-session-credentials`;
     addCookieAndSessionCleanup(t, expectedCookieAndAttributes);
@@ -20,15 +20,17 @@
     assert_equals(login_response.status, 200);
     assert_true(await waitForCookie(expectedCookieAndValue));
 
-    // Confirm that a request has the cookie set.
-    const auth_response = await fetch('verify_authenticated.py');
-    assert_equals(auth_response.status, 200);
+    // The server ends the session.
+    const end_session_response = await fetch('end_session_via_clear_site_data.py');
+    assert_equals(end_session_response.status, 200);
+    // Need to set up the state again because all cookies were cleared.
+    await setupShardedServerState(testId);
 
-    // Confirm that expiring the cookie still leads to a request with the cookie set (refresh occurs).
+    // Expire the cookie, and confirm it does not get refreshed.
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
-    const auth_response_after_expiry = await fetch('verify_authenticated.py');
-    assert_equals(auth_response_after_expiry.status, 200);
-    assert_true(documentHasCookie(expectedCookieAndValue));
-  }, "An established session can refresh a cookie");
+    const auth_response = await fetch('verify_authenticated.py');
+    assert_equals(auth_response.status, 401);
+    assert_false(documentHasCookie(expectedCookieAndValue));
+  }, "An session ended with Clear-Site-Data: 'cookies' does not refresh cookies");
 </script>

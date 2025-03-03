@@ -206,6 +206,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   raw_ptr<const URLRequestContext> context_;
   raw_ptr<SessionStore> session_store_ = nullptr;
 
+  // When true, the refresh quota is not enforced. This is only ever set to
+  // true for testing purposes.
+  bool ignore_refresh_quota_ = false;
+
   // Deferred requests are stored by session ID.
   DeferredRequestsMap deferred_requests_;
 
