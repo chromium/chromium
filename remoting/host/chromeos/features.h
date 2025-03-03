@@ -19,6 +19,10 @@ BASE_DECLARE_FEATURE(kEnableCrdFileTransferForKiosk);
 // Enable to allow shared CRD session to the login/lock screen.
 BASE_DECLARE_FEATURE(kEnableCrdSharedSessionToUnattendedDevice);
 
+// Enable to auto-approve session connect request for enterprise shared CRD
+// sessions.
+BASE_DECLARE_FEATURE(kAutoApproveEnterpriseSharedSessions);
+
 }  // namespace remoting::features
 
 #endif  // REMOTING_HOST_CHROMEOS_FEATURES_H_

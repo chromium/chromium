@@ -20,4 +20,8 @@ BASE_FEATURE(kEnableCrdSharedSessionToUnattendedDevice,
              "EnableCrdSharedSessionToUnattendedDevice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutoApproveEnterpriseSharedSessions,
+             "EnableAutoApproveEnterpriseSharedSessions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace remoting::features
