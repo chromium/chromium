@@ -11,15 +11,10 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/view_class_properties.h"
 
 namespace glic {
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GlicFreDialogView,
-                                      kWebViewElementIdForTesting);
 
 GlicFreDialogView::GlicFreDialogView(Profile* profile,
                                      const gfx::Size& initial_size) {
@@ -36,8 +31,6 @@ GlicFreDialogView::GlicFreDialogView(Profile* profile,
   SetUseDefaultFillLayout(true);
 
   auto web_view = std::make_unique<views::WebView>(profile);
-  web_view->SetProperty(views::kElementIdentifierKey,
-                        kWebViewElementIdForTesting);
   web_view->SetSize(initial_size);
   web_view->SetPreferredSize(initial_size);
 

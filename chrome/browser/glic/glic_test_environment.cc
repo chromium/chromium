@@ -6,7 +6,6 @@
 
 #include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
-#include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_test_util.h"
@@ -22,24 +21,18 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
     GlicKeyedService* service =
         GlicKeyedServiceFactory::GetGlicKeyedService(profile);
     auto cookie_synchronizer = std::make_unique<TestCookieSynchronizer>(
-        profile, IdentityManagerFactory::GetForProfile(profile),
-        /*for_fre=*/false);
+        profile, IdentityManagerFactory::GetForProfile(profile));
     TestCookieSynchronizer* ptr = cookie_synchronizer.get();
     service->GetAuthController().SetCookieSynchronizerForTesting(
         std::move(cookie_synchronizer));
-
-    service->window_controller()
-        .fre_controller()
-        ->GetAuthControllerForTesting()
-        .SetCookieSynchronizerForTesting(
-            std::make_unique<TestCookieSynchronizer>(
-                profile, IdentityManagerFactory::GetForProfile(profile),
-                /*for_fre=*/true));
-
     return ptr;
   }
 
-  using GlicCookieSynchronizer::GlicCookieSynchronizer;
+  TestCookieSynchronizer(content::BrowserContext* context,
+                         signin::IdentityManager* identity_manager)
+      : GlicCookieSynchronizer(context,
+                               identity_manager,
+                               /*use_for_fre=*/false) {}
 
   void CopyCookiesToWebviewStoragePartition(
       base::OnceCallback<void(bool)> callback) override {

@@ -22,8 +22,6 @@ class GlicFreDialogView : public views::DialogDelegateView {
   GlicFreDialogView& operator=(const GlicFreDialogView&) = delete;
   ~GlicFreDialogView() override;
 
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewElementIdForTesting);
-
   content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
