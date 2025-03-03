@@ -246,7 +246,7 @@ found in the LICENSE file.
                        style="@style/TextAppearance.TextMedium.Secondary" />
 
                        <View
-                           android:id="@+id/top_separator"
+                           android:id="@+id/top_separator_for_dropdown"
                            android:layout_width="match_parent"
                            android:layout_height="1dp"
                            android:layout_marginTop="8dp"
@@ -284,7 +284,7 @@ found in the LICENSE file.
                         android:visibility="gone" />
 
                         <View
-                           android:id="@+id/bottom_separator"
+                           android:id="@+id/bottom_separator_for_dropdown"
                            android:layout_width="match_parent"
                            android:layout_height="1dp"
                            android:layout_marginVertical="16dp"

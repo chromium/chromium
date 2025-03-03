@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -150,14 +149,12 @@ public final class PrivacySandboxDialogV3Test {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/397790001")
     public void testRenderEeaConsentDropdownContent() throws IOException {
         launchDialog();
+        // Expands the dropdown element.
         onView(withId(R.id.ad_measurement_dropdown_element))
                 .inRoot(isDialog())
                 .perform(scrollTo(), click());
-        // Expands the dropdown element.
-        onView(withId(R.id.ad_measurement_dropdown_element)).inRoot(isDialog()).perform(click());
         renderViewWithId(R.id.privacy_sandbox_dialog, "ad_measurement_dropdown_container");
     }
 
@@ -280,20 +277,24 @@ public final class PrivacySandboxDialogV3Test {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/397790001")
     public void testEEAConsentDropdown() {
         launchDialog();
-        onView(withId(R.id.ad_measurement_dropdown_element)).inRoot(isDialog()).perform(scrollTo());
         // Validate dropdown content is not shown
         onView(withId(R.id.ad_measurement_dropdown_container))
                 .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
         // Expand the dropdown element.
-        onView(withId(R.id.ad_measurement_dropdown_element)).inRoot(isDialog()).perform(click());
+        onView(withId(R.id.ad_measurement_dropdown_element))
+                .inRoot(isDialog())
+                .perform(scrollTo(), click());
         // Validate the dropdown content is shown.
         onView(withId(R.id.ad_measurement_dropdown_container))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+        // We need to scroll to the top separator so that the dropdown element is clickable, if we
+        // scroll to the dropdown element it becomes unclickable - blocked by the android status bar
+        // at the top.
+        onView(withId(R.id.top_separator_for_dropdown)).inRoot(isDialog()).perform(scrollTo());
         // Retract the dropdown element.
         onView(withId(R.id.ad_measurement_dropdown_element)).inRoot(isDialog()).perform(click());
         // Validate the dropdown content is not shown
