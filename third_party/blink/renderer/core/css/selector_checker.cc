@@ -27,11 +27,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 
 #include "base/auto_reset.h"
@@ -2593,11 +2588,11 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       // <pt-name-selector><pt-class-selector>, as in [name, class, class, ...]
       // so we check that all of its items excluding the first one are
       // contained in the pseudo element's classes (pseudo_ident_list_).
-      return std::ranges::all_of(
-          selector.IdentList().begin() + 1, selector.IdentList().end(),
-          [&](const AtomicString& class_from_selector) {
-            return base::Contains(pseudo_ident_list_, class_from_selector);
-          });
+      return std::ranges::all_of(base::span(selector.IdentList()).subspan(1ul),
+                                 [&](const AtomicString& class_from_selector) {
+                                   return base::Contains(pseudo_ident_list_,
+                                                         class_from_selector);
+                                 });
     }
     case CSSSelector::kPseudoScrollbarButton:
     case CSSSelector::kPseudoScrollbarCorner:
