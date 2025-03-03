@@ -71,7 +71,7 @@ using PlainTextItemList = HeapVector<PlainTextItem, 25>;
 // segmentation, as well as their ShapeResult.
 //
 // Instances of this class are immutable.
-class PlainTextNode : public GarbageCollected<PlainTextNode> {
+class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
  public:
   // normalize_space - Enables canvas-specific whitespace normalization
   // bidi_overridden - Adjusts offset values for leading/trailing BiDi controls
@@ -93,6 +93,16 @@ class PlainTextNode : public GarbageCollected<PlainTextNode> {
   const PlainTextItemList& ItemList() const { return item_list_; }
 
  private:
+  friend class PlainTextNodeTest;
+
+  // Up-converts to UTF-16 as needed and normalizes spaces and Unicode control
+  // characters as per the CSS Text Module Level 3 specification.
+  // https://drafts.csswg.org/css-text-3/#white-space-processing
+  // Also, check if BiDi reorder is necessary.
+  static std::pair<String, bool> NormalizeSpacesAndMaybeBidi(
+      StringView text,
+      bool normalize_canvas_space);
+
   String text_content_;
   PlainTextItemList item_list_;
   TextDirection base_direction_ = TextDirection::kLtr;
