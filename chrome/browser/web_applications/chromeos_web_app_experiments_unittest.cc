@@ -20,7 +20,8 @@ constexpr char kM365UrlsFinchParamName[] = "m365-scope-extensions-urls";
 constexpr char kM365DomainsFinchParamName[] = "m365-scope-extensions-domains";
 
 constexpr auto kDefaultUrls = base::MakeFixedFlatSet<std::string_view>(
-    {"https://onedrive.live.com", "https://1drv.ms", "https://www.office.com"});
+    {"https://onedrive.live.com", "https://1drv.ms", "https://www.office.com",
+     "https://m365.cloud.microsoft", "https://www.microsoft365.com"});
 constexpr auto kDefaultDomains =
     base::MakeFixedFlatSet<std::string_view>({"https://sharepoint.com"});
 
