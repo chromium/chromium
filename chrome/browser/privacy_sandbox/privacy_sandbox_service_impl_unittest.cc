@@ -2711,7 +2711,7 @@ TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptIn,
-            actual->notice_action_taken);
+            actual->notice_action_taken_);
 
   // Histogram
   CreateService();
@@ -2732,7 +2732,7 @@ TEST_P(TopicsConsentTest, DidConsentOptOutUpdateNoticeStorage) {
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptOut,
-            actual->notice_action_taken);
+            actual->notice_action_taken_);
 
   // Histogram
   CreateService();
@@ -2762,7 +2762,7 @@ TEST_P(NoticeAckTest, DidNoticeAckUpdateNoticeStorage) {
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kAck,
-            actual->notice_action_taken);
+            actual->notice_action_taken_);
 
   // Histogram
   CreateService();
@@ -2783,7 +2783,7 @@ TEST_P(NoticeSettingsTest, DidNoticeSettingsUpdateNoticeStorage) {
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kSettings,
-            actual->notice_action_taken);
+            actual->notice_action_taken_);
 
   // Histogram
   CreateService();
@@ -2803,7 +2803,7 @@ TEST_P(LearnMoreTest, DidLearnMoreActionUpdateNoticeStorage) {
   auto actual =
       notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kNotSet,
-            actual->notice_action_taken);
+            actual->notice_action_taken_);
 
   // Histogram
   CreateService();

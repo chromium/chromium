@@ -97,10 +97,10 @@ void PrivacySandboxNoticeService::MigratePrivacySandboxPrefsToDataModel() {
             prefs::kPrivacySandboxTopicsConsentGiven);
         if (consent_decision_given) {
           PrivacySandboxNoticeData notice_data;
-          notice_data.notice_action_taken = consent_decision_given->GetBool()
-                                                ? NoticeActionTaken::kOptIn
-                                                : NoticeActionTaken::kOptOut;
-          notice_data.notice_action_taken_time = consent_update_time;
+          notice_data.notice_action_taken_ = consent_decision_given->GetBool()
+                                                 ? NoticeActionTaken::kOptIn
+                                                 : NoticeActionTaken::kOptOut;
+          notice_data.notice_action_taken_time_ = consent_update_time;
           notice_storage_->MigratePrivacySandboxNoticeData(
               pref_service_, notice_data, topics_notice_name);
         }
@@ -110,9 +110,9 @@ void PrivacySandboxNoticeService::MigratePrivacySandboxPrefsToDataModel() {
         // Prefs set by settings are mapped to 'kUnknownActionPreMigration'
         // since it's unknown what action the user took on a notice, if any
         PrivacySandboxNoticeData notice_data;
-        notice_data.notice_action_taken =
+        notice_data.notice_action_taken_ =
             NoticeActionTaken::kUnknownActionPreMigration;
-        notice_data.notice_action_taken_time = base::Time();
+        notice_data.notice_action_taken_time_ = base::Time();
         notice_storage_->MigratePrivacySandboxNoticeData(
             pref_service_, notice_data, topics_notice_name);
       }
@@ -137,7 +137,7 @@ void PrivacySandboxNoticeService::MigratePrivacySandboxPrefsToDataModel() {
           prefs::kPrivacySandboxM1EEANoticeAcknowledged);
       if (notice_acknowledged && notice_acknowledged->GetBool()) {
         PrivacySandboxNoticeData notice_data;
-        notice_data.notice_action_taken = NoticeActionTaken::kAck;
+        notice_data.notice_action_taken_ = NoticeActionTaken::kAck;
         notice_storage_->MigratePrivacySandboxNoticeData(
             pref_service_, notice_data, pam_notice_name);
       }
@@ -159,7 +159,7 @@ void PrivacySandboxNoticeService::MigratePrivacySandboxPrefsToDataModel() {
           prefs::kPrivacySandboxM1RowNoticeAcknowledged);
       if (notice_acknowledged && notice_acknowledged->GetBool()) {
         PrivacySandboxNoticeData notice_data;
-        notice_data.notice_action_taken = NoticeActionTaken::kAck;
+        notice_data.notice_action_taken_ = NoticeActionTaken::kAck;
         notice_storage_->MigratePrivacySandboxNoticeData(
             pref_service_, notice_data, three_ads_apis_notice_name);
       }
@@ -181,7 +181,7 @@ void PrivacySandboxNoticeService::MigratePrivacySandboxPrefsToDataModel() {
           prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
       if (notice_acknowledged && notice_acknowledged->GetBool()) {
         PrivacySandboxNoticeData notice_data;
-        notice_data.notice_action_taken = NoticeActionTaken::kAck;
+        notice_data.notice_action_taken_ = NoticeActionTaken::kAck;
         notice_storage_->MigratePrivacySandboxNoticeData(
             pref_service_, notice_data, measurement_notice_name);
       }
