@@ -15,6 +15,11 @@
 
 namespace blink {
 
+enum class CanvasPixelFormat {
+  kUint8,
+  kF16,
+};
+
 // Parameters used by CanvasRenderingContext2D and
 // OffscreenCanvasRenderingContext2D.
 class CORE_EXPORT Canvas2DColorParams {

@@ -43,11 +43,6 @@ enum AlphaDisposition {
   kDontChangeAlpha,
 };
 
-enum class CanvasPixelFormat {
-  kUint8,
-  kF16,
-};
-
 enum ImageEncodingMimeType {
   kMimeTypePng,
   kMimeTypeJpeg,
