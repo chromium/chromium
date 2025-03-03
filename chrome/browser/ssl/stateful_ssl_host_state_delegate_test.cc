@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERT_SYMANTEC_LEGACY);
+  chrome_state->DidDisplayErrorPage(net::ERR_CERT_AUTHORITY_INVALID);
   EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
@@ -438,15 +438,15 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_FALSE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERT_SYMANTEC_LEGACY);
+  chrome_state->DidDisplayErrorPage(net::ERR_CERT_AUTHORITY_INVALID);
   EXPECT_FALSE(
-      chrome_state->HasSeenRecurrentErrors(net::ERR_CERT_SYMANTEC_LEGACY));
+      chrome_state->HasSeenRecurrentErrors(net::ERR_CERT_AUTHORITY_INVALID));
   chrome_state->DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_TRUE(chrome_state->HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  chrome_state->DidDisplayErrorPage(net::ERR_CERT_SYMANTEC_LEGACY);
-  EXPECT_TRUE(
-      chrome_state->HasSeenRecurrentErrors(net::ERR_CERT_SYMANTEC_LEGACY));
+  chrome_state->DidDisplayErrorPage(net::ERR_CERT_AUTHORITY_INVALID);
+  EXPECT_FALSE(
+      chrome_state->HasSeenRecurrentErrors(net::ERR_CERT_AUTHORITY_INVALID));
 
   // Create a new StatefulSSLHostStateDelegate to check that the state has been
   // saved to the pref and that the new StatefulSSLHostStateDelegate reads it.
@@ -459,12 +459,12 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
 
   EXPECT_TRUE(new_state.HasSeenRecurrentErrors(
       net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  EXPECT_TRUE(new_state.HasSeenRecurrentErrors(net::ERR_CERT_SYMANTEC_LEGACY));
 
   // Also test the logic for when the number of displayed errors exceeds the
   // threshold.
-  new_state.DidDisplayErrorPage(net::ERR_CERT_SYMANTEC_LEGACY);
-  EXPECT_TRUE(new_state.HasSeenRecurrentErrors(net::ERR_CERT_SYMANTEC_LEGACY));
+  new_state.DidDisplayErrorPage(net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
+  EXPECT_TRUE(new_state.HasSeenRecurrentErrors(
+      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
 }
 
 // Tests that StatefulSSLHostStateDelegate::HasSeenRecurrentErrors handles

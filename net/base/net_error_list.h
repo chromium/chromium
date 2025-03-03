@@ -550,9 +550,7 @@ NET_ERROR(CERT_VALIDITY_TOO_LONG, -213)
 // did not provide CT information that complied with the policy.
 NET_ERROR(CERTIFICATE_TRANSPARENCY_REQUIRED, -214)
 
-// The certificate chained to a legacy Symantec root that is no longer trusted.
-// https://g.co/chrome/symantecpkicerts
-NET_ERROR(CERT_SYMANTEC_LEGACY, -215)
+// Error -215 was removed (CERT_SYMANTEC_LEGACY)
 
 // -216 was QUIC_CERT_ROOT_NOT_KNOWN which has been renumbered to not be in the
 // certificate error range.

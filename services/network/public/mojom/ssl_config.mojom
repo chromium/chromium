@@ -18,7 +18,6 @@ struct SSLConfig {
   bool rev_checking_required_local_anchors = false;
 
   bool sha1_local_anchors_enabled = false;
-  bool symantec_enforcement_disabled = false;
 
   // SSL 2.0/3.0 and TLS 1.0/1.1 are not supported. Note these lines must be
   // kept in sync with net/ssl/ssl_config.cc.

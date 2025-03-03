@@ -99,7 +99,6 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
       break;
     case CERT_KNOWN_INTERCEPTION_BLOCKED:
     case CERT_AUTHORITY_INVALID:
-    case CERT_SYMANTEC_LEGACY:
     case CERT_SELF_SIGNED_LOCAL_NETWORK:
       details =
           l10n_util::GetStringFUTF16(IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS,
@@ -232,8 +231,6 @@ ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
       return CERT_PINNED_KEY_MISSING;
     case net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED:
       return CERTIFICATE_TRANSPARENCY_REQUIRED;
-    case net::ERR_CERT_SYMANTEC_LEGACY:
-      return CERT_SYMANTEC_LEGACY;
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return CERT_KNOWN_INTERCEPTION_BLOCKED;
     case net::ERR_CERT_SELF_SIGNED_LOCAL_NETWORK:
@@ -263,7 +260,6 @@ void ErrorInfo::GetErrorsForCertStatus(
       net::CERT_STATUS_NAME_CONSTRAINT_VIOLATION,
       net::CERT_STATUS_VALIDITY_TOO_LONG,
       net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED,
-      net::CERT_STATUS_SYMANTEC_LEGACY,
       net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED,
   });
 
@@ -281,7 +277,6 @@ void ErrorInfo::GetErrorsForCertStatus(
       CERT_NAME_CONSTRAINT_VIOLATION,
       CERT_VALIDITY_TOO_LONG,
       CERTIFICATE_TRANSPARENCY_REQUIRED,
-      CERT_SYMANTEC_LEGACY,
       CERT_KNOWN_INTERCEPTION_BLOCKED,
   });
   DCHECK(std::size(kErrorFlags) == std::size(kErrorTypes));

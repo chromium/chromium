@@ -51,6 +51,8 @@ class NET_EXPORT CertVerifier {
     Config& operator=(const Config&);
     Config& operator=(Config&&);
 
+    bool operator==(const Config& other) const = default;
+
     // Enable online revocation checking via CRLs and OCSP for the certificate
     // chain. Note that revocation checking is soft-fail.
     bool enable_rev_checking = false;
@@ -64,10 +66,6 @@ class NET_EXPORT CertVerifier {
     // Enable support for SHA-1 signatures if the constructed chain terminates
     // in a locally-installed, non-public trust anchor.
     bool enable_sha1_local_anchors = false;
-
-    // Disable enforcement of the policies described at
-    // https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
-    bool disable_symantec_enforcement = false;
   };
 
   class Request {
@@ -214,14 +212,6 @@ class NET_EXPORT CertVerifier {
   static std::unique_ptr<CertVerifier> CreateDefault(
       scoped_refptr<CertNetFetcher> cert_net_fetcher);
 };
-
-// Overloads for comparing two configurations. Note, comparison is shallow -
-// that is, two scoped_refptr<CRLSet>s are equal iff they point to the same
-// object.
-NET_EXPORT bool operator==(const CertVerifier::Config& lhs,
-                           const CertVerifier::Config& rhs);
-NET_EXPORT bool operator!=(const CertVerifier::Config& lhs,
-                           const CertVerifier::Config& rhs);
 
 // A CertVerifier that can update its CertVerifyProc while it is running.
 class NET_EXPORT CertVerifierWithUpdatableProc : public CertVerifier {

@@ -26,7 +26,6 @@ typedef NS_OPTIONS(NSInteger, CWVCertStatus) {
   CWVCertStatusNameConstraintViolation = 1 << 14,
   CWVCertStatusValidityTooLong = 1 << 15,
   CWVCertStatusCertificateTransparencyRequired = 1 << 24,
-  CWVCertStatusSymantecLegacy = 1 << 25,
   CWVCertStatusKnownInterceptionBlocked = 1 << 26,
 };
 
