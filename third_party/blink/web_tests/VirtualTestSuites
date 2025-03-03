@@ -1635,7 +1635,7 @@
       "fast/preloader"
     ],
     "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts"],
-    "expires": "Dec 5, 2024"
+    "expires": "Dec 5, 2025"
   },
   {
     "prefix": "coop-restrict-properties",
