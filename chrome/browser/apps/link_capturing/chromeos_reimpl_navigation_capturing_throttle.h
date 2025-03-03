@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_REIMPL_NAVIGATION_CAPTURING_THROTTLE_H_
 
 #include "base/auto_reset.h"
+#include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class Profile;
@@ -49,6 +50,8 @@ class ChromeOsReimplNavigationCapturingThrottle
 
   // Identify whether web contents need to be deleted post navigation capturing.
   bool IsEmptyDanglingWebContentsAfterLinkCapture();
+
+  base::Value::Dict debug_data_;
 
   raw_ref<Profile> profile_;
   base::WeakPtrFactory<ChromeOsReimplNavigationCapturingThrottle>
