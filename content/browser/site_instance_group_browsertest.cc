@@ -435,6 +435,52 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
   EXPECT_NE(data_instance->GetProcess(), b_instance->GetProcess());
 }
 
+// Ensure that when default SiteInstances and SiteInstanceGroups for data: URLs
+// are enabled, data: URL subframes are in a separate SiteInstance, but share a
+// process with the default SiteInstance.
+IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
+                       DataSubframeInDefaultSiteInstance) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Add a data: URL subframe.
+  {
+    TestNavigationObserver observer(web_contents());
+    GURL data_url("data:text/html,test");
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'data_frame'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        data_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    observer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    ASSERT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_EQ(data_url, observer.last_navigation_url());
+  }
+
+  SiteInstanceImpl* a_instance = main_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(a_instance->IsDefaultSiteInstance());
+
+  FrameTreeNode* data_frame = main_frame()->child_at(0);
+  SiteInstanceImpl* data_instance =
+      data_frame->current_frame_host()->GetSiteInstance();
+
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(a_instance, data_instance);
+    EXPECT_FALSE(data_instance->IsDefaultSiteInstance());
+  } else {
+    EXPECT_EQ(a_instance, data_instance);
+  }
+
+  // In both cases, A and data: should share a group. If the feature is enabled,
+  // data: should have its own SiteInstance, but should still be in the default
+  // group as it does not need further isolating. If the feature is disabled,
+  // both should be in the default SiteInstance.
+  EXPECT_EQ(a_instance->group(), data_instance->group());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DataURLSiteInstanceGroupTest,
                          ::testing::Bool(),
