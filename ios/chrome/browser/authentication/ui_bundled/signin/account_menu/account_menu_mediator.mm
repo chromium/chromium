@@ -63,10 +63,6 @@
   BOOL _blockUpdates;
   // The authentication flow,
   AuthenticationFlow* _authenticationFlow;
-  // The lifetime of this ScopedClosureRunner denotes a batch of primary account
-  // changes. UI listens to batched changes to avoid visual artifacts during an
-  // account switch.
-  base::ScopedClosureRunner _accountSwitchingBatchClosureRunner;
 
   // The list of identities to display and their index in the table view’s
   // identities section
@@ -125,7 +121,6 @@
 }
 
 - (void)disconnect {
-  _accountSwitchingBatchClosureRunner.RunAndReset();
   _signinCompletionIdentity = nil;
   _blockUpdates = YES;
   _accountManagerService = nullptr;
@@ -297,7 +292,6 @@
   self.userInteractionsBlocked = YES;
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
-                             forSwitch:NO
                             completion:^(BOOL success) {
                               [weakSelf signoutEndedWithSuccess:success];
                             }];
@@ -324,27 +318,14 @@
 
   __weak __typeof(self) weakSelf = self;
   id<SystemIdentity> fromIdentity = _primaryIdentity;
-  // TODO(crbug.com/375604649): Need to use AuthenticationFlow in both cases.
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    _authenticationFlow = [self.delegate
-        triggerSigninWithSystemIdentity:newIdentity
-                             completion:^(SigninCoordinatorResult result) {
-                               [weakSelf signinEndedWithResult:result
-                                                  fromIdentity:fromIdentity
-                                                    toIdentity:newIdentity];
-                             }];
-    return;
-  }
-
-  _accountSwitchingBatchClosureRunner =
-      _identityManager->StartBatchOfPrimaryAccountChanges();
-  [self.delegate signOutFromTargetRect:targetRect
-                             forSwitch:YES
-                            completion:^(BOOL success) {
-                              [weakSelf signoutEndedWithSuccess:success
-                                                   fromIdentity:fromIdentity
-                                                     toIdentity:newIdentity];
-                            }];
+  _authenticationFlow = [self.delegate
+      triggerSigninWithSystemIdentity:newIdentity
+                           anchorRect:targetRect
+                           completion:^(SigninCoordinatorResult result) {
+                             [weakSelf signinEndedWithResult:result
+                                                fromIdentity:fromIdentity
+                                                  toIdentity:newIdentity];
+                           }];
 }
 
 - (void)didTapErrorButton {
@@ -453,33 +434,11 @@
   }
 }
 
-// Callback for the first part of the switch, which is a sign-out.
-- (void)signoutEndedWithSuccess:(BOOL)signoutSuccess
-                   fromIdentity:(id<SystemIdentity>)previousIdentity
-                     toIdentity:(id<SystemIdentity>)newIdentity {
-  if (!signoutSuccess) {
-    // User had not signed-out. Allow to interact with the UI.
-    self.userInteractionsBlocked = NO;
-    _accountSwitchingBatchClosureRunner.RunAndReset();
-    [self restartUpdates];
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  _authenticationFlow = [self.delegate
-      triggerSigninWithSystemIdentity:newIdentity
-                           completion:^(SigninCoordinatorResult result) {
-                             [weakSelf signinEndedWithResult:result
-                                                fromIdentity:previousIdentity
-                                                  toIdentity:newIdentity];
-                           }];
-}
-
 - (void)signinEndedWithResult:(SigninCoordinatorResult)result
                  fromIdentity:(id<SystemIdentity>)previousIdentity
                    toIdentity:(id<SystemIdentity>)newIdentity {
   CHECK(_authenticationFlow);
   _authenticationFlow = nil;
-  _accountSwitchingBatchClosureRunner.RunAndReset();
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {

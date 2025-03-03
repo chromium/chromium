@@ -26,6 +26,7 @@
 // whether the the sign-in was done.
 - (AuthenticationFlow*)
     triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
+                         anchorRect:(CGRect)anchorRect
                          completion:
                              (signin_ui::SigninCompletionCallback)completion;
 
@@ -37,7 +38,6 @@
 // it’s a success.
 // It should only be called when the current scene is not blocked.
 - (void)signOutFromTargetRect:(CGRect)targetRect
-                    forSwitch:(BOOL)forSwith
                    completion:(void (^)(BOOL))completion;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in
