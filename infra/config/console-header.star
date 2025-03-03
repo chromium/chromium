@@ -847,7 +847,7 @@ DEV_HEADER = headers.header(
                     "chromium/cft rotation",
                     "chromium/chromium rotation",
                     "chromium/chromium.gpu rotation",
-                    "chrome/chromium.perf",
+                    "chrome/chrome.perf",
                     "chromium/dawn rotation",
                     "chromium/fuchsia rotation",
                     "chromium/ios rotation",
