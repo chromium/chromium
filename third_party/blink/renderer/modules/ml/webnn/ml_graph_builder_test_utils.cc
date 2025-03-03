@@ -41,10 +41,8 @@ MaybeShared<DOMArrayBufferView> CreateDOMArrayBufferView(
       break;
     }
     case V8MLOperandDataType::Enum::kFloat16: {
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
       buffer_view = MaybeShared<DOMArrayBufferView>(
-          blink::DOMUint16Array::CreateOrNull(size));
+          blink::DOMFloat16Array::CreateOrNull(size));
       break;
     }
     case V8MLOperandDataType::Enum::kInt32: {

@@ -1694,9 +1694,22 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   if (buffer->IsArrayBufferViewAllowShared()) {
     if (GetArrayBufferViewType(descriptor.data_type()) !=
         buffer->GetAsArrayBufferViewAllowShared().Get()->GetType()) {
-      exception_state.ThrowTypeError(
-          "The buffer view type doesn't match the operand data type.");
-      return nullptr;
+      if (descriptor.data_type() == webnn::OperandDataType::kFloat16 &&
+          buffer->GetAsArrayBufferViewAllowShared().Get()->GetType() ==
+              DOMArrayBufferView::ViewType::kTypeUint16) {
+        // Passing a Uint16Array when the data type is float16 was supported
+        // prior to Float16Array shipping. Maintain this special case to give
+        // developers/frameworks time to migrate their code.
+        // TODO(crbug.com/399459942): Remove this circa 2025Q3.
+        LogConsoleWarning(script_state,
+                          "Passing a Uint16Array instance for a float16 "
+                          "operand is deprecated. Use Float16Array instead.");
+
+      } else {
+        exception_state.ThrowTypeError(
+            "The buffer view type doesn't match the operand data type.");
+        return nullptr;
+      }
     }
   }
 
