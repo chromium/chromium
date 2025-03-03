@@ -5567,23 +5567,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="BrowsingTopics.TopicsRedirectChainDetected">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records the redirect state related to Topics. Recorded when a page is
-    detected to have initiated a chain of redirects, and at least two pages
-    within that chain invoke the Topics API, suggesting potential misuse of the
-    API. This event can be logged multiple times for the same page if the
-    redirect chain continues to grow.
-  </summary>
-  <metric name="NumberOfPagesCallingTopics">
-    <summary>
-      The number of pages that invoked the Topics API in the redirect chain.
-    </summary>
-  </metric>
-</event>
-
 <event name="BTM.ShortVisit" singular="True">
   <owner>rtarpine@chromium.org</owner>
   <owner>dc-komics@google.com</owner>

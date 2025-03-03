@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_REDIRECT_OBSERVER_H_
 #define COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_REDIRECT_OBSERVER_H_
 
+#include "components/browsing_topics/common/common_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -58,17 +59,31 @@ class BrowsingTopicsRedirectObserver
  private:
   friend class content::WebContentsUserData<BrowsingTopicsRedirectObserver>;
 
+  struct PendingNavigationRedirectState {
+    PendingNavigationRedirectState(
+        std::set<HashedHost>
+            pending_navigation_redirect_hosts_with_topics_invoked,
+        ukm::SourceId source_id_before_redirects);
+    ~PendingNavigationRedirectState();
+
+    PendingNavigationRedirectState(
+        const PendingNavigationRedirectState& other) = delete;
+    PendingNavigationRedirectState& operator=(
+        const PendingNavigationRedirectState& other) = delete;
+
+    PendingNavigationRedirectState(PendingNavigationRedirectState&& other);
+    PendingNavigationRedirectState& operator=(
+        PendingNavigationRedirectState&& other);
+
+    std::set<HashedHost> pending_navigation_redirect_hosts_with_topics_invoked;
+    ukm::SourceId source_id_before_redirects;
+  };
+
   // WebContentsObserver:
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-
-  struct PendingNavigationRedirectState {
-    int redirect_count;
-    int redirect_with_topics_invoked_count;
-    ukm::SourceId source_id_before_redirects;
-  };
 
   // For the ongoing main frame navigation(s), the redirect state to be
   // initialized with for the new page. When a navigation reaches
