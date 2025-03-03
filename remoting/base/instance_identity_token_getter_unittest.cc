@@ -423,7 +423,7 @@ INSTANTIATE_TEST_SUITE_P(
                         "google.compute_engine",
                         base::Value::Dict().Set("instance_id",
                                                 "test-instance-id"))),
-                    "ComputeEngineDictMissingValues"), ),
+                    "ComputeEngineDictMissingValues")),
     [](const testing::TestParamInfo<InstanceIdentityTokenGetterTest::ParamType>&
            info) { return info.param.test_name; });
 
