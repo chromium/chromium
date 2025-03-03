@@ -1148,6 +1148,37 @@ TEST_F(ScannerControllerTest, OpenFeedbackDialogCallbackSendsFeedback) {
 }
 
 TEST_F(ScannerControllerTest,
+       OpenFeedbackDialogSendFeedbackCallbackSendsMetric) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  FakeScannerDelegate& fake_scanner_delegate =
+      *GetFakeScannerDelegate(*scanner_controller);
+  base::test::TestFuture<const AccountId&, ScannerFeedbackInfo,
+                         ScannerDelegate::SendFeedbackCallback>
+      feedback_info_future;
+  fake_scanner_delegate.SetOpenFeedbackDialogCallback(
+      feedback_info_future.GetRepeatingCallback());
+  EXPECT_CALL(mock_send_specialized_feature_feedback(), Run);
+  manta::proto::ScannerAction action;
+  action.mutable_copy_to_clipboard()->set_html_text("<b>Hello</b>");
+
+  scanner_controller->OpenFeedbackDialog(
+      Shell::Get()->session_controller()->GetActiveAccountId(),
+      std::move(action),
+      /*screenshot=*/base::MakeRefCounted<base::RefCountedString>("testimage"));
+  auto [unused_account_id, feedback_dialog_info, send_feedback_callback] =
+      feedback_info_future.Take();
+  histogram_tester.ExpectBucketCount("Ash.ScannerFeature.UserState",
+                                     ScannerFeatureUserState::kFeedbackSent, 0);
+  std::move(send_feedback_callback)
+      .Run(std::move(feedback_dialog_info), "feedback");
+
+  histogram_tester.ExpectBucketCount("Ash.ScannerFeature.UserState",
+                                     ScannerFeatureUserState::kFeedbackSent, 1);
+}
+
+TEST_F(ScannerControllerTest,
        OpenFeedbackDialogCallbackSendsFeedbackWithOriginalAccount) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
