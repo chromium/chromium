@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">後でページを読み込む</translation>
 <translation id="1010225406377140704">送信者に連絡して新しいリンクをリクエストしてください</translation>
 <translation id="1011206368273183593">ファイルを準備しています</translation>
+<translation id="1012264210825687872">注文の確認が完了したら、<ph name="BNPL_ISSUER_NAME" /> アカウントにログインするか、アカウントを作成する必要があります。このアカウントは自動的に Google Pay にリンクされます。</translation>
 <translation id="1014509239502131234">結果を元に戻しています</translation>
 <translation id="1015730422737071372">詳細を報告する</translation>
 <translation id="1019413721762100891">オフ</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">経済ニュース</translation>
 <translation id="214556005048008348">支払いをキャンセル</translation>
 <translation id="2147117373852943630">楽器</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> があなたに関する保存済みの情報の使用を要求しています</translation>
 <translation id="2148613324460538318">カードを追加</translation>
 <translation id="2148716181193084225">今日</translation>
 <translation id="2149968176347646218">接続は安全ではありません</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">検出（デフォルト）</translation>
 <translation id="2188375229972301266">多穴パンチ（下）</translation>
 <translation id="2194856509914051091">留意事項</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> の詳細</translation>
 <translation id="2200678913752027654">低評価ボタンです。Enter キーを押すとフィードバック フォームが開き、この提案を気に入らない理由を記入して送信できます</translation>
 <translation id="2202627062836089804">カードの裏面</translation>
 <translation id="2204482073374652408">更新が完了しました。</translation>
@@ -2318,6 +2321,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome にデバイスの <ph name="PERMISSION" /> へのアクセスを許可する必要があります</translation>
 <translation id="510644072453496781">段ボール（エンド）</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> の仮想カードの入力</translation>
 <translation id="5108881358339761672">サイトは安全ではありません</translation>
 <translation id="5109892411553231226">お支払い方法を管理</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@
             <ph name="LIST_ITEM" />フォームに入力した情報
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">逆の順序（上向き）</translation>
+<translation id="5445340838622821110">後払いする場合は、1 回限りの仮想カード番号が入力されます。この番号は、今回の購入にのみ使用されます。<ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> があなたに関する保存済みの情報を使用することを許可する</translation>
 <translation id="5452270690849572955">この <ph name="HOST_NAME" /> ページが見つかりません</translation>
 <translation id="5452923259299906094">電子ウォレットと Pix で支払う</translation>
@@ -3332,6 +3337,7 @@
 <translation id="6917795328362592458">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、アカウントを保護するために保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6917873303492266709">タブグループの共有、参加、共同作業を行うには、設定を開いて [Chrome へのログインを許可する] をオンにしてください</translation>
 <translation id="6921197121276419421">ウェブアプリのインストールを許可しました</translation>
+<translation id="69238565902785824">アカウントをリンクしたままにすると、<ph name="BNPL_ISSUER_NAME" /> ですばやくお支払いできます。もしくは、<ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> でリンクを解除できます。</translation>
 <translation id="6924013822850225188">購入手続き時にカードの特典を表示するかどうかを選択します（カード発行会社の利用規約が適用されます）</translation>
 <translation id="6925267999184670015">北米 B+</translation>
 <translation id="6926216138694948720">ボディアート</translation>
@@ -3397,6 +3403,7 @@
 <translation id="701757816833614688">ビジュアル アート、デザイン教育</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="7023162328967545559">管理者の警告</translation>
+<translation id="7023765275461720661">アカウントをリンクして <ph name="BNPL_ISSUER_NAME" /> で支払いますか？</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030164307377592766">お支払い方法の入力の設定を変更します</translation>
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>
@@ -3619,6 +3626,7 @@
 <translation id="741204030948306876">ON にする</translation>
 <translation id="7416351320495623771">パスワードを管理…</translation>
 <translation id="7416898721136759658">奨学金、補助金</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">プログラミング</translation>
 <translation id="7419091773564635591">コンピュータ、電化製品</translation>
 <translation id="7419106976560586862">プロフィール パス</translation>
@@ -3665,6 +3673,7 @@
 <translation id="7485085230273446323">ビジネス、産業</translation>
 <translation id="7485870689360869515">データが見つかりません。</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> が利用資格の有無を確認します（これはクレジット スコアには影響しません）。承認された場合は、<ph name="BNPL_ISSUER_NAME" /> からお支払いプランが提供され、選択いただくと購入を完了できます。</translation>
 <translation id="7489392576326061356">シャンプー、コンディショナー</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>
 <translation id="749865518782565832">配管</translation>

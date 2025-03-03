@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Cerques suggerides</translation>
 <translation id="3658847490588580244">Full inferior del navegador predeterminat</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> lloc web al grup de llocs web de <ph name="RWS_OWNER" /> que poden veure la teva activitat al grup}other{<ph name="RWS_MEMBERS_COUNT" /> llocs web al grup de llocs web de <ph name="RWS_OWNER" /> que poden veure la teva activitat al grup}}</translation>
+<translation id="3676777756440746804">Els llocs web no poden demanar-te permís per utilitzar la informació que han desat sobre tu</translation>
 <translation id="3697164069658504920">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius USB. Quan aquesta opció està desactivada, els llocs web no poden fer servir dispositius USB.</translation>
 <translation id="3707034683772193706">Els llocs web que visites poden desar una quantitat petita de dades amb Chrome, principalment per validar que no ets un bot</translation>
 <translation id="3709818294139939629">Accés del lloc web suprimit</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Al telèfon, obre Configuració</translation>
 <translation id="3933121352599513978">Replega les sol·licituds no desitjades (opció recomanada)</translation>
 <translation id="3955193568934677022">Permet que els llocs web reprodueixin contingut protegit (opció recomanada)</translation>
+<translation id="3965467402665811906">Els llocs web poden demanar-te permís per utilitzar la informació que han desat sobre tu</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3987993985790029246">Copia l'enllaç</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> pot utilitzar la teva informació mentre navegues</translation>
 <translation id="3992684624889376114">Sobre aquesta pàgina</translation>
 <translation id="4002066346123236978">Títol</translation>
 <translation id="4046123991198612571">Pista següent</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Les opcions de configuració gestionades no es poden restablir</translation>
 <translation id="4887024562049524730">Pregunta abans de permetre que els llocs web utilitzin el teu dispositiu i les teves dades de realitat virtual (opció recomanada)</translation>
 <translation id="4936863036653376783">Trobaràs els teus grups a la secció de grups de pestanyes de tots els teus dispositius</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> no pot utilitzar la teva informació a</translation>
 <translation id="4953688446973710931">Quan aquesta opció està activada, els llocs web poden demanar permís per baixar automàticament diversos fitxers. Quan aquesta opció està desactivada, els llocs web no poden baixar automàticament diversos fitxers.</translation>
 <translation id="4962975101802056554">Revoca tots els permisos del dispositiu</translation>
 <translation id="497421865427891073">Ves endavant</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8541410041357371550">Aquest lloc web obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants</translation>
+<translation id="854876774113449365">Els llocs web que visites poden inserir contingut d'altres llocs web, com ara imatges, anuncis i text. Aquests altres llocs web poden demanar permís per utilitzar informació teva que han desat a mesura que navegues pel lloc web. <ph name="BEGIN_LINK" />Més informació sobre el contingut inserit<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Com s'han de mostrar les sol·licituds</translation>
 <translation id="8558480467877843976">Ara pots utilitzar Chrome cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="857943718398505171">Permès (opció recomanada)</translation>
+<translation id="8593422116412089302">Quan aquesta opció està activada, els llocs web poden demanar-te permís per utilitzar la informació que han desat sobre tu. Quan aquesta opció està desactivada, els llocs web no poden demanar-te permís per utilitzar la informació que han desat sobre tu.</translation>
 <translation id="8609465669617005112">Desplaça cap amunt</translation>
 <translation id="8617611086246832542">Quan aquesta opció està activada, es mostra la visualització per a ordinadors dels llocs web. Quan aquesta opció està desactivada, es mostra la visualització per a mòbils dels llocs web.</translation>
 <translation id="8670078035093027626">Full inferior del navegador predeterminat obert a alçada completa</translation>

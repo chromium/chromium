@@ -81,6 +81,7 @@
 <translation id="131461803491198646">홈 네트워크 로밍 안함</translation>
 <translation id="1327977588028644528">게이트웨이</translation>
 <translation id="1328223165223065150">배경화면 색상</translation>
+<translation id="1329478709358066995">스크립트:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">스캔 영역에 맞춤</translation>
 <translation id="1343442362630695901">염호</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">배경화면 정보</translation>
 <translation id="6939667434404433010">녹음 파일 이름 검색</translation>
 <translation id="6939766318048400022">카페</translation>
+<translation id="6942253772720771875">의견을 공유하거나 문제를 설명해 주세요</translation>
 <translation id="6943893908656559156">원격 ID(선택사항)</translation>
 <translation id="6953137545147683679">금빛</translation>
 <translation id="6957231940976260713">서비스 이름</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> 기기는 기업에서 관리합니다.</translation>
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> 스타일의 <ph name="ART_FEATURE" /> 그림</translation>
+<translation id="8409219750150841791">생성된 요약:</translation>
 <translation id="8410244574650205435">자동으로 감지</translation>
 <translation id="8420955526972171689">테스트 실행 및 하드웨어 문제 해결</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" />의 작업 더보기</translation>
 <translation id="86356131183441916">연한 보라색</translation>
 <translation id="8647595191512746911">오디오 스크립트 작성</translation>
+<translation id="8648578954147795914">생성된 이름:</translation>
 <translation id="8650852232143958317">어디서나 함께하는 Gmail 및 Google Drive 파일</translation>
 <translation id="8651481478098336970">음소거</translation>
 <translation id="8655295600908251630">채널</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">알려진 APN 표시</translation>
 <translation id="932327136139879170">홈</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">마이크가 연결되어 있는지 확인하거나 Chromebook을 다시 시작하세요</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> 키가 누락되었습니다. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">스크립트에 각 발화자가 말하는 내용과 시점이 반영되도록 녹음 파일 전체의 음성을 비교합니다.</translation>

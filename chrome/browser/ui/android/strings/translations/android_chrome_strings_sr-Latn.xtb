@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – poslato je sa uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Folderi toka čuvanja obeleživača su otvoreni do polovine ekrana</translation>
 <translation id="1327257854815634930">Istorija navigacije je otvorena</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, nova ili ažurirana kartica</translation>
 <translation id="1331212799747679585">Chrome ne može da se ažurira. Još opcija</translation>
 <translation id="1332501820983677155">Prečice za Google Chrome funkcije</translation>
 <translation id="1333491156693005331">Nedavno provereno</translation>
@@ -204,7 +203,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1925021887439448749">Unesite prilagođenu veb-adresu</translation>
 <translation id="1928618076168182477">Ovo je vizuelni prikaz</translation>
 <translation id="1928696683969751773">Ažuriranja</translation>
-<translation id="1933845786846280168">Izabrane kartice</translation>
 <translation id="1939549834451474504">Lozinke će uskoro prestati da rade jer Google Play usluge nisu dostupne. Možete da napravite kopiju sačuvanih lozinki pre nego što prestanu da rade. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Sačuvaj lozinke</translation>
 <translation id="1944535645109964458">Nije dostupan nijedan pristupni kôd</translation>
@@ -431,7 +429,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2976550651269220761">Neki Chrome podaci još nisu sačuvani na Google nalogu.\nProbajte da sačekate nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="2977350910003566746">Sortira se prema poslednjem otvaranju</translation>
 <translation id="297771753501244313">Po poslednjem otvaranju</translation>
-<translation id="2979025552038692506">Izabrane kartice bez arhiviranja</translation>
 <translation id="2979639724566107830">Otvorite u novom prozoru</translation>
 <translation id="2981364137500752533">Možete da imate najviše 5 prozora.</translation>
 <translation id="2983102365694924129">Na osnovu vaše aktivnosti na sajtu. Ovo podešavanje je isključeno.</translation>
@@ -622,7 +619,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3902562446536395999">Sortira se od A do Z</translation>
 <translation id="3908308510347173149">Ažurirajte <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sortira se od Z do A</translation>
-<translation id="3918415141610210050">Kartica</translation>
 <translation id="3924911262913579434">Režim <ph name="SAFE_BROWSING_MODE" /> je uključen</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kombinuj podatke</translation>
@@ -645,7 +641,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4024768890073681126">Roditelj upravlja pregledačem</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# č}one{# č}few{# č}other{# č}}</translation>
 <translation id="4042941173059740150">Nastavite na <ph name="SITE_ETLD_PLUS_ONE" /> uz <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Neimenovana grupa</translation>
 <translation id="4044708993631234325">Donja tabela</translation>
 <translation id="4045441967987592849">Ponovo otvori</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardna kartica sa novom aktivnošću u deljenim grupama kartica}one{<ph name="TABS_COUNT_MANY" /> standardna kartica sa novom aktivnošću u deljenim grupama kartica}few{<ph name="TABS_COUNT_MANY" /> standardne kartice sa novom aktivnošću u deljenim grupama kartica}other{<ph name="TABS_COUNT_MANY" /> standardnih kartica sa novom aktivnošću u deljenim grupama kartica}}</translation>
@@ -1740,7 +1735,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8840953339110955557">Ova stranica može da se razlikuje od onlajn verzije.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skriveno</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, kartica</translation>
 <translation id="8854223127042600341">Pogledajte oflajn datoteke</translation>
 <translation id="885480114717186641">Možete da zatražite verziju sajta za računar za <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Preuzimaj opise</translation>

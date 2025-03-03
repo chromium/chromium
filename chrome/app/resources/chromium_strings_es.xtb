@@ -320,6 +320,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5579324208890605088">Error de arranque: ejecuta el instalador como usuario normal, no como administrador.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5605834417512968703">Selecciona cualquier cosa para buscarla con la búsqueda por imágenes o pulsa la tecla Esc para salir de la búsqueda por imágenes</translation>
+<translation id="5618818588972826921">Selecciona cualquier texto o imagen para buscar con la búsqueda por imágenes o pulsa la tecla Esc para salir de la búsqueda por imágenes</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hay una actualización de Chromium disponible}=1{Hay una actualización de Chromium disponible}other{Hay una actualización de Chromium disponible desde hace # días}}</translation>
 <translation id="5643865575100044307">Eliminar siempre los datos de sitios de tu dispositivo al cerrar Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
@@ -595,5 +596,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="983803489796659991">No se ha podido realizar la instalación porque el servidor de actualizaciones no tiene datos hash de la aplicación.</translation>
 <translation id="985498048907240953">Usar Chromium sin una cuenta</translation>
 <translation id="985602178874221306">Los creadores de Chromium</translation>
+<translation id="989970834842471429">Selecciona cualquier texto o imagen para buscar con la búsqueda por imágenes</translation>
 <translation id="992780518932311116">Para usar tu ubicación, da acceso a Chromium en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 </translationbundle>

@@ -3579,7 +3579,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3663124775601519286">Als je het beleid toepast of niet instelt, mag de Translator API worden gebruikt in <ph name="PRODUCT_NAME" />.
 
       Als je het beleid niet toepast, mag de Translator API niet worden gebruikt.</translation>
-<translation id="3664164569472125114"><ph name="GLIC" />-toegang beheren</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
 <translation id="3667467644216039144">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit.
 
@@ -7386,7 +7385,6 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
 <translation id="6383774771168138899">Hiermee stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces in voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Weergave van resultatenpagina's van standaard zoekmachine in een zijvenster van de browser aanzetten.</translation>
 <translation id="6389240462871677239">Toestaan dat geïsoleerde web-app-oorsprongen het Controlled Frame gebruiken</translation>
-<translation id="6389858262577493180">Gebruik van <ph name="GLIC" /> aanzetten</translation>
 <translation id="6390338862225976270">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
 
 0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
@@ -7986,7 +7984,6 @@ Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_
 <translation id="6766216162565713893">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een Bluetooth-apparaat in de buurt</translation>
 <translation id="6770454900105963262">Informatie over actieve kiosk-sessies melden</translation>
 <translation id="6774132787348495175">Gebruikers niet toestaan virtuele machines te gebruiken die nodig zijn om Linux-apps te ondersteunen</translation>
-<translation id="6776202826080834193">Als je dit beleid toepast of niet instelt, kunnen gebruikers de functie <ph name="GLIC" /> gebruiken. Als je dit beleid niet toepast, kunnen gebruikers <ph name="GLIC" /> niet gebruiken. De knop in de tabbladstrook is dan verborgen en <ph name="GLIC" /> is niet beschikbaar via een sneltoets, tenzij de functie is aangezet in een ander profiel.</translation>
 <translation id="678121785914414680">Lijst met bestandstypen die automatisch moeten worden geopend nadat ze zijn gedownload. Het voorafgaande scheidingsteken mag niet worden opgenomen als je het bestandstype vermeldt. Vermeld dus 'txt' in plaats van '.txt'.
 
 Bestanden met typen die automatisch moeten worden geopend, vallen nog steeds onder de geactiveerde Safe Browsing-checks en worden niet geopend als ze die checks niet doorstaan.
@@ -11134,7 +11131,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als je het beleid instelt op True, worden de systeemgegevens van het apparaat gerapporteerd.</translation>
 <translation id="9131419675479917141">Toestaan dat gebruikers een zwakke pincode instellen, maar een waarschuwing tonen</translation>
 <translation id="913195841488580904">Toegang blokkeren voor een lijst met URL's</translation>
-<translation id="9132345265506256744">Gebruik van <ph name="GLIC" /> uitzetten.</translation>
 <translation id="9133526448421932754">Gele achtergrondverlichting van toetsenbord</translation>
 <translation id="9135033364005346124">Proxy voor <ph name="CLOUD_PRINT_NAME" /> gebruiken</translation>
 <translation id="9135095804754272364">Een melding tonen als een USB-apparaat wordt gevonden</translation>

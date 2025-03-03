@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-ൽ നിന്ന് അയച്ചത്</translation>
 <translation id="1320912611264252795">ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കൽ ഫ്ലോ ഫോൾഡറുകൾ മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="1327257854815634930">നാവിഗേഷൻ ചരിത്രം തുറന്നിരിക്കുന്നു</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, പുതിയതോ അപ്‌ഡേറ്റ് ചെയ്‌തതോ ആയ ടാബ്</translation>
 <translation id="1331212799747679585">Chrome അപ്‌ഡേറ്റ് ചെയ്യാനാവില്ല. കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="1332501820983677155">Google Chrome ഫീച്ചർ കുറുക്കുവഴികൾ</translation>
 <translation id="1333491156693005331">അടുത്തിടെ പരിശോധിച്ചു</translation>
@@ -204,7 +203,6 @@
 <translation id="1925021887439448749">ഇഷ്‌ടാനുസൃത വെബ് വിലാസം നൽകുക</translation>
 <translation id="1928618076168182477">വിഷ്വൽ കാഴ്‌ച കാണിക്കുന്നു</translation>
 <translation id="1928696683969751773">അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
-<translation id="1933845786846280168">തിരഞ്ഞെടുത്ത ടാബ്</translation>
 <translation id="1939549834451474504">Google Play സേവനങ്ങൾ ലഭ്യമല്ലാത്തതിനാൽ, പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തും. സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പ്രവർത്തനം നിർത്തുന്നതിന് മുമ്പ്, നിങ്ങൾക്ക് അവയുടെ പകർപ്പെടുക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="1944535645109964458">പാസ്‌കീകൾ ലഭ്യമല്ല</translation>
@@ -431,7 +429,6 @@
 <translation id="2976550651269220761">നിങ്ങളുടെ Chrome ഡാറ്റയിൽ ചിലത് നിങ്ങളുടെ Google Account-ൽ ഇപ്പോഴും സംരക്ഷിച്ചിട്ടില്ല.\nഅൽപ്പ സമയം കാത്തിരുന്നതിന് ശേഷം സൈൻ ഔട്ട് ചെയ്യാൻ ശ്രമിക്കുക. നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്താൽ ഈ ഡാറ്റ ഇല്ലാതാക്കും.</translation>
 <translation id="2977350910003566746">അവസാനം തുറന്നത് പ്രകാരം അടുക്കുന്നു</translation>
 <translation id="297771753501244313">അവസാനം തുറന്നതനുസരിച്ച് അടുക്കൂ</translation>
-<translation id="2979025552038692506">തിരഞ്ഞെടുത്ത അദൃശ്യ ടാബ്</translation>
 <translation id="2979639724566107830">പുതിയ വിന്‍ഡോയില്‍ തുറക്കുക</translation>
 <translation id="2981364137500752533">നിങ്ങൾക്ക് 5 വിൻഡോകൾ വരെ തുറക്കാനാകും.</translation>
 <translation id="2983102365694924129">സൈറ്റിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റിയെ അടിസ്ഥാനമാക്കി. ഈ ക്രമീകരണം ഓഫാണ്.</translation>
@@ -622,7 +619,6 @@
 <translation id="3902562446536395999">A മുതൽ Z വരെ ക്രമത്തിൽ അടുക്കുന്നു</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="3911609878849982353">Z മുതൽ A വരെ ക്രമത്തിൽ അടുക്കുന്നു</translation>
-<translation id="3918415141610210050">ടാബ്</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ഓണാണ്</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">എന്റെ വിവരങ്ങൾ സംയോജിപ്പിക്കുക</translation>
@@ -645,7 +641,6 @@
 <translation id="4024768890073681126">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ രക്ഷിതാവാണ്</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# മണിക്കൂർ}other{# മണിക്കൂർ}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുന്നത് തുടരുക</translation>
-<translation id="404352903042073578">പേരില്ലാത്ത ഗ്രൂപ്പ്</translation>
 <translation id="4044708993631234325">ബോട്ടം ഷീറ്റ്</translation>
 <translation id="4045441967987592849">വീണ്ടും തുറക്കുക</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ പുതിയ ആക്റ്റിവിറ്റിയുള്ള <ph name="TABS_COUNT_ONE" /> സ്റ്റാൻഡേർഡ് ടാബ്}other{പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ പുതിയ ആക്റ്റിവിറ്റിയുള്ള <ph name="TABS_COUNT_MANY" /> സ്റ്റാൻഡേർഡ് ടാബുകൾ}}</translation>
@@ -1740,7 +1735,6 @@
 <translation id="8840953339110955557">ഈ പേജ് ഓൺലൈൻ പതിപ്പിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">മറച്ചിരിക്കുന്നു</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, ടാബ്</translation>
 <translation id="8854223127042600341">നിങ്ങളുടെ ഓഫ്‌ലൈൻ ഫയലുകൾ കാണുക</translation>
 <translation id="885480114717186641">നിങ്ങൾക്ക് <ph name="HOST_NAME" /> എന്നതിനുള്ള ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കാം</translation>
 <translation id="8856607253650333758">വിവരണങ്ങൾ നേടുക</translation>

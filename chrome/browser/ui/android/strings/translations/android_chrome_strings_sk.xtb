@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – odoslané zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Priečinky s postupom uloženia záložky sú otvorené na úplnú výšku</translation>
 <translation id="1327257854815634930">História navigácie je otvorená</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, nová alebo aktualizovaná karta</translation>
 <translation id="1331212799747679585">Chrome sa nedá aktualizovať. Ďalšie možnosti</translation>
 <translation id="1332501820983677155">Skratky pre funkcie prehliadača Google Chrome</translation>
 <translation id="1333491156693005331">Nedávno skontrolované</translation>
@@ -203,7 +202,6 @@
 <translation id="1925021887439448749">Zadajte vlastnú webovú adresu</translation>
 <translation id="1928618076168182477">Používa sa vizuálne zobrazenie</translation>
 <translation id="1928696683969751773">Aktualizácie</translation>
-<translation id="1933845786846280168">Vybratá karta</translation>
 <translation id="1939549834451474504">Heslá čoskoro prestanú fungovať, pretože Služby Google Play nie sú k dispozícii. Než sa tak stane, môžete si uložené heslá skopírovať. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Ukladať heslá</translation>
 <translation id="1944535645109964458">Nie sú k dispozícii žiadne prístupové kľúče</translation>
@@ -430,7 +428,6 @@
 <translation id="2976550651269220761">Niektoré údaje Chromu zatiaľ neboli vo vašom účte Google uložené.\nNež sa odhlásite, skúste niekoľko minút počkať. Ak sa odhlásite teraz, tieto údaje budú odstránené.</translation>
 <translation id="2977350910003566746">Zoraďuje sa podľa posledného otvorenia</translation>
 <translation id="297771753501244313">Zoradiť podľa posl. otv.</translation>
-<translation id="2979025552038692506">Vybratá karta inkognito</translation>
 <translation id="2979639724566107830">Otvoriť v novom okne</translation>
 <translation id="2981364137500752533">Môžete mať maximálne päť okien.</translation>
 <translation id="2983102365694924129">Založené na vašej aktivite na webe. Toto nastavenie je vypnuté.</translation>
@@ -621,7 +618,6 @@
 <translation id="3902562446536395999">Zoraďuje sa od A po Z</translation>
 <translation id="3908308510347173149">Aktualizovať službu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Zoraďuje sa od Z po A</translation>
-<translation id="3918415141610210050">Karta</translation>
 <translation id="3924911262913579434">Je zapnutý režim <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Bezpätkové</translation>
 <translation id="3928666092801078803">Spojiť moje údaje</translation>
@@ -644,7 +640,6 @@
 <translation id="4024768890073681126">Váš prehliadač spravuje nadradená položka</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hod.}few{# hod.}many{# hod.}other{# hod.}}</translation>
 <translation id="4042941173059740150">Pokračujte na webe <ph name="SITE_ETLD_PLUS_ONE" /> poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Nepomenovaná skupina</translation>
 <translation id="4044708993631234325">Dolný hárok</translation>
 <translation id="4045441967987592849">Znova otvoriť</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> štandardná karta s novou aktivitou v zdieľaných skupinách kariet}few{<ph name="TABS_COUNT_MANY" /> štandardné karty s novou aktivitou v zdieľaných skupinách kariet}many{<ph name="TABS_COUNT_MANY" /> standard tabs with new activity in shared tab groups}other{<ph name="TABS_COUNT_MANY" /> štandardných kariet s novou aktivitou v zdieľaných skupinách kariet}}</translation>
@@ -1736,7 +1731,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8840953339110955557">Táto stránka sa môže líšiť od online verzie.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skryté</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, karta</translation>
 <translation id="8854223127042600341">Zobraziť offline súbory</translation>
 <translation id="885480114717186641">Požiadať o web pre počítače pre <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Získať popisy</translation>

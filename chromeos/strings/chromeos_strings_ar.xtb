@@ -81,6 +81,7 @@
 <translation id="131461803491198646">الشبكة الرئيسية، بلا تجوال</translation>
 <translation id="1327977588028644528">المدخل</translation>
 <translation id="1328223165223065150">لون الخلفية</translation>
+<translation id="1329478709358066995">النص:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">الملاءمة مع منطقة المسح الضوئي</translation>
 <translation id="1343442362630695901">بحيرة مالحة</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">لمحة عن الخلفية</translation>
 <translation id="6939667434404433010">البحث عن اسم التسجيل</translation>
 <translation id="6939766318048400022">مقهى</translation>
+<translation id="6942253772720771875">يُرجى إخبارنا بملاحظاتك أو توضيح مشكلتك</translation>
 <translation id="6943893908656559156">الهوية عن بُعد (اختياري)</translation>
 <translation id="6953137545147683679">ذهبي</translation>
 <translation id="6957231940976260713">اسم الخدمة</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">تُدير المؤسسة جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="8398927464629426868">معدّل شحن الجهاز أو تفريغ شحنه حاليًا</translation>
 <translation id="8403988360557588704">رسمة <ph name="ART_FEATURE" /> بأسلوب <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">الملخّص الذي تم إنشاؤه:</translation>
 <translation id="8410244574650205435">تم الرصد تلقائيًا</translation>
 <translation id="8420955526972171689">يمكنك إجراء اختبارات وتحديد مشاكل الجهاز وحلّها.</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811">مزيد من الإجراءات لـ "<ph name="APN_NAME" />"</translation>
 <translation id="86356131183441916">أرجواني فاتح</translation>
 <translation id="8647595191512746911">تحويل الصوت إلى نص</translation>
+<translation id="8648578954147795914">الأسماء التي تم إنشاؤها:</translation>
 <translation id="8650852232143958317">‏الوصول إلى حساب Gmail وملفاتك على Google Drive من أي مكان</translation>
 <translation id="8651481478098336970">كتم الصوت</translation>
 <translation id="8655295600908251630">القناة</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">‏عرض أسماء نقاط الوصول (APN) المعروفة</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">‏يُرجى التأكّد من توصيل الميكروفون أو محاولة إعادة تشغيل جهاز Chromebook</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="950520315903467048">لم يتم تخصيص مفتاح لـ <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">مقارنة الأصوات طوال مدة التسجيل ليعرض النص ما يقوله كل متحدّث ووقت الكلام</translation>

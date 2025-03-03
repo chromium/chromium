@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Барак кийинчерээк жүктөлсүн</translation>
 <translation id="1010225406377140704">Жаңы шилтемени суроо үчүн жөнөтүүчүгө кайрылыңыз</translation>
 <translation id="1011206368273183593">Файлдар даярдалууда</translation>
+<translation id="1012264210825687872">Буйрутмаңызды карап чыккандан кийин, кирүүңүз же <ph name="BNPL_ISSUER_NAME" /> аккаунтун түзүшүңүз керек. Бул аккаунт Google Pay менен автоматтык түрдө байланыштырылат.</translation>
 <translation id="1014509239502131234">Кайтаруу</translation>
 <translation id="1015730422737071372">Кошумча маалымат берүү</translation>
 <translation id="1019413721762100891">Өчүк</translation>
@@ -691,6 +692,7 @@
 <translation id="2187317261103489799">Аныктоо (демейки)</translation>
 <translation id="2188375229972301266">Төмөнкү жагын бир нече жолу тешүү</translation>
 <translation id="2194856509914051091">Эске ала турган нерселер</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> тууралуу кеңири маалымат</translation>
 <translation id="2200678913752027654">Жаккан жок баскычы. Форманы ачып, бул сунушту эмне үчүн жактырбаганыңыз тууралуу кеңири пикир билдирүү үчүн Enter баскычын басыңыз</translation>
 <translation id="2202627062836089804">картаңыздын аркасы</translation>
 <translation id="2204482073374652408">Жаңыртылды!</translation>
@@ -2317,6 +2319,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome'го түзмөгүңүздөгү <ph name="PERMISSION" /> колдонууга уруксат бериңиз</translation>
 <translation id="510644072453496781">Картон (аягы)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> үчүн виртуалдык карта толтурулду</translation>
 <translation id="5108881358339761672">Сайт кооптуу</translation>
 <translation id="5109892411553231226">Төлөм ыкмаларын башкаруу</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2512,6 +2515,7 @@
             <ph name="LIST_ITEM" />Формаларга киргизилген маалымат
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Тескери иретте алдыңкы бетин өйдө каратып</translation>
+<translation id="5445340838622821110">Убакыттын өтүшү менен төлөгөндө, бир жолку виртуалдык картанын номери толтурулат. Бул номер ушул сатып алуу үчүн гана. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> сайтына анда сакталган маалыматыңызды колдонууга уруксат берүү</translation>
 <translation id="5452270690849572955">Бул <ph name="HOST_NAME" /> барагын табуу мүмкүн эмес</translation>
 <translation id="5452923259299906094">Электрондук капчык жана Pix менен төлөңүз</translation>
@@ -3331,6 +3335,7 @@
 <translation id="6917795328362592458">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Сырсөздөрдү башкаргыч сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
 <translation id="6917873303492266709">Өтмөктөр топторуна кошулуу, бөлүшүү, жана кызматташуу үчүн жөндөөлөрдү ачып, Chrome'го кирүүгө уруксат берүүнү күйгүзүңүз</translation>
 <translation id="6921197121276419421">Веб колдонмолорун орнотууга уруксат берилет</translation>
+<translation id="69238565902785824">Аккаунтуңузду байланыштырылган бойдон калтыруу <ph name="BNPL_ISSUER_NAME" /> менен тезирээк төлөөгө жардам берет, бирок <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> дарегине өтүп, аны ажырата аласыз</translation>
 <translation id="6924013822850225188">Төлөп жатканда картадагы бонустар көрсөтүлүп же көрсөтүлбөй турганын тандаңыз (банктын шарттары колдонулат)</translation>
 <translation id="6925267999184670015">Түндүк америкалык B+</translation>
 <translation id="6926216138694948720">Денеге сүрөт тартуу</translation>
@@ -3396,6 +3401,7 @@
 <translation id="701757816833614688">Визуалдык искусство жана дизайн билими</translation>
 <translation id="702275896380648118">Бул сайт сизге жаккан нерселерди аныктап, башка сайттарга жарнамаларды сунуштап турат. Ошондой эле, ал Сhrome'дон жарнама темаларыңыз тууралуу маалымат алып, сизге ылайыктуу жарнамаларды көрсөтүп турат.</translation>
 <translation id="7023162328967545559">Администратордун эскертүүсү</translation>
+<translation id="7023765275461720661">Аккаунтту байланыштырып, <ph name="BNPL_ISSUER_NAME" /> менен төлөйсүзбү?</translation>
 <translation id="7029809446516969842">Сырсөздөр</translation>
 <translation id="7030164307377592766">төлөм ыкмаларын толтуруу параметрлерин өзгөртүү</translation>
 <translation id="7031646650991750659">Кайсы Google Play колдонмолорун орнотуп алдыңыз</translation>
@@ -3617,6 +3623,7 @@
 <translation id="741204030948306876">Ооба, макулмун</translation>
 <translation id="7416351320495623771">Сырсөздөрдү башкаруу…</translation>
 <translation id="7416898721136759658">Гранттар, стипендиялар жана каржылык жардам</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Программалоо</translation>
 <translation id="7419091773564635591">Компьютерлер жана электроника</translation>
 <translation id="7419106976560586862">Профиль жолу</translation>
@@ -3663,6 +3670,7 @@
 <translation id="7485085230273446323">Бизнес жана өнөр-жай</translation>
 <translation id="7485870689360869515">Дайындар табылган жок.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> жарамдуулугуңузду текшерет (мунун насыя рейтингиңизге кедергиси тийбейт). Эгер ырасталса, <ph name="BNPL_ISSUER_NAME" /> тандооңуз үчүн төлөм пландарын сунуштап, сатып алуу аракетиңизди аягына чыгарат.</translation>
 <translation id="7489392576326061356">Шампундар жана кондиционерлер</translation>
 <translation id="7495528107193238112">Бул мазмун бөгөттөлгөн. Көйгөйдү чечүү үчүн сайттын ээсине байланышыңыз.</translation>
 <translation id="749865518782565832">Сантехника кызматы</translation>

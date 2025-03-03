@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Enviado de <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Pastas do fluxo de armazenamento de marcadores abertas à altura total</translation>
 <translation id="1327257854815634930">O histórico de navegação está aberto.</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, separador novo ou atualizado</translation>
 <translation id="1331212799747679585">Não é possível atualizar o Chrome. Mais opções.</translation>
 <translation id="1332501820983677155">Atalhos das funcionalidades do Google Chrome</translation>
 <translation id="1333491156693005331">Última verificação feita recentemente</translation>
@@ -204,7 +203,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1925021887439448749">Introduzir endereço Web personalizado</translation>
 <translation id="1928618076168182477">A mostrar a vista visual</translation>
 <translation id="1928696683969751773">Atualizações</translation>
-<translation id="1933845786846280168">Separador selecionado</translation>
 <translation id="1939549834451474504">As palavras-passe vão deixar de funcionar em breve porque os Serviços do Google Play não estão disponíveis. Pode fazer uma cópia das palavras-passe guardadas antes de deixarem de funcionar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Guardar palavras-passe</translation>
 <translation id="1944535645109964458">Nenhuma token de acesso disponível</translation>
@@ -431,7 +429,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2976550651269220761">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.\nExperimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="2977350910003566746">Ordenação por última abertura</translation>
 <translation id="297771753501244313">Ord. por última abertura</translation>
-<translation id="2979025552038692506">Separador de navegação anónima selecionado</translation>
 <translation id="2979639724566107830">Abrir numa nova janela</translation>
 <translation id="2981364137500752533">Pode ter até 5 janelas.</translation>
 <translation id="2983102365694924129">Com base na sua atividade num site. Esta definição está desativada.</translation>
@@ -623,7 +620,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3902562446536395999">Ordenação de A a Z</translation>
 <translation id="3908308510347173149">Atualizar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Ordenação de Z a A</translation>
-<translation id="3918415141610210050">Separador</translation>
 <translation id="3924911262913579434">A funcionalidade <ph name="SAFE_BROWSING_MODE" /> está ativada.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combinar os meus dados</translation>
@@ -646,7 +642,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4024768890073681126">O teu navegador é gerido por um dos teus pais</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Continue para o <ph name="SITE_ETLD_PLUS_ONE" /> com o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Grupo sem nome</translation>
 <translation id="4044708993631234325">Secção inferior</translation>
 <translation id="4045441967987592849">Reabrir</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> separador padrão com nova atividade em grupos de separadores partilhados}other{<ph name="TABS_COUNT_MANY" /> separadores padrão com nova atividade em grupos de separadores partilhados}}</translation>
@@ -1741,7 +1736,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8840953339110955557">Esta página pode ser diferente da versão online.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Oculto</translation>
-<translation id="8853345339104747198">Separador <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Veja os seus ficheiros offline</translation>
 <translation id="885480114717186641">Pode pedir o site para computador para o anfitrião <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obter descrições</translation>

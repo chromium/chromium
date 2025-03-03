@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Pindutin nang matagal ang home screen</translation>
 <translation id="1832848789136765277">Para matiyak na maa-access mo anumang oras ang iyong naka-sync na data, i-verify na ikaw ito</translation>
 <translation id="1836891464494477513">{count,plural, =1{Na-save ang bookmark sa iyong Google Account na, {email}}one{Na-save ang mga bookmark sa iyong Google Account na, {email}}other{Na-save ang mga bookmark sa iyong Google Account na, {email}}}</translation>
+<translation id="1838089197478136166">Buksan sa Wallet?</translation>
 <translation id="183878838231635348">Ipinapakita ng card na ito ang anumang isyu sa privacy o seguridad na awtomatikong dine-detect ng Pag-check sa Kaligtasan para sa iyo.</translation>
 <translation id="1845230888742614096">Panatilihin ang Grupo</translation>
 <translation id="1854463785401910334">Maghanap sa mga bukas na tab</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">Na-restore kamakailan ang iPad mo, na posibleng nagpabago sa iyong default na browser.</translation>
 <translation id="1901366738768303267">Paano ko magagamit ang feature na ito?</translation>
 <translation id="1901600657316773839">Panatilihin ang pinili</translation>
+<translation id="1902277226107477495">Naka-off ang pag-detect ng address. I-on ulit ito sa Mga Setting.</translation>
 <translation id="1904580727789512086">Naka-save sa iyong Google Account ang mga URL na iyong binibisita</translation>
 <translation id="1911619930368729126">I-upload sa Google Drive</translation>
 <translation id="1923342640370224680">Nakaraang Oras</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Na-load na ang webpage</translation>
 <translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="2240256190924001613">Available ang profile ng configuration</translation>
+<translation id="2244080985779413662">Gusto ng website na ito na mag-download ng file at buksan ito sa iyong Wallet.</translation>
 <translation id="2245007488813216650">Isinasalin…</translation>
 <translation id="2249119578464404734">Sa itaas ng screen, i-tap ang icon ng Paghahanap</translation>
 <translation id="2251686759395008410">Menu → History</translation>
@@ -1361,6 +1364,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Ide-delete ang iyong data mula sa pag-browse</translation>
 <translation id="6790502149545262384">Hindi magtatagal at makakakita ka ng mga kuwento mula sa <ph name="CHANNEL_NAME" /> kapag nagbukas ka ng bagong tab.</translation>
+<translation id="6794476726485507147">Pumili ng petsa at oras para makatanggap ng notification ng paalalang bisitahin ulit ang page na ito</translation>
 <translation id="681368974849482173">Nagawa ang item</translation>
 <translation id="6825078212112407882">{count,plural, =1{Na-save ang bookmark sa iyong Google Account na {email}}one{Na-save ang {count} bookmark sa iyong Google Account na {email}}other{Na-save ang {count} na bookmark sa iyong Google Account na {email}}}</translation>
 <translation id="6830728435402077660">Hindi secure</translation>
@@ -1488,6 +1492,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7425053386765766120">Magdagdag ng paraan ng pagbabayad…</translation>
 <translation id="7425346204213733349">Hindi na masi-sync sa Google Account mo ang mga pagbabago sa iyong mga bookmark, history, password, at iba pang setting. Gayunpaman, mananatiling naka-store sa Google account mo ang iyong kasalukuyang data.</translation>
 <translation id="742664698522525515">Panatilihin ang grupo?</translation>
+<translation id="7431851541687113774">I-off ang pag-detect ng address</translation>
 <translation id="7431991332293347422">Kontrolin kung paano ginagamit ang iyong history ng pag-browse para i-personalize ang Paghahanap at higit pa</translation>
 <translation id="7435356471928173109">Na-off ng iyong administrator</translation>
 <translation id="7438481509621345350">Makakakita ka na ngayon ng mga kuwento mula sa <ph name="CHANNEL_NAME" /> kapag nagbukas ka ng bagong tab.</translation>
@@ -1641,6 +1646,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8023170444051056234">Mawawalan ka kaagad ng access sa grupo ng tab na “<ph name="GROUP_NAME" />," at ide-delete ito sa lahat ng device mo</translation>
 <translation id="8023878949384262191">Pinapalawak ang seksyon.</translation>
 <translation id="8027581147000338959">Buksan sa Bagong Window</translation>
+<translation id="8029092694585014252">Itakda ang paalala</translation>
 <translation id="8032569120109842252">Sinusubaybayan</translation>
 <translation id="8035133914807600019">Bagong folder…</translation>
 <translation id="8035412398498507358">Mga Larawan</translation>

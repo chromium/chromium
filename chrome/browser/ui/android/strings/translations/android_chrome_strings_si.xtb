@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> වෙතින් යවන ලදි</translation>
 <translation id="1320912611264252795">පිටුසන් සුරැකීම් ප්‍රවාහ ෆෝල්ඩර පූර්ණ උසකදී විවෘතයි</translation>
 <translation id="1327257854815634930">සංචලන ඉතිහාසය විවෘතයි</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, නව හෝ යාවත්කාලීන පටිත්ත</translation>
 <translation id="1331212799747679585">Chrome යාවත්කාලීන කළ නොහැක. තවත් විකල්ප</translation>
 <translation id="1332501820983677155">Google Chrome විශේෂාංග කෙටි මං</translation>
 <translation id="1333491156693005331">මෑතක දී පරීක්ෂා කරන ලදි</translation>
@@ -204,7 +203,6 @@
 <translation id="1925021887439448749">අභිරුචි වෙබ් ලිපිනය ඇතුළු කරන්න</translation>
 <translation id="1928618076168182477">දෘශ්‍ය දසුන පෙන්වමින්</translation>
 <translation id="1928696683969751773">යාවත්කාලීන</translation>
-<translation id="1933845786846280168">තෝරා ගත් ටැබය</translation>
 <translation id="1939549834451474504">Google Play සේවා නොමැති නිසා මුරපද ඉක්මනින් වැඩ කිරීම නවත්වනු ඇත. ඔබේ සුරකින ලද මුරපද ක්‍රියා කිරීම නැවැත්වීමට පෙර ඔබට ඒවායේ පිටපතක් සෑදිය හැක. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">මුරපද සුරකින්න</translation>
 <translation id="1944535645109964458">මුරයතුරු කිසිවක් නොලැබේ</translation>
@@ -431,7 +429,6 @@
 <translation id="2976550651269220761">ඔබේ Chrome දත්ත සමහරක් තවම ඔබේ Google ගිණුම තුළ සුරැකී නැත.\nවැරීමට පෙර විනාඩි කිහිපයක් රැඳී සිටීමට උත්සාහ කරන්න. ඔබ දැන් වරන්නේ නම් මෙම දත්ත මකනු ලැබේ.</translation>
 <translation id="2977350910003566746">අවසන් වරට විවෘත කළ අනුව වර්ග කිරීම</translation>
 <translation id="297771753501244313">අවසන් විවෘත අනුව සුබෙදීම</translation>
-<translation id="2979025552038692506">තෝරා ගත් අප්‍රකට ටැබය</translation>
 <translation id="2979639724566107830">නව කවුළුවක විවෘත කරන්න</translation>
 <translation id="2981364137500752533">ඔබට කවුළු 5ක් දක්වා තිබිය හැකිය.</translation>
 <translation id="2983102365694924129">අඩවියක ඔබේ ක්‍රියාකාරකම් මත පදනම්ව. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>
@@ -622,7 +619,6 @@
 <translation id="3902562446536395999">A සිට Z දක්වා වර්ග කිරීම</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> යාවත්කාලීන කරන්න</translation>
 <translation id="3911609878849982353">Z සිට A දක්වා වර්ග කිරීම</translation>
-<translation id="3918415141610210050">පටිත්ත</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ක්‍රියාත්මකයි</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">මගේ දත්ත ඒකාබද්ධ කරන්න</translation>
@@ -645,7 +641,6 @@
 <translation id="4024768890073681126">ඔබේ බ්‍රවුසරය ඔබේ මාපියවරු විසින් කළමනා කරනු ලැබේ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{පැය #}one{පැය #}other{පැය #}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> සමග <ph name="SITE_ETLD_PLUS_ONE" /> වෙත ඉදිරියට යන්න</translation>
-<translation id="404352903042073578">නම් නොකළ සමූහය</translation>
 <translation id="4044708993631234325">පහළ පත්‍රය</translation>
 <translation id="4045441967987592849">යළි විවෘත කරන්න</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත <ph name="TABS_COUNT_ONE" /> සම්මත පටිත්තක්}one{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත සම්මත පටිති <ph name="TABS_COUNT_MANY" />ක්}other{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත සම්මත පටිති <ph name="TABS_COUNT_MANY" />ක්}}</translation>
@@ -1740,7 +1735,6 @@
 <translation id="8840953339110955557">මෙම පිටුව සබැඳි අනුවාදයෙන් වෙනස් විය හැක.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">සඟවා ඇත</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, ටැබය</translation>
 <translation id="8854223127042600341">ඔබේ නොබැඳි ගොනු බලන්න</translation>
 <translation id="885480114717186641">ඔබට <ph name="HOST_NAME" /> සඳහා ඩෙක්ස්ටොප් අඩවිය ඉල්ලා සිටිය හැක</translation>
 <translation id="8856607253650333758">විස්තර ලබා ගන්න</translation>

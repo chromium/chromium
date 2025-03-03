@@ -3729,7 +3729,6 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
 <translation id="3663124775601519286">Se a política for ativada ou deixada sem definição, a API Translator poderá ser usada no <ph name="PRODUCT_NAME" />.
 
       Se a política for definida como "Desativada", o uso da API Translator não será permitida.</translation>
-<translation id="3664164569472125114">Controlar acesso ao <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">Consultar o usuário apenas quando nenhum certificado corresponder à seleção automática.</translation>
 <translation id="3667467644216039144">Configura uma lista de tipos de dados de navegação a serem excluídos quando o usuário fechar todas as janelas do navegador.
 
@@ -7758,7 +7757,6 @@ Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> usar
 <translation id="6383774771168138899">Configura o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Ativar a exibição de páginas de resultados do mecanismo de pesquisa padrão em um painel lateral do navegador.</translation>
 <translation id="6389240462871677239">Permitir que origens de Apps Isolados da Web usem a API Controlled Frame</translation>
-<translation id="6389858262577493180">Ativar o uso de <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Esses recursos no DevTools do <ph name="PRODUCT_NAME" /> usam modelos de IA generativa para dar mais informações de depuração. Para usá-los, o <ph name="PRODUCT_NAME" /> precisa coletar dados, como mensagens de erro, stack traces, snippets de código e solicitações de rede, e enviar essas informações a um servidor do Google, que executa um modelo de IA generativa. O corpo da resposta ou a autenticação e os cabeçalhos de cookie em solicitações de rede não são incluídos nos dados enviados ao servidor.
 
 Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
@@ -8389,11 +8387,6 @@ Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="6766216162565713893">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo Bluetooth próximo</translation>
 <translation id="6770454900105963262">Denunciar informações sobre sessões de quiosque ativas</translation>
 <translation id="6774132787348495175">Não permitir o uso de máquinas virtuais necessárias para apps Linux</translation>
-<translation id="6776202826080834193">Se a política for ativada ou deixada sem definição, os usuários poderão usar o
-recurso <ph name="GLIC" />. Se a política for desativada,
-os usuários não poderão interagir com o <ph name="GLIC" />. O botão na
-barra de guias ficará oculto, e o <ph name="GLIC" /> não estará disponível
-no atalho do teclado, a menos que seja ativado em outro perfil.</translation>
 <translation id="678121785914414680">Lista de tipos de arquivo que serão abertos automaticamente após o download. O separador à esquerda não pode ser incluído ao listar os tipos de arquivo. Então, liste "txt" em vez de ".txt".
 
 Os arquivos dos tipos que devem ser automaticamente abertos ainda estarão sujeitos às verificações ativadas da Navegação segura e não serão abertos se forem reprovados nessas verificações.
@@ -11645,7 +11638,6 @@ Esta política só tem efeito quando a <ph name="FULL_RESTORE_ENABLED_NAME" /> e
       Se ela for definida como verdadeira, as informações sobre o sistema do dispositivo serão enviadas.</translation>
 <translation id="9131419675479917141">Permitir que os usuários definam um PIN fraco, mas mostrar um aviso</translation>
 <translation id="913195841488580904">Bloquear acesso a uma lista de URLs</translation>
-<translation id="9132345265506256744">Desativar o uso de <ph name="GLIC" /></translation>
 <translation id="9133526448421932754">Luz de fundo amarela do teclado</translation>
 <translation id="9135033364005346124">Ativar proxy do <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Mostrar uma notificação quando um dispositivo USB for detectado</translation>

@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - ສົ່ງມາຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">ເປີດຂັ້ນຕອນການບັນທຶກບຸກມາກແບບເຕັມຄວາມສູງແລ້ວ</translation>
 <translation id="1327257854815634930">ປະຫວັດການນຳທາງເປີດຢູ່</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, ແຖບໃໝ່ ຫຼື ອັບເດດ</translation>
 <translation id="1331212799747679585">Chrome ບໍ່ສາມາດອັບເດດໄດ້. ຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="1332501820983677155">ທາງລັດຄຸນສົມບັດ Google Chrome</translation>
 <translation id="1333491156693005331">ກວດສອບແລ້ວເມື່ອບໍ່ດົນມານີ້</translation>
@@ -204,7 +203,6 @@
 <translation id="1925021887439448749">ປ້ອນທີ່ຢູ່ເວັບແບບກຳນົດເອງ</translation>
 <translation id="1928618076168182477">ການສະແດງມຸມມອງພາບ</translation>
 <translation id="1928696683969751773">ອັບເດດ</translation>
-<translation id="1933845786846280168">ແຖບທີ່ເລືອກໄວ້</translation>
 <translation id="1939549834451474504">ລະຫັດຜ່ານຈະຢຸດເຮັດວຽກໃນໄວໆນີ້ເນື່ອງຈາກບໍລິການ Google Play ບໍ່ພ້ອມນຳໃຊ້. ທ່ານສາມາດສ້າງສຳເນົາລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ກ່ອນທີ່ລະຫັດຜ່ານຈະຢຸດເຮັດວຽກໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="1944535645109964458">ກະແຈຜ່ານໃຊ້ບໍ່ໄດ້</translation>
@@ -431,7 +429,6 @@
 <translation id="2976550651269220761">ຂໍ້ມູນ Chrome ບາງສ່ວນຂອງທ່ານຍັງບໍ່ໄດ້ຖືກບັນທຶກໃສ່ໃນບັນຊີ Google ຂອງທ່ານເທື່ອ.\nກະລຸນາລໍຖ້າສອງສາມນາທີກ່ອນອອກຈາກລະບົບ. ຫາກທ່ານອອກຈາກລະບົບຕອນນີ້, ຂໍ້ມູນນີ້ຈະຖືກລຶບ.</translation>
 <translation id="2977350910003566746">ການຈັດຮຽງຕາມເປີດຫຼ້າສຸດ</translation>
 <translation id="297771753501244313">ຈັດຮຽງຕາມເວລາເປີດຫຼ້າສຸດ</translation>
-<translation id="2979025552038692506">ແຖບບໍ່ເປີດເຜີຍຕົວຕົນທີ່ເລືອກໄວ້</translation>
 <translation id="2979639724566107830">ເປີດໃນໜ້າຈໍໃໝ່</translation>
 <translation id="2981364137500752533">ທ່ານສາມາດເປີດໄດ້ສູງສຸດ 5 ໜ້າຈໍ.</translation>
 <translation id="2983102365694924129">ອີງຕາມການເຄື່ອນໄຫວຂອງທ່ານຢູ່ເວັບໄຊ. ການຕັ້ງຄ່ານີ້ປິດຢູ່.</translation>
@@ -622,7 +619,6 @@
 <translation id="3902562446536395999">ການຈັດຮຽງຈາກ A ຫາ Z</translation>
 <translation id="3908308510347173149">ອັບເດດ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">ການຈັດຮຽງຈາກ Z ຫາ A</translation>
-<translation id="3918415141610210050">ແຖບ</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ເປີດຢູ່</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ລວມຂໍ້ມູນຂອງຂ້ອຍເຂົ້າກັນ</translation>
@@ -645,7 +641,6 @@
 <translation id="4024768890073681126">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໄດ້ຮັບການຈັດການໂດຍຜູ້ປົກຄອງຂອງທ່ານ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ຊົ່ວໂມງ}other{# ຊົ່ວໂມງ}}</translation>
 <translation id="4042941173059740150">ໃຊ້ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຕໍ່ໄປ</translation>
-<translation id="404352903042073578">ກຸ່ມທີ່ບໍ່ມີຊື່</translation>
 <translation id="4044708993631234325">ຊີດລຸ່ມສຸດ</translation>
 <translation id="4045441967987592849">ເປີດຄືນໃໝ່</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ແຖບມາດຕະຖານທີ່ມີກິດຈະກຳໃໝ່ໃນກຸ່ມແຖບທີ່ແບ່ງປັນ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ແຖບມາດຕະຖານທີ່ມີກິດຈະກຳໃໝ່ໃນກຸ່ມແຖບທີ່ແບ່ງປັນ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
@@ -1740,7 +1735,6 @@
 <translation id="8840953339110955557">ໜ້ານີ້ອາດຈະແຕກຕ່າງຈາກເວີຊັນອອນລາຍ.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ເຊື່ອງໄວ້</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, ແຖບ​</translation>
 <translation id="8854223127042600341">ເບິ່ງໄຟລ໌ອອບລາຍຂອງທ່ານ</translation>
 <translation id="885480114717186641">ທ່ານສາມາດຂໍເວັບໄຊເດັສທັອບສຳລັບ <ph name="HOST_NAME" /> ໄດ້</translation>
 <translation id="8856607253650333758">ຮັບຄຳອະທິບາຍ</translation>

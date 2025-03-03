@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Carrega la pàgina més tard</translation>
 <translation id="1010225406377140704">Contacta amb el remitent per demanar-li un enllaç nou</translation>
 <translation id="1011206368273183593">S'estan preparant els fitxers</translation>
+<translation id="1012264210825687872">Després de revisar la comanda, has d'iniciar la sessió al compte de <ph name="BNPL_ISSUER_NAME" /> o crear-ne un. Aquest compte s'enllaçarà automàticament a Google Pay.</translation>
 <translation id="1014509239502131234">S'està desfent el resultat</translation>
 <translation id="1015730422737071372">Proporcioneu més informació</translation>
 <translation id="1019413721762100891">Desactivat</translation>
@@ -660,6 +661,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2145193671493396738">Notícies d'economia</translation>
 <translation id="214556005048008348">Cancel·la el pagament</translation>
 <translation id="2147117373852943630">Instruments musicals</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> vol utilitzar la informació que ha desat sobre tu</translation>
 <translation id="2148613324460538318">Afegeix una targeta</translation>
 <translation id="2148716181193084225">Avui</translation>
 <translation id="2149968176347646218">La connexió no és segura</translation>
@@ -691,6 +693,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2187317261103489799">Detecta (opció predeterminada)</translation>
 <translation id="2188375229972301266">Encunyació múltiple a la part inferior</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
+<translation id="2198071643181968308">Més informació sobre <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Botó No m'agrada: prem Retorn per obrir un formulari i enviar comentaris detallats sobre per què indiques que no t'agrada aquest suggeriment</translation>
 <translation id="2202627062836089804">al revers de la targeta</translation>
 <translation id="2204482073374652408">S'ha acabat d'actualitzar</translation>
@@ -2318,6 +2321,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome necessita accés a la <ph name="PERMISSION" /> del teu dispositiu</translation>
 <translation id="510644072453496781">Cartró (final)</translation>
+<translation id="5106648964679263509">S'ha emplenat amb la targeta virtual de <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108881358339761672">El lloc web no és segur</translation>
 <translation id="5109892411553231226">Gestiona les formes de pagament</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
             <ph name="LIST_ITEM" />La informació introduïda en formularis
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Ordre invers de cara amunt</translation>
+<translation id="5445340838622821110">Si pagues a terminis, s'emplena amb un número de targeta virtual únic. Aquest número només servirà per a aquesta compra. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Permet que <ph name="SITE" /> utilitzi la informació que ha desat sobre tu</translation>
 <translation id="5452270690849572955">No s'ha trobat aquesta pàgina de <ph name="HOST_NAME" /></translation>
 <translation id="5452923259299906094">Paga amb la cartera electrònica i Pix</translation>
@@ -3332,6 +3337,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6917795328362592458">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes recomana que comprovis les contrasenyes desades.</translation>
 <translation id="6917873303492266709">Per compartir grups de pestanyes, unir-t'hi i col·laborar-hi, obre la configuració i activa l'opció Permet l'inici de sessió a Chrome</translation>
 <translation id="6921197121276419421">Es permet la instal·lació d'aplicacions web</translation>
+<translation id="69238565902785824">Si mantens el compte enllaçat, podràs pagar més ràpidament amb <ph name="BNPL_ISSUER_NAME" />, però pots desenllaçar-lo a <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Tria si vols veure els avantatges de la targeta en tramitar una compra (s'hi apliquen les condicions del banc)</translation>
 <translation id="6925267999184670015">B+ nord-americà</translation>
 <translation id="6926216138694948720">Art corporal</translation>
@@ -3397,6 +3403,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="701757816833614688">Formació d'arts visuals i disseny</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants.</translation>
 <translation id="7023162328967545559">Advertiment d'administrador</translation>
+<translation id="7023765275461720661">Vols enllaçar el compte i pagar amb <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7030164307377592766">modificar la configuració per emplenar les formes de pagament</translation>
 <translation id="7031646650991750659">Quines aplicacions de Google Play has instal·lat</translation>
@@ -3619,6 +3626,7 @@ Detalls addicionals:
 <translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7416351320495623771">Gestiona les contrasenyes…</translation>
 <translation id="7416898721136759658">Subvencions, beques i ajudes financeres</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programació</translation>
 <translation id="7419091773564635591">Informàtica i electrònica</translation>
 <translation id="7419106976560586862">Camí del perfil</translation>
@@ -3665,6 +3673,7 @@ Detalls addicionals:
 <translation id="7485085230273446323">Empresa i indústria</translation>
 <translation id="7485870689360869515">No s'han trobat dades.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> comprovarà la teva idoneïtat. Això no afectarà la teva puntuació creditícia. Si l'aprova, <ph name="BNPL_ISSUER_NAME" /> t'oferirà diversos plans de pagament entre els quals podràs triar i finalitzar la compra.</translation>
 <translation id="7489392576326061356">Xampús i suavitzants</translation>
 <translation id="7495528107193238112">Aquest contingut està bloquejat. Contacta amb el propietari del lloc web per resoldre el problema.</translation>
 <translation id="749865518782565832">Lampisteria</translation>

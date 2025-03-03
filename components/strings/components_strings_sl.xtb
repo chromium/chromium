@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Naloži stran pozneje</translation>
 <translation id="1010225406377140704">Obrnite se na pošiljatelja in ga prosite za novo povezavo</translation>
 <translation id="1011206368273183593">Pripravljanje datotek</translation>
+<translation id="1012264210825687872">Ko pregledate naročilo, se morate prijaviti v račun za <ph name="BNPL_ISSUER_NAME" /> ali ga ustvariti. Ta račun bo samodejno povezan z Googlom Pay.</translation>
 <translation id="1014509239502131234">Razveljavitev rezultata</translation>
 <translation id="1015730422737071372">Navedite dodatne podrobnosti</translation>
 <translation id="1019413721762100891">Izklopljeno</translation>
@@ -660,6 +661,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2145193671493396738">Gospodarske novice</translation>
 <translation id="214556005048008348">Prekliči plačilo</translation>
 <translation id="2147117373852943630">Glasbila</translation>
+<translation id="2147254250314124496">Spletno mesto <ph name="EMBEDDED_URL" /> želi uporabiti podatke, ki jih je shranilo o vas</translation>
 <translation id="2148613324460538318">Dodaj kartico</translation>
 <translation id="2148716181193084225">Danes</translation>
 <translation id="2149968176347646218">Povezava ni varna</translation>
@@ -691,6 +693,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2187317261103489799">Zaznava (privzeto)</translation>
 <translation id="2188375229972301266">Večkratno luknjanje spodaj</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
+<translation id="2198071643181968308">Preberite več o ponudniku <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Gumb za Ni mi všeč, pritisnite Enter, če želite odpreti obrazec za pošiljanje podrobnih povratnih informacij o tem, zakaj vam ta predlog ni všeč</translation>
 <translation id="2202627062836089804">hrbtni strani kartice</translation>
 <translation id="2204482073374652408">Posodabljanje je končano.</translation>
@@ -2318,6 +2321,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome potrebuje dostop do tega v napravi: <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Cardboard (End)</translation>
+<translation id="5106648964679263509">Navidezna kartica za storitev <ph name="BNPL_ISSUER_NAME" /> je izpolnjena</translation>
 <translation id="5108881358339761672">Spletno mesto ni varno</translation>
 <translation id="5109892411553231226">Upravljanje plačilnih sredstev</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
             <ph name="LIST_ITEM" />Podatkov, vnesenih v obrazce
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">V obratnem vrstnem redu s tiskom na zgornji strani</translation>
+<translation id="5445340838622821110">Pri obročnem odplačevanju se izpolni enkratna številka navidezne kartice. Ta številka je samo za ta nakup. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Spletnemu mestu <ph name="SITE" /> dovolite uporabo podatkov, ki jih je shranil o vas</translation>
 <translation id="5452270690849572955">Te strani spletnega mesta <ph name="HOST_NAME" /> ni mogoče najti</translation>
 <translation id="5452923259299906094">Plačevanje z e-denarnico in storitvijo Pix</translation>
@@ -3332,6 +3337,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6917795328362592458">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Zaradi zavarovanja računov Upravitelj gesel priporoča, da preverite shranjena gesla.</translation>
 <translation id="6917873303492266709">Če želite deliti, se pridružiti in sodelovati v skupinah zavihkov, odprite nastavitve in vklopite »Omogoči prijavo v Chrome«</translation>
 <translation id="6921197121276419421">Nameščanje spletnih aplikacij je dovoljeno</translation>
+<translation id="69238565902785824">Če je vaš račun povezan, lahko hitreje plačujete s ponudnikom <ph name="BNPL_ISSUER_NAME" />, vendar lahko povezavo prekinete na <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Izberite, ali bodo ob zaključku nakupa prikazane ugodnosti kartice (veljajo pogoji banke)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Telesna umetnost</translation>
@@ -3397,6 +3403,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="701757816833614688">Izobraževanje, povezano z vizualno umetnostjo in oblikovanjem</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="7023162328967545559">Opozorilo skrbnika</translation>
+<translation id="7023765275461720661">Želite povezati račun in plačevati s ponudnikom <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7030164307377592766">spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih</translation>
 <translation id="7031646650991750659">Katere aplikacije iz Googla Play ste namestili</translation>
@@ -3619,6 +3626,7 @@ Dodatne podrobnosti:
 <translation id="741204030948306876">Da, sem za</translation>
 <translation id="7416351320495623771">Upravljaj gesla …</translation>
 <translation id="7416898721136759658">Štipendije in finančna pomoč</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programiranje</translation>
 <translation id="7419091773564635591">Računalniki in elektronika</translation>
 <translation id="7419106976560586862">Pot profila</translation>
@@ -3665,6 +3673,7 @@ Dodatne podrobnosti:
 <translation id="7485085230273446323">Posel in industrija</translation>
 <translation id="7485870689360869515">Ni podatkov.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">Ponudnik <ph name="BNPL_ISSUER_NAME" /> bo preveril vašo primernost (to ne bo vplivalo na vašo kreditno sposobnost). Če boste odobreni, vam bo ponudnik <ph name="BNPL_ISSUER_NAME" /> zagotovil plačniške pakete, med katerimi lahko izberete, da dokončate nakup.</translation>
 <translation id="7489392576326061356">Šamponi in balzami</translation>
 <translation id="7495528107193238112">Ta vsebina je blokirana. Obrnite se na lastnika spletnega mesta, da odpravi težavo.</translation>
 <translation id="749865518782565832">Vodovodarstvo</translation>

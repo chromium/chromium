@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Jangan tawarkan penerjemahan situs ini</translation>
 <translation id="1145536944570833626">Hapus data yang sudah ada.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> akan dibuka di Chrome. Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">Anda tidak memiliki sandi tersimpan di Pengelola Sandi Google.</translation>
 <translation id="115483310321669804">Gunakan sandi <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1174479719160874822">Chrome akan meminta situs seluler jika layarnya sempit</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Dikirim dari <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Folder alur penyimpanan bookmark terbuka sepenuhnya</translation>
 <translation id="1327257854815634930">Histori navigasi terbuka</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, tab baru atau yang diperbarui</translation>
 <translation id="1331212799747679585">Chrome tidak dapat diupdate. Opsi lainnya</translation>
 <translation id="1332501820983677155">Pintasan fitur Google Chrome</translation>
 <translation id="1333491156693005331">Baru saja diperiksa</translation>
@@ -203,7 +203,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1925021887439448749">Masukkan alamat web khusus</translation>
 <translation id="1928618076168182477">Menampilkan tampilan visual</translation>
 <translation id="1928696683969751773">Update</translation>
-<translation id="1933845786846280168">Tab yang Dipilih</translation>
 <translation id="1939549834451474504">Sandi akan segera berhenti berfungsi karena layanan Google Play tidak tersedia. Anda dapat membuat salinan sandi tersimpan Anda sebelum sandi berhenti berfungsi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Simpan sandi</translation>
 <translation id="1944535645109964458">Tidak ada kunci sandi yang tersedia</translation>
@@ -430,7 +429,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2976550651269220761">Beberapa data Chrome Anda belum disimpan di Akun Google Anda.\nCoba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini akan dihapus.</translation>
 <translation id="2977350910003566746">Mengurutkan berdasarkan terakhir dibuka</translation>
 <translation id="297771753501244313">Urutkan menurut terakhir dibuka</translation>
-<translation id="2979025552038692506">Tab Samaran yang Dipilih</translation>
 <translation id="2979639724566107830">Buka di jendela baru</translation>
 <translation id="2981364137500752533">Anda dapat membuka hingga 5 jendela.</translation>
 <translation id="2983102365694924129">Berdasarkan aktivitas Anda di situs. Setelan ini nonaktif.</translation>
@@ -621,7 +619,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3902562446536395999">Mengurutkan dari A ke Z</translation>
 <translation id="3908308510347173149">Update <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Mengurutkan dari Z ke A</translation>
-<translation id="3918415141610210050">Tab</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> aktif</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Gabungkan data saya</translation>
@@ -644,7 +641,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4024768890073681126">Browser dikelola oleh orang tuamu</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
 <translation id="4042941173059740150">Lanjutkan ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Grup tanpa nama</translation>
 <translation id="4044708993631234325">Sheet bawah</translation>
 <translation id="4045441967987592849">Buka kembali</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab standar dengan aktivitas baru di grup tab yang dibagikan}other{<ph name="TABS_COUNT_MANY" /> tab standar dengan aktivitas baru di grup tab yang dibagikan}}</translation>
@@ -1371,10 +1367,12 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7224097611345298931">Semua sandi yang hanya disimpan di perangkat ini untuk Chrome dan <ph name="CHROME_CHANNEL" /> telah digabungkan. Anda dapat mengisi otomatis semua sandi tersimpan di kedua aplikasi.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download tertunda}other{# download tertunda}}</translation>
 <translation id="7230064152164845085">Beralih ke mode Samaran</translation>
+<translation id="7237724030342645845">Pengelola Sandi Google berhenti berfungsi</translation>
 <translation id="72415438529550637">Saran sandi ditutup.</translation>
 <translation id="7260367682327802201">Perangkat Android Anda mungkin menyertakan setelan serupa. Jika Pengukuran iklan diaktifkan di Chrome dan di perangkat Android Anda, perusahaan iklan mungkin dapat mengukur keefektifan iklan di semua situs yang Anda buka dan aplikasi yang Anda gunakan.</translation>
 <translation id="727288900855680735">Kirim <ph name="ONE_TIME_CODE" /> ke <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Situs yang diblokir</translation>
+<translation id="7276868533747677875">Jika Anda sebelumnya mengekspor sandi, cari file CSV di perangkat Anda dan impor file tersebut ke pengelola sandi pilihan Anda.</translation>
 <translation id="7289049772085228972">Anda memiliki keamanan terkuat Chrome</translation>
 <translation id="7289303553784750393">Jika Anda sudah online tetapi masalah ini terus terjadi, Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Ganti nama tidak tersedia</translation>
@@ -1549,6 +1547,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8027395186860110042">Sandi mungkin segera berhenti berfungsi</translation>
 <translation id="8027863900915310177">Pilih lokasi untuk mendownload</translation>
 <translation id="8030852056903932865">Setujui</translation>
+<translation id="8031805944372049238">Untuk mulai menyimpan dan menggunakan sandi dengan Pengelola Sandi Google, update layanan Google Play.</translation>
 <translation id="8032569120109842252">Mengikuti</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> hari lagi</translation>
 <translation id="8037801708772278989">Baru saja diperiksa</translation>
@@ -1736,7 +1735,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8840953339110955557">Halaman ini mungkin berbeda dengan versi onlinenya.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Tersembunyi</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, tab</translation>
 <translation id="8854223127042600341">Lihat file offline Anda</translation>
 <translation id="885480114717186641">Anda dapat meminta situs desktop untuk <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Dapatkan deskripsi</translation>

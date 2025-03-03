@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Tavsiya etilgan qidiruvlar</translation>
 <translation id="3658847490588580244">Birlamchi brauzer quyi ekrani</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> saytlar guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}other{<ph name="RWS_OWNER" /> saytlar guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}}</translation>
+<translation id="3676777756440746804">Saytlarga saqlangan shaxsiy maʼlumotlardan foydalanishga ruxsat soʻrash taqiqlanadi</translation>
 <translation id="3697164069658504920">Yoqilsa, saytlar USB qurilmalardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
 <translation id="3707034683772193706">Siz ochadigan sayt Chrome orqali real foydalanuvchi ekaningizni tasdiqlovchi axborotni saqlashi mumkin.</translation>
 <translation id="3709818294139939629">Saytning faylga ruxsati yopildi</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Telefonda sozlamalarni oching</translation>
 <translation id="3933121352599513978">Keraksiz soʻrovlarni yigʻish (tavsiya etiladi)</translation>
 <translation id="3955193568934677022">Saytlarga himoyalangan kontentni ijro qilish uchun ruxsat berish (tavsiya etiladi)</translation>
+<translation id="3965467402665811906">Saytlar shaxsiy maʼlumotlaringizdan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
 <translation id="3987993985790029246">Nusxalash</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> saytni kezishda shaxsiy axborotlardan foydalanishi mumkin</translation>
 <translation id="3992684624889376114">Bu sahifa haqida</translation>
 <translation id="4002066346123236978">Nomi</translation>
 <translation id="4046123991198612571">Keyingi musiqa</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Boshqariladigan sozlamalarni oʻzgartirish imkonsiz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishi oldidan ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="4936863036653376783">Guruhlaringizni barcha qurilmalaringizda varaqlar guruhi boʻlimida topishingiz mumkin</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> shaxsiy maʼlumotlaringizdan foydalanishi bloklangan</translation>
 <translation id="4953688446973710931">Yoqilsa, saytlar avtomat tarzda bir nechta fayl yuklab olish uchun ruxsat soʻrashi mumkin Oʻchirilsa, yuklay olmaydi.</translation>
 <translation id="4962975101802056554">Qurilma uchun barcha ruxsatnomalarni bekor qilish</translation>
 <translation id="497421865427891073">Oldinga</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Saytlarga qurilmalarga ulanishni taqiqlash</translation>
 <translation id="8525306231823319788">To‘liq ekran rejimi</translation>
 <translation id="8541410041357371550">Bu sayt yanada mos reklama chiqishi uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi</translation>
+<translation id="854876774113449365">Siz kirgan saytlar boshqa saytlardagi kontentni, masalan, rasmlar, reklamalar va matnlarni joylashtirishi mumkin. Mazkur boshqa saytlar saytni kezishda saqlangan shaxsiy maʼlumotlaringizdan foydalanishga ruxsat soʻraydi <ph name="BEGIN_LINK" />Joylashtirilgan kontent haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Soʻrovlarni chiqarish tartibi</translation>
 <translation id="8558480467877843976">Siz endi Chrome brauzerini har doim internetni kezish vaqtida yoki xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="857943718398505171">Ruxsat berilgan (tavsiya etiladi)</translation>
+<translation id="8593422116412089302">Yoqilsa, saytlar siz haqingizda saqlagan maʼlumotlardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday ruxsatlar taqiqlanadi.</translation>
 <translation id="8609465669617005112">Tepaga o‘tish</translation>
 <translation id="8617611086246832542">Yoqilsa, saytlarning desktop versiyasi koʻrinadi. Oʻchirilsa, saytlarning mobil versiyasi koʻrinadi.</translation>
 <translation id="8670078035093027626">Birlamchi brauzer quyi ekrani toʻliq hajmda ochildi</translation>

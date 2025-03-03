@@ -315,6 +315,7 @@
 <translation id="5579324208890605088">Ishga tushirishda xato: oʻrnatish faylini oddiy foydalanuvchi (administrator emas) nomidan ishga tushiring.</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5605834417512968703">Rasm orqali qidirish uchun istalgan obyektni tanlang yoki yopish uchun Espace tugmasini bosing</translation>
+<translation id="5618818588972826921">Rasm orqali qidirish uchun undagi istalgan matn yoki rasmni tanlang yoki Esc tugmasini bosib, qidiruvni yoping</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium uchun yangilanish mavjud}=1{Chromium uchun yangilanish mavjud}other{Chromium uchun yangilanish mavjud (# kun)}}</translation>
 <translation id="5643865575100044307">Chromium yopilganda har doim qurilmadan sayt maʼlumotlarini oʻchirib tashlash</translation>
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
@@ -590,5 +591,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="983803489796659991">Yangilanish serverida ilova uchun hech qanday hesh axboroti mavjud emasligi sababli oʻrnatilmadi.</translation>
 <translation id="985498048907240953">Chromium brauzeridan hisobsiz foydalanish</translation>
 <translation id="985602178874221306">Chromium mualliflari</translation>
+<translation id="989970834842471429">Rasm orqali qidirish uchun undagi istalgan matn yoki rasmni tanlang</translation>
 <translation id="992780518932311116">Joylashuvdan foydalanish uchun <ph name="BEGIN_LINK" />tizim sozlamalari<ph name="END_LINK" /> orqali Chromiumga ruxsat bering</translation>
 </translationbundle>

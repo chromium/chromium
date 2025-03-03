@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Domače omrežje, brez gostovanja</translation>
 <translation id="1327977588028644528">Prehod</translation>
 <translation id="1328223165223065150">Barva zaslonskega ozadja</translation>
+<translation id="1329478709358066995">Prepis:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ustrezanje velikosti območja za optično branje</translation>
 <translation id="1343442362630695901">slano jezero</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">O ozadju</translation>
 <translation id="6939667434404433010">Iskanje imena posnetka</translation>
 <translation id="6939766318048400022">Kavarna</translation>
+<translation id="6942253772720771875">Pošljite povratne informacije ali opišite težavo</translation>
 <translation id="6943893908656559156">Oddaljena identiteta (izbirno)</translation>
 <translation id="6953137545147683679">zlata</translation>
 <translation id="6957231940976260713">Ime storitve</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">To napravo <ph name="DEVICE_TYPE" /> upravlja podjetje.</translation>
 <translation id="8398927464629426868">Trenutna hitrost polnjenja ali praznjenja baterije naprave.</translation>
 <translation id="8403988360557588704">Na sliki je <ph name="ART_FEATURE" /> v slogu »<ph name="ART_MOVEMENT" />«</translation>
+<translation id="8409219750150841791">Generiran povzetek:</translation>
 <translation id="8410244574650205435">Samodejno zaznano</translation>
 <translation id="8420955526972171689">Izvajanje preizkusov in odpravljanje težav s strojno opremo.</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811">Več dejanj za <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetlo vijolična</translation>
 <translation id="8647595191512746911">Prepis zvoka</translation>
+<translation id="8648578954147795914">Generirana imena:</translation>
 <translation id="8650852232143958317">Vzemite s seboj datoteke iz Gmaila in Googla Drive</translation>
 <translation id="8651481478098336970">izklop zvoka</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">Pokaži znane APN-je</translation>
 <translation id="932327136139879170">Domov</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Prepričajte se, da je mikrofon priključen, ali poskusite znova zagnati Chromebook</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="950520315903467048">Manjka tipka za <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Primerjajte glasove v celotnem posnetku, da bo iz prepisa razvidno, kaj so povedali posamezni govorci in kdaj so to povedali.</translation>

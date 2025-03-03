@@ -319,6 +319,7 @@
 <translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5605834417512968703">이미지 검색으로 검색할 항목을 선택하거나 Esc 키를 눌러 이미지 검색을 종료하세요.</translation>
+<translation id="5618818588972826921">이미지 검색으로 검색할 텍스트 또는 이미지를 선택하거나 Esc 키를 눌러 이미지 검색을 종료하세요</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium 업데이트 출시}=1{Chromium 업데이트 출시}other{Chromium 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="5643865575100044307">Chromium 종료 시 기기에 있는 사이트 데이터를 항상 삭제</translation>
 <translation id="5653831366781983928">지금 Chromium을 다시 시작하세요</translation>
@@ -594,5 +595,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="983803489796659991">업데이트 서버에 애플리케이션에 대한 해시 데이터가 없어 설치할 수 없습니다.</translation>
 <translation id="985498048907240953">계정 없이 Chromium 사용</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">이미지 검색으로 검색할 텍스트 또는 이미지를 선택하세요.</translation>
 <translation id="992780518932311116">위치를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chromium에 액세스 권한을 부여하세요.</translation>
 </translationbundle>

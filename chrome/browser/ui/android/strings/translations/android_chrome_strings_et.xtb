@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – saadetud seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Järjehoidja salvestamise voo kaustad on avatud täiskõrgusel</translation>
 <translation id="1327257854815634930">Navigeerimisajalugu on avatud</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, uus või värskendatud vahekaart</translation>
 <translation id="1331212799747679585">Chrome'i ei saa värskendada. Rohkem valikuid</translation>
 <translation id="1332501820983677155">Google Chrome'i funktsioonide otseteed</translation>
 <translation id="1333491156693005331">Hiljuti kontrollitud</translation>
@@ -203,7 +202,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1925021887439448749">Sisestage kohandatud veebiaadress</translation>
 <translation id="1928618076168182477">Näidatakse visuaalset vaadet</translation>
 <translation id="1928696683969751773">Värskendused</translation>
-<translation id="1933845786846280168">Valitud vaheleht</translation>
 <translation id="1939549834451474504">Paroolid peagi enam ei tööta, kuna Google Play teenused pole saadaval. Võite oma salvestatud paroolidest koopia teha, enne kui need enam ei tööta. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Paroolide salvestamine</translation>
 <translation id="1944535645109964458">Saadaval pole ühtegi pääsuvõtit</translation>
@@ -430,7 +428,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2976550651269220761">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.\nOodake enne väljalogimist mõni minut. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="2977350910003566746">Sortimine viimase avamise järgi</translation>
 <translation id="297771753501244313">Sorditud: viimati avatud</translation>
-<translation id="2979025552038692506">Valitud inkognito vaheleht</translation>
 <translation id="2979639724566107830">Ava uues aknas</translation>
 <translation id="2981364137500752533">Teil võib olla kuni viis akent.</translation>
 <translation id="2983102365694924129">Põhinevad teie tegevusel konkreetsel saidil. See seade on välja lülitatud.</translation>
@@ -551,6 +548,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3566639033325271639">Seadete värskendamine</translation>
 <translation id="3568945271227339929">Ükski parool ei ole ohus</translation>
 <translation id="357465026686164600">Telefon turvavõtmena</translation>
+<translation id="3575464060651642446">Selles seadmes paroolide kontrollimine…</translation>
 <translation id="3577473026931028326">Midagi läks valesti. Proovige uuesti.</translation>
 <translation id="3577558748185201054">Hallake oma huvisid ja eelistusi</translation>
 <translation id="3587482841069643663">Kõik</translation>
@@ -621,7 +619,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3902562446536395999">Sortimine A-st Z-ni</translation>
 <translation id="3908308510347173149">Värskenda rakendust <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sortimine Z-st A-ni</translation>
-<translation id="3918415141610210050">Tabulaator</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on sisse lülitatud</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Minu andmete kombineerimine</translation>
@@ -644,7 +641,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4024768890073681126">Sinu brauserit haldab sinu vanem</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Minge saidile <ph name="SITE_ETLD_PLUS_ONE" /> kontoga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Nimetu grupp</translation>
 <translation id="4044708993631234325">Alumine leht</translation>
 <translation id="4045441967987592849">Ava uuesti</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> uue tegevusega standardne vaheleht jagatud vahelehegruppides}other{<ph name="TABS_COUNT_MANY" /> uue tegevusega standardset vahelehte jagatud vahelehegruppides}}</translation>
@@ -1736,7 +1732,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8840953339110955557">Leht võib veebiversioonist erineda.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Peidetud</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, vahekaart</translation>
 <translation id="8854223127042600341">Vaadake oma võrguühenduseta faile</translation>
 <translation id="885480114717186641">Saate taotleda hosti <ph name="HOST_NAME" /> arvutisaiti</translation>
 <translation id="8856607253650333758">Esita kirjeldusi</translation>

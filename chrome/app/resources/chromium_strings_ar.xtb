@@ -318,6 +318,7 @@
 <translation id="5579324208890605088">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مستخدمًا عاديًا وليس بصفتك مشرفًا.</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5605834417512968703">‏حدِّد أي محتوى للبحث عنه باستخدام ميزة "البحث بالصور"، أو اضغط على مفتاح Escape للخروج من الميزة</translation>
+<translation id="5618818588972826921">‏يُرجى اختيار أي نصوص أو صور للبحث عنها باستخدام ميزة "البحث بالصور"، أو الضغط على مفتاح Escape للخروج من الميزة</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏يتوفر تحديث لمتصفح Chromium}=1{‏يتوفر تحديث لمتصفح Chromium}two{‏يتوفر تحديث لمتصفح Chromium منذ يومين}few{‏يتوفر تحديث لمتصفح Chromium منذ # أيام}many{‏يتوفر تحديث لمتصفح Chromium منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chromium منذ # يوم}}</translation>
 <translation id="5643865575100044307">‏حذف بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chromium</translation>
 <translation id="5653831366781983928">‏يُرجى إعادة تشغيل Chromium الآن</translation>
@@ -593,5 +594,6 @@
 <translation id="983803489796659991">تعذَّر تثبيت التطبيق لعدم وجود أي بيانات تجزئة للتطبيق في خادم التحديث.</translation>
 <translation id="985498048907240953">‏استخدام Chromium بدون حساب</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">يُرجى اختيار أي نصوص أو صور للبحث عنها باستخدام ميزة "البحث بالصور"</translation>
 <translation id="992780518932311116">‏لاستخدام الموقع الجغرافي، يجب منح Chromium إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
 </translationbundle>

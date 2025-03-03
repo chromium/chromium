@@ -22,6 +22,7 @@
 <translation id="1058009965971887428">รายงานความคิดเห็น</translation>
 <translation id="1059120031266247284">แชร์กับคุณ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1060847216467038176"><ph name="ITEM_LABEL" /> พร้อมปุ่มนำออก</translation>
 <translation id="1062407476771304334">แทนที่</translation>
 <translation id="1073899992769346247">โปรดเปลี่ยนหรือชาร์จแบตเตอรี่</translation>
 <translation id="1081015718268701546">ขณะนี้ไม่รองรับแอป Linux ระบบจะบันทึกแอปอื่นๆ</translation>
@@ -1223,6 +1224,7 @@
 <translation id="5043679421800073804">คลิกหรือแตะไอคอนสุดท้ายบนแถบ</translation>
 <translation id="504465286040788597">ย่อหน้าก่อนหน้า</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
+<translation id="5056587122125565772">สร้างรูปภาพ</translation>
 <translation id="5058794129231928255">สร้างเอกสารใน Google เอกสารไม่ได้</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">คุณจะได้รับการแจ้งเตือนเมื่อพูดขณะที่ปิดเสียงอยู่ โดยระบบจะไม่ส่งเสียงของคุณออกไปที่อื่น</translation>
@@ -1271,6 +1273,7 @@
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5228195526683428788">เส้นแยกหน้าจอ</translation>
 <translation id="5229343007215035173">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
+<translation id="5229860525743792999">นำ <ph name="ITEM_LABEL" /> ออกจากกลุ่มที่แนะนำ</translation>
 <translation id="5230516054153933099">หน้าต่าง</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="523505283826916779">การตั้งค่าสำหรับการเข้าถึง</translation>
@@ -1753,6 +1756,7 @@
 <translation id="6757237461819837179">ไม่มีการเล่นสื่อ</translation>
 <translation id="6760438044935091345">แดชบอร์ดเกม</translation>
 <translation id="6768043681523654438">พื้นที่เก็บข้อมูล</translation>
+<translation id="6769195697113506406">แทรกรูปภาพแล้ว</translation>
 <translation id="6777216307882431711">กำลังชาร์จอุปกรณ์ USB-C ที่เชื่อมต่ออยู่</translation>
 <translation id="6781002679438061620">เดสก์ที่ 9</translation>
 <translation id="6782182743534150858">เดสก์ที่ 13</translation>
@@ -1979,6 +1983,7 @@
 <translation id="7571361473021531288">แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />% | ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="7573585051776738856">ตรึงหน้าต่างที่ใช้งานไว้ทางด้านขวาแล้ว</translation>
 <translation id="7579778809502851308">จับภาพหน้าจอ</translation>
+<translation id="7588317312481506627">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="7593891976182323525">ค้นหาหรือ Shift</translation>
 <translation id="7598054670902114203">ภาพรวมการใช้งาน CPU <ph name="CPU_USEAGE" />% อุณหภูมิ <ph name="TEMPERATURE" /> องศาเซลเซียส ความเร็วปัจจุบัน: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7599378375976398913">กำลังแทรกผลการค้นหาที่เลือก</translation>
@@ -2173,6 +2178,7 @@
 <translation id="8155628902202578800">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">กำลังใช้<ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">เนื้อหา</translation>
+<translation id="81817143961839203">แทรกรูปภาพไม่สำเร็จ</translation>
 <translation id="8185090165691050712">เปิด/ปิดเมนูเพื่อปรับขนาดโหมดล็อก</translation>
 <translation id="8192727139462702395">เมื่อปิดบลูทูธ อุปกรณ์ภายนอกเหล่านี้จะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ</translation>
 <translation id="8198456017687137612">กำลังแคสต์แท็บ</translation>
@@ -2251,6 +2257,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ได้<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />ไว้</translation>
 <translation id="8477270416194247200">กด Alt + Search หรือ Shift เพื่อยกเลิก</translation>
 <translation id="8480418399907765580">แสดงแถบเครื่องมือ</translation>
+<translation id="8487660088084188539">เมื่อเปิดใช้ฟีเจอร์เหล่านี้ ระบบอาจส่งข้อความที่ป้อน เนื้อหาเอกสาร และ URL หน้าเว็บไปยังเซิร์ฟเวอร์ของ Google ข้อมูลนี้ใช้เพื่อสร้างคำแนะนำในการเขียน สร้างข้อมูลสรุป ตอบคำถาม และปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="LINK_TO_SERVICE_TERMS" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ</translation>
 <translation id="8487699605742506766">ฮอตสปอต</translation>
 <translation id="8491237443345908933">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> ระบบเปลี่ยนความละเอียดเป็น <ph name="FALLBACK_RESOLUTION" /> คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
@@ -2320,6 +2327,7 @@
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8725214031272624704">แสดงรายการวิธีการป้อนข้อมูลที่มีอยู่</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
+<translation id="8731188831050207755">ดาวน์โหลด <ph name="FILE_NAME" /> ไม่สำเร็จ</translation>
 <translation id="8731487213223706745">สิ้นสุดเวลา <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">แป้นพิมพ์นี้อาจพยายามขโมยการกดแป้นพิมพ์ของคุณ</translation>
 <translation id="8735678380411481005">สีไฟแบ็กไลต์ของแป้นพิมพ์</translation>

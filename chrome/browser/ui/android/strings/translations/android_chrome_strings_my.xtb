@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> မှ ပို့ထားသည်</translation>
 <translation id="1320912611264252795">လိပ်စာသိမ်းရန် လုပ်ငန်းစဉ်ကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="1327257854815634930">လမ်းညွှန်မှု မှတ်တမ်း ဖွင့်ထားသည်</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />၊ အသစ် (သို့) အပ်ဒိတ်လုပ်ထားသော တဘ်</translation>
 <translation id="1331212799747679585">Chrome ကို အပ်ဒိတ်လုပ်၍မရပါ။ နောက်ထပ်ရွေးချယ်စရာများ</translation>
 <translation id="1332501820983677155">Google Chrome ဝန်ဆောင်မှု ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="1333491156693005331">လတ်တလော စစ်ဆေးထားသည်</translation>
@@ -203,7 +202,6 @@
 <translation id="1925021887439448749">စိတ်ကြိုက်ဝဘ်လိပ်စာကို ထည့်ရန်</translation>
 <translation id="1928618076168182477">ရုပ်မြင်ပြကွက်ကို ပြနေသည်</translation>
 <translation id="1928696683969751773">အဆင့်မြှင့်မှုများ</translation>
-<translation id="1933845786846280168">ရွေးထားသည့်တဘ်</translation>
 <translation id="1939549834451474504">Google Play ဝန်ဆောင်မှုများ မရနိုင်သဖြင့် စကားဝှက်များကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ။ ထိုသို့မဖြစ်မီ သိမ်းထားသော သင့်စကားဝှက်များ၏ မိတ္တူပြုလုပ်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">စကားဝှက်များကို သိမ်းဆည်းပါ</translation>
 <translation id="1944535645109964458">လျှို့ဝှက်ကီး မရနိုင်ပါ</translation>
@@ -430,7 +428,6 @@
 <translation id="2976550651269220761">သင်၏ Chrome ဒေတာအချို့ကို သင့် Google Account တွင် မသိမ်းရသေးပါ။\nမထွက်မီ မိနစ်အနည်းငယ် စောင့်ပေးပါ။ ယခု ထွက်သွားပါက ဤဒေတာကို ဖျက်ပါမည်။</translation>
 <translation id="2977350910003566746">နောက်ဆုံးဖွင့်ချိန်ဖြင့် စီနေသည်</translation>
 <translation id="297771753501244313">နောက်ဆုံးဖွင့်ချိန်ဖြင့် စီရန်</translation>
-<translation id="2979025552038692506">ရွေးချယ်ထားသည့် ကိုယ်ဖျောက်တဘ်</translation>
 <translation id="2979639724566107830">ဝင်းဒိုးအသစ်တွင် ဖွင့်ပါ</translation>
 <translation id="2981364137500752533">ဝင်းဒိုး ၅ ခုအထိ ဖွင့်နိုင်သည်။</translation>
 <translation id="2983102365694924129">ဝဘ်ဆိုက်ရှိ သင့်လုပ်ဆောင်ချက်ပေါ် အခြေခံထားသည်။ ဤဆက်တင်ကို ပိတ်ထားသည်။</translation>
@@ -621,7 +618,6 @@
 <translation id="3902562446536395999">A မှ Z သို့ စီနေသည်</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="3911609878849982353">Z မှ A သို့ စီနေသည်</translation>
-<translation id="3918415141610210050">တဘ်</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ကို ဖွင့်ထားသည်</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">ကျွန်ုပ်၏ ဒေတာများကို ပေါင်းပါ</translation>
@@ -644,7 +640,6 @@
 <translation id="4024768890073681126">သင့်ဘရောင်ဇာကို သင့်မိဘက စီမံခန့်ခွဲသည်</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# နာရီ}other{# နာရီ}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို ရှေ့ဆက်ပါ</translation>
-<translation id="404352903042073578">အမည်ပေးမထားသော အုပ်စု</translation>
 <translation id="4044708993631234325">အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="4045441967987592849">ပြန်ဖွင့်ရန်</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
@@ -1735,7 +1730,6 @@
 <translation id="8840953339110955557">ဤဝဘ်ဆိုက်သည် အွန်လိုင်းဗားရှင်းနှင့် ကွဲပြားနိုင်ပါသည်။</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ဖျောက်ထားသည်</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />၊ တဘ်</translation>
 <translation id="8854223127042600341">သင်၏အော့ဖ်လိုင်း ဖိုင်များ ကြည့်ရန်</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" /> အတွက် ဒက်စ်တော့ဝဘ်ဆိုက်ကို တောင်းဆိုနိုင်သည်</translation>
 <translation id="8856607253650333758">ရှင်းလင်းချက်များ ရယူရန်</translation>

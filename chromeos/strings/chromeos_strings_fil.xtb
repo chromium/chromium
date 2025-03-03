@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Home network, hindi roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Kulay ng wallpaper</translation>
+<translation id="1329478709358066995">Transcript:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pagkasyahin sa nasa-scan na bahagi</translation>
 <translation id="1343442362630695901">salt lake</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">Tungkol sa background</translation>
 <translation id="6939667434404433010">Hanapin ang pangalan ng recording</translation>
 <translation id="6939766318048400022">Cafe</translation>
+<translation id="6942253772720771875">I-share ang iyong feedback o ilarawan ang isyu mo</translation>
 <translation id="6943893908656559156">Remote na pagkakakilanlan (opsyonal)</translation>
 <translation id="6953137545147683679">ginto</translation>
 <translation id="6957231940976260713">Pangalan ng serbisyo</translation>
@@ -1598,6 +1600,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8395584934117017006">Pinapamahalaan ng enterprise ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="8398927464629426868">Ang rate ng kasalukuyang pag-charge o pag-discharge ng device</translation>
 <translation id="8403988360557588704">Isang painting ng <ph name="ART_FEATURE" /> sa istilong <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Nabuong buod:</translation>
 <translation id="8410244574650205435">Awtomatikong na-detect</translation>
 <translation id="8420955526972171689">Magpatakbo ng mga pagsusuri at pag-troubleshoot para sa mga isyu sa hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8626489604350149811">Higit pang pagkilos para sa <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>
 <translation id="8647595191512746911">Audio transcription</translation>
+<translation id="8648578954147795914">Mga nabuong pangalan:</translation>
 <translation id="8650852232143958317">Kunin ang iyong mga file sa Gmail at Google Drive</translation>
 <translation id="8651481478098336970">i-mute ang volume</translation>
 <translation id="8655295600908251630">Channel</translation>
@@ -1784,6 +1788,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="9218016617214286986">Ipakita ang mga kilalang APN</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Tiyaking nakakonekta ang iyong mikropono o subukang i-restart Chromebook mo</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="950520315903467048">Walang key para sa <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Paghambingin ang mga boses sa buong recording para maipakita ng transcript kung ano ang sinabi ng bawat speaker at kung kailan</translation>

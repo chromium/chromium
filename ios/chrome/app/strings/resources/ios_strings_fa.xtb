@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">صفحه اصلی را لمس کنید و نگه دارید</translation>
 <translation id="1832848789136765277">برای اینکه مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
 <translation id="1836891464494477513">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏نشانک‌ها در «حساب Google» شما ({email}) ذخیره شدند}}</translation>
+<translation id="1838089197478136166">در «کیف پول» باز شود؟</translation>
 <translation id="183878838231635348">در این کارت، همه مشکلات امنیتی یا حریم خصوصی‌ای که «کنترل ایمنی» به‌طور خودکار شناسایی می‌کند نمایش داده می‌شود.</translation>
 <translation id="1845230888742614096">نگه داشتن گروه</translation>
 <translation id="1854463785401910334">جستجوی برگه‌های باز</translation>
@@ -301,6 +302,7 @@
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
 <translation id="2236949375853147973">فعالیت من</translation>
 <translation id="2240256190924001613">پیکربندی نمایه دردسترس است</translation>
+<translation id="2244080985779413662">این وب‌سایت می‌خواهد فایلی را بارگیری کند و آن را در «کیف پول» شما باز کند.</translation>
 <translation id="2245007488813216650">درحال ترجمه کردن…</translation>
 <translation id="2249119578464404734">در بالای صفحه، روی نماد «جستجو» تک‌ضرب بزنید</translation>
 <translation id="2251686759395008410">منو ← سابقه</translation>
@@ -1361,6 +1363,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6761393919622941301">صدا</translation>
 <translation id="6779455296366983087">داده‌های مرورتان حذف خواهد شد</translation>
 <translation id="6790502149545262384">به‌زودی وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
+<translation id="6794476726485507147">تاریخ و ساعتی برای دریافت اعلان یادآور جهت بازدید مجدد از این صفحه انتخاب کنید.</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}}</translation>
 <translation id="6830728435402077660">امن نیست</translation>
@@ -1641,6 +1644,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8023170444051056234">دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهید، و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
 <translation id="8023878949384262191">بخش را بزرگ می‌کند.</translation>
 <translation id="8027581147000338959">باز کردن در پنجرهٔ جدید</translation>
+<translation id="8029092694585014252">تنظیم یادآور</translation>
 <translation id="8032569120109842252">دنبال می‌کنید</translation>
 <translation id="8035133914807600019">پوشه جدید…</translation>
 <translation id="8035412398498507358">Photos</translation>

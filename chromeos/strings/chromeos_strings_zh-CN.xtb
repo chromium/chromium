@@ -81,6 +81,7 @@
 <translation id="131461803491198646">家庭网络，非漫游</translation>
 <translation id="1327977588028644528">网关</translation>
 <translation id="1328223165223065150">壁纸颜色</translation>
+<translation id="1329478709358066995">转写内容：</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1343442362630695901">咸水湖</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">关于背景</translation>
 <translation id="6939667434404433010">搜索录制内容名称</translation>
 <translation id="6939766318048400022">咖啡馆</translation>
+<translation id="6942253772720771875">分享您的反馈或描述您的问题</translation>
 <translation id="6943893908656559156">远程身份（可选）</translation>
 <translation id="6953137545147683679">金色</translation>
 <translation id="6957231940976260713">服务名称</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企业管理</translation>
 <translation id="8398927464629426868">设备当前的充电或放电速度</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" />风格的<ph name="ART_FEATURE" />绘画</translation>
+<translation id="8409219750150841791">生成的摘要：</translation>
 <translation id="8410244574650205435">已自动检测</translation>
 <translation id="8420955526972171689">运行硬件测试以排查硬件问题</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811">可对“<ph name="APN_NAME" />”执行的更多操作</translation>
 <translation id="86356131183441916">浅紫色</translation>
 <translation id="8647595191512746911">音频转写</translation>
+<translation id="8648578954147795914">生成的名称：</translation>
 <translation id="8650852232143958317">随时随地查看 Gmail 和 Google 云端硬盘文件</translation>
 <translation id="8651481478098336970">静音</translation>
 <translation id="8655295600908251630">版本</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">显示已知的 APN</translation>
 <translation id="932327136139879170">首页</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">请确保麦克风已连接，或尝试重启 Chromebook</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="950520315903467048">缺少表示<ph name="DIRECTION" />的按键。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">对整个录音中的各种语音进行比较，以便在转写内容中体现出每位讲者的说话内容和说话时间</translation>

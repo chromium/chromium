@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – poslano s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Mape tijeka spremanja oznake otvorene su u punoj visini</translation>
 <translation id="1327257854815634930">Otvorena je povijest navigacije</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, nova ili ažurirana kartica</translation>
 <translation id="1331212799747679585">Chrome se ne može ažurirati. Više opcija</translation>
 <translation id="1332501820983677155">Prečaci za značajke Google Chromea</translation>
 <translation id="1333491156693005331">Nedavno provjereno</translation>
@@ -204,7 +203,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1925021887439448749">Unesite prilagođenu web-adresu</translation>
 <translation id="1928618076168182477">Prikazuje se vizualni prikaz</translation>
 <translation id="1928696683969751773">Ažuriranja</translation>
-<translation id="1933845786846280168">Odabrana kartica</translation>
 <translation id="1939549834451474504">Zaporke će uskoro prestati funkcionirati jer usluge za Google Play nisu dostupne. Možete kopirati spremljene zaporke prije nego što prestanu funkcionirati. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Spremanje zaporki</translation>
 <translation id="1944535645109964458">Nije dostupan nijedan pristupni ključ</translation>
@@ -431,7 +429,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2976550651269220761">Neki vaši podaci iz Chromea još nisu spremljeni na vaš Google račun.\nPričekajte nekoliko minuta prije nego što se odjavite. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="2977350910003566746">Sortiranje od posljednjeg otvaranja</translation>
 <translation id="297771753501244313">Poredaj od posljednjeg otvaranja</translation>
-<translation id="2979025552038692506">Odabrana anonimna kartica</translation>
 <translation id="2979639724566107830">Otvori u novom prozoru</translation>
 <translation id="2981364137500752533">Možete imati do pet prozora.</translation>
 <translation id="2983102365694924129">Na temelju vaše aktivnosti na web-lokaciji. Postavka je isključena.</translation>
@@ -622,7 +619,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3902562446536395999">Sortiranje od A do Ž</translation>
 <translation id="3908308510347173149">Ažurirajte <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sortiranje od Ž do A</translation>
-<translation id="3918415141610210050">Kartica</translation>
 <translation id="3924911262913579434">Uključen je način <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kombiniraj moje podatke</translation>
@@ -645,7 +641,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4024768890073681126">Preglednikom upravlja tvoj roditelj</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}few{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Nastavi na <ph name="SITE_ETLD_PLUS_ONE" /> s davateljem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Neimenovana grupa</translation>
 <translation id="4044708993631234325">Donja tablica</translation>
 <translation id="4045441967987592849">Ponovno otvori</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardna kartica s novom aktivnošću u dijeljenim grupama kartica}one{<ph name="TABS_COUNT_MANY" /> standardna kartica s novom aktivnošću u dijeljenim grupama kartica}few{<ph name="TABS_COUNT_MANY" /> standardne kartice s novom aktivnošću u dijeljenim grupama kartica}other{<ph name="TABS_COUNT_MANY" /> standardnih kartica s novom aktivnošću u dijeljenim grupama kartica}}</translation>
@@ -1740,7 +1735,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8840953339110955557">Ta se stranica možda razlikuje od online verzije.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skriveno</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, kartica</translation>
 <translation id="8854223127042600341">Prikaz offline datoteka</translation>
 <translation id="885480114717186641">Možete zatražiti web-lokaciju za računala za <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Primite opise</translation>

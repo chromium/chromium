@@ -1318,6 +1318,7 @@
 <translation id="1910721550319506122">સ્વાગત!</translation>
 <translation id="1910736334623230603">એકથી વધુ છબી શોધી શકતા નથી. એક સમયે માત્ર એક છબી ઉમેરો.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> માત્ર ઑટોમૅટેડ પરીક્ષણ માટે છે. નિયમિત બ્રાઉઝિંગ માટે, Chromeના સ્ટૅન્ડર્ડ વર્ઝનનો ઉપયોગ કરો જે ઑટોમૅટિક રીતે અપડેટ થાય છે.</translation>
+<translation id="1912867150686509584">તમારા Calendar પર વધુ મીટિંગ જુઓ</translation>
 <translation id="1913749768968678106">કાસ્ટ કરો, સાચવો અને શેર કરો</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">સમાપ્ત કરો</translation>
@@ -1703,6 +1704,7 @@
 <translation id="2178545675770638239">પાસવર્ડ પસંદ કરો</translation>
 <translation id="2178585470774851578">તમે ChromeOS Flexની ડિબગીંગની સુવિધાઓ ચાલુ કરી રહ્યાં છો, જે sshd daemonનું સેટઅપ કરશે અને USB ડ્રાઇવમાંથી બૂટ કરવાનું ચાલુ કરશે.</translation>
 <translation id="2178614541317717477">CA સમાધાન</translation>
+<translation id="2179850495466791921">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> અને વધુ છે</translation>
 <translation id="2180620921879609685">કોઈપણ પેજ પરનું કન્ટેન્ટ બ્લૉક કરો</translation>
 <translation id="2181821976797666341">પૉલિસીઓ</translation>
 <translation id="2182058453334755893">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવ્યું</translation>
@@ -2946,6 +2948,7 @@
 <translation id="3029808567601324798">લૉક કરવાનો સમય</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે આજે અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}one{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય એ પહેલાં અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}other{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય એ પહેલાં અપડેટ ડાઉનલોડ કરો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ થશો, ત્યારે અપડેટ ઑટોમૅટિક રીતે ડાઉનલોડ થશે.}}</translation>
 <translation id="3030772324014024606">ફેરફાર કરો</translation>
+<translation id="3030795534674718505">તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="3030967311408872958">સૂર્યોદયથી સૂર્યાસ્ત સુધી</translation>
 <translation id="3031417829280473749">એજંટ X</translation>
 <translation id="3031532026314193077">રાઇટ ક્લિક કરવા માટે ટચપૅડ અને કીબોર્ડનો ઉપયોગ કરો</translation>
@@ -3118,6 +3121,7 @@
 <translation id="3167562202484086668"><ph name="BRAND" />નો તમામ ડેટા ડિલીટ કરો</translation>
 <translation id="3169930038976362151">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="3170072451822350649">તમે સાઇન ઇન કરવાનું છોડી અને <ph name="LINK_START" />અતિથિ તરીકે બ્રાઉઝ<ph name="LINK_END" /> પણ કરી શકો છો.</translation>
+<translation id="3171499217959105722">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM" /> અને વધુ છે</translation>
 <translation id="3175067642577044620">મુખ્ય ભાગ</translation>
 <translation id="3175862692832442091">જંગલ</translation>
 <translation id="3176347586396987181">માઉસનું બટન દબાવી રાખવા માટે “z”નો ઉપયોગ કરો</translation>
@@ -3731,6 +3735,7 @@
 <translation id="3621202678540785336">ઇનપુટ</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{એક ઍપ}one{# ઍપ}other{# ઍપ}}</translation>
 <translation id="3622820753353315928">ફ્લૅશ થતી સ્ક્રીનનો રંગ</translation>
+<translation id="3623318122257816196">તમે મુલાકાત લેતા હો એવી બધી સાઇટ અન્ય સાઇટમાંનું કન્ટેન્ટ શામેલ કરી શકે છે, ઉદાહરણ તરીકે છબીઓ, જાહેરાતો અને ટેક્સ્ટ. આ અન્ય સાઇટ, તમે જેમ જેમ સાઇટ બ્રાઉઝ કરો તેમ તેમ તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવાની પરવાનગી માગી શકે છે.</translation>
 <translation id="362333465072914957">CA પ્રમાણપત્ર જારી કરે તેની રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="3623598555687153298">આમ કરવાથી બતાવવામાં આવેલી સાઇટ દ્વારા સ્ટોર કરવામાં આવેલો <ph name="TOTAL_USAGE" /> ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="3624567683873126087">ઉપકરણ અનલૉક કરો અને Google એકાઉન્ટમાં સાઇન ઇન કરો</translation>
@@ -3807,6 +3812,7 @@
 <translation id="3673622964532248901">આ ડિવાઇસ પર કાસ્ટ કરવાની તમે મંજૂરી ધરાવતા નથી.</translation>
 <translation id="3675683621636519363">ક્રૅશ રિપોર્ટ તેમજ ડાયગ્નોસ્ટિક્સ અને વપરાશનો ડેટા ChromeOS Flexને મોકલો</translation>
 <translation id="367645871420407123">જો તમે રૂટ પાસવર્ડને ડિફૉલ્ટ પરીક્ષણ છબી મૂલ્ય પર સેટ કરવા માંગતા હો તો ખાલી છોડો</translation>
+<translation id="3676777756440746804">આ સાઇટને, તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવા માટે તમને પૂછવાથી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="3677911431265050325">મોબાઇલ સાઇટની વિનંતી કરો</translation>
 <translation id="3678156199662914018">એક્સ્ટેંશન: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">આ વિન્ડોમાં તમે જે પેજ જોઈ રહ્યાં છો એ બ્રાઉઝર ઇતિહાસમાં દેખાશે નહીં અને તમારા સાઇન આઉટ કર્યા પછી, તે કમ્પ્યુટર પર કુકી જેવા કોઈ બીજા ટ્રેસ છોડશે નહીં. તમે ડાઉનલોડ કરશો એ ફાઇલો અને તમે બનાવશો એ બુકમાર્ક જાળવવામાં આવશે નહીં.</translation>
@@ -3927,6 +3933,7 @@
 <translation id="3744219658596020825">તમારા પાસવર્ડ આયાત કરવામાં આવ્યા ન હતા</translation>
 <translation id="3745306754941902605">રસોડું</translation>
 <translation id="3747077776423672805">ઍપને કાઢી નાખવા માટે, સેટિંગ &gt; Google Play Store &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોય શકે છે). પછી અનઇન્સ્ટૉલ કરો અથવા બંધ કરો પર ટૅપ કરો.</translation>
+<translation id="3747552357646973221">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> અને વધુ છે</translation>
 <translation id="3748424433435232460">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી જ આ ડિવાઇસમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="3748706263662799310">બગની જાણ કરો</translation>
 <translation id="3749724428455457489">સાઇટ દ્વારા સૂચવવામાં આવેલી જાહેરાતો વિશે વધુ જાણો</translation>
@@ -3981,6 +3988,7 @@
 <translation id="3778208826288864398">ઘણી બધી વખત ખોટો પિન દાખલ કર્યો હતો એટલા માટે સુરક્ષા કોડ લૉક કરેલો છે. તમને સુરક્ષા કોડનો ઉપયોગ કરવાની જરૂર પડશે.</translation>
 <translation id="3778740492972734840">&amp;વિકાસકર્તા  ટુલ્સ</translation>
 <translation id="3778868487658107119">તેને પ્રશ્નો પૂછો. તેને વસ્તુઓ કરવા માટે કહો. આ તમારું વ્યક્તિગત Google છે, હંમેશા મદદ કરવા માટે તૈયાર છે.</translation>
+<translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# સાઇટનો તમારો બ્રાઉઝિંગ ઇતિહાસ}one{# સાઇટનો તમારો બ્રાઉઝિંગ ઇતિહાસ}other{# સાઇટનો તમારો બ્રાઉઝિંગ ઇતિહાસ}}</translation>
 <translation id="3779244863011082655">કોઈ અલગ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> એકાઉન્ટનો ઉપયોગ કરો</translation>
 <translation id="3780542776224651912">ડેટા ઉલ્લંઘનો માટે, <ph name="BRAND" /> તમારા પાસવર્ડ ચેક કરી શકતા નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3781742599892759500">માઇક્રોફોનને Linuxનો ઍક્સેસ આપવાના સેટિંગ</translation>
@@ -4265,6 +4273,7 @@
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="3963753386716096475">કોઈ અલગ ફોન, ટૅબ્લેટ કે સિક્યુરિટી કીનો ઉપયોગ કરો</translation>
 <translation id="3964480518399667971">સેલ્યુલર નેટવર્ક બંધ કરો</translation>
+<translation id="3965467402665811906">આ સાઇટ, તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવા માટે પૂછી શકે છે</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />માંથી બહાર નીકળો</translation>
 <translation id="3965984916551757611">નોટિફિકેશન, Google Play</translation>
 <translation id="3966072572894326936">બીજું ફોલ્ડર પસંદ કરો...</translation>
@@ -5117,6 +5126,7 @@
 <translation id="4582297591746054421">સાઇટ સામાન્ય રીતે, તમે કૉપિ કરેલી ટેક્સ્ટનું ફૉર્મેટિંગ જાળવી રાખવા જેવી સુવિધાઓ માટે તમારું ક્લિપબોર્ડ વાંચે છે</translation>
 <translation id="4582563038311694664">તમામ સેટિંગને રીસેટ કરો</translation>
 <translation id="4584770411839426377">વિન્ડો</translation>
+<translation id="4584836561445313300">તમારી સંસ્થા હાલનો કોઈપણ બ્રાઉઝિંગ ડેટા જોઈ અને મેનેજ કરી શકશે, જેમકે પાસવર્ડ અને વધુ ડેટા</translation>
 <translation id="4585793705637313973">પેજમાં ફેરફાર કરો</translation>
 <translation id="4586275095964870617"><ph name="URL" /> વૈકલ્પિક બ્રાઉઝરમાં ખૂલી ન શક્યું. કૃપા કરીને તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="4587589328781138893">સાઇટ</translation>
@@ -5882,6 +5892,7 @@
 <translation id="5139823398361067371">તમારી સિક્યુરિટી કી માટેનો પિન દાખલ કરો. જો તમને તમારો પિન યાદ ન હોય, તો તમારે સિક્યુરિટી કી રીસેટ કરવી પડશે.</translation>
 <translation id="5139955368427980650">&amp;ખોલો</translation>
 <translation id="5140742218917419811">ઉપયોગ કરવા માટેની કી</translation>
+<translation id="5140852400507269896">{BOOKMARKS_COUNT,plural, =1{# એક્સ્ટેન્શન}one{# એક્સ્ટેન્શન}other{# એક્સ્ટેન્શન}}</translation>
 <translation id="5141421572306659464">પ્રાથમિક એકાઉન્ટ</translation>
 <translation id="5141957579434225843">ઉદાહરણ તરીકે, òa, òe, ùyને બદલે oà, oè, uỳનો ઉપયોગ કરો</translation>
 <translation id="5143374789336132547">જ્યારે તમે હોમ બટન પર ક્લિક કરો છો ત્યારે જે પેજ દર્શાવવામાં આવે છે તે <ph name="EXTENSION_NAME" /> એક્સટેન્શને બદલ્યું છે.</translation>
@@ -7083,6 +7094,7 @@ USB ડિવાઇસ</translation>
 <translation id="6016462059150340136">નજીકની કોઈપણ વ્યક્તિ</translation>
 <translation id="6016551720757758985">અગાઉના વર્ઝન પર પાછા ફરવાની સાથે Powerwashની ખાતરી કરો</translation>
 <translation id="6016972670657536680">ભાષા અને કીબોર્ડ બટન પસંદ કરો. હાલમાં પસંદ કરેલ ભાષા <ph name="LANGUAGE" /> છે.</translation>
+<translation id="6017318029492906697">તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="6017514345406065928">લીલો</translation>
 <translation id="6019169947004469866">ક્રોપ</translation>
 <translation id="6019851026059441029">શ્રેષ્ઠ - HD</translation>
@@ -7941,6 +7953,7 @@ USB ડિવાઇસ</translation>
 <translation id="6650584564768559994">સંતુલિત પ્રમાણમાં મેમરી બચત મેળવો. ઑપ્ટિમલ સમયગાળા બાદ તમારા ટૅબ નિષ્ક્રિય બની જાય છે.</translation>
 <translation id="665061930738760572">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="6651237644330755633">વેબસાઇટ્સ ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>
+<translation id="6651366126843599466">જેમ જેમ તમે બ્રાઉઝ કરશો, તેમ તેમ તમારી માહિતીનો ઉપયોગ કરી શકે છે</translation>
 <translation id="6651495917527016072">તમારા ફોન સાથે વાઇ-ફાઇ નેટવર્ક સિંક કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6651762277693024112">તમે જ્યારે પણ આ સાઇટની મુલાકાત લો, ત્યારે ઑટોમૅટિક રીતે ચાલે છે</translation>
 <translation id="6654509035557065241">પસંદ કરેલું નેટવર્ક</translation>
@@ -8825,6 +8838,7 @@ USB ડિવાઇસ</translation>
 <translation id="7286908876112207905">આ કન્ટેન્ટને આ સાઇટ પર પેસ્ટ કરવાની મંજૂરી નથી</translation>
 <translation id="7287143125007575591">ઍક્સેસ નિષેધ.</translation>
 <translation id="7287411021188441799">ડિફૉલ્ટ બૅકગ્રાઉન્ડ પાછું મેળવો</translation>
+<translation id="7287949630503871403">ઍપમાં સ્ટોર કરેલો ડેટા</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974"><ph name="SUBJECT" />ની <ph name="INDEX" /> તાજેતરની AI થીમ</translation>
 <translation id="7289049772085228972">તમે Chromeની સૌથી સશક્ત સુરક્ષા ધરાવો છો</translation>
@@ -8981,6 +8995,7 @@ USB ડિવાઇસ</translation>
 <translation id="7399045143794278225">સિંકની સુવિધા કસ્ટમાઇઝ કરો</translation>
 <translation id="7399616692258236448">તમે મંજૂરી આપો છો તે સિવાયની બધી સાઇટ માટે લોકેશનની વિનંતીઓને ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવે છે</translation>
 <translation id="7399802613464275309">સલામતી માટે તપાસ</translation>
+<translation id="7400059772197434086">ને તમારી માહિતીનો ઉપયોગ આના પર કરવાથી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">બદલીને પાછા <ph name="OLD_SEARCH_PROVIDER" /> પર આવીએ?</translation>
 <translation id="7400528739136719497">કેટલાક Google વૉઇસ અત્યારે ઉપલબ્ધ ન હોય તેમ બની શકે છે</translation>
@@ -10016,6 +10031,7 @@ USB ડિવાઇસ</translation>
 <translation id="8116972784401310538">&amp;બુકમાર્ક વ્યવસ્થાપક</translation>
 <translation id="8118276691321086429">તમે કેવી રીતે સાઇન ઇન કર્યું છે તે <ph name="PASSWORD_MANAGER_BRAND" /> યાદ રાખે છે અને શક્ય હોય ત્યારે તે તમને ઑટોમૅટિક રીતે સાઇન ઇન કરાવે છે. જ્યારે આ સુવિધા બંધ હોય, ત્યારે દર વખતે કન્ફર્મેશન માટે તમને પૂછવામાં આવશે.</translation>
 <translation id="8118362518458010043">Chrome દ્વારા બંધ કરેલ છે. આ એક્સ્ટેંશન અસુરક્ષિત હોઈ શકે છે.</translation>
+<translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# બુકમાર્ક}one{# બુકમાર્ક}other{# બુકમાર્ક}}</translation>
 <translation id="8118488170956489476">તમારી સંસ્થા દ્વારા તમારું<ph name="BEGIN_LINK" />બ્રાઉઝર મેનેજ કરવામાં આવે છે<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">રિફ્રેશ થવાનો રેટ બતાવો</translation>
 <translation id="8118860139461251237">તમારા ડાઉનલોડ્સનું સંચાલન કરો</translation>
@@ -10210,7 +10226,6 @@ USB ડિવાઇસ</translation>
 <translation id="8258027225380843424">આયાત કરવું સફળ થયું!</translation>
 <translation id="8259048637628995340">વિક્ષેપરહિત અનુભવ માટે, તમારો Android ફોન કનેક્ટ કરો</translation>
 <translation id="8260177673299865994">ડાઉનલોડની પ્રક્રિયા સંબંધિત સંરક્ષણ બહેતર બનાવો</translation>
-<translation id="8260473380156923937">Chrome ઍપ ટૂંક સમયમાં કાયમ માટે બંધ કરી દેવામાં આવશે. વિકલ્પો માટે ડેવલપર અથવા તમારી IT સેવાનો સંપર્ક કરો.</translation>
 <translation id="8260864402787962391">માઉસ</translation>
 <translation id="8261378640211443080">આ એક્સટેન્શન <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>

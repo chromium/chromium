@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Sahifani keyinroq yuklash</translation>
 <translation id="1010225406377140704">Yuboruvchidan yangi havola yuborishni soʻrang</translation>
 <translation id="1011206368273183593">Fayllar tayyorlanmoqda</translation>
+<translation id="1012264210825687872">Buyurtmani tekshirib, <ph name="BNPL_ISSUER_NAME" /> hisobiga kiring yoki yangi hisob yarating. Bu hisob avtomatik ravishda Google Pay xizmatiga ulanadi.</translation>
 <translation id="1014509239502131234">Natija bekor qilinmoqda</translation>
 <translation id="1015730422737071372">Qo‘shimcha ma’lumotlarni to‘ldiring</translation>
 <translation id="1019413721762100891">Oʻchiq</translation>
@@ -659,6 +660,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2145193671493396738">Iqtisodiyot yangiliklari</translation>
 <translation id="214556005048008348">To‘lovni bekor qilish</translation>
 <translation id="2147117373852943630">Musiqiy asboblar</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> sayti shaxsiy maʼlumotlaringizdan foydalanmoqchi</translation>
 <translation id="2148613324460538318">Yangi karta qo‘shish</translation>
 <translation id="2148716181193084225">Bugun</translation>
 <translation id="2149968176347646218">Aloqa xavfsiz emas.</translation>
@@ -690,6 +692,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2187317261103489799">Aniqlansin (standart parametr)</translation>
 <translation id="2188375229972301266">Quyidan bir nechta teshik ochish</translation>
 <translation id="2194856509914051091">Bularni hisobga olish kerak</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> haqida batafsil</translation>
 <translation id="2200678913752027654">Salbiy baho tugmasi, bu taklif nega yoqmagani haqida batafsil fikr-mulohaza yuborish shaklini ochish uchun Enter tugmasini bosing</translation>
 <translation id="2202627062836089804">kartangiz orqasidagi</translation>
 <translation id="2204482073374652408">Yangilandi!</translation>
@@ -2313,6 +2316,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome foydalanishi uchun qurilmadagi <ph name="PERMISSION" />ga ruxsat bering</translation>
 <translation id="510644072453496781">Karton (oxiri)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> virtual kartasi kiritildi</translation>
 <translation id="5108881358339761672">Sayt xavfsiz emas</translation>
 <translation id="5109892411553231226">Toʻlov usullarini boshqarish</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2508,6 +2512,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
           <ph name="LIST_ITEM" />Shakllarga kiritilgan maʼlumotlar
         <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Teskari tartibda old tomonida</translation>
+<translation id="5445340838622821110">Vaqt oʻtishi bilan bir martalik virtual karta raqami kiritiladi. Bu raqam faqat mazkur xaridga talluqli. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> saytiga siz haqingizdagi saqlangan maʼlumotlardan foydalanishiga ruxsat bering</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> sahifasi topilmadi</translation>
 <translation id="5452923259299906094">eWallet va Pix bilan toʻlash</translation>
@@ -3326,6 +3331,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6917795328362592458">Hozirgina siz foydalangan parol oshkor qilingan. Hisoblaringizni himoyalash maqsadida Parollar menejeri saqlangan parollaringizni tekshirishni tavsiya etadi.</translation>
 <translation id="6917873303492266709">Varaqlar guruhini ulashish, ularga qoʻshilish hamda boshqalar bilan birga ishlash uchun sozlamalarni oching va “Chrome hisobiga kirishga ruxsat berish” bandini yoqing</translation>
 <translation id="6921197121276419421">Veb ilovalarni oʻrnatish mumkin</translation>
+<translation id="69238565902785824">Hisob ulanganidan keyin <ph name="BNPL_ISSUER_NAME" /> bilan tezroq toʻlash mumkin. Hisobni <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> sahifasi orqali uzish mumkin.</translation>
 <translation id="6924013822850225188">Hisob-kitob sahifasida karta imtiyozlari chiqishi yoki chiqmasligini tanlang (bank shartlari amal qiladi)</translation>
 <translation id="6925267999184670015">Shimoliy Amerika B+</translation>
 <translation id="6926216138694948720">Bodi-art</translation>
@@ -3391,6 +3397,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="701757816833614688">Vizual sanʼat va dizayn taʼlimi</translation>
 <translation id="702275896380648118">Bu sayt sizga qiziq narsalarni aniqlashi va boshqa saytlarga taklif qilishi mumkin. Bu sayt ham mos reklamalarni chiqarish uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="7023162328967545559">Administrator ogohlantirishi</translation>
+<translation id="7023765275461720661">Hisob ulanib, <ph name="BNPL_ISSUER_NAME" /> bilan toʻlasinmi?</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7030164307377592766">toʻlov usuli kiritilishi sozlamalarini oʻzgartirish</translation>
 <translation id="7031646650991750659">Google Play Marketdan oʻrnatilgan ilovalar</translation>
@@ -3612,6 +3619,7 @@ Batafsil axborot:
 <translation id="741204030948306876">Ha, roziman</translation>
 <translation id="7416351320495623771">Parollarni boshqarish…</translation>
 <translation id="7416898721136759658">Grantlar, stipendiyalar va moliyaviy yordam</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Dasturlash</translation>
 <translation id="7419091773564635591">Kompyuterlar va elektronika</translation>
 <translation id="7419106976560586862">Profil saqlanadigan jild</translation>
@@ -3658,6 +3666,7 @@ Batafsil axborot:
 <translation id="7485085230273446323">Biznes va sanoat</translation>
 <translation id="7485870689360869515">Ma‘lumotlar topilmadi.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> muvofiqligingizni tekshiradi (bu kredit balliga taʼsir qilmaydi). Tasdiqlansa, <ph name="BNPL_ISSUER_NAME" /> tanlash va xaridni yakunlash uchun toʻlov rejalarini taqdim etadi.</translation>
 <translation id="7489392576326061356">Shampun va konditsionerlar</translation>
 <translation id="7495528107193238112">Bu kontent bloklandi. Muammoni yechish uchun sayt egasiga murojaat qiling.</translation>
 <translation id="749865518782565832">Santexnik xizmatlari</translation>

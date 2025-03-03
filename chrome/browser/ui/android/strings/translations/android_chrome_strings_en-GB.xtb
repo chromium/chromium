@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Sent from <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Bookmark save flow folders opened at full height</translation>
 <translation id="1327257854815634930">Navigation history is opened</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, new or updated tab</translation>
 <translation id="1331212799747679585">Chrome can’t update. More options</translation>
 <translation id="1332501820983677155">Google Chrome feature shortcuts</translation>
 <translation id="1333491156693005331">Checked recently</translation>
@@ -203,7 +202,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1925021887439448749">Enter custom web address</translation>
 <translation id="1928618076168182477">Showing visual view</translation>
 <translation id="1928696683969751773">Updates</translation>
-<translation id="1933845786846280168">Selected Tab</translation>
 <translation id="1939549834451474504">Passwords will stop working soon because Google Play services isn't available. You can make a copy of your saved passwords before they stop working. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Save passwords</translation>
 <translation id="1944535645109964458">No passkeys available</translation>
@@ -430,7 +428,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2976550651269220761">Some of your Chrome data hasn't been saved in your Google Account yet.\nTry waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="2977350910003566746">Sorting by last opened</translation>
 <translation id="297771753501244313">Sort by last opened</translation>
-<translation id="2979025552038692506">Selected Incognito Tab</translation>
 <translation id="2979639724566107830">Open in new window</translation>
 <translation id="2981364137500752533">You can have up to 5 windows.</translation>
 <translation id="2983102365694924129">Based on your activity on a site. This setting is off.</translation>
@@ -621,7 +618,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3902562446536395999">Sorting from A to Z</translation>
 <translation id="3908308510347173149">Update <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sorting from Z to A</translation>
-<translation id="3918415141610210050">Tab</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> is on</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combine my data</translation>
@@ -644,7 +640,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4024768890073681126">Your browser is managed by your parent</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4042941173059740150">Continue to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Unnamed group</translation>
 <translation id="4044708993631234325">Bottom sheet</translation>
 <translation id="4045441967987592849">Re-open</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standard tab with new activity in shared tab groups}other{<ph name="TABS_COUNT_MANY" /> standard tabs with new activity in shared tab groups}}</translation>
@@ -1736,7 +1731,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8840953339110955557">This page may differ from the online version.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Hidden</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, tab</translation>
 <translation id="8854223127042600341">See your offline files</translation>
 <translation id="885480114717186641">You can request the desktop site for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Get descriptions</translation>

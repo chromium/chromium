@@ -459,6 +459,7 @@
 <translation id="1303101771013849280">HTML 格式的書籤檔案</translation>
 <translation id="1303671224831497365">找不到藍牙裝置</translation>
 <translation id="130491383855577612">已成功取代 Linux 應用程式和檔案</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{移除 1 項擴充功能及其儲存在這部裝置上的資料}other{移除 {ACCOUNT_EXTENSIONS_COUNT} 項擴充功能及其儲存在這部裝置上的資料}}</translation>
 <translation id="1306518237408758433">開啟「<ph name="BOOKMARK_TITLE" />」</translation>
 <translation id="1306606229401759371">變更設定</translation>
 <translation id="1307165550267142340">已建立 PIN 碼</translation>
@@ -1207,6 +1208,7 @@
 <translation id="1826192255355608658">同步處理 Chrome 瀏覽器的書籤、密碼和歷史記錄等資料</translation>
 <translation id="1826516787628120939">檢查中</translation>
 <translation id="1826657447823925402">已停用反向捲動功能</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" />色</translation>
 <translation id="1827504459960247692">無線基地台名稱</translation>
 <translation id="1828378091493947763">這部裝置不支援這個外掛程式</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{開啟所有網址(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟所有 ({COUNT} 個) 網址(&amp;O)}}</translation>
@@ -6701,6 +6703,7 @@
 <translation id="5749214722697335450">傳送使用狀況與診斷資料。如要協助改善您的 Android 使用體驗，可以選擇讓系統自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。如果將「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在您的 Google 帳戶中。<ph name="BEGIN_LINK1" />進一步瞭解指標<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">檢查網路共用完備性</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{這項擴充功能已儲存到你的 Google 帳戶，但系統可能會刪除擴充功能儲存在這部裝置上的所有資料}other{這些擴充功能已儲存到你的 Google 帳戶，但系統可能會刪除擴充功能儲存在這部裝置上的所有資料}}</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757187557809630523">播放下一首曲目</translation>
@@ -10203,7 +10206,6 @@
 <translation id="8258027225380843424">成功匯入！</translation>
 <translation id="8259048637628995340">連結 Android 手機即可享有流暢的使用體驗</translation>
 <translation id="8260177673299865994">強化下載防護功能</translation>
-<translation id="8260473380156923937">Chrome 應用程式即將淘汰。如需替代選項，請洽詢開發人員或 IT 服務聯絡人。</translation>
 <translation id="8260864402787962391">滑鼠</translation>
 <translation id="8261378640211443080">這個擴充功能未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中，可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="8261506727792406068">刪除</translation>

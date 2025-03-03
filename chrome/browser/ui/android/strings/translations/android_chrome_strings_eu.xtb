@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> gailutik bidalia</translation>
 <translation id="1320912611264252795">Laster-marka gordetzeko fluxua altuera osoan irekita dago</translation>
 <translation id="1327257854815634930">Nabigazio-historia irekita dago</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, fitxa berria edo eguneratua</translation>
 <translation id="1331212799747679585">Ezin da eguneratu Chrome. Aukera gehiago.</translation>
 <translation id="1332501820983677155">Google Chrome eginbideetarako lasterbideak</translation>
 <translation id="1333491156693005331">Duela gutxi egiaztatu da</translation>
@@ -203,7 +202,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1925021887439448749">Idatzi web-helbide pertsonalizatua</translation>
 <translation id="1928618076168182477">Ikuspegi bisuala ikusgai</translation>
 <translation id="1928696683969751773">Eguneratzeak</translation>
-<translation id="1933845786846280168">Hautatutako fitxa</translation>
 <translation id="1939549834451474504">Laster, pasahitzek funtzionatzeari utziko diote, Google Play Services erabilgarri ez dagoelako. Gordetako pasahitzek funtzionatzeari utzi baino lehen, haien kopia bat egin dezakezu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Gorde pasahitzak</translation>
 <translation id="1944535645109964458">Ez dago sarbide-gakorik erabilgarri</translation>
@@ -430,7 +428,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2976550651269220761">Chrome-ko datu batzuk ez dira gorde Google-ko kontuan oraindik.\nSaioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="2977350910003566746">Azken irekitze-dataren arabera ordenatzen</translation>
 <translation id="297771753501244313">Ordenatu: azken irekitzea</translation>
-<translation id="2979025552038692506">Hautatutako ezkutuko moduko fitxa</translation>
 <translation id="2979639724566107830">Ireki beste leiho batean</translation>
 <translation id="2981364137500752533">5 leiho ireki ditzakezu gehienez.</translation>
 <translation id="2983102365694924129">Webgune batean egin dituzun jardueretan oinarrituta. Desaktibatuta dago ezarpena.</translation>
@@ -621,7 +618,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3902562446536395999">Atik zetara ordenatzen</translation>
 <translation id="3908308510347173149">Eguneratu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Zetatik Ara ordenatzen</translation>
-<translation id="3918415141610210050">Fitxa</translation>
 <translation id="3924911262913579434">"<ph name="SAFE_BROWSING_MODE" />" aktibatuta dago</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Bateratu nire datuak</translation>
@@ -644,7 +640,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4024768890073681126">Zure gurasoak kudeatzen du arakatzailea</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Sartu <ph name="SITE_ETLD_PLUS_ONE" /> webgunean <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
-<translation id="404352903042073578">Izenik gabeko taldea</translation>
 <translation id="4044708993631234325">Pantailaren behealdean ainguratutako orria</translation>
 <translation id="4045441967987592849">Ireki berriro</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Jarduera berriak dituen fitxa estandar <ph name="TABS_COUNT_ONE" /> dago fitxa talde partekatuetan}other{Jarduera berriak dituzten <ph name="TABS_COUNT_MANY" /> fitxa estandar daude fitxa talde partekatuetan}}</translation>
@@ -1736,7 +1731,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8840953339110955557">Baliteke orri hau sareko bertsioarekin bat ez etortzea.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Ezkutatuta</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="8854223127042600341">Ikusi konexiorik gabeko fitxategiak</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" /> webgunearen ordenagailuetarako bertsioa eska dezakezu</translation>
 <translation id="8856607253650333758">Lortu deskribapenak</translation>

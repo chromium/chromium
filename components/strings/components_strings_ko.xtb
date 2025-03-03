@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">페이지 나중에 로드하기</translation>
 <translation id="1010225406377140704">발신자에게 새 링크를 요청하세요.</translation>
 <translation id="1011206368273183593">파일 준비 중</translation>
+<translation id="1012264210825687872">주문을 검토한 후 로그인하거나 <ph name="BNPL_ISSUER_NAME" /> 계정을 만들어야 합니다. 이 계정이 Google Pay에 자동으로 연결됩니다.</translation>
 <translation id="1014509239502131234">결과 실행취소</translation>
 <translation id="1015730422737071372">추가 세부정보 제공</translation>
 <translation id="1019413721762100891">꺼짐</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">경제 뉴스</translation>
 <translation id="214556005048008348">결제 취소</translation>
 <translation id="2147117373852943630">악기</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" />에서 나에 관해 저장된 정보를 사용하려고 합니다</translation>
 <translation id="2148613324460538318">카드 추가</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2149968176347646218">연결이 안전하지 않음</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">감지(기본값)</translation>
 <translation id="2188375229972301266">하단 다공 펀칭</translation>
 <translation id="2194856509914051091">고려사항</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" />에 관해 자세히 알아보기</translation>
 <translation id="2200678913752027654">싫어요 버튼, 양식을 열어 이 추천이 마음에 들지 않는 이유에 관한 자세한 의견을 제출하려면 Enter 키를 누르세요.</translation>
 <translation id="2202627062836089804">카드 뒷면</translation>
 <translation id="2204482073374652408">업데이트 완료됨</translation>
@@ -2318,6 +2321,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome에서 기기의 <ph name="PERMISSION" />에 액세스해야 합니다.</translation>
 <translation id="510644072453496781">골판지(끝)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> 가상 카드 입력됨</translation>
 <translation id="5108881358339761672">안전하지 않은 사이트</translation>
 <translation id="5109892411553231226">결제 수단 관리</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@
             <ph name="LIST_ITEM" />양식에 입력된 정보
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">역순으로 인쇄면이 위를 향하게</translation>
+<translation id="5445340838622821110">기간별 결제를 할 때 일회성 가상 카드 번호가 자동 입력됩니다. 이 번호는 이 구매에만 사용됩니다. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" />에서 나에 관해 저장한 정보를 사용하도록 허용</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> 페이지를 찾을 수 없음</translation>
 <translation id="5452923259299906094">전자 지갑 및 Pix로 결제</translation>
@@ -3332,6 +3337,7 @@
 <translation id="6917795328362592458">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정 보호를 위해 비밀번호 관리자에서 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="6917873303492266709">탭 그룹을 공유하고, 탭 그룹에 참여하며, 탭 그룹에서 공동작업하려면 설정을 열고 Chrome 로그인 허용을 사용 설정하세요.</translation>
 <translation id="6921197121276419421">웹 앱 설치 허용됨</translation>
+<translation id="69238565902785824">계정을 연결한 상태로 유지하면 <ph name="BNPL_ISSUER_NAME" /> 서비스를 통해 더 빠르게 결제할 수 있으며, <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />에서 연결을 해제할 수도 있습니다.</translation>
 <translation id="6924013822850225188">결제 시 카드 혜택을 표시할지 선택합니다(은행 약관 적용).</translation>
 <translation id="6925267999184670015">북미 B+</translation>
 <translation id="6926216138694948720">바디아트</translation>
@@ -3397,6 +3403,7 @@
 <translation id="701757816833614688">시각 예술 및 디자인 교육</translation>
 <translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
 <translation id="7023162328967545559">관리자 경고</translation>
+<translation id="7023765275461720661">계정을 연결하고 <ph name="BNPL_ISSUER_NAME" /> 시스템을 통해 결제하시겠어요?</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7030164307377592766">결제 수단 입력 설정을 수정합니다.</translation>
 <translation id="7031646650991750659">내가 설치한 Google Play 앱</translation>
@@ -3618,6 +3625,7 @@
 <translation id="741204030948306876">사용</translation>
 <translation id="7416351320495623771">비밀번호 관리...</translation>
 <translation id="7416898721136759658">보조금, 장학금, 재정 지원</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">프로그래밍</translation>
 <translation id="7419091773564635591">컴퓨터 및 가전</translation>
 <translation id="7419106976560586862">프로필 경로</translation>
@@ -3664,6 +3672,7 @@
 <translation id="7485085230273446323">비즈니스 및 산업</translation>
 <translation id="7485870689360869515">데이터 없음</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" />에서 자격 요건을 확인합니다(신용 점수에는 영향을 미치지 않음). 승인되면 <ph name="BNPL_ISSUER_NAME" />에서 구매를 완료하기 위해 선택할 수 있는 여러 요금제를 제공합니다.</translation>
 <translation id="7489392576326061356">샴푸 및 린스</translation>
 <translation id="7495528107193238112">이 콘텐츠는 차단되어 있습니다. 문제를 해결하려면 사이트 소유자에게 문의하세요.</translation>
 <translation id="749865518782565832">배관공사</translation>

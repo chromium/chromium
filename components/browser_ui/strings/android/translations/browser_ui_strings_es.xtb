@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Sugerencias de búsqueda</translation>
 <translation id="3658847490588580244">Hoja inferior del navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio incluido en el grupo de sitios de <ph name="RWS_OWNER" /> que puede ver tu actividad en el grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios incluidos en el grupo de sitios de <ph name="RWS_OWNER" /> que puede ver tu actividad en el grupo}}</translation>
+<translation id="3676777756440746804">Los sitios no pueden pedirte permiso para usar información que hayan guardado sobre ti</translation>
 <translation id="3697164069658504920">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos USB. Si está desactivada, los sitios no pueden usar dispositivos USB.</translation>
 <translation id="3707034683772193706">Los sitios que visitas pueden guardar una pequeña cantidad de información con Chrome, principalmente para verificar que no eres un bot</translation>
 <translation id="3709818294139939629">Acceso de sitio a archivo quitado</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">En tu teléfono, abre Configuración</translation>
 <translation id="3933121352599513978">Ocultar solicitudes no deseadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que los sitios reproduzcan contenido protegido (recomendado)</translation>
+<translation id="3965467402665811906">Los sitios pueden solicitar permiso para usar la información que hayan guardado sobre ti</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3987993985790029246">Copiar enlace</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> puede usar tu información mientras navegas</translation>
 <translation id="3992684624889376114">Acerca de esta página</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4046123991198612571">Pista siguiente</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">No se pueden restablecer los ajustes gestionados</translation>
 <translation id="4887024562049524730">Preguntar antes de permitir que los sitios usen tu dispositivo y tus datos de realidad virtual (recomendado)</translation>
 <translation id="4936863036653376783">Encontrarás tus grupos en la sección de grupos de pestañas de todos tus dispositivos</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> no puede usar tu información en</translation>
 <translation id="4953688446973710931">Cuando esta opción está activada, los sitios pueden solicitar permiso para descargar varios archivos automáticamente. Si está desactivada, los sitios no pueden descargar varios archivos automáticamente.</translation>
 <translation id="4962975101802056554">Revocar todos los permisos de este dispositivo</translation>
 <translation id="497421865427891073">Avanzar</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">No permitir que los sitios se conecten a dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8541410041357371550">Este sitio consulta tus temas de anuncios de Chrome para mostrarte anuncios más relevantes</translation>
+<translation id="854876774113449365">Los sitios que visites pueden insertar contenido de otros sitios, como imágenes, anuncios y texto. Estos otros sitios pueden solicitar permiso para usar información que hayan guardado sobre ti mientras navegas por el sitio. <ph name="BEGIN_LINK" />Más información sobre el contenido insertado<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Cómo mostrar solicitudes</translation>
 <translation id="8558480467877843976">Ahora puedes usar Chrome cada vez que navegues o toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
+<translation id="8593422116412089302">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar la información que hayan guardado sobre ti. Si está desactivada, los sitios no pueden solicitar permiso para usar la información que hayan guardado sobre ti.</translation>
 <translation id="8609465669617005112">Subir</translation>
 <translation id="8617611086246832542">Cuando esta opción está activada, se muestra la vista para ordenador de los sitios web. Si está desactivada, se muestra la vista para móvil de los sitios web.</translation>
 <translation id="8670078035093027626">Hoja inferior del navegador predeterminado abierta a altura completa</translation>

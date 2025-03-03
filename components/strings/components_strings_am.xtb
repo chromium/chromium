@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">በኋላ ላይ ገፅ ጫን</translation>
 <translation id="1010225406377140704">አዲስ አገናኝ ለመጠየቅ ላኪውን ያነጋግሩ</translation>
 <translation id="1011206368273183593">ፋይሎችን በማዘጋጀት ላይ</translation>
+<translation id="1012264210825687872">ትዕዛዝዎን ከገመገሙ በኋላ በመለያ መግባት ወይም የ<ph name="BNPL_ISSUER_NAME" /> መለያ መፍጠር አለብዎት። ይህ መለያ ከGoogle Pay ጋር በራስ-ሰር ይገናኛል።</translation>
 <translation id="1014509239502131234">የመቀልበስ ውጤትመ</translation>
 <translation id="1015730422737071372">ተጨማሪ ዝርዝሮችን ያቅርቡ</translation>
 <translation id="1019413721762100891">ጠፍቷል</translation>
@@ -691,6 +692,7 @@
 <translation id="2187317261103489799">አግኝ (ነባሪ)</translation>
 <translation id="2188375229972301266">በርካታ ብስ ግርጌ</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
+<translation id="2198071643181968308">ስለ <ph name="BNPL_ISSUER_NAME" /> የበለጠ ይወቁ</translation>
 <translation id="2200678913752027654">ደባሪ ነው አዝራር፣ ይህን ጥቆማ ለምን እንዳልወደዱት በዝርዝር የተቀመጠ ግብረመልስ ለማስገባት የሚሆን ቅጽ ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="2202627062836089804">የካርድዎ በስተጀርባ</translation>
 <translation id="2204482073374652408">ማዘመን ጨርሷል!</translation>
@@ -2317,6 +2319,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome የመሣሪያዎን የ<ph name="PERMISSION" /> መዳረሻ ያስፈልገዋል</translation>
 <translation id="510644072453496781">Cardboard (ማብቂያ)</translation>
+<translation id="5106648964679263509">ለ<ph name="BNPL_ISSUER_NAME" /> ምናባዊ ካርድ ተሞልቷል</translation>
 <translation id="5108881358339761672">የጣቢያ ደህንነት የተጠበቀ አይደለም</translation>
 <translation id="5109892411553231226">የመክፈያ ዘዴዎችን ያቀናብሩ</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2512,6 +2515,7 @@
             <ph name="LIST_ITEM" />በቅጾች ውስጥ የገባው መረጃ
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ተቃራኒ ቅደም-ተከተል ፊቱ ወደ ላይ</translation>
+<translation id="5445340838622821110">በጊዜ ሂደት ሲከፍሉ የአንድ ጊዜ ምናባዊ ካርድ ቁጥር ይሞላል። ይህ ቁጥር ለግዢ ብቻ ነው። <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">ስለ እርስዎ ያስቀመጡትን መረጃ እንዲጠቀም <ph name="SITE" /> ለሚለው ይፍቀዱ</translation>
 <translation id="5452270690849572955">ይህ <ph name="HOST_NAME" /> ገፅ ሊገኝ አይችልም</translation>
 <translation id="5452923259299906094">በኢ-ኪስ ቦርሳ እና Pix ይክፈሉ</translation>
@@ -3331,6 +3335,7 @@
 <translation id="6917795328362592458">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ፣ የይለፍ ቃል አስተዳዳሪ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>
 <translation id="6917873303492266709">በትር ቡድኖች ውስጥ ለማጋራት፣ ለመቀላቀል እና ለመተባበር ቅንብሮችን ይክፈቱ እና የChrome በመለያ መግባትን ፍቀድ የሚለውን ያብሩ</translation>
 <translation id="6921197121276419421">የድር መተግበሪያዎችን መጫን ተፈቅዷል</translation>
+<translation id="69238565902785824">መለያዎን እንደተገናኘ ማቆየት በ<ph name="BNPL_ISSUER_NAME" /> ይበልጥ በፍጥነት እንዲከፍሉ ያግዝዎታል፣ ነገር ግን ወደ <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> በመሄድ ግንኙነቱን ማቋረጥ ይችላሉ</translation>
 <translation id="6924013822850225188">በክፍያ ማጠናቀቂያ ላይ የካርድ ጥቅማጥቅሞችን ያዩ እንደሆነ ይምረጡ (የባንክ ደንቦች ተፈጻሚ ናቸው)</translation>
 <translation id="6925267999184670015">የሰሜን አሜሪካ B+</translation>
 <translation id="6926216138694948720">የሰውነት ሥነ ጥበብ</translation>
@@ -3396,6 +3401,7 @@
 <translation id="701757816833614688">የሚታይ ሥነ ጥበብ እና ዲዛይን ትምህርት</translation>
 <translation id="702275896380648118">ይህ ጣቢያ እርስዎ የሚወዷቸውን ነገሮች ይወስናል እና ከዚያም ማስታወቂያዎችን ለሌሎች ጣቢያዎች ይጠቁማል። እንዲሁም ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል።</translation>
 <translation id="7023162328967545559">የአስተዳዳሪ ማስጠንቀቂያ</translation>
+<translation id="7023765275461720661">መለያ ይገናኝ እና በ<ph name="BNPL_ISSUER_NAME" /> ይከፈል?</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7030164307377592766">የመክፈያ ዘዴዎችን ለመሙላት ቅንብሮችን ያስተካክሉ።</translation>
 <translation id="7031646650991750659">የትኛዎቹን የGoogle Play መተግበሪያዎች እንደጫኑ</translation>
@@ -3618,6 +3624,7 @@
 <translation id="741204030948306876">አዎ፣ ገብቼያለሁ</translation>
 <translation id="7416351320495623771">የይለፍ ቃላትን ያስተዳድሩ...</translation>
 <translation id="7416898721136759658">ድጎማዎች፣ ስኮላርሺፖች እና የገንዘብ ድጋፍ</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">ፕሮግራም ማድረግ</translation>
 <translation id="7419091773564635591">ኮምፒውተሮች እና ኤሌክትሮኒክስ</translation>
 <translation id="7419106976560586862">የመገለጫ ዱካ</translation>
@@ -3664,6 +3671,7 @@
 <translation id="7485085230273446323">ንግድ እና የኢንዱስትሪ</translation>
 <translation id="7485870689360869515">ምንም ውሂብ አልተገኘም።</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> የእርስዎን ብቁነት ይፈትሻል (ይህ በእርስዎ የክሬዲት ውጤት ላይ ተጽዕኖ አያሳድርም)። ከጸደቀ <ph name="BNPL_ISSUER_NAME" /> እንዲመርጡ እና ግዢዎን እንዲያጠናቅቁ የክፍያ ዕቅዶችን ያቀርብልዎታል።</translation>
 <translation id="7489392576326061356">ሻምፖዎች እና ኮንዲሽነሮች</translation>
 <translation id="7495528107193238112">ይህ ይዘት ታግዷል። ችግሩን ለማስተካከል የጣቢያውን ባለቤት ያነጋግሩ።</translation>
 <translation id="749865518782565832">የቧንቧ ሥራ</translation>

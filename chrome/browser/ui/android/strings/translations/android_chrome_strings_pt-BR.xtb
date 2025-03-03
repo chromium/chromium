@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" />: enviado de <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Pastas do fluxo para adicionar aos favoritos abertas no tamanho máximo</translation>
 <translation id="1327257854815634930">O histórico de navegação está aberto</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, guia nova ou atualizada</translation>
 <translation id="1331212799747679585">Não é possível atualizar o Chrome. Mais opções</translation>
 <translation id="1332501820983677155">Atalhos de recursos do Google Chrome</translation>
 <translation id="1333491156693005331">Verificado recentemente</translation>
@@ -203,7 +202,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1925021887439448749">Digite o endereço da Web personalizado</translation>
 <translation id="1928618076168182477">Mostrando a exibição visual</translation>
 <translation id="1928696683969751773">Atualizações</translation>
-<translation id="1933845786846280168">Guia selecionada</translation>
 <translation id="1939549834451474504">As senhas deixarão de funcionar em breve porque o Google Play Services não está disponível. Você pode fazer uma cópia das suas senhas salvas antes que elas deixem de funcionar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Salvar senhas</translation>
 <translation id="1944535645109964458">Nenhuma chave de acesso disponível</translation>
@@ -430,7 +428,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2976550651269220761">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google.\nEspere alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="2977350910003566746">Ordenar por último aberto</translation>
 <translation id="297771753501244313">Ordenar por último aberto</translation>
-<translation id="2979025552038692506">Guia anônima selecionada</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
 <translation id="2981364137500752533">Você pode ter até cinco janelas.</translation>
 <translation id="2983102365694924129">Com base na sua atividade em um site. Esta configuração está desativada.</translation>
@@ -621,7 +618,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3902562446536395999">Ordenar de A a Z</translation>
 <translation id="3908308510347173149">Atualizar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Ordenar de Z a A</translation>
-<translation id="3918415141610210050">Tab</translation>
 <translation id="3924911262913579434">O modo <ph name="SAFE_BROWSING_MODE" /> está ativado</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Integrar meus dados</translation>
@@ -644,7 +640,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4024768890073681126">O navegador é gerenciado pelo seu familiar responsável</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Acesse <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Grupo sem nome</translation>
 <translation id="4044708993631234325">Página inferior</translation>
 <translation id="4045441967987592849">Reabrir</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> guia padrão com nova atividade em grupos de guias compartilhados}one{<ph name="TABS_COUNT_MANY" /> guia padrão com nova atividade em grupos de guias compartilhados}other{<ph name="TABS_COUNT_MANY" /> guias padrão com nova atividade em grupos de guias compartilhados}}</translation>
@@ -1737,7 +1732,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8840953339110955557">Esta página pode ser diferente da versão on-line.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Oculto</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, guia</translation>
 <translation id="8854223127042600341">Ver seus arquivos off-line</translation>
 <translation id="885480114717186641">Você pode solicitar o site para computador para <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Ver descrições</translation>

@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Muat halaman nanti</translation>
 <translation id="1010225406377140704">Hubungi pengirim untuk meminta link baru</translation>
 <translation id="1011206368273183593">Menyiapkan file</translation>
+<translation id="1012264210825687872">Setelah meninjau pesanan, Anda harus login atau membuat akun <ph name="BNPL_ISSUER_NAME" />. Akun ini akan otomatis ditautkan ke Google Pay.</translation>
 <translation id="1014509239502131234">Urungkan hasil</translation>
 <translation id="1015730422737071372">Berikan detail tambahan</translation>
 <translation id="1019413721762100891">Nonaktif</translation>
@@ -661,6 +662,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2145193671493396738">Berita Ekonomi</translation>
 <translation id="214556005048008348">Batalkan pembayaran</translation>
 <translation id="2147117373852943630">Alat Musik</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> ingin menggunakan informasi tentang Anda yang telah disimpan situs</translation>
 <translation id="2148613324460538318">Tambahkan Kartu</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2149968176347646218">Koneksi tidak aman</translation>
@@ -692,6 +694,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2187317261103489799">Deteksi (default)</translation>
 <translation id="2188375229972301266">Beberapa lubang di bawah</translation>
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
+<translation id="2198071643181968308">Pelajari lebih lanjut <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Tombol tidak suka, tekan Enter untuk membuka formulir guna mengirim masukan mendetail tentang alasan Anda tidak menyukai saran ini</translation>
 <translation id="2202627062836089804">bagian belakang kartu Anda</translation>
 <translation id="2204482073374652408">Update selesai!</translation>
@@ -2318,6 +2321,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome memerlukan akses ke <ph name="PERMISSION" /> perangkat Anda</translation>
 <translation id="510644072453496781">Kertas kardus (Akhir)</translation>
+<translation id="5106648964679263509">Kartu virtual untuk <ph name="BNPL_ISSUER_NAME" /> terisi</translation>
 <translation id="5108881358339761672">Situs tidak aman</translation>
 <translation id="5109892411553231226">Kelola Metode Pembayaran</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
             <ph name="LIST_ITEM" />Informasi yang dimasukkan dalam formulir
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Urutan yang berkebalikan menghadap ke atas</translation>
+<translation id="5445340838622821110">Saat Anda melakukan pembayaran dengan cicilan, nomor kartu virtual satu kali akan terisi. Nomor ini hanya dapat digunakan untuk pembelian ini. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Izinkan <ph name="SITE" /> untuk menggunakan info tentang Anda yang telah disimpan situs</translation>
 <translation id="5452270690849572955">Halaman <ph name="HOST_NAME" /> ini tidak dapat ditemukan</translation>
 <translation id="5452923259299906094">Bayar dengan eWallet dan Pix</translation>
@@ -3332,6 +3337,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6917795328362592458">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Untuk mengamankan akun Anda, Pengelola Sandi merekomendasikan untuk memeriksa sandi tersimpan Anda.</translation>
 <translation id="6917873303492266709">Untuk berbagi, bergabung, dan berkolaborasi dalam grup tab, buka setelan dan aktifkan Izinkan login Chrome</translation>
 <translation id="6921197121276419421">Penginstalan aplikasi web diizinkan</translation>
+<translation id="69238565902785824">Menautkan akun membantu Anda membayar lebih cepat dengan <ph name="BNPL_ISSUER_NAME" />, tetapi Anda dapat membatalkan tautan ini dengan membuka <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Pilih apakah Anda akan melihat manfaat kartu saat checkout (persyaratan bank berlaku)</translation>
 <translation id="6925267999184670015">Amerika Utara B+</translation>
 <translation id="6926216138694948720">Seni Rajah dan Tindik</translation>
@@ -3397,6 +3403,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="701757816833614688">Pendidikan Seni &amp; Desain Visual</translation>
 <translation id="702275896380648118">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain. Situs ini juga mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>
 <translation id="7023162328967545559">Peringatan admin</translation>
+<translation id="7023765275461720661">Tautkan akun dan bayar dengan <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7030164307377592766">mengubah setelan pengisian metode pembayaran</translation>
 <translation id="7031646650991750659">Aplikasi Google Play yang telah diinstal</translation>
@@ -3617,6 +3624,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7416351320495623771">Kelola Sandi...</translation>
 <translation id="7416898721136759658">Hibah, Beasiswa &amp; Bantuan Keuangan</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Pemrograman</translation>
 <translation id="7419091773564635591">Komputer &amp; Elektronik</translation>
 <translation id="7419106976560586862">Jalur Profil</translation>
@@ -3663,6 +3671,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7485085230273446323">Bisnis &amp; Industri</translation>
 <translation id="7485870689360869515">Tidak ada data yang ditemukan.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> akan memeriksa kelayakan Anda (tindakan ini tidak akan memengaruhi skor kredit Anda). Jika disetujui, <ph name="BNPL_ISSUER_NAME" /> akan menyediakan paket pembayaran yang dapat Anda pilih sehingga pembelian dapat diselesaikan.</translation>
 <translation id="7489392576326061356">Sampo &amp; Kondisioner</translation>
 <translation id="7495528107193238112">Konten ini diblokir. Hubungi pemilik situs untuk memperbaiki masalah.</translation>
 <translation id="749865518782565832">Pekerjaan Saluran Air</translation>

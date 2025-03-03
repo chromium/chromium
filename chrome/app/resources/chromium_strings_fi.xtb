@@ -318,6 +318,7 @@
 <translation id="5579324208890605088">Käynnistysvirhe: Suorita asennusohjelma tavallisena käyttäjänä, ei järjestelmänvalvojana.</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5605834417512968703">Valitse, mitä haluat hakea kuvahaulla, tai poistu kuvahausta painamalla Escape</translation>
+<translation id="5618818588972826921">Valitse teksti tai kuva, jota haluat hakea kuvahaulla, tai poistu kuvahausta painamalla Escape</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-päivitys on saatavilla}=1{Chromium-päivitys on saatavilla}other{Chromium-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
 <translation id="5643865575100044307">Poista laitteen sivustodata aina, kun suljet Chromiumin</translation>
 <translation id="5653831366781983928">Käynnistä Chromium uudelleen nyt</translation>
@@ -593,5 +594,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="983803489796659991">Asennus epäonnistui, koska päivityspalvelimella ei ole tiivistedataa sovelluksesta.</translation>
 <translation id="985498048907240953">Käytä Chromiumia ilman tiliä</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">Valitse teksti tai kuva, jota haluat hakea kuvahaulla</translation>
 <translation id="992780518932311116">Anna Chromiumille pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />, jotta voit käyttää sijaintia</translation>
 </translationbundle>

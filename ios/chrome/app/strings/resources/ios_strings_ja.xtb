@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">ホーム画面を長押し</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="1836891464494477513">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）にブックマークを保存しました}}</translation>
+<translation id="1838089197478136166">ウォレットで開きますか？</translation>
 <translation id="183878838231635348">このカードには、安全チェックで自動検出されたプライバシーやセキュリティの問題が表示されます。</translation>
 <translation id="1845230888742614096">グループを保持</translation>
 <translation id="1854463785401910334">開いているタブを検索</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">iPad が最近復元されたため、デフォルトのブラウザが変更されている可能性があります。</translation>
 <translation id="1901366738768303267">この機能の使用方法</translation>
 <translation id="1901600657316773839">選択を保持</translation>
+<translation id="1902277226107477495">住所の検出をオフにしました。設定で再びオンにできます。</translation>
 <translation id="1904580727789512086">アクセスした URL は Google アカウントに保存されます</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
 <translation id="1923342640370224680">過去 1 時間</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">ウェブページを読み込みました</translation>
 <translation id="2236949375853147973">マイ アクティビティ</translation>
 <translation id="2240256190924001613">設定プロファイルを使用できます</translation>
+<translation id="2244080985779413662">このウェブサイトがファイルをダウンロードしてウォレットで開く許可を求めています。</translation>
 <translation id="2245007488813216650">翻訳しています…</translation>
 <translation id="2249119578464404734">画面上部の検索アイコンをタップする</translation>
 <translation id="2251686759395008410">メニュー → 履歴</translation>
@@ -1361,6 +1364,7 @@
 <translation id="6761393919622941301">音声</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
 <translation id="6790502149545262384">まもなく、新しいタブを開くと、<ph name="CHANNEL_NAME" /> のストーリーが表示されるようになります。</translation>
+<translation id="6794476726485507147">このページに再度アクセスするリマインダーの通知を受け取る日時を選択してください</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
 <translation id="6825078212112407882">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）に　{count}　件のブックマークを保存しました}}</translation>
 <translation id="6830728435402077660">保護されていません</translation>
@@ -1488,6 +1492,7 @@
 <translation id="7425053386765766120">お支払い方法を追加…</translation>
 <translation id="7425346204213733349">今後、ブックマーク、履歴、パスワード、その他の設定に行った変更は Google アカウントに同期されません。ただし、既存のデータは Google アカウントに保存されたままとなります。</translation>
 <translation id="742664698522525515">グループを保持しますか？</translation>
+<translation id="7431851541687113774">住所の検出をオフにする</translation>
 <translation id="7431991332293347422">検索などのパーソナライズに閲覧履歴がどのように使われるかを管理します</translation>
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
 <translation id="7438481509621345350">新しいタブを開くと、<ph name="CHANNEL_NAME" /> のストーリーが表示されるようになります。</translation>
@@ -1641,6 +1646,7 @@
 <translation id="8023170444051056234">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="8023878949384262191">セクションを展開します。</translation>
 <translation id="8027581147000338959">新しいウインドウで開く</translation>
+<translation id="8029092694585014252">リマインダーを設定</translation>
 <translation id="8032569120109842252">フォロー中</translation>
 <translation id="8035133914807600019">新しいフォルダ...</translation>
 <translation id="8035412398498507358">フォト</translation>

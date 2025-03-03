@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Ne ponudi prevajanja teh spletnih mest</translation>
 <translation id="1145536944570833626">Izbris obstoječih podatkov.</translation>
 <translation id="1150263420752757504">Aplikacija <ph name="APP_NAME" /> se bo odprla v Chromu. Če nadaljujete, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">V Googlovem upravitelju gesel nimate shranjenih gesel.</translation>
 <translation id="115483310321669804">Uporaba gesla <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174479719160874822">Chrome bo zahteval spletno mesto za mobilne naprave, ko je zaslon ozek</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – poslano iz naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Mape v postopku shranjevanja zaznamka, odprte pri polni višini</translation>
 <translation id="1327257854815634930">Zgodovina krmarjenja je odprta</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, nov ali posodobljen zavihek</translation>
 <translation id="1331212799747679585">Posodobitev Chroma ni mogoča. Več možnosti.</translation>
 <translation id="1332501820983677155">Bližnjice za funkcije Google Chroma</translation>
 <translation id="1333491156693005331">Nedavno preverjeno</translation>
@@ -203,7 +203,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1925021887439448749">Vnesite spletni naslov po meri</translation>
 <translation id="1928618076168182477">Prikazan je vizualni pogled</translation>
 <translation id="1928696683969751773">Posodobitve</translation>
-<translation id="1933845786846280168">Izbrani zavihek</translation>
 <translation id="1939549834451474504">Gesla bodo kmalu nehala delovati, ker Storitve Google Play niso na voljo. Shranjena gesla lahko kopirate, preden nehajo delovati. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Shranjevanje gesel</translation>
 <translation id="1944535645109964458">Ključi za dostop niso na voljo</translation>
@@ -430,7 +429,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2976550651269220761">Nekateri podatki v Chromu še niso shranjeni v računu Google.\nPoskusite počakati nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="2977350910003566746">Razvrščanje po nazadnje odprtih</translation>
 <translation id="297771753501244313">Razvrsti po naz. odprt.</translation>
-<translation id="2979025552038692506">Izbrani anonimni zavihek</translation>
 <translation id="2979639724566107830">Odpri v novem oknu</translation>
 <translation id="2981364137500752533">Imate lahko največ pet oken.</translation>
 <translation id="2983102365694924129">Na podlagi vaše dejavnosti na spletnem mestu. Ta nastavitev je izklopljena.</translation>
@@ -621,7 +619,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3902562446536395999">Razvrščanje od A do Ž</translation>
 <translation id="3908308510347173149">Posodobi <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Razvrščanje od Ž do A</translation>
-<translation id="3918415141610210050">Zavihek</translation>
 <translation id="3924911262913579434">Način »<ph name="SAFE_BROWSING_MODE" />« je vklopljen</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Združevanje podatkov</translation>
@@ -644,7 +641,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4024768890073681126">Vaš brskalnik upravlja starš</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}two{# h}few{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Naprej na <ph name="SITE_ETLD_PLUS_ONE" /> z računom pri ponudniku <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Neimenovana skupina</translation>
 <translation id="4044708993631234325">List na dnu zaslona</translation>
 <translation id="4045441967987592849">Znova odpri</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardni zavihek z novo dejavnostjo v deljenih skupinah zavihkov}one{<ph name="TABS_COUNT_MANY" /> standardni zavihek z novo dejavnostjo v deljenih skupinah zavihkov}two{<ph name="TABS_COUNT_MANY" /> standardna zavihka z novo dejavnostjo v deljenih skupinah zavihkov}few{<ph name="TABS_COUNT_MANY" /> standardni zavihki z novo dejavnostjo v deljenih skupinah zavihkov}other{<ph name="TABS_COUNT_MANY" /> standardnih zavihkov z novo dejavnostjo v deljenih skupinah zavihkov}}</translation>
@@ -1371,10 +1367,12 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7224097611345298931">Vsa gesla, shranjena samo v tej napravi za Chrome in <ph name="CHROME_CHANNEL" />, so bila združena. Samodejno lahko izpolnite vsa shranjena gesla v obeh aplikacijah.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 prenos na čakanju}one{# prenos na čakanju}two{# prenosa na čakanju}few{# prenosi na čakanju}other{# prenosov na čakanju}}</translation>
 <translation id="7230064152164845085">Preklopi na anonimni način</translation>
+<translation id="7237724030342645845">Googlov upravitelj gesel je nehal delovati</translation>
 <translation id="72415438529550637">Predlog gesla je zaprt.</translation>
 <translation id="7260367682327802201">Naprava Android morda vsebuje podobno nastavitev. Če je merjenje oglasov vklopljeno v Chromu in napravi Android, lahko podjetje meri uspešnost oglasa na spletnih mestih, ki jih obiščete, in v aplikacijah, ki jih uporabljate.</translation>
 <translation id="727288900855680735">Želite, da se <ph name="ONE_TIME_CODE" /> pošlje <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokirano spletno mesto</translation>
+<translation id="7276868533747677875">Če ste gesla že izvozili, v napravi poiščite datoteko CSV in jih uvozite v želenega upravitelja gesel.</translation>
 <translation id="7289049772085228972">Uporabljate Chromovo najmočnejšo varnost</translation>
 <translation id="7289303553784750393">Če ste povezani v splet, vendar se težava ponavlja, lahko na <ph name="SITE_ETLD_PLUS_ONE" /> poskusite nadaljevati na druge načine.</translation>
 <translation id="7290209999329137901">Preimenovanje ni na voljo</translation>
@@ -1549,6 +1547,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8027395186860110042">Gesla bodo kmalu morda nehala delovati</translation>
 <translation id="8027863900915310177">Izberite lokacijo za prenos</translation>
 <translation id="8030852056903932865">Odobri</translation>
+<translation id="8031805944372049238">Če želite začeti shranjevati in uporabljati gesla z Googlovim upraviteljem gesel, posodobite storitve Google Play.</translation>
 <translation id="8032569120109842252">Spremljate</translation>
 <translation id="8037750541064988519">Še <ph name="DAYS" /> dni</translation>
 <translation id="8037801708772278989">Pravkar preverjeno</translation>
@@ -1736,7 +1735,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8840953339110955557">Ta stran se morda razlikuje od spletne različice.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skrito</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, zavihek</translation>
 <translation id="8854223127042600341">Ogled datotek, ki so na voljo brez povezave</translation>
 <translation id="885480114717186641">Za <ph name="HOST_NAME" /> lahko zahtevate namizno spletno mesto.</translation>
 <translation id="8856607253650333758">Pridobivanje opisov</translation>

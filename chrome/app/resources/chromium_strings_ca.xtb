@@ -318,6 +318,7 @@
 <translation id="5579324208890605088">Error d'arrencada: executa l'instal·lador com a usuari normal, no com a administrador.</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5605834417512968703">Selecciona el que vulguis per cercar-ho amb la cerca d'imatges o prem Esc per sortir de la cerca d'imatges</translation>
+<translation id="5618818588972826921">Selecciona qualsevol text o imatge per cercar-lo amb la cerca d'imatges o prem Esc per sortir de la cerca d'imatges</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hi ha una actualització de Chromium disponible}=1{Hi ha una actualització de Chromium disponible}other{Fa # dies que hi ha una actualització de Chromium disponible}}</translation>
 <translation id="5643865575100044307">Suprimeix sempre les dades dels llocs web del dispositiu quan tanquis Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium ara</translation>
@@ -593,5 +594,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de dades de valor resum per a l'aplicació.</translation>
 <translation id="985498048907240953">Fes servir Chromium sense cap compte</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
+<translation id="989970834842471429">Selecciona qualsevol text o imatge per cercar-lo amb la cerca d'imatges</translation>
 <translation id="992780518932311116">Per poder utilitzar la ubicació, dona accés a Chromium des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>
 </translationbundle>

@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Bosh ekranni bosib turing</translation>
 <translation id="1832848789136765277">Maʼlumotlaringizni doim sinxronlash uchun shaxsingizni tasdiqlang</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bukmark Google hisobingizga saqlandi, {email}}other{Bukmarklar Google hisobingizga saqlandi, {email}}}</translation>
+<translation id="1838089197478136166">Walletda ochilsinmi?</translation>
 <translation id="183878838231635348">Bu bildirgida Xavfsizlik tekshiruvi avtomatik aniqlagan maxfiylik yoki xavfsizlik muammolari chiqadi.</translation>
 <translation id="1845230888742614096">Guruh qolsin</translation>
 <translation id="1854463785401910334">Ochiq varaqlar ichidan qidirish</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">iPad yaqinda asliga qaytarilgani uchun undagi asosiy brauzer oʻzgargan boʻlishi mumkin.</translation>
 <translation id="1901366738768303267">Bu funksiyadan qanday foydalanish mumkin?</translation>
 <translation id="1901600657316773839">Tanlovni qoldirish</translation>
+<translation id="1902277226107477495">Manzil aniqlanishi yoqilmagan. Sozlamalar orqali qayta yoqish mumkin</translation>
 <translation id="1904580727789512086">Tashrif qilingan URL manzillar Google hisobingizda saqlanadi</translation>
 <translation id="1911619930368729126">Google Drive’ga yuklash</translation>
 <translation id="1923342640370224680">So‘nggi soat</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
 <translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="2240256190924001613">Profil konfiguratsiyasi mavjud</translation>
+<translation id="2244080985779413662">Bu sayt faylni yuklab olib, Wallet hamyoningizda ochmoqchi.</translation>
 <translation id="2245007488813216650">Tarjima qilinmoqda…</translation>
 <translation id="2249119578464404734">Ekranning yuqori qismida qidiruv belgisini bosing</translation>
 <translation id="2251686759395008410">Menyu → Tarix</translation>
@@ -1361,6 +1364,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Brauzer tarixi tozalanadi</translation>
 <translation id="6790502149545262384">Tez orada yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
+<translation id="6794476726485507147">Bu saytga qayta kirish haqida eslatma olish uchun sana va vaqtni tanlang</translation>
 <translation id="681368974849482173">Saqlandi</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bukmark Google hisobingizga ({email}) saqlandi}other{{count} ta bukmark Google hisobingizga ({email}) saqlandi}}</translation>
 <translation id="6830728435402077660">Xavfsiz emas</translation>
@@ -1488,6 +1492,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7425053386765766120">Toʻlov usulini qoʻshish…</translation>
 <translation id="7425346204213733349">Endi xatcho‘plar, brauzer tarixi va boshqa sozlamalaringiz Google hisobingizga sinxronlanmaydi. Shunday bo‘lsa-da, mavjud ma’lumotlaringiz Google hisobingizda saqlanib qoladi.</translation>
 <translation id="742664698522525515">Guruh qolsinmi?</translation>
+<translation id="7431851541687113774">Manzil aniqlanishini faolsizlantirish</translation>
 <translation id="7431991332293347422">Moslashtirilgan qidiruv, reklama va boshqa tashriflar tarixi parametrlarini tanlang</translation>
 <translation id="7435356471928173109">Administrator tomonidan faolsizlantirilgan</translation>
 <translation id="7438481509621345350">Endi yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
@@ -1641,6 +1646,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8023170444051056234">“<ph name="GROUP_NAME" />” varaqlar guruhiga ruxsat darhol yopiladi va barcha qurilmalardan oʻchiriladi</translation>
 <translation id="8023878949384262191">Bo‘limni yoyadi.</translation>
 <translation id="8027581147000338959">Yangi oynada ochish</translation>
+<translation id="8029092694585014252">Eslatma kiritish</translation>
 <translation id="8032569120109842252">Kuzatyapsiz</translation>
 <translation id="8035133914807600019">Yangi jild qo‘shish…</translation>
 <translation id="8035412398498507358">Photos</translation>

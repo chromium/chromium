@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Gửi từ <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Các thư mục của luồng lưu dấu trang đã mở trên toàn màn hình</translation>
 <translation id="1327257854815634930">Lịch sử di chuyển đang mở</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, thẻ mới hoặc thẻ đã cập nhật</translation>
 <translation id="1331212799747679585">Chrome không thể cập nhật. Tùy chọn khác</translation>
 <translation id="1332501820983677155">Phím tắt cho các tính năng của Google Chrome</translation>
 <translation id="1333491156693005331">Đã kiểm tra gần đây</translation>
@@ -204,7 +203,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1925021887439448749">Nhập địa chỉ web tùy chỉnh</translation>
 <translation id="1928618076168182477">Đang hiển thị chế độ xem hình ảnh</translation>
 <translation id="1928696683969751773">Bản cập nhật</translation>
-<translation id="1933845786846280168">Thẻ được chọn</translation>
 <translation id="1939549834451474504">Các mật khẩu sắp ngừng hoạt động do không thể sử dụng Dịch vụ Google Play. Bạn có thể tạo bản sao cho các mật khẩu đã lưu trước khi các mật khẩu này ngừng hoạt động. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Lưu mật khẩu</translation>
 <translation id="1944535645109964458">Không có khoá đăng nhập nào</translation>
@@ -431,7 +429,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2976550651269220761">Một phần dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google.\nHãy thử đợi một vài phút rồi mới đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
 <translation id="2977350910003566746">Sắp xếp theo lần mở gần nhất</translation>
 <translation id="297771753501244313">Xếp theo lần mở gần nhất</translation>
-<translation id="2979025552038692506">Thẻ ẩn danh được chọn</translation>
 <translation id="2979639724566107830">Mở trong cửa sổ mới</translation>
 <translation id="2981364137500752533">Bạn có thể mở tối đa 5 cửa sổ.</translation>
 <translation id="2983102365694924129">Dựa vào hoạt động của bạn trên một trang web. Chế độ cài đặt này đang tắt.</translation>
@@ -622,7 +619,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3902562446536395999">Sắp xếp theo thứ tự từ A đến Z</translation>
 <translation id="3908308510347173149">Cập nhật <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sắp xếp theo thứ tự từ Z đến A</translation>
-<translation id="3918415141610210050">Thẻ</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> đang bật</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Kết hợp dữ liệu của tôi</translation>
@@ -645,7 +641,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4024768890073681126">Trình duyệt này do cha mẹ của bạn quản lý</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# giờ}other{# giờ}}</translation>
 <translation id="4042941173059740150">Tiếp tục truy cập <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Nhóm chưa đặt tên</translation>
 <translation id="4044708993631234325">Bảng dưới cùng</translation>
 <translation id="4045441967987592849">Mở lại</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> thẻ chuẩn có hoạt động mới trong nhóm thẻ được chia sẻ}other{<ph name="TABS_COUNT_MANY" /> thẻ chuẩn có hoạt động mới trong nhóm thẻ được chia sẻ}}</translation>
@@ -1738,7 +1733,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8840953339110955557">Trang này có thể khác với phiên bản trực tuyến.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Đã ẩn</translation>
-<translation id="8853345339104747198">Thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Xem tệp khi không có mạng</translation>
 <translation id="885480114717186641">Bạn có thể yêu cầu trang web dành cho máy tính cho <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Tải nội dung mô tả</translation>

@@ -320,6 +320,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5579324208890605088">Villa í ræsingu: keyrðu uppsetningarforritið sem venjulegur notandi, ekki sem kerfisstjóri.</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5605834417512968703">Veldu hvað sem er til að leita með myndaleit eða ýttu á „Esc“ til að loka myndaleitinni</translation>
+<translation id="5618818588972826921">Veldu hvaða texta eða mynd sem er til að leita með myndaleit eða ýttu á „Esc“ til að loka myndaleitinni</translation>
 <translation id="5623402015214259806">{0,plural, =0{Uppfærsla er í boði fyrir Chromium}=1{Uppfærsla er í boði fyrir Chromium}one{Uppfærsla hefur verið í boði fyrir Chromium í # dag}other{Uppfærsla hefur verið í boði fyrir Chromium í # daga}}</translation>
 <translation id="5643865575100044307">Ávallt eyða vefsvæðagögnum úr tækinu þegar þú lokar Chromium</translation>
 <translation id="5653831366781983928">Endurræstu Chromium núna</translation>
@@ -595,5 +596,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="983803489796659991">Uppsetning mistókst vegna þess að uppfærsluþjónninn er ekki með tætigögn fyrir forritið.</translation>
 <translation id="985498048907240953">Nota Chromium án reiknings</translation>
 <translation id="985602178874221306">Höfundar Chromium</translation>
+<translation id="989970834842471429">Veldu hvaða texta eða mynd sem er til að leita með myndaleit</translation>
 <translation id="992780518932311116">Veittu Chromium aðgang að staðsetningunni þinni í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hana</translation>
 </translationbundle>

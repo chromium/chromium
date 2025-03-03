@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Ehdotetut haut</translation>
 <translation id="3658847490588580244">Oletusselainsyöte</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sivusto osoitteen <ph name="RWS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}other{<ph name="RWS_MEMBERS_COUNT" /> sivustoa osoitteen <ph name="RWS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}}</translation>
+<translation id="3676777756440746804">Sivustoja estetään pyytämästä lupaa sinusta tallennettujen tietojen käytölle</translation>
 <translation id="3697164069658504920">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää USB-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää USB-laitteita.</translation>
 <translation id="3707034683772193706">Avaamasi sivusto voi tallentaa pienen määrän tietoja Chromeen tarkistaakseen, ettet ole botti</translation>
 <translation id="3709818294139939629">Sivustolla ei pääse tiedostoon</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Avaa puhelimella Asetukset</translation>
 <translation id="3933121352599513978">Tiivistä ei-toivotut pyynnöt (suositus)</translation>
 <translation id="3955193568934677022">Salli sivustojen toistaa suojattua sisältöä (suositus)</translation>
+<translation id="3965467402665811906">Sivustot voivat pyytää lupaa sinusta tallennettujen tietojen käytölle</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3987993985790029246">Kopioi linkki</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> voi käyttää tietojasi selaamisen aikana</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Ylläpidettyjä asetuksia ei voi nollata</translation>
 <translation id="4887024562049524730">Kysy, saavatko sivustot käyttää virtuaalitodellisuuslaitteitasi ja ‑dataasi (suositus)</translation>
 <translation id="4936863036653376783">Löydät ryhmäsi välilehtiryhmäosiosta kaikilla laitteillasi</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> ei saa käyttää tietojasi näillä sivustoilla:</translation>
 <translation id="4953688446973710931">Kun tämä on päällä, sivustot voivat pyytää lupaa ladata useita tiedostoja automaattisesti. Kun tämä on pois päältä, sivustot eivät voi ladata useita tiedostoja automaattisesti.</translation>
 <translation id="4962975101802056554">Peru kaikki laitteen käyttöoikeudet</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Estä sivustoja yhdistämästä laitteisiin</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="8541410041357371550">Tämä sivusto saa mainosaiheet Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
+<translation id="854876774113449365">Avaamasi sivustot voivat upottaa muiden sivustojen sisältöä, esimerkiksi kuvia, mainoksia ja tekstiä. Nämä muut sivustot voivat pyytää lupaa käyttää sinusta tallentamiaan tietoja, kun selaat sivustoa. <ph name="BEGIN_LINK" />Lue lisää upotetusta sisällöstä<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Miten pyyntöjä näytetään</translation>
 <translation id="8558480467877843976">Voit nyt käyttää Chromea aina selatessasi ja kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="857943718398505171">Sallittu (suositus)</translation>
+<translation id="8593422116412089302">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää tietoja, jotka ne ovat tallentaneet sinusta. Kun tämä on pois päältä, sivustot eivät voi pyytää sinua käyttämään tietoja, jotka ne ovat tallentaneet sinusta.</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
 <translation id="8617611086246832542">Kun tämä on päällä, näet verkkosivustojen tietokonenäkymän. Kun tämä on pois päältä, näet sivustojen mobiilinäkymän.</translation>
 <translation id="8670078035093027626">Oletusselaimen alapaneeli avattu koko näytön kokoisena</translation>

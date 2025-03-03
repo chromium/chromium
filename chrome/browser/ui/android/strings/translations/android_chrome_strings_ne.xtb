@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
 <translation id="1320912611264252795">बुकमार्क सेभ गर्ने फ्लोका फोल्डरहरू स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="1327257854815634930">नेभिगेसनको इतिहास खोलियो</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, नयाँ वा परिवर्तन गरिएको ट्याब</translation>
 <translation id="1331212799747679585">Chrome अद्यावधिक गर्न सकिँदैन। थप विकल्पहरू</translation>
 <translation id="1332501820983677155">Google Chrome को विशेषताका सर्टकटहरू</translation>
 <translation id="1333491156693005331">हालसालै जाँचिएको</translation>
@@ -203,7 +202,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1925021887439448749"> कस्टम पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="1928618076168182477">भिजुअल भ्यू देखाइँदै छ</translation>
 <translation id="1928696683969751773">अपडेटहरू</translation>
-<translation id="1933845786846280168">चयन गरिएको ट्याब</translation>
 <translation id="1939549834451474504">Google Play services उपलब्ध नभएकाले पासवर्डहरूले चाँडै नै काम गर्न छाड्ने छन्। तपाईं तपाईंका सेभ गरिएका पासवर्डहरूले काम गर्न छाड्नुअघि नै ती पासवर्डहरूको एउटा कपी बनाउन सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">पासवर्डहरू संग्रह गर्नुहोस्</translation>
 <translation id="1944535645109964458">कुनै पनि पासकी उपलब्ध छैन</translation>
@@ -430,7 +428,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2976550651269220761">तपाईंको Chrome का केही डेटा अहिलेसम्म तपाईंको Google खातामा सेभ गरिएका छैनन्।\nसाइन आउट गर्नुअघि केही मिनेट पर्खी हेर्नुहोस्। तपाईंले अहिले नै साइन आउट गर्नुभयो भने यो डेटा मेटाइने छ।</translation>
 <translation id="2977350910003566746">पछिल्लो पटक खोलिएको आधारमा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="297771753501244313">पछिल्लो पटक खोलिएको आधारमा क्रमबद्ध गर्नुहोस्</translation>
-<translation id="2979025552038692506">चयन गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2979639724566107830">नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="2981364137500752533">तपाईं बढीमा ५ वटा विन्डो खोल्न सक्नुहुन्छ।</translation>
 <translation id="2983102365694924129">तपाईंले कुनै साइटमा गरेका गतिविधिका आधारमा। यो सेटिङ अफ छ।</translation>
@@ -621,7 +618,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3902562446536395999">A देखि Z को क्रममा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> अपडेट गर्नुहोस्</translation>
 <translation id="3911609878849982353">Z देखि A को क्रममा क्रमबद्ध गर्नुहोस्</translation>
-<translation id="3918415141610210050">ट्याब</translation>
 <translation id="3924911262913579434">'<ph name="SAFE_BROWSING_MODE" />' अन छ</translation>
 <translation id="3927692899758076493">स्यान्स सेरिफ</translation>
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
@@ -644,7 +640,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4024768890073681126">तपाईंका अभिभावक तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
-<translation id="404352903042073578">नाम नभएको समूह</translation>
 <translation id="4044708993631234325">पुछारको पाना</translation>
 <translation id="4045441967987592849">फेरि खोल्नुहोस्</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_ONE" /> सामान्य ट्याब}other{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_MANY" /> वटा सामान्य ट्याब}}</translation>
@@ -1735,7 +1730,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8840953339110955557">यो पृष्ठ अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">लुकाइएको</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, ट्याब</translation>
 <translation id="8854223127042600341">आफ्ना अफलाइन फाइलहरू हेर्नुहोस्</translation>
 <translation id="885480114717186641">तपाईं <ph name="HOST_NAME" /> को डेस्कटप साइटको लिंक माग्न सक्नुहुन्छ</translation>
 <translation id="8856607253650333758">विवरणहरू प्राप्त गर्नुहोस्</translation>
