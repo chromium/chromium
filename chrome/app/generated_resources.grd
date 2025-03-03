@@ -8576,6 +8576,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_TEXT" desc="Text shown on button on the NTP Calendar cards for joining a video conference." meaning="Click here to join your video conference meetings.">
         Join Meeting
       </message>
+      <message name="IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_ACCNAME" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the Join Meeting button is focused.">
+        Join meeting <ph name ="MEETING_TITLE">$1<ex>Leads Sync</ex></ph>
+      </message>
       <message name="IDS_NTP_MODULES_CALENDAR_IN_PROGRESS" desc="Text displaying that the meeting is in progress." meaning="The meeting is currently in progress.">
         In Progress
       </message>
