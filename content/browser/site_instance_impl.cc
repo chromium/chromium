@@ -451,16 +451,17 @@ RenderProcessHost* SiteInstanceImpl::GetProcess() {
 
 RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess(
     const ProcessAllocationContext& context) {
+  if (!HasProcess() &&
+      base::FeatureList::IsEnabled(kTraceSiteInstanceGetProcessCreation) &&
+      context.source == ProcessAllocationSource::kNoProcessCreationExpected) {
+    base::debug::DumpWithoutCrashing();
+  }
   // Create a new SiteInstanceGroup and RenderProcessHost if there isn't one.
   // All SiteInstances within a SiteInstanceGroup share a process and
   // AgentSchedulingGroupHost. A group must have a process. If the process gets
   // destructed, `site_instance_group_` will get cleared, and another one with a
   // new process will be assigned the next time GetProcess() gets called.
   if (!has_group()) {
-    if (base::FeatureList::IsEnabled(kTraceSiteInstanceGetProcessCreation) &&
-        context.source == ProcessAllocationSource::kNoProcessCreationExpected) {
-      base::debug::DumpWithoutCrashing();
-    }
     // Check if the ProcessReusePolicy should be updated.
     if (ShouldUseProcessPerSite()) {
       process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
