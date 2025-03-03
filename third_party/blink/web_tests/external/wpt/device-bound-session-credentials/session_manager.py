@@ -20,6 +20,7 @@ class SessionManager:
         self.should_refresh_end_session = False
         self.authorization_value = None
         self.send_challenge_early = False
+        self.cookie_has_no_attributes = False
 
     def create_new_session(self):
         session_id = str(len(self.session_to_key_map))
@@ -38,8 +39,22 @@ class SessionManager:
     def get_session_ids(self):
         return list(self.session_to_key_map.keys())
 
-    def set_should_refresh_end_session(self, value):
-        self.should_refresh_end_session = value
+    def configure_state_for_test(self, configuration):
+        should_refresh_end_session = configuration.get("shouldRefreshEndSession")
+        if should_refresh_end_session is not None:
+            self.should_refresh_end_session = should_refresh_end_session
+
+        authorization_value = configuration.get("authorizationValue")
+        if authorization_value is not None:
+            self.authorization_value = authorization_value
+
+        send_challenge_early = configuration.get("sendChallengeEarly")
+        if send_challenge_early is not None:
+            self.send_challenge_early = send_challenge_early
+
+        cookie_has_no_attributes = configuration.get("cookieHasNoAttributes")
+        if cookie_has_no_attributes is not None:
+            self.cookie_has_no_attributes = cookie_has_no_attributes
 
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
@@ -47,16 +62,17 @@ class SessionManager:
     def get_authorization_value(self):
         return self.authorization_value
 
-    def set_authorization_value(self, value):
-        self.authorization_value = value
-
-    def set_send_challenge_early(self, value):
-        self.send_challenge_early = value
-
     def get_send_challenge_early(self):
         return self.send_challenge_early
 
     def get_session_instructions_response(self, session_id, request):
+        cookie_parts = ["auth_cookie=abcdef0123"]
+        cookie_attributes = ""
+        if not self.cookie_has_no_attributes:
+            cookie_attributes = "Domain=" + request.url_parts.hostname + "; Path=/device-bound-session-credentials"
+            cookie_parts.append(cookie_attributes)
+        value_of_set_cookie = "; ".join(cookie_parts)
+
         response_body = {
             "session_identifier": session_id,
             "refresh_url": "/device-bound-session-credentials/refresh_session.py",
@@ -70,12 +86,12 @@ class SessionManager:
             "credentials": [{
                 "type": "cookie",
                 "name": "auth_cookie",
-                "attributes": "Domain=" + request.url_parts.hostname + "; Path=/device-bound-session-credentials"
+                "attributes": cookie_attributes
             }]
         }
         headers = [
             ("Content-Type", "application/json"),
             ("Cache-Control", "no-store"),
-            ("Set-Cookie", "auth_cookie=abcdef0123; Domain=" + request.url_parts.hostname + "; Path=/device-bound-session-credentials")
+            ("Set-Cookie", value_of_set_cookie)
         ]
         return (200, headers, json.dumps(response_body))

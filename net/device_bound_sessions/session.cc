@@ -157,7 +157,7 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
       candidate_refresh_endpoint.host(), candidate_refresh_endpoint.path());
 
   for (const auto& cred : params.credentials) {
-    if (!cred.name.empty() && !cred.attributes.empty()) {
+    if (!cred.name.empty()) {
       std::optional<CookieCraving> craving =
           CookieCraving::Create(params.fetcher_url, cred.name, cred.attributes,
                                 base::Time::Now(), std::nullopt);
