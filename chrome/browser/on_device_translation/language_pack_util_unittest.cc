@@ -143,10 +143,10 @@ TEST(LanguagePackUtilTest, IsPopularLanguage) {
   EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kSl));
   EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kSv));
   EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kUk));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kKn));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kTa));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kTe));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kMr));
+  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kKn));
+  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kTa));
+  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kTe));
+  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kMr));
 }
 
 TEST(LanguagePackUtilTest, GetLanguagePackComponentConfig) {
