@@ -633,8 +633,8 @@ std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
     return std::nullopt;
   }
 
-  return goopdate_base_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII("Update")
+  return goopdate_base_dir.AppendUTF8(COMPANY_SHORTNAME_STRING)
+      .Append(L"Update")
       .Append(kLegacyExeName);
 }
 
@@ -946,12 +946,12 @@ std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
     LOG(ERROR) << "Can't retrieve app data directory.";
     return std::nullopt;
   }
-  return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
+  return app_data_dir.AppendUTF8(COMPANY_SHORTNAME_STRING)
+      .AppendUTF8(PRODUCT_FULLNAME_STRING);
 }
 
 base::FilePath GetExecutableRelativePath() {
-  return base::FilePath::FromASCII(kExecutableName);
+  return base::FilePath::FromUTF8Unsafe(kExecutableName);
 }
 
 bool IsGuid(const std::wstring& s) {
@@ -1475,11 +1475,12 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
     return std::nullopt;
   }
 
-  return install_dir->AppendASCII(base::StrCat(
-      {base::FilePath::FromASCII(enterprise_companion::kExecutableName)
-           .RemoveExtension()
-           .MaybeAsASCII(),
-       kExecutableSuffix, ".exe"}));
+  return install_dir->AppendUTF8(
+      base::StrCat({base::FilePath()
+                        .AppendUTF8(enterprise_companion::kExecutableName)
+                        .RemoveExtension()
+                        .AsUTF8Unsafe(),
+                    kExecutableSuffix, ".exe"}));
 }
 
 }  // namespace updater

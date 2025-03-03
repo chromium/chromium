@@ -39,7 +39,7 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
   test_manifest = test_manifest.Append(L"updater").Append(manifest_filename);
   ASSERT_TRUE(base::PathExists(test_manifest));
 
-  const base::FilePath offline_app_dir(offline_dir.AppendASCII(app_id));
+  const base::FilePath offline_app_dir(offline_dir.AppendUTF8(app_id));
   ASSERT_TRUE(base::CreateDirectory(offline_app_dir));
   ASSERT_TRUE(
       base::CopyFile(test_manifest, offline_dir.Append(manifest_filename)));

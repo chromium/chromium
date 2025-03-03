@@ -64,10 +64,10 @@ std::vector<base::FilePath> GetHomeDirPaths(UpdaterScope scope) {
 
 base::FilePath GetActiveFile(const base::FilePath& home_dir,
                              const std::string& id) {
-  return home_dir.AppendASCII(".local")
-      .AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING)
-      .AppendASCII("Actives")
-      .AppendASCII(id);
+  return home_dir.Append(".local")
+      .Append(COMPANY_SHORTNAME_STRING)
+      .Append(PRODUCT_FULLNAME_STRING)
+      .Append("Actives")
+      .Append(id);
 }
 }  // namespace updater

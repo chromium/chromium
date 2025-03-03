@@ -142,7 +142,7 @@ class UpdaterDownloadTest : public ::testing::Test {
     server_.ServeFilesFromSourceDirectory("chrome/updater/test/data");
     server_handle_ = server_.StartAndReturnHandle();
     ASSERT_TRUE(scoped_dir_.CreateUniqueTempDir());
-    dest_ = scoped_dir_.GetPath().AppendASCII("updater-signed.exe");
+    dest_ = scoped_dir_.GetPath().AppendUTF8("updater-signed.exe");
     gurl_ = GURL(base::StrCat({server_.base_url().spec(), "signed.exe"}));
   }
 

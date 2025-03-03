@@ -575,7 +575,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CertificateTagMsiValidateTest, TestCases) {
   base::MemoryMappedFile mapped_file;
   ASSERT_TRUE(mapped_file.Initialize(
-      test::GetTestFilePath("tagged_msi").AppendASCII(GetParam().infile)));
+      test::GetTestFilePath("tagged_msi").AppendUTF8(GetParam().infile)));
   const std::unique_ptr<MSIBinary> bin = MSIBinary::Parse(mapped_file.bytes());
   ASSERT_TRUE(bin);
 

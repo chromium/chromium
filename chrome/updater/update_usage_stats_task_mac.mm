@@ -34,7 +34,7 @@ bool AnyAppUsageStatsAllowedInDir(const base::FilePath& base_dir) {
     if (name.BaseName().value() == PRODUCT_FULLNAME_STRING) {
       continue;
     }
-    base::FilePath crashpad = name.AppendASCII("Crashpad");
+    base::FilePath crashpad = name.Append("Crashpad");
     if (base::PathExists(crashpad)) {
       std::unique_ptr<crashpad::CrashReportDatabase> app_database =
           crashpad::CrashReportDatabase::Initialize(crashpad);

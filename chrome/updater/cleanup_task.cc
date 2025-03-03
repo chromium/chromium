@@ -53,7 +53,7 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
   }
   base::FileEnumerator(*dir, false, base::FileEnumerator::DIRECTORIES)
       .ForEach([&scope, &cleanup_max](const base::FilePath& item) {
-        base::Version version(item.BaseName().MaybeAsASCII());
+        base::Version version(item.BaseName().AsUTF8Unsafe());
         if (!version.IsValid() || version.CompareTo(cleanup_max) > 0) {
           return;
         }

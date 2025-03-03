@@ -159,7 +159,7 @@ std::unique_ptr<device_management_storage::CachedPolicyInfo>
 GetCachedPolicyInfo(
     scoped_refptr<device_management_storage::DMStorage> dm_storage) {
   const base::FilePath policy_info_file =
-      dm_storage->policy_cache_folder().AppendASCII("CachedPolicyInfo");
+      dm_storage->policy_cache_folder().AppendUTF8("CachedPolicyInfo");
   auto cached_info =
       std::make_unique<device_management_storage::CachedPolicyInfo>();
   std::string policy_info_data;
@@ -175,8 +175,8 @@ std::unique_ptr<edm::OmahaSettingsClientProto> GetOmahaPolicySettings() {
 
   base::FilePath omaha_policy_file = GetDMStorage()
                                          ->policy_cache_folder()
-                                         .AppendASCII(encoded_omaha_policy_type)
-                                         .AppendASCII("PolicyFetchResponse");
+                                         .AppendUTF8(encoded_omaha_policy_type)
+                                         .AppendUTF8("PolicyFetchResponse");
   std::string response_data;
   ::enterprise_management::PolicyFetchResponse response;
   ::enterprise_management::PolicyData policy_data;
@@ -195,13 +195,13 @@ std::unique_ptr<edm::OmahaSettingsClientProto> GetOmahaPolicySettings() {
 
 void PrintCachedPolicy(const base::FilePath& policy_path) {
   std::string policy_type;
-  if (!base::Base64Decode(policy_path.BaseName().MaybeAsASCII(),
+  if (!base::Base64Decode(policy_path.BaseName().AsUTF8Unsafe(),
                           &policy_type)) {
     std::cout << "Directory not base64 encoded: [" << policy_path << "]";
     return;
   }
 
-  base::FilePath policy_file = policy_path.AppendASCII("PolicyFetchResponse");
+  base::FilePath policy_file = policy_path.AppendUTF8("PolicyFetchResponse");
   std::string response_data;
   ::enterprise_management::PolicyFetchResponse response;
   auto omaha_settings = std::make_unique<edm::OmahaSettingsClientProto>();

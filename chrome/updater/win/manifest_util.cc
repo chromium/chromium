@@ -34,14 +34,14 @@ std::optional<base::FilePath> GetOfflineManifest(
     const base::FilePath& offline_dir,
     const std::string& app_id) {
   // Check manifest with fixed name first.
-  base::FilePath manifest_path = offline_dir.AppendASCII("OfflineManifest.gup");
+  base::FilePath manifest_path = offline_dir.Append(L"OfflineManifest.gup");
   if (base::PathExists(manifest_path)) {
     return manifest_path;
   }
 
   // Then check the legacy app specific manifest.
   manifest_path =
-      offline_dir.AppendASCII(app_id).AddExtension(FILE_PATH_LITERAL(".gup"));
+      offline_dir.AppendUTF8(app_id).AddExtension(FILE_PATH_LITERAL(".gup"));
   return base::PathExists(manifest_path)
              ? std::optional<base::FilePath>(manifest_path)
              : std::nullopt;
@@ -134,8 +134,8 @@ void ReadInstallCommandFromManifest(
 
   installer_version = it->manifest.version;
   installer_path = [&offline_dir, &app_id, &it] {
-    const base::FilePath app_dir(offline_dir.AppendASCII(app_id));
-    const base::FilePath path(app_dir.AppendASCII(it->manifest.run));
+    const base::FilePath app_dir(offline_dir.AppendUTF8(app_id));
+    const base::FilePath path(app_dir.AppendUTF8(it->manifest.run));
     return base::PathExists(path)
                ? path
                : base::FileEnumerator(

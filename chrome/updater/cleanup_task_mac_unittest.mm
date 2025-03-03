@@ -25,12 +25,12 @@ TEST(CleanupTaskMacTest, CleansOldCache) {
 
   base::FilePath cache;
   ASSERT_TRUE(base::apple::GetLocalDirectory(NSCachesDirectory, &cache));
-  cache = cache.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING);
+  cache = cache.Append(MAC_BUNDLE_IDENTIFIER_STRING);
   ASSERT_TRUE(base::DeletePathRecursively(cache));
   ASSERT_TRUE(base::CreateDirectory(cache));
 
-  const base::FilePath crx_cache = cache.AppendASCII("crx_cache");
-  const base::FilePath file = crx_cache.AppendASCII(
+  const base::FilePath crx_cache = cache.Append("crx_cache");
+  const base::FilePath file = crx_cache.Append(
       "appid_1."
       "f522c227412f46118df438ca07ac4ec89ccd7cf37b10ed79064a56d58f718df0");
   EXPECT_TRUE(base::CreateDirectory(crx_cache));
@@ -53,12 +53,12 @@ TEST(CleanupTaskMacTest, CleansOldCacheSymlinkSafe) {
 
   base::ScopedTempDir temp;
   ASSERT_TRUE(temp.CreateUniqueTempDir());
-  base::FilePath survivor = temp.GetPath().AppendASCII("surviving_file");
+  base::FilePath survivor = temp.GetPath().Append("surviving_file");
   ASSERT_TRUE(base::WriteFile(survivor, "contents"));
 
   base::FilePath cache;
   ASSERT_TRUE(base::apple::GetLocalDirectory(NSCachesDirectory, &cache));
-  cache = cache.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING);
+  cache = cache.Append(MAC_BUNDLE_IDENTIFIER_STRING);
   ASSERT_TRUE(base::DeletePathRecursively(cache));
   ASSERT_FALSE(symlink(temp.GetPath().value().c_str(), cache.value().c_str()));
 

@@ -112,7 +112,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MsiSetTagsTest, MsiSetTags) {
   MockMsiHandle mock_msi_handle;
   const std::wstring msi_file_path = test::GetTestFilePath("tagged_msi")
-                                         .AppendASCII(GetParam().msi_file_name)
+                                         .AppendUTF8(GetParam().msi_file_name)
                                          .value();
   EXPECT_CALL(mock_msi_handle,
               GetProperty(std::wstring(L"OriginalDatabase"), _, Eq(1U)))

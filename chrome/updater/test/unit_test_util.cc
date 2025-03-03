@@ -160,7 +160,7 @@ void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
 
   if (should_create_updater_executable) {
     // Create a fake `updater.exe` inside the install folder.
-    ASSERT_TRUE(base::CopyFile(folder_path->DirName().AppendASCII("prefs.json"),
+    ASSERT_TRUE(base::CopyFile(folder_path->DirName().AppendUTF8("prefs.json"),
                                updater_executable_path));
   }
 }
@@ -310,7 +310,7 @@ base::FilePath StartProcmonLogging() {
     return {};
   }
 
-  dest_dir = dest_dir.AppendASCII(GetTestName());
+  dest_dir = dest_dir.AppendUTF8(GetTestName());
   if (!base::CreateDirectory(dest_dir)) {
     LOG(ERROR) << __func__
                << ": failed to create log destination dir: " << dest_dir;
@@ -437,11 +437,11 @@ bool WaitFor(base::FunctionRef<bool()> predicate,
 base::FilePath GetTestFilePath(const char* file_name) {
   base::FilePath test_data_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root);
-  return test_data_root.AppendASCII("chrome")
-      .AppendASCII("updater")
-      .AppendASCII("test")
-      .AppendASCII("data")
-      .AppendASCII(file_name);
+  return test_data_root.AppendUTF8("chrome")
+      .AppendUTF8("updater")
+      .AppendUTF8("test")
+      .AppendUTF8("data")
+      .AppendUTF8(file_name);
 }
 
 void SetupFakeUpdaterVersion(UpdaterScope scope,

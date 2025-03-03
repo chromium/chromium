@@ -28,8 +28,7 @@ TEST(UtilTest, ConfirmFilePermissionsTest) {
   base::ScopedTempDir temp_dir_;
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-  base::FilePath test_file_path =
-      temp_dir_.GetPath().AppendASCII(kTestFilePath);
+  base::FilePath test_file_path = temp_dir_.GetPath().Append(kTestFilePath);
   ASSERT_TRUE(base::CreateTemporaryFile(&test_file_path));
 
   EXPECT_TRUE(

@@ -162,7 +162,7 @@ void ExpectPingRequest(
 }
 
 base::FilePath GetInstallerPath(const std::string& installer) {
-  return base::FilePath::FromASCII("test_installer").AppendASCII(installer);
+  return base::FilePath::FromUTF8Unsafe("test_installer").AppendUTF8(installer);
 }
 
 struct TestApp {
@@ -204,7 +204,7 @@ struct TestApp {
         installer_path.ReplaceExtension(FILE_PATH_LITERAL(".exe"))));
 #else
     command.SetProgram(exe_path.Append(
-        installer_path.DirName().AppendASCII("test_app_setup.sh")));
+        installer_path.DirName().AppendUTF8("test_app_setup.sh")));
 #endif
     return command;
   }
@@ -682,8 +682,8 @@ class IntegrationTest : public ::testing::Test {
     const base::FilePath app_json_path =
         GetInstallDirectory(GetUpdaterScopeForTesting())
             ->DirName()
-            .AppendASCII(appid)
-            .AppendASCII("app.json");
+            .AppendUTF8(appid)
+            .AppendUTF8("app.json");
     JSONFileValueDeserializer parser(app_json_path,
                                      base::JSON_ALLOW_TRAILING_COMMAS);
     int error_code = 0;
@@ -723,7 +723,7 @@ class IntegrationTest : public ::testing::Test {
     SetExistenceCheckerPath(app.appid,
                             GetInstallDirectory(GetUpdaterScopeForTesting())
                                 ->DirName()
-                                .AppendASCII(app.appid));
+                                .AppendUTF8(app.appid));
 #endif
 
     ExpectAppInstalled(app.appid, version);
@@ -1035,7 +1035,7 @@ TEST_P(IntegrationCleanupOldVersionTest, VariousArchitectures) {
   int dirs = 0;
   base::FileEnumerator(*path, false, base::FileEnumerator::DIRECTORIES)
       .ForEach([&dirs](const base::FilePath& path) {
-        if (base::Version(path.BaseName().MaybeAsASCII()).IsValid()) {
+        if (base::Version(path.BaseName().AsUTF8Unsafe()).IsValid()) {
           ++dirs;
         }
       });
@@ -2148,10 +2148,10 @@ TEST_F(IntegrationTest, RegisterApp) {
   RegistrationRequest registration;
   registration.app_id = "e595682b-02d5-46d1-b7ab-90034bd6be0f";
   registration.brand_code = "TSBD";
-  registration.brand_path = base::FilePath::FromASCII("/bp");
+  registration.brand_path = base::FilePath::FromUTF8Unsafe("/bp");
   registration.ap = "TestAp";
   registration.version = base::Version("11.22.33.44");
-  registration.existence_checker_path = base::FilePath::FromASCII("/tmp");
+  registration.existence_checker_path = base::FilePath::FromUTF8Unsafe("/tmp");
   registration.cohort = "cohort_test";
   test_commands_->RegisterApp(registration);
 
@@ -4629,7 +4629,7 @@ TEST_F(IntegrationTest, AppLogoUrl) {
   std::string app_logo_bytes;
   ASSERT_TRUE(base::ReadFileToString(
       test::GetTestFilePath("app_logos")
-          .AppendASCII(base::StringPrintf("%s.bmp", kAppId.c_str())),
+          .AppendUTF8(base::StringPrintf("%s.bmp", kAppId.c_str())),
       &app_logo_bytes));
   test_logo_server.ExpectOnce(
       {
@@ -5051,7 +5051,7 @@ class IntegrationTestMsi : public IntegrationTest {
     ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &msi_path));
     msi_path = msi_path.Append(
         GetInstallerPath(base::StrCat({kMsiAppId, ".", version.GetString()}))
-            .AppendASCII(kMsiCrx)
+            .AppendUTF8(kMsiCrx)
             .RemoveExtension());
     const std::wstring command = BuildMsiCommandLine({}, {}, msi_path);
     base::Process process = base::LaunchProcess(command, {});

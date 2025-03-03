@@ -226,7 +226,7 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchivePreinstallPostinstall) {
 
   ASSERT_EQ(updater::InstallFromArchive(
                 test_dir.Append("setup_test_envcheck").Append("marker.app"),
-                base::FilePath::FromASCII("xc_path"), "ap",
+                base::FilePath().Append("xc_path"), "ap",
                 updater::UpdaterScope::kUser, base::Version("0"), "arg1 arg2",
                 {}, false, TestTimeouts::action_timeout()),
             0);

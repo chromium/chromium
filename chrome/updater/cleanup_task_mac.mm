@@ -21,7 +21,7 @@ void CleanOldCrxCache() {
       !cache_app.IsAbsolute()) {
     return;
   }
-  cache_app = cache_app.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING);
+  cache_app = cache_app.Append(MAC_BUNDLE_IDENTIFIER_STRING);
   // cache_app is now likely /Library/Caches/{MAC_BUNDLE_IDENTIFIER_STRING}
 
   base::stat_wrapper_t stat;

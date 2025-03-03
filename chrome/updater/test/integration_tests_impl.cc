@@ -126,8 +126,8 @@ constexpr char kEnterpriseCompanionCRXArguments[] = "--install";
 base::FilePath GetEnterpriseCompanionAppExeRelativePath() {
   base::FilePath exe_path;
 #if BUILDFLAG(IS_MAC)
-  exe_path = exe_path.AppendASCII(BROWSER_NAME_STRING "EnterpriseCompanion.app")
-                 .AppendASCII("Contents/MacOS");
+  exe_path = exe_path.Append(BROWSER_NAME_STRING "EnterpriseCompanion.app")
+                 .Append("Contents/MacOS");
 #endif
   return exe_path.Append(kCompanionAppTestExecutableName);
 }
@@ -256,7 +256,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
-                                .AppendASCII(kDoNothingCRXName);
+                                .AppendUTF8(kDoNothingCRXName);
   ASSERT_TRUE(base::PathExists(crx_path));
 
   // First request: update check.
@@ -480,17 +480,17 @@ void RegisterAppByValue(UpdaterScope scope, const base::Value::Dict& value) {
   registration.app_id = *value.FindString("app_id");
   registration.brand_code = *value.FindString("brand_code");
   registration.brand_path =
-      base::FilePath::FromASCII(*value.FindString("brand_path"));
+      base::FilePath::FromUTF8Unsafe(*value.FindString("brand_path"));
   registration.ap = *value.FindString("ap");
   registration.ap_path =
-      base::FilePath::FromASCII(*value.FindString("ap_path"));
+      base::FilePath::FromUTF8Unsafe(*value.FindString("ap_path"));
   registration.ap_key = *value.FindString("ap_key");
   registration.version = base::Version(*value.FindString("version"));
   registration.version_path =
-      base::FilePath::FromASCII(*value.FindString("version_path"));
+      base::FilePath::FromUTF8Unsafe(*value.FindString("version_path"));
   registration.version_key = *value.FindString("version_key");
-  registration.existence_checker_path =
-      base::FilePath::FromASCII(*value.FindString("existence_checker_path"));
+  registration.existence_checker_path = base::FilePath::FromUTF8Unsafe(
+      *value.FindString("existence_checker_path"));
   registration.cohort = *value.FindString("cohort");
   registration.cohort_name = *value.FindString("cohort_name");
   registration.cohort_hint = *value.FindString("cohort_hint");
@@ -659,8 +659,8 @@ std::vector<base::FilePath> GetUpdaterLogFilesInTmp() {
 void PrintLog(UpdaterScope scope) {
   PrintFile([&] {
     std::optional<base::FilePath> path = GetInstallDirectory(scope);
-    if (path && base::PathExists(path->AppendASCII("updater.log"))) {
-      return path->AppendASCII("updater.log");
+    if (path && base::PathExists(path->AppendUTF8("updater.log"))) {
+      return path->AppendUTF8("updater.log");
     } else if (const std::vector<base::FilePath> files =
                    GetUpdaterLogFilesInTmp();
                !files.empty()) {
@@ -681,7 +681,7 @@ void PrintLog(UpdaterScope scope) {
 // infix is applied only to the output log file name; the retrieved log is
 // always `updater.log`.
 void CopyLog(const base::FilePath& src_dir, const std::string& infix) {
-  base::FilePath log_path = src_dir.AppendASCII("updater.log");
+  base::FilePath log_path = src_dir.AppendUTF8("updater.log");
   if (!base::PathExists(log_path)) {
     if (const std::vector<base::FilePath> files = GetUpdaterLogFilesInTmp();
         !files.empty()) {
@@ -695,13 +695,13 @@ void CopyLog(const base::FilePath& src_dir, const std::string& infix) {
   base::FilePath dest_dir = GetLogDestinationDir();
   if (!dest_dir.empty() && base::PathExists(dest_dir) &&
       base::PathExists(log_path)) {
-    dest_dir = dest_dir.AppendASCII(GetTestName());
+    dest_dir = dest_dir.AppendUTF8(GetTestName());
     EXPECT_TRUE(base::CreateDirectory(dest_dir));
     const base::FilePath dest_file_path = [dest_dir, real_infix] {
       base::FilePath path =
-          dest_dir.AppendASCII(base::StrCat({"updater", real_infix, ".log"}));
+          dest_dir.AppendUTF8(base::StrCat({"updater", real_infix, ".log"}));
       for (int i = 1; i < 10 && base::PathExists(path); ++i) {
-        path = dest_dir.AppendASCII(
+        path = dest_dir.AppendUTF8(
             base::StringPrintf("updater%s.%d.log", real_infix.c_str(), i));
       }
       return path;
@@ -727,8 +727,8 @@ void ExpectNoCrashes(UpdaterScope scope) {
     return;
   }
   dest_dir =
-      dest_dir.AppendASCII(GetTestName())
-          .AppendASCII(scope == UpdaterScope::kSystem ? "system" : "user");
+      dest_dir.AppendUTF8(GetTestName())
+          .AppendUTF8(scope == UpdaterScope::kSystem ? "system" : "user");
   EXPECT_TRUE(base::CreateDirectory(dest_dir));
 
   int count = 0;
@@ -792,7 +792,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
                                       : base_name;
     app_responses.push_back(GetUpdateResponseForApp(
         app.app_id, "", test_server->download_url().spec(), app.to_version,
-        crx_path, run_action.MaybeAsASCII().c_str(), app.args, std::nullopt,
+        crx_path, run_action.AsUTF8Unsafe().c_str(), app.args, std::nullopt,
         app.response_status));
   }
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
@@ -1290,7 +1290,7 @@ void ExpectAppCommandPing(UpdaterScope scope,
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &test_data_path));
-  base::FilePath crx_path = test_data_path.AppendASCII(kSelfUpdateCRXName);
+  base::FilePath crx_path = test_data_path.AppendUTF8(kSelfUpdateCRXName);
   ASSERT_TRUE(base::PathExists(crx_path));
 
   // First request: update check.
@@ -1354,7 +1354,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
-                                .AppendASCII(kDoNothingCRXName);
+                                .AppendUTF8(kDoNothingCRXName);
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/3, from_version, to_version,
                        do_fault_injection, skip_download, crx_path,
@@ -1372,7 +1372,7 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
-                                .AppendASCII(kDoNothingCRXName);
+                                .AppendUTF8(kDoNothingCRXName);
   ASSERT_TRUE(base::PathExists(crx_path));
 
   // First request: update check.
@@ -1427,7 +1427,7 @@ void ExpectInstallSequence(UpdaterScope scope,
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
-                                .AppendASCII(kDoNothingCRXName);
+                                .AppendUTF8(kDoNothingCRXName);
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/2, from_version, to_version,
                        do_fault_injection, skip_download, crx_path,
@@ -1439,7 +1439,7 @@ void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &test_data_path));
   base::FilePath crx_path =
-      test_data_path.AppendASCII(kEnterpriseCompanionCRXName);
+      test_data_path.AppendUTF8(kEnterpriseCompanionCRXName);
   ExpectUpdateSequence(
       UpdaterScope::kSystem, test_server, enterprise_companion::kCompanionAppId,
       /*install_data_index=*/{}, UpdateService::Priority::kForeground,
@@ -1592,7 +1592,7 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
       kTestProcessExecutableName,
       [] {
         const base::FilePath test_executable =
-            base::FilePath::FromASCII(kExecutableName).BaseName();
+            base::FilePath::FromUTF8Unsafe(kExecutableName).BaseName();
         return base::StrCat({test_executable.RemoveExtension().value(),
                              base::UTF8ToWide(kExecutableSuffix),
                              test_executable.Extension()});
@@ -1604,9 +1604,10 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
 }
 
 std::set<base::FilePath::StringType> GetCompanionAppProcessNames() {
-  return {
-      base::FilePath::FromASCII(enterprise_companion::kExecutableName).value(),
-      kCompanionAppTestExecutableName};
+  return {base::FilePath()
+              .AppendUTF8(enterprise_companion::kExecutableName)
+              .value(),
+          kCompanionAppTestExecutableName};
 }
 
 #if BUILDFLAG(IS_WIN)

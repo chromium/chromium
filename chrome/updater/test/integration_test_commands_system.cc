@@ -57,15 +57,15 @@ std::string RegistrationRequestToString(
   base::Value::Dict value;
   value.Set("app_id", registration.app_id);
   value.Set("brand_code", registration.brand_code);
-  value.Set("brand_path", registration.brand_path.MaybeAsASCII());
+  value.Set("brand_path", registration.brand_path.AsUTF8Unsafe());
   value.Set("ap", registration.ap);
-  value.Set("ap_path", registration.ap_path.MaybeAsASCII());
+  value.Set("ap_path", registration.ap_path.AsUTF8Unsafe());
   value.Set("ap_key", registration.ap_key);
   value.Set("version", registration.version.GetString());
-  value.Set("version_path", registration.version_path.MaybeAsASCII());
+  value.Set("version_path", registration.version_path.AsUTF8Unsafe());
   value.Set("version_key", registration.version_key);
   value.Set("existence_checker_path",
-            registration.existence_checker_path.MaybeAsASCII());
+            registration.existence_checker_path.AsUTF8Unsafe());
   value.Set("cohort", registration.cohort);
   value.Set("cohort_name", registration.cohort_name);
   value.Set("cohort_hint", registration.cohort_hint);
@@ -134,7 +134,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
          Param("expected_exit_code", base::NumberToString(expected_exit_code)),
          Param("additional_switches",
                StringFromValue(base::Value(additional_switches.Clone()))),
-         Param("updater_path", updater_path.MaybeAsASCII())});
+         Param("updater_path", updater_path.AsUTF8Unsafe())});
   }
 
   void ExpectInstalled() const override { RunCommand("expect_installed"); }
@@ -297,13 +297,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void SetupRealUpdater(const base::FilePath& updater_path) const override {
     RunCommand("setup_real_updater",
-               {Param("updater_path", updater_path.MaybeAsASCII())});
+               {Param("updater_path", updater_path.AsUTF8Unsafe())});
   }
 
   void SetExistenceCheckerPath(const std::string& app_id,
                                const base::FilePath& path) const override {
     RunCommand("set_existence_checker_path",
-               {Param("app_id", app_id), Param("path", path.MaybeAsASCII())});
+               {Param("app_id", app_id), Param("path", path.AsUTF8Unsafe())});
   }
 
   void SetServerStarts(int value) const override {
@@ -407,7 +407,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void DeleteFile(const base::FilePath& path) const override {
-    RunCommand("delete_file", {Param("path", path.MaybeAsASCII())});
+    RunCommand("delete_file", {Param("path", path.AsUTF8Unsafe())});
   }
 
   void InstallApp(const std::string& app_id,
@@ -537,7 +537,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void ExpectPrepareToRunBundleSuccess(
       const base::FilePath& bundle_path) const override {
     RunCommand("expect_prepare_to_run_bundle_success",
-               {Param("bundle_path", bundle_path.MaybeAsASCII())});
+               {Param("bundle_path", bundle_path.AsUTF8Unsafe())});
   }
 
   void ExpectKSAdminFetchTag(

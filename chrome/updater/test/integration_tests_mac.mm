@@ -77,10 +77,10 @@ std::optional<base::FilePath> GetActiveFile(UpdaterScope /*scope*/,
     return std::nullopt;
   }
 
-  return path->AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
-      .AppendASCII("Actives")
-      .AppendASCII(id);
+  return path->Append(COMPANY_SHORTNAME_STRING)
+      .Append(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
+      .Append("Actives")
+      .Append(id);
 }
 
 }  // namespace
@@ -118,8 +118,7 @@ void Clean(UpdaterScope scope) {
 
   // TODO(crbug.com/394302692): Delete after CIPD updater versions are M136+.
   EXPECT_TRUE(base::DeletePathRecursively(
-      base::FilePath("/Library/Caches/")
-          .AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING)));
+      base::FilePath("/Library/Caches/").Append(MAC_BUNDLE_IDENTIFIER_STRING)));
 
   EXPECT_TRUE(RemoveWakeJobFromLaunchd(scope));
 
@@ -164,7 +163,7 @@ void ExpectClean(UpdaterScope scope) {
     // present.
     int count = CountDirectoryFiles(*path);
     for (const auto& file_name : {"updater.log", "prefs.json"}) {
-      if (base::PathExists(path->AppendASCII(file_name))) {
+      if (base::PathExists(path->Append(file_name))) {
         count -= 1;
       }
     }
@@ -184,7 +183,7 @@ void ExpectClean(UpdaterScope scope) {
   EXPECT_TRUE(keystone_path);
   if (keystone_path) {
     EXPECT_FALSE(
-        base::PathExists(keystone_path->AppendASCII(KEYSTONE_NAME ".bundle")));
+        base::PathExists(keystone_path->Append(KEYSTONE_NAME ".bundle")));
   }
   ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }
@@ -320,11 +319,11 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
       keystone_path.Append(FILE_PATH_LITERAL("TicketStore"));
   ASSERT_TRUE(base::CreateDirectory(keystone_ticket_store_path));
   ASSERT_TRUE(base::CopyFile(
-      updater_test_data_path.AppendASCII("Keystone.legacy.ticketstore"),
-      keystone_ticket_store_path.AppendASCII("Keystone.ticketstore")));
-  ASSERT_TRUE(base::CopyFile(
-      updater_test_data_path.AppendASCII("CountingMetrics.plist"),
-      keystone_path.AppendASCII("CountingMetrics.plist")));
+      updater_test_data_path.Append("Keystone.legacy.ticketstore"),
+      keystone_ticket_store_path.Append("Keystone.ticketstore")));
+  ASSERT_TRUE(
+      base::CopyFile(updater_test_data_path.Append("CountingMetrics.plist"),
+                     keystone_path.Append("CountingMetrics.plist")));
 }
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
@@ -432,8 +431,8 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
 
     NSURL* const managed_preferences_url = base::apple::FilePathToNSURL(
         GetLibraryFolderPath(UpdaterScope::kSystem)
-            ->AppendASCII("Managed Preferences")
-            .AppendASCII(LEGACY_GOOGLE_UPDATE_APPID ".plist"));
+            ->Append("Managed Preferences")
+            .Append(LEGACY_GOOGLE_UPDATE_APPID ".plist"));
     ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
                                              forKey:@"updatePolicies"]
         writeToURL:managed_preferences_url
@@ -748,8 +747,8 @@ std::optional<base::FilePath> GetRegistrationTestAppPath() {
     return std::nullopt;
   }
   const base::FilePath test_app_path =
-      exe_path.AppendASCII("registration_test_app_bundle.app/Contents/MacOS/"
-                           "registration_test_app_bundle");
+      exe_path.Append("registration_test_app_bundle.app/Contents/MacOS/"
+                      "registration_test_app_bundle");
   if (test_app_path.empty() || !base::PathExists(test_app_path)) {
     return std::nullopt;
   }
