@@ -45,9 +45,9 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Unit tests for {@link TabListEditorGroupAction}. */
+/** Unit tests for {@link TabListEditorLegacyGroupAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class TabListEditorGroupActionUnitTest {
+public class TabListEditorLegacyGroupActionUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -63,7 +63,7 @@ public class TabListEditorGroupActionUnitTest {
     public void setUp() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         mAction =
-                TabListEditorGroupAction.createAction(
+                TabListEditorLegacyGroupAction.createAction(
                         RuntimeEnvironment.application,
                         mTabGroupCreationDialogManager,
                         ShowMode.MENU_ONLY,

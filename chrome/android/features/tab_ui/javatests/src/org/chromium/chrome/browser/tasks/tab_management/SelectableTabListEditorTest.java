@@ -340,7 +340,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -508,7 +508,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -545,7 +545,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -585,7 +585,7 @@ public class SelectableTabListEditorTest {
                                     ButtonType.TEXT,
                                     IconPosition.START));
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.MENU_ONLY,
@@ -709,7 +709,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -768,7 +768,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -1309,7 +1309,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -1348,7 +1348,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -1447,7 +1447,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -1488,7 +1488,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -1517,7 +1517,7 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<TabListEditorAction> actions = new ArrayList<>();
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.IF_ROOM,
@@ -1679,7 +1679,7 @@ public class SelectableTabListEditorTest {
                                     ButtonType.TEXT,
                                     IconPosition.START));
                     actions.add(
-                            TabListEditorGroupAction.createAction(
+                            TabListEditorLegacyGroupAction.createAction(
                                     sActivityTestRule.getActivity(),
                                     mCreationDialogManager,
                                     ShowMode.MENU_ONLY,

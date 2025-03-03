@@ -24,8 +24,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-/** Group action for the {@link TabListEditorMenu}. */
-public class TabListEditorGroupAction extends TabListEditorAction {
+/**
+ * Legacy group action for the {@link TabListEditorMenu}. This menu item will be replaced with new
+ * items allowing for more explicit control of merging and creation of tab groups.
+ */
+public class TabListEditorLegacyGroupAction extends TabListEditorAction {
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
 
     /**
@@ -44,11 +47,11 @@ public class TabListEditorGroupAction extends TabListEditorAction {
             @ButtonType int buttonType,
             @IconPosition int iconPosition) {
         Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_widgets);
-        return new TabListEditorGroupAction(
+        return new TabListEditorLegacyGroupAction(
                 tabGroupCreationDialogManager, showMode, buttonType, iconPosition, drawable);
     }
 
-    private TabListEditorGroupAction(
+    private TabListEditorLegacyGroupAction(
             TabGroupCreationDialogManager tabGroupCreationDialogManager,
             @ShowMode int showMode,
             @ButtonType int buttonType,
@@ -109,10 +112,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
 
         HashSet<Tab> selectedTabs = new HashSet<>(tabs);
         Tab destinationTab =
-                getDestinationTab(
-                        tabs,
-                        tabGroupModelFilter,
-                        editorSupportsActionOnRelatedTabs());
+                getDestinationTab(tabs, tabGroupModelFilter, editorSupportsActionOnRelatedTabs());
         List<Tab> relatedTabs = tabGroupModelFilter.getRelatedTabList(destinationTab.getId());
         selectedTabs.removeAll(relatedTabs);
 
