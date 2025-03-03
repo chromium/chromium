@@ -140,25 +140,34 @@ void TabContainerImpl::SetAvailableWidthCallback(
   available_width_callback_ = available_width_callback;
 }
 
-Tab* TabContainerImpl::AddTab(std::unique_ptr<Tab> tab,
-                              int model_index,
-                              TabPinned pinned) {
+std::vector<Tab*> TabContainerImpl::AddTabs(
+    std::vector<TabInsertionParams> tabs_params) {
+  std::vector<Tab*> added_tabs;
+
   // First add the tab to the view model, this is done because AddChildView sets
   // some tooltip information which tries to calculate the hit test, which needs
   // information about its adjacent tabs which it gets from the view model.
-  AddTabToViewModel(tab.get(), model_index, pinned);
-  Tab* tab_ptr = AddChildView(std::move(tab));
-  OrderTabSlotView(tab_ptr);
+  for (auto& param : tabs_params) {
+    AddTabToViewModel(param.tab.get(), param.model_index, param.pinned);
+  }
+
+  for (auto& param : tabs_params) {
+    Tab* tab_ptr = AddChildView(std::move(param.tab));
+    OrderTabSlotView(tab_ptr);
+    added_tabs.push_back(tab_ptr);
+  }
 
   // Don't animate the first tab, it looks weird, and don't animate anything
   // if the containing window isn't visible yet.
   if (GetTabCount() > 1 && GetWidget() && GetWidget()->IsVisible()) {
-    StartInsertTabAnimation(model_index);
+    for (auto& param : tabs_params) {
+      StartInsertTabAnimation(param.model_index);
+    }
   } else {
     CompleteAnimationAndLayout();
   }
 
-  return tab_ptr;
+  return added_tabs;
 }
 
 void TabContainerImpl::MoveTab(int from_model_index, int to_model_index) {

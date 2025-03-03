@@ -175,8 +175,11 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
               TabPinned pinned,
               std::optional<tab_groups::TabGroupId> group = std::nullopt,
               TabActive active = TabActive::kInactive) {
-    Tab* tab = tab_container_->AddTab(
-        std::make_unique<Tab>(tab_slot_controller_.get()), model_index, pinned);
+    std::vector<TabContainer::TabInsertionParams> tabs_params;
+    tabs_params.emplace_back(std::make_unique<Tab>(tab_slot_controller_.get()),
+                             model_index, pinned);
+
+    Tab* tab = tab_container_->AddTabs(std::move(tabs_params))[0];
     tab_strip_controller_->AddTab(model_index, active, pinned);
 
     if (active == TabActive::kActive) {

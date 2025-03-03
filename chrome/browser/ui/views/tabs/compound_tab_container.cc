@@ -266,16 +266,30 @@ void CompoundTabContainer::SetAvailableWidthCallback(
   available_width_callback_ = available_width_callback;
 }
 
-Tab* CompoundTabContainer::AddTab(std::unique_ptr<Tab> tab,
-                                  int model_index,
-                                  TabPinned pinned) {
-  if (pinned == TabPinned::kPinned) {
-    CHECK_LE(model_index, NumPinnedTabs());
-    return pinned_tab_container_->AddTab(std::move(tab), model_index, pinned);
+std::vector<Tab*> CompoundTabContainer::AddTabs(
+    std::vector<TabInsertionParams> tabs_params) {
+  std::vector<Tab*> added_tabs;
+
+  // Assume all tabs are either pinned or unpinned
+  if (!tabs_params.empty()) {
+    if (tabs_params[0].pinned == TabPinned::kPinned) {
+      for (const TabInsertionParams& param : tabs_params) {
+        CHECK_EQ(param.pinned, TabPinned::kPinned);
+        CHECK_LE(param.model_index, NumPinnedTabs());
+      }
+
+      added_tabs = pinned_tab_container_->AddTabs(std::move(tabs_params));
+    } else {
+      for (auto& param : tabs_params) {
+        CHECK_EQ(param.pinned, TabPinned::kUnpinned);
+        CHECK_GE(param.model_index, NumPinnedTabs());
+        param.model_index -= NumPinnedTabs();
+      }
+      added_tabs = unpinned_tab_container_->AddTabs(std::move(tabs_params));
+    }
   }
-  CHECK_GE(model_index, NumPinnedTabs());
-  return unpinned_tab_container_->AddTab(std::move(tab),
-                                         model_index - NumPinnedTabs(), pinned);
+
+  return added_tabs;
 }
 
 void CompoundTabContainer::MoveTab(int from_model_index, int to_model_index) {

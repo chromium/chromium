@@ -165,9 +165,29 @@ TabGroupChange::~TabGroupChange() = default;
 TabGroupChange::VisualsChange::VisualsChange() = default;
 TabGroupChange::VisualsChange::~VisualsChange() = default;
 
+TabGroupChange::CreateChange::CreateChange(
+    TabGroupChange::TabGroupCreationReason reason)
+    : reason_(reason) {}
+TabGroupChange::CreateChange::~CreateChange() = default;
+
+TabGroupChange::CloseChange::CloseChange(
+    TabGroupChange::TabGroupClosureReason reason)
+    : reason_(reason) {}
+TabGroupChange::CloseChange::~CloseChange() = default;
+
 const TabGroupChange::VisualsChange* TabGroupChange::GetVisualsChange() const {
   DCHECK_EQ(type, Type::kVisualsChanged);
   return static_cast<const VisualsChange*>(delta.get());
+}
+
+const TabGroupChange::CreateChange* TabGroupChange::GetCreateChange() const {
+  DCHECK_EQ(type, Type::kCreated);
+  return static_cast<const CreateChange*>(delta.get());
+}
+
+const TabGroupChange::CloseChange* TabGroupChange::GetCloseChange() const {
+  DCHECK_EQ(type, Type::kClosed);
+  return static_cast<const CloseChange*>(delta.get());
 }
 
 TabGroupChange::TabGroupChange(TabStripModel* model,
@@ -177,6 +197,22 @@ TabGroupChange::TabGroupChange(TabStripModel* model,
                      group,
                      Type::kVisualsChanged,
                      std::make_unique<VisualsChange>(std::move(deltap))) {}
+
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
+                               CreateChange deltap)
+    : TabGroupChange(model,
+                     group,
+                     Type::kCreated,
+                     std::make_unique<CreateChange>(std::move(deltap))) {}
+
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
+                               CloseChange deltap)
+    : TabGroupChange(model,
+                     group,
+                     Type::kClosed,
+                     std::make_unique<CloseChange>(std::move(deltap))) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // TabStripModelObserver
@@ -200,12 +236,6 @@ void TabStripModelObserver::OnTabWillBeAdded() {}
 
 void TabStripModelObserver::OnTabWillBeRemoved(content::WebContents* contents,
                                                int index) {}
-
-void TabStripModelObserver::OnTabGroupDetached(TabStripModel* model,
-                                               const TabGroup& group) {}
-
-void TabStripModelObserver::OnTabGroupAttached(TabStripModel* model,
-                                               const TabGroup& group) {}
 
 void TabStripModelObserver::OnTabGroupChanged(const TabGroupChange& change) {}
 

@@ -27,13 +27,15 @@ void FakeBaseTabStripController::AddTab(int index,
   num_tabs_++;
   tab_groups_.insert(tab_groups_.begin() + index, std::nullopt);
 
+  std::vector<std::pair<int, TabRendererData>> data_list;
   TabRendererData data;
   if (is_pinned == TabPinned::kPinned) {
     num_pinned_tabs_++;
     data.pinned = true;
   }
+  data_list.emplace_back(index, std::move(data));
   if (tab_strip_) {
-    tab_strip_->AddTabAt(index, std::move(data));
+    tab_strip_->AddTabsAt(std::move(data_list));
   }
   if (is_active == TabActive::kActive) {
     SetActiveIndex(index);

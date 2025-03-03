@@ -128,8 +128,8 @@ class TabStrip : public views::View,
   // keep the throbbers in sync.
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time);
 
-  // Adds a tab at the specified index.
-  void AddTabAt(int model_index, TabRendererData data);
+  // Adds tabs at the specified indices.
+  void AddTabsAt(std::vector<std::pair<int, TabRendererData>> tabs_datas);
 
   // Moves a tab.
   void MoveTab(int from_model_index, int to_model_index, TabRendererData data);
