@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -256,7 +257,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   // Returns namespace ID for the client that submitted this frame. This is used
   // to deduplicate layer IDs from different clients.
-  uint32_t GetClientNamespaceId() const;
+  std::pair<uint32_t, uint32_t> GetClientNamespaceId() const;
 
   void SetFullDamageForNextAggregation();
 

@@ -601,7 +601,8 @@ void DebugDrawFrame(
                         base::NumberToString(static_cast<int>(quad->material)));
       DBG_DRAW_TEXT_OPT(
           "frame.render_pass.layer_id", DBG_OPT_BLUE, display_rect.origin(),
-          base::StringPrintf("%u:%u", sqs->layer_namespace_id, sqs->layer_id));
+          base::StringPrintf("%u:%u:%u", sqs->layer_namespace_id.first,
+                             sqs->layer_namespace_id.second, sqs->layer_id));
       DBG_DRAW_TEXT_OPT("frame.render_pass.display_rect", DBG_OPT_GREEN,
                         display_rect.origin(), display_rect.ToString());
       DBG_DRAW_TEXT_OPT(

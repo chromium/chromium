@@ -20,10 +20,11 @@ namespace gfx {
 // See |SharedQuadState::layer_id| and |SharedQuadState::layer_namespace_id|.
 class COMPONENT_EXPORT(GFX) OverlayLayerId {
  public:
+  using NamespaceId = std::pair<uint32_t, uint32_t>;
+
   OverlayLayerId();
   // `layer_namespace_id` must be non-zero.
-  OverlayLayerId(uint32_t layer_namespace_id,
-                 uint32_t layer_id);
+  OverlayLayerId(const NamespaceId& layer_namespace_id, uint32_t layer_id);
   ~OverlayLayerId();
 
   // Create an `OverlayLayerId` with a zero `layer_namespace_id`, which is
@@ -36,14 +37,15 @@ class COMPONENT_EXPORT(GFX) OverlayLayerId {
   std::string ToString() const;
 
   // TODO(crbug.com/324460866): remove when we remove partial delegation.
-  std::pair<uint32_t, uint32_t> shared_quad_state_layer_id() const {
+  using SharedQuadStateLayerId = std::pair<NamespaceId, uint32_t>;
+  SharedQuadStateLayerId shared_quad_state_layer_id() const {
     return {layer_namespace_id_, layer_id_};
   }
 
  private:
   // See `viz::SharedQuadState::layer_namespace_id`.
   // A value of 0 is reserved for Viz use.
-  uint32_t layer_namespace_id_ = 0;
+  NamespaceId layer_namespace_id_;
   // See `viz::SharedQuadState::layer_id`.
   uint32_t layer_id_ = 0;
 };

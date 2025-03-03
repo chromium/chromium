@@ -269,7 +269,7 @@ class OverlayProcessorTestBase : public testing::Test {
   SharedQuadState* CreateSharedQuadStateWithLayerNamespaceId(
       AggregatedRenderPass* pass) {
     SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-    sqs->layer_namespace_id = 1;
+    sqs->layer_namespace_id = std::make_pair(1, 1);
     return sqs;
   }
 
@@ -277,8 +277,9 @@ class OverlayProcessorTestBase : public testing::Test {
   // namespace id that matches the output of
   // `CreateSharedQuadStateWithLayerNamespaceId`.
   testing::Matcher<const OverlayCandidate&> OverlayHasLayerId() {
-    return testing::Field("layer_id", &OverlayCandidate::layer_id,
-                          testing::Eq(gfx::OverlayLayerId(1, 0)));
+    return testing::Field(
+        "layer_id", &OverlayCandidate::layer_id,
+        testing::Eq(gfx::OverlayLayerId(std::make_pair(1, 1), 0)));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -2404,7 +2405,7 @@ class OverlayProcessorWinSurfacePlaneTest
             /*opacity_f=*/1.f, SkBlendMode::kSrc, /*sorting_context=*/0,
             /*layer_id=*/0u,
             /*fast_rounded_corner=*/false);
-        shared_quad_state->layer_namespace_id = 1;
+        shared_quad_state->layer_namespace_id = std::make_pair(1, 1);
 
         auto* quad =
             pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/viz_common_export.h"
@@ -80,7 +81,7 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // a previous frame, even if they changed position or other attributes.
   uint32_t layer_id = 0;
   // Used by SurfaceAggregator to namespace layer_ids from different clients.
-  uint32_t layer_namespace_id = 0;
+  std::pair<uint32_t, uint32_t> layer_namespace_id;
   // Used by SurfaceAggregator to decide whether to merge quads for a surface
   // into their target render pass. It is a performance optimization by avoiding
   // render passes as much as possible.

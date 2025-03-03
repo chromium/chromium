@@ -10,9 +10,10 @@
 namespace gfx {
 
 OverlayLayerId::OverlayLayerId() = default;
-OverlayLayerId::OverlayLayerId(uint32_t layer_namespace_id, uint32_t layer_id)
+OverlayLayerId::OverlayLayerId(const NamespaceId& layer_namespace_id,
+                               uint32_t layer_id)
     : layer_namespace_id_(layer_namespace_id), layer_id_(layer_id) {
-  CHECK_NE(0u, layer_namespace_id_);
+  CHECK(layer_namespace_id_.first != 0 || layer_namespace_id_.second != 0);
 }
 OverlayLayerId::~OverlayLayerId() = default;
 
@@ -25,7 +26,8 @@ OverlayLayerId OverlayLayerId::MakeForVizInternal(uint32_t layer_id) {
 }
 
 std::string OverlayLayerId::ToString() const {
-  return base::StringPrintf("%d:%d", layer_namespace_id_, layer_id_);
+  return base::StringPrintf("%d:%d:%d", layer_namespace_id_.first,
+                            layer_namespace_id_.second, layer_id_);
 }
 
 }  // namespace gfx
