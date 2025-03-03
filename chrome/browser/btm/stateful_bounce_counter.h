@@ -10,7 +10,7 @@
 #include "base/types/pass_key.h"
 #include "content/public/browser/btm_service.h"
 
-namespace dips {
+namespace btm {
 
 // This class exists just to call
 // PageSpecificContentSettings::IncrementStatefulBounceCount() whenever the user
@@ -38,6 +38,6 @@ class StatefulBounceCounter : public content::BtmService::Observer,
   static const int kUserDataKey = 0;
 };
 
-}  // namespace dips
+}  // namespace btm
 
 #endif  // CHROME_BROWSER_BTM_STATEFUL_BOUNCE_COUNTER_H_

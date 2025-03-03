@@ -40,17 +40,17 @@ bool IsPageTransitionDirectNavigation(ui::PageTransition page_transition) {
   return false;
 }
 
-dips::DirectNavigationSource ToDirectNavigationSource(
+btm::DirectNavigationSource ToDirectNavigationSource(
     ui::PageTransition page_transition) {
   if (ui::PageTransitionCoreTypeIs(page_transition,
                                    ui::PAGE_TRANSITION_TYPED)) {
-    return dips::DirectNavigationSource::kOmnibar;
+    return btm::DirectNavigationSource::kOmnibar;
   }
   if (ui::PageTransitionCoreTypeIs(page_transition,
                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
-    return dips::DirectNavigationSource::kBookmark;
+    return btm::DirectNavigationSource::kBookmark;
   }
-  return dips::DirectNavigationSource::kUnknown;
+  return btm::DirectNavigationSource::kUnknown;
 }
 
 // Looks for a redirect to the current page that qualifies as a server-redirect
@@ -135,7 +135,7 @@ void MaybeEmitDirectNavigationUkm(NavigationHandle* navigation_handle,
 }
 }  // namespace
 
-namespace dips {
+namespace btm {
 
 PageVisitInfo::PageVisitInfo() {
   site = "";
@@ -160,7 +160,7 @@ bool PageVisitInfo::WasNavigationToPageClientRedirect() const {
 }
 
 EntrypointInfo::EntrypointInfo(const BtmRedirectInfo& server_redirect_info,
-                               const dips::PageVisitInfo& exit_page_info)
+                               const btm::PageVisitInfo& exit_page_info)
     : site(server_redirect_info.site),
       source_id(server_redirect_info.url.source_id),
       had_triggering_storage_access(
@@ -169,8 +169,7 @@ EntrypointInfo::EntrypointInfo(const BtmRedirectInfo& server_redirect_info,
       was_referral_client_redirect(
           exit_page_info.WasNavigationToPageClientRedirect()) {}
 
-EntrypointInfo::EntrypointInfo(
-    const dips::PageVisitInfo& client_redirector_info)
+EntrypointInfo::EntrypointInfo(const btm::PageVisitInfo& client_redirector_info)
     : site(client_redirector_info.site),
       source_id(client_redirector_info.source_id),
       had_triggering_storage_access(
@@ -180,7 +179,7 @@ EntrypointInfo::EntrypointInfo(
           client_redirector_info.WasNavigationToPageClientRedirect()) {}
 
 InFlowSuccessorInteractionState::InFlowSuccessorInteractionState(
-    dips::EntrypointInfo flow_entrypoint)
+    btm::EntrypointInfo flow_entrypoint)
     : flow_entrypoint_(flow_entrypoint) {}
 
 InFlowSuccessorInteractionState::~InFlowSuccessorInteractionState() = default;
@@ -208,12 +207,12 @@ bool InFlowSuccessorInteractionState::IsAtSuccessor() const {
   return flow_index_ > 0;
 }
 
-}  // namespace dips
+}  // namespace btm
 
 BtmNavigationFlowDetector::BtmNavigationFlowDetector(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       WebContentsUserData<BtmNavigationFlowDetector>(*web_contents),
-      current_page_visit_info_(dips::PageVisitInfo()) {
+      current_page_visit_info_(btm::PageVisitInfo()) {
   redirect_chain_observation_.Observe(
       RedirectChainDetector::FromWebContents(web_contents));
 }
@@ -270,15 +269,15 @@ void BtmNavigationFlowDetector::OnNavigationCommitted(
   bool did_start_new_flow = MaybeInitializeSuccessorInteractionTrackingState();
 
   flow_status_ = FlowStatusAfterNavigation(did_start_new_flow);
-  if (flow_status_ == dips::FlowStatus::kOngoing && !did_start_new_flow) {
+  if (flow_status_ == btm::FlowStatus::kOngoing && !did_start_new_flow) {
     successor_interaction_tracking_state_->IncrementFlowIndex(
         redirect_context.GetServerRedirectsSinceLastPrimaryPageChange().size() +
         1);
   }
-  if (flow_status_ == dips::FlowStatus::kEnded) {
+  if (flow_status_ == btm::FlowStatus::kEnded) {
     MaybeEmitInFlowSuccessorInteraction();
   }
-  if (flow_status_ != dips::FlowStatus::kOngoing) {
+  if (flow_status_ != btm::FlowStatus::kOngoing) {
     successor_interaction_tracking_state_.reset();
   }
 
@@ -367,7 +366,7 @@ bool BtmNavigationFlowDetector::
     return false;
   }
 
-  dips::EntrypointInfo entrypoint_info_for_server_redirect_exit(
+  btm::EntrypointInfo entrypoint_info_for_server_redirect_exit(
       *exit_info, *current_page_visit_info_);
   return CanEmitSuspectedTrackerFlowUkm(
       *previous_page_visit_info_, entrypoint_info_for_server_redirect_exit,
@@ -401,16 +400,16 @@ bool BtmNavigationFlowDetector::
     return false;
   }
 
-  dips::EntrypointInfo entrypoint_info(previous_page_visit_info_.value());
+  btm::EntrypointInfo entrypoint_info(previous_page_visit_info_.value());
   return CanEmitSuspectedTrackerFlowUkm(two_pages_ago_visit_info_.value(),
                                         entrypoint_info,
                                         current_page_visit_info_.value());
 }
 
 bool BtmNavigationFlowDetector::CanEmitSuspectedTrackerFlowUkm(
-    const dips::PageVisitInfo& referrer_page_info,
-    const dips::EntrypointInfo& entrypoint_info,
-    const dips::PageVisitInfo& exit_page_info) const {
+    const btm::PageVisitInfo& referrer_page_info,
+    const btm::EntrypointInfo& entrypoint_info,
+    const btm::PageVisitInfo& exit_page_info) const {
   bool referrer_has_valid_source_id =
       referrer_page_info.source_id != ukm::kInvalidSourceId;
   bool entrypoint_has_valid_source_id =
@@ -458,13 +457,13 @@ void BtmNavigationFlowDetector::MaybeEmitInFlowSuccessorInteraction() {
   }
 }
 
-dips::FlowStatus BtmNavigationFlowDetector::FlowStatusAfterNavigation(
+btm::FlowStatus BtmNavigationFlowDetector::FlowStatusAfterNavigation(
     bool did_most_recent_navigation_start_new_flow) const {
   if (!current_page_visit_info_->WasNavigationToPageClientRedirect()) {
-    return dips::FlowStatus::kInvalidated;
+    return btm::FlowStatus::kInvalidated;
   }
   if (!successor_interaction_tracking_state_.has_value()) {
-    return dips::FlowStatus::kInvalidated;
+    return btm::FlowStatus::kInvalidated;
   }
 
   const base::span<const BtmRedirectInfoPtr> server_redirects =
@@ -473,13 +472,13 @@ dips::FlowStatus BtmNavigationFlowDetector::FlowStatusAfterNavigation(
   if (did_most_recent_navigation_start_new_flow) {
     bool is_still_on_entrypoint = server_redirects.empty();
     if (is_still_on_entrypoint) {
-      return dips::FlowStatus::kOngoing;
+      return btm::FlowStatus::kOngoing;
     }
 
     return successor_interaction_tracking_state_->flow_entrypoint().site ==
                    current_page_visit_info_->site
-               ? dips::FlowStatus::kOngoing
-               : dips::FlowStatus::kEnded;
+               ? btm::FlowStatus::kOngoing
+               : btm::FlowStatus::kEnded;
   }
 
   QuantityBucket cross_site_redirect_quantity_bucket =
@@ -488,17 +487,17 @@ dips::FlowStatus BtmNavigationFlowDetector::FlowStatusAfterNavigation(
                                    current_page_visit_info_->site);
   switch (cross_site_redirect_quantity_bucket) {
     case QuantityBucket::kZero:
-      return dips::FlowStatus::kOngoing;
+      return btm::FlowStatus::kOngoing;
     case QuantityBucket::kOne:
-      return dips::FlowStatus::kEnded;
+      return btm::FlowStatus::kEnded;
     case QuantityBucket::kMultiple:
-      return dips::FlowStatus::kInvalidated;
+      return btm::FlowStatus::kInvalidated;
   }
 }
 
 bool BtmNavigationFlowDetector::
     MaybeInitializeSuccessorInteractionTrackingState() {
-  if (flow_status_ == dips::FlowStatus::kOngoing) {
+  if (flow_status_ == btm::FlowStatus::kOngoing) {
     return false;
   }
   if (!previous_page_visit_info_ || !current_page_visit_info_) {
@@ -518,7 +517,7 @@ bool BtmNavigationFlowDetector::
   if (can_entrypoint_be_current_page) {
     if (current_page_visit_info_->site != previous_page_visit_info_->site) {
       successor_interaction_tracking_state_.emplace(
-          dips::EntrypointInfo(*current_page_visit_info_));
+          btm::EntrypointInfo(*current_page_visit_info_));
       return true;
     }
     return false;
@@ -537,7 +536,7 @@ bool BtmNavigationFlowDetector::
   }
 
   successor_interaction_tracking_state_.emplace(
-      dips::EntrypointInfo(*possible_entrypoint, *current_page_visit_info_));
+      btm::EntrypointInfo(*possible_entrypoint, *current_page_visit_info_));
   successor_interaction_tracking_state_->IncrementFlowIndex(
       server_redirects.size());
   return true;
@@ -553,7 +552,7 @@ void BtmNavigationFlowDetector::OnCookiesAccessed(
     const CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
   // access attempts.
-  if (!dips::IsOrWasInPrimaryPage(render_frame_host) ||
+  if (!btm::IsOrWasInPrimaryPage(render_frame_host) ||
       details.blocked_by_policy) {
     return;
   }
@@ -563,7 +562,7 @@ void BtmNavigationFlowDetector::OnCookiesAccessed(
   if (!first_party_url.has_value()) {
     return;
   }
-  // DIPS mitigations are only turned on when non-CHIPS 3PCs are blocked, so
+  // BTM is only turned on when non-CHIPS 3PCs are blocked, so
   // mirror that behavior by ignoring non-CHIPS 3PC accesses.
   if (!HasCHIPS(details.cookie_access_result_list) &&
       !IsSameSiteForBtm(first_party_url.value(), details.url)) {
@@ -571,7 +570,7 @@ void BtmNavigationFlowDetector::OnCookiesAccessed(
   }
 
   current_page_visit_info_->did_page_access_cookies = true;
-  if (flow_status_ == dips::FlowStatus::kOngoing &&
+  if (flow_status_ == btm::FlowStatus::kOngoing &&
       !successor_interaction_tracking_state_->IsAtSuccessor()) {
     successor_interaction_tracking_state_
         ->RecordTriggeringStorageAccessByEntrypoint();
@@ -595,7 +594,7 @@ void BtmNavigationFlowDetector::OnCookiesAccessed(
       return;
     }
 
-    // DIPS mitigations are only turned on when non-CHIPS 3PCs are blocked, so
+    // BTM is only turned on when non-CHIPS 3PCs are blocked, so
     // mirror that behavior by ignoring non-CHIPS 3PC accesses.
     if (!HasCHIPS(details.cookie_access_result_list) &&
         !IsSameSiteForBtm(first_party_url.value(), details.url)) {
@@ -603,7 +602,7 @@ void BtmNavigationFlowDetector::OnCookiesAccessed(
     }
 
     current_page_visit_info_->did_page_access_cookies = true;
-    if (flow_status_ == dips::FlowStatus::kOngoing &&
+    if (flow_status_ == btm::FlowStatus::kOngoing &&
         !successor_interaction_tracking_state_->IsAtSuccessor()) {
       successor_interaction_tracking_state_
           ->RecordTriggeringStorageAccessByEntrypoint();
@@ -620,7 +619,7 @@ void BtmNavigationFlowDetector::OnCookiesAccessed(
 
   if (details.url == current_page_visit_info_->url) {
     current_page_visit_info_->did_page_access_cookies = true;
-    if (flow_status_ == dips::FlowStatus::kOngoing &&
+    if (flow_status_ == btm::FlowStatus::kOngoing &&
         !successor_interaction_tracking_state_->IsAtSuccessor()) {
       successor_interaction_tracking_state_
           ->RecordTriggeringStorageAccessByEntrypoint();
@@ -640,7 +639,7 @@ void BtmNavigationFlowDetector::NotifyStorageAccessed(
     return;
   }
   current_page_visit_info_->did_page_access_storage = true;
-  if (flow_status_ == dips::FlowStatus::kOngoing &&
+  if (flow_status_ == btm::FlowStatus::kOngoing &&
       !successor_interaction_tracking_state_->IsAtSuccessor()) {
     successor_interaction_tracking_state_
         ->RecordTriggeringStorageAccessByEntrypoint();

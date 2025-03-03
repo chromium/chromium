@@ -489,8 +489,8 @@ class CONTENT_EXPORT BtmWebContentsObserver
 
   // TODO(rtarpine): make this take a Clock&.
   void SetClockForTesting(base::Clock* clock) {
-    DCHECK(dips_service_);
-    dips_service_->storage()
+    DCHECK(btm_service_);
+    btm_service_->storage()
         ->AsyncCall(&BtmStorage::SetClockForTesting)
         .WithArgs(clock);
     RedirectChainDetector::FromWebContents(web_contents())
@@ -565,7 +565,7 @@ class CONTENT_EXPORT BtmWebContentsObserver
   // raw_ptr<> is safe here because BtmServiceImpl is a KeyedService,
   // associated with the BrowserContext/Profile which will outlive the
   // WebContents that BtmWebContentsObserver is observing.
-  raw_ptr<BtmServiceImpl> dips_service_;
+  raw_ptr<BtmServiceImpl> btm_service_;
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   BtmIssueReportingCallback issue_reporting_callback_;
 
@@ -578,7 +578,7 @@ class CONTENT_EXPORT BtmWebContentsObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-namespace dips {
+namespace btm {
 
 ukm::SourceId GetRedirectSourceId(NavigationHandle* navigation_handle,
                                   size_t index);
@@ -593,7 +593,7 @@ CONTENT_EXPORT void Populate3PcExceptions(
     const GURL& final_url,
     base::span<BtmRedirectInfoPtr> redirects);
 
-}  // namespace dips
+}  // namespace btm
 
 }  // namespace content
 

@@ -61,8 +61,8 @@ bool Has3pcException(BrowserContext* browser_context,
   BtmRedirectInfoPtr redirect = BtmRedirectInfo::CreateForServer(
       UrlAndSourceId(url, ukm::kInvalidSourceId), BtmDataAccessType::kWrite,
       base::Time::Now(), false, net::HTTP_FOUND, base::TimeDelta());
-  dips::Populate3PcExceptions(browser_context, web_contents, initial_url,
-                              final_url, base::span_from_ref(redirect));
+  btm::Populate3PcExceptions(browser_context, web_contents, initial_url,
+                             final_url, base::span_from_ref(redirect));
   return redirect->has_3pc_exception.value();
 }
 
@@ -105,14 +105,14 @@ TEST_F(BtmServiceTest, DontCreateServiceIfFeatureDisabled) {
 }
 
 // Verifies that if database persistence is disabled via Finch, then when the
-// DIPS Service is constructed, it deletes any DIPS Database files for the
+// BTM Service is constructed, it deletes any BTM Database files for the
 // associated BrowserContext.
 TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
   BtmServiceImpl* service;
   std::unique_ptr<TestBrowserContext> profile;
 
-  // Ensure the DIPS feature is enabled and the database is set to be persisted.
+  // Ensure the BTM feature is enabled and the database is set to be persisted.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kBtm, {{"persist_database", "true"}});
@@ -122,7 +122,7 @@ TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   ASSERT_NE(service, nullptr);
 
   // Ensure the database files have been created and are NOT deleted since the
-  // DIPS feature is enabled.
+  // BTM feature is enabled.
   WaitOnStorage(service);
   service->WaitForFileDeletionCompleteForTesting();
   ASSERT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
@@ -140,18 +140,18 @@ TEST_F(BtmServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   service = BtmServiceImpl::Get(profile.get());
   ASSERT_NE(service, nullptr);
 
-  // Ensure the database files ARE deleted since the DIPS feature is disabled.
+  // Ensure the database files ARE deleted since the BTM feature is disabled.
   WaitOnStorage(service);
   service->WaitForFileDeletionCompleteForTesting();
   EXPECT_FALSE(base::PathExists(GetBtmFilePath(profile.get())));
 }
 
-// Verifies that when an OTR profile is opened, the DIPS database file for
+// Verifies that when an OTR profile is opened, the BTM database file for
 // the underlying regular profile is NOT deleted.
 TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
 
-  // Ensure the DIPS feature is enabled and the database is set to be persisted.
+  // Ensure the BTM feature is enabled and the database is set to be persisted.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kBtm, {{"persist_database", "true"}});
@@ -163,7 +163,7 @@ TEST_F(BtmServiceTest, PreserveRegularProfileDbFiles) {
   ASSERT_NE(service, nullptr);
 
   // Ensure the regular profile's database files have been created since the
-  // DIPS feature and persistence are enabled.
+  // BTM feature and persistence are enabled.
   WaitOnStorage(service);
   service->WaitForFileDeletionCompleteForTesting();
   ASSERT_TRUE(base::PathExists(GetBtmFilePath(profile.get())));
@@ -344,9 +344,9 @@ TEST_F(BtmServiceStateRemovalTest,
       /*final_url=*/MakeUrlAndId("http://c.test/"),
       /*length=*/1, /*is_partial_chain=*/false);
 
-  dips::Populate3PcExceptions(
-      GetProfile(), /*web_contents=*/nullptr, complete_chain->initial_url.url,
-      complete_chain->final_url.url, complete_redirects);
+  btm::Populate3PcExceptions(GetProfile(), /*web_contents=*/nullptr,
+                             complete_chain->initial_url.url,
+                             complete_chain->final_url.url, complete_redirects);
   GetService()->HandleRedirectChain(
       std::move(complete_redirects), std::move(complete_chain),
       base::BindRepeating([](const GURL& final_url) {}));
@@ -373,9 +373,9 @@ TEST_F(BtmServiceStateRemovalTest,
       /*final_url=*/MakeUrlAndId("http://c.test/"),
       /*length=*/1, /*is_partial_chain=*/true);
 
-  dips::Populate3PcExceptions(GetProfile(), /*web_contents=*/nullptr,
-                              partial_chain->initial_url.url,
-                              partial_chain->final_url.url, partial_redirects);
+  btm::Populate3PcExceptions(GetProfile(), /*web_contents=*/nullptr,
+                             partial_chain->initial_url.url,
+                             partial_chain->final_url.url, partial_redirects);
   GetService()->HandleRedirectChain(
       std::move(partial_redirects), std::move(partial_chain),
       base::BindRepeating([](const GURL& final_url) {}));
@@ -385,8 +385,8 @@ TEST_F(BtmServiceStateRemovalTest,
 }
 
 // NOTE: The use of a MockBrowsingDataRemoverDelegate in this test fixture
-// means that when DIPS deletion is enabled, the row for 'url' is not actually
-// removed from the DIPS db since 'delegate_' doesn't actually carryout the
+// means that when BTM deletion is enabled, the row for 'url' is not actually
+// removed from the BTM db since 'delegate_' doesn't actually carryout the
 // removal task.
 TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -440,7 +440,7 @@ TEST_F(BtmServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
   // Verify that a removal task was posted to the BrowsingDataRemover(Delegate)
   // for 'url'.
   delegate_.VerifyAndClearExpectations();
-  // Because this test fixture uses a MockBrowsingDataRemoverDelegate the DIPS
+  // Because this test fixture uses a MockBrowsingDataRemoverDelegate the BTM
   // entry should not actually be removed. However, in practice it would be.
   EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
 
@@ -468,7 +468,7 @@ TEST_F(BtmServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify the DIPS entry was not removed and a removal task was not posted to
+  // Verify the BTM entry was not removed and a removal task was not posted to
   // the BrowsingDataRemover(Delegate).
   delegate_.VerifyAndClearExpectations();
   EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
@@ -478,7 +478,7 @@ TEST_F(BtmServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify that the site's DIPS entry WAS removed, but a removal task was NOT
+  // Verify that the site's BTM entry WAS removed, but a removal task was NOT
   // posted to the BrowsingDataRemover(Delegate) since
   // `features::kBtmDeletionEnabled` is false.
   delegate_.VerifyAndClearExpectations();
@@ -784,7 +784,7 @@ TEST_F(BtmServiceStateRemovalTest, ImmediateEnforcement) {
   EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
 
   // Set the current time to just after the bounce happened and simulate firing
-  // the DIPS timer.
+  // the BTM timer.
   AdvanceTimeTo(bounce + tiny_delta);
   FireBtmTimer();
   task_environment_.RunUntilIdle();
@@ -876,7 +876,7 @@ TEST_F(BtmServiceHistogramTest, DeletionLatency) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify deletion latency metrics were NOT emitted and the DIPS entry was NOT
+  // Verify deletion latency metrics were NOT emitted and the BTM entry was NOT
   // removed.
   histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency2", 0);
   EXPECT_TRUE(GetBtmState(GetService(), url).has_value());
@@ -886,7 +886,7 @@ TEST_F(BtmServiceHistogramTest, DeletionLatency) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify a deletion latency metric was emitted and the DIPS entry was
+  // Verify a deletion latency metric was emitted and the BTM entry was
   // removed.
   histograms().ExpectTotalCount("Privacy.DIPS.DeletionLatency2", 1);
   EXPECT_FALSE(GetBtmState(GetService(), url).has_value());
@@ -916,7 +916,7 @@ TEST_F(BtmServiceHistogramTest, Deletion_Disallowed) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify a deletion metric was emitted and the DIPS entry was removed.
+  // Verify a deletion metric was emitted and the BTM entry was removed.
   base::HistogramTester::CountsMap expected_counts;
   expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
   EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
@@ -951,7 +951,7 @@ TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs1P) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify a deletion metric was emitted and the DIPS entry was removed.
+  // Verify a deletion metric was emitted and the BTM entry was removed.
   base::HistogramTester::CountsMap expected_counts;
   expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
   EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
@@ -986,7 +986,7 @@ TEST_F(BtmServiceHistogramTest, Deletion_ExceptedAs3P) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify a deletion metric was emitted and the DIPS entry was removed.
+  // Verify a deletion metric was emitted and the BTM entry was removed.
   base::HistogramTester::CountsMap expected_counts;
   expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
   EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
@@ -1020,7 +1020,7 @@ TEST_F(BtmServiceHistogramTest, DISABLED_Deletion_Enforced) {
   FireBtmTimer();
   task_environment_.RunUntilIdle();
 
-  // Verify a deletion metric was emitted and the DIPS entry was not removed.
+  // Verify a deletion metric was emitted and the BTM entry was not removed.
   base::HistogramTester::CountsMap expected_counts;
   expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
   EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
@@ -1068,9 +1068,9 @@ TEST_F(BtmServiceHistogramTest, ServerBounceDelay) {
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, UrlAndSourceId(), redirects.size(),
       /*is_partial_chain=*/false);
-  dips::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
-                              chain->initial_url.url, chain->final_url.url,
-                              redirects);
+  btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
+                             chain->initial_url.url, chain->final_url.url,
+                             redirects);
   service->HandleRedirectChain(std::move(redirects), std::move(chain),
                                base::DoNothing());
   observer.Wait();
@@ -1134,8 +1134,8 @@ TEST_F(BtmServiceUkmTest, BothChainBeginAndChainEnd) {
       initial_url, final_url,
       /*length=*/2, /*is_partial_chain=*/false);
   const int32_t chain_id = chain->chain_id;
-  dips::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
-                              initial_url.url, final_url.url, redirects);
+  btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
+                             initial_url.url, final_url.url, redirects);
   service->HandleRedirectChain(std::move(redirects), std::move(chain),
                                base::DoNothing());
   observer.Wait();
@@ -1187,9 +1187,9 @@ TEST_F(BtmServiceUkmTest, InitialAndFinalSitesSame_True) {
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, final_url,
       /*length=*/1, /*is_partial_chain=*/false);
-  dips::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
-                              chain->initial_url.url, chain->final_url.url,
-                              redirects);
+  btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
+                             chain->initial_url.url, chain->final_url.url,
+                             redirects);
   service->HandleRedirectChain(std::move(redirects), std::move(chain),
                                base::DoNothing());
   observer.Wait();
@@ -1254,9 +1254,9 @@ TEST_F(BtmServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       UrlAndSourceId(), final_url,
       /*length=*/1, /*is_partial_chain=*/false);
-  dips::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
-                              chain->initial_url.url, chain->final_url.url,
-                              redirects);
+  btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
+                             chain->initial_url.url, chain->final_url.url,
+                             redirects);
   service->HandleRedirectChain(std::move(redirects), std::move(chain),
                                base::DoNothing());
   observer.Wait();
@@ -1290,9 +1290,9 @@ TEST_F(BtmServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, UrlAndSourceId(),
       /*length=*/1, /*is_partial_chain=*/false);
-  dips::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
-                              chain->initial_url.url, chain->final_url.url,
-                              redirects);
+  btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
+                             chain->initial_url.url, chain->final_url.url,
+                             redirects);
   service->HandleRedirectChain(std::move(redirects), std::move(chain),
                                base::DoNothing());
   observer.Wait();

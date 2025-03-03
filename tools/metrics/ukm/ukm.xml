@@ -7630,8 +7630,8 @@ be describing additional metrics about the same event.
   <metric name="HasStickyActivation" enum="BooleanHasUserActivation">
     <summary>
       Populated for client redirects only. Whether the user interacted with the
-      page (See the HTML spec for a definition). This info is persistem within
-      DIPS for a duration of `dips::kInteractionTtl`.
+      page (See the HTML spec for a definition). This info is persisted within
+      BTM for a duration of `btm::kInteractionTtl`.
     </summary>
   </metric>
   <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
@@ -7683,8 +7683,8 @@ be describing additional metrics about the same event.
       enum="BooleanWebAuthnAssertionRequestSucceeded">
     <summary>
       Populated for client redirects only. Whether the user triggered a
-      successful web authn assertion. This info is persistem within DIPS for a
-      duration of `dips::kInteractionTtl`.
+      successful web authn assertion. This info is persisted within BTM for a
+      duration of `btm::kInteractionTtl`.
     </summary>
   </metric>
 </event>
