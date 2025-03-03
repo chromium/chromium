@@ -869,6 +869,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PWD_ACCESS_LOSS_NOTIFICATION_UPDATE_GMS_CORE_TEXT" desc="The text of the password access loss notification when the GMS Core version doesn't support local passwords." formatter_data="android_java">
         Passwords may stop working soon on this device. To keep using your passwords, update Google Play services.
       </message>
+      <message name="IDS_SOME_PASSWORDS_ARE_NOT_ACCESSIBLE_SUBTITLE" desc="Subtitle shown under the Google Password Manager entry point, when the password manager is available for the user, but they have unmigrated passwords left behind in Chrome.">
+        Some of your passwords aren’t accessible
+      </message>
+      <message name="IDS_GPM_STOPPED_WORKING_SUBTITLE" desc="Subtitle shown under the Google Password Manager entry point, when the password manager is not available for the user. Among other reasons, this can happen when Google Play services is not updated.">
+        Stopped working on this device
+      </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_ACKNOWLEDGE" desc="The text on the button that acknowledges the password migration warning.">
         Got it
       </message>

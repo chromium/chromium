@@ -7,7 +7,11 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/prefs/android/pref_service_android.h"
@@ -61,6 +65,16 @@ jint JNI_PasswordManagerUtilBridge_GetPasswordAccessLossWarningType(
   return static_cast<int>(
       password_manager_android_util::GetPasswordAccessLossWarningType(
           pref_service));
+}
+
+base::android::ScopedJavaLocalRef<jstring>
+JNI_PasswordManagerUtilBridge_GetAutoExportCsvFilePath(JNIEnv* env,
+                                                       Profile* profile) {
+  return base::android::ConvertUTF8ToJavaString(
+      env, profile->GetPath()
+               .Append(FILE_PATH_LITERAL(
+                   password_manager::kExportedPasswordsFileName))
+               .value());
 }
 
 namespace password_manager_android_util {

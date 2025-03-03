@@ -540,12 +540,14 @@ source_set("utils") {
 
   deps = [
     ":jni_headers",
+    "//chrome/browser/profiles:profile",
     "//chrome/common:non_code_constants",
     "//components/autofill/core/common",
     "//components/browser_sync",
     "//components/password_manager/content/browser:browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_manager_buildflags",
+    "//components/password_manager/core/browser/export",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:common",
     "//components/prefs:prefs",
