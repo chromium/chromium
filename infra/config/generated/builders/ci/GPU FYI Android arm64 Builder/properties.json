@@ -22,7 +22,7 @@
                 "apply_configs": [
                   "download_xr_test_apks"
                 ],
-                "config": "android",
+                "config": "arm64_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -55,7 +55,7 @@
                 "apply_configs": [
                   "download_xr_test_apks"
                 ],
-                "config": "android",
+                "config": "arm64_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
