@@ -4674,9 +4674,6 @@
       status: "stable",
     },
     {
-      name: "ViewTransitionLayeredCapture",
-    },
-    {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
       status: "test",
     },

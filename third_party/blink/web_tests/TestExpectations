@@ -337,11 +337,6 @@ crbug.com/333739950 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/
 crbug.com/333739950 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
 crbug.com/333739950 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
 
-# View transition: tests that work only in layered capture mode. Remove this once we settle the spec.
-crbug.com/373759981 virtual/threaded/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
-crbug.com/373759981 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
-crbug.com/373759981 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/layered-capture/* [ Failure Skip ]
-
 # Flaky on Mac
 crbug.com/40946176 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 crbug.com/40946176 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
@@ -2763,8 +2758,6 @@ crbug.com/390459301 [ Mac15 ] virtual/threaded/wpt_internal/view-transition/brow
 crbug.com/390459301 [ Mac12 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-old.html [ Crash Failure ]
 crbug.com/390459301 [ Mac14 ] virtual/view-transition-wide-gamut/wpt_internal/view-transition/browser-controls-root-offset-old.html [ Crash Failure Skip ]
 crbug.com/390459301 [ Win ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-old.html [ Crash Failure ]
-crbug.com/388319476 [ Mac15 ] virtual/view-transition-layered-capture/external/wpt/css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=visible&margin=0&contain=paint&radius=0 [ Crash ]
-crbug.com/388319476 [ Win ] virtual/view-transition-layered-capture/external/wpt/css/css-view-transitions/layered-capture/nested-overflow.tentative.sub.html?overflow=visible&margin=0&contain=paint&radius=0 [ Crash ]
 [ Mac15 ] virtual/view-transition-mpa-serialization/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Crash ]
 [ Win ] virtual/view-transition-mpa-serialization/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Crash ]
 crbug.com/388319476 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/parsing/pseudo-elements-invalid.html [ Crash ]

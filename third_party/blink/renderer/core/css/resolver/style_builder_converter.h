@@ -394,9 +394,6 @@ class StyleBuilderConverter {
   static StyleViewTransitionGroup ConvertViewTransitionGroup(
       StyleResolverState&,
       const CSSValue&);
-  static StyleViewTransitionCaptureMode ConvertViewTransitionCaptureMode(
-      StyleResolverState&,
-      const CSSValue&);
 
   // Take a list value for a specified color-scheme, extract flags for known
   // color-schemes and the 'only' modifier, and push the list items into a

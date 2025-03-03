@@ -3332,28 +3332,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     UpdateElementCaptureEffect();
     UpdateViewTransitionSubframeRootEffect();
 
-    // When layered capture is enabled (see the inverse condition below), the
-    // effects (clip/clip-path/opacity/mask/filter) are rendered in an ancestor
-    // of the view transition capture. The corresponding CSS is copied to the
-    // view-transition pseudo-elements instead of being captured into the
-    // texture as content.
-
-    const bool delegate_effects_to_view_transition = ViewTransitionUtils::
-        ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(object_);
-    if (!delegate_effects_to_view_transition) {
-      UpdateViewTransitionEffect();
-      UpdateViewTransitionClip();
-    }
+    UpdateViewTransitionEffect();
+    UpdateViewTransitionClip();
     UpdateClipPathClip();
     UpdateEffect();
     UpdateCssClip();
     UpdateFilter();
-
-    // See comment above in inverse condition.
-    if (delegate_effects_to_view_transition) {
-      UpdateViewTransitionEffect();
-      UpdateViewTransitionClip();
-    }
     UpdateOverflowControlsClip();
     UpdateBackgroundClip();
   } else if (!object_.IsAnonymous()) {

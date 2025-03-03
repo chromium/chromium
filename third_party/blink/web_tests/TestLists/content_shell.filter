@@ -1076,7 +1076,6 @@ virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-scr
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
 virtual/url-non-special/external/wpt/url/failure.html
-virtual/view-transition-layered-capture/*
 virtual/view-transition-mpa-serialization/*
 virtual/view-transition-mpa-serialization/wpt_internal/*
 # https://github.com/web-platform-tests/wpt/issues/48825

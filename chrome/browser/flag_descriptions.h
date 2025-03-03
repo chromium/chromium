@@ -667,9 +667,6 @@ extern const char kDebugShortcutsDescription[];
 extern const char kDisallowDocWrittenScriptsUiName[];
 extern const char kDisallowDocWrittenScriptsUiDescription[];
 
-extern const char kViewTransitionLayeredCaptureName[];
-extern const char kViewTransitionLayeredCaptureDescription[];
-
 extern const char kViewTransitionOnNavigationName[];
 extern const char kViewTransitionOnNavigationDescription[];
 

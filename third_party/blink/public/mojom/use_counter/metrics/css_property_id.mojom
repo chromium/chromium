@@ -866,7 +866,7 @@ enum CSSSampleId {
     kMasonryTrack = 807,
     kMasonrySlack = 808,
     kCaretAnimation = 809,
-    kViewTransitionCaptureMode = 810,
+    // kViewTransitionCaptureMode = 810,
     kInteractivity = 811,
     kMasonryFill = 812,
     kMasonryDirection = 813,

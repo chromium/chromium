@@ -1138,13 +1138,6 @@ const char kDisallowDocWrittenScriptsUiDescription[] =
     "Disallows fetches for third-party parser-blocking scripts inserted into "
     "the main frame via document.write.";
 
-const char kViewTransitionLayeredCaptureName[] =
-    "CSS view transition layered capture";
-const char kViewTransitionLayeredCaptureDescription[] =
-    "Controls the way view transition elements are captured. "
-    "When enabled, view transition borders, backgrounds, effects etc. "
-    "are captured as style instead of being baked into the image.";
-
 const char kViewTransitionOnNavigationName[] =
     "viewTransition API for navigations";
 const char kViewTransitionOnNavigationDescription[] =

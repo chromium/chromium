@@ -7549,17 +7549,6 @@ const CSSValue* ViewTransitionGroup::ParseSingleValue(
   return css_parsing_utils::ConsumeCustomIdent(stream, context);
 }
 
-const CSSValue* ViewTransitionCaptureMode::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  auto id = stream.Peek().Id();
-  if (id == CSSValueID::kLayered || id == CSSValueID::kFlat) {
-    return css_parsing_utils::ConsumeIdent(stream);
-  }
-  return nullptr;
-}
-
 const CSSValue* ViewTransitionGroup::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -7574,19 +7563,6 @@ const CSSValue* ViewTransitionGroup::CSSValueFromComputedStyleInternal(
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(
       style.ViewTransitionGroup().CustomName());
-}
-
-const CSSValue* ViewTransitionCaptureMode::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  switch (style.ViewTransitionCaptureMode()) {
-    case blink::StyleViewTransitionCaptureMode::kFlat:
-      return CSSIdentifierValue::Create(CSSValueID::kFlat);
-    case blink::StyleViewTransitionCaptureMode::kLayered:
-      return CSSIdentifierValue::Create(CSSValueID::kLayered);
-  }
 }
 
 const CSSValue* PaintOrder::ParseSingleValue(

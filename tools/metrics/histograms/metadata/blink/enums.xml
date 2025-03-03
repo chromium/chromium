@@ -7430,7 +7430,7 @@ Called by update_use_counter_css.py.-->
   <int value="807" label="masonry-track"/>
   <int value="808" label="masonry-slack"/>
   <int value="809" label="caret-animation"/>
-  <int value="810" label="view-transition-capture-mode"/>
+  <int value="810" label="view-transition-capture-mode (obsolete)"/>
   <int value="811" label="interactivity"/>
   <int value="812" label="masonry-fill"/>
   <int value="813" label="masonry-direction"/>
