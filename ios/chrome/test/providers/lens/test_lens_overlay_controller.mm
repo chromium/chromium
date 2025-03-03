@@ -57,4 +57,8 @@
   return NO;
 }
 
+- (CGRect)selectionRect {
+  return CGRectZero;
+}
+
 @end

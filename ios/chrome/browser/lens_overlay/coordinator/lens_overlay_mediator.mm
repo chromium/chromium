@@ -224,11 +224,19 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
     BOOL switchToTranslate = !isInTranslate && willUseTranslate;
     BOOL switchToSelection = isInTranslate && !willUseTranslate;
 
+    BOOL hasUserSelection =
+        !CGRectEqualToRect(lensOverlay.selectionRect, CGRectZero);
+    BOOL noSelectionInTranslate = !hasUserSelection && willUseTranslate;
+
     if (switchToTranslate) {
       // The translation filter needs the selection area reset as well as the
       // bottom sheet hidden, as no auto selection happens at this stage.
       [self.lensHandler resetSelectionAreaToInitialPosition:^{
       }];
+      [self.presentationDelegate hideBottomSheet];
+    } else if (noSelectionInTranslate) {
+      // A missing selection without a switch in modes indicates the user
+      // intended to dismiss the current selection.
       [self.presentationDelegate hideBottomSheet];
     } else if (switchToSelection || willUseTranslate) {
       // When transitioning to selection the bottom sheet might be hidden. As

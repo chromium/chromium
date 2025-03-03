@@ -80,6 +80,10 @@
   // NO-OP
 }
 
+- (CGRect)selectionRect {
+  return CGRectZero;
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {
