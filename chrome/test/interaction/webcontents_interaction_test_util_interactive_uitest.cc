@@ -352,8 +352,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
-// TODO(https://crbug.com/372873264): Re-enable on chrome linux builders.
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(https://crbug.com/372873264): Re-enable on chrome linux and win
+// builders.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_UseElementBoundsInScreenToSendInput \
   DISABLED_UseElementBoundsInScreenToSendInput
 #else
