@@ -288,7 +288,7 @@ apply plugin: ChromiumPlugin
 repositories {
     google()
     maven {
-        url 'https://androidx.dev/snapshots/builds/13146129/artifacts/repository'
+        url 'https://androidx.dev/snapshots/builds/13147953/artifacts/repository'
     }
     mavenCentral()
 }
