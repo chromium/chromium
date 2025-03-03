@@ -512,13 +512,19 @@ void LensOverlayQueryController::ResetPageContentData() {
   partial_content_ = base::span<const std::u16string>();
 }
 
-void LensOverlayQueryController::SendPageContentUpdateRequest(
-    base::span<const lens::PageContent> underlying_page_content,
-    lens::MimeType primary_content_type,
-    GURL new_page_url) {
-  underlying_page_contents_ = underlying_page_content;
-  primary_content_type_ = primary_content_type;
-  page_url_ = new_page_url;
+void LensOverlayQueryController::SendUpdatedPageContent(
+    std::optional<base::span<const lens::PageContent>> underlying_page_content,
+    std::optional<lens::MimeType> primary_content_type,
+    std::optional<GURL> new_page_url,
+    const SkBitmap& screenshot) {
+  if (underlying_page_content.has_value()) {
+    underlying_page_contents_ = underlying_page_content.value();
+    primary_content_type_ = primary_content_type.value();
+    page_url_ = new_page_url.value();
+  }
+  if (!screenshot.drawsNothing()) {
+    original_screenshot_ = screenshot;
+  }
 
   suggest_inputs_.set_contextual_visual_input_type(
       VitQueryParamValueForMimeType(primary_content_type_));
@@ -528,11 +534,16 @@ void LensOverlayQueryController::SendPageContentUpdateRequest(
       QueryControllerState::kAwaitingClusterInfoResponse) {
     // If we are waiting for the cluster info response, we should not send the
     // page content update request immediately. Instead, the cluster info
-    // response handler will call PrepareAndFetchPageContentRequest.
+    // response handler will call PrepareAndFetchFullImageRequest and
+    // PrepareAndFetchPageContentRequest.
     return;
   }
-
-  PrepareAndFetchPageContentRequest();
+  if (!screenshot.drawsNothing()) {
+    PrepareAndFetchFullImageRequest();
+  }
+  if (underlying_page_content.has_value()) {
+    PrepareAndFetchPageContentRequest();
+  }
 }
 
 void LensOverlayQueryController::SendPartialPageContentRequest(
@@ -563,7 +574,8 @@ void LensOverlayQueryController::SendContextualTextQuery(
   }
 
   // If the contextual search query shouldn't be sent now, hold it until the
-  // full page content upload is finished.
+  // full page content upload is finished and/or the full image query for an
+  // updated screenshot is finished.
   if (!ShouldSendContextualSearchQuery()) {
     pending_contextual_query_callback_ =
         base::BindOnce(&LensOverlayQueryController::SendContextualTextQuery,
@@ -1259,7 +1271,7 @@ void LensOverlayQueryController::PageContentResponseHandler(
 void LensOverlayQueryController::PageContentUploadProgressHandler(
     uint64_t position,
     uint64_t total) {
-  if(page_content_upload_progress_callback_) {
+  if (page_content_upload_progress_callback_) {
     page_content_upload_progress_callback_.Run(position, total);
   }
 
