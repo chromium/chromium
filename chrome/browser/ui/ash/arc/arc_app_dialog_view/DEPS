@@ -18,6 +18,7 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window.h",
   "+chrome/test/base",
 ]
