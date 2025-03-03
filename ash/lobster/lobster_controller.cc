@@ -111,6 +111,9 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
 
   if (system_state.status == LobsterStatus::kBlocked) {
     RecordLobsterState(LobsterMetricState::kBlocked);
+    for (auto failed_reason : system_state.failed_checks) {
+      RecordLobsterBlockedReason(failed_reason);
+    }
     return nullptr;
   }
 

@@ -147,6 +147,17 @@ struct EnumTraits<lobster::mojom::WebUIMetricEvent, ash::LobsterMetricState> {
       case ash::LobsterMetricState::kCommitAsInsert:
       case ash::LobsterMetricState::kCommitAsInsertSuccess:
       case ash::LobsterMetricState::kCommitAsInsertError:
+      case ash::LobsterMetricState::kBlockedByConsent:
+      case ash::LobsterMetricState::kBlockedByAccountCapabilities:
+      case ash::LobsterMetricState::kBlockedByAccountType:
+      case ash::LobsterMetricState::kBlockedByGeolocation:
+      case ash::LobsterMetricState::kBlockedByInputField:
+      case ash::LobsterMetricState::kBlockedBySettings:
+      case ash::LobsterMetricState::kBlockedByInternetConnection:
+      case ash::LobsterMetricState::kBlockedByInputMethod:
+      case ash::LobsterMetricState::kBlockedByFeatureFlags:
+      case ash::LobsterMetricState::kBlockedByHardware:
+      case ash::LobsterMetricState::kBlockedByKioskMode:
         return lobster::mojom::WebUIMetricEvent::kUnknown;
     }
   }
