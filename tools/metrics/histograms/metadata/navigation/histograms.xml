@@ -2629,6 +2629,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.URLLoader.InMainPath" enum="Boolean"
+    expires_after="2025-09-25">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records NavigationURLLoader is executed as the main path or not.
+
+    This is recorded on each main resource load on navigation. Multiple events
+    will be recorded for redirect cases.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.URLLoader.ParseHeaders.{Case}" units="microseconds"
     expires_after="2025-09-25">
   <owner>yyanagisawa@chromium.org</owner>
