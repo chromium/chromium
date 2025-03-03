@@ -391,8 +391,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
   if (!is_from_cached_state) {
     if (!display_state_record_caller_) {
       CHECK(!profile_prefs_->HasPrefPath(
-                prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState),
-            base::NotFatalUntil::M131);
+          prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
       display_state_record_caller_ =
           std::make_unique<base::debug::StackTrace>();
     } else {
@@ -430,7 +429,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
                      : "no")
               : "no value");
 
-      NOTREACHED(base::NotFatalUntil::M135);
+      NOTREACHED(base::NotFatalUntil::M138);
       caller_trace_key.Clear();
     }
   }
