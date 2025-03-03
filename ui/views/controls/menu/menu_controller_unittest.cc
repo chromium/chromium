@@ -2463,6 +2463,19 @@ TEST_F(MenuControllerTest, WidgetStateChangeCancelsMenu) {
   EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
 }
 
+TEST_F(MenuControllerTest, WidgetBoundsChangeCancelsMenu) {
+  ExitMenuRun();
+  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
+                         MenuAnchorPosition::kTopLeft);
+  EXPECT_TRUE(showing());
+  EXPECT_EQ(MenuController::ExitType::kNone, menu_controller()->exit_type());
+  gfx::Rect bounds = owner()->GetWindowBoundsInScreen();
+  bounds.Offset(10, 10);
+  owner()->SetBounds(bounds);
+  EXPECT_FALSE(showing());
+  EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
+}
+
 // TODO(pkasting): The test below fails most of the time on Wayland; not clear
 // it's important to support this case.
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && !BUILDFLAG(IS_OZONE_WAYLAND)
