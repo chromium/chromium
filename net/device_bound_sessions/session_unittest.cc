@@ -108,13 +108,23 @@ TEST_F(SessionTest, InvalidServiceRefreshUrl) {
             SessionError::ErrorType::kInvalidRefreshUrl);
 }
 
-TEST_F(SessionTest, InvalidTestUrl) {
+TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
   auto params = CreateValidParams();
   params.fetcher_url = kTestUrlForWrongETLD;
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kInvalidFetcherUrl);
+            SessionError::ErrorType::kScopeOriginSameSiteMismatch);
+}
+
+TEST_F(SessionTest, SameSiteMismatchRefreshUrl) {
+  auto params = CreateValidParams();
+  params.fetcher_url = GURL("http://example.test/index.html");
+  params.refresh_url = kUrlStringForWrongETLD;
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kRefreshUrlSameSiteMismatch);
 }
 
 TEST_F(SessionTest, NonSecureUrl) {

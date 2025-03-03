@@ -33,6 +33,8 @@ bool SessionError::IsFatal() const {
     case kInvalidFetcherUrl:
     case kInvalidRefreshUrl:
     case kPersistentHttpError:
+    case kScopeOriginSameSiteMismatch:
+    case kRefreshUrlSameSiteMismatch:
       return true;
 
     case kNetError:
