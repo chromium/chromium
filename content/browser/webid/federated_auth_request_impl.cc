@@ -784,7 +784,8 @@ void FederatedAuthRequestImpl::RequestToken(
               ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
               : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
           webid::ComputeRequesterFrameType(render_frame_host(), origin(),
-                                           GetEmbeddingOrigin()));
+                                           GetEmbeddingOrigin()),
+          /*has_signin_account=*/std::nullopt);
 
       AddDevToolsIssue(
           blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
@@ -2985,6 +2986,18 @@ void FederatedAuthRequestImpl::CompleteRequest(
               : FedCmVerifyingDialogResult::kDestroyAutoReauthn;
     }
 
+    std::optional<bool> has_signin_account;
+    // Note: accounts_ does not include the ones that got filtered out. In case
+    // that all accounts are filtered out, we'd show the mismatch UI and skip
+    // recording the account status on the mismatch UI.
+    for (const auto& account : accounts_) {
+      has_signin_account = false;
+      if (account->login_state == LoginState::kSignIn) {
+        has_signin_account = true;
+        break;
+      }
+    }
+
     fedcm_metrics_->RecordRequestTokenStatus(
         *token_status, mediation_requirement_, idp_order_, num_idps_mismatch,
         selected_idp_config_url, rp_mode_, use_other_account_result,
@@ -2993,7 +3006,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
             ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
             : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
         webid::ComputeRequesterFrameType(render_frame_host(), origin(),
-                                         GetEmbeddingOrigin()));
+                                         GetEmbeddingOrigin()),
+        has_signin_account);
   }
 
   if (result == FederatedAuthRequestResult::kSuccess) {

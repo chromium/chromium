@@ -3770,6 +3770,15 @@ be describing additional metrics about the same event.
       category.
     </summary>
   </metric>
+  <metric name="HasSigninAccount" enum="Boolean">
+    <summary>
+      Records whether a user is signing up with the API. Records once per
+      successful account fetch from the IdP server after the accounts filtering.
+      If there are multiple accounts, record the user as sign-in if IdP claims
+      at least one of the accounts is sign-in. If an IdP does not share the
+      user's sign-in state, record the state stored in the browser.
+    </summary>
+  </metric>
   <metric name="LoginHint.NumMatchingAccounts" enum="FedCmNumAccounts">
     <summary>
       Records the number of accounts that match a login hint. Records at the
@@ -4050,6 +4059,15 @@ be describing additional metrics about the same event.
       iframe, where the site of the caller frame is compared with the site of
       the main frame. Same-origin iframes are recorded under the same-site
       category.
+    </summary>
+  </metric>
+  <metric name="HasSigninAccount" enum="Boolean">
+    <summary>
+      Records whether a user is signing up with the API. Records once per
+      successful account fetch from the IdP server after the accounts filtering.
+      If there are multiple accounts, record the user as sign-in if IdP claims
+      at least one of the accounts is sign-in. If an IdP does not share the
+      user's sign-in state, record the state stored in the browser.
     </summary>
   </metric>
   <metric name="MismatchDialogShown" enum="BooleanHit">

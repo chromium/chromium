@@ -2156,6 +2156,8 @@ TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignUpForFirstTimeUser) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
   EXPECT_EQ(LoginState::kSignUp, all_accounts_for_display()[0]->login_state);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.HasSigninAccount", false,
+                                       1);
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
@@ -2185,6 +2187,8 @@ TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
   histogram_tester_.ExpectUniqueTimeSample(
       "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch",
       base::TimeDelta(), 1);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.HasSigninAccount", true, 1);
 }
 
 TEST_F(FederatedAuthRequestImplTest,
@@ -5449,6 +5453,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatch) {
   RunAuthTest(parameters, expectations, configuration);
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   EXPECT_FALSE(did_show_accounts_dialog());
+  ExpectNoUKMPresence("HasSigninAccount");
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
@@ -6529,6 +6534,7 @@ TEST_F(FederatedAuthRequestImplTest, MismatchDialogShownMetric) {
       FedCmMetrics::MismatchDialogType::kFirstWithoutHints, 1);
   ExpectUKMPresence("MismatchDialogShown");
   ExpectNoUKMPresence("AccountsDialogShown");
+  ExpectNoUKMPresence("HasSigninAccount");
   CheckAllFedCmSessionIDs();
 }
 
@@ -7415,6 +7421,8 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(all_accounts_for_display()[2]->login_state, LoginState::kSignUp);
   EXPECT_EQ(all_accounts_for_display()[2]->browser_trusted_login_state,
             LoginState::kSignUp);
+
+  ExpectUkmValue("HasSigninAccount", true);
 }
 
 // Test that IdP claimed SignIn does not affect browser observed SignUp.

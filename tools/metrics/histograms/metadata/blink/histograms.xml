@@ -1562,6 +1562,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.HasSigninAccount" enum="BooleanYesNo"
+    expires_after="2025-08-12">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether a user is signing up with the API. Records once per
+    successful account fetch from the IdP server after the accounts filtering.
+    If there are multiple accounts, record the user as sign-in if IdP claims at
+    least one of the accounts is sign-in. If an IdP does not share the user's
+    sign-in state, record the state stored in the browser.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IdentityProvidersCount" units="count"
     expires_after="2025-08-12">
   <owner>npm@chromium.org</owner>
