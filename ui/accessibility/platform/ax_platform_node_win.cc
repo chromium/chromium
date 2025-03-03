@@ -421,8 +421,6 @@ AXPlatformNodeWin::~AXPlatformNodeWin() {
 
   // This node is no longer a ghost (it became one in `Dispose()`).
   --g_ghost_node_count_;
-
-  ClearOwnRelations();
 }
 
 void AXPlatformNodeWin::Init(AXPlatformNodeDelegate* delegate) {
@@ -430,12 +428,6 @@ void AXPlatformNodeWin::Init(AXPlatformNodeDelegate* delegate) {
       g_dormant_node_count_, g_live_node_count_, g_ghost_node_count_);
 
   AXPlatformNodeBase::Init(delegate);
-}
-
-void AXPlatformNodeWin::ClearOwnRelations() {
-  for (size_t i = 0; i < relations_.size(); ++i)
-    relations_[i]->Invalidate();
-  relations_.clear();
 }
 
 // Static
@@ -2268,9 +2260,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relation(LONG relation_index,
       relation_obj->AddTarget(static_cast<AXPlatformNodeWin*>(target));
   }
 
-  // Maintain references to all relations returned by this object.
-  // Every time this object changes state, invalidate them.
-  relations_.push_back(relation_obj);
   *relation = relation_obj;
   return S_OK;
 }
