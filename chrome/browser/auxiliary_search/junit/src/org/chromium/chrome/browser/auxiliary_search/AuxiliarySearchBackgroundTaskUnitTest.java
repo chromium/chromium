@@ -51,7 +51,6 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +83,6 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
     @Captor private ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mDonateCallbackCaptor;
 
-    private List<AuxiliarySearchEntry> mEntries;
     private TaskParameters mParams;
     private AuxiliarySearchBackgroundTask mTask;
 
@@ -96,14 +94,6 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         when(mContext.getResources()).thenReturn(mResources);
-        long now = TimeUtils.uptimeMillis();
-        mEntries = new ArrayList<>();
-        mEntries.add(
-                AuxiliarySearchProvider.createAuxiliarySearchEntry(
-                        TAB_ID_1, TITLE_1, URL_1.getSpec(), now));
-        mEntries.add(
-                AuxiliarySearchProvider.createAuxiliarySearchEntry(
-                        TAB_ID_2, TITLE_2, URL_2.getSpec(), now));
 
         PersistableBundle bundle = new PersistableBundle();
         bundle.putLong(AuxiliarySearchProvider.TASK_CREATED_TIME, START_TIME);
@@ -158,17 +148,35 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
     }
 
     @Test
-    public void testOnTabDonateMetadataRead() {
+    public void testOnDonateMetadataRead() {
+        long now = TimeUtils.uptimeMillis();
+        List<AuxiliarySearchEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchEntries(now);
+
+        testOnDonateMetadataReadImpl(entries);
+    }
+
+    @Test
+    public void testOnDonateMetadataRead_AuxiliarySearchDataEntry() {
+        long now = TimeUtils.uptimeMillis();
+        List<AuxiliarySearchDataEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries(now);
+
+        testOnDonateMetadataReadImpl(entries);
+    }
+
+    private <T> void testOnDonateMetadataReadImpl(List<T> entries) {
         int faviconSize = 50;
         int timeDelta = 1000;
-        mTask.onTabDonateMetadataRead(
+
+        mTask.onDonationMetadataRead(
                 mProfile,
                 faviconSize,
                 TimeUtils.uptimeMillis(),
                 mTaskFinishedCallback,
                 mFaviconHelper,
                 mAuxiliarySearchController,
-                mEntries);
+                entries);
 
         // Verifies request fetching favicons for the two entries.
         verify(mFaviconHelper)
@@ -196,7 +204,7 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
         mFaviconImageCallbackCaptor.getAllValues().get(0).onFaviconAvailable(bitmap1, URL_1);
         verify(mAuxiliarySearchController, never())
                 .onBackgroundTaskStart(
-                        eq(mEntries), any(Map.class), mDonateCallbackCaptor.capture(), anyLong());
+                        eq(entries), any(Map.class), mDonateCallbackCaptor.capture(), anyLong());
         verify(mTaskFinishedCallback, never()).taskFinished(anyBoolean());
 
         // Verifies that AuxiliarySearchController#onBackgroundTaskStart() is called after two
@@ -204,7 +212,7 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
         mFaviconImageCallbackCaptor.getAllValues().get(0).onFaviconAvailable(null, URL_1);
         verify(mAuxiliarySearchController)
                 .onBackgroundTaskStart(
-                        eq(mEntries), any(Map.class), mDonateCallbackCaptor.capture(), anyLong());
+                        eq(entries), any(Map.class), mDonateCallbackCaptor.capture(), anyLong());
         histogramWatcher.assertExpected();
 
         String histogramName = "Search.AuxiliarySearch.Schedule.FaviconDonateResult";
@@ -220,16 +228,33 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
     }
 
     @Test
-    public void testOnTabDonateMetadataRead_NoFaviconsAvailable() {
+    public void testOnDonateMetadataRead_NoFaviconsAvailable() {
+        long now = TimeUtils.uptimeMillis();
+        List<AuxiliarySearchEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchEntries(now);
+
+        testOnDonateMetadataRead_NoFaviconsAvailableImpl(entries);
+    }
+
+    @Test
+    public void testOnDonateMetadataRead_NoFaviconsAvailable_AuxiliarySearchDataEntry() {
+        long now = TimeUtils.uptimeMillis();
+        List<AuxiliarySearchDataEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries(now);
+
+        testOnDonateMetadataRead_NoFaviconsAvailableImpl(entries);
+    }
+
+    private <T> void testOnDonateMetadataRead_NoFaviconsAvailableImpl(List<T> entries) {
         int faviconSize = 50;
-        mTask.onTabDonateMetadataRead(
+        mTask.onDonationMetadataRead(
                 mProfile,
                 faviconSize,
                 TimeUtils.uptimeMillis(),
                 mTaskFinishedCallback,
                 mFaviconHelper,
                 mAuxiliarySearchController,
-                mEntries);
+                entries);
 
         // Verifies request fetching favicons for the two entries.
         verify(mFaviconHelper)
@@ -256,7 +281,7 @@ public class AuxiliarySearchBackgroundTaskUnitTest {
         mFaviconImageCallbackCaptor.getAllValues().get(0).onFaviconAvailable(null, URL_1);
         verify(mAuxiliarySearchController, never())
                 .onBackgroundTaskStart(
-                        eq(mEntries), any(Map.class), mDonateCallbackCaptor.capture(), anyLong());
+                        eq(entries), any(Map.class), mDonateCallbackCaptor.capture(), anyLong());
 
         // Verifies that mTaskFinishedCallback is notified.
         verify(mTaskFinishedCallback).taskFinished(eq(false));

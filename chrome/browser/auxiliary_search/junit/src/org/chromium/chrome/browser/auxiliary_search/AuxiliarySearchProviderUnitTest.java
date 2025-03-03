@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -26,9 +27,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.MetaDataVersion;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -41,6 +47,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashSet;
 import java.util.List;
@@ -187,5 +194,70 @@ public class AuxiliarySearchProviderUnitTest {
         assertFalse(taskInfo.isUserInitiated());
         assertTrue(taskInfo.shouldUpdateCurrent());
         assertTrue(taskInfo.isPersisted());
+    }
+
+    @Test
+    @SmallTest
+    public void testSaveAndReadDonationMetadataAsync_V1() {
+        @MetaDataVersion int metaDataVersion = MetaDataVersion.V1;
+        long now = TimeUtils.uptimeMillis();
+        List<AuxiliarySearchEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchEntries(now);
+
+        testSaveAndReadDonationMetadataAsyncImpl(
+                entries,
+                metaDataVersion,
+                (entryList) -> {
+                    assertEquals(1, entryList.size());
+
+                    AuxiliarySearchEntry entry = (AuxiliarySearchEntry) entryList.get(0);
+                    assertEquals(AuxiliarySearchTestHelper.TAB_ID_2, entry.getId());
+                    assertEquals(JUnitTestGURLs.URL_2.getSpec(), entry.getUrl());
+                    assertEquals(AuxiliarySearchTestHelper.TITLE_2, entry.getTitle());
+                    assertEquals(now, entry.getLastAccessTimestamp());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSaveAndReadDonationMetadataAsync_V2() {
+        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V2;
+        long now = TimeUtils.uptimeMillis();
+        List<AuxiliarySearchDataEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries(now);
+
+        testSaveAndReadDonationMetadataAsyncImpl(
+                entries,
+                metaDataVersion,
+                (entryList) -> {
+                    assertEquals(1, entryList.size());
+
+                    AuxiliarySearchDataEntry entry = (AuxiliarySearchDataEntry) entryList.get(0);
+                    assertEquals(AuxiliarySearchEntryType.TAB, entry.type);
+                    assertEquals(AuxiliarySearchTestHelper.TAB_ID_2, entry.tabId);
+                    assertEquals(JUnitTestGURLs.URL_2, entry.url);
+                    assertEquals(AuxiliarySearchTestHelper.TITLE_2, entry.title);
+                    assertEquals(now, entry.lastActiveTime);
+                    assertNull(entry.appId);
+                    assertEquals(Tab.INVALID_TAB_ID, entry.visitId);
+                });
+    }
+
+    private <T> void testSaveAndReadDonationMetadataAsyncImpl(
+            List<T> entries, int metaDataVersion, Callback<List<T>> callback) {
+        int startIndex = 1;
+        int remainingEntryCount = 1;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAuxiliarySearchProvider.saveTabMetadataToFile(
+                            AuxiliarySearchUtils.getTabDonateFile(mContext),
+                            metaDataVersion,
+                            entries,
+                            startIndex,
+                            remainingEntryCount);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> AuxiliarySearchBackgroundTask.readDonationMetadataAsync(mContext, callback));
     }
 }

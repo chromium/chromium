@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -24,6 +25,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.url.GURL;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -31,6 +33,8 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,6 +42,16 @@ import java.util.concurrent.TimeUnit;
 
 /** This class provides information for the auxiliary search. */
 public class AuxiliarySearchProvider {
+
+    /** The version of tab donation's metadata. */
+    @IntDef({MetaDataVersion.V1, MetaDataVersion.MULTI_TYPE_V2, MetaDataVersion.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface MetaDataVersion {
+        int V1 = 0;
+        int MULTI_TYPE_V2 = 1;
+        int NUM_ENTRIES = 2;
+    }
+
     /* Only donate the recent 7 days accessed tabs.*/
     @VisibleForTesting static final String TAB_AGE_HOURS_PARAM = "tabs_max_hours";
     @VisibleForTesting static final String TASK_CREATED_TIME = "TaskCreatedTime";
@@ -45,9 +59,6 @@ public class AuxiliarySearchProvider {
 
     @VisibleForTesting
     static final int DEFAULT_WINDOW_END_TIME_MS = 60 * 1000; // 1 min in milliseconds.
-
-    /** The current version of the saved Tab donate metadata file. */
-    private static final int SAVED_STATE_VERSION = 1;
 
     /** Prevents two AuxiliarySearchProvider from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
@@ -110,15 +121,21 @@ public class AuxiliarySearchProvider {
     }
 
     /**
-     * Saves the tabs' metadata to a file.
+     * Saves metadata to a file.
      *
      * @param metadataFile The file to write.
-     * @param tabs A list of tabs to save.
-     * @param startIndex The index of the first tabs to save.
-     * @param tabCount The total count of tabs to save.
+     * @param entries A list of data to save.
+     * @param startIndex The index of the first entry to save.
+     * @param entryCountToSave The count of entries to save to the file. This is the count of the
+     *     remaining entries which haven't been donated yet.
+     * @param <T> The type of the entry data for donation.
      */
-    void saveTabMetadataToFile(
-            @NonNull File metadataFile, @NonNull List<Tab> tabs, int startIndex, int tabCount) {
+    <T> void saveTabMetadataToFile(
+            @NonNull File metadataFile,
+            int version,
+            @NonNull List<T> entries,
+            int startIndex,
+            int entryCountToSave) {
         synchronized (SAVE_LIST_LOCK) {
             AtomicFile file = new AtomicFile(metadataFile);
             FileOutputStream output = null;
@@ -126,15 +143,33 @@ public class AuxiliarySearchProvider {
                 output = file.startWrite();
 
                 DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(output));
-                stream.writeInt(SAVED_STATE_VERSION);
-                stream.writeInt(tabCount);
+                stream.writeInt(version);
+                stream.writeInt(entryCountToSave);
 
-                for (int i = 0; i < tabCount; i++) {
-                    Tab tab = tabs.get(i + startIndex);
-                    stream.writeInt(tab.getId());
-                    stream.writeUTF(tab.getTitle());
-                    stream.writeUTF(tab.getUrl().getSpec());
-                    stream.writeLong(tab.getTimestampMillis());
+                for (int i = 0; i < entryCountToSave; i++) {
+                    T entry = entries.get(i + startIndex);
+                    if (entry instanceof Tab tab) {
+                        assert version == MetaDataVersion.V1;
+                        stream.writeInt(tab.getId());
+                        stream.writeUTF(tab.getTitle());
+                        stream.writeUTF(tab.getUrl().getSpec());
+                        stream.writeLong(tab.getTimestampMillis());
+                    } else if (entry instanceof AuxiliarySearchDataEntry dataEntry) {
+                        assert version == MetaDataVersion.MULTI_TYPE_V2;
+                        @AuxiliarySearchEntryType int type = dataEntry.type;
+                        stream.writeInt(type);
+                        if (type == AuxiliarySearchEntryType.TAB) {
+                            stream.writeInt(dataEntry.tabId);
+                        } else {
+                            if (type == AuxiliarySearchEntryType.CUSTOM_TAB) {
+                                stream.writeUTF(dataEntry.appId);
+                            }
+                            stream.writeInt(dataEntry.visitId);
+                        }
+                        stream.writeUTF(dataEntry.title);
+                        stream.writeUTF(dataEntry.url.getSpec());
+                        stream.writeLong(dataEntry.lastActiveTime);
+                    }
                 }
 
                 stream.flush();
@@ -149,27 +184,48 @@ public class AuxiliarySearchProvider {
      * Extracts the tab information from a given tab donation metadata stream.
      *
      * @param stream The stream pointing to the tab donation metadata file to be parsed.
+     * @param <T> The type of the entry data for donation.
      */
     @Nullable
-    static List<AuxiliarySearchEntry> readSavedMetadataFile(@Nullable DataInputStream stream)
-            throws IOException {
+    static <T> List<T> readSavedMetadataFile(@Nullable DataInputStream stream) throws IOException {
         if (stream == null) return null;
 
         final int version = stream.readInt();
-        assert version == SAVED_STATE_VERSION;
-
         final int count = stream.readInt();
         if (count < 0) {
             return null;
         }
 
-        List<AuxiliarySearchEntry> entryList = new ArrayList<>();
+        List<T> entryList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            int id = stream.readInt();
-            String title = stream.readUTF();
-            String url = stream.readUTF();
-            long timeStamp = stream.readLong();
-            AuxiliarySearchEntry entry = createAuxiliarySearchEntry(id, title, url, timeStamp);
+            T entry = null;
+            if (version == MetaDataVersion.V1) {
+                int id = stream.readInt();
+                String title = stream.readUTF();
+                String url = stream.readUTF();
+                long timeStamp = stream.readLong();
+                entry = (T) createAuxiliarySearchEntry(id, title, url, timeStamp);
+            } else if (version == MetaDataVersion.MULTI_TYPE_V2) {
+                int type = stream.readInt();
+                int id = Tab.INVALID_TAB_ID;
+                String appId = null;
+                int visitId = Tab.INVALID_TAB_ID;
+                if (type == AuxiliarySearchEntryType.TAB) {
+                    id = stream.readInt();
+                } else {
+                    if (type == AuxiliarySearchEntryType.CUSTOM_TAB) {
+                        appId = stream.readUTF();
+                    }
+                    visitId = stream.readInt();
+                }
+                String title = stream.readUTF();
+                String url = stream.readUTF();
+                long timeStamp = stream.readLong();
+                entry =
+                        (T)
+                                new AuxiliarySearchDataEntry(
+                                        type, new GURL(url), title, timeStamp, id, appId, visitId);
+            }
             if (entry != null) {
                 entryList.add(entry);
             }
