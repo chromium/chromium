@@ -445,7 +445,7 @@ void SoftwareRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad) {
 }
 
 void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
-  if (!IsSoftwareResource(quad->resource_id) || quad->is_stream_video) {
+  if (!IsSoftwareResource(quad->resource_id)) {
     DrawUnsupportedQuad(quad);
     return;
   }
