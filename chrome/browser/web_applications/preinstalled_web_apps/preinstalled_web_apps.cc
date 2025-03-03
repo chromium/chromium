@@ -190,8 +190,8 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
     if (options.uninstall_and_replace.size() != 1)
       continue;
 
-    if (options.gate_on_feature && !IsPreinstalledAppInstallFeatureEnabled(
-                                       *options.gate_on_feature, profile)) {
+    if (options.gate_on_feature &&
+        !IsPreinstalledAppInstallFeatureEnabled(*options.gate_on_feature)) {
       continue;
     }
 
