@@ -52,6 +52,8 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
 
   SetVisible(true);
 
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
