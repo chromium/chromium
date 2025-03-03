@@ -461,6 +461,10 @@ EXTENSIONS_EXPORT bool IsPreinstalledAppId(std::string_view app_id);
 inline constexpr char kPolicyBlockedScripting[] =
     "This page cannot be scripted due to an ExtensionsSettings policy.";
 
+// Error message when extension tries to allow 3PCs in incognito.
+inline constexpr char kCookiesAllowedIncognitoErrorMessage[] =
+    "Third-party cookies are blocked in incognito and cannot be re-allowed.";
+
 // Error message when access to incognito preferences is denied.
 inline constexpr char kIncognitoErrorMessage[] =
     "You do not have permission to access incognito preferences.";
