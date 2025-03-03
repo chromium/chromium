@@ -101,47 +101,6 @@ _DEVIL_BUILD_PRODUCT_DEPS = {
             'path_components': ['host_forwarder'],
         },
     ],
-    # TODO(martinkong): Remove this once devil no longer depends on md5sum
-    'md5sum_device': [
-        {
-            'platform': 'android',
-            'arch': abis.ARM,
-            'path_components': ['md5sum_dist'],
-        },
-        {
-            'platform': 'android',
-            'arch': abis.ARM_64,
-            'path_components': ['md5sum_dist'],
-        },
-        {
-            'platform': 'android',
-            'arch': 'mips',
-            'path_components': ['md5sum_dist'],
-        },
-        {
-            'platform': 'android',
-            'arch': 'mips64',
-            'path_components': ['md5sum_dist'],
-        },
-        {
-            'platform': 'android',
-            'arch': abis.X86,
-            'path_components': ['md5sum_dist'],
-        },
-        {
-            'platform': 'android',
-            'arch': abis.X86_64,
-            'path_components': ['md5sum_dist'],
-        },
-    ],
-    # TODO(martinkong): Remove this once devil no longer depends on md5sum
-    'md5sum_host': [
-        {
-            'platform': 'linux2',
-            'arch': 'x86_64',
-            'path_components': ['md5sum_bin_host'],
-        },
-    ],
 }
 
 

@@ -152,9 +152,6 @@ group("apk_installer_data") {
       data_deps = [
         "//build/android/pylib/device/commands",
         "//tools/android/devil_util",
-
-        # TODO(martinkong): Remove this once we no longer depend on md5sum
-        "//tools/android/md5sum",
       ]
     }
     data =
