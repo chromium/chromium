@@ -282,18 +282,6 @@ chromium-metrics-reviews@google.com.
       summary="the virtual card unenrollment dialog"/>
 </variants>
 
-<variants name="Autofill.ShadowPredictions.SourcePair">
-  <variant name="DefaultHeuristicToDefaultServer"
-      summary="the default heuristics, the default server prediction"/>
-  <variant name="DefaultPatternSourceToMLModel"
-      summary="the default pattern source, the machine learning model
-               prediction"/>
-  <variant name="DefaultServerToMLModel"
-      summary="the default server, the machine learning model prediction"/>
-  <variant name="ExperimentalToDefault"
-      summary="the heuristics being rolled out, the default heuristics"/>
-</variants>
-
 <variants name="Autofill.Snackbar.Type">
   <variant name="MandatoryReauth"
       summary="Snackbar shown after opting into mandatory reauth."/>
@@ -5689,18 +5677,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Records user interactions with local IBANs on the Chrome payment methods
     settings page.
   </summary>
-</histogram>
-
-<histogram name="Autofill.ShadowPredictions.{SourcePair}"
-    enum="AutofillPredictionsComparisonResult" expires_after="2025-08-24">
-  <owner>schwering@google.com</owner>
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    3-way comparison between {SourcePair} and the value that was in a field on
-    submission. This is emitted after an autofillable form has been submitted.
-  </summary>
-  <token key="SourcePair" variants="Autofill.ShadowPredictions.SourcePair"/>
 </histogram>
 
 <histogram name="Autofill.SharedStorageServerCardDataSetResult"

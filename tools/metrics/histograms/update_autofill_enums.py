@@ -87,23 +87,6 @@ def GenerateAutofilledFieldUserEditingStatusByFieldType(server_field_types):
   return result
 
 
-def GenerateAutofillPredictionsComparisonResult(server_field_types):
-  result = {}
-  result[0] = 'None'
-  for id, name in server_field_types.items():
-    result[6 * id + 1] = f'{name} - Predictions equal - Value agrees'
-    result[6 * id + 2] = f'{name} - Predictions equal - Value disagrees'
-    result[6 * id + 3] = \
-        f'{name} - Predictions different - Value agrees with old prediction'
-    result[6 * id + 4] = \
-        f'{name} - Predictions different - Value agrees with new prediction'
-    result[6 * id + 5] = \
-        f'{name} - Predictions different - Value agrees with neither prediction'
-    result[6 * id + 6] = \
-        f'{name} - Predictions different - Value agrees with both predictions'
-  return result
-
-
 def GenerateAutofillFieldPredictionQualityByFieldType():
   groups = ReadFieldPredictionGroups(FIELD_PREDICTION_GROUPS_PATH)
   result = {}
@@ -150,12 +133,6 @@ if __name__ == '__main__':
       'tools/metrics/histograms/metadata/autofill/enums.xml',
       'AutofilledFieldUserEditingStatusByFieldType',
       GenerateAutofilledFieldUserEditingStatusByFieldType(server_field_types),
-      FIELD_TYPES_PATH, os.path.basename(__file__))
-
-  update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillPredictionsComparisonResult',
-      GenerateAutofillPredictionsComparisonResult(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(

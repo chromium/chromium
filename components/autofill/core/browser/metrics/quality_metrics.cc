@@ -24,7 +24,6 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
-#include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
@@ -185,7 +184,6 @@ void LogPredictionMetrics(
     LogOverallPredictionQualityMetrics(form_interactions_ukm_logger, source_id,
                                        form, *field, metric_type);
     LogEmailFieldPredictionMetrics(*field);
-    LogShadowPredictionComparison(*field, GetActiveHeuristicSource());
     LogFieldPredictionOverlapMetrics(*field);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     // If ML predictions are the active heuristic source, don't record samples
