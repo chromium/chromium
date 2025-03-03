@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
-    expires_after="2025-03-22">
+    expires_after="2025-09-22">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
-    expires_after="2025-04-13">
+    expires_after="2025-09-13">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
