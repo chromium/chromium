@@ -169,3 +169,27 @@ grit("resources") {
     "add_filepath_to_resource_map=${load_webui_from_disk}",
   ]
 }
+
+if (enable_webui_generate_code_cache) {
+  generate_grd("build_code_cache_grd") {
+    grd_prefix = "webui_code_cache"
+    out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+    grdp_files =
+        [ "$root_gen_dir/third_party/lit/v3_0/code_cache_resources.grdp" ]
+
+    public_deps = [ "//third_party/lit/v3_0:build_code_cache_grdp" ]
+  }
+
+  grit("code_cache_resources") {
+    enable_input_discovery_for_gn_analyze = false
+    source = "$target_gen_dir/webui_code_cache_resources.grd"
+    deps = [ ":build_code_cache_grd" ]
+
+    outputs = [
+      "grit/webui_code_cache_resources.h",
+      "grit/webui_code_cache_resources_map.cc",
+      "grit/webui_code_cache_resources_map.h",
+      "webui_code_cache_resources.pak",
+    ]
+  }
+}
