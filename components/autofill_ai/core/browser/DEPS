@@ -4,7 +4,6 @@ include_rules = [
   "+components/optimization_guide/proto",
   "+components/prefs",
   "+components/strings/grit",
-  "+components/user_annotations",
   "+ui/base",
   "+ui/native_theme",
 ]

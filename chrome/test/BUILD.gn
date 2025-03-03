@@ -2216,7 +2216,6 @@ if (!is_android) {
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/webui/whats_new",
-      "//chrome/browser/user_annotations:browser_tests",
       "//chrome/browser/web_applications:browser_tests",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:prevent_close_test_support",
@@ -2493,7 +2492,6 @@ if (!is_android) {
       "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
       "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
       "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
-      "//components/user_annotations",
       "//components/user_education/common",
       "//components/user_education/test",
       "//components/user_education/webui:webui",
@@ -4525,7 +4523,6 @@ if (!is_android) {
         # when tests that include chrome_zoom_level_prefs.h get modularized, eg
         # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
         "//chrome/browser/ui/zoom",
-        "//chrome/browser/user_annotations:user_annotations",
         "//chrome/browser/web_applications/extensions",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
@@ -4538,13 +4535,11 @@ if (!is_android) {
         "//components/media_router/browser:test_support",
         "//components/media_router/common:test_support",
         "//components/optimization_guide/optimization_guide_internals/webui",
-        "//components/user_annotations:test_support",
         "//components/web_package",
 
         # TODO(rockot) bug 505926: The chrome_extensions_browsertests_sources
         # target should be deleted and this line removed. See the
         # chrome_extensions_browsertests_sources target for more.
-        "//components/user_annotations:test_support",
         "//extensions:chrome_extensions_browsertests_sources",
         "//extensions/browser:test_support",
         "//extensions/browser/api/storage:settings_namespace",
@@ -6796,7 +6791,6 @@ test("unit_tests") {
     "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
     "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
     "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
-    "//components/user_annotations:test_support",
     "//components/user_education/common",
     "//components/user_education/test",
     "//components/user_manager",
@@ -8124,7 +8118,6 @@ test("unit_tests") {
       "//chrome/browser/ui/zoom",
       "//chrome/browser/ui/zoom:unit_tests",
       "//chrome/browser/upgrade_detector:build_state_observer",
-      "//chrome/browser/user_annotations",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",
@@ -8176,8 +8169,6 @@ test("unit_tests") {
       "//components/soda:constants",
       "//components/supervised_user/core/browser",
       "//components/sync:test_support",
-      "//components/user_annotations",
-      "//components/user_annotations:test_support",
       "//components/user_education/common",
       "//components/user_education/test",
       "//components/webapps/browser",
@@ -10845,7 +10836,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
-      "//chrome/browser/user_annotations:user_annotations",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -10919,7 +10909,6 @@ if (!is_android && !is_chromeos_device) {
       "//components/translate/content/browser:test_support",
       "//components/ukm:test_support",
       "//components/ukm:ukm_test_helper",
-      "//components/user_annotations:user_annotations",
       "//components/user_education/common",
       "//components/user_education/test",
       "//components/webapps/browser:test_support",

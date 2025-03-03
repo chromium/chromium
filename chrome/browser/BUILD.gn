@@ -2392,7 +2392,6 @@ static_library("browser") {
     "//components/url_formatter/spoof_checks/top_domains:top_bucket_domains",
     "//components/url_formatter/spoof_checks/top_domains:top_bucket_domains_header",
     "//components/url_matcher",
-    "//components/user_annotations",
     "//components/user_manager",
     "//components/user_prefs",
     "//components/variations",
@@ -4324,7 +4323,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui/whats_new:impl",
       "//chrome/browser/upgrade_detector:build_state_observer",
-      "//chrome/browser/user_annotations",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:web_applications_metrics",
@@ -4406,9 +4404,6 @@ static_library("browser") {
 
       # TODO(crbug.com/366172297): Remove circular dependencies.
       "//chrome/browser/autofill_ai:util",
-
-      # TODO(crbug.com/366172297): Remove circular dependencies.
-      "//chrome/browser/user_annotations",
 
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",

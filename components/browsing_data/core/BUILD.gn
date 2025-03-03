@@ -43,7 +43,6 @@ static_library("core") {
     "//components/prefs",
     "//components/strings",
     "//components/sync",
-    "//components/user_annotations",
     "//components/version_info",
     "//components/webdata/common",
     "//ui/base",

@@ -41,7 +41,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 // TODO(crbug.com/389629573): Refactor this test to handle only the
-// implementation under `autofill::features::kAutofillAiWithDataSchema` flag.
+// implementation under `autofill::features::kAutofillAiWithDataSchema`
+// flag.
 namespace autofill_ai {
 namespace {
 

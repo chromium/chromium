@@ -14,7 +14,6 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -35,7 +34,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_annotations/test_user_annotations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,11 +48,6 @@ using ::testing::Return;
 std::unique_ptr<KeyedService> CreateOptimizationGuideKeyedService(
     content::BrowserContext* context) {
   return std::make_unique<NiceMock<MockOptimizationGuideKeyedService>>();
-}
-
-std::unique_ptr<KeyedService> CreateUserAnnotationsServiceFactory(
-    content::BrowserContext* context) {
-  return std::make_unique<user_annotations::TestUserAnnotationsService>();
 }
 
 std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
@@ -92,9 +85,6 @@ class ChromeAutofillAiClientTest : public ChromeRenderViewHostTestHarness {
     return {TestingProfile::TestingFactory{
                 OptimizationGuideKeyedServiceFactory::GetInstance(),
                 base::BindRepeating(&CreateOptimizationGuideKeyedService)},
-            TestingProfile::TestingFactory{
-                UserAnnotationsServiceFactory::GetInstance(),
-                base::BindRepeating(&CreateUserAnnotationsServiceFactory)},
             TestingProfile::TestingFactory{
                 autofill::PersonalDataManagerFactory::GetInstance(),
                 base::BindRepeating(&CreateTestPersonalDataManager)},

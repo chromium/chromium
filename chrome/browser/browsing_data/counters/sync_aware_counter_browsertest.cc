@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS),
-      /*user_annotations_service=*/nullptr, sync_service);
+      sync_service);
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
