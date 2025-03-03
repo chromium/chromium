@@ -8,7 +8,12 @@
 <title>$i18n{blockPageTitle}</title>
 <link rel="stylesheet" href="../../../../../components/security_interstitials/core/common/resources/interstitial_core.css">
 <link rel="stylesheet" href="supervised_user_block_interstitial_v2.css">
-<script src="supervised_user_block_interstitial_v2.js"></script>
+<if expr="not optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/supervised_user/core/browser/resources/preprocessed/supervised_user_block_interstitial_v2.js"></script>
+</if>
+<if expr="optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/supervised_user/core/browser/resources/minified/supervised_user_block_interstitial_v2.js"></script>
+</if>
 </head>
 <body class="supervised-user-block">
 <div class="frame-blocked" id="frame-blocked" tabindex="-1">

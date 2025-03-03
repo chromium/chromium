@@ -1242,6 +1242,10 @@ grit("generate_components_resources") {
     "//components/security_interstitials/core/browser/resources:bundle_js",
   ]
 
+  if (enable_supervised_users) {
+    deps += [ "//components/supervised_user/core/browser/resources:bundle_js" ]
+  }
+
   if (safe_browsing_mode != 0) {
     deps += [
       "//components/safe_browsing/content/resources:make_file_types_protobuf",
