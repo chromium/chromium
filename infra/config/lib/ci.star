@@ -126,9 +126,9 @@ def ci_builder(
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
     branch_gardener_rotations = list({
-        platform_settings.gardener_rotation: None
+        builders.rotation(platform_settings.gardener_rotation, None): None
         for platform, platform_settings in settings.platforms.items()
-        if branches.matches(branch_selector, platform = platform)
+        if branches.matches(branch_selector, platform = platform) and platform_settings.gardener_rotation
     })
     branch_gardener_rotations = args.listify(gardener_rotations, branch_gardener_rotations)
 
@@ -192,7 +192,7 @@ def ci_builder(
             for rotation in gardener_rotations:
                 luci.console_view_entry(
                     builder = builder,
-                    console_view = builders.gardener_rotation_name(rotation),
+                    console_view = rotation.console_name,
                     category = overview_console_category,
                     short_name = entry.short_name,
                 )

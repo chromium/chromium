@@ -119,31 +119,31 @@ siso = struct(
     ),
 )
 
-def _rotation(name):
+def _rotation(name, console_name):
+    if not name:
+        fail("Rotations must be created with a name")
     return branches.value(
         branch_selector = branches.selector.MAIN,
-        value = [name],
+        value = struct(
+            name = name,
+            console_name = console_name,
+        ),
     )
-
-def _gardener_rotation_name(rotation):
-    return "{}.rotation".format(rotation)
 
 # Gardener rotations that a builder can be added to (only takes effect on trunk)
 # New rotations can be added, but won't automatically show up in SoM without
 # changes to SoM code.
 gardener_rotations = struct(
-    ANDROID = _rotation("android"),
-    ANGLE = _rotation("angle"),
-    CHROMIUM = _rotation("chromium"),
-    CFT = _rotation("cft"),
-    DAWN = _rotation("dawn"),
-    FUCHSIA = _rotation("fuchsia"),
-    CHROMIUM_CLANG = _rotation("chromium.clang"),
-    CHROMIUM_GPU = _rotation("chromium.gpu"),
-    CHROMIUM_PERF = _rotation("chromium.perf"),
-    IOS = _rotation("ios"),
-    CHROMIUMOS = _rotation("chromiumos"),  # This group is not on SoM.
-    LACROS_SKYLAB = _rotation("lacros_skylab"),
+    ANDROID = _rotation("android", "android rotation"),
+    ANGLE = _rotation("angle", "angle rotation"),
+    CHROMIUM = _rotation("chromium", "chromium rotation"),
+    CFT = _rotation("cft", "cft rotation"),
+    DAWN = _rotation("dawn", "dawn rotation"),
+    FUCHSIA = _rotation("fuchsia", "fuchsia rotation"),
+    CHROMIUM_CLANG = _rotation("chromium.clang", "chromium.clang rotation"),
+    CHROMIUM_GPU = _rotation("chromium.gpu", "chromium.gpu rotation"),
+    IOS = _rotation("ios", "ios rotation"),
+    CHROMIUMOS = _rotation("chromiumos", "chromiumos rotation"),  # This group is not on SoM.
 )
 
 # Free disk space in a machine reserved for build tasks.
@@ -841,10 +841,11 @@ def builder(
         dimensions["pool"] = pool
 
     gardener_rotations = defaults.get_value("gardener_rotations", gardener_rotations, merge = args.MERGE_LIST)
+    gardener_rotation_names = [rotation.name for rotation in gardener_rotations]
     if gardener_rotations:
         # TODO(343503161): Remove gardener_rotations after SoM is updated.
-        properties["sheriff_rotations"] = gardener_rotations
-        properties["gardener_rotations"] = gardener_rotations
+        properties["sheriff_rotations"] = gardener_rotation_names
+        properties["gardener_rotations"] = gardener_rotation_names
 
     ssd = defaults.get_value("ssd", ssd)
     if ssd == args.COMPUTE:
@@ -1091,7 +1092,7 @@ def builder(
     if builder_group != None and bucket not in _BUILDER_GROUP_REUSE_BUCKET_ALLOWLIST:
         _BUILDER_GROUP_ID_NODE.add("{}:{}".format(builder_group, name))
 
-    register_gardener_builder(bucket, name, gardener_rotations)
+    register_gardener_builder(bucket, name, gardener_rotation_names)
 
     register_recipe_experiments_ref(bucket, name, executable)
 
@@ -1192,6 +1193,6 @@ builders = struct(
     defaults = defaults,
     os = os,
     gardener_rotations = gardener_rotations,
-    gardener_rotation_name = _gardener_rotation_name,
+    rotation = _rotation,
     free_space = free_space,
 )
