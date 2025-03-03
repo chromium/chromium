@@ -150,6 +150,24 @@ public class TabGroupSyncRemoteObserverUnitTest {
     }
 
     @Test
+    public void testTabGroupAdded_SkipsSharedTabGroupIfAlreadyOpen() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        savedTabGroup.localId = LOCAL_TAB_GROUP_ID_1;
+        savedTabGroup.collaborationId = "Collaboration1";
+        mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any(), anyInt());
+    }
+
+    @Test
+    public void testTabGroupAdded_CreatesSharedTabGroupIfNotAlreadyOpen() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        savedTabGroup.collaborationId = "Collaboration1";
+        mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
+        verify(mLocalMutationHelper)
+                .createNewTabGroup(any(), eq(OpeningSource.AUTO_OPENED_FROM_SYNC));
+    }
+
+    @Test
     public void testTabGroupAdded_PreviouslyClosedGroupOnSignIn() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         when(mTabGroupSyncService.wasTabGroupClosedLocally(savedTabGroup.syncId)).thenReturn(true);

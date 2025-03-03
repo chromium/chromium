@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -78,6 +80,13 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
         if (mTabGroupSyncService.wasTabGroupClosedLocally(tabGroup.syncId)) return;
 
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
+        if (tabGroup.localId != null && !TextUtils.isEmpty(tabGroup.collaborationId)) {
+            // For shared tab groups join flow, it could happen that the tab group has been already
+            // opened locally and the posted onTabGroupAdded event from TabGroupSyncService arrives
+            // later. Ignore it quietly.
+            return;
+        }
+
         assert tabGroup.localId == null;
         boolean isAutoOpenEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
