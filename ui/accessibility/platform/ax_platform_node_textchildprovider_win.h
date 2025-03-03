@@ -23,7 +23,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeTextChildProviderWin
   AXPlatformNodeTextChildProviderWin();
   ~AXPlatformNodeTextChildProviderWin();
 
-  static AXPlatformNodeTextChildProviderWin* Create(AXPlatformNodeWin* owner);
+  static Microsoft::WRL::ComPtr<AXPlatformNodeTextChildProviderWin> Create(
+      AXPlatformNodeWin* owner);
   static void CreateIUnknown(AXPlatformNodeWin* owner, IUnknown** unknown);
 
   // Retrieves this element's nearest ancestor provider that supports the Text
