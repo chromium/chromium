@@ -69,6 +69,7 @@ def _ParseEditsFromStdin(build_directory):
     A dictionary mapping filenames to the associated edits.
   """
   path_to_resolved_path = {}
+
   def _ResolvePath(path):
     if path in path_to_resolved_path:
       return path_to_resolved_path[path]
@@ -165,7 +166,6 @@ _INCLUDE_INSERTION_POINT_REGEX_TEMPLATE = r'''
           %s[^"/]*\.h "  # Matching both basename.h and basename_posix.h
     )
 '''
-
 
 _NEWLINE_CHARACTERS = [ord('\n'), ord('\r')]
 
@@ -466,9 +466,10 @@ suppress this behavior is to replace the text with a single space or similar
 
   filenames = set(_GetFilesFromGit(args.path_filter))
   edits = _ParseEditsFromStdin(args.p)
-  return _ApplyEdits(
-      {k: v
-       for k, v in edits.items() if os.path.realpath(k) in filenames})
+  return _ApplyEdits({
+      k: v
+      for k, v in edits.items() if os.path.realpath(k) in filenames
+  })
 
 
 if __name__ == '__main__':
