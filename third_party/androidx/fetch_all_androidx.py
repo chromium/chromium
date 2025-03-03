@@ -77,42 +77,15 @@ _CIPD_DATA_FILES = _FILES_TO_COMMIT + [
     'to_commit.zip',
 ]
 
+_GENERATED_DISCLAIMER = '''\
+// **IMPORTANT**: build.gradle is generated and any changes would be overridden
+//                by the autoroller. Please update build.gradle.template
+//                instead.
+'''
+
 
 def _build_snapshot_repository_url(version):
     return _SNAPSHOT_REPOSITORY_URL.replace('{{version}}', version)
-
-
-def _parse_dir_list(dir_list):
-    """Computes 'library_group:library_name'->library_version mapping.
-
-    Args:
-      dir_list: List of androidx library directories.
-    """
-    dependency_version_map = dict()
-    for dir_entry in dir_list:
-        stripped_dir = dir_entry.strip()
-        if not stripped_dir.startswith('repository/androidx/'):
-            continue
-        dir_components = stripped_dir.split('/')
-        # Expected format:
-        # "repository/androidx/library_group/library_name/library_version"
-        if len(dir_components) < 5:
-            continue
-        dependency_package = 'androidx.' + '.'.join(dir_components[2:-2])
-        dependency_module = '{}:{}'.format(dependency_package,
-                                           dir_components[-2])
-        if dependency_module not in dependency_version_map:
-            dependency_version_map[dependency_module] = dir_components[-1]
-    return dependency_version_map
-
-
-@contextlib.contextmanager
-def _build_dir():
-    dirname = tempfile.mkdtemp()
-    try:
-        yield dirname
-    finally:
-        shutil.rmtree(dirname)
 
 
 def _get_latest_androidx_version():
@@ -175,15 +148,6 @@ def _get_current_androidx_version():
     return version
 
 
-def _create_local_dir_list(repo_path):
-    repo_path = repo_path.rstrip('/')
-    prefix_len = len(repo_path) + 1
-    ret = []
-    for dirpath, _, _ in os.walk(repo_path):
-        ret.append(os.path.join('repository', dirpath[prefix_len:]))
-    return ret
-
-
 def _generate_version_map_str(bom_path):
     bom = []
     version_lines = []
@@ -209,6 +173,8 @@ def _process_build_gradle(template_path, output_path, androidx_repository_url,
     content = content.replace('{{androidx_repository_url}}',
                               androidx_repository_url)
     content = content.replace('{{version_overrides}}', version_overrides_str)
+    content = content.replace('{{generated_disclaimer}}',
+                              _GENERATED_DISCLAIMER)
     # build.gradle is not deleted after script has finished running. The file is in
     # .gitignore and thus will be excluded from uploaded CLs.
     pathlib.Path(output_path).write_text(content)
