@@ -92,7 +92,7 @@ class ChildListMutationScope final {
 
  public:
   explicit ChildListMutationScope(Node& target) {
-    RecordReplayOnDOMMutation(target, "childList");
+    list_node_id_ = RecordReplayOnDOMMutation(target, "childList");
 
     if (target.GetDocument().HasMutationObserversOfType(
             kMutationTypeChildList)) {
@@ -113,17 +113,28 @@ class ChildListMutationScope final {
   }
 
   void ChildAdded(Node& child) {
+    int node_id = RecordReplayOnDOMMutation(child, "childAdded");
+    if (node_id != -1) {
+      recordreplay::AddDependencyGraphEdge(list_node_id_, node_id,
+                                           "{\"kind\":\"mutationScope\"}");
+    }
     if (accumulator_ && accumulator_->HasObservers())
       accumulator_->ChildAdded(child);
   }
 
   void WillRemoveChild(Node& child) {
+    int node_id = RecordReplayOnDOMMutation(child, "willRemoveChild");
+    if (node_id != -1) {
+      recordreplay::AddDependencyGraphEdge(list_node_id_, node_id,
+                                           "{\"kind\":\"mutationScope\"}");
+    }
     if (accumulator_ && accumulator_->HasObservers())
       accumulator_->WillRemoveChild(child);
   }
 
  private:
   ChildListMutationAccumulator* accumulator_ = nullptr;
+  int list_node_id_ = -1;
 };
 
 }  // namespace blink

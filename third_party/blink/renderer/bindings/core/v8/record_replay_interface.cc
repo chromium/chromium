@@ -2774,9 +2774,9 @@ void RecordReplayEventListener::Trace(Visitor* visitor) const {
   EventListener::Trace(visitor);
 }
 
-void RecordReplayOnDOMMutation(Node& target, const char* type) {
+int RecordReplayOnDOMMutation(Node& target, const char* type) {
   if (!recordreplay::DependencyGraphEnabled()) {
-    return;
+    return -1;
   }
 
   base::Value::Dict info;
@@ -2785,7 +2785,7 @@ void RecordReplayOnDOMMutation(Node& target, const char* type) {
   info.Set("mutationNode", target.RecordReplayId());
   std::string json;
   base::JSONWriter::Write(info, &json);
-  recordreplay::NewDependencyGraphNode(json.c_str());
+  return recordreplay::NewDependencyGraphNode(json.c_str());
 }
 
 }  // namespace blink

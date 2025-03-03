@@ -69,7 +69,7 @@ class RecordReplayEventListener : public NativeEventListener {
   void HandleRecordReplayMessage(v8::Local<v8::Context> context, v8::Local<v8::Object> message);
 };
 
-void RecordReplayOnDOMMutation(Node& target, const char* type);
+int RecordReplayOnDOMMutation(Node& target, const char* type);
 
 } // namespace blink
 
