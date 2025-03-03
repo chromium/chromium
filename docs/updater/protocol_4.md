@@ -40,6 +40,34 @@ The ping-back is an HTTP POST with a JSON data body. The response may contain a
 JSON data body acknowledging the received data, but should be ignored by the
 client unless CUP is in use on this request.
 
+In order to maintain consistency with prior protocols, all objects are designed
+to be serializable in both XML and JSON. Type names defined in this document are
+organizational only, and are not actually serialized as a part of any response
+or request.
+
+For example, we define a `hash` object named `in` represented as:
+> JSON:
+> "in": { "sha256": "hashvalue" }
+> XML:
+> <in sha256="hashvalue" />
+
+There are multiple ways to serialize lists of objects. JSON style suggests that
+lists should have plural property names. In XML, we opted for repeated fields
+with the same pluralized node name. This allows the JSON to be represented as a
+list with the same node name represented only once. This decision also has the
+added benefit that even in cases where only one element is provided in the XML,
+the name indicates that this type should be interpreted as a list of size 1.
+
+For example, we define a list of `hash` objects, named `cached_items`, which is
+represented as:
+> JSON:
+> "cached_items": [
+>   { "sha256": "hashvalue" },
+>   { "sha256": "otherhashvalue" }
+> ]
+> XML:
+> <cached_items sha256="hashvalue" />
+> <cached_items sha256="otherhashvalue" />
 
 ## Concepts
 
@@ -151,11 +179,11 @@ pipeline is successful, or all pipelines have failed. This increases the
 probability that a pipeline will be applied, even if all differential pipelines
 fail.
 
-Some pipeline operations have a `hash_in` member, describing the hash of the
+Some pipeline operations have an `in` member, describing the hash of the
 file that the operation will operate on. If a file with a matching hash is
 already cached, clients may skip the preceding operations. Similarly, clients
-may skip operations preceding and including any operation that has a
-`hash_out` member if they already have a file matching `hash_out` cached.
+may skip operations preceding and including any operation that has an
+`out` member if they already have a file matching `out` cached.
 Since the contents of the cache may change as a client attempts and falls back
 between pipelines, the server cannot always predict what operations a client
 may skip.
@@ -269,7 +297,7 @@ A request object has the following members:
      Default: "".
      The valid operations are any of the types supported by the
      [Operation Object](#operation-objects-update-check-response)
- *   `app`: A list of `app` objects.
+ *   `apps`: A list of `app` objects.
  *   `dedup`: A string, must be "cr". This indicates to servers that the client
      intends to use client-regulated counting algorithms rather than any sort of
      unique identifier. Version 3.0 of the protocol also supported "uid".
@@ -298,7 +326,7 @@ A request object has the following members:
      probers to distinguish this request from real user traffic. Any value
      other than the empty string indicates that the request should not be
      counted toward official metrics. Default: "" (empty string).
- *   `updater`: A list of `updater` objects.
+ *   `updaters`: A list of `updater` objects.
  *   `updaterchannel`: If present, identifies the distribution channel of the
      client (e.g. "stable", "beta", "dev", "canary", "extended"). Default: "".
  *   `updaterversion`: The version of the client that is sending this request.
@@ -389,9 +417,10 @@ following members:
      unknown, or that the concept of enabling/disabling does not exist. "0"
      indicates that the application is disabled. "1" indicates that the app is
      enabled.  Default: "-1".
- *   `cache`: A list of `hash` objects, identifying files that the client has
-     available to use for the purposes of differential updates. This list may
-     be empty, for example if the local cache is empty or does not exist.
+ *   `cached_items`: A list of `hash` objects, identifying files that the
+     client has available to use for the purposes of differential updates. This
+     list may be empty, for example if the local cache is empty or does not
+     exist.
  *   `iid`: Installation ID is an opaque token that identifies an installation
      flow. The installation ID is a unique identifier embedded into a
      metainstaller for the application. It can be used to correlate the first
@@ -436,7 +465,7 @@ following members:
  *   `updatecheck`: An `updatecheck` object. This member may be omitted if the
      client will not honor an update response.
 
-#### `hash` Objects (Update Check Request)
+#### `hash` Objects (Update Check Request and Update Check Response)
  *   `sha256`: A SHA-256 hash, rendered in lowercase base16.
 
 #### `ping` Objects (Update Check Request)
@@ -568,7 +597,7 @@ newline character, followed by a JSON object with the following members:
 #### `response` Objects (Update Check Response)
 A response object contains the server's response to a corresponding `request`
 object in the update check request.
- *   `app`: A list of `app` objects. There is one object for each `app` in the
+ *   `apps`: A list of `app` objects. There is one object for each `app` in the
      request body.
  *   `daystart`: A `daystart` object.
  *   `protocol`: The version of the Omaha protocol. Servers responding with this
@@ -664,7 +693,7 @@ the following members:
 The following members are only present if the `status` is "ok":
  *   `nextversion`: The expected version of the product, if any pipeline is
      able to complete all operations successfully.
- *   `pipeline`: A list of `pipeline` objects.
+ *   `pipelines`: A list of `pipeline` objects.
 
 #### `pipeline` Objects (Update Check Response)
 A pipeline object describes a pipeline process that may be applied in order to
@@ -676,7 +705,7 @@ A pipeline object has the following members:
     unique; for example, a server might use an ID of "h1 -> h2 via zucchini" to
     identify a pipeline that updates an application from h1 to h2, using a
     zucchini patch, and reuse that ID across many update check responses.
- *  `operation`: A list of `operation` objects.
+ *  `operations`: A list of `operation` objects.
 
 #### `operation` Objects (Update Check Response)
 A operation object describes one of many operations to be performed in order to
@@ -690,9 +719,9 @@ the following members:
 
 For `type == "download"`: Download a payload.
  *  `size`: The size in bytes of the payload requested for download.
- *  `hash_out`: A `hash` object containing the expected hash of the downloaded
+ *  `out`: A `hash` object containing the expected hash of the downloaded
     bytes.
- *  `url`: The ordered list of url objects from which this payload may be
+ *  `urls`: The ordered list of `url` objects from which this payload may be
     obtained. Clients must attempt to download from each URL of the appropriate
     type in the specified order, falling back to the next URL if a TCP or HTTP
     error is encountered. A 4xx or 5xx HTTP response qualifies as an error that
@@ -716,7 +745,7 @@ For `type == "puff"`: Apply a differential Puffin patch produced by a previous
 
 For `type == "crx3"`: Decompress a CRX3 package produced by the previous
     operation and install it.
- *  `hash_in`: A `hash` object containing the expected hash of the CRX3 to be
+ *  `in`: A `hash` object containing the expected hash of the CRX3 to be
     installed.
  *  `path`: The path to a payload or directory, relative to the root of the CRX
     archive. This may be left blank in cases where execution after install is
@@ -791,7 +820,7 @@ A ping-back `app` object cannot contain any of the following members:
  *   `updatecheck`
 
 A ping-back `app` additionally contains the following members:
- *   `event`: a list of `event` objects.
+ *   `events`: a list of `event` objects.
 
 #### `event` Objects (Ping-Back Request)
 An event object represents a specific report about an operation the client
@@ -896,7 +925,7 @@ A ping-back `app` object cannot contain any of the following members:
  *   `updatecheck`
 
 A ping-back `app` additionally contains the following members:
- *   `event`: a list of `event` objects.
+ *   `events`: a list of `event` objects.
 
 #### `event` Objects (Ping-Back Response)
 A ping-back response `event` object indicates the server's acknowledgement of
