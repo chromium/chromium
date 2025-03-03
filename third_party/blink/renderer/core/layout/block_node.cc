@@ -327,6 +327,24 @@ void AttachScrollMarkers(LayoutObject& parent,
                          bool has_absolute_containment = false,
                          bool has_fixed_containment = false,
                          bool has_ancestor_marker = false) {
+  auto display_lock_blocks_markers = [](const LayoutObject& object) -> bool {
+    if (DisplayLockContext* display_lock_context =
+            object.GetDisplayLockContext()) {
+      // We don't attach scroll markers for an object that is locked and
+      // non-auto. Also, don't prevent scroll markers if we're not styling auto
+      // locks either, which is a separate decision.
+      return display_lock_context->IsLocked() &&
+             (!display_lock_context->IsAuto() ||
+              !display_lock_context->ShouldStyleChildren());
+    }
+    return false;
+  };
+
+  // Avoid recursing into non-auto content-visibility locked subtrees.
+  if (display_lock_blocks_markers(parent)) {
+    return;
+  }
+
   if (parent.CanContainAbsolutePositionObjects()) {
     has_absolute_containment = true;
     if (parent.CanContainFixedPositionObjects()) {
@@ -340,6 +358,11 @@ void AttachScrollMarkers(LayoutObject& parent,
         (child->IsAbsolutePositioned() && !has_absolute_containment)) {
       continue;
     }
+
+    if (display_lock_blocks_markers(*child)) {
+      continue;
+    }
+
     bool did_attach_marker = false;
     if (auto* element = DynamicTo<Element>(child->GetNode())) {
       if (PseudoElement* marker =
