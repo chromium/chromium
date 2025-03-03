@@ -1252,7 +1252,7 @@ public class TabPersistentStore {
         return modelInfo;
     }
 
-    private static boolean shouldSkipTab(@NonNull Tab tab) {
+    public static boolean shouldSkipTab(@NonNull Tab tab) {
         boolean isNtp = tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl());
         if (!isNtp) return false;
 

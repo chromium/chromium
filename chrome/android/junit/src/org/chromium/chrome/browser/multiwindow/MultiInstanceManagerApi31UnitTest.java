@@ -955,6 +955,50 @@ public class MultiInstanceManagerApi31UnitTest {
                 runningTabbedActivityCount);
     }
 
+    @Test
+    @SmallTest
+    @Config(sdk = 31)
+    public void testRemoveInstanceInfo() {
+        int index = 1;
+        String urlKey = MultiInstanceManagerApi31.urlKey(index);
+        ChromeSharedPreferences.getInstance().writeString(urlKey, "");
+        String titleKey = MultiInstanceManagerApi31.titleKey(index);
+        ChromeSharedPreferences.getInstance().writeString(titleKey, "");
+        String tabCountKey = MultiInstanceManagerApi31.tabCountKey(index);
+        ChromeSharedPreferences.getInstance().writeInt(tabCountKey, 1);
+        String tabCountForRelaunch = MultiInstanceManagerApi31.tabCountForRelaunchKey(index);
+        ChromeSharedPreferences.getInstance().writeInt(tabCountForRelaunch, 1);
+        String incognitoTabCountKey = MultiInstanceManagerApi31.incognitoTabCountKey(index);
+        ChromeSharedPreferences.getInstance().writeInt(incognitoTabCountKey, 1);
+        String incognitoSelectedKey = MultiInstanceManagerApi31.incognitoSelectedKey(index);
+        ChromeSharedPreferences.getInstance().writeBoolean(incognitoSelectedKey, false);
+        String lastAccessedTimeKey = MultiInstanceManagerApi31.lastAccessedTimeKey(index);
+        ChromeSharedPreferences.getInstance().writeLong(lastAccessedTimeKey, 1);
+
+        MultiInstanceManagerApi31.removeInstanceInfo(index);
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(urlKey));
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(titleKey));
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(tabCountKey));
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(tabCountForRelaunch));
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(incognitoTabCountKey));
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(incognitoSelectedKey));
+        assertFalse(
+                "Shared preference key should be removed.",
+                ChromeSharedPreferences.getInstance().contains(lastAccessedTimeKey));
+    }
+
     private void triggerSelectTab(TabModelObserver tabModelObserver, Tab tab) {
         // Set up the mocks to have |TabModelUtils.getCurrentTab(selector.getModel(false))|
         // return the last active normal tab.

@@ -21,6 +21,7 @@ import android.os.Build.VERSION_CODES;
 import android.util.SparseIntArray;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +37,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
@@ -43,6 +46,9 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -117,6 +123,9 @@ public class MultiWindowUtilsUnitTest {
     @Mock HomepageManager mHomepageManager;
     @Mock DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock AppHeaderState mAppHeaderState;
+    @Mock Tab mTab1;
+    @Mock Tab mTab2;
+    @Mock Tab mTab3;
 
     @Before
     public void setUp() {
@@ -616,6 +625,70 @@ public class MultiWindowUtilsUnitTest {
 
         // Histograms should not be emitted.
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testGetTabCountForRelaunchFromSharedPrefs() {
+        int windowId1 = 0;
+        int windowId2 = 1;
+        ChromeSharedPreferences.getInstance()
+                .writeInt(MultiWindowUtils.getTabCountForRelaunchKey(windowId1), 10);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(MultiWindowUtils.getTabCountForRelaunchKey(windowId2), 15);
+        assertEquals(10, MultiWindowUtils.getTabCountForRelaunchFromSharedPrefs(windowId1), 0.01);
+        assertEquals(15, MultiWindowUtils.getTabCountForRelaunchFromSharedPrefs(windowId2), 0.01);
+    }
+
+    @Test
+    public void testRecordTabCountForRelaunchWhenActivityPaused_MultiInstanceApi31Enabled() {
+        MultiWindowTestUtils.enableMultiInstance();
+        int windowId = 1;
+        testRecordTabCountForRelaunchWhenActivityPausedImpl(windowId);
+    }
+
+    @Test
+    public void testRecordTabCountForRelaunchWhenActivityPaused_MultiInstanceApi31Disabled() {
+        testRecordTabCountForRelaunchWhenActivityPausedImpl(/* windowId= */ 0);
+    }
+
+    private void testRecordTabCountForRelaunchWhenActivityPausedImpl(int windowId) {
+        String tabCountForRelaunchKey = MultiWindowUtils.getTabCountForRelaunchKey(windowId);
+
+        List<TabModel> models = Arrays.asList(mNormalTabModel, mIncognitoTabModel);
+        when(mTabModelSelector.getModels()).thenReturn(models);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+
+        // Test if recordTabCountForRelaunchWhenActivityPaused() returns the correct value for
+        // standard tabs.
+        when(mNormalTabModel.getCount()).thenReturn(2);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
+        when(mNormalTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(mTab1.isNativePage()).thenReturn(false);
+        when(mTab1.getUrl()).thenReturn(TEST_GURL);
+        when(mTab2.isNativePage()).thenReturn(false);
+        when(mTab2.getUrl()).thenReturn(TEST_GURL);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        Assert.assertEquals(
+                /* expected= */ 2,
+                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
+
+        // Test the case of adding a non-NTP tab to the tab model.
+        when(mNormalTabModel.getCount()).thenReturn(3);
+        when(mNormalTabModel.getTabAt(2)).thenReturn(mTab3);
+        when(mTab3.isNativePage()).thenReturn(false);
+        when(mTab3.getUrl()).thenReturn(TEST_GURL);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        Assert.assertEquals(
+                /* expected= */ 3,
+                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
+
+        // Test the case of adding a NTP tab to the tab model.
+        when(mTab3.isNativePage()).thenReturn(true);
+        when(mTab3.getUrl()).thenReturn(NTP_GURL);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        Assert.assertEquals(
+                /* expected= */ 2,
+                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
     }
 
     private void writeInstanceInfo(

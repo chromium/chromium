@@ -11,6 +11,7 @@ import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -45,7 +46,9 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -67,6 +70,7 @@ import java.util.Locale;
 public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_INSTANCE_ID = TabWindowManager.INVALID_WINDOW_INDEX;
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
+    private static final int DEFAULT_TAB_COUNT_FOR_RELAUNCH = 0;
 
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
             "Android.MultiInstance.NumActivities.DesktopWindow";
@@ -894,6 +898,61 @@ public class MultiWindowUtils implements ActivityStateListener {
 
         RecordHistogram.recordExactLinearHistogram(
                 histogramName + histogramSuffix, count, getMaxInstances() + 1);
+    }
+
+    /**
+     * Records count of tabs with shared preference before Chrome is paused and becomes invisible to
+     * the user. The value stored is only used for relaunching chrome and it may not be accurate if
+     * Chrome remains active in the foreground or background without being terminated.
+     *
+     * @param tabModelSelector The current {@link TabModelSelector}.
+     * @param windowId The id of the window.
+     */
+    public static void recordTabCountForRelaunchWhenActivityPaused(
+            TabModelSelector tabModelSelector, int windowId) {
+        List<TabModel> models = tabModelSelector.getModels();
+        int totalCount = 0;
+        for (TabModel model : models) {
+            for (int i = 0; i < model.getCount(); i++) {
+                Tab tab = model.getTabAt(i);
+                if (!TabPersistentStore.shouldSkipTab(tab)) {
+                    totalCount++;
+                }
+            }
+        }
+
+        SharedPreferences.Editor editor = ChromeSharedPreferences.getInstance().getEditor();
+        String tabCountForRelaunchKey = getTabCountForRelaunchKey(windowId);
+        editor.putInt(tabCountForRelaunchKey, totalCount);
+        // The ChromeSharedPreferences.getInstance().writeInt() method uses editor.apply() instead
+        // of editor.commit(). The editor.apply() method writes data to memory and returns
+        // immediately, while the actual disk write occurs asynchronously in a background thread. On
+        // the other hand, editor.commit() writes data directly to disk and waits for the operation
+        // to complete. Since apply() is asynchronous, if the program is forcibly closed right after
+        // calling it (e.g., in our case where Chrome is closed and then relaunched), the disk write
+        // may not finish in time, potentially resulting in data loss. Therefore, editor.commit() is
+        // used here to ensure data is reliably saved.
+        editor.commit();
+    }
+
+    /**
+     * Returns the total number of tabs for relaunch across both regular and incognito browsing
+     * modes through shared preference key.
+     *
+     * @param windowId The id of the window.
+     */
+    public static int getTabCountForRelaunchFromSharedPrefs(int windowId) {
+        String tabCountForRelaunchKey = getTabCountForRelaunchKey(windowId);
+        return ChromeSharedPreferences.getInstance()
+                .readInt(
+                        tabCountForRelaunchKey, /* defaultValue= */ DEFAULT_TAB_COUNT_FOR_RELAUNCH);
+    }
+
+    /** Returns the tab count for relaunch key. */
+    @VisibleForTesting
+    static String getTabCountForRelaunchKey(int windowId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.createKey(
+                String.valueOf(windowId));
     }
 
     public static void setInstanceForTesting(MultiWindowUtils instance) {
