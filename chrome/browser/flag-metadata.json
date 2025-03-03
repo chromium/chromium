@@ -4471,6 +4471,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "fast-enumerate-printers",
+    "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "fast-pair-debug-metadata",
     "owners": [
       "//ash/quick_pair/OWNERS",

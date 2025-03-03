@@ -11,8 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #endif
 
-namespace printing {
-namespace features {
+namespace printing::features {
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Add printers via printscanmgr instead of debugd.
@@ -35,6 +34,13 @@ BASE_FEATURE(kCupsIppPrintingBackend,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+// Use a faster method to enumerate printers, using a combination of a
+// non-blocking Print Spooler API and the Windows registry to speed up reading
+// of basic printer info.
+BASE_FEATURE(kFastEnumeratePrinters,
+             "FastEnumeratePrinters",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When using PostScript level 3 printing, render text with Type 42 fonts if
 // possible.
 BASE_FEATURE(kPrintWithPostScriptType42Fonts,
@@ -91,5 +97,4 @@ const base::FeatureParam<bool> kEnableOopPrintDriversSingleProcess{
 #endif
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
-}  // namespace features
-}  // namespace printing
+}  // namespace printing::features

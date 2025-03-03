@@ -59,6 +59,7 @@ class DriverInfo {
 
 }  // namespace internal
 
+using PrinterInfo1 = internal::PrinterInfo<PRINTER_INFO_1, 1>;
 using PrinterInfo2 = internal::PrinterInfo<PRINTER_INFO_2, 2>;
 using PrinterInfo5 = internal::PrinterInfo<PRINTER_INFO_5, 5>;
 
