@@ -97,24 +97,74 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
       mojom_geometry.is_fixed_or_sticky_position);
 }
 
-void ConvertInteractionInfo(
-    const blink::mojom::AIPageContentInteractionInfo& mojom_interaction_info,
+void ConvertNodeInteractionInfo(
+    const blink::mojom::AIPageContentNodeInteractionInfo&
+        mojom_node_interaction_info,
     optimization_guide::proto::InteractionInfo* proto_interaction_info) {
   proto_interaction_info->set_scrolls_overflow_x(
-      mojom_interaction_info.scrolls_overflow_x);
+      mojom_node_interaction_info.scrolls_overflow_x);
   proto_interaction_info->set_scrolls_overflow_y(
-      mojom_interaction_info.scrolls_overflow_y);
+      mojom_node_interaction_info.scrolls_overflow_y);
   proto_interaction_info->set_is_selectable(
-      mojom_interaction_info.is_selectable);
-  proto_interaction_info->set_is_editable(mojom_interaction_info.is_editable);
+      mojom_node_interaction_info.is_selectable);
+  proto_interaction_info->set_is_editable(
+      mojom_node_interaction_info.is_editable);
   proto_interaction_info->set_can_resize_horizontal(
-      mojom_interaction_info.can_resize_horizontal);
+      mojom_node_interaction_info.can_resize_horizontal);
   proto_interaction_info->set_can_resize_vertical(
-      mojom_interaction_info.can_resize_vertical);
-  proto_interaction_info->set_is_focusable(mojom_interaction_info.is_focusable);
-  proto_interaction_info->set_is_focused(mojom_interaction_info.is_focused);
-  proto_interaction_info->set_is_draggable(mojom_interaction_info.is_draggable);
-  proto_interaction_info->set_is_clickable(mojom_interaction_info.is_clickable);
+      mojom_node_interaction_info.can_resize_vertical);
+  proto_interaction_info->set_is_focusable(
+      mojom_node_interaction_info.is_focusable);
+  proto_interaction_info->set_is_draggable(
+      mojom_node_interaction_info.is_draggable);
+  proto_interaction_info->set_is_clickable(
+      mojom_node_interaction_info.is_clickable);
+}
+
+void ConvertPoint(const gfx::Point& mojom_point,
+                  optimization_guide::proto::Point* proto_point) {
+  proto_point->set_x(mojom_point.x());
+  proto_point->set_y(mojom_point.y());
+}
+
+void ConvertSelection(
+    const blink::mojom::AIPageContentSelection& mojom_selection,
+    optimization_guide::proto::Selection* proto_selection) {
+  proto_selection->set_selected_text(mojom_selection.selected_text);
+  proto_selection->set_start_node_id(mojom_selection.start_node_id);
+  proto_selection->set_end_node_id(mojom_selection.end_node_id);
+  proto_selection->set_start_offset(mojom_selection.start_offset);
+  proto_selection->set_end_offset(mojom_selection.end_offset);
+}
+
+void ConvertFrameInteractionInfo(
+    const blink::mojom::AIPageContentFrameInteractionInfo&
+        mojom_frame_interaction_info,
+    optimization_guide::proto::FrameInteractionInfo*
+        proto_frame_interaction_info) {
+  if (mojom_frame_interaction_info.selection) {
+    ConvertSelection(*mojom_frame_interaction_info.selection,
+                     proto_frame_interaction_info->mutable_selection());
+  }
+}
+
+void ConvertPageInteractionInfo(
+    const blink::mojom::AIPageContentPageInteractionInfo&
+        mojom_page_interaction_info,
+    optimization_guide::proto::PageInteractionInfo*
+        proto_page_interaction_info) {
+  if (mojom_page_interaction_info.focused_node_id) {
+    proto_page_interaction_info->set_focused_node_id(
+        *mojom_page_interaction_info.focused_node_id);
+  }
+  if (mojom_page_interaction_info.accessibility_focused_node_id) {
+    proto_page_interaction_info->set_accessibility_focused_node_id(
+        *mojom_page_interaction_info.accessibility_focused_node_id);
+  }
+  if (mojom_page_interaction_info.mouse_position) {
+    ConvertPoint(*mojom_page_interaction_info.mouse_position,
+                 proto_page_interaction_info->mutable_mouse_position());
+  }
 }
 
 optimization_guide::proto::TextSize ConvertTextSize(
@@ -341,9 +391,9 @@ bool ConvertAttributes(
                     proto_attributes->mutable_geometry());
   }
 
-  if (mojom_attributes.interaction_info) {
-    ConvertInteractionInfo(*mojom_attributes.interaction_info,
-                           proto_attributes->mutable_interaction_info());
+  if (mojom_attributes.node_interaction_info) {
+    ConvertNodeInteractionInfo(*mojom_attributes.node_interaction_info,
+                               proto_attributes->mutable_interaction_info());
   }
 
   if (mojom_attributes.text_info) {
@@ -405,12 +455,18 @@ bool ConvertAttributes(
 
 void ConvertIframeData(
     const RenderFrameInfo& render_frame_info,
-    const blink::mojom::AIPageContentIframeData& iframe_data,
+    const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
     optimization_guide::proto::IframeData* proto_iframe_data) {
   if (!render_frame_info.source_origin.opaque()) {
     proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
   }
-  proto_iframe_data->set_likely_ad_frame(iframe_data.likely_ad_frame);
+  proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
+  auto* proto_frame_data = proto_iframe_data->mutable_frame_data();
+  if (mojom_iframe_data.frame_interaction_info) {
+    ConvertFrameInteractionInfo(
+        *mojom_iframe_data.frame_interaction_info,
+        proto_frame_data->mutable_frame_interaction_info());
+  }
 }
 
 bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
@@ -498,6 +554,17 @@ bool ConvertAIPageContentToProto(
                    page_content_map, get_render_frame_info,
                    proto->mutable_root_node())) {
     return false;
+  }
+
+  if (main_frame_page_content.page_interaction_info) {
+    ConvertPageInteractionInfo(*main_frame_page_content.page_interaction_info,
+                              proto->mutable_page_interaction_info());
+  }
+  if (main_frame_page_content.main_frame_interaction_info) {
+    auto* proto_main_frame_data = proto->mutable_main_frame_data();
+    ConvertFrameInteractionInfo(
+        *main_frame_page_content.main_frame_interaction_info,
+        proto_main_frame_data->mutable_frame_interaction_info());
   }
 
   proto->set_version(

@@ -413,7 +413,68 @@ TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_TableRow) {
   EXPECT_FALSE(ConvertAIPageContentToProto(root_content, proto));
 }
 
-// TODO(crbug.com/385159723): Add tests for ConvertIFrameData.
+TEST(PageContentProtoUtilTest, ConvertIframeData) {
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+  root_content->root_node->children_nodes.emplace_back(
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe));
+
+  auto iframe_token = CreateFrameToken();
+  auto iframe_data = blink::mojom::AIPageContentIframeData::New();
+  iframe_data->frame_token = iframe_token.frame_token;
+  iframe_data->likely_ad_frame = true;
+  iframe_data->frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  iframe_data->frame_interaction_info->selection =
+      blink::mojom::AIPageContentSelection::New();
+  iframe_data->frame_interaction_info->selection->selected_text =
+      "selected text";
+  iframe_data->frame_interaction_info->selection->start_node_id = 1;
+  iframe_data->frame_interaction_info->selection->end_node_id = 2;
+  iframe_data->frame_interaction_info->selection->start_offset = 3;
+  iframe_data->frame_interaction_info->selection->end_offset = 4;
+  root_content->root_node->children_nodes.back()
+      ->content_attributes->iframe_data = std::move(iframe_data);
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  std::optional<blink::FrameToken> query_token;
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int child_process_id,
+          blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        query_token = token;
+        RenderFrameInfo render_frame_info;
+        render_frame_info.global_frame_token = iframe_token;
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        return render_frame_info;
+      });
+
+  proto::AnnotatedPageContent proto;
+  EXPECT_TRUE(ConvertAIPageContentToProto(main_frame_token, page_content_map,
+                                          get_render_frame_info, &proto));
+  ASSERT_TRUE(query_token.has_value());
+  EXPECT_EQ(iframe_token.frame_token, *query_token);
+
+  EXPECT_EQ(proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(proto.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(
+      proto.root_node().children_nodes(0).content_attributes().attribute_type(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& proto_iframe_data =
+      proto.root_node().children_nodes(0).content_attributes().iframe_data();
+  EXPECT_TRUE(proto_iframe_data.likely_ad_frame());
+  const auto& frame_interaction_info =
+      proto_iframe_data.frame_data().frame_interaction_info();
+  const auto& selection = frame_interaction_info.selection();
+  EXPECT_EQ(selection.selected_text(), "selected text");
+  EXPECT_EQ(selection.start_node_id(), 1);
+  EXPECT_EQ(selection.end_node_id(), 2);
+  EXPECT_EQ(selection.start_offset(), 3);
+  EXPECT_EQ(selection.end_offset(), 4);
+}
 
 TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Form) {
   auto root_content = CreatePageContent();
@@ -462,22 +523,25 @@ TEST(PageContentProtoUtilTest, ConvertGeometry) {
   EXPECT_TRUE(geometry.is_fixed_or_sticky_position());
 }
 
-TEST(PageContentProtoUtilTest, ConvertInteractionInfo) {
+TEST(PageContentProtoUtilTest, ConvertNodeInteractionInfo) {
   auto root_content = CreatePageContent();
   auto text_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kText);
-  text_node->content_attributes->interaction_info =
-      blink::mojom::AIPageContentInteractionInfo::New();
-  text_node->content_attributes->interaction_info->scrolls_overflow_x = true;
-  text_node->content_attributes->interaction_info->scrolls_overflow_y = true;
-  text_node->content_attributes->interaction_info->is_selectable = true;
-  text_node->content_attributes->interaction_info->is_editable = true;
-  text_node->content_attributes->interaction_info->can_resize_horizontal = true;
-  text_node->content_attributes->interaction_info->can_resize_vertical = true;
-  text_node->content_attributes->interaction_info->is_focusable = true;
-  text_node->content_attributes->interaction_info->is_focused = true;
-  text_node->content_attributes->interaction_info->is_draggable = true;
-  text_node->content_attributes->interaction_info->is_clickable = true;
+  text_node->content_attributes->node_interaction_info =
+      blink::mojom::AIPageContentNodeInteractionInfo::New();
+  text_node->content_attributes->node_interaction_info->scrolls_overflow_x =
+      true;
+  text_node->content_attributes->node_interaction_info->scrolls_overflow_y =
+      true;
+  text_node->content_attributes->node_interaction_info->is_selectable = true;
+  text_node->content_attributes->node_interaction_info->is_editable = true;
+  text_node->content_attributes->node_interaction_info->can_resize_horizontal =
+      true;
+  text_node->content_attributes->node_interaction_info->can_resize_vertical =
+      true;
+  text_node->content_attributes->node_interaction_info->is_focusable = true;
+  text_node->content_attributes->node_interaction_info->is_draggable = true;
+  text_node->content_attributes->node_interaction_info->is_clickable = true;
   root_content->root_node->children_nodes.emplace_back(std::move(text_node));
 
   proto::AnnotatedPageContent proto;
@@ -500,9 +564,56 @@ TEST(PageContentProtoUtilTest, ConvertInteractionInfo) {
   EXPECT_TRUE(interaction_info.can_resize_horizontal());
   EXPECT_TRUE(interaction_info.can_resize_vertical());
   EXPECT_TRUE(interaction_info.is_focusable());
-  EXPECT_TRUE(interaction_info.is_focused());
   EXPECT_TRUE(interaction_info.is_draggable());
   EXPECT_TRUE(interaction_info.is_clickable());
+}
+
+TEST(PageContentProtoUtilTest, ConvertPageInteractionInfo) {
+  auto root_content = CreatePageContent();
+  root_content->page_interaction_info =
+      blink::mojom::AIPageContentPageInteractionInfo::New();
+  root_content->page_interaction_info->focused_node_id = 1;
+  root_content->page_interaction_info->accessibility_focused_node_id = 2;
+  root_content->page_interaction_info->mouse_position = gfx::Point(10, 20);
+
+  proto::AnnotatedPageContent proto;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, proto));
+
+  EXPECT_EQ(proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  const auto& page_interaction_info = proto.page_interaction_info();
+  EXPECT_EQ(page_interaction_info.focused_node_id(), 1);
+  EXPECT_EQ(page_interaction_info.accessibility_focused_node_id(), 2);
+  EXPECT_EQ(page_interaction_info.mouse_position().x(), 10);
+  EXPECT_EQ(page_interaction_info.mouse_position().y(), 20);
+}
+
+TEST(PageContentProtoUtilTest, ConvertMainFrameInteractionInfo) {
+  auto root_content = CreatePageContent();
+  root_content->main_frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  root_content->main_frame_interaction_info->selection =
+      blink::mojom::AIPageContentSelection::New();
+  root_content->main_frame_interaction_info->selection->selected_text =
+      "selected text";
+  root_content->main_frame_interaction_info->selection->start_node_id = 1u;
+  root_content->main_frame_interaction_info->selection->end_node_id = 2u;
+  root_content->main_frame_interaction_info->selection->start_offset = 3u;
+  root_content->main_frame_interaction_info->selection->end_offset = 4u;
+
+  proto::AnnotatedPageContent proto;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, proto));
+
+  EXPECT_EQ(proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  const auto& main_frame_data = proto.main_frame_data();
+  const auto& frame_interaction_info = main_frame_data.frame_interaction_info();
+  const auto& selection = frame_interaction_info.selection();
+  EXPECT_EQ(selection.selected_text(), "selected text");
+  EXPECT_EQ(selection.start_node_id(), 1);
+  EXPECT_EQ(selection.end_node_id(), 2);
+  EXPECT_EQ(selection.start_offset(), 3);
+  EXPECT_EQ(selection.end_offset(), 4);
 }
 
 TEST(PageContentProtoUtilTest, ConvertAnnotatedRoles) {

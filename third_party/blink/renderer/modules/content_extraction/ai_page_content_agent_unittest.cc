@@ -6,10 +6,12 @@
 
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -252,6 +254,18 @@ class AIPageContentAgentTest : public testing::Test {
 
     return agent->GetAIPageContentInternal(options ? *options
                                                    : default_options_);
+  }
+
+  void FireMouseMoveEvent(const gfx::PointF& point) {
+    EventHandler& event_handler =
+        helper_.LocalMainFrame()->GetFrame()->GetEventHandler();
+    WebMouseEvent event(WebInputEvent::Type::kMouseMove, point, point,
+                        WebPointerProperties::Button::kLeft, 0,
+                        WebInputEvent::kLeftButtonDown,
+                        WebInputEvent::GetStaticTimeStampForTests());
+    event.SetFrameScale(1);
+    event_handler.HandleMouseMoveEvent(event, Vector<WebMouseEvent>(),
+                                       Vector<WebMouseEvent>());
   }
 
  protected:
@@ -1090,10 +1104,10 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
   CheckContainerNode(fixed_element);
   EXPECT_TRUE(
       fixed_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(
-      fixed_element.content_attributes->interaction_info->scrolls_overflow_x);
-  EXPECT_FALSE(
-      fixed_element.content_attributes->interaction_info->scrolls_overflow_y);
+  EXPECT_FALSE(fixed_element.content_attributes->node_interaction_info
+                   ->scrolls_overflow_x);
+  EXPECT_FALSE(fixed_element.content_attributes->node_interaction_info
+                   ->scrolls_overflow_y);
   CheckTextNode(*fixed_element.children_nodes[0],
                 "This element stays in place when the page is scrolled.");
 
@@ -1101,20 +1115,20 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
   CheckContainerNode(sticky_element);
   EXPECT_TRUE(
       sticky_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(
-      sticky_element.content_attributes->interaction_info->scrolls_overflow_x);
-  EXPECT_FALSE(
-      sticky_element.content_attributes->interaction_info->scrolls_overflow_y);
+  EXPECT_FALSE(sticky_element.content_attributes->node_interaction_info
+                   ->scrolls_overflow_x);
+  EXPECT_FALSE(sticky_element.content_attributes->node_interaction_info
+                   ->scrolls_overflow_y);
   CheckTextNode(*sticky_element.children_nodes[0],
                 "This element stays in place when the page is scrolled.");
 
   const auto& normal_element = *root.children_nodes[2];
   EXPECT_FALSE(
       normal_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(
-      normal_element.content_attributes->interaction_info->scrolls_overflow_x);
-  EXPECT_FALSE(
-      normal_element.content_attributes->interaction_info->scrolls_overflow_y);
+  EXPECT_FALSE(normal_element.content_attributes->node_interaction_info
+                   ->scrolls_overflow_x);
+  EXPECT_FALSE(normal_element.content_attributes->node_interaction_info
+                   ->scrolls_overflow_y);
   CheckTextNode(normal_element,
                 "This element flows naturally with the document.");
 }
@@ -1180,16 +1194,18 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
   const auto& root = *content->root_node;
   ASSERT_EQ(root.children_nodes.size(), 4u);
 
-  EXPECT_TRUE(root.content_attributes->interaction_info->scrolls_overflow_x);
-  EXPECT_TRUE(root.content_attributes->interaction_info->scrolls_overflow_y);
+  EXPECT_TRUE(
+      root.content_attributes->node_interaction_info->scrolls_overflow_x);
+  EXPECT_TRUE(
+      root.content_attributes->node_interaction_info->scrolls_overflow_y);
 
   const auto& scrollable_x_element = *root.children_nodes[0];
   CheckContainerNode(scrollable_x_element);
   EXPECT_FALSE(scrollable_x_element.content_attributes->geometry
                    ->is_fixed_or_sticky_position);
-  EXPECT_TRUE(scrollable_x_element.content_attributes->interaction_info
+  EXPECT_TRUE(scrollable_x_element.content_attributes->node_interaction_info
                   ->scrolls_overflow_x);
-  EXPECT_FALSE(scrollable_x_element.content_attributes->interaction_info
+  EXPECT_FALSE(scrollable_x_element.content_attributes->node_interaction_info
                    ->scrolls_overflow_y);
   CheckTextNode(
       *scrollable_x_element.children_nodes[0],
@@ -1201,9 +1217,9 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
   CheckContainerNode(scrollable_y_element);
   EXPECT_FALSE(scrollable_y_element.content_attributes->geometry
                    ->is_fixed_or_sticky_position);
-  EXPECT_FALSE(scrollable_y_element.content_attributes->interaction_info
+  EXPECT_FALSE(scrollable_y_element.content_attributes->node_interaction_info
                    ->scrolls_overflow_x);
-  EXPECT_TRUE(scrollable_y_element.content_attributes->interaction_info
+  EXPECT_TRUE(scrollable_y_element.content_attributes->node_interaction_info
                   ->scrolls_overflow_y);
   CheckTextNode(*scrollable_y_element.children_nodes[0],
                 "Some long text to make it scrollable. Some long text to make "
@@ -1214,9 +1230,9 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
   CheckContainerNode(auto_scroll_x_element);
   EXPECT_FALSE(auto_scroll_x_element.content_attributes->geometry
                    ->is_fixed_or_sticky_position);
-  EXPECT_TRUE(auto_scroll_x_element.content_attributes->interaction_info
+  EXPECT_TRUE(auto_scroll_x_element.content_attributes->node_interaction_info
                   ->scrolls_overflow_x);
-  EXPECT_FALSE(auto_scroll_x_element.content_attributes->interaction_info
+  EXPECT_FALSE(auto_scroll_x_element.content_attributes->node_interaction_info
                    ->scrolls_overflow_y);
   CheckTextNode(
       *auto_scroll_x_element.children_nodes[0],
@@ -1228,9 +1244,9 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
   CheckContainerNode(auto_scroll_y_element);
   EXPECT_FALSE(auto_scroll_y_element.content_attributes->geometry
                    ->is_fixed_or_sticky_position);
-  EXPECT_FALSE(auto_scroll_y_element.content_attributes->interaction_info
+  EXPECT_FALSE(auto_scroll_y_element.content_attributes->node_interaction_info
                    ->scrolls_overflow_x);
-  EXPECT_TRUE(auto_scroll_y_element.content_attributes->interaction_info
+  EXPECT_TRUE(auto_scroll_y_element.content_attributes->node_interaction_info
                   ->scrolls_overflow_y);
   CheckTextNode(*auto_scroll_y_element.children_nodes[0],
                 "Some long text to make it scrollable. Some long text to make "
@@ -1946,87 +1962,98 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
 
   const auto& text_area = *root.children_nodes[0];
   CheckFormControlNode(text_area, mojom::blink::FormControlType::kTextArea);
-  EXPECT_TRUE(text_area.content_attributes->interaction_info->is_selectable);
-  EXPECT_FALSE(text_area.content_attributes->interaction_info->is_editable);
-  EXPECT_TRUE(text_area.content_attributes->interaction_info->is_focusable);
-  EXPECT_FALSE(text_area.content_attributes->interaction_info->is_focused);
-  EXPECT_FALSE(text_area.content_attributes->interaction_info->is_draggable);
-  EXPECT_TRUE(text_area.content_attributes->interaction_info->is_clickable);
   EXPECT_TRUE(
-      text_area.content_attributes->interaction_info->can_resize_vertical);
+      text_area.content_attributes->node_interaction_info->is_selectable);
+  EXPECT_FALSE(
+      text_area.content_attributes->node_interaction_info->is_editable);
   EXPECT_TRUE(
-      text_area.content_attributes->interaction_info->can_resize_horizontal);
+      text_area.content_attributes->node_interaction_info->is_focusable);
+  EXPECT_FALSE(
+      text_area.content_attributes->node_interaction_info->is_draggable);
+  EXPECT_TRUE(
+      text_area.content_attributes->node_interaction_info->is_clickable);
+  EXPECT_TRUE(
+      text_area.content_attributes->node_interaction_info->can_resize_vertical);
+  EXPECT_TRUE(text_area.content_attributes->node_interaction_info
+                  ->can_resize_horizontal);
 
   EXPECT_EQ(text_area.children_nodes.size(), 1u);
   const auto& text_area_text = *text_area.children_nodes[0];
   CheckTextNode(text_area_text, "text");
   EXPECT_TRUE(
-      text_area_text.content_attributes->interaction_info->is_selectable);
-  EXPECT_TRUE(text_area_text.content_attributes->interaction_info->is_editable);
+      text_area_text.content_attributes->node_interaction_info->is_selectable);
+  EXPECT_TRUE(
+      text_area_text.content_attributes->node_interaction_info->is_editable);
   EXPECT_FALSE(
-      text_area_text.content_attributes->interaction_info->is_focusable);
-  EXPECT_FALSE(text_area_text.content_attributes->interaction_info->is_focused);
+      text_area_text.content_attributes->node_interaction_info->is_focusable);
   EXPECT_FALSE(
-      text_area_text.content_attributes->interaction_info->is_draggable);
+      text_area_text.content_attributes->node_interaction_info->is_draggable);
   EXPECT_FALSE(
-      text_area_text.content_attributes->interaction_info->is_clickable);
-  EXPECT_FALSE(
-      text_area_text.content_attributes->interaction_info->can_resize_vertical);
-  EXPECT_FALSE(text_area_text.content_attributes->interaction_info
+      text_area_text.content_attributes->node_interaction_info->is_clickable);
+  EXPECT_FALSE(text_area_text.content_attributes->node_interaction_info
+                   ->can_resize_vertical);
+  EXPECT_FALSE(text_area_text.content_attributes->node_interaction_info
                    ->can_resize_horizontal);
 
   const auto& button = *root.children_nodes[1];
   CheckFormControlNode(button, mojom::blink::FormControlType::kButtonSubmit);
-  EXPECT_TRUE(button.content_attributes->interaction_info->is_selectable);
-  EXPECT_FALSE(button.content_attributes->interaction_info->is_editable);
-  EXPECT_TRUE(button.content_attributes->interaction_info->is_focusable);
-  EXPECT_FALSE(button.content_attributes->interaction_info->is_focused);
-  EXPECT_FALSE(button.content_attributes->interaction_info->is_draggable);
-  EXPECT_TRUE(button.content_attributes->interaction_info->is_clickable);
+  EXPECT_TRUE(button.content_attributes->node_interaction_info->is_selectable);
+  EXPECT_FALSE(button.content_attributes->node_interaction_info->is_editable);
+  EXPECT_TRUE(button.content_attributes->node_interaction_info->is_focusable);
+  EXPECT_FALSE(button.content_attributes->node_interaction_info->is_draggable);
+  EXPECT_TRUE(button.content_attributes->node_interaction_info->is_clickable);
   EXPECT_FALSE(
-      button.content_attributes->interaction_info->can_resize_vertical);
+      button.content_attributes->node_interaction_info->can_resize_vertical);
   EXPECT_FALSE(
-      button.content_attributes->interaction_info->can_resize_horizontal);
+      button.content_attributes->node_interaction_info->can_resize_horizontal);
 
   EXPECT_EQ(button.children_nodes.size(), 1u);
   const auto& button_text = *button.children_nodes[0];
   CheckTextNode(button_text, "button");
-  EXPECT_TRUE(button_text.content_attributes->interaction_info->is_selectable);
-  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_editable);
-  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_focusable);
-  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_focused);
-  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_draggable);
-  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_clickable);
+  EXPECT_TRUE(
+      button_text.content_attributes->node_interaction_info->is_selectable);
   EXPECT_FALSE(
-      button_text.content_attributes->interaction_info->can_resize_vertical);
+      button_text.content_attributes->node_interaction_info->is_editable);
   EXPECT_FALSE(
-      button_text.content_attributes->interaction_info->can_resize_horizontal);
+      button_text.content_attributes->node_interaction_info->is_focusable);
+  EXPECT_FALSE(
+      button_text.content_attributes->node_interaction_info->is_draggable);
+  EXPECT_FALSE(
+      button_text.content_attributes->node_interaction_info->is_clickable);
+  EXPECT_FALSE(button_text.content_attributes->node_interaction_info
+                   ->can_resize_vertical);
+  EXPECT_FALSE(button_text.content_attributes->node_interaction_info
+                   ->can_resize_horizontal);
 
   const auto& resize = *root.children_nodes[2];
   CheckContainerNode(resize);
-  EXPECT_TRUE(resize.content_attributes->interaction_info->is_selectable);
-  EXPECT_FALSE(resize.content_attributes->interaction_info->is_editable);
-  EXPECT_FALSE(resize.content_attributes->interaction_info->is_focusable);
-  EXPECT_FALSE(resize.content_attributes->interaction_info->is_focused);
-  EXPECT_FALSE(resize.content_attributes->interaction_info->is_draggable);
-  EXPECT_FALSE(resize.content_attributes->interaction_info->is_clickable);
-  EXPECT_TRUE(resize.content_attributes->interaction_info->can_resize_vertical);
+  EXPECT_TRUE(resize.content_attributes->node_interaction_info->is_selectable);
+  EXPECT_FALSE(resize.content_attributes->node_interaction_info->is_editable);
+  EXPECT_FALSE(resize.content_attributes->node_interaction_info->is_focusable);
+  EXPECT_FALSE(resize.content_attributes->node_interaction_info->is_draggable);
+  EXPECT_FALSE(resize.content_attributes->node_interaction_info->is_clickable);
   EXPECT_TRUE(
-      resize.content_attributes->interaction_info->can_resize_horizontal);
+      resize.content_attributes->node_interaction_info->can_resize_vertical);
+  EXPECT_TRUE(
+      resize.content_attributes->node_interaction_info->can_resize_horizontal);
 
   EXPECT_EQ(resize.children_nodes.size(), 1u);
   const auto& resize_text = *resize.children_nodes[0];
   CheckTextNode(resize_text, "resize");
-  EXPECT_TRUE(resize_text.content_attributes->interaction_info->is_selectable);
-  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_editable);
-  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_focusable);
-  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_focused);
-  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_draggable);
-  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_clickable);
+  EXPECT_TRUE(
+      resize_text.content_attributes->node_interaction_info->is_selectable);
   EXPECT_FALSE(
-      resize_text.content_attributes->interaction_info->can_resize_vertical);
+      resize_text.content_attributes->node_interaction_info->is_editable);
   EXPECT_FALSE(
-      resize_text.content_attributes->interaction_info->can_resize_horizontal);
+      resize_text.content_attributes->node_interaction_info->is_focusable);
+  EXPECT_FALSE(
+      resize_text.content_attributes->node_interaction_info->is_draggable);
+  EXPECT_FALSE(
+      resize_text.content_attributes->node_interaction_info->is_clickable);
+  EXPECT_FALSE(resize_text.content_attributes->node_interaction_info
+                   ->can_resize_vertical);
+  EXPECT_FALSE(resize_text.content_attributes->node_interaction_info
+                   ->can_resize_horizontal);
 }
 
 TEST_F(AIPageContentAgentTest, ContentNodeIds) {
@@ -2078,6 +2105,196 @@ TEST_F(AIPageContentAgentTest, ContentNodeIds) {
   CheckTextNode(*iframe_root.children_nodes[0], "iframe text");
   EXPECT_EQ(iframe_root.children_nodes[0]->content_attributes->content_node_id,
             6);
+}
+
+TEST_F(AIPageContentAgentTest, Selection) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p id='p1'>Paragraph 1</p>"
+      "  <p id='p2'>Paragraph 2</p>"
+      "  <p id='p3'>Paragraph 3</p>"
+      "  <script>"
+      "    const p1 = document.getElementById('p1');"
+      "    const p2 = document.getElementById('p2');"
+      "    const range = new Range();"
+      "    range.setStart(p1.childNodes[0], 10);"
+      "    range.setEnd(p2.childNodes[0], 9);"
+      "    const selection = window.getSelection();"
+      "    selection.removeAllRanges();"
+      "    selection.addRange(range);"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.content_attributes->content_node_id, 0);
+  EXPECT_EQ(root.children_nodes.size(), 3u);
+
+  const auto& paragraph1 = *root.children_nodes[0];
+  EXPECT_EQ(paragraph1.content_attributes->content_node_id, 1);
+  CheckTextNode(*paragraph1.children_nodes[0], "Paragraph 1");
+  EXPECT_EQ(paragraph1.children_nodes[0]->content_attributes->content_node_id,
+            2);
+
+  const auto& paragraph2 = *root.children_nodes[1];
+  EXPECT_EQ(paragraph2.content_attributes->content_node_id, 3);
+  CheckTextNode(*paragraph2.children_nodes[0], "Paragraph 2");
+  EXPECT_EQ(paragraph2.children_nodes[0]->content_attributes->content_node_id,
+            4);
+
+  const auto& paragraph3 = *root.children_nodes[2];
+  EXPECT_EQ(paragraph3.content_attributes->content_node_id, 5);
+  CheckTextNode(*paragraph3.children_nodes[0], "Paragraph 3");
+  EXPECT_EQ(paragraph3.children_nodes[0]->content_attributes->content_node_id,
+            6);
+
+  const auto& frame_interaction_info = content->main_frame_interaction_info;
+  ASSERT_TRUE(frame_interaction_info->selection);
+  const auto& selection = *frame_interaction_info->selection;
+  EXPECT_EQ(selection.selected_text, "1\n\nParagraph");
+  EXPECT_EQ(selection.start_node_id, 2);
+  EXPECT_EQ(selection.end_node_id, 4);
+  EXPECT_EQ(selection.start_offset, 10);
+  EXPECT_EQ(selection.end_offset, 9);
+}
+
+TEST_F(AIPageContentAgentTest, SelectionInIframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <iframe srcdoc='"
+      "    <p id=\"p1\">Paragraph 1</p>"
+      "    <p id=\"p2\">Paragraph 2</p>"
+      "    <p id=\"p3\">Paragraph 3</p>"
+      "    <script>"
+      "      const p1 = document.getElementById(\"p1\");"
+      "      const p2 = document.getElementById(\"p2\");"
+      "      const range = new Range();"
+      "      range.setStart(p1.childNodes[0], 10);"
+      "      range.setEnd(p2.childNodes[0], 9);"
+      "      const selection = window.getSelection();"
+      "      selection.removeAllRanges();"
+      "      selection.addRange(range);"
+      "    </script>"
+      "  '></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.content_attributes->content_node_id, 0);
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& iframe = *root.children_nodes[0];
+  CheckIframeNode(iframe);
+  EXPECT_EQ(iframe.content_attributes->content_node_id, 8);
+  EXPECT_EQ(iframe.children_nodes.size(), 1u);
+
+  const auto& iframe_root = *iframe.children_nodes[0];
+  CheckRootNode(iframe_root);
+  EXPECT_EQ(iframe_root.content_attributes->content_node_id, 1);
+  EXPECT_EQ(iframe_root.children_nodes.size(), 3u);
+
+  const auto& paragraph1 = *iframe_root.children_nodes[0];
+  EXPECT_EQ(paragraph1.content_attributes->content_node_id, 2);
+  CheckTextNode(*paragraph1.children_nodes[0], "Paragraph 1");
+  EXPECT_EQ(paragraph1.children_nodes[0]->content_attributes->content_node_id,
+            3);
+
+  const auto& paragraph2 = *iframe_root.children_nodes[1];
+  EXPECT_EQ(paragraph2.content_attributes->content_node_id, 4);
+  CheckTextNode(*paragraph2.children_nodes[0], "Paragraph 2");
+  EXPECT_EQ(paragraph2.children_nodes[0]->content_attributes->content_node_id,
+            5);
+
+  const auto& paragraph3 = *iframe_root.children_nodes[2];
+  EXPECT_EQ(paragraph3.content_attributes->content_node_id, 6);
+  CheckTextNode(*paragraph3.children_nodes[0], "Paragraph 3");
+  EXPECT_EQ(paragraph3.children_nodes[0]->content_attributes->content_node_id,
+            7);
+
+  const auto& main_frame_interaction_info =
+      content->main_frame_interaction_info;
+  ASSERT_FALSE(main_frame_interaction_info->selection);
+
+  const auto& iframe_interaction_info =
+      iframe.content_attributes->iframe_data->frame_interaction_info;
+  ASSERT_TRUE(iframe_interaction_info->selection);
+  const auto& selection = *iframe_interaction_info->selection;
+  EXPECT_EQ(selection.selected_text, "1\n\nParagraph");
+  EXPECT_EQ(selection.start_node_id, 3);
+  EXPECT_EQ(selection.end_node_id, 5);
+  EXPECT_EQ(selection.start_offset, 10);
+  EXPECT_EQ(selection.end_offset, 9);
+}
+
+TEST_F(AIPageContentAgentTest, Focus) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <button id='button'>button</button>"
+      "  <script>"
+      "    const button = document.getElementById('button');"
+      "    button.focus();"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.content_attributes->content_node_id, 0);
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& button = *root.children_nodes[0];
+  EXPECT_EQ(button.content_attributes->content_node_id, 1);
+
+  const auto& page_interaction_info = content->page_interaction_info;
+  EXPECT_EQ(page_interaction_info->focused_node_id, 1);
+}
+
+TEST_F(AIPageContentAgentTest, MousePosition) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    div {"
+      "      position: absolute;"
+      "      top: 100px;"
+      "      left: 200px;"
+      "    }"
+      "  </style>"
+      "  <div>text</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Move the mouse to the middle of the page.
+  FireMouseMoveEvent(gfx::PointF(150, 50));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.content_attributes->content_node_id, 0);
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& text = *root.children_nodes[0];
+  CheckTextNode(text, "text");
+  EXPECT_EQ(text.content_attributes->content_node_id, 1);
+
+  EXPECT_EQ(content->page_interaction_info->mouse_position->x(), 150);
+  EXPECT_EQ(content->page_interaction_info->mouse_position->y(), 50);
 }
 
 }  // namespace
