@@ -121,9 +121,9 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         entity_attributes
             .try_emplace(*field_attribute_type, *field_attribute_type)
             .first;
-    attribute_it->second.SetInfoWithVerificationStatus(
-        field->Type().GetStorableType(), value, app_locale,
-        autofill::VerificationStatus::kObserved);
+    attribute_it->second.SetInfo(field->Type().GetStorableType(), value,
+                                 app_locale,
+                                 autofill::VerificationStatus::kObserved);
   }
 
   for (auto& [section, entities] : section_to_entity_types_attributes) {

@@ -872,28 +872,29 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   if (options.number) {
     attributes.emplace_back(AttributeType(kPassportNumber));
     attributes.back().SetInfo(PASSPORT_NUMBER, options.number,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"", VerificationStatus::kNoStatus);
   }
   if (options.name) {
     attributes.emplace_back(AttributeType(kPassportName));
     attributes.back().SetInfo(PASSPORT_NAME_TAG, options.name,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"", VerificationStatus::kNoStatus);
     attributes.back().FinalizeInfo();
   }
   if (options.country) {
     attributes.emplace_back(AttributeType(kPassportCountry));
     attributes.back().SetInfo(PASSPORT_ISSUING_COUNTRY_TAG, options.country,
-                              /*app_locale=*/"en-US");
+                              /*app_locale=*/"en-US",
+                              VerificationStatus::kNoStatus);
   }
   if (options.expiry_date) {
     attributes.emplace_back(AttributeType(kPassportExpiryDate));
     attributes.back().SetInfo(PASSPORT_EXPIRATION_DATE_TAG, options.expiry_date,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"", VerificationStatus::kNoStatus);
   }
   if (options.issue_date) {
     attributes.emplace_back(AttributeType(kPassportIssueDate));
     attributes.back().SetInfo(PASSPORT_ISSUE_DATE_TAG, options.issue_date,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"", VerificationStatus::kNoStatus);
   }
   return EntityInstance(
       EntityType(EntityTypeName::kPassport), std::move(attributes),
@@ -907,30 +908,31 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
   if (options.name) {
     attributes.emplace_back(AttributeType(kDriversLicenseName));
     attributes.back().SetInfo(DRIVERS_LICENSE_NAME_TAG, options.name,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"", VerificationStatus::kNoStatus);
     attributes.back().FinalizeInfo();
   }
   if (options.region) {
     attributes.emplace_back(AttributeType(kDriversLicenseRegion));
     attributes.back().SetInfo(DRIVERS_LICENSE_REGION, options.region,
-                              /*app_locale=*/"en-US");
+                              /*app_locale=*/"en-US",
+                              VerificationStatus::kNoStatus);
   }
   if (options.number) {
     attributes.emplace_back(AttributeType(kDriversLicenseNumber));
     attributes.back().SetInfo(DRIVERS_LICENSE_NUMBER, options.number,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"", VerificationStatus::kNoStatus);
   }
   if (options.expiration_date) {
     attributes.emplace_back(AttributeType(kDriversLicenseExpirationDate));
     attributes.back().SetInfo(DRIVERS_LICENSE_EXPIRATION_DATE_TAG,
                               options.expiration_date,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"", VerificationStatus::kNoStatus);
   }
   if (options.issue_date) {
     attributes.emplace_back(AttributeType(kDriversLicenseIssueDate));
     attributes.back().SetInfo(DRIVERS_LICENSE_ISSUE_DATE_TAG,
                               options.issue_date,
-                              /*app_locale=*/"");
+                              /*app_locale=*/"", VerificationStatus::kNoStatus);
   }
   return EntityInstance(
       EntityType(EntityTypeName::kDriversLicense), std::move(attributes),

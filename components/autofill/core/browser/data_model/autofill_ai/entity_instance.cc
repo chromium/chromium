@@ -136,16 +136,8 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
 
 void AttributeInstance::SetInfo(FieldType type,
                                 const std::u16string& value,
-                                const std::string& app_locale) {
-  SetInfoWithVerificationStatus(type, value, app_locale,
-                                VerificationStatus::kNoStatus);
-}
-
-void AttributeInstance::SetInfoWithVerificationStatus(
-    FieldType type,
-    const std::u16string& value,
-    const std::string& app_locale,
-    VerificationStatus status) {
+                                const std::string& app_locale,
+                                VerificationStatus status) {
   type = GetNormalizedType(type);
   if (type == UNKNOWN_TYPE) {
     return;
@@ -164,23 +156,20 @@ void AttributeInstance::SetInfoWithVerificationStatus(
                       country = CountryInfo();
                     }
                   },
-                  [&](DateInfo& date) {
-                    SetRawInfoWithVerificationStatus(type, value, status);
-                  },
+                  [&](DateInfo& date) { SetRawInfo(type, value, status); },
                   [&](NameInfo& name) {
                     name.SetInfoWithVerificationStatus(type, value, app_locale,
                                                        status);
                   },
                   [&](std::u16string& old_value) {
-                    SetRawInfoWithVerificationStatus(type, value, status);
+                    SetRawInfo(type, value, status);
                   }},
               info_);
 }
 
-void AttributeInstance::SetRawInfoWithVerificationStatus(
-    FieldType type,
-    const std::u16string& value,
-    VerificationStatus status) {
+void AttributeInstance::SetRawInfo(FieldType type,
+                                   const std::u16string& value,
+                                   VerificationStatus status) {
   type = GetNormalizedType(type);
   if (type == UNKNOWN_TYPE) {
     return;

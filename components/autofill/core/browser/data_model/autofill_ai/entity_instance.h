@@ -126,24 +126,17 @@ class AttributeInstance final {
   // given `app_locale`.
   void SetInfo(FieldType type,
                const std::u16string& value,
-               const std::string& app_locale);
-
-  // Similar to `SetInfo` but also assigns a verification status to the set
-  // value.
-  // TODO(crbug.com/396325496): Add `format_string` parameter.
-  void SetInfoWithVerificationStatus(FieldType type,
-                                     const std::u16string& value,
-                                     const std::string& app_locale,
-                                     const VerificationStatus status);
+               const std::string& app_locale,
+               VerificationStatus status);
 
   // Same as `SetInfoWithVerificationStatus`, but for structured types this
   // function does nothing but modify the information in `type`, while the other
   // function might perform additional steps (e.g., name formatting). This
   // function should only be used by database logic and settings page logic.
   // TODO(crbug.com/389625753): Investigate merging SetInfo* and SetRawInfo*.
-  void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
-                                        VerificationStatus status);
+  void SetRawInfo(FieldType type,
+                  const std::u16string& value,
+                  VerificationStatus status);
 
   // Returns the set of `FieldType`s for which the setter/getter functions above
   // may be called.
