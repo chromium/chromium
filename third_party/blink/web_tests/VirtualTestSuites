@@ -4083,7 +4083,7 @@
     ],
     "args": ["--disable-blink-features=CSSRelativeColorPreserveNone"],
     "owners": ["kbabbitt@microsoft.com"],
-    "expires": "Mar 1, 2025"
+    "expires": "Sep 1, 2025"
   },
   {
     "prefix": "partitioned-popins-disabled",
