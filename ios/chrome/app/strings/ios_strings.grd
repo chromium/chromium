@@ -1441,6 +1441,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_ACCESSIBILITY_LABEL" desc="Accessibility label for Reviews ShopCard">
           Product reviews on <ph name="PRODUCT_NAME">$1<ex>Pixel Phone</ex></ph>, <ph name="STARS">$2<ex>4.5</ex></ph> out of <ph name="MAX_STARS">$3<ex>5</ex></ph>, <ph name="DOMAIN">$4<ex>store.google.com</ex></ph>
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_ALT_TITLE" desc="Alternative title for Reviews ShopCard in Magic Stack">
+          Reviews based on your interests
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CUSTOMIZE_CARDS" desc="Text for ShopCard Reviews in Customize Cards in Magic Stack">
           Read what people are saying
       </message>
@@ -1455,6 +1458,12 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ACCESSIBILITY_LABEL" desc="Accessibility label for Track Price Shop Card">
           Track price on <ph name="PRODUCT_NAME">$1<ex>Pixel Phone</ex></ph>, <ph name="PRICE">$2<ex>$699</ex></ph>, <ph name="DOMAIN">$3<ex>store.google.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ALT_TITLE_1" desc="First alternate title for Track Price ShopCard in Magic Stack">
+          Products based on your interests
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ALT_TITLE_2" desc="Second alternate title for Track Price ShopCard in Magic Stack">
+          Track prices from your tabs
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_BUTTON" desc="Text for 'Track' Button in Track Price ShopCard in Magic Stack">
           Track
