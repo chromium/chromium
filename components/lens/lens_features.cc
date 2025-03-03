@@ -354,9 +354,6 @@ constexpr base::FeatureParam<double> kUploadProgressBarShowHeuristic{
 constexpr base::FeatureParam<bool> kAutoFocusSearchbox{
     &kLensOverlayContextualSearchbox, "auto-focus-searchbox", true};
 
-constexpr base::FeatureParam<bool> kUpdateViewportEachQuery{
-    &kLensOverlayContextualSearchbox, "update-viewport-each-query", true};
-
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
     "https://translate-pa.googleapis.com/v1/supportedLanguages"};
@@ -854,9 +851,5 @@ bool IsSimplifiedSelectionEnabled() {
 
 bool PageContentUploadRequestIdFixEnabled() {
   return kPageContentUploadRequestIdFix.Get();
-}
-
-bool UpdateViewportEachQueryEnabled() {
-  return kUpdateViewportEachQuery.Get();
 }
 }  // namespace lens::features

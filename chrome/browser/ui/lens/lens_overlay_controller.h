@@ -322,17 +322,10 @@ class LensOverlayController : public LensSearchboxClient,
   };
   State state() { return state_; }
 
-  // Returns the screenshot initially displayed on this overlay. If no
+  // Returns the screenshot currently being displayed on this overlay. If no
   // screenshot is showing, will return nullptr.
-  const SkBitmap& initial_screenshot() {
-    return initialization_data_->initial_screenshot_;
-  }
-
-  // Returns the screenshot of the live page which may have been updated after
-  // the overlay is hidden and the live page is shown. If no screenshot is
-  // showing, will return nullptr.
-  const SkBitmap& updated_screenshot() {
-    return initialization_data_->updated_screenshot_;
+  const SkBitmap& current_screenshot() {
+    return initialization_data_->current_screenshot_;
   }
 
   // Returns the dynamic color palette identifier based on the screenshot.
@@ -621,18 +614,13 @@ class LensOverlayController : public LensSearchboxClient,
       return !text_.is_null() || !objects_.empty();
     }
 
-    // The screenshot that is initially rendered by the WebUI.
-    // initial_screenshot_ is in native format and is needed to encode JPEGs to
-    // send to the server. initial_rgb_screenshot_ is in RGBA color type and
-    // used to display in the WebUI. initial_rgb_screenshot_ cannot be used to
+    // The screenshot that is currently being rendered by the WebUI.
+    // current_screenshot_ is in native format and is needed to encode JPEGs to
+    // send to the server. current_rgb_screenshot_ is in RGBA color type and
+    // used to display in the WebUI. current_rgb_screenshot_ cannot be used to
     // encode JPEGs because the JPEG encoder expects the native color format.
-    SkBitmap initial_screenshot_;
-    SkBitmap initial_rgb_screenshot_;
-
-    // Screenshot of the live page which may be updated after the overlay is
-    // hidden and the live page is shown. Initially equal to
-    // initial_screenshot_.
-    SkBitmap updated_screenshot_;
+    SkBitmap current_screenshot_;
+    SkBitmap current_rgb_screenshot_;
 
     // The dynamic color palette identifier based on the screenshot.
     lens::PaletteId color_palette_;
@@ -795,20 +783,11 @@ class LensOverlayController : public LensSearchboxClient,
   // with them.
   void TryUpdatePageContextualization();
 
-  // Begin updating page contextualization by potentially taking a new
-  // screenshot.
+  // Updates the query flow with the new page content bytes. A request will only
+  // be sent if the bytes are different from the previous bytes sent.
   void UpdatePageContextualization(std::vector<lens::PageContent> page_contents,
                                    lens::MimeType primary_content_type,
                                    std::optional<uint32_t> pdf_page_count);
-
-  // Updates the query flow with the new page content bytes and/or screenshot. A
-  // request will only be sent if the bytes are different from the previous
-  // bytes sent or the screenshot is different from the previous screenshot.
-  void UpdatePageContextualizationPart2(
-      std::vector<lens::PageContent> page_contents,
-      lens::MimeType primary_content_type,
-      std::optional<uint32_t> pdf_page_count,
-      const SkBitmap& bitmap);
 
   // Updates state of the ghost loader. |suppress_ghost_loader| is true when
   // the page bytes can't be uploaded.

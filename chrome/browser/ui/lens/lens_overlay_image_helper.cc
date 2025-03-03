@@ -1,10 +1,6 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 
@@ -523,18 +519,5 @@ SkColor FindBestMatchedColorOrTransparent(
     return SK_ColorTRANSPARENT;
   }
   return *closest_color;
-}
-
-bool AreBitmapsEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
-  // Verify the dimensions are the same.
-  if (bitmap1.width() != bitmap2.width() ||
-      bitmap1.height() != bitmap2.height()) {
-    return false;
-  }
-
-  // Compare pixel data
-  SkPixmap pixmap1 = bitmap1.pixmap();
-  SkPixmap pixmap2 = bitmap2.pixmap();
-  return memcmp(pixmap1.addr(), pixmap2.addr(), pixmap1.computeByteSize()) == 0;
 }
 }  // namespace lens

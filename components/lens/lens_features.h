@@ -675,10 +675,6 @@ extern bool IsSimplifiedSelectionEnabled();
 // upload request is sent.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool PageContentUploadRequestIdFixEnabled();
-
-// Whether to update the viewport on each contextual query.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UpdateViewportEachQueryEnabled();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

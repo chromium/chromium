@@ -945,9 +945,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->initial_screenshot();
-  EXPECT_FALSE(screenshot_bitmap.empty());
-  screenshot_bitmap = controller->updated_screenshot();
+  auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_FALSE(screenshot_bitmap.empty());
 }
 
@@ -1008,9 +1006,7 @@ IN_PROC_BROWSER_TEST_F(
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->initial_screenshot();
-  EXPECT_FALSE(screenshot_bitmap.empty());
-  screenshot_bitmap = controller->updated_screenshot();
+  auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_FALSE(screenshot_bitmap.empty());
 }
 
@@ -1101,9 +1097,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->initial_screenshot();
-  EXPECT_FALSE(screenshot_bitmap.empty());
-  screenshot_bitmap = controller->updated_screenshot();
+  auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_FALSE(screenshot_bitmap.empty());
 
   // Verify screenshot was encoded and passed to WebUI.
@@ -5945,9 +5939,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->initial_screenshot();
-  EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
-  screenshot_bitmap = controller->updated_screenshot();
+  auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
 
   // Verify screenshot was encoded and passed to WebUI.
@@ -6002,9 +5994,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->initial_screenshot();
-  EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
-  screenshot_bitmap = controller->updated_screenshot();
+  auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
 
   // Verify screenshot was encoded and passed to WebUI.
@@ -6043,7 +6033,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->initial_screenshot();
+  auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
 
   auto* fake_query_controller =
@@ -6292,62 +6282,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
   // Verify the similarity score was only recorded once for the session.
   histogram_tester.ExpectTotalCount("Lens.Overlay.OcrDomSimilarity", 1);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       UpdateScreenshotOnSearchboxFocus) {
-  base::HistogramTester histogram_tester;
-  WaitForPaint(kDocumentWithNonAsciiCharacters);
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Make a searchbox query.
-  controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
-      /*is_zero_prefix_suggestion=*/false,
-      /*additional_query_params=*/{});
-
-  // Verify transitions to live page.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
-
-  // Reset mock query controller so we can verify the new request.
-  auto* fake_query_controller =
-      static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
-  fake_query_controller->ResetTestingState();
-
-  // Change page.
-  WaitForPaint(kDocumentWithNamedElement);
-
-  // Focus the searchbox.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->OnFocusChangedForTesting(/*focused=*/true);
-
-  // Verify a new full image and page content request was sent in the live page
-  // state. Both requests happen async, so need to wait for both to be sent
-  // before continuing to prevent flakiness.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_query_controller->num_full_image_requests_sent() == 2 &&
-           fake_query_controller->num_page_content_update_requests_sent() == 2;
-  }));
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes().empty();
-  }));
-  ASSERT_EQ(lens::MimeType::kPlainText,
-            fake_query_controller->last_sent_underlying_content_type());
-  ASSERT_TRUE(fake_query_controller->sent_full_image_objects_request()
-                  .has_image_data());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -7844,9 +7778,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->initial_screenshot();
-  EXPECT_FALSE(screenshot_bitmap.empty());
-  screenshot_bitmap = controller->updated_screenshot();
+  auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_FALSE(screenshot_bitmap.empty());
 }
 
@@ -7946,9 +7878,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->initial_screenshot();
-  EXPECT_FALSE(screenshot_bitmap.empty());
-  screenshot_bitmap = controller->updated_screenshot();
+  auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_FALSE(screenshot_bitmap.empty());
 }
 
