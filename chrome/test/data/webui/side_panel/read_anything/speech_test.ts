@@ -452,7 +452,8 @@ suite('Speech', () => {
 
     test('uses max speech length', () => {
       const expectedNumSegments =
-          Math.ceil(longSentences.length / app.maxSpeechLength);
+          Math.ceil(longSentences.length / app.maxSpeechLengthForRemoteVoices) +
+          1;
 
       app.playSpeech();
 

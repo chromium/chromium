@@ -72,6 +72,7 @@ suite('WordBoundariesUsedForSpeech', () => {
     assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
     assertEquals(0, state.previouslySpokenIndex);
     assertEquals(0, state.speechUtteranceStartIndex);
+    assertEquals(0, state.tooLongTextOffset);
   });
 
   test(
@@ -82,6 +83,7 @@ suite('WordBoundariesUsedForSpeech', () => {
         assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
         assertEquals(0, state.previouslySpokenIndex);
         assertEquals(0, state.speechUtteranceStartIndex);
+        assertEquals(0, state.tooLongTextOffset);
       });
 
   test('by default, wordBoundaryState in default state', () => {
@@ -89,6 +91,7 @@ suite('WordBoundariesUsedForSpeech', () => {
     assertEquals(WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED, state.mode);
     assertEquals(0, state.previouslySpokenIndex);
     assertEquals(0, state.speechUtteranceStartIndex);
+    assertEquals(0, state.tooLongTextOffset);
   });
 
   suite('during speech with one initial word boundary ', () => {

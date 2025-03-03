@@ -127,6 +127,10 @@ export interface WordBoundaryState {
   // just the correct index within the current string.
   // Default is 0.
   speechUtteranceStartIndex: number;
+  // If we have to break a string because the text is too long, we need to
+  // offset future word boundaries within this utterance by this offset so
+  // that they appear in the correct locations.
+  tooLongTextOffset: number;
 }
 
 export interface AppElement {
@@ -308,12 +312,16 @@ export class AppElement extends AppElementBase {
 
   private imagesEnabled: boolean = false;
 
-  maxSpeechLength: number = 175;
+  maxSpeechLengthForRemoteVoices: number = 175;
+  // This corresponds to what would be more than a 2 second delay between
+  // sentences.
+  maxSpeechLengthForWordBoundaries: number = 250;
 
   wordBoundaryState: WordBoundaryState = {
     mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
     speechUtteranceStartIndex: 0,
     previouslySpokenIndex: 0,
+    tooLongTextOffset: 0,
   };
 
   // If the node id of the first text node that should be used by Read Aloud
@@ -321,6 +329,10 @@ export class AppElement extends AppElementBase {
   firstTextNodeSetForReadAloud: number|null = null;
 
   speechSynthesisLanguage: string;
+
+  // Punctuation that is reasonable to splice audio on if text is too long.
+  private spliceablePunctuationArray = [',', '(', ')', '-', '[', ']', '{', '}'];
+
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -1780,19 +1792,29 @@ export class AppElement extends AppElementBase {
 
   // Gets the accessible text boundary for the given string.
   getAccessibleTextLength(utteranceText: string): number {
-    // Splicing on commas won't work for all locales, but since this is a
-    // simple strategy for splicing text in languages that do use commas
-    // that reduces the need for calling getAccessibleBoundary.
-    // TODO(crub.com/1474951): Investigate if we can utilize comma splices
-    // directly in the utils methods called by #getAccessibleBoundary.
-    const lastCommaIndex =
-        utteranceText.substring(0, this.maxSpeechLength).lastIndexOf(',');
+    const maxSpeechLength = this.selectedVoice_?.localService ?
+        this.maxSpeechLengthForWordBoundaries :
+        this.maxSpeechLengthForRemoteVoices;
 
-    // To prevent infinite looping, only use the lastCommaIndex if it's not the
-    // first character. Otherwise, use getAccessibleBoundary to prevent
-    // repeatedly splicing on the first comma of the same substring.
-    if (lastCommaIndex > 0) {
-      return lastCommaIndex;
+    // Splicing on punctuation won't work for all locales, but since this is a
+    // simple strategy for splicing text in languages that do use these
+    // characters that reduces the need for calling getAccessibleBoundary.
+    // Since these characters will be searched for in-order, they should
+    // be listed in priority order for most likely to be a reasonable splice.
+    // TODO(crub.com/1474951): Investigate if we can utilize comma splices
+    // and splices on other punctuation directly in the utils methods called by
+    // #getAccessibleBoundary.
+    for (let i = 0; i < this.spliceablePunctuationArray.length; i++) {
+      const punctuationString = this.spliceablePunctuationArray[i];
+      const lastPunctuationIndex = utteranceText.substring(0, maxSpeechLength)
+                                       .lastIndexOf(punctuationString);
+
+      // To prevent infinite looping, only use the lastCommaIndex if it's not
+      // the first character. Otherwise, use getAccessibleBoundary to prevent
+      // repeatedly splicing on the first comma of the same substring.
+      if (lastPunctuationIndex > 0) {
+        return lastPunctuationIndex;
+      }
     }
 
     // TODO(crbug.com/40927698): getAccessibleBoundary breaks on the nearest
@@ -1800,19 +1822,19 @@ export class AppElement extends AppElementBase {
     // it would be preferable to break on the punctuation so the pause in
     // speech sounds more natural.
     return chrome.readingMode.getAccessibleBoundary(
-        utteranceText, this.maxSpeechLength);
+        utteranceText, maxSpeechLength);
   }
 
   private playText(utteranceText: string) {
     // This check is needed due limits of TTS audio for remote voices. See
     // crbug.com/1176078 for more details.
+    // This check is also needed for local voices on Windows, Linux, and Mac
+    // to reduce the delay between sentences. See crbug.com/395909372.
     // Since the TTS bug only impacts remote voices, no need to check for
     // maximum text length if we're using a local voice. If we do somehow
     // attempt to speak text that's too long, this will be able to be handled
     // by listening for a text-too-long error in message.onerror.
-    const isTextTooLong = this.selectedVoice_?.localService ?
-        false :
-        utteranceText.length > this.maxSpeechLength;
+    const isTextTooLong = this.isTextTooLong(utteranceText.length);
     const endBoundary = isTextTooLong ?
         this.getAccessibleTextLength(utteranceText) :
         utteranceText.length;
@@ -1883,6 +1905,11 @@ export class AppElement extends AppElementBase {
 
     message.onend = () => {
       if (isTextTooLong) {
+        this.wordBoundaryState = {
+          ...this.wordBoundaryState,
+          tooLongTextOffset:
+              this.wordBoundaryState.tooLongTextOffset + endBoundary,
+        };
         // Since our previous utterance was too long, continue speaking pieces
         // of the current utterance until the utterance is complete. The entire
         // utterance is highlighted, so there's no need to update highlighting
@@ -2012,7 +2039,8 @@ export class AppElement extends AppElementBase {
   }
 
   updateBoundary(charIndex: number) {
-    this.wordBoundaryState.previouslySpokenIndex = charIndex;
+    this.wordBoundaryState.previouslySpokenIndex =
+        charIndex + this.wordBoundaryState.tooLongTextOffset;
     this.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
   }
 
@@ -2035,7 +2063,23 @@ export class AppElement extends AppElementBase {
           WordBoundaryMode.NO_BOUNDARIES :
           WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
       speechUtteranceStartIndex: 0,
+      tooLongTextOffset: 0,
     };
+  }
+
+
+  private isTextTooLong(textLength: number): boolean {
+    const maxSpeechLength = this.selectedVoice_?.localService ?
+        this.maxSpeechLengthForWordBoundaries :
+        this.maxSpeechLengthForRemoteVoices;
+
+    if (!chrome.readingMode.isChromeOsAsh && this.selectedVoice_ &&
+        isNatural(this.selectedVoice_)) {
+      return textLength > maxSpeechLength;
+    }
+
+    return this.selectedVoice_?.localService ? false :
+                                               textLength > maxSpeechLength;
   }
 
   private extractTextOf(axNodeIds: number[]): string {
