@@ -255,7 +255,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 - (void)signOutForAccountSwitchWithProfile:(ProfileIOS*)profile {
   __weak __typeof(_delegate) weakDelegate = _delegate;
   AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings, ^{
+      signin_metrics::ProfileSignout::kChangeAccountInAccountMenu, ^{
         [weakDelegate didSignOutForAccountSwitch];
       });
 }
