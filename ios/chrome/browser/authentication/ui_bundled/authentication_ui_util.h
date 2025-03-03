@@ -54,6 +54,11 @@ enum class SignedInUserState {
 // Sign-out completion block.
 using SignoutActionSheetCoordinatorCompletion =
     void (^)(SignoutActionSheetCoordinatorResult result);
+// Completion block for `GetLeavingPrimaryAccountConfirmationDialog()`.
+// `continue_flow` is true if the user wants to continue the sign-out or the
+// account switching.
+using LeavingPrimaryAccountConfirmationDialogCompletion =
+    void (^)(bool continue_flow);
 
 // Returns the hosted domain for the primary account.
 std::u16string HostedDomainForPrimaryAccount(
@@ -109,5 +114,26 @@ SignedInUserState GetSignedInUserState(
     AuthenticationService* authentication_service,
     signin::IdentityManager* identity_manager,
     PrefService* profile_pref_service);
+
+// Returns `true` if the dialog from
+// `GetLeavingPrimaryAccountConfirmationDialog()` needs to be shown, even if
+// there is no unsynced data.
+bool ForceLeavingPrimaryAccountConfirmationDialog(
+    SignedInUserState signed_in_user_state);
+
+// Returns a dialog for the user to confirm to sign out, switch account.
+// `anchorView` and `anchorRect` is the position that triggered sign-in.
+// `account_profile_switch` is true if the flow was triggered for an account or
+// profile switching.
+// `signed_in_user_state` sign-in&sync state for the current primary account.
+// `completion` called once the user closes the dialog.
+ActionSheetCoordinator* GetLeavingPrimaryAccountConfirmationDialog(
+    UIViewController* base_view_controller,
+    Browser* browser,
+    UIView* anchor_view,
+    CGRect anchor_rect,
+    SignedInUserState signed_in_user_state,
+    bool account_profile_switch,
+    LeavingPrimaryAccountConfirmationDialogCompletion completion);
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_AUTHENTICATION_UI_UTIL_H_
