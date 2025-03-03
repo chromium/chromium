@@ -313,6 +313,13 @@ void LockScreenStartReauthDialog::ReactivateAutoReload() {
   reauth_handler->ActivateAutoReload();
 }
 
+bool LockScreenStartReauthDialog::IsAutoReloadActive() {
+  LockScreenReauthHandler* reauth_handler =
+      static_cast<LockScreenStartReauthUI*>(webui()->GetController())
+          ->GetMainHandler();
+  return reauth_handler->GetAutoReloadManager().IsAutoReloadActive();
+}
+
 void LockScreenStartReauthDialog::UpdateState(
     NetworkError::ErrorReason reason) {
   if (is_proxy_auth_in_progress_) {
@@ -338,7 +345,7 @@ void LockScreenStartReauthDialog::UpdateState(
       should_reload_gaia_ = true;
     }
   } else {
-    if (state == NetworkStateInformer::ONLINE) {
+    if (state == NetworkStateInformer::ONLINE && !IsAutoReloadActive()) {
       ReactivateAutoReload();
     }
     DismissLockScreenCaptivePortalDialog();
@@ -384,6 +391,11 @@ void LockScreenStartReauthDialog::OnReadyForTesting() {
   if (on_dialog_loaded_callback_for_testing_) {
     std::move(on_dialog_loaded_callback_for_testing_).Run();
   }
+}
+
+void LockScreenStartReauthDialog::ForceUpdateStateForTesting(
+    NetworkError::ErrorReason reason) {
+  UpdateState(reason);
 }
 
 web_modal::WebContentsModalDialogHost*

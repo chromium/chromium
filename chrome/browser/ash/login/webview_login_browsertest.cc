@@ -987,11 +987,15 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
     // TODO(b/353919505): Introduce a function for testing to advance time and
     // reschedule the timer in one call.
     task_runner()->FastForwardBy(time_change);
-    LoginDisplayHost::default_host()
-        ->GetOobeUI()
-        ->GetHandler<GaiaScreenHandler>()
-        ->GetAutoReloadManagerForTesting()
-        .ResumeTimerForTesting();
+    base::WallClockTimer* auto_reload_timer =
+        LoginDisplayHost::default_host()
+            ->GetOobeUI()
+            ->GetHandler<GaiaScreenHandler>()
+            ->GetAutoReloadManagerForTesting()
+            .GetTimerForTesting();
+    if (auto_reload_timer && auto_reload_timer->IsRunning()) {
+      auto_reload_timer->OnResume();
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -1038,7 +1042,7 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
         ->GetOobeUI()
         ->GetHandler<GaiaScreenHandler>()
         ->GetAutoReloadManagerForTesting()
-        .IsActiveForTesting();
+        .IsAutoReloadActive();
   }
 
   void ExpectAutoReloadDisabled() {

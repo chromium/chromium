@@ -47,9 +47,9 @@ class AuthenticationFlowAutoReloadManager
   static void SetClockForTesting(base::Clock* clock,
                                  const base::TickClock* tick_clock);
 
-  void ResumeTimerForTesting();
+  base::WallClockTimer* GetTimerForTesting();
 
-  bool IsActiveForTesting();
+  bool IsAutoReloadActive();
 
  private:
   // Fetch policy value for the reload time interval.

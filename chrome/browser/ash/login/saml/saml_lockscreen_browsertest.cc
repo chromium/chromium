@@ -554,6 +554,30 @@ IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest,
   reauth_dialog_helper()->ExpectAutoReloadEnabled();
 }
 
+IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest,
+                       NoReactivationOnNetworkPropertiesChanged) {
+  SetAutoReloadInterval(/*reload_interval_in_minutes=*/10);
+
+  ShowLockScreenDialog();
+
+  AdvanceTime(base::Minutes(5));
+  reauth_dialog_helper()->ExpectAutoReloadEnabled();
+
+  // The time by which the reload should be triggered.
+  base::Time desired_run_time_before =
+      reauth_dialog_helper()->GetAutoReloadTimer()->desired_run_time();
+
+  reauth_dialog_helper()->TriggerNetworkUpdateState();
+
+  // The `desired_run_time` should remain the same since autoreload is not
+  // expected to be reactivated, unless `TriggerNetworkUpdateState` causes the
+  // state to change.
+  base::Time desired_run_time_after =
+      reauth_dialog_helper()->GetAutoReloadTimer()->desired_run_time();
+
+  EXPECT_EQ(desired_run_time_before, desired_run_time_after);
+}
+
 // Sets up proxy server which requires authentication.
 class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
  public:
