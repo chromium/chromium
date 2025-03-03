@@ -141,7 +141,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     : StaticBitmapImage(orientation),
       shared_image_(std::move(shared_image)),
       size_(size),
-      sk_color_type_(sk_color_type),
+      format_(viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type)),
       alpha_type_(alpha_type),
       sk_color_space_(std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),

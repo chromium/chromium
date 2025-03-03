@@ -131,12 +131,14 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   gfx::Size GetSize() const override { return size_; }
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
-  SkColorType GetSkColorType() const override { return sk_color_type_; }
+  SkColorType GetSkColorType() const override {
+    return viz::ToClosestSkColorType(format_);
+  }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
     return sk_color_space_;
   }
   viz::SharedImageFormat GetSharedImageFormat() const override {
-    return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+    return format_;
   }
 
  private:
@@ -167,7 +169,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gfx::Size size_;
-  SkColorType sk_color_type_;
+  viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   sk_sp<SkColorSpace> sk_color_space_;
 
