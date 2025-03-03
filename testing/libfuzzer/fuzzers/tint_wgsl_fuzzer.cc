@@ -13,5 +13,15 @@ void CanParseWithoutCrashing(std::string_view wgsl) {
   auto program = tint::wgsl::reader::Parse(&file, parse_options);
 }
 
+void CanConvertWgslToIRWithoutCrashing(std::string_view wgsl) {
+  tint::Source::File file("test.wgsl", wgsl);
+  tint::wgsl::reader::Options parse_options;
+  parse_options.allowed_features = tint::wgsl::AllowedFeatures::Everything();
+  auto module = tint::wgsl::reader::WgslToIR(&file, parse_options);
+}
+
 FUZZ_TEST(ChromiumTintWgslTest, CanParseWithoutCrashing)
+    .WithDomains(fuzztest::InWgslGrammar());
+
+FUZZ_TEST(ChromiumTintWgslTest, CanConvertWgslToIRWithoutCrashing)
     .WithDomains(fuzztest::InWgslGrammar());

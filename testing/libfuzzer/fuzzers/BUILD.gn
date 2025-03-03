@@ -484,7 +484,10 @@ test("chrome_tint_wgsl_fuzzer") {
     "tint_wgsl_fuzzer.cc",
     "tint_wgsl_fuzzer_grammar.h",
   ]
-  fuzztests = [ "ChromiumTintWgslTest.CanParseWithoutCrashing" ]
+  fuzztests = [
+    "ChromiumTintWgslTest.CanParseWithoutCrashing",
+    "ChromiumTintWgslTest.CanConvertWgslToIRWithoutCrashing",
+  ]
   fuzztest_stack_limit_kb = 512
 
   deps = [
