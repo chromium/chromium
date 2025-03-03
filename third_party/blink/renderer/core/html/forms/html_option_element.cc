@@ -28,6 +28,7 @@
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
@@ -708,7 +709,11 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
             // The next option isn't visible, which means we were at the very
             // bottom. Scroll the current option to the top, and then focus the
             // bottom one.
-            scrollIntoView(/*align_to_top*/ true);
+            ScrollIntoViewOptions* scroll_into_view_options =
+                ScrollIntoViewOptions::Create();
+            scroll_into_view_options->setBlock("start");
+            scroll_into_view_options->setInlinePosition("nearest");
+            scrollIntoViewWithOptions(scroll_into_view_options);
           }
           // Then find the last option that is still in the view.
           HTMLOptionElement* next_focus = this;
@@ -730,7 +735,11 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
             // The previous option isn't visible, which means we were at the
             // very top. Scroll the current option to the bottom, and then focus
             // the top one.
-            scrollIntoView(/*align_to_top*/ false);
+            ScrollIntoViewOptions* scroll_into_view_options =
+                ScrollIntoViewOptions::Create();
+            scroll_into_view_options->setBlock("end");
+            scroll_into_view_options->setInlinePosition("nearest");
+            scrollIntoViewWithOptions(scroll_into_view_options);
           }
           // Then find the first option that is in the view.
           HTMLOptionElement* next_focus = this;
