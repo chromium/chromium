@@ -3963,6 +3963,28 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Checks that the details view is correctly updated to have a move password to
+// account button when the sync state changes to signed in.
+- (void)testMovePasswordToAccountStoreIfSignedInWhileInDetailsView {
+  // Save form to be moved to account later.
+  SavePasswordFormToProfileStore();
+
+  // Open password details view for the saved password and verify the move to
+  // account option is not visible.
+  OpenPasswordManager();
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsMoveToAccountButton()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // Sign in and verify the option is now visible.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsMoveToAccountButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 - (void)testAddPasswordTappingAnywhereInNoteFieldFocusesTextView {
   SavePasswordFormToProfileStore();
   OpenPasswordManager();
