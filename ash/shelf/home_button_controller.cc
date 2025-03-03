@@ -8,8 +8,8 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/root_window_controller.h"
-#include "ash/shelf/assistant_overlay.h"
 #include "ash/shelf/home_button.h"
+#include "ash/shelf/home_button_tap_overlay.h"
 #include "ash/shelf/shelf_button.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
@@ -37,7 +37,7 @@ HomeButtonController::HomeButtonController(HomeButton* button)
   DCHECK(button_);
 
   InitializeAssistantOverlay();
-  DCHECK(assistant_overlay_);
+  DCHECK(tap_overlay_);
 
   Shell* shell = Shell::Get();
   shell->app_list_controller()->AddObserver(this);
@@ -66,14 +66,14 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
       // available - because it could have been started when Assistant _was_
       // available.
       // These are no-ops if the animation did not start.
-      assistant_overlay_->EndAnimation();
-      assistant_animation_delay_timer_->Stop();
+      tap_overlay_->EndAnimation();
+      tap_animation_delay_timer_->Stop();
 
       // After animating the ripple, let the button handle the event.
       return false;
     case ui::EventType::kGestureTapDown:
       if (IsAssistantAvailable()) {
-        assistant_animation_delay_timer_->Start(
+        tap_animation_delay_timer_->Start(
             FROM_HERE, kAssistantAnimationDelay,
             base::BindOnce(&HomeButtonController::StartAssistantAnimation,
                            base::Unretained(this)));
@@ -86,7 +86,7 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
 
       base::RecordAction(base::UserMetricsAction(
           "VoiceInteraction.Started.HomeButtonLongPress"));
-      assistant_overlay_->BurstAnimation();
+      tap_overlay_->BurstAnimation();
       event->SetHandled();
       Shell::SetRootWindowForNewWindows(
           button_->GetWidget()->GetNativeWindow()->GetRootWindow());
@@ -153,7 +153,7 @@ void HomeButtonController::OnUiVisibilityChanged(
 }
 
 void HomeButtonController::StartAssistantAnimation() {
-  assistant_overlay_->StartAnimation();
+  tap_overlay_->StartAnimation();
 }
 
 void HomeButtonController::OnAppListShown() {
@@ -171,11 +171,11 @@ void HomeButtonController::OnAppListDismissed() {
 }
 
 void HomeButtonController::InitializeAssistantOverlay() {
-  DCHECK_EQ(nullptr, assistant_overlay_);
-  assistant_overlay_ = new AssistantOverlay(button_);
-  button_->AddChildView(assistant_overlay_.get());
-  assistant_overlay_->SetVisible(false);
-  assistant_animation_delay_timer_ = std::make_unique<base::OneShotTimer>();
+  DCHECK_EQ(nullptr, tap_overlay_);
+  tap_overlay_ = new HomeButtonTapOverlay(button_);
+  button_->AddChildView(tap_overlay_.get());
+  tap_overlay_->SetVisible(false);
+  tap_animation_delay_timer_ = std::make_unique<base::OneShotTimer>();
 }
 
 }  // namespace ash

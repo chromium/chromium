@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/shelf/assistant_overlay.h"
+#include "ash/shelf/home_button_tap_overlay.h"
 
 #include <algorithm>
 #include <memory>
@@ -66,13 +66,13 @@ constexpr int kHideDurationMs = 200;
 
 }  // namespace
 
-AssistantOverlay::AssistantOverlay(HomeButton* host_view)
+HomeButtonTapOverlay::HomeButtonTapOverlay(HomeButton* host_view)
     : ripple_layer_(std::make_unique<ui::Layer>()),
       host_view_(host_view),
       circle_layer_delegate_(gfx::kPlaceholderColor,
                              kRippleCircleInitRadiusDip) {
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  layer()->SetName("AssistantOverlay:ROOT_LAYER");
+  layer()->SetName("HomeButtonTapOverlay:ROOT_LAYER");
   layer()->SetMasksToBounds(false);
 
   ripple_layer_->SetBounds(gfx::Rect(0, 0, kRippleCircleInitRadiusDip * 2,
@@ -80,15 +80,15 @@ AssistantOverlay::AssistantOverlay(HomeButton* host_view)
   ripple_layer_->set_delegate(&circle_layer_delegate_);
   ripple_layer_->SetFillsBoundsOpaquely(false);
   ripple_layer_->SetMasksToBounds(true);
-  ripple_layer_->SetName("AssistantOverlay:PAINTED_LAYER");
+  ripple_layer_->SetName("HomeButtonTapOverlay:PAINTED_LAYER");
   layer()->Add(ripple_layer_.get());
 }
 
-AssistantOverlay::~AssistantOverlay() {
+HomeButtonTapOverlay::~HomeButtonTapOverlay() {
   StopObservingImplicitAnimations();
 }
 
-void AssistantOverlay::StartAnimation() {
+void HomeButtonTapOverlay::StartAnimation() {
   animation_state_ = AnimationState::STARTING;
   SetVisible(true);
 
@@ -130,7 +130,7 @@ void AssistantOverlay::StartAnimation() {
   }
 }
 
-void AssistantOverlay::BurstAnimation() {
+void HomeButtonTapOverlay::BurstAnimation() {
   animation_state_ = AnimationState::BURSTING;
 
   const gfx::PointF center = host_view_->GetCenterPoint();
@@ -156,7 +156,7 @@ void AssistantOverlay::BurstAnimation() {
   }
 }
 
-void AssistantOverlay::EndAnimation() {
+void HomeButtonTapOverlay::EndAnimation() {
   if (IsBursting() || IsHidden()) {
     // Too late, user action already fired, we have to finish what's started.
     // Or the widget has already been hidden, no need to play the end animation.
@@ -190,7 +190,7 @@ void AssistantOverlay::EndAnimation() {
   }
 }
 
-void AssistantOverlay::HideAnimation() {
+void HomeButtonTapOverlay::HideAnimation() {
   animation_state_ = AnimationState::HIDDEN;
 
   // Setup ripple animations.
@@ -206,18 +206,18 @@ void AssistantOverlay::HideAnimation() {
   }
 }
 
-void AssistantOverlay::OnThemeChanged() {
+void HomeButtonTapOverlay::OnThemeChanged() {
   views::View::OnThemeChanged();
   circle_layer_delegate_.set_color(
       GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
   SchedulePaint();
 }
 
-void AssistantOverlay::OnImplicitAnimationsCompleted() {
+void HomeButtonTapOverlay::OnImplicitAnimationsCompleted() {
   scoped_no_clip_rect_.reset();
 }
 
-BEGIN_METADATA(AssistantOverlay)
+BEGIN_METADATA(HomeButtonTapOverlay)
 END_METADATA
 
 }  // namespace ash

@@ -23,7 +23,7 @@ class GestureEvent;
 
 namespace ash {
 
-class AssistantOverlay;
+class HomeButtonTapOverlay;
 class HomeButton;
 
 // Controls behavior of the HomeButton, including a possible long-press
@@ -83,8 +83,8 @@ class HomeButtonController : public AppListControllerObserver,
   const raw_ptr<HomeButton> button_;
 
   // Owned by the button's view hierarchy.
-  raw_ptr<AssistantOverlay> assistant_overlay_ = nullptr;
-  std::unique_ptr<base::OneShotTimer> assistant_animation_delay_timer_;
+  raw_ptr<HomeButtonTapOverlay> tap_overlay_ = nullptr;
+  std::unique_ptr<base::OneShotTimer> tap_animation_delay_timer_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };
