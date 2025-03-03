@@ -22,7 +22,6 @@ enum class MimeType {
   kVideo = 5,      // "video/*"
   kAudio = 6,      // "audio/*"
   kJson = 7,       // "application/json"
-  kAnnotatedPageContent = 8,  // Serialized AnnotatedPageContent proto
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayMimeType)
 // When adding a value here, also update:

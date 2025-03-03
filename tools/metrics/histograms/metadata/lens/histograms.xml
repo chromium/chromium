@@ -45,18 +45,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(LensOverlayMimeType) -->
 
-<!-- The MimeType enum used for UMA histograms. -->
-
 <variants name="MimeTypes">
-  <variant name="AnnotatedPageContent"/>
-  <variant name="Audio"/>
   <variant name="Html"/>
-  <variant name="Image"/>
-  <variant name="Json"/>
   <variant name="Pdf"/>
   <variant name="PlainText"/>
   <variant name="Unknown"/>
-  <variant name="Video"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->

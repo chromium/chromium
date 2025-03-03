@@ -123,7 +123,6 @@ constexpr char kGen204IdentifierQueryParameter[] = "plla";
 // kFakeContentBytes and kNewFakeContentBytes needs to outlive the query
 // controller, so initialize it here.
 const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
-const std::vector<uint8_t> kFakeContentBytes2({2, 3, 4, 5, 6});
 const std::vector<uint8_t> kNewFakeContentBytes({5, 6, 7, 8});
 
 // The PageContent needs to outlive the query controller, so initialize it here.
@@ -133,11 +132,6 @@ const std::vector<lens::PageContent> kFakeTextPageContents = {
     lens::PageContent(kFakeContentBytes, lens::MimeType::kPlainText)};
 const std::vector<lens::PageContent> kFakeHtmlPageContents = {
     lens::PageContent(kFakeContentBytes, lens::MimeType::kHtml)};
-const std::vector<lens::PageContent> kFakeHtmlPageContentsWithMultipleContents =
-    {lens::PageContent(kFakeContentBytes, lens::MimeType::kHtml),
-     lens::PageContent(kFakeContentBytes2, lens::MimeType::kPlainText),
-     lens::PageContent(kNewFakeContentBytes,
-                       lens::MimeType::kAnnotatedPageContent)};
 const std::vector<lens::PageContent> kNewFakeTextPageContents = {
     lens::PageContent(kFakeContentBytes, lens::MimeType::kPlainText)};
 
@@ -379,17 +373,6 @@ class LensOverlayQueryControllerTest : public testing::Test {
     base::FieldTrialParams params =
         kDefaultLensOverlayContextualSearchboxParams.params;
     params.insert({"ztsd-compress-pdf-bytes", "true"});
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlayContextualSearchbox, params);
-  }
-
-  void InitFeaturesWithNewContentPayload() {
-    feature_list_.Reset();
-    base::FieldTrialParams params =
-        kDefaultLensOverlayContextualSearchboxParams.params;
-    params.insert({"use-updated-content-fields", "true"});
-    params.insert({"use-inner-text-with-inner-html", "true"});
-    params.insert({"use-apc-with-inner-html", "true"});
     feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensOverlayContextualSearchbox, params);
   }
@@ -2361,82 +2344,6 @@ TEST_F(LensOverlayQueryControllerTest,
                 .sequence_id(),
             6);
   query_controller.EndQuery();
-}
-
-TEST_F(LensOverlayQueryControllerTest,
-       PageContentRequest_MultiplePageContents_SendProperRequest) {
-  InitFeaturesWithNewContentPayload();
-  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr, bool>
-      full_image_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
-      url_response_future;
-  base::test::TestFuture<const std::string&> thumbnail_created_future;
-  TestLensOverlayQueryController query_controller(
-      full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), base::NullCallback(),
-      GetSuggestInputsCallback(),
-      thumbnail_created_future.GetRepeatingCallback(), base::NullCallback(),
-      fake_variations_client_.get(),
-      IdentityManagerFactory::GetForProfile(profile()), profile(),
-      lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false, GetGen204Controller());
-
-  // Set up the query controller responses.
-  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
-  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
-  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
-  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
-  lens::LensOverlayObjectsResponse fake_objects_response;
-  fake_objects_response.mutable_cluster_info()->set_server_session_id(
-      kTestServerSessionId);
-  query_controller.set_fake_objects_response(fake_objects_response);
-  lens::LensOverlayInteractionResponse fake_interaction_response;
-  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
-  query_controller.set_fake_interaction_response(fake_interaction_response);
-
-  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  std::map<std::string, std::string> additional_search_query_params;
-  query_controller.StartQueryFlow(
-      bitmap, GURL(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      kFakeHtmlPageContentsWithMultipleContents, lens::MimeType::kHtml, 0,
-      base::TimeTicks::Now());
-  ASSERT_TRUE(full_image_response_future.Wait());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return query_controller.num_page_content_update_requests_sent() == 1;
-  }));
-  query_controller.EndQuery();
-
-  // Verify that the payload has 3 sets of data
-  auto page_content_request =
-      query_controller.sent_page_content_objects_request();
-  ASSERT_TRUE(page_content_request.payload().content_data().empty());
-  ASSERT_TRUE(page_content_request.payload().has_content());
-  EXPECT_EQ(3, page_content_request.payload().content().content_data().size());
-
-  // Verify the payload has a URL.
-  const auto sent_content = page_content_request.payload().content();
-  EXPECT_EQ(sent_content.webpage_url(), kTestPageUrl);
-
-  // Verify the first is the first bytes with the correct content type
-  EXPECT_EQ(sent_content.content_data(0).data().size(),
-            kFakeContentBytes.size());
-  EXPECT_EQ(sent_content.content_data(0).content_type(),
-            lens::ContentData::CONTENT_TYPE_INNER_HTML);
-
-  // Verify the second is the second bytes with the correct content type
-  EXPECT_EQ(sent_content.content_data(1).data().size(),
-            kFakeContentBytes2.size());
-  EXPECT_EQ(sent_content.content_data(1).content_type(),
-            lens::ContentData::CONTENT_TYPE_INNER_TEXT);
-
-  // Verify the third is the third bytes with the correct content type
-  EXPECT_EQ(sent_content.content_data(2).data().size(),
-            kNewFakeContentBytes.size());
-  EXPECT_EQ(sent_content.content_data(2).content_type(),
-            lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT);
 }
 
 TEST_F(LensOverlayQueryControllerTest,

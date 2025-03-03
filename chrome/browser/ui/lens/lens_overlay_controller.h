@@ -49,7 +49,6 @@
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
@@ -787,20 +786,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Callback for when the inner HTML is retrieved from the underlying page.
   void OnInnerHtmlReceived(PageContentRetrievedCallback callback,
                            const std::optional<std::string>& result);
-
-  // Callback for when the inner text is retrieved for the HTML request flow,
-  // which sends HTML, innerText, and Annotated page content.
-  void OnInnerTextForHtmlRequestReceived(
-      std::vector<lens::PageContent> page_contents,
-      PageContentRetrievedCallback callback,
-      std::unique_ptr<content_extraction::InnerTextResult> result);
-
-  // Callback for when the annotated page content is retrieved for the HTML
-  // request flow, which sends HTML, innerText, and Annotated page content.
-  void OnAnnotatedPageContentForHtmlRequestReceived(
-      std::vector<lens::PageContent> page_contents,
-      PageContentRetrievedCallback callback,
-      std::optional<optimization_guide::proto::AnnotatedPageContent> apc);
 
   // Creates the mojo bounding boxes for the significant regions.
   std::vector<lens::mojom::CenterRotatedBoxPtr> ConvertSignificantRegionBoxes(

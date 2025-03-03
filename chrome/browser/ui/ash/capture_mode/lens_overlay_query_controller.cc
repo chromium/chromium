@@ -167,7 +167,6 @@ lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
       break;
     case lens::MimeType::kUnknown:
       break;
-    case lens::MimeType::kAnnotatedPageContent:
     case lens::MimeType::kImage:
     case lens::MimeType::kVideo:
     case lens::MimeType::kAudio:
