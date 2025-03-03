@@ -7,8 +7,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
-assert(use_blink, "Not supported without use_blink")
-
 source_set("color_headers") {
   sources = [
     "color_id.h",
@@ -178,7 +176,7 @@ component("mixers") {
     "//ui/base:features",
     "//ui/color/dynamic_color",
     "//ui/gfx:color_utils",
-    "//ui/native_theme:features",
+    "//ui/native_theme/features",
   ]
 
   public_deps = [ "//base" ]

@@ -5,13 +5,14 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_AURA_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_AURA_H_
 
+#include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "ui/native_theme/native_theme_base.h"
 
 namespace ui {
 
 // Aura implementation of native theme support.
-class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
+class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
  protected:
   friend class NativeTheme;
   friend class NativeThemeAuraTest;

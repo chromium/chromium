@@ -486,6 +486,8 @@ component("base") {
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/color:color_headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
@@ -544,11 +546,9 @@ component("base") {
 
   if (use_blink) {
     deps += [
-      "//ui/color",
       "//ui/events",
       "//ui/events/devices",
     ]
-    public_deps += [ "//ui/color:color_headers" ]
   }
 
   if (is_win) {
@@ -1061,6 +1061,7 @@ test("ui_base_unittests") {
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction:prediction",
+    "//ui/color",
     "//ui/display",
     "//ui/gfx:test_support",
     "//ui/resources",
@@ -1131,7 +1132,6 @@ test("ui_base_unittests") {
 
   if (use_blink) {
     deps += [
-      "//ui/color",
       "//ui/events:events_base",
       "//ui/events:test_support",
     ]

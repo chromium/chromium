@@ -6,7 +6,7 @@
 
 #include <string_view>
 
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 
 namespace ui {
 

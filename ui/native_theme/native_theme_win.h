@@ -14,6 +14,7 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -31,8 +32,9 @@ namespace ui {
 // of several PaintXXX methods to an API, inherited from the NativeTheme base
 // class, that consists of a single Paint() method with a argument to indicate
 // what kind of part to paint.
-class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
-                                           public gfx::SysColorChangeListener {
+class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin
+    : public NativeTheme,
+      public gfx::SysColorChangeListener {
  public:
   enum ThemeName {
     BUTTON,

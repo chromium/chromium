@@ -5,20 +5,20 @@
 #ifndef UI_NATIVE_THEME_SCROLLBAR_ANIMATOR_MAC_H_
 #define UI_NATIVE_THEME_SCROLLBAR_ANIMATOR_MAC_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
-#include "ui/native_theme/native_theme_export.h"
 
 namespace ui {
 
 // Timer used for animating scrollbar effects.
 // TODO(crbug.com/40626921): Change this to be driven by the client
 // (Blink or Views) animation system.
-class NATIVE_THEME_EXPORT ScrollbarAnimationTimerMac {
+class COMPONENT_EXPORT(NATIVE_THEME) ScrollbarAnimationTimerMac {
  public:
   ScrollbarAnimationTimerMac(
       base::RepeatingCallback<void(double)> callback,
@@ -41,7 +41,7 @@ class NATIVE_THEME_EXPORT ScrollbarAnimationTimerMac {
   std::unique_ptr<gfx::CubicBezierTimingFunction> timing_function_;
 };
 
-class NATIVE_THEME_EXPORT OverlayScrollbarAnimatorMac {
+class COMPONENT_EXPORT(NATIVE_THEME) OverlayScrollbarAnimatorMac {
  public:
   class Client {
    public:

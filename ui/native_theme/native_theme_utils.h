@@ -7,8 +7,8 @@
 
 #include <string_view>
 
+#include "base/component_export.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_export.h"
 
 namespace ui {
 
@@ -17,10 +17,10 @@ namespace ui {
 // functions are called.
 
 // Converts NativeTheme::ColorScheme.
-std::string_view NATIVE_THEME_EXPORT
-NativeThemeColorSchemeName(NativeTheme::ColorScheme color_scheme);
+std::string_view COMPONENT_EXPORT(NATIVE_THEME)
+    NativeThemeColorSchemeName(NativeTheme::ColorScheme color_scheme);
 
-NATIVE_THEME_EXPORT bool IsOverlayScrollbarEnabled();
+COMPONENT_EXPORT(NATIVE_THEME) bool IsOverlayScrollbarEnabled();
 
 }  // namespace ui
 

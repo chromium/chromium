@@ -5,20 +5,6 @@
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-component("features") {
-  output_name = "native_theme_features"
-
-  defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
-
-  sources = [
-    "native_theme_export.h",
-    "native_theme_features.cc",
-    "native_theme_features.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
 component("native_theme") {
   sources = [
     "caption_style.cc",
@@ -80,10 +66,10 @@ component("native_theme") {
     ]
   }
 
-  defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
+  defines = [ "IS_NATIVE_THEME_IMPL" ]
 
   public_deps = [
-    ":features",
+    "features",
     "//skia",
   ]
 
@@ -105,7 +91,7 @@ component("native_theme") {
 
 if (is_win) {
   component("native_theme_browser") {
-    defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
+    defines = [ "IS_NATIVE_THEME_IMPL" ]
 
     # These files cannot work in the renderer on Windows.
     sources = [

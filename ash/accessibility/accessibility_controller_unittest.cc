@@ -54,8 +54,8 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_features.h"
 
 using message_center::MessageCenter;
 

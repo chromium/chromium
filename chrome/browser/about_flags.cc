@@ -250,7 +250,7 @@
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/ui_features.h"
 #include "url/url_features.h"
 

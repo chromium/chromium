@@ -1756,7 +1756,7 @@ component("platform") {
     "//ui/base/cursor",
     "//ui/base/mojom:ui_base_types_blink",
     "//ui/gfx",
-    "//ui/native_theme:features",
+    "//ui/native_theme/features",
   ]
   deps = [
     "//base:base_static",
