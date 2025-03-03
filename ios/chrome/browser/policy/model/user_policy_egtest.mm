@@ -252,8 +252,7 @@ void WaitForVisibleChromeManagementURL() {
 
 // Tests that the user policies are fetched and activated when signing in with
 // a managed account.
-// TODO(crbug.com/331794057): Test fails.
-- (void)DISABLED_testThatPoliciesAreFetchedOnSignIn {
+- (void)testThatPoliciesAreFetchedOnSignIn {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
@@ -263,8 +262,7 @@ void WaitForVisibleChromeManagementURL() {
 }
 
 // Tests that the user policies are cleared after sign out.
-// TODO(crbug.com/331794057): Test fails.
-- (void)DISABLED_testThatPoliciesAreClearedOnSignOut {
+- (void)testThatPoliciesAreClearedOnSignOut {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
@@ -278,8 +276,7 @@ void WaitForVisibleChromeManagementURL() {
 
 // Tests that the user policies previously fetched are loaded from the store
 // when signed in at startup.
-// TODO(crbug.com/331794057): Test fails.
-- (void)DISABLED_testThatPoliciesAreLoadedFromStoreWhenSignedInAtStartup {
+- (void)testThatPoliciesAreLoadedFromStoreWhenSignedInAtStartup {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
@@ -405,8 +402,7 @@ void WaitForVisibleChromeManagementURL() {
 
 // Tests that the managed accout confirmation dialog is shown in the sign-in
 // flow with its contextual and specific content when user policies are enabled.
-// TODO(crbug.com/331794057): Test fails.
-- (void)DISABLED_testSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
+- (void)testSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
   // Enable User Policy for sign-in consent level exclusively.
   config.features_enabled.push_back(
@@ -494,16 +490,7 @@ void WaitForVisibleChromeManagementURL() {
 
 // Tests that the managed account confirmation dialog isn't shown if the browser
 // is already managed. Only applies for the sign-in consent level.
-// TODO(crbug.com/331794057): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies \
-  DISABLED_testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies
-#else
-#define MAYBE_testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies \
-  testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies
-#endif
-- (void)
-    MAYBE_testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies {
+- (void)testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies {
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
   // Enable User Policy for sign-in consent level exclusively.
   config.features_enabled.push_back(
