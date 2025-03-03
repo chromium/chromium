@@ -1266,8 +1266,6 @@ TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
 }
 
 TEST_F(PlusAddressServiceEnabledTest, GlobalSettingsToggleOff) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressGlobalToggle};
   identity_env().MakeAccountAvailable("plus@plus.plus",
                                       {signin::ConsentLevel::kSignin});
   InitService();
@@ -1281,8 +1279,6 @@ TEST_F(PlusAddressServiceEnabledTest, GlobalSettingsToggleOff) {
 
 TEST_F(PlusAddressServiceEnabledTest,
        GlobalSettingsToggleOffButTheUserHasPlusAddress) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressGlobalToggle};
   identity_env().MakeAccountAvailable("plus@plus.plus",
                                       {signin::ConsentLevel::kSignin});
   InitService();
@@ -2045,8 +2041,6 @@ TEST_F(PlusAddressAffiliationsTest,
 // Tests that no creation suggestion is offered when the global toggle is off.
 TEST_F(PlusAddressAffiliationsTest,
        GetSuggestionsDoesNotOfferCreationWhenToggleIsOff) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressGlobalToggle};
   ON_CALL(affiliation_service(), GetPSLExtensions)
       .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
@@ -2063,8 +2057,6 @@ TEST_F(PlusAddressAffiliationsTest,
 // matches and the global settings toggle is off.
 TEST_F(PlusAddressAffiliationsTest,
        FillingSuggestionsAreOfferedWhenGlobalToggleIsOff) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressGlobalToggle};
   PlusProfile group_profile = test::CreatePlusProfileWithFacet(
       FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
   service().SavePlusProfile(group_profile);

@@ -56,12 +56,6 @@ BASE_FEATURE(kPlusAddressFullFormFill,
              "PlusAddressFullFormFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the `PlusAddressSettingService` will be consulted on whether
-// to offer plus address creation.
-BASE_FEATURE(kPlusAddressGlobalToggle,
-             "PlusAddressGlobalToggle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, plus address creation is offered on all email fields that are
 // not a username field - even if they are on a login form or a change password
 // form.

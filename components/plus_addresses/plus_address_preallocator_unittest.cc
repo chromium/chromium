@@ -109,8 +109,6 @@ class PlusAddressPreallocatorTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kPlusAddressGlobalToggle};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
