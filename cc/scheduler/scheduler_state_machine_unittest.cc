@@ -1170,7 +1170,13 @@ bool RunOneFrameAndReturnWhetherMainFrameIsIssued(
   // If we send a BeginMainFrame(), simulate the fast path, where main is fast
   // enough to catch the next deadline.
   bool send_begin_main_frame = state.ShouldSendBeginMainFrame();
-  if (state.ShouldSendBeginMainFrame()) {
+  // If no BeginMainFrame is going to be sent, don't wait for it.
+  auto expected_state =
+      send_begin_main_frame
+          ? SchedulerStateMachine::BeginImplFrameDeadlineMode::LATE
+          : SchedulerStateMachine::BeginImplFrameDeadlineMode::IMMEDIATE;
+  EXPECT_EQ(expected_state, state.CurrentBeginImplFrameDeadlineMode());
+  if (send_begin_main_frame) {
     send_begin_main_frame = true;
     EXPECT_ACTION_UPDATE_STATE(
         SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
