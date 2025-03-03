@@ -82,20 +82,40 @@ void fct() {
   // temp = (++expected_data).data();
   temp = (++expected_data).data();
   // Expected rewrite:
-  // temp = (expected_data + 1).data();
-  temp = (expected_data + 1).data();
+  // temp = expected_data.subspan(1).data();
+  temp = expected_data.subspan(1).data();
   // Expected rewrite:
-  // temp = (expected_data + index).data();
-  temp = (expected_data + index).data();
+  // temp = expected_data.subspan(index).data();
+  temp = expected_data.subspan(index).data();
   // Expected rewrite:
-  // temp = (expected_data + offset()).data();
-  temp = (expected_data + offset()).data();
+  // temp = expected_data.subspan(offset()).data();
+  temp = expected_data.subspan(offset()).data();
   // Expected rewrite:
-  // temp = (expected_data + offset(2)).data();
-  temp = (expected_data + offset(2)).data();
+  // temp = expected_data.subspan(offset(2)).data();
+  temp = expected_data.subspan(offset(2)).data();
   // Expected rewrite:
-  // temp = (expected_data + offset(index)).data();
-  temp = (expected_data + offset(index)).data();
+  // temp = expected_data.subspan(offset(index)).data();
+  temp = expected_data.subspan(offset(index)).data();
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(1 + index + offset(index)).data();
+  temp = expected_data.subspan(1 + index + offset(index)).data();
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(1 + index - 3 + offset(index)).data();
+  temp = expected_data.subspan(1 + index - 3 + offset(index)).data();
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(index * 2).data();
+  temp = expected_data.subspan(index * 2).data();
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(index + 2 * 2).data();
+  temp = expected_data.subspan(index + 2 * 2).data();
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(index + 2 * 2 + offset()).data();
+  temp = expected_data.subspan(index + 2 * 2 + offset()).data();
 
   // Expected rewrite:
   // base::span<char> ptr = &buf[0];
@@ -211,16 +231,16 @@ void fct() {
 
   int index = 11;
   // Expected rewrite:
-  // memcpy((buf2 + 1).data(), (buf + index).data(), 10)
-  memcpy((buf2 + 1).data(), (buf + index).data(), 10);
+  // memcpy(buf2.subspan(1).data(), buf.subspan(index).data(), 10);
+  memcpy(buf2.subspan(1).data(), buf.subspan(index).data(), 10);
 
   // Expected rewrite:
   // int i = (buf++)[0];
   int i = (buf++)[0];
   // i = (++buf)[0]
   i = (++buf)[0];
-  // i = ((buf + index)[0])
-  i = ((buf + index)[0]);
+  // i = (buf.subspan(index)[0])
+  i = (buf.subspan(index)[0]);
   // i = buf[0];
   i = buf[0];
 }
