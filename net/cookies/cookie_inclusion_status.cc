@@ -324,13 +324,11 @@ std::string CookieInclusionStatus::GetDebugString() const {
   }
 
   // Add exemption reason
-  if (exemption_reason() == CookieInclusionStatus::ExemptionReason::kNone) {
-    base::StrAppend(&out, {"NO_EXEMPTION"});
-    return out;
-  }
-
   std::string_view reason;
   switch (exemption_reason()) {
+    case ExemptionReason::kNone:
+      reason = "NO_EXEMPTION";
+      break;
     case ExemptionReason::kUserSetting:
       reason = "ExemptionUserSetting";
       break;
@@ -361,8 +359,6 @@ std::string CookieInclusionStatus::GetDebugString() const {
     case ExemptionReason::kSameSiteNoneCookiesInSandbox:
       reason = "ExemptionSameSiteNoneCookiesInSandbox";
       break;
-    case ExemptionReason::kNone:
-      NOTREACHED();
   }
   base::StrAppend(&out, {reason});
 
