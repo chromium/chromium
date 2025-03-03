@@ -245,6 +245,7 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="kPreflightMissingPrivateNetworkAccessName"/>
   <int value="29" label="kPrivateNetworkAccessPermissionUnavailable"/>
   <int value="30" label="kPrivateNetworkAccessPermissionDenied"/>
+  <int value="31" label="kLocalNetworkAccessPermissionDenied"/>
 </enum>
 
 <!-- LINT.IfChange(DeviceBoundSessionError) -->

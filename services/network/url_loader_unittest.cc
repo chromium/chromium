@@ -2178,6 +2178,54 @@ TEST_P(ParameterizedURLLoaderTest,
               Pointee(Eq("allowed-potentially-trustworthy-same-origin")));
 }
 
+TEST_P(ParameterizedURLLoaderTest, SecurePublicToLocalPermission) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+            LoadRequest(request));
+  EXPECT_THAT(
+      client()->completion_status().cors_error_status,
+      Optional(CorsErrorStatus(
+          mojom::CorsError::kLocalNetworkAccessPermissionDenied,
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
+}
+
+TEST_P(ParameterizedURLLoaderTest, SecurePrivateToLocalPermission) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+            LoadRequest(request));
+  EXPECT_THAT(
+      client()->completion_status().cors_error_status,
+      Optional(CorsErrorStatus(
+          mojom::CorsError::kLocalNetworkAccessPermissionDenied,
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
+}
+
+TEST_P(ParameterizedURLLoaderTest, SecureLocalToLocalPermission) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+}
+
 // Bundles together the inputs to a parameterized private network request test.
 struct URLLoaderFakeTransportInfoTestParams {
   // The address space of the client.

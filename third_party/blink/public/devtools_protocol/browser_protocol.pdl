@@ -6192,6 +6192,9 @@ domain Network
       # Request was a private network request and is denied by user permission.
       # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
       PrivateNetworkAccessPermissionDenied
+      # Request was a local network request and is denied by user permission.
+      # https://github.com/explainers-by-googlers/local-network-access
+      LocalNetworkAccessPermissionDenied
 
   type CorsErrorStatus extends object
     properties
@@ -7383,6 +7386,7 @@ domain Network
       WarnFromInsecureToMorePrivate
       PreflightBlock
       PreflightWarn
+      PermissionBlock
 
   experimental type IPAddressSpace extends string
     enum

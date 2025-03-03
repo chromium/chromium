@@ -151,6 +151,10 @@ enum CorsError {
   // See: https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
   // TODO(crbug.com/40272644): link to the spec.
   kPrivateNetworkAccessPermissionDenied,
+
+  // User did not grant permission to access the local network.
+  // See: https://github.com/explainers-by-googlers/local-network-access
+  kLocalNetworkAccessPermissionDenied,
 };
 
 // Contains additional details about a CORS-related error.

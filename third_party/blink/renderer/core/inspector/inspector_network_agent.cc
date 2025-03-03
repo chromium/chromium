@@ -561,6 +561,10 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
     case network::mojom::CorsError::kPrivateNetworkAccessPermissionDenied:
       return protocol::Network::CorsErrorEnum::
           PrivateNetworkAccessPermissionDenied;
+
+    case network::mojom::CorsError::kLocalNetworkAccessPermissionDenied:
+      return protocol::Network::CorsErrorEnum::
+          LocalNetworkAccessPermissionDenied;
   }
 }
 
