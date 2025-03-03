@@ -1190,16 +1190,29 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
 TEST_P(AILanguageModelVisionTest, Basic) {
   MockOnDeviceVisionSession mock_on_device_vision_session;
+  // First call is for input.
   EXPECT_CALL(mock_on_device_vision_session, Append(_, _))
       .WillOnce([&](on_device_model::mojom::AppendOptionsPtr options,
                     mojo::PendingRemote<on_device_model::mojom::ContextClient>
                         client) {
         auto pieces = options->input->pieces;
-        EXPECT_EQ(pieces.size(), 4u);
+        EXPECT_EQ(pieces.size(), 5u);
         EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[0]));
         EXPECT_TRUE(std::holds_alternative<std::string>(pieces[1]));
         EXPECT_TRUE(std::holds_alternative<SkBitmap>(pieces[2]));
         EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[3]));
+        EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[4]));
+        // Second call adds output to the session.
+        EXPECT_CALL(mock_on_device_vision_session, Append(_, _))
+            .WillOnce(
+                [&](on_device_model::mojom::AppendOptionsPtr options,
+                    mojo::PendingRemote<on_device_model::mojom::ContextClient>
+                        client) {
+                  auto pieces = options->input->pieces;
+                  EXPECT_EQ(pieces.size(), 2u);
+                  EXPECT_TRUE(std::holds_alternative<std::string>(pieces[0]));
+                  EXPECT_TRUE(std::holds_alternative<ml::Token>(pieces[1]));
+                });
       });
   EXPECT_CALL(mock_on_device_vision_session, Generate(_, _))
       .WillOnce(

@@ -115,20 +115,33 @@ class AILanguageModel : public AIContextBoundObject,
   };
 
   // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  class MultimodalResponder : on_device_model::mojom::StreamingResponder {
+  class MultimodalResponder : public on_device_model::mojom::StreamingResponder,
+                              public on_device_model::mojom::ContextClient {
    public:
     explicit MultimodalResponder(
+        AILanguageModel* model,
+        mojo::PendingReceiver<on_device_model::mojom::StreamingResponder>
+            response_receiver,
+        mojo::PendingReceiver<on_device_model::mojom::ContextClient>
+            context_receiver,
         mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder);
     ~MultimodalResponder() override;
-    mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
-    BindRemote();
     // on_device_model::mojom::StreamingResponder:
     void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
     void OnComplete(
         on_device_model::mojom::ResponseSummaryPtr summary) override;
 
+    // on_device_model::mojom::ContextClient:
+    void OnComplete(uint32_t tokens_processed) override;
+
    private:
-    mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_{this};
+    void OnDisconnect();
+
+    uint32_t tokens_processed_ = 0;
+    raw_ptr<AILanguageModel> model_;
+    mojo::Receiver<on_device_model::mojom::StreamingResponder>
+        response_receiver_;
+    mojo::Receiver<on_device_model::mojom::ContextClient> context_receiver_;
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder_;
     std::string current_response_;
   };
@@ -216,7 +229,7 @@ class AILanguageModel : public AIContextBoundObject,
   mojo::Receiver<blink::mojom::AILanguageModel> receiver_;
 
   // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  std::vector<std::unique_ptr<MultimodalResponder>> multimodal_responders_;
+  std::unique_ptr<MultimodalResponder> multimodal_responder_;
 
   base::WeakPtrFactory<AILanguageModel> weak_ptr_factory_{this};
 };
