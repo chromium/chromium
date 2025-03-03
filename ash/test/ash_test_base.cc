@@ -36,6 +36,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/pixel/ash_pixel_diff_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
@@ -166,7 +167,8 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
       CreatePixelTestInitParams();
   if (pixel_test_init_params) {
     PrepareForPixelDiffTest();
-    init_params_.pixel_test_init_params = std::move(pixel_test_init_params);
+    pixel_test_helper_ = std::make_unique<AshPixelTestHelper>(
+        std::move(*pixel_test_init_params));
   }
 
   test_context_factories_ =
@@ -174,6 +176,12 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   ash_test_helper_ = std::make_unique<AshTestHelper>(
       test_context_factories_->GetContextFactory());
   ash_test_helper_->SetUp(std::move(init_params_));
+
+  // Call `StabilizeUI()` after the user session is activated (if any) in the
+  // test setup.
+  if (pixel_test_helper_) {
+    pixel_test_helper_->StabilizeUi();
+  }
 
   // Creates a dummy `SensorDisabledNotificationDelegate` to avoid a crash due
   // to it missing in tests.
@@ -402,10 +410,6 @@ AshPixelDiffer* AshTestBase::GetPixelDiffer() {
   return pixel_differ_.get();
 }
 
-void AshTestBase::StabilizeUIForPixelTest() {
-  ash_test_helper_->StabilizeUIForPixelTest();
-}
-
 void AshTestBase::SetUserPref(const std::string& user_email,
                               const std::string& path,
                               const base::Value& value) {
@@ -447,6 +451,10 @@ void AshTestBase::SimulateUserLogin(const AccountId& account_id,
                                     std::unique_ptr<PrefService> pref_service) {
   ash_test_helper_->SimulateUserLogin(
       account_id, user_type, /*is_new_profiel=*/false, std::move(pref_service));
+
+  if (pixel_test_helper_) {
+    pixel_test_helper_->StabilizeUi();
+  }
 }
 
 AccountId AshTestBase::SimulateNewUserFirstLogin(
@@ -455,6 +463,9 @@ AccountId AshTestBase::SimulateNewUserFirstLogin(
   ash_test_helper_->SimulateUserLogin(account_id,
                                       user_manager::UserType::kRegular,
                                       /*is_new_profile=*/true);
+  if (pixel_test_helper_) {
+    pixel_test_helper_->StabilizeUi();
+  }
   return account_id;
 }
 

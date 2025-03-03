@@ -68,6 +68,7 @@ namespace ash {
 class AmbientAshTestHelper;
 class AppListTestHelper;
 class AshPixelDiffer;
+class AshPixelTestHelper;
 class AshTestHelper;
 class NotificationCenterTray;
 class Shelf;
@@ -197,11 +198,6 @@ class AshTestBase : public testing::Test {
 
   // Returns the raw pointer carried by `pixel_differ_`.
   AshPixelDiffer* GetPixelDiffer();
-
-  // Stabilizes the variable UI components (such as the battery view). It should
-  // be called after the active user changes since some UI components are
-  // associated with the active account.
-  void StabilizeUIForPixelTest();
 
   // Returns the EventGenerator that uses screen coordinates and works
   // across multiple displays. It creates a new generator if it
@@ -419,6 +415,9 @@ class AshTestBase : public testing::Test {
 
   // Must be constructed after |task_environment_|.
   std::unique_ptr<AshTestHelper> ash_test_helper_;
+
+  // Used only for pixel tests.
+  std::unique_ptr<AshPixelTestHelper> pixel_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
