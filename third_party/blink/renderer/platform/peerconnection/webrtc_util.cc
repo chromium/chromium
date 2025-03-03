@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 
 #include <cstring>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -108,6 +109,31 @@ base::TimeTicks WebRTCFrameNtpEpoch() {
   static base::TimeTicks ntp_epoch =
       base::TimeTicks::UnixEpoch() - base::Milliseconds(2208988800000);
   return ntp_epoch;
+}
+
+std::optional<base::TimeTicks> PLATFORM_EXPORT
+ConvertToOptionalTimeTicks(std::optional<webrtc::Timestamp> time,
+                           std::optional<base::TimeTicks> offset) {
+  // Converting minimal timestamps to DOMHighResTimeStamps can result in UB.
+  // Return nullopt in that case. See https://crbug.com/399818722
+  if (!time || time->IsMinusInfinity()) {
+    return std::nullopt;
+  }
+  base::TimeTicks time_ticks = ConvertToBaseTimeTicks(*time);
+  if (offset) {
+    return *offset + (time_ticks - base::TimeTicks());
+  }
+  return time_ticks;
+}
+
+std::optional<base::TimeDelta> PLATFORM_EXPORT
+ConvertToOptionalTimeDelta(std::optional<webrtc::TimeDelta> time_delta) {
+  // Converting minimal deltas to DOMHighResTimeStamps can result in UB.
+  // Return nullopt in that case. See https://crbug.com/399818722
+  if (!time_delta || time_delta->IsMinusInfinity()) {
+    return std::nullopt;
+  }
+  return ConvertToBaseTimeDelta(*time_delta);
 }
 
 }  // namespace blink

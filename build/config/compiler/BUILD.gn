@@ -1212,17 +1212,6 @@ config("compiler_cpu_abi") {
         "-m64",
         "-msse3",
       ]
-
-      # Minimum SIMD support for devices running lacros.
-      # See https://crbug.com/1475858
-      if (is_chromeos_lacros) {
-        cflags += [
-          "-mssse3",
-          "-msse4",
-          "-msse4.1",
-          "-msse4.2",
-        ]
-      }
       ldflags += [ "-m64" ]
     } else if (current_cpu == "x86") {
       cflags += [ "-m32" ]
@@ -2278,8 +2267,7 @@ config("no_rtti") {
 # (de)allocate memory on a different heap, which would spell trouble if pointers
 # to heap-allocated memory are passed over shared library boundaries.
 config("export_dynamic") {
-  # TODO(crbug.com/40118868): Revisit after target_os flip is completed.
-  if (is_linux || is_chromeos_lacros || export_libcxxabi_from_executables) {
+  if (is_linux || export_libcxxabi_from_executables) {
     ldflags = [ "-rdynamic" ]
   }
 }

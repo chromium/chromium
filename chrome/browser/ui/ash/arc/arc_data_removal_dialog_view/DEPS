@@ -12,6 +12,5 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/app_list",
   "+chrome/browser/ash/arc/session",
-  "+chrome/browser/ui/views",
   "+chrome/grit",
 ]

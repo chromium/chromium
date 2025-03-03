@@ -79,6 +79,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/geometry/rect.h"
@@ -228,6 +229,22 @@ TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointIsNoop) {
 
   auto* controller = CaptureModeController::Get();
   EXPECT_FALSE(controller->IsActive());
+}
+
+// Tests that the accelerator entry point does not emit metrics when neither
+// Sunfish nor Scanner is enabled.
+TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointDoesNotEmitMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut, 0);
+
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut, 0);
 }
 
 TEST_F(SunfishDisabledScannerDisabledTest,
@@ -460,6 +477,21 @@ TEST_F(SunfishTest, AccelEntryPoint) {
       controller->capture_mode_session()->active_behavior();
   ASSERT_TRUE(active_behavior);
   EXPECT_EQ(active_behavior->behavior_type(), BehaviorType::kSunfish);
+}
+
+// Tests that the accelerator entry point emits the correct metrics.
+TEST_F(SunfishTest, AccelEntryPointMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut, 0);
+
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut, 1);
 }
 
 // Tests that the accelerator entry point is a no-op when the enabled pref is

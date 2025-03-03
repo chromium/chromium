@@ -517,7 +517,7 @@ group("gn_all") {
       }
     }
 
-    if (is_ios || is_win || is_linux || is_chromeos_lacros || is_fuchsia) {
+    if (is_ios || is_win || is_linux || is_fuchsia) {
       deps += [
         "//base:base_i18n_perftests",
         "//google_apis:google_apis_unittests",
@@ -608,7 +608,7 @@ group("gn_all") {
       ]
     }
 
-    if (is_android || is_linux || is_chromeos_lacros) {
+    if (is_android || is_linux) {
       deps += [
         "//components/network_hints/browser",
         "//content/public/app",
@@ -622,7 +622,7 @@ group("gn_all") {
       ]
     }
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       deps += [
         "//skia:filter_fuzz_stub",
         "//skia:image_operations_bench",
@@ -749,14 +749,14 @@ group("gn_all") {
       deps += [ "//third_party/sqlite:sqlite_shell" ]
     }
 
-    if ((is_linux && !is_castos) || is_chromeos_lacros || is_fuchsia) {
+    if ((is_linux && !is_castos) || is_fuchsia) {
       # TODO(https://crbug.com/1329673): Figure out if this should be in gn_all
       # and how cross-platform this is.
       deps +=
           [ "//components/services/filesystem:filesystem_service_unittests" ]
     }
 
-    if ((is_linux && !is_castos) || is_chromeos_lacros) {
+    if (is_linux && !is_castos) {
       # TODO(https://crbug.com/1329673): Figure out if any of these should be in
       # gn_all and figure out how cross-platform they are.
       deps += [
@@ -1762,7 +1762,7 @@ group("chromium_builder_perf") {
     }
   }
 
-  if ((is_linux && !is_castos) || is_chromeos_lacros) {
+  if (is_linux && !is_castos) {
     if (is_official_build) {
       # In GN builds, this is controlled by the 'linux_dump_symbols'
       # flag, which defaults to 1 for official builds. For now,

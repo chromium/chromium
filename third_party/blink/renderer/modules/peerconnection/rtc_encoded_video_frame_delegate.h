@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_type.h"
@@ -40,6 +41,9 @@ class RTCEncodedVideoFrameDelegate
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;
   std::optional<webrtc::VideoFrameMetadata> GetMetadata() const;
+  std::optional<base::TimeTicks> ReceiveTime() const;
+  std::optional<base::TimeTicks> CaptureTime() const;
+  std::optional<base::TimeDelta> SenderCaptureTimeOffset() const;
   base::expected<void, String> SetMetadata(
       const webrtc::VideoFrameMetadata& metadata,
       uint32_t rtpTimestamp);

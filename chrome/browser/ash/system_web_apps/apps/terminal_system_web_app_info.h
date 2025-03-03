@@ -39,11 +39,4 @@ class TerminalSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool UseSystemThemeColor() const override;
 };
 
-// Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForTerminalSystemWebApp();
-
-// Returns the default bounds.
-gfx::Rect GetDefaultBoundsForTerminal(Browser* browser);
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_TERMINAL_SYSTEM_WEB_APP_INFO_H_

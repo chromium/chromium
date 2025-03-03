@@ -3,12 +3,11 @@
 # found in the LICENSE file.
 
 import("//ash/webui/tools/mwc_path_mappings.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Sample System Web App is ash-chrome only")
+assert(is_chromeos, "Sample System Web App is ChromeOS only")
 assert(!is_official_build,
        "Sample System Web App is only built for unofficial builds")
 

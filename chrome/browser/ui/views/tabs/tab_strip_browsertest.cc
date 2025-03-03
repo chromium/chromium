@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -116,6 +118,37 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabAndDeleteGroup) {
       tab_strip_model()->group_model()->ListTabGroups();
   EXPECT_EQ(groups.size(), 1U);
   EXPECT_EQ(groups[0], group);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, DetachAndReInsertGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
+  AppendTab();
+  AppendTab();
+
+  tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser()->profile());
+
+  // TODO(392952244): Remove this after migrating callers to using new APIs.
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
+      observation_pauser_ =
+          tab_group_service->CreateScopedLocalObserverPauser();
+
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      tab_strip_model()->DetachTabGroupForInsertion(group);
+
+  EXPECT_EQ(tab_strip()->GetTabCount(), 1);
+  EXPECT_EQ(tab_strip()->tab_at(0)->group(), std::nullopt);
+
+  tab_strip_model()->InsertDetachedTabGroupAt(std::move(detached_group), 1);
+
+  EXPECT_EQ(tab_strip()->GetTabCount(), 3);
+  EXPECT_EQ(tab_strip()->tab_at(0)->group(), std::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(1)->group(), group);
+  EXPECT_EQ(tab_strip()->tab_at(2)->group(), group);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_Success) {

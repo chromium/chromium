@@ -168,7 +168,7 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 
 [[nodiscard]] ::testing::AssertionResult ReadCompleteLogFile(
     const base::FilePath& log_path,
-    std::unique_ptr<base::Value::Dict>* root) {
+    std::optional<base::Value::Dict>* root) {
   DCHECK(!log_path.empty());
 
   if (!base::PathExists(log_path)) {
@@ -212,14 +212,15 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
     return ::testing::AssertionFailure()
            << log_path.value() << " could not be read.";
   }
-  std::optional<base::Value> log_parsed = base::JSONReader::Read(log_string);
-  if (!log_parsed || !log_parsed->is_dict()) {
+  std::optional<base::Value::Dict> log_parsed =
+      base::JSONReader::ReadDict(log_string);
+  if (!log_parsed) {
     return ::testing::AssertionFailure()
            << "Contents of " << log_path.value()
            << " do not form valid JSON dictionary.";
   }
 
-  *root = std::make_unique<base::Value::Dict>(std::move(log_parsed->GetDict()));
+  *root = std::move(*log_parsed);
   // Make sure the "constants" section exists
   const base::Value::Dict* constants = (*root)->FindDict("constants");
   if (!constants) {
@@ -446,7 +447,7 @@ class NetExportFileWriterTest : public ::testing::Test {
     }
 
     // Make sure the generated log file is valid.
-    std::unique_ptr<base::Value::Dict> root;
+    std::optional<base::Value::Dict> root;
     result = ReadCompleteLogFile(expected_log_path, &root);
     if (!result) {
       return ::testing::AssertionFailure()
@@ -713,7 +714,7 @@ TEST_F(NetExportFileWriterTest, StopWithPolledData) {
                                             kCaptureModeDefaultString));
 
   // Read polledData from log file.
-  std::unique_ptr<base::Value::Dict> root;
+  std::optional<base::Value::Dict> root;
   ASSERT_TRUE(ReadCompleteLogFile(default_log_path(), &root));
   const base::Value::Dict* polled_data = root->FindDict("polledData");
   ASSERT_TRUE(polled_data);
@@ -798,7 +799,7 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
   ASSERT_TRUE(StopThenVerifyNewStateAndFile(
       base::FilePath(), base::Value::Dict(), kCaptureModeDefaultString));
   // Read events from log file.
-  std::unique_ptr<base::Value::Dict> root;
+  std::optional<base::Value::Dict> root;
   ASSERT_TRUE(ReadCompleteLogFile(default_log_path(), &root));
   const base::Value::List* events = root->FindList("events");
   ASSERT_TRUE(events);

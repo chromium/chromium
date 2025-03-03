@@ -29,8 +29,4 @@ class SampleSystemAppDelegate : public ash::SystemWebAppDelegate {
       const override;
 };
 
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForSampleSystemWebApp();
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_SAMPLE_SYSTEM_WEB_APP_INFO_H_

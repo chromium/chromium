@@ -63,13 +63,9 @@ struct DataTypeLimits {
   SupportedTensors batch_normalization_mean;
   SupportedTensors cast_input;
   SupportedTensors clamp_input;
-  SupportedTensors concat_inputs;
-  // Also used to validate filter.
-  SupportedTensors conv2d_input;
-  SupportedTensors conv2d_bias;
-  // Also used to validate filter.
-  SupportedTensors conv_transpose2d_input;
-  SupportedTensors conv_transpose2d_bias;
+  SupportedDataTypes concat_inputs;
+  SupportedDataTypes conv2d_input;
+  SupportedDataTypes conv_transpose2d_input;
   SupportedTensors cumulative_sum_input;
 
   // DequantizeLinear.

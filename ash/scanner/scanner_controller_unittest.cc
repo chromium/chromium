@@ -923,6 +923,53 @@ TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
             "copy_to_clipboard.html_text: <b>Hello</b>\n");
 }
 
+TEST_F(ScannerControllerTest, ActionSuccessToastButtonEmitsMetric) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()
+      ->add_actions()
+      ->mutable_copy_to_clipboard()
+      ->set_html_text("<b>Hello</b>");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  // Mock a successful action.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  ScannerSession::FetchActionsResponse actions = actions_future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+  scanner_controller->ExecuteAction(actions.value()[0]);
+
+  ASSERT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
+  ToastOverlay* toast_overlay =
+      Shell::Get()->toast_manager()->GetCurrentOverlayForTesting();
+  ASSERT_TRUE(toast_overlay);
+  views::Button* feedback_button = toast_overlay->button_for_testing();
+  ASSERT_TRUE(feedback_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kFeedbackFormOpened, 0);
+  LeftClickOn(feedback_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kFeedbackFormOpened, 1);
+}
+
 TEST_F(
     ScannerControllerTest,
     ActionSuccessToastDoesNotHaveButtonIfPolicyAllowedWithoutModelImprovement) {
@@ -1098,6 +1145,37 @@ TEST_F(ScannerControllerTest, OpenFeedbackDialogCallbackSendsFeedback) {
       "location": "Wonderland",
     }
   })json"));
+}
+
+TEST_F(ScannerControllerTest,
+       OpenFeedbackDialogSendFeedbackCallbackSendsMetric) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  FakeScannerDelegate& fake_scanner_delegate =
+      *GetFakeScannerDelegate(*scanner_controller);
+  base::test::TestFuture<const AccountId&, ScannerFeedbackInfo,
+                         ScannerDelegate::SendFeedbackCallback>
+      feedback_info_future;
+  fake_scanner_delegate.SetOpenFeedbackDialogCallback(
+      feedback_info_future.GetRepeatingCallback());
+  EXPECT_CALL(mock_send_specialized_feature_feedback(), Run);
+  manta::proto::ScannerAction action;
+  action.mutable_copy_to_clipboard()->set_html_text("<b>Hello</b>");
+
+  scanner_controller->OpenFeedbackDialog(
+      Shell::Get()->session_controller()->GetActiveAccountId(),
+      std::move(action),
+      /*screenshot=*/base::MakeRefCounted<base::RefCountedString>("testimage"));
+  auto [unused_account_id, feedback_dialog_info, send_feedback_callback] =
+      feedback_info_future.Take();
+  histogram_tester.ExpectBucketCount("Ash.ScannerFeature.UserState",
+                                     ScannerFeatureUserState::kFeedbackSent, 0);
+  std::move(send_feedback_callback)
+      .Run(std::move(feedback_dialog_info), "feedback");
+
+  histogram_tester.ExpectBucketCount("Ash.ScannerFeature.UserState",
+                                     ScannerFeatureUserState::kFeedbackSent, 1);
 }
 
 TEST_F(ScannerControllerTest,

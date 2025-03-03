@@ -128,13 +128,11 @@ ContextProperties ContextImplDml::GetProperties(
        /*clamp_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
-       /*concat_inputs=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*concat_inputs=*/kFloat16To32Ints8To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc#tensor-support
-       /*conv2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
-       /*conv2d_bias=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
-       /*conv_transpose2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
-       /*conv_transpose2d_bias=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
+       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cumulative_summation_operator_desc#tensor-support
        /*cumulative_sum_input=*/{kFloat16To32Ints32, kMaxRank},
@@ -435,7 +433,7 @@ ContextProperties ContextImplDml::GetProperties(
        /*where_value=*/{kFloat16To32Ints8To32, kMaxRank}});
 
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
-    properties.data_type_limits.concat_inputs.data_types =
+    properties.data_type_limits.concat_inputs =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.add_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;

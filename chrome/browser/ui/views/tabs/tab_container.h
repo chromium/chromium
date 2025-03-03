@@ -35,15 +35,28 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   METADATA_HEADER(TabContainer, views::View)
 
  public:
+  struct TabInsertionParams {
+    std::unique_ptr<Tab> tab;
+    int model_index;
+    TabPinned pinned;
+
+    TabInsertionParams(std::unique_ptr<Tab> tab, int index, TabPinned pinned);
+    ~TabInsertionParams();
+    TabInsertionParams(TabInsertionParams&& other) noexcept;
+    TabInsertionParams& operator=(TabInsertionParams&& other) noexcept;
+
+    TabInsertionParams(const TabInsertionParams&) = delete;
+    TabInsertionParams& operator=(const TabInsertionParams&) = delete;
+  };
+
   // This callback is used when calculating animation targets that may increase
   // the width of the tabstrip.
   virtual void SetAvailableWidthCallback(
       base::RepeatingCallback<int()> available_width_callback) = 0;
 
   // Handle model changes.
-  virtual Tab* AddTab(std::unique_ptr<Tab> tab,
-                      int model_index,
-                      TabPinned pinned) = 0;
+  virtual std::vector<Tab*> AddTabs(
+      std::vector<TabInsertionParams> tabs_params) = 0;
   virtual void MoveTab(int from_model_index, int to_model_index) = 0;
   virtual void RemoveTab(int index, bool was_active) = 0;
   virtual void SetTabPinned(int model_index, TabPinned pinned) = 0;

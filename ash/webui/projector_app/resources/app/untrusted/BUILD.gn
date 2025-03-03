@@ -8,7 +8,7 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Projector is ChromeOS only")
+assert(is_chromeos, "Projector is ChromeOS only")
 
 mojo_files = [
   "ash/webui/projector_app/mojom/untrusted_projector.mojom-webui.ts",

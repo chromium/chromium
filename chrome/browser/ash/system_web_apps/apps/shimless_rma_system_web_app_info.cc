@@ -16,8 +16,14 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
+ShimlessRMASystemAppDelegate::ShimlessRMASystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SHIMLESS_RMA,
+                                "ShimlessRMA",
+                                GURL(ash::kChromeUIShimlessRMAUrl),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForShimlessRMASystemWebApp() {
+ShimlessRMASystemAppDelegate::GetWebAppInfo() const {
   GURL start_url(ash::kChromeUIShimlessRMAUrl);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -31,19 +37,7 @@ CreateWebAppInfoForShimlessRMASystemWebApp() {
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
   return info;
-}
-
-ShimlessRMASystemAppDelegate::ShimlessRMASystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SHIMLESS_RMA,
-                                "ShimlessRMA",
-                                GURL(ash::kChromeUIShimlessRMAUrl),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-ShimlessRMASystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForShimlessRMASystemWebApp();
 }
 
 bool ShimlessRMASystemAppDelegate::ShouldCaptureNavigations() const {

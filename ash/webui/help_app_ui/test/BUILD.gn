@@ -5,7 +5,7 @@
 import("//ash/webui/help_app_ui/help_app_files.gni")
 import("//tools/typescript/ts_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 copy("stage_for_test_tsc") {
   sources = help_app_test_ts + help_app_test_defs

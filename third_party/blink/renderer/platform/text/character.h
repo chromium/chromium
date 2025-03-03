@@ -121,7 +121,8 @@ class PLATFORM_EXPORT Character {
 
   // http://unicode.org/reports/tr9/#Directional_Formatting_Characters
   static bool IsBidiControl(UChar32 character);
-  static bool MaybeBidiRtlUtf16(UChar);
+  static bool MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch);
+  static bool MaybeBidiRtl(UChar32 ch);
   static bool MaybeBidiRtl(const String&);
 
   static HanKerningCharType GetHanKerningCharType(UChar32 character);
@@ -268,7 +269,9 @@ class PLATFORM_EXPORT Character {
 // `Bidi_Class` of `ch` isn't `R`, `AL`, nor Bidi controls.
 // https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=%5B%5B%3Abc%3DR%3A%5D%5B%3Abc%3DAL%3A%5D%5D&g=bc
 // https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=[:Bidi_C:]
-inline bool Character::MaybeBidiRtlUtf16(UChar ch) {
+//
+// This function assumes all non-BMP characters may be Bidi.
+inline bool Character::MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch) {
   return ch >= 0x0590 &&
          // General Punctuation such as curly quotes.
          !IsInRange(ch, 0x2010, 0x2029) &&
@@ -276,6 +279,21 @@ inline bool Character::MaybeBidiRtlUtf16(UChar ch) {
          !IsInRange(ch, 0x206A, 0xD7FF) &&
          // Common in CJK.
          !IsInRange(ch, 0xFF00, 0xFFFF);
+}
+
+inline bool Character::MaybeBidiRtl(UChar32 ch) {
+  return ch >= 0x0590 &&
+         // General Punctuation such as curly quotes.
+         !IsInRange(ch, 0x2010, 0x2029) &&
+         // CJK etc., up to Surrogate Pairs.
+         !IsInRange(ch, 0x206A, 0xD7FF) &&
+         // Common in CJK.
+         !IsInRange(ch, 0xFF00, 0xFFFF) &&
+         // Kana Extended-B, Kana Supplement, Kana Extended-A, Small Kana
+         // Extension
+         !IsInRange(ch, 0x1AFF0, 0x1B16F) &&
+         // CJK Ideographs Extensions
+         !IsInRange(ch, 0x20000, 0x323AF);
 }
 
 inline bool Character::MaybeBidiRtl(const String& text) {

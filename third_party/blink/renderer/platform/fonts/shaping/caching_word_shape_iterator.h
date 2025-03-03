@@ -78,35 +78,39 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
   const ShapeResult* ShapeWord(const TextRun&, const Font*);
 
   bool NextWord(const ShapeResult** word_result) {
-    return ShapeToEndIndex(word_result, NextWordEndIndex());
+    return ShapeToEndIndex(
+        word_result, NextWordEndIndex(text_run_.ToStringView(), start_index_));
   }
 
   static bool IsWordDelimiter(UChar ch) {
     return ch == kSpaceCharacter || ch == kTabulationCharacter;
   }
 
-  unsigned NextWordEndIndex() const {
-    const unsigned length = text_run_.length();
-    if (start_index_ >= length)
+  static unsigned NextWordEndIndex(StringView text, unsigned start_index) {
+    const unsigned length = text.length();
+    if (start_index >= length) {
       return 0;
+    }
 
-    if (start_index_ + 1u == length || IsWordDelimiter(text_run_[start_index_]))
-      return start_index_ + 1;
+    if (start_index + 1u == length || IsWordDelimiter(text[start_index])) {
+      return start_index + 1;
+    }
 
-    // 8Bit words end at isWordDelimiter().
-    if (text_run_.Is8Bit()) {
-      for (unsigned i = start_index_ + 1;; i++) {
-        if (i == length || IsWordDelimiter(text_run_[i]))
+    // 8Bit words end at IsWordDelimiter().
+    if (text.Is8Bit()) {
+      for (unsigned i = start_index + 1;; ++i) {
+        if (i == length || IsWordDelimiter(text[i])) {
           return i;
+        }
       }
     }
 
-    // Non-CJK/Emoji words end at isWordDelimiter() or CJK/Emoji characters.
-    unsigned end = start_index_;
-    UChar32 ch = text_run_.CodepointAtAndNext(end);
+    // Non-CJK/Emoji words end at IsWordDelimiter() or CJK/Emoji characters.
+    unsigned end = start_index;
+    UChar32 ch = text.CodePointAtAndNext(end);
     if (!Character::IsCJKIdeographOrSymbol(ch)) {
       for (unsigned next_end = end; end < length; end = next_end) {
-        ch = text_run_.CodepointAtAndNext(next_end);
+        ch = text.CodePointAtAndNext(next_end);
         if (IsWordDelimiter(ch) || Character::IsCJKIdeographOrSymbolBase(ch))
           return end;
       }
@@ -118,7 +122,7 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     // worsen the cache efficiency.
     bool has_any_script = !Character::IsCommonOrInheritedScript(ch);
     for (unsigned next_end = end; end < length; end = next_end) {
-      ch = text_run_.CodepointAtAndNext(next_end);
+      ch = text.CodePointAtAndNext(next_end);
       // Modifier check in order not to split Emoji sequences.
       if (U_GET_GC_MASK(ch) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK) ||
           ch == kZeroWidthJoinerCharacter || Character::IsEmojiComponent(ch) ||

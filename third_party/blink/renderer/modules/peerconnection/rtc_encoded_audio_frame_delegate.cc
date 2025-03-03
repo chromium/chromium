@@ -115,31 +115,29 @@ std::optional<uint64_t> RTCEncodedAudioFrameDelegate::AbsCaptureTime() const {
 std::optional<base::TimeTicks> RTCEncodedAudioFrameDelegate::ReceiveTime()
     const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ && webrtc_frame_->ReceiveTime()
-             ? std::make_optional(
-                   ConvertToBaseTimeTicks(*webrtc_frame_->ReceiveTime()))
-             : std::nullopt;
+  if (!webrtc_frame_) {
+    return std::nullopt;
+  }
+  return ConvertToOptionalTimeTicks(webrtc_frame_->ReceiveTime());
 }
 
 std::optional<base::TimeTicks> RTCEncodedAudioFrameDelegate::CaptureTime()
     const {
   base::AutoLock lock(lock_);
-  if (webrtc_frame_ && webrtc_frame_->CaptureTime()) {
-    // This timestamp is relative to the NTP epoch;
-    return WebRTCFrameNtpEpoch() +
-           (ConvertToBaseTimeTicks(*webrtc_frame_->CaptureTime()) -
-            base::TimeTicks());
+  if (!webrtc_frame_) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  return ConvertToOptionalTimeTicks(webrtc_frame_->CaptureTime(),
+                                    WebRTCFrameNtpEpoch());
 }
 
 std::optional<base::TimeDelta>
 RTCEncodedAudioFrameDelegate::SenderCaptureTimeOffset() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ && webrtc_frame_->SenderCaptureTimeOffset()
-             ? std::make_optional(ConvertToBaseTimeDelta(
-                   *webrtc_frame_->SenderCaptureTimeOffset()))
-             : std::nullopt;
+  if (!webrtc_frame_) {
+    return std::nullopt;
+  }
+  return ConvertToOptionalTimeDelta(webrtc_frame_->SenderCaptureTimeOffset());
 }
 
 std::unique_ptr<webrtc::TransformableAudioFrameInterface>

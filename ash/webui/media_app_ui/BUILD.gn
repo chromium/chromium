@@ -6,12 +6,11 @@ import("//ash/webui/media_app_ui/media_app_files.gni")
 import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/typescript/ts_library.gni")
 import("//tools/typescript/webui_ts_library.gni")
 
-assert(is_chromeos_ash, "Media App is ash-chrome only")
+assert(is_chromeos, "Media App is ChromeOS only")
 
 static_library("media_app_ui") {
   sources = [

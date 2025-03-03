@@ -159,10 +159,7 @@ const LayoutBlockFlow* ComputeInlineContentsAsBlockFlow(
     return nullptr;
   if (!block_flow->ChildrenInline())
     return nullptr;
-  if (block_flow->IsAtomicInlineLevel() ||
-      (!RuntimeEnabledFeatures::
-           TextSegmentBoundaryForElementWithFloatStyleEnabled() &&
-       block_flow->IsFloatingOrOutOfFlowPositioned())) {
+  if (block_flow->IsAtomicInlineLevel()) {
     const LayoutBlockFlow& root_block_flow =
         RootInlineContentsContainerOf(*block_flow);
     // Skip |root_block_flow| if it's an anonymous wrapper created for

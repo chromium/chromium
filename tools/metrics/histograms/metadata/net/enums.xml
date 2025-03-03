@@ -265,6 +265,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Invalid refresh URL"/>
   <int value="13" label="Transient HTTP error"/>
   <int value="14" label="Persistent HTTP error"/>
+  <int value="15" label="Same-site mismatch scope origin"/>
+  <int value="16" label="Same-site mismatch refresh URL"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

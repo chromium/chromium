@@ -5,10 +5,8 @@
 #include "ash/lobster/lobster_controller.h"
 
 #include <memory>
-#include <string_view>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/lobster/lobster_metrics_recorder.h"
 #include "ash/lobster/lobster_session_impl.h"
@@ -17,8 +15,7 @@
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
-#include "base/command_line.h"
-#include "base/hash/sha1.h"
+#include "ash/shell.h"
 
 namespace ash {
 
@@ -30,6 +27,28 @@ bool HasOpportunityToShow(
       !system_checks.Has(ash::LobsterSystemCheck::kUnsupportedHardware) &&
       !system_checks.Has(ash::LobsterSystemCheck::kUnsupportedInKioskMode) &&
       !system_checks.Has(ash::LobsterSystemCheck::kInvalidInputField));
+}
+
+void RecordEntryPointImpressionMetric(LobsterEntryPoint entry_point) {
+  switch (entry_point) {
+    case LobsterEntryPoint::kQuickInsert:
+      RecordLobsterState(LobsterMetricState::kQuickInsertTriggerImpression);
+      return;
+    case LobsterEntryPoint::kRightClickMenu:
+      RecordLobsterState(LobsterMetricState::kRightClickTriggerImpression);
+      return;
+  }
+}
+
+void RecordEntryPointConsentRequiredMetric(LobsterEntryPoint entry_point) {
+  switch (entry_point) {
+    case LobsterEntryPoint::kQuickInsert:
+      RecordLobsterState(LobsterMetricState::kQuickInsertTriggerNeedsConsent);
+      return;
+    case LobsterEntryPoint::kRightClickMenu:
+      RecordLobsterState(LobsterMetricState::kRightClickTriggerNeedsConsent);
+      return;
+  }
 }
 
 }  // namespace
@@ -111,9 +130,19 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
 
   if (system_state.status == LobsterStatus::kBlocked) {
     RecordLobsterState(LobsterMetricState::kBlocked);
+    for (auto failed_reason : system_state.failed_checks) {
+      RecordLobsterBlockedReason(failed_reason);
+    }
     return nullptr;
   }
 
+  if (system_state.status == LobsterStatus::kConsentNeeded) {
+    RecordEntryPointConsentRequiredMetric(entry_point);
+  }
+
+  // Creates the trigger point if the status is either enabled, or requires
+  // consent.
+  RecordEntryPointImpressionMetric(entry_point);
   return std::make_unique<Trigger>(std::move(client), entry_point,
                                    text_input_context.support_image_insertion
                                        ? LobsterMode::kInsert

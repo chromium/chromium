@@ -348,7 +348,7 @@ class AutofillField : public FormFieldData {
 
   void set_format_string_unless_overruled(std::string format_string,
                                           FormatStringSource source) {
-    if (format_string_source_ >= source) {
+    if (format_string_source_ <= source) {
       format_string_ = std::move(format_string);
       format_string_source_ = source;
     }

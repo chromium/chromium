@@ -5,7 +5,7 @@
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
-  assert(is_chromeos_ash, "The office fallback dialog is ash-chrome only")
+  assert(is_chromeos, "The office fallback dialog is ChromeOS only")
   grd_prefix = "office_fallback"
 
   static_files = [ "main.html" ]

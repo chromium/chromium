@@ -284,10 +284,6 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
     host_->SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
   }
 
-  void SetExternalPageScaleFactor(float scale) {
-    host_->SetExternalPageScaleFactor(scale, false);
-  }
-
   // Returns the size of the widget that is being drawn to in pixel coordinates.
   const gfx::Size& size() const { return size_; }
 

@@ -7,11 +7,10 @@ import("//ash/webui/camera_app_ui/resources/images/images.gni")
 import("//ash/webui/camera_app_ui/resources/js/js.gni")
 import("//ash/webui/camera_app_ui/resources/sounds/sounds.gni")
 import("//ash/webui/camera_app_ui/resources/views/views.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Camera App is ash-chrome only")
+assert(is_chromeos, "Camera App is ChromeOS only")
 
 static_library("camera_app_ui") {
   sources = [

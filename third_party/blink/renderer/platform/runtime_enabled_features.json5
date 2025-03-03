@@ -4395,13 +4395,6 @@
       status: "stable",
     },
     {
-      // Ensures correct segment boundary for floating elements
-      // so that the selection does not get expanded for them.
-      // See https://crbug.com/40711666.
-      name: "TextSegmentBoundaryForElementWithFloatStyle",
-      status: "stable",
-    },
-    {
       // crbug.com/379254069
       name: "TextTransformAndSecurityFix",
       status: "stable",

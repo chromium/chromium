@@ -201,10 +201,17 @@ void WebContentsObserverProxy::DOMContentLoaded(
   if (render_frame_host->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_documentLoadedInPrimaryMainFrame(
         AttachCurrentThread(), java_observer_,
+        render_frame_host->GetPage().GetJavaPage(),
         render_frame_host->GetProcess()->GetDeprecatedID(),
         render_frame_host->GetRoutingID(),
         static_cast<jint>(render_frame_host->GetLifecycleState()));
   }
+}
+
+void WebContentsObserverProxy::OnFirstContentfulPaintInPrimaryMainFrame() {
+  Java_WebContentsObserverProxy_firstContentfulPaintInPrimaryMainFrame(
+      AttachCurrentThread(), java_observer_,
+      web_contents()->GetPrimaryPage().GetJavaPage());
 }
 
 void WebContentsObserverProxy::NavigationEntryCommitted(

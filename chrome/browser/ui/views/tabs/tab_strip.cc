@@ -1104,33 +1104,45 @@ void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
   }
 }
 
-void TabStrip::AddTabAt(int model_index, TabRendererData data) {
-  CHECK(IsValidModelIndex(model_index), base::NotFatalUntil::M128)
-      << "Attempted to add a tab with an invalid model index.";
+void TabStrip::AddTabsAt(
+    std::vector<std::pair<int, TabRendererData>> tabs_datas) {
+  std::vector<TabContainer::TabInsertionParams> tabs_params;
 
-  const bool pinned = data.pinned;
-  Tab* tab = tab_container_->AddTab(
-      std::make_unique<Tab>(this), model_index,
-      pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
-
-  tab->set_context_menu_controller(&context_menu_controller_);
-  tab->AddObserver(this);
-  selected_tabs_.IncrementFrom(model_index);
-
-  // Setting data must come after all state from the model has been updated
-  // above for the tab. Accessibility, in particular, reacts to data changed
-  // callbacks.
-  tab->SetData(std::move(data));
-
-  if (observer_) {
-    observer_->OnTabAdded(model_index);
+  for (auto tab_data : tabs_datas) {
+    const int model_index = tab_data.first;
+    CHECK(IsValidModelIndex(model_index))
+        << "Attempted to add a tab with an invalid model index.";
+    TabContainer::TabInsertionParams param(
+        std::make_unique<Tab>(this), tab_data.first,
+        tab_data.second.pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+    tabs_params.push_back(std::move(param));
   }
 
-  // At the start of AddTabAt() the model and tabs are out of sync. Any queries
-  // to find a tab given a model index can go off the end of |tabs_|. As such,
-  // it is important that we complete the drag *after* adding the tab so that
-  // the model and tabstrip are in sync.
-  drag_context_->TabWasAdded();
+  std::vector<Tab*> tabs = tab_container_->AddTabs(std::move(tabs_params));
+
+  for (int index = 0; index < static_cast<int>(tabs_datas.size()); index++) {
+    Tab* tab = tabs[index];
+    int model_index = tabs_datas[index].first;
+    TabRendererData renderer_data = tabs_datas[index].second;
+    tab->set_context_menu_controller(&context_menu_controller_);
+    tab->AddObserver(this);
+    selected_tabs_.IncrementFrom(model_index);
+
+    // Setting data must come after all state from the model has been updated
+    // above for the tab. Accessibility, in particular, reacts to data changed
+    // callbacks.
+    tab->SetData(std::move(renderer_data));
+
+    if (observer_) {
+      observer_->OnTabAdded(model_index);
+    }
+
+    // At the start of AddTabAt() the model and tabs are out of sync. Any
+    // queries to find a tab given a model index can go off the end of |tabs_|.
+    // As such, it is important that we complete the drag *after* adding the tab
+    // so that the model and tabstrip are in sync.
+    drag_context_->TabWasAdded();
+  }
 
   Profile* profile = controller_->GetProfile();
   if (profile) {

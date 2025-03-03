@@ -21,7 +21,6 @@
 #include "ui/base/models/list_selection_model.h"
 
 class TabStripModel;
-class TabGroup;
 
 namespace content {
 class WebContents;
@@ -267,6 +266,13 @@ struct TabGroupChange {
     kClosed
   };
 
+  enum class TabGroupCreationReason {
+    kNewGroupCreated,
+    kInsertedFromAnotherTabstrip
+  };
+
+  enum class TabGroupClosureReason { kGroupClosed, kDetachedToAnotherTabstrip };
+
   // Base class for all changes. Similar to TabStripModelChange::Delta.
   struct Delta {
     virtual ~Delta() = default;
@@ -280,6 +286,26 @@ struct TabGroupChange {
     raw_ptr<const tab_groups::TabGroupVisualData> new_visuals = nullptr;
   };
 
+  struct CreateChange : public Delta {
+    explicit CreateChange(TabGroupCreationReason reason);
+    ~CreateChange() override;
+
+    TabGroupCreationReason reason() const { return reason_; }
+
+   private:
+    TabGroupCreationReason reason_;
+  };
+
+  struct CloseChange : public Delta {
+    explicit CloseChange(TabGroupClosureReason reason);
+    ~CloseChange() override;
+
+    TabGroupClosureReason reason() const { return reason_; }
+
+   private:
+    TabGroupClosureReason reason_;
+  };
+
   TabGroupChange(TabStripModel* model,
                  tab_groups::TabGroupId group,
                  Type type,
@@ -287,9 +313,18 @@ struct TabGroupChange {
   TabGroupChange(TabStripModel* model,
                  tab_groups::TabGroupId group,
                  VisualsChange deltap);
+  TabGroupChange(TabStripModel* model,
+                 tab_groups::TabGroupId group,
+                 CreateChange deltap);
+  TabGroupChange(TabStripModel* model,
+                 tab_groups::TabGroupId group,
+                 CloseChange deltap);
+
   ~TabGroupChange();
 
   const VisualsChange* GetVisualsChange() const;
+  const CreateChange* GetCreateChange() const;
+  const CloseChange* GetCloseChange() const;
 
   tab_groups::TabGroupId group;
   raw_ptr<TabStripModel> model;
@@ -359,12 +394,6 @@ class TabStripModelObserver {
   // TODO(crbug.com/40838330): Unify and generalize this and OnTabWillBeAdded,
   // e.g. via OnTabStripModelWillChange().
   virtual void OnTabWillBeRemoved(content::WebContents* contents, int index);
-
-  // Notification that a group is detached from the TabStripModel.
-  void OnTabGroupDetached(TabStripModel* model, const TabGroup& group);
-
-  // Notification that a detached group is attached to the TabStripModel.
-  void OnTabGroupAttached(TabStripModel* model, const TabGroup& group);
 
   // |change| is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are

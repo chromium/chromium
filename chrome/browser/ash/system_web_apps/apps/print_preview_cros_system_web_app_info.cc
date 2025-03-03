@@ -31,27 +31,6 @@ PrintPreviewCrosDelegate::PrintPreviewCrosDelegate(Profile* profile)
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 PrintPreviewCrosDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForPrintPreviewCrosSystemWebApp();
-}
-
-bool PrintPreviewCrosDelegate::IsAppEnabled() const {
-  return ash::features::IsPrinterPreviewCrosAppEnabled();
-}
-
-bool PrintPreviewCrosDelegate::ShouldShowInLauncher() const {
-  return false;
-}
-
-bool PrintPreviewCrosDelegate::ShouldShowInSearchAndShelf() const {
-  return false;
-}
-
-bool PrintPreviewCrosDelegate::ShouldCaptureNavigations() const {
-  return true;
-}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForPrintPreviewCrosSystemWebApp() {
   GURL start_url = GURL(ash::kChromeUIPrintPreviewCrosURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -70,4 +49,20 @@ CreateWebAppInfoForPrintPreviewCrosSystemWebApp() {
       *info);
 
   return info;
+}
+
+bool PrintPreviewCrosDelegate::IsAppEnabled() const {
+  return ash::features::IsPrinterPreviewCrosAppEnabled();
+}
+
+bool PrintPreviewCrosDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool PrintPreviewCrosDelegate::ShouldShowInSearchAndShelf() const {
+  return false;
+}
+
+bool PrintPreviewCrosDelegate::ShouldCaptureNavigations() const {
+  return true;
 }

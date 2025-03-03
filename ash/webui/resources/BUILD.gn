@@ -9,7 +9,7 @@ import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//ash/webui/projector_app/projector_app.gni")
 import("//tools/grit/grit_rule.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
 
 ash_webui_grit_output_dir = "$root_gen_dir/ash/webui"
 

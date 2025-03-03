@@ -41,6 +41,16 @@ WebRTCFormatToCodecProfile(const webrtc::SdpVideoFormat& sdp);
 //  FrameTimeTicks = WebRTCFrameNtpEpoch() + FrameTimeDeltaRelativeToNtpEpoch()
 base::TimeTicks PLATFORM_EXPORT WebRTCFrameNtpEpoch();
 
+// Converts an optional webrtc::Timestamp into an optional TimeTicks and
+// optionally adds an offset to the result.
+std::optional<base::TimeTicks> PLATFORM_EXPORT ConvertToOptionalTimeTicks(
+    std::optional<webrtc::Timestamp> time,
+    std::optional<base::TimeTicks> offset = std::nullopt);
+
+// Converts an optional webrtc::TimesDelta into an base::TimeDelta.
+std::optional<base::TimeDelta> PLATFORM_EXPORT
+ConvertToOptionalTimeDelta(std::optional<webrtc::TimeDelta> time_delta);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_

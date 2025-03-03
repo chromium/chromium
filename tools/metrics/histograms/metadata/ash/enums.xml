@@ -1362,6 +1362,17 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="28" label="Commit As Insert Error"/>
   <int value="29" label="Feedback Thumbs Up"/>
   <int value="30" label="Feedback Thumbs Down"/>
+  <int value="31" label="Blocked by invalid consent"/>
+  <int value="32" label="Blocked by invalid account capabilities"/>
+  <int value="33" label="Blocked by an invalid account type"/>
+  <int value="34" label="Blocked by geolocation restrictions"/>
+  <int value="35" label="Blocked by invalid input field"/>
+  <int value="36" label="Blocked by user settings"/>
+  <int value="37" label="Blocked by lack of internet connection"/>
+  <int value="38" label="Blocked by invalid input method"/>
+  <int value="39" label="Blocked by feature flag restrictions"/>
+  <int value="40" label="Blocked by unsupported hardware"/>
+  <int value="41" label="Blocked by Kiosk mode"/>
 </enum>
 
 <enum name="LockScreenUserClickTarget">
@@ -2080,6 +2091,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="51"
       label="Smart actions button was not shown because network connection
              was offline after text detection"/>
+  <int value="52" label="Sunfish-session started using the Ash debug shortcut"/>
+  <int value="53" label="Sunfish-session started using the button in Launcher"/>
+  <int value="54"
+      label="Sunfish-session started using a long-press on the home button"/>
+  <int value="55" label="Feedback dialog was opened"/>
+  <int value="56" label="Feedback sent"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->

@@ -6,11 +6,14 @@
 #define ASH_LOBSTER_LOBSTER_METRICS_RECORDER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 
 namespace ash {
 
 void ASH_EXPORT RecordLobsterState(LobsterMetricState state);
+
+void ASH_EXPORT RecordLobsterBlockedReason(LobsterSystemCheck failed_reason);
 
 }  // namespace ash
 

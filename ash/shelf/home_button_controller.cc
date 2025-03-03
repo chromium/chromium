@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/home_button_tap_overlay.h"
 #include "ash/shelf/shelf_button.h"
@@ -91,6 +92,9 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
       if (IsSunfishOrScannerAvailable()) {
         tap_overlay_->BurstAnimation();
         event->SetHandled();
+        RecordScannerFeatureUserState(
+            ScannerFeatureUserState::
+                kSunfishSessionStartedFromHomeButtonLongPress);
         CaptureModeController::Get()->StartSunfishSession();
         return true;
       }

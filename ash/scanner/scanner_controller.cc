@@ -308,6 +308,7 @@ void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
                                      base::Value::Dict action_dict,
                                      ScannerFeedbackInfo feedback_info,
                                      const std::string& user_description) {
+  RecordScannerFeatureUserState(ScannerFeatureUserState::kFeedbackSent);
   std::optional<std::string> pretty_printed_action = base::WriteJsonWithOptions(
       action_dict, base::JsonOptions::OPTIONS_PRETTY_PRINT);
   // JSON serialisation should always succeed as the depth of the Dict is fixed,
@@ -651,6 +652,7 @@ void ScannerController::OpenFeedbackDialog(
     const AccountId& account_id,
     manta::proto::ScannerAction action,
     scoped_refptr<base::RefCountedMemory> screenshot) {
+  RecordScannerFeatureUserState(ScannerFeatureUserState::kFeedbackFormOpened);
   base::Value::Dict action_dict = ScannerActionToDict(std::move(action));
 
   std::optional<std::string> user_facing_string = ValueToUserFacingString(

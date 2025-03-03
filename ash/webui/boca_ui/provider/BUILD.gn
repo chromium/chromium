@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Boca is ChromeOS only")
+assert(is_chromeos, "Boca is ChromeOS only")
 
 mojom("classroom_mojo_bindings") {
   sources = [ "classroom.mojom" ]

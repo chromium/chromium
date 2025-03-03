@@ -224,7 +224,7 @@ vars = {
   # luci-go CIPD package version.
   # Make sure the revision is uploaded by infra-packagers builder.
   # https://ci.chromium.org/p/infra-internal/g/infra-packagers/console
-  'luci_go': 'git_revision:5d4ee097b7e44f39fc68e169a1a8ae29f98bfa1f',
+  'luci_go': 'git_revision:ca20346b3e3d0ac7f06cded05d8d06625b01867e',
 
   # This can be overridden, e.g. with custom_vars, to build clang from HEAD
   # instead of downloading the prebuilt pinned revision.
@@ -280,11 +280,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '101eee8fce596ef55173d24e91949438f6be0e5a',
+  'skia_revision': '1e9fa50fc296c2ce2c337d70252127685d2ef23e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '3a9f04a6c4915f615651f03322be4c59266d8c23',
+  'v8_revision': 'c206c46cd0bd65b02e85abe5965d82e4beb7d453',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '9f267c00f44302ffdb5bd7345f516c2663ed8daf',
+  'devtools_frontend_revision': '01b69d8fbdcc656b989c3343d8b3bf2d1d65421d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '084d4a2553a75f443e969a409781312dcc21a210',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '195d312f8eee3ef575c2ab1dc514e8e6e34c945a',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'ef89182820ebb621b1dd196458f86e42f4324d7f',
+    'cfd5543af95e4222f6686885572d1a90d44efe99',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2859,7 +2859,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/linux-amd64',
-          'version': 'PQKVHQJMefbc-yJj5CI7LTrDgGTJcPg3bLAH00f1O9UC',
+          'version': 'GGRZJWa6xkrq-E8sKElWsbFz5h_MzyIClxLus3TIbPgC',
         },
       ],
       'dep_type': 'cipd',
@@ -2869,7 +2869,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/windows-amd64',
-          'version': 'j_OggsAOlPBjCBYtpjDFF_Rn0owwl74rTULkScTlTHoC',
+          'version': 'iEvrlp9kgIVZSE_ZhAvv6u6WFNTWozqp9tRnLQ6bSzQC',
         },
       ],
       'dep_type': 'cipd',
@@ -2880,7 +2880,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'IWO4YmfUYELAXJz3cbZ0I2Ry6P79GtGMjxisQ4wPQloC',
+          'version': 'QUB-1pP_ki7pa9VtWMiQw23KsIOTOsrqsjod0ic_1s8C',
         },
       ],
       'dep_type': 'cipd',
@@ -2891,7 +2891,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-arm64',
-          'version': 'F_B0D9-n-qew23TZGR77RKsjawRxn3YsCEDTy3v84ckC',
+          'version': 'op7z6olEAHR9u_jp-NHnWh2L1NG7kE-IPBClH7ExbQ8C',
         },
       ],
       'dep_type': 'cipd',

@@ -22,6 +22,7 @@ ci.defaults.set(
     execution_timeout = 10 * time.hour,
     health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,
+    reclient_enabled = False,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
@@ -96,6 +97,7 @@ def fyi_reclient_comparison_builder(*, name, **kwargs):
         "RBE_ip_reset_min_delay": "-1s",
         "RBE_fast_log_collection": "true",
     })
+    kwargs["reclient_enabled"] = True
     return ci.builder(name = name, **kwargs)
 
 def fyi_ios_builder(*, name, **kwargs):
@@ -116,6 +118,7 @@ def fyi_mac_builder(*, name, **kwargs):
     return ci.builder(name = name, **mac_builder_defaults(**kwargs))
 
 def fyi_mac_reclient_comparison_builder(*, name, **kwargs):
+    kwargs["reclient_enabled"] = True
     return fyi_reclient_comparison_builder(name = name, **mac_builder_defaults(**kwargs))
 
 ci.builder(

@@ -43,8 +43,16 @@ bool IsUserFeedbackAllowed(Profile* profile) {
 
 }  // namespace
 
+OSFeedbackAppDelegate::OSFeedbackAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::OS_FEEDBACK,
+                                "OSFeedback",
+                                GURL(ash::kChromeUIOSFeedbackUrl),
+                                profile) {}
+
+OSFeedbackAppDelegate::~OSFeedbackAppDelegate() = default;
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForOSFeedbackSystemWebApp() {
+OSFeedbackAppDelegate::GetWebAppInfo() const {
   GURL start_url(ash::kChromeUIOSFeedbackUrl);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -59,29 +67,7 @@ CreateWebAppInfoForOSFeedbackSystemWebApp() {
       *info);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
   return info;
-}
-
-gfx::Rect GetDefaultBoundsForOSFeedbackApp(Browser*) {
-  gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  bounds.ClampToCenteredSize(
-      {kFeedbackAppDefaultWidth, kFeedbackAppDefaultHeight});
-  return bounds;
-}
-
-OSFeedbackAppDelegate::OSFeedbackAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::OS_FEEDBACK,
-                                "OSFeedback",
-                                GURL(ash::kChromeUIOSFeedbackUrl),
-                                profile) {}
-
-OSFeedbackAppDelegate::~OSFeedbackAppDelegate() = default;
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-OSFeedbackAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForOSFeedbackSystemWebApp();
 }
 
 bool OSFeedbackAppDelegate::ShouldAllowScriptsToCloseWindows() const {
@@ -110,8 +96,12 @@ bool OSFeedbackAppDelegate::ShouldShowInSearchAndShelf() const {
   return IsUserFeedbackAllowed(profile());
 }
 
-gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(Browser* browser) const {
-  return GetDefaultBoundsForOSFeedbackApp(browser);
+gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(Browser*) const {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(
+      {kFeedbackAppDefaultWidth, kFeedbackAppDefaultHeight});
+  return bounds;
 }
 
 Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(

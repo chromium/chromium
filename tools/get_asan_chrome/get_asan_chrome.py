@@ -72,7 +72,6 @@ def get_release_metadata_by_channel(release_info):
         'linux_debug': 'linux',
         'mac': 'mac',
         'win64': 'win64',
-        'lacros': 'lacros',
     }
     platform = os_to_platform[release_info.os]
     uri = (f'https://chromiumdash.appspot.com/fetch_releases'
@@ -132,7 +131,6 @@ def download_asan_chrome(release_info, download_dir, quiet, retries=100):
         'mac': 'mac-release/asan-mac-release',
         # 'mac_debug': 'mac-debug/asan-mac-debug',
         # 'ios': 'ios-release/asan-ios-release', # unsupported
-        'lacros': 'linux-release-chromeos/asan-linux-release',
         # android is currently unsupported
     }
 
@@ -194,7 +192,6 @@ if __name__ == '__main__':
             'linux',
             'linux_debug',
             'mac',
-            'lacros',
         ],
         help='Operating system type as defined by Chromium Dash.')
     parser.add_argument(

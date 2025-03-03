@@ -38,9 +38,11 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static RTCEncodedVideoFrame* Create(RTCEncodedVideoFrame* original_frame,
+  static RTCEncodedVideoFrame* Create(ExecutionContext* context,
+                                      RTCEncodedVideoFrame* original_frame,
                                       ExceptionState& exception_state);
   static RTCEncodedVideoFrame* Create(
+      ExecutionContext* context,
       RTCEncodedVideoFrame* original_frame,
       const RTCEncodedVideoFrameOptions* options_dict,
       ExceptionState& exception_state);
@@ -58,10 +60,12 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   // Returns the RTP Packet Timestamp for this frame.
   uint32_t timestamp() const;
   DOMArrayBuffer* data(ExecutionContext* context) const;
-  RTCEncodedVideoFrameMetadata* getMetadata() const;
+  RTCEncodedVideoFrameMetadata* getMetadata(ExecutionContext* context) const;
   base::expected<void, String> SetMetadata(
+      ExecutionContext* context,
       const RTCEncodedVideoFrameMetadata* metadata);
-  void setMetadata(RTCEncodedVideoFrameMetadata* metadata,
+  void setMetadata(ExecutionContext* context,
+                   RTCEncodedVideoFrameMetadata* metadata,
                    ExceptionState& exception_state);
   void setData(ExecutionContext*, DOMArrayBuffer*);
   String toString(ExecutionContext* context) const;

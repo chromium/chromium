@@ -25,8 +25,4 @@ class PrintPreviewCrosDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
 };
 
-// Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForPrintPreviewCrosSystemWebApp();
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PRINT_PREVIEW_CROS_SYSTEM_WEB_APP_INFO_H_

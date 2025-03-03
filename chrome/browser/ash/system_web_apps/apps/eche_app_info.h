@@ -30,11 +30,6 @@ class EcheSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldAllowScriptsToCloseWindows() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
   bool IsAppEnabled() const override;
-
-  gfx::Rect GetDefaultBoundsForEche() const;
 };
-
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForEcheApp();
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_ECHE_APP_INFO_H_

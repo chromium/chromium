@@ -96,6 +96,7 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
                      net::SchemefulSite(), /*session_id=*/std::nullopt});
   }
 
+  // Check if the scope-origin is samesite with fetcher URL.
   if (!params.scope.origin.empty() && !params.fetcher_url.host().empty() &&
       params.fetcher_url.host() != params.scope.origin &&
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -105,7 +106,7 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
               params.scope.origin,
               net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidFetcherUrl,
+        SessionError{SessionError::ErrorType::kScopeOriginSameSiteMismatch,
                      net::SchemefulSite(), /*session_id=*/std::nullopt});
   }
 
@@ -118,14 +119,23 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
       base::UnescapeRule::PATH_SEPARATORS |
           base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
   GURL candidate_refresh_endpoint = params.fetcher_url.Resolve(unescaped_path);
+
+  // Check if the refresh URL is valid, secure.
   if (!candidate_refresh_endpoint.is_valid() ||
-      !IsSecure(candidate_refresh_endpoint) ||
-      net::SchemefulSite(candidate_refresh_endpoint) !=
-          net::SchemefulSite(params.fetcher_url)) {
+      !IsSecure(candidate_refresh_endpoint)) {
     return base::unexpected(
         SessionError{SessionError::ErrorType::kInvalidRefreshUrl,
                      net::SchemefulSite(), /*session_id=*/std::nullopt});
   }
+
+  // Check if the refresh URL is same-site with the fetcher URL.
+  if (net::SchemefulSite(candidate_refresh_endpoint) !=
+      net::SchemefulSite(params.fetcher_url)) {
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kRefreshUrlSameSiteMismatch,
+                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+  }
+
   std::unique_ptr<Session> session(new Session(
       Id(params.session_id), url::Origin::Create(params.fetcher_url),
       candidate_refresh_endpoint));
@@ -408,6 +418,8 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kInvalidFetcherUrl:
     case kInvalidRefreshUrl:
     case kPersistentHttpError:
+    case kScopeOriginSameSiteMismatch:
+    case kRefreshUrlSameSiteMismatch:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum

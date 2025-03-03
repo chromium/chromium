@@ -23,8 +23,4 @@ class ScanningSystemAppDelegate : public ash::SystemWebAppDelegate {
   gfx::Size GetMinimumWindowSize() const override;
 };
 
-// Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForScanningSystemWebApp();
-
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_SCANNING_SYSTEM_WEB_APP_INFO_H_

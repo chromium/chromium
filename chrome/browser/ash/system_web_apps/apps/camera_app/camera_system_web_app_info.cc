@@ -28,8 +28,14 @@ constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
                                                    32);
 }
 
+CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CAMERA,
+                                "Camera",
+                                GURL("chrome://camera-app/views/main.html"),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForCameraSystemWebApp() {
+CameraSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url(ash::kChromeUICameraAppMainURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -55,24 +61,6 @@ CreateWebAppInfoForCameraSystemWebApp() {
   return info;
 }
 
-gfx::Rect GetDefaultBoundsForCameraApp(Browser*) {
-  gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);
-  return bounds;
-}
-
-CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CAMERA,
-                                "Camera",
-                                GURL("chrome://camera-app/views/main.html"),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-CameraSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForCameraSystemWebApp();
-}
-
 bool CameraSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
@@ -81,8 +69,11 @@ gfx::Size CameraSystemAppDelegate::GetMinimumWindowSize() const {
   return {kChromeCameraAppMinimumWidth, kChromeCameraAppMinimumHeight + 32};
 }
 
-gfx::Rect CameraSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
-  return GetDefaultBoundsForCameraApp(browser);
+gfx::Rect CameraSystemAppDelegate::GetDefaultBounds(Browser*) const {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);
+  return bounds;
 }
 
 bool CameraSystemAppDelegate::UseSystemThemeColor() const {

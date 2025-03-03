@@ -60,12 +60,9 @@ TEST(AutofillEntityInstanceTest,
 TEST(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityMissingAttribute_NoMergeableAttributes_IsASubset) {
-  autofill::test::PassportEntityOptions passport_without_an_expiry_date;
-  passport_without_an_expiry_date.expiry_date = nullptr;
-
   EntityInstance::EntityMergeability result =
       test::GetPassportEntityInstance().GetEntityMergeability(
-          test::GetPassportEntityInstance(passport_without_an_expiry_date));
+          test::GetPassportEntityInstance({.expiry_date = nullptr}));
 
   EXPECT_TRUE(result.mergeable_attributes.empty());
   EXPECT_TRUE(result.is_subset);
@@ -73,12 +70,9 @@ TEST(
 TEST(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityEmptyStringAttribute_NoMergeablesAttribute_IsASubset) {
-  autofill::test::PassportEntityOptions passport_without_an_expiry_date;
-  passport_without_an_expiry_date.expiry_date = u"";
-
   EntityInstance::EntityMergeability result =
       test::GetPassportEntityInstance().GetEntityMergeability(
-          test::GetPassportEntityInstance(passport_without_an_expiry_date));
+          test::GetPassportEntityInstance({.expiry_date = u""}));
 
   EXPECT_TRUE(result.mergeable_attributes.empty());
   EXPECT_TRUE(result.is_subset);
@@ -87,14 +81,13 @@ TEST(
 TEST(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityHasNewAttribute_MergeableAttributesExists_IsNotASubset) {
-  autofill::test::PassportEntityOptions passport_without_an_expiry_date;
-  passport_without_an_expiry_date.expiry_date = u"";
+  EntityInstance old_entity =
+      test::GetPassportEntityInstance({.expiry_date = u""});
   EntityInstance new_entity = test::GetPassportEntityInstance();
   EntityInstance::EntityMergeability result =
-      test::GetPassportEntityInstance(passport_without_an_expiry_date)
-          .GetEntityMergeability(new_entity);
+      old_entity.GetEntityMergeability(new_entity);
 
-  EXPECT_EQ(result.mergeable_attributes.size(), 1u);
+  ASSERT_EQ(result.mergeable_attributes.size(), 1u);
   EXPECT_EQ(result.mergeable_attributes[0].type().name(),
             AttributeTypeName::kPassportExpiryDate);
 
@@ -115,14 +108,12 @@ TEST(
 TEST(
     AutofillEntityInstanceTest,
     GetEntityMergeability_MergeConstraintsMatch_AttributeWithDifferentValue_MergeableAttributesExists_IsNotASubset) {
-  autofill::test::PassportEntityOptions passport_with_new_country;
-  passport_with_new_country.country = u"Argentina";
   EntityInstance new_entity =
-      test::GetPassportEntityInstance(passport_with_new_country);
+      test::GetPassportEntityInstance({.country = u"Argentina"});
   EntityInstance::EntityMergeability result =
       test::GetPassportEntityInstance().GetEntityMergeability(new_entity);
 
-  EXPECT_EQ(result.mergeable_attributes.size(), 1u);
+  ASSERT_EQ(result.mergeable_attributes.size(), 1u);
   EXPECT_EQ(result.mergeable_attributes[0].type().name(),
             AttributeTypeName::kPassportCountry);
 
@@ -138,11 +129,9 @@ TEST(
 TEST(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityHasSameAttributeWithDifferentValue_MergeableAttributesDoNotExists_IsNotASubset) {
-  autofill::test::PassportEntityOptions passport_without_different_expiry_date;
-  passport_without_different_expiry_date.expiry_date = u"01/12/2034";
   EntityInstance new_entity = test::GetPassportEntityInstance();
   EntityInstance::EntityMergeability result =
-      test::GetPassportEntityInstance(passport_without_different_expiry_date)
+      test::GetPassportEntityInstance({.expiry_date = u"01/12/2034"})
           .GetEntityMergeability(new_entity);
 
   EXPECT_TRUE(result.mergeable_attributes.empty());
@@ -152,14 +141,10 @@ TEST(
 TEST(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityHasEquivalentAttribute_MergeableAttributesDoNotExists_IsASubset) {
-  autofill::test::PassportEntityOptions pp_1;
-  pp_1.number = u"1234 5";
-  autofill::test::PassportEntityOptions pp_2;
-  pp_2.number = u" 1234    5";
-
   EntityInstance::EntityMergeability result =
-      test::GetPassportEntityInstance(pp_1).GetEntityMergeability(
-          test::GetPassportEntityInstance(pp_2));
+      test::GetPassportEntityInstance({.number = u"1234 5"})
+          .GetEntityMergeability(
+              test::GetPassportEntityInstance({.number = u"1234    5"}));
 
   EXPECT_TRUE(result.mergeable_attributes.empty());
   EXPECT_TRUE(result.is_subset);
