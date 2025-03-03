@@ -8,8 +8,10 @@
 
 #include "ash/public/cpp/update_types.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -20,7 +22,13 @@
 #include "ui/display/manager/display_configurator.h"
 
 RelaunchNotificationControllerPlatformImpl::
-    RelaunchNotificationControllerPlatformImpl() = default;
+    RelaunchNotificationControllerPlatformImpl()
+    : system_tray_client_impl_(SystemTrayClientImpl::Get()) {
+  // In production, system_tray_client_impl_ should not be null.
+  if (!system_tray_client_impl_) {
+    CHECK_IS_TEST();
+  }
+}
 
 RelaunchNotificationControllerPlatformImpl::
     ~RelaunchNotificationControllerPlatformImpl() = default;
@@ -54,7 +62,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
 }
 
 void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
-  SystemTrayClientImpl::Get()->ResetUpdateState();
+  ResetRelaunchNotification();
   relaunch_required_timer_.reset();
   on_visible_.Reset();
   StopObserving();
@@ -70,11 +78,11 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
 void RelaunchNotificationControllerPlatformImpl::
     RefreshRelaunchRecommendedTitle(bool past_deadline) {
   if (past_deadline) {
-    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
+    SetRelaunchNotificationState(
         {.requirement_type =
              ash::RelaunchNotificationState::kRecommendedAndOverdue});
   } else {
-    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
+    SetRelaunchNotificationState(
         {.requirement_type =
              ash::RelaunchNotificationState::kRecommendedNotOverdue});
   }
@@ -87,18 +95,15 @@ bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
 
 void RelaunchNotificationControllerPlatformImpl::RefreshRelaunchRequiredTitle(
     bool is_notification_type_overriden) {
-  // SystemTrayClientImpl may not exist in unit tests.
-  if (SystemTrayClientImpl::Get()) {
-    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
-        {.requirement_type = ash::RelaunchNotificationState::kRequired,
-         // We only override notification type to kRequired in the
-         // MinimumVersionPolicyHandler that handles device policies.
-         .policy_source = is_notification_type_overriden
-                              ? ash::RelaunchNotificationState::kDevice
-                              : ash::RelaunchNotificationState::kUser,
-         .rounded_time_until_reboot_required =
-             relaunch_required_timer_->GetRoundedDeadlineDelta()});
-  }
+  SetRelaunchNotificationState(
+      {.requirement_type = ash::RelaunchNotificationState::kRequired,
+       // We only override notification type to kRequired in the
+       // MinimumVersionPolicyHandler that handles device policies.
+       .policy_source = is_notification_type_overriden
+                            ? ash::RelaunchNotificationState::kDevice
+                            : ash::RelaunchNotificationState::kUser,
+       .rounded_time_until_reboot_required =
+           relaunch_required_timer_->GetRoundedDeadlineDelta()});
 }
 
 void RelaunchNotificationControllerPlatformImpl::OnPowerStateChanged(
@@ -139,4 +144,14 @@ void RelaunchNotificationControllerPlatformImpl::StartObserving() {
 void RelaunchNotificationControllerPlatformImpl::StopObserving() {
   display_observation_.Reset();
   session_observation_.Reset();
+}
+
+void RelaunchNotificationControllerPlatformImpl::SetRelaunchNotificationState(
+    const ash::RelaunchNotificationState& relaunch_notification_state) {
+  system_tray_client_impl_->SetRelaunchNotificationState(
+      relaunch_notification_state);
+}
+
+void RelaunchNotificationControllerPlatformImpl::ResetRelaunchNotification() {
+  system_tray_client_impl_->ResetUpdateState();
 }
