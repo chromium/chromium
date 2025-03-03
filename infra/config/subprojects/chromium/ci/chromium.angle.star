@@ -22,6 +22,7 @@ ci.defaults.set(
     properties = {
         "perf_dashboard_machine_group": "ChromiumANGLE",
     },
+    reclient_enabled = False,
     service_account = ci.gpu.SERVICE_ACCOUNT,
     shadow_service_account = ci.gpu.SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
