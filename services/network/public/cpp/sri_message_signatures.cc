@@ -18,11 +18,11 @@
 
 namespace network {
 
+namespace {
+
 using ComponentParameter = mojom::SRIMessageSignatureComponentParameter;
 using ComponentParameterPtr = mojom::SRIMessageSignatureComponentParameterPtr;
 using ParameterType = mojom::SRIMessageSignatureComponentParameter::Type;
-
-namespace {
 
 const size_t kEd25519KeyLength = 32;
 const size_t kEd25519SigLength = 64;
