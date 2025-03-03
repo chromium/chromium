@@ -29,6 +29,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_condition_rule.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
@@ -56,6 +57,7 @@ namespace probe {
 class RecalculateStyle;
 }  // namespace probe
 
+class CSSConditionRule;
 class CSSContainerRule;
 class CSSFunctionRule;
 class CSSPropertyName;
@@ -192,9 +194,10 @@ class CORE_EXPORT InspectorCSSAgent final
       std::optional<int>*,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
-      std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*
-          out_cssFontPaletteValuesRule,
-      std::optional<int>*) override;
+      std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*,
+      std::optional<int>* parent_layout_node_id,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionRule>>*)
+      override;
   protocol::Response getInlineStylesForNode(
       int node_id,
       std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
@@ -495,6 +498,14 @@ class CORE_EXPORT InspectorCSSAgent final
   void CollectScopesFromRule(CSSRule*,
                              protocol::Array<protocol::CSS::CSSScope>*,
                              protocol::Array<protocol::CSS::CSSRuleType>*);
+
+  // Function at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSFunctionRule> BuildObjectForFunctionRule(
+      CSSFunctionRule*);
+  std::unique_ptr<protocol::CSS::CSSFunctionConditionNode>
+  BuildObjectForFunctionConditionNode(CSSConditionRule*);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionNode>>
+  BuildArrayForFunctionNodeChildren(CSSRuleList*);
 
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;
