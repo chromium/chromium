@@ -91,9 +91,63 @@ class ReadAnythingAppController
   // content::RenderFrameObserver:
   void OnDestruct() override;
 
+  // gin::WrappableBase:
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
+      v8::Isolate* isolate) override;
+
   // ReadAnythingAppModel::ModelObserver:
   void OnTreeAdded(ui::AXTree* tree) override;
   void OnTreeRemoved(ui::AXTree* tree) override;
+
+  // read_anything::mojom::UntrustedPage:
+  void AccessibilityEventReceived(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const std::vector<ui::AXEvent>& events) override;
+  void AccessibilityLocationChangesReceived(
+      const ui::AXTreeID& tree_id,
+      ui::AXLocationAndScrollUpdates& details) override;
+  void AccessibilityLocationChangesReceived(
+      const ui::AXTreeID& tree_id,
+      const ui::AXLocationAndScrollUpdates& details) override;
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
+                               ukm::SourceId ukm_source_id,
+                               bool is_pdf) override;
+  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
+  void OnImageDataDownloaded(const ui::AXTreeID& tree_id,
+                             ui::AXNodeID node_id,
+                             const SkBitmap& image) override;
+  void OnSettingsRestoredFromPrefs(
+      read_anything::mojom::LineSpacing line_spacing,
+      read_anything::mojom::LetterSpacing letter_spacing,
+      const std::string& font,
+      double font_size,
+      bool links_enabled,
+      bool images_enabled,
+      read_anything::mojom::Colors color,
+      double speech_rate,
+      base::Value::Dict voices,
+      base::Value::List languages_enabled_in_pref,
+      read_anything::mojom::HighlightGranularity granularity) override;
+  void SetLanguageCode(const std::string& code) override;
+  void SetDefaultLanguageCode(const std::string& code) override;
+  void ScreenAIServiceReady() override;
+  void OnGetVoicePackInfo(
+      read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnDeviceLocked() override;
+#else
+  void OnTtsEngineInstalled() override;
+#endif
+
+  // ui::AXTreeObserver:
+  void OnNodeDataChanged(ui::AXTree* tree,
+                         const ui::AXNodeData& old_node_data,
+                         const ui::AXNodeData& new_node_data) override;
+
+  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
+
+  void OnNodeDeleted(ui::AXTree* tree, ui::AXNodeID node) override;
 
   // gin templates:
   ui::AXNodeID RootId() const;
@@ -184,103 +238,13 @@ class ReadAnythingAppController
   void OnScrolledToBottom();
   bool IsDocsLoadMoreButtonVisible() const;
 
- private:
-  friend ReadAnythingAppControllerTest;
-  friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
-
-  explicit ReadAnythingAppController(content::RenderFrame* render_frame);
-  ~ReadAnythingAppController() override;
-
-  // gin::WrappableBase:
-  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override;
-
-  // ui::AXTreeObserver:
-  void OnNodeDataChanged(ui::AXTree* tree,
-                         const ui::AXNodeData& old_node_data,
-                         const ui::AXNodeData& new_node_data) override;
-
-  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
-
-  void OnNodeDeleted(ui::AXTree* tree, ui::AXNodeID node) override;
-
-  // read_anything::mojom::UntrustedPage:
-  void AccessibilityEventReceived(
-      const ui::AXTreeID& tree_id,
-      const std::vector<ui::AXTreeUpdate>& updates,
-      const std::vector<ui::AXEvent>& events) override;
-  void AccessibilityLocationChangesReceived(
-      const ui::AXTreeID& tree_id,
-      ui::AXLocationAndScrollUpdates& details) override;
-  void AccessibilityLocationChangesReceived(
-      const ui::AXTreeID& tree_id,
-      const ui::AXLocationAndScrollUpdates& details) override;
-  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
-                               ukm::SourceId ukm_source_id,
-                               bool is_pdf) override;
-  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
-  void OnImageDataDownloaded(const ui::AXTreeID& tree_id,
-                             ui::AXNodeID node_id,
-                             const SkBitmap& image) override;
-  void OnSettingsRestoredFromPrefs(
-      read_anything::mojom::LineSpacing line_spacing,
-      read_anything::mojom::LetterSpacing letter_spacing,
-      const std::string& font,
-      double font_size,
-      bool links_enabled,
-      bool images_enabled,
-      read_anything::mojom::Colors color,
-      double speech_rate,
-      base::Value::Dict voices,
-      base::Value::List languages_enabled_in_pref,
-      read_anything::mojom::HighlightGranularity granularity) override;
-  void SetLanguageCode(const std::string& code) override;
-  void SetDefaultLanguageCode(const std::string& code) override;
-  void ScreenAIServiceReady() override;
-  void OnGetVoicePackInfo(
-      read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnDeviceLocked() override;
-#else
-  void OnTtsEngineInstalled() override;
-#endif
-
   // The language code that should be used to determine which voices are
   // supported for speech.
   const std::string& GetLanguageCodeForSpeech() const;
 
-  // The fallback language code if GetLanguageCodeForSpeech has an error.
-  // However, this may be the same value as GetLanguageCodeForSpeech.
-  const std::string& GetDefaultLanguageCodeForSpeech() const;
-
   const std::string GetDisplayNameForLocale(
       const std::string& locale,
       const std::string& display_locale) const;
-
-  void Distill(bool for_training_data);
-  void Draw(bool recompute_display_nodes);
-  void DrawSelection();
-  void DrawEmptyState();
-
-  void ExecuteJavaScript(const std::string& script);
-
-  // Called when distillation has completed.
-  void OnAXTreeDistilled(const ui::AXTreeID& tree_id,
-                         const std::vector<ui::AXNodeID>& content_node_ids);
-
-  // Returns true if a draw occured.
-  bool PostProcessSelection();
-
-  // Signals that the side panel has finished loading and it's safe to show
-  // the UI to avoid loading artifacts.
-  void ShouldShowUI();
-
-  // Inits the AXPosition with a starting node.
-  // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
-  // where this isn't needed.
-  void InitAXPositionWithNode(const ui::AXNodeID& starting_node_id);
-
-  void ResetGranularityIndex();
 
   // Returns a list of AXNodeIds representing the next nodes that should be
   // spoken and highlighted with Read Aloud.
@@ -293,9 +257,34 @@ class ReadAnythingAppController
   // indices for specific text that should be referenced within the node.
   std::vector<ui::AXNodeID> GetCurrentText();
 
-  // Preprocess the text on the current page for speech to be used by
-  // Read Aloud.
-  void PreprocessTextForSpeech();
+  // Returns the Read Aloud starting text index for a node. For example,
+  // if the entire text of the node should be read by Read Aloud at a particular
+  // moment, this will return 0. Returns -1 if the node isn't in the current
+  // segment.
+  int GetCurrentTextStartIndex(ui::AXNodeID node_id);
+
+  // Returns the Read Aloud ending text index for a node. For example,
+  // if the entire text of the node should be read by Read Aloud at a particular
+  // moment, this will return the length of the node's text. Returns -1 if the
+  // node isn't in the current segment.
+  int GetCurrentTextEndIndex(ui::AXNodeID node_id);
+
+  int GetAccessibleBoundary(const std::u16string& text, int max_text_length);
+
+  // Called when a new dependency parser model file has been loaded and is
+  // available.
+  void UpdateDependencyParserModel(base::File model_file);
+
+  DependencyParserModel& GetDependencyParserModelForTesting();
+
+  // Called when distillation has completed.
+  void OnAXTreeDistilled(const ui::AXTreeID& tree_id,
+                         const std::vector<ui::AXNodeID>& content_node_ids);
+
+  // Inits the AXPosition with a starting node.
+  // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
+  // where this isn't needed.
+  void InitAXPositionWithNode(const ui::AXNodeID& starting_node_id);
 
   // TODO(crbug.com/40927698): Random access to processed nodes might not always
   // work (e.g. if we're switching granularities or jumping to a specific node),
@@ -311,19 +300,58 @@ class ReadAnythingAppController
   // the current granularity to refer to the previous granularity
   void MovePositionToPreviousGranularity();
 
-  int GetAccessibleBoundary(const std::u16string& text, int max_text_length);
+  void ResetGranularityIndex();
 
-  // Returns the Read Aloud starting text index for a node. For example,
-  // if the entire text of the node should be read by Read Aloud at a particular
-  // moment, this will return 0. Returns -1 if the node isn't in the current
-  // segment.
-  int GetCurrentTextStartIndex(ui::AXNodeID node_id);
+  // Preprocess the text on the current page for speech to be used by
+  // Read Aloud.
+  void PreprocessTextForSpeech();
 
-  // Returns the Read Aloud ending text index for a node. For example,
-  // if the entire text of the node should be read by Read Aloud at a particular
-  // moment, this will return the length of the node's text. Returns -1 if the
-  // node isn't in the current segment.
-  int GetCurrentTextEndIndex(ui::AXNodeID node_id);
+  void Draw(bool recompute_display_nodes);
+
+  // Snapshot_lite is a data structure which resembles an
+  // AXTreeUpdate. E.g.:
+  //   const axTree = {
+  //     root_id: 1,
+  //     nodes: [
+  //       {
+  //         id: 1,
+  //         role: 'rootWebArea',
+  //         child_ids: [2],
+  //       },
+  //       {
+  //         id: 2,
+  //         role: 'staticText',
+  //         name: 'Some text.',
+  //       },
+  //     ],
+  //   };
+  void SetContentForTesting(v8::Local<v8::Value> v8_snapshot_lite,
+                            std::vector<ui::AXNodeID> content_node_ids);
+  void SetLanguageForTesting(const std::string& language_code);
+
+ private:
+  friend ReadAnythingAppControllerTest;
+  friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
+
+  explicit ReadAnythingAppController(content::RenderFrame* render_frame);
+  ~ReadAnythingAppController() override;
+
+  // The fallback language code if GetLanguageCodeForSpeech has an error.
+  // However, this may be the same value as GetLanguageCodeForSpeech.
+  const std::string& GetDefaultLanguageCodeForSpeech() const;
+
+  void Distill(bool for_training_data);
+  void DrawSelection();
+  void DrawEmptyState();
+
+  void ExecuteJavaScript(const std::string& script);
+
+  // Returns true if a draw occured.
+  bool PostProcessSelection();
+
+  // Signals that the side panel has finished loading and it's safe to show
+  // the UI to avoid loading artifacts.
+  void ShouldShowUI();
 
   // Records the number of selections that occurred for the active page. Called
   // when the active tree changes.
@@ -346,39 +374,9 @@ class ReadAnythingAppController
   v8::Local<v8::Value> GetHighlightForCurrentSegmentIndex(int index,
                                                           bool phrases);
 
-  // SetContentForTesting and SetLanguageForTesting are used by
-  // ReadAnythingAppTest and thus need to be kept in ReadAnythingAppController
-  // even though ReadAnythingAppControllerBrowserTest is friended.
-  // Snapshot_lite is a data structure which resembles an
-  // AXTreeUpdate. E.g.:
-  //   const axTree = {
-  //     root_id: 1,
-  //     nodes: [
-  //       {
-  //         id: 1,
-  //         role: 'rootWebArea',
-  //         child_ids: [2],
-  //       },
-  //       {
-  //         id: 2,
-  //         role: 'staticText',
-  //         name: 'Some text.',
-  //       },
-  //     ],
-  //   };
-  void SetContentForTesting(v8::Local<v8::Value> v8_snapshot_lite,
-                            std::vector<ui::AXNodeID> content_node_ids);
-  void SetLanguageForTesting(const std::string& language_code);
-
   // Helpers for logging UmaHistograms based on times recorded in WebUI.
   void IncrementMetricCount(const std::string& metric);
   void LogSpeechEventCounts();
-
-  // Called when a new dependency parser model file has been loaded and is
-  // available.
-  void UpdateDependencyParserModel(base::File model_file);
-
-  DependencyParserModel& GetDependencyParserModelForTesting();
 
   // Stores a screenshot of the page and triggers distillation to record protos.
   // This function is not used in production and is behind the disabled
