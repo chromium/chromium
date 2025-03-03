@@ -85,6 +85,22 @@ source_set("impl") {
   }
 }
 
+source_set("ai_model_download_progress_manager") {
+  sources = [
+    "ai_model_download_progress_manager.cc",
+    "ai_model_download_progress_manager.h",
+  ]
+  public_deps = [
+    ":ai",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//components/component_updater",
+    "//components/update_client",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -106,13 +122,16 @@ source_set("unit_tests") {
   sources = [
     "ai_language_model_unittest.cc",
     "ai_manager_unittest.cc",
+    "ai_model_download_progress_manager_unittest.cc",
     "ai_rewriter_unittest.cc",
     "ai_summarizer_unittest.cc",
     "ai_writer_unittest.cc",
   ]
   deps = [
     ":ai",
+    ":ai_model_download_progress_manager",
     ":test_support",
+    "//components/component_updater:test_support",
     "//components/optimization_guide/core:test_support",
   ]
 }
