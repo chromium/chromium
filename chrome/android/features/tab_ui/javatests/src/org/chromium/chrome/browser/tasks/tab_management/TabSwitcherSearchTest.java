@@ -45,7 +45,6 @@ import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -390,7 +389,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/399858506")
     public void testSearchActivityBackButton() {
         mInitialPage.openRegularTabSwitcher().openTabSwitcherSearch();
         closeSearchAndVerify();
