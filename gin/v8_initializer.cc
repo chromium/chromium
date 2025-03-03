@@ -280,6 +280,19 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   }
 }
 
+// Sets feature flags that are default to enabled.
+//
+// This function must be called *before* SetFeatureFlags is called, so that
+// default-enabled flags may be overridden and disabled.
+//
+// Usually V8 is the source of truth for the default state of feature flags.
+// However, some features must be shipped from the blink side because they add
+// new globals, which requires updating web tests that cannot be skipped (to
+// safeguard against accidentally breaking the web).
+void SetDefaultEnabledFeatureFlags() {
+  SetV8Flags("--js-float16array");
+}
+
 // Sets feature controlled V8 flags.
 void SetFeatureFlags() {
   // Chromium features prefixed with "V8Flag_" are forwarded to V8 as V8 flags,
@@ -516,7 +529,6 @@ void SetFeatureFlags() {
                          "--no-js-duplicate-named-groups");
   SetV8FlagsIfOverridden(features::kJavaScriptPromiseTry, "--js-promise-try",
                          "--no-js-promise-try");
-  SetV8Flags("--js-float16array");
 
   // WebAssembly features.
 
@@ -550,6 +562,7 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   // instrumentation initialization, see https://crbug.com/v8/11043. --js-flags
   // and other mandatory flags in `SetFlags` must be ordered after feature flag
   // overrides.
+  SetDefaultEnabledFeatureFlags();
   if (!disallow_v8_feature_flag_overrides) {
     SetFeatureFlags();
   }
