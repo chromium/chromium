@@ -25,7 +25,9 @@ constexpr unsigned kNumberOfOutputChannels = 1;
 ConstantSourceHandler::ConstantSourceHandler(AudioNode& node,
                                              float sample_rate,
                                              AudioParamHandler& offset)
-    : AudioScheduledSourceHandler(kNodeTypeConstantSource, node, sample_rate),
+    : AudioScheduledSourceHandler(NodeType::kNodeTypeConstantSource,
+                                  node,
+                                  sample_rate),
       offset_(&offset),
       sample_accurate_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   AddOutput(kNumberOfOutputChannels);

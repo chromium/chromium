@@ -46,7 +46,7 @@ PannerHandler::PannerHandler(AudioNode& node,
                              AudioParamHandler& orientation_x,
                              AudioParamHandler& orientation_y,
                              AudioParamHandler& orientation_z)
-    : AudioHandler(kNodeTypePanner, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypePanner, node, sample_rate),
       position_x_(&position_x),
       position_y_(&position_y),
       position_z_(&position_z),

@@ -36,7 +36,7 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 }  // namespace
 
 ConvolverHandler::ConvolverHandler(AudioNode& node, float sample_rate)
-    : AudioHandler(kNodeTypeConvolver, node, sample_rate) {
+    : AudioHandler(NodeType::kNodeTypeConvolver, node, sample_rate) {
   AddInput();
   AddOutput(kDefaultNumberOfOutputChannels);
 

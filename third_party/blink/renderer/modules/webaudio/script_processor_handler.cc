@@ -41,7 +41,7 @@ ScriptProcessorHandler::ScriptProcessorHandler(
     uint32_t number_of_output_channels,
     const HeapVector<Member<AudioBuffer>>& input_buffers,
     const HeapVector<Member<AudioBuffer>>& output_buffers)
-    : AudioHandler(kNodeTypeScriptProcessor, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeScriptProcessor, node, sample_rate),
       buffer_size_(buffer_size),
       number_of_input_channels_(number_of_input_channels),
       number_of_output_channels_(number_of_output_channels),

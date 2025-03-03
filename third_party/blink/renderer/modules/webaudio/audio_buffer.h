@@ -73,11 +73,12 @@ class MODULES_EXPORT AudioBuffer final : public ScriptWrappable {
   // How to initialize the contents of an AudioBuffer.  Default is to
   // zero-initialize (`kZeroInitialize`).  Otherwise, leave the array
   // uninitialized (`kDontInitialize`).
-  enum InitializationPolicy { kZeroInitialize, kDontInitialize };
+  enum class InitializationPolicy { kZeroInitialize, kDontInitialize };
   AudioBuffer(unsigned number_of_channels,
               uint32_t number_of_frames,
               float sample_rate,
-              InitializationPolicy allocation_policy = kZeroInitialize);
+              InitializationPolicy allocation_policy =
+                  InitializationPolicy::kZeroInitialize);
 
   // Format
   uint32_t length() const { return length_; }
@@ -118,7 +119,8 @@ class MODULES_EXPORT AudioBuffer final : public ScriptWrappable {
  private:
   static DOMFloat32Array* CreateFloat32ArrayOrNull(
       uint32_t length,
-      InitializationPolicy allocation_policy = kZeroInitialize);
+      InitializationPolicy allocation_policy =
+          InitializationPolicy::kZeroInitialize);
 
   bool CreatedSuccessfully(unsigned desired_number_of_channels) const;
 

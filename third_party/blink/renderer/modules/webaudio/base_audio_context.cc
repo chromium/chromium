@@ -88,7 +88,7 @@ namespace blink {
 
 // Constructor for rendering to the audio hardware.
 BaseAudioContext::BaseAudioContext(LocalDOMWindow* window,
-                                   enum ContextType context_type)
+                                   ContextType context_type)
     : ActiveScriptWrappable<BaseAudioContext>({}),
       ExecutionContextLifecycleStateObserver(window),
       InspectorHelperMixin(*AudioGraphTracer::FromWindow(*window), String()),
@@ -742,9 +742,9 @@ void BaseAudioContext::HandleStoppableSourceNodes() {
     // long as the active nodes eventually get stopped if they're done.
     for (auto handler : *active_source_handlers) {
       switch (handler->GetNodeType()) {
-        case AudioHandler::kNodeTypeAudioBufferSource:
-        case AudioHandler::kNodeTypeOscillator:
-        case AudioHandler::kNodeTypeConstantSource: {
+        case AudioHandler::NodeType::kNodeTypeAudioBufferSource:
+        case AudioHandler::NodeType::kNodeTypeOscillator:
+        case AudioHandler::NodeType::kNodeTypeConstantSource: {
           AudioScheduledSourceHandler* source_handler =
               static_cast<AudioScheduledSourceHandler*>(handler.get());
           source_handler->HandleStoppableSourceNode();

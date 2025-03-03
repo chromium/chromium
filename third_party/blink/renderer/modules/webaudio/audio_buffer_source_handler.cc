@@ -46,7 +46,7 @@ AudioBufferSourceHandler::AudioBufferSourceHandler(
     float sample_rate,
     AudioParamHandler& playback_rate,
     AudioParamHandler& detune)
-    : AudioScheduledSourceHandler(kNodeTypeAudioBufferSource,
+    : AudioScheduledSourceHandler(NodeType::kNodeTypeAudioBufferSource,
                                   node,
                                   sample_rate),
       playback_rate_(&playback_rate),

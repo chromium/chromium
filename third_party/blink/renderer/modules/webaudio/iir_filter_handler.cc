@@ -73,7 +73,7 @@ IIRFilterHandler::IIRFilterHandler(AudioNode& node,
                                    const Vector<double>& feedforward_coef,
                                    const Vector<double>& feedback_coef,
                                    bool is_filter_stable)
-    : AudioHandler(kNodeTypeIIRFilter, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeIIRFilter, node, sample_rate),
       nyquist_frequency_(0.5 * sample_rate) {
   CHECK(Context());
   CHECK(Context()->GetExecutionContext());
