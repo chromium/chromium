@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_reference_context_with_no_user_context_set[tab]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_reference_context_with_no_user_context_set[window]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+Harness: the test ran to completion.
+

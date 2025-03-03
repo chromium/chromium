@@ -1,0 +1,17 @@
+This is a wdspec test.
+[FAIL] test_unsubscribe_globally_with_user_context_subscription
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_unsubscribe_globally_with_user_context_and_context_subscription
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_unsubscribe_from_user_context_with_global_subscription
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_unsubscribe_from_user_context
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_unsubscribe_from_user_context_twice
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_unsubscribe_from_user_context_with_context_subscription
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_unsubscribe_from_context_with_user_context_subscription
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+Harness: the test ran to completion.
+

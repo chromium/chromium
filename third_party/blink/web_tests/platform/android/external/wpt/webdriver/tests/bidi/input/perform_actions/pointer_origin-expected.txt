@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_element_center_point_with_offset[10-15-element partly visible]
+  assert 30 == 31.5 ± 1.0e+00
+[FAIL] test_element_center_point_with_offset[0-0-element partly visible]
+  assert 15 == 16.5 ± 1.0e+00
+Harness: the test ran to completion.
+

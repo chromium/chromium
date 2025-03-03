@@ -25,6 +25,22 @@ targets.tests.isolated_script_test(
     args = [
         "--skipped",
         "always",
+        "--test-type",
+        "testharness",
+        "reftest",
+        "crashtest",
+        "print-reftest",
+    ],
+    binary = "chrome_public_wpt",
+)
+
+targets.tests.isolated_script_test(
+    name = "android_webdriver_wpt_tests",
+    args = [
+        "--skipped",
+        "always",
+        "--test-type",
+        "wdspec",
     ],
     binary = "chrome_public_wpt",
 )

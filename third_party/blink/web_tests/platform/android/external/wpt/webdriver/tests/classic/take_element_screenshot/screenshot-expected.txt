@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  assert (193, 22) == (578, 65)
+[FAIL] test_no_such_element_with_shadow_root
+  assert 500 == 404
+[FAIL] test_format_and_dimensions
+  assert (193, 22) == (578, 65)
+Harness: the test ran to completion.
+

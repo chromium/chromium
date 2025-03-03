@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
+[FAIL] test_pointer_down_closes_browsing_context
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
+[FAIL] test_move_to_fractional_position
+  webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument
+[FAIL] test_touch_pointer_properties
+  AssertionError: assert 6 == 7
+[FAIL] test_touch_pointer_properties_angle_twist
+  AssertionError: assert 6 == 7
+[ERROR] test_touch_pointer_properties_tilt_twist
+  teardown error: webdriver.error.WebDriverException: tab crashed (500): tab crashed
+Harness: the test ran to completion.
+

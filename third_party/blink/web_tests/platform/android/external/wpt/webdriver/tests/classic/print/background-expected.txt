@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_background[None-iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2P4DwQACfsD/Z8fLAAAAAAASUVORK5CYII=]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_background[True-iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NgYGD4DwABBAEAwS2OUAAAAABJRU5ErkJggg==]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_background[False-iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2P4DwQACfsD/Z8fLAAAAAAASUVORK5CYII=]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+Harness: the test ran to completion.
+

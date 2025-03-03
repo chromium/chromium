@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_iframe
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_iframe_origin[same_origin]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Printing of non-top level contexts is not supported)
+[FAIL] test_iframe_origin[cross_origin]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Printing of non-top level contexts is not supported)
+Harness: the test ran to completion.
+

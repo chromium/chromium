@@ -1,0 +1,19 @@
+This is a wdspec test.
+[FAIL] test_accept[capabilities0-alert-None]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_accept[capabilities0-confirm-True]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_accept[capabilities0-prompt-]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_accept_and_notify[capabilities0-confirm-True]
+  assert (360, 515) == (360, 536)
+[FAIL] test_dismiss[capabilities0-alert-None]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_dismiss[capabilities0-confirm-False]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_dismiss[capabilities0-prompt-None]
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_dismiss_and_notify[capabilities0-confirm-False]
+  assert (360, 515) == (360, 536)
+Harness: the test ran to completion.
+
