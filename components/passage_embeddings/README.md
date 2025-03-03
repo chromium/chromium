@@ -1,1 +1,1 @@
-The passage embeddinggs component provides functionality to generate text embeddings with a TFLite model.
+The passage embeddings component provides functionality to generate text embeddings with a TFLite model.
