@@ -706,13 +706,6 @@ void ImageBitmap::close() {
   UpdateImageBitmapMemoryUsage();
 }
 
-// static
-ImageBitmap* ImageBitmap::Take(ScriptPromiseResolverBase*,
-                               sk_sp<SkImage> image) {
-  return MakeGarbageCollected<ImageBitmap>(
-      UnacceleratedStaticBitmapImage::Create(std::move(image)));
-}
-
 SkImageInfo ImageBitmap::GetBitmapSkImageInfo() const {
   return GetSkImageInfo(image_);
 }

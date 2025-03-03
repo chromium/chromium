@@ -80,11 +80,6 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
               bool is_image_bitmap_origin_clean,
               ImageOrientationEnum);
 
-  // Type and helper function required by CallbackPromiseAdapter:
-  using IDLType = ImageBitmap;
-  using WebType = sk_sp<SkImage>;
-  static ImageBitmap* Take(ScriptPromiseResolverBase*, sk_sp<SkImage>);
-
   scoped_refptr<StaticBitmapImage> BitmapImage() const { return image_; }
 
   // Retrieve the SkImageInfo that best represents BitmapImage().
