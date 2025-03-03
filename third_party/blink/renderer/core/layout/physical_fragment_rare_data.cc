@@ -78,9 +78,8 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   }
 
   if (!builder.table_column_geometries_.empty()) {
-    table_column_geometries_ =
-        MakeGarbageCollected<TableFragmentData::ColumnGeometries>(
-            builder.table_column_geometries_);
+    table_column_geometries_ = MakeGarbageCollected<TableColumnGeometries>(
+        builder.table_column_geometries_);
   }
 
   // size() can be smaller than num_fields because FieldId::kMargins is not

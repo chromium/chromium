@@ -132,7 +132,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     if (const auto* table_collapsed_borders_geometry =
             physical_fragment.TableCollapsedBordersGeometry()) {
       container_builder_.SetTableCollapsedBordersGeometry(
-          std::make_unique<TableFragmentData::CollapsedBordersGeometry>(
+          std::make_unique<CollapsedTableBordersGeometry>(
               *table_collapsed_borders_geometry));
     }
   } else if (physical_fragment.IsTableSection()) {
