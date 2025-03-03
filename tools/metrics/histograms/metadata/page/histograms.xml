@@ -4182,7 +4182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.ForegroundToFirstContentfulPaint"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2026-04-13">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
