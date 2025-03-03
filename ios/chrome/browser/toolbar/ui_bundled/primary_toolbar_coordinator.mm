@@ -139,16 +139,7 @@
 // Returns whether the banner promo is supported given the current view
 // controller state.
 - (BOOL)viewControllerSupportsBannerPromo {
-  if (self.viewController.locationBarIsExpanded) {
-    return NO;
-  }
-
-  // iPad screen is always large enough to show the banner.
-  BOOL isIPad =
-      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
-  // On smaller iPhone screens, the promo is only supported in split toolbar
-  // mode. Otherwise, it takes up too much space.
-  return isIPad || IsSplitToolbarMode(self.viewController);
+  return !self.viewController.locationBarIsExpanded;
 }
 
 // Returns the active banner promo app agent if it is available currently.

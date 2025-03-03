@@ -166,9 +166,9 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
 
     [NSLayoutConstraint activateConstraints:@[
       [_contentsStackView.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor
                          constant:kContentHorizontalMargin],
-      [self.trailingAnchor
+      [self.safeAreaLayoutGuide.trailingAnchor
           constraintEqualToAnchor:_contentsStackView.trailingAnchor
                          constant:kContentHorizontalMargin],
       [_contentsStackView.topAnchor
