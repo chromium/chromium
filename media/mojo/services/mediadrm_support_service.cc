@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "media/base/android/media_drm_bridge.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -20,6 +22,7 @@ MediaDrmSupportService::~MediaDrmSupportService() = default;
 
 void MediaDrmSupportService::IsKeySystemSupported(
     const std::string& key_system,
+    bool is_secure,
     IsKeySystemSupportedCallback callback) {
   DCHECK(!key_system.empty());
   DVLOG(1) << __func__ << " key_system: " << key_system;
@@ -30,10 +33,27 @@ void MediaDrmSupportService::IsKeySystemSupported(
   }
 
   auto result = mojom::MediaDrmSupportResult::New();
+  auto security_level = media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
+  if (base::FeatureList::IsEnabled(
+          media::kUseSecurityLevelWhenCheckingMediaDrmVersion)) {
+    security_level = is_secure ? media::MediaDrmBridge::SECURITY_LEVEL_1
+                               : media::MediaDrmBridge::SECURITY_LEVEL_3;
+  }
+  auto version = MediaDrmBridge::GetVersion(key_system, security_level);
+  if (!version.has_value() &&
+      version.error() ==
+          media::CreateCdmStatus::kAndroidFailedL1SecurityLevel) {
+    // Failed to determine version as `security_level` not supported.
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
   result->key_system_supports_video_webm =
       MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/webm");
   result->key_system_supports_video_mp4 =
       MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/mp4");
+  result->key_system_version = version.value_or(base::Version());
+
   std::move(callback).Run(std::move(result));
 }
 

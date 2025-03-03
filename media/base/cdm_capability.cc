@@ -95,6 +95,9 @@ std::string CdmCapabilityQueryStatusToString(
              "system.";
     case CdmCapabilityQueryStatus::kUnexpectedEmptyCapability:
       return "kUnexpectedEmptyCapability";
+    case CdmCapabilityQueryStatus::kNoMediaDrmSupport:
+      return "MediaDrm not available for the key system and robustness "
+             "specified.";
   }
 
   NOTREACHED();

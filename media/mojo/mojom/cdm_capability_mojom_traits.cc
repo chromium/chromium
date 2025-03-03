@@ -102,6 +102,8 @@ media::mojom::CdmCapabilityQueryStatus EnumTraits<
           kCreateDummyMediaFoundationCdmFailed;
     case media::CdmCapabilityQueryStatus::kUnexpectedEmptyCapability:
       return media::mojom::CdmCapabilityQueryStatus::kUnexpectedEmptyCapability;
+    case media::CdmCapabilityQueryStatus::kNoMediaDrmSupport:
+      return media::mojom::CdmCapabilityQueryStatus::kNoMediaDrmSupport;
   }
 
   NOTREACHED();
@@ -153,6 +155,9 @@ bool EnumTraits<media::mojom::CdmCapabilityQueryStatus,
       return true;
     case media::mojom::CdmCapabilityQueryStatus::kUnexpectedEmptyCapability:
       *output = media::CdmCapabilityQueryStatus::kUnexpectedEmptyCapability;
+      return true;
+    case media::mojom::CdmCapabilityQueryStatus::kNoMediaDrmSupport:
+      *output = media::CdmCapabilityQueryStatus::kNoMediaDrmSupport;
       return true;
   }
 

@@ -605,7 +605,7 @@ void CdmRegistryImpl::OnCapabilityInitialized(
     media::CdmCapabilityOrStatus cdm_capability_or_status) {
   DVLOG(1) << __func__ << ": key_system=" << key_system
            << ", robustness=" << robustness << ", cdm_capability_or_status="
-           << (cdm_capability_or_status.has_value() ? "yes" : "no");
+           << cdm_capability_or_status.ToString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_lazy_initializations_.count({key_system, robustness}));
 
@@ -663,13 +663,6 @@ void CdmRegistryImpl::FinalizeCapability(
     itr->capability = std::nullopt;
     itr->capability_query_status = std::move(cdm_capability_or_status).error();
   }
-#if BUILDFLAG(IS_ANDROID)
-  // Querying for the CDM version requires creating a MediaDrm object, so
-  // delaying it until the capability is determined.
-  // TODO(crbug.com/40280540): Once querying capabilities on Android is done in
-  // a separate process, include the version with the capabilities returned.
-  itr->version = media::MediaDrmBridge::GetVersion(key_system);
-#endif
 }
 
 void CdmRegistryImpl::UpdateAndNotifyKeySystemCapabilities() {

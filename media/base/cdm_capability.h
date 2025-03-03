@@ -113,7 +113,9 @@ enum class CdmCapabilityQueryStatus {
   kCreateDummyMediaFoundationCdmFailed = 9,
   // Unexpected empty video codec, encryption scheme or session type.
   kUnexpectedEmptyCapability = 10,
-  kMaxValue = kUnexpectedEmptyCapability,
+  // MediaDrm not available for the key system and robustness specified.
+  kNoMediaDrmSupport = 11,
+  kMaxValue = kNoMediaDrmSupport,
 };
 
 // Returns a string version of the status.

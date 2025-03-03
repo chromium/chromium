@@ -415,15 +415,17 @@ std::vector<uint8_t> MediaDrmBridge::GetUUID(const std::string& key_system) {
 }
 
 // static
-base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
+MediaDrmBridge::GetVersionResult MediaDrmBridge::GetVersion(
+    const std::string& key_system,
+    MediaDrmBridge::SecurityLevel security_level) {
   auto media_drm_bridge = MediaDrmBridge::CreateWithoutSessionSupport(
-      key_system, /* origin_id= */ "", MediaDrmBridge::SECURITY_LEVEL_DEFAULT,
-      "GetVersion", base::NullCallback());
+      key_system, /* origin_id= */ "", security_level, "GetVersion",
+      base::NullCallback());
   if (!media_drm_bridge.has_value()) {
     DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system
              << ", CreateCdmStatus: "
              << (media::StatusCodeType)media_drm_bridge.code();
-    return base::Version();
+    return base::unexpected(media_drm_bridge.code());
   }
 
   std::string version_str = media_drm_bridge->GetVersionInternal();

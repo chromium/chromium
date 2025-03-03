@@ -1084,6 +1084,12 @@ BASE_FEATURE(kUseAudioLatencyFromHAL,
              "UseAudioLatencyFromHAL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Specify the required security level for MediaDrm when checking the MediaDrm
+// version.
+BASE_FEATURE(kUseSecurityLevelWhenCheckingMediaDrmVersion,
+             "UseSecurityLevelWhenCheckingMediaDrmVersion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allow the media pipeline to prioritize the software decoder provided by
 // MediaCodec, instead of the built-in software decoders. This is only enabled
 // for platforms which shows worse performance when using the built-in software
