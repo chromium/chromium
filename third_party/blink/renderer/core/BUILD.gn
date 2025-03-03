@@ -738,7 +738,6 @@ css_properties("make_core_generated_computed_style_base") {
   in_files = [
     "style/computed_style_extra_fields.json5",
     "css/css_value_keywords.json5",
-    "css/css_properties_ranking.json5",
     "css/css_group_config.json5",
   ]
   other_inputs = [
