@@ -582,7 +582,16 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 - (void)showLeavingPrimaryAccountConfirmationIfNeededStep {
   CHECK(_unsyncedDataTypes.has_value(), base::NotFatalUntil::M140);
-  if (_unsyncedDataTypes.value().empty()) {
+  ProfileIOS* profile = _browser->GetProfile()->GetOriginalProfile();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  PrefService* profilePrefService = profile->GetPrefs();
+  SignedInUserState signedInUserState = GetSignedInUserState(
+      authenticationService, identityManager, profilePrefService);
+  if (!ForceLeavingPrimaryAccountConfirmationDialog(signedInUserState) &&
+      _unsyncedDataTypes.value().empty()) {
     [self continueFlow];
     return;
   }
@@ -590,6 +599,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       showLeavingPrimaryAccountConfirmationWithBaseViewController:
           _presentingViewController
                                                           browser:_browser
+                                                signedInUserState:
+                                                    signedInUserState
                                                        anchorView:_anchorView
                                                        anchorRect:_anchorRect];
 }

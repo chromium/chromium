@@ -24,6 +24,7 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/model/enterprise_policy_test_helper.h"
@@ -435,6 +436,9 @@ TEST_F(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
                                                                           any]
                                                               browser:browser_
                                                                           .get()
+                                                    signedInUserState:
+                                                        SignedInUserState::
+                                                            kNotSyncingAndReplaceSyncWithSignin
                                                            anchorView:[OCMArg
                                                                           any]
                                                            anchorRect:CGRect()])

@@ -17,6 +17,7 @@ class Browser;
 @protocol ChangeProfileCommands;
 class ProfileIOS;
 @class SceneState;
+enum class SignedInUserState;
 @protocol SystemIdentity;
 
 namespace syncer {
@@ -65,6 +66,9 @@ using OnProfileSwitchCompletion =
             (UIViewController*)baseViewController
                                                             browser:(Browser*)
                                                                         browser
+                                                  signedInUserState:
+                                                      (SignedInUserState)
+                                                          signedInUserState
                                                          anchorView:
                                                              (UIView*)anchorView
                                                          anchorRect:

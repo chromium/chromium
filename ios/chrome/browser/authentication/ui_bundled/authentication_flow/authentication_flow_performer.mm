@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -103,6 +104,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
       _accountLevelSigninRestrictionPolicyFetcher;
   std::unique_ptr<base::OneShotTimer> _watchdogTimer;
   id<ChangeProfileCommands> _changeProfileHandler;
+  ActionSheetCoordinator* _leavingPrimaryAccountConfirmationDialogCoordinator;
 }
 
 - (id<AuthenticationFlowPerformerDelegate>)delegate {
@@ -150,14 +152,21 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
         (UIViewController*)baseViewController
                                                         browser:
                                                             (Browser*)browser
+                                              signedInUserState:
+                                                  (SignedInUserState)
+                                                      signedInUserState
                                                      anchorView:
                                                          (UIView*)anchorView
                                                      anchorRect:
                                                          (CGRect)anchorRect {
-  // TODO(crbug.com/375604649): Need to display the confirmation dialog and then
-  // call `-[id<AuthenticationFlowPerformerDelegate>
-  // didAcceptToLeavePrimaryAccount:]`.
-  [_delegate didAcceptToLeavePrimaryAccount:YES];
+  __weak __typeof(self) weakSelf = self;
+  _leavingPrimaryAccountConfirmationDialogCoordinator =
+      GetLeavingPrimaryAccountConfirmationDialog(
+          baseViewController, browser, anchorView, anchorRect,
+          signedInUserState, YES, ^(BOOL continueFlow) {
+            [weakSelf leavingPrimaryAccountConfirmationDone:continueFlow];
+          });
+  [_leavingPrimaryAccountConfirmationDialogCoordinator start];
 }
 
 - (void)fetchManagedStatus:(ProfileIOS*)profile
@@ -486,6 +495,13 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 }
 
 #pragma mark - Private
+
+// Called when `_leavingPrimaryAccountConfirmationDialogCoordinator` is done.
+- (void)leavingPrimaryAccountConfirmationDone:(BOOL)continueFlow {
+  [_leavingPrimaryAccountConfirmationDialogCoordinator stop];
+  _leavingPrimaryAccountConfirmationDialogCoordinator = nil;
+  [_delegate didAcceptToLeavePrimaryAccount:continueFlow];
+}
 
 // Called when separation policies have been fetched, and calls the delegate.
 - (void)didFetchProfileSeparationPolicies:
