@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 #if DCHECK_IS_ON()
 #include "base/memory/scoped_refptr.h"
@@ -239,6 +240,15 @@ class WTF_EXPORT StringView {
   // Returns i+2 if a pair of [i] and [i+1] is a valid surrogate pair.
   // Returns i+1 otherwise.
   unsigned NextCodePointOffset(unsigned i) const;
+
+  // Does `CodepointAt()`, and the specified `i` is updated by
+  // `NextCodePointOffset()`.
+  UChar32 CodePointAtAndNext(unsigned& i) const {
+    if (Is8Bit()) {
+      return (*this)[i++];
+    }
+    return WTF::CodePointAtAndNext(Span16(), i);
+  }
 
   const void* Bytes() const { return bytes_; }
 
