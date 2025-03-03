@@ -212,8 +212,7 @@ def _SkipOverPreviousComment(contents, index):
   # Is the previous line a non-comment?  If so, just return `index`.
   new_index = _FindStartOfPreviousLine(contents, index)
   prev_text = contents[new_index:index]
-  _COMMENT_START_REGEX = b"^  \s*  (  //  |  \*  )"
-  if not re.search(_COMMENT_START_REGEX, prev_text, re.VERBOSE):
+  if not re.search(br"^  \s*  (  //  |  \*  )", prev_text, re.VERBOSE):
     return index
 
   # Otherwise skip over the previous line + continue skipping via recursion.
