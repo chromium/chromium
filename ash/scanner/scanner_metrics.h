@@ -115,7 +115,9 @@ enum class ScannerFeatureUserState {
   kSmartActionsButtonNotShownDueToCanShowUiFalse = 50,
   kSmartActionsButtonNotShownDueToOffline = 51,
 
-  kMaxValue = kSmartActionsButtonNotShownDueToOffline,
+  kSunfishSessionStartedFromDebugShortcut = 52,
+
+  kMaxValue = kSunfishSessionStartedFromDebugShortcut,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 

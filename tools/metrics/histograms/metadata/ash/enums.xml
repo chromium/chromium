@@ -2091,6 +2091,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="51"
       label="Smart actions button was not shown because network connection
              was offline after text detection"/>
+  <int value="52" label="Sunfish-session started using the Ash debug shortcut"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->
