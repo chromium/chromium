@@ -257,6 +257,7 @@ class SmsObserver;
 class SnapGroupController;
 class SnoopingProtectionController;
 class StickyKeysController;
+class SunfishScannerFeatureWatcher;
 class SystemGestureEventFilter;
 class SystemModalContainerEventFilter;
 class SystemNotificationController;
@@ -737,6 +738,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   RgbKeyboardManager* rgb_keyboard_manager() {
     return rgb_keyboard_manager_.get();
   }
+  SunfishScannerFeatureWatcher* sunfish_scanner_feature_watcher() {
+    return sunfish_scanner_feature_watcher_.get();
+  }
   ScannerController* scanner_controller() { return scanner_controller_.get(); }
   ScreenLayoutObserver* screen_layout_observer() {
     return screen_layout_observer_.get();
@@ -1127,6 +1131,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<RgbKeyboardManager> rgb_keyboard_manager_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
+  // Must be after `session_controller_`.
+  std::unique_ptr<SunfishScannerFeatureWatcher>
+      sunfish_scanner_feature_watcher_;
   std::unique_ptr<FeatureDiscoveryDurationReporterImpl>
       feature_discover_reporter_;
   std::unique_ptr<AshColorProvider> ash_color_provider_;

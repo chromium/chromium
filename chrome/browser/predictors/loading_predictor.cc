@@ -97,7 +97,6 @@ void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
     return;
   }
 
-  // TODO(jbroman): Allow a non-default storage partition.
   content::StoragePartition* storage_partition =
       profile->GetDefaultStoragePartition();
 
@@ -427,8 +426,7 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
       preconnect_data.last_preconnect_time_ = now;
       preconnect_manager()->StartPreconnectUrl(
           url, true, network_anonymization_key,
-          kLoadingPredictorPreconnectTrafficAnnotation,
-          /*storage_partition_config=*/nullptr);
+          kLoadingPredictorPreconnectTrafficAnnotation);
     }
     return true;
   }
@@ -438,8 +436,7 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
     preconnect_data.last_preresolve_time_ = now;
     preconnect_manager()->StartPreresolveHost(
         url, network_anonymization_key,
-        kLoadingPredictorPreconnectTrafficAnnotation,
-        /*storage_partition_config=*/nullptr);
+        kLoadingPredictorPreconnectTrafficAnnotation);
     return true;
   }
 
@@ -496,14 +493,12 @@ void LoadingPredictor::PreconnectURLIfAllowed(
     const GURL& url,
     bool allow_credentials,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const content::StoragePartitionConfig* storage_partition_config) {
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_))
     return;
 
   preconnect_manager()->StartPreconnectUrl(
-      url, allow_credentials, network_anonymization_key, traffic_annotation,
-      storage_partition_config);
+      url, allow_credentials, network_anonymization_key, traffic_annotation);
 }
 
 void LoadingPredictor::MaybePrewarmResources(
@@ -534,7 +529,6 @@ void LoadingPredictor::MaybePrewarmResources(
   }
 
   if (!prewarm_http_disk_cache_manager_) {
-    // TODO(jbroman): Allow a non-default storage partition.
     prewarm_http_disk_cache_manager_ =
         std::make_unique<PrewarmHttpDiskCacheManager>(
             profile_->GetDefaultStoragePartition()

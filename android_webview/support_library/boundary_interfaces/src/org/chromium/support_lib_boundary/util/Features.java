@@ -323,6 +323,10 @@ public class Features {
     // WebViewNavigationClient.onNavigationStarted()
     // WebViewNavigationClient.onNavigationRedirected()
     // WebViewNavigationClient.onNavigationCompleted()
+    // WebViewNavigationClient.onPageDeleted()
+    // WebViewNavigationClient.onPageLoadEventFired()
+    // WebViewNavigationClient.onPageDOMContentLoadedEventFired()
+    // WebViewNavigationClient.onFirstContentfulPaint()
     //
     // WebViewNavigation.getUrl()
     // WebViewNavigation.isPageInitiated()

@@ -21,6 +21,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -73,7 +74,7 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
 
         int callCount = onPageFinishedHelper.getCallCount();
         mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
-                frameId, mExampleURL, true, LifecycleState.ACTIVE);
+                Page.createForTesting(), frameId, mExampleURL, true, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mExampleURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals(
@@ -87,9 +88,13 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
 
         callCount = onPageFinishedHelper.getCallCount();
         mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
-                frameId, mUnreachableWebDataUrl, false, LifecycleState.ACTIVE);
+                Page.createForTesting(),
+                frameId,
+                mUnreachableWebDataUrl,
+                false,
+                LifecycleState.ACTIVE);
         mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
-                frameId, mSyncURL, true, LifecycleState.ACTIVE);
+                Page.createForTesting(), frameId, mSyncURL, true, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals(
@@ -139,7 +144,7 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 !isRendererInitiated,
                 PageTransition.TYPED);
         mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
-                frameId, mSyncURL, true, LifecycleState.ACTIVE);
+                Page.createForTesting(), frameId, mSyncURL, true, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         onPageFinishedHelper.waitForCallback(callCount);
@@ -254,7 +259,8 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                /* isSaveableNavigation= */ false);
+                /* isSaveableNavigation= */ false,
+                Page.createForTesting());
         mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(navigation);
     }
 }

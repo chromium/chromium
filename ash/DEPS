@@ -18,6 +18,7 @@ include_rules = [
   "+components/global_media_controls",
   "+components/language/core/browser/pref_names.h",
   "+components/language/core/common/locale_util.h",
+  "+components/lens",
   "+components/live_caption",
   "+components/manta",
   "+components/media_message_center",

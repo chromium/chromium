@@ -439,6 +439,9 @@ bool EditorSwitch::CanBeTriggered() const {
          IsAppAllowed(context_->app_id()) &&
          !net::NetworkChangeNotifier::IsOffline() &&
          !context_->InTabletMode() &&
+         profile_->GetPrefs()->GetInteger(prefs::kHmwManagedSettings) !=
+             base::to_underlying(
+                 chromeos::editor_menu::EditorEnterprisePolicy::kDisallowed) &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
          context_->selected_text_length() <= kTextLengthMaxLimit &&

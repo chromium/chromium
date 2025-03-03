@@ -1158,9 +1158,15 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.elementwise_unary.clip
        /*clamp_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*concat_inputs=*/kFloatsAndInt32,
-       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*concat_inputs=*/{kFloatsAndInt32, kMaxRank},
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.conv.conv
+       /*conv2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
+       /*conv2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.conv.conv_transpose
+       /*conv_transpose2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
+       /*conv_transpose2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cumulative_sum_input=*/
        {kFloatsAndInt32, kMaxRank},
        // TODO(crbug.com/396176047): Make scale and zero_point's rank match with
@@ -1273,6 +1279,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.pool.max_pool
        /*max_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, {3, 5}},
+       /*prelu_input=*/
        {kFloatsAndInt32, kMaxRank},
        /*quantize_linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*quantize_linear_zero_point=*/
@@ -2142,12 +2149,11 @@ GraphBuilderCoreml::AddOperationForConcat(
     uint64_t output_operand_id,
     uint32_t axis,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(
-      std::ranges::all_of(input_operand_ids, [&](uint64_t input_operand_id) {
-        return context_properties_.data_type_limits.concat_inputs.Has(
-            MILDataTypeToOperandType(
-                GetOperandInfo(input_operand_id).mil_data_type));
-      }));
+  CHECK(std::ranges::all_of(input_operand_ids, [&](uint64_t input_operand_id) {
+    return context_properties_.data_type_limits.concat_inputs.data_types.Has(
+        MILDataTypeToOperandType(
+            GetOperandInfo(input_operand_id).mil_data_type));
+  }));
 
   static constexpr char kParamValues[] = "values";
   static constexpr char kParamInterleave[] = "interleave";
@@ -2181,8 +2187,6 @@ GraphBuilderCoreml::AddOperationForConcat(
 GraphBuilderCoreml::AddOperationForConv2d(
     const mojom::Conv2d& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
-
   static constexpr char kParamStrides[] = "strides";
   static constexpr char kParamPadType[] = "pad_type";
   static constexpr char kParamPadTypeValue[] = "custom";
@@ -2191,15 +2195,19 @@ GraphBuilderCoreml::AddOperationForConv2d(
   static constexpr char kParamOutputShape[] = "output_shape";
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  const mojom::Operand& input_operand = GetOperand(operation.input_operand_id);
+  const mojom::Operand& filter_operand =
+      GetOperand(operation.filter_operand_id);
   switch (operation.kind) {
     case mojom::Conv2d::Kind::kDirect:
-      CHECK(context_properties_.data_type_limits.conv2d_input.Has(
-          MILDataTypeToOperandType(input_operand.mil_data_type)));
+      CHECK(context_properties_.data_type_limits.conv2d_input.SupportsAll(
+          {input_operand.descriptor, filter_operand.descriptor}));
       op->set_type(kOpConv2dTypeName);
       break;
     case mojom::Conv2d::Kind::kTransposed:
-      CHECK(context_properties_.data_type_limits.conv_transpose2d_input.Has(
-          MILDataTypeToOperandType(input_operand.mil_data_type)));
+      CHECK(context_properties_.data_type_limits.conv_transpose2d_input
+                .SupportsAll(
+                    {input_operand.descriptor, filter_operand.descriptor}));
       op->set_type(kOpConvTranspose2dTypeName);
       break;
   }
@@ -2230,6 +2238,16 @@ GraphBuilderCoreml::AddOperationForConv2d(
        {kParamGroups, CreateScalarImmediateValue(
                           base::checked_cast<int32_t>(operation.groups))}});
   if (operation.bias_operand_id) {
+    const mojom::Operand& bias_operand =
+        GetOperand(operation.bias_operand_id.value());
+    if (operation.kind == mojom::Conv2d::Kind::kDirect) {
+      CHECK(context_properties_.data_type_limits.conv2d_bias.Supports(
+          bias_operand.descriptor));
+    } else {
+      CHECK(context_properties_.data_type_limits.conv_transpose2d_bias.Supports(
+          bias_operand.descriptor));
+    }
+
     // TODO(crbug.com/338529226): This param must be a constant tensor.
     RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamBias,
                                         operation.bias_operand_id.value()));

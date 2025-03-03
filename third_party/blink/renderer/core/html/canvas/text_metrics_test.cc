@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
@@ -227,7 +228,10 @@ TEST_P(CaretPositionForOffsetBidiTest, CaretPositionForOffsetsBidi) {
   TextMetrics* text_metrics = MakeGarbageCollected<TextMetrics>(
       GetFont(test_data.font), test_data.direction,
       V8CanvasTextBaseline::Enum::kAlphabetic, V8CanvasTextAlign::Enum::kLeft,
-      text_string);
+      text_string,
+      RuntimeEnabledFeatures::CanvasTextNgEnabled()
+          ? MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
+          : nullptr);
 
   for (wtf_size_t i = 0; i < test_data.points.size(); ++i) {
     EXPECT_EQ(test_data.positions[i],

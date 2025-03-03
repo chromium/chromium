@@ -259,6 +259,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.SERVICE_WORKER_SET_ASYNC_SHOULD_INTERCEPT_REQUEST,
         ApiCall.WEB_RESPONSE_CALLBACK_DO_NOT_INTERCEPT,
         ApiCall.WEB_RESPONSE_CALLBACK_INTERCEPT,
+        ApiCall.NAVIGATION_GET_PAGE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -405,9 +406,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int SERVICE_WORKER_SET_ASYNC_SHOULD_INTERCEPT_REQUEST = 137;
         int WEB_RESPONSE_CALLBACK_DO_NOT_INTERCEPT = 138;
         int WEB_RESPONSE_CALLBACK_INTERCEPT = 139;
+        int NAVIGATION_GET_PAGE = 140;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 140;
+        int COUNT = 141;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

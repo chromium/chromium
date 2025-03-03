@@ -15,7 +15,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition_config.h"
 #include "net/base/url_util.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/native_theme/native_theme.h"
@@ -81,16 +80,6 @@ bool UseDarkMode(ThemeService* theme_service) {
   return color_scheme == ThemeService::BrowserColorScheme::kSystem
              ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
              : color_scheme == ThemeService::BrowserColorScheme::kDark;
-}
-
-content::StoragePartitionConfig GetFreStoragePartitionConfig(
-    content::BrowserContext* browser_context) {
-  // This storage partition must match the partition attribute in
-  // chrome/browser/resources/glic_fre/fre.html: "glicfrepart".
-  return content::StoragePartitionConfig::Create(
-      browser_context, "glic-fre",
-      /*partition_name=*/"glicfrepart",
-      /*in_memory=*/true);
 }
 
 }  // namespace glic

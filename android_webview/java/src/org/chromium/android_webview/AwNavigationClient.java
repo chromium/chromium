@@ -19,5 +19,11 @@ public interface AwNavigationClient {
 
     public abstract void onNavigationCompleted(AwNavigation navigation);
 
-    // TODO(crbug.com/394479273): Add Page & loading-related functions.
+    public abstract void onPageDeleted(AwPage page);
+
+    public abstract void onPageLoadEventFired(AwPage page);
+
+    public abstract void onPageDOMContentLoadedEventFired(AwPage page);
+
+    public abstract void onFirstContentfulPaint(AwPage page);
 }

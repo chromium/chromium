@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
@@ -86,9 +88,10 @@ TextMetrics::TextMetrics(const Font* font,
                          const TextDirection& direction,
                          const V8CanvasTextBaseline::Enum baseline,
                          const V8CanvasTextAlign::Enum align,
-                         const String& text)
+                         const String& text,
+                         PlainTextPainter* text_painter)
     : TextMetrics() {
-  Update(font, direction, baseline, align, text);
+  Update(font, direction, baseline, align, text, text_painter);
 }
 
 namespace {
@@ -108,7 +111,8 @@ void TextMetrics::Update(const Font* font,
                          const TextDirection& direction,
                          const V8CanvasTextBaseline::Enum baseline,
                          const V8CanvasTextAlign::Enum align,
-                         const String& text) {
+                         const String& text,
+                         PlainTextPainter* text_painter) {
   const SimpleFontData* font_data = font->PrimaryFont();
   if (!font_data)
     return;
@@ -117,7 +121,7 @@ void TextMetrics::Update(const Font* font,
   font_ = font;
   direction_ = direction;
 
-  auto [xpos, glyph_bounds] = MeasureRuns();
+  auto [xpos, glyph_bounds] = MeasureRuns(text_painter);
   double real_width = xpos;
   width_ = real_width;
 
@@ -180,8 +184,41 @@ void TextMetrics::Update(const Font* font,
   }
 }
 
-std::pair<float, gfx::RectF> TextMetrics::MeasureRuns() {
+std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
+    PlainTextPainter* text_painter) {
   runs_with_offset_.clear();
+
+  if (text_painter) {
+    DCHECK(RuntimeEnabledFeatures::CanvasTextNgEnabled());
+    shaping_needed_ = false;
+    const PlainTextNode& node = text_painter->SegmentAndShape(
+        TextRun(text_, direction_, /* directional_override */ false,
+                /* normalize_space */ true),
+        *font_);
+    gfx::RectF glyph_bounds;
+    float xpos = 0;
+    runs_with_offset_.reserve(node.ItemList().size());
+    for (const auto& item : node.ItemList()) {
+      // Save the run for computing additional metrics.
+      const ShapeResult* shape_result = item.GetShapeResult();
+
+      runs_with_offset_.push_back(
+          RunWithOffset{.shape_result_ = shape_result,
+                        .text_ = item.Text(),
+                        .direction_ = item.Direction(),
+                        .character_offset_ = item.StartOffset(),
+                        .num_characters_ = item.Length(),
+                        .x_position_ = xpos});
+
+      // Accumulate the position and the glyph bounding box.
+      gfx::RectF run_glyph_bounds = item.InkBounds();
+      run_glyph_bounds.Offset(xpos, 0);
+      glyph_bounds.Union(run_glyph_bounds);
+      xpos += shape_result->Width();
+    }
+    return {xpos, glyph_bounds};
+  }
+  DCHECK(!RuntimeEnabledFeatures::CanvasTextNgEnabled());
 
   if (!RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
     // If not enabled, Font::Width is called, which causes a shaping via

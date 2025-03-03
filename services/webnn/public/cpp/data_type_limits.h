@@ -22,9 +22,11 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors batch_normalization_mean,
                  SupportedTensors cast_input,
                  SupportedTensors clamp_input,
-                 SupportedDataTypes concat_inputs,
-                 SupportedDataTypes conv2d_input,
-                 SupportedDataTypes conv_transpose2d_input,
+                 SupportedTensors concat_inputs,
+                 SupportedTensors conv2d_input,
+                 SupportedTensors conv2d_bias,
+                 SupportedTensors conv_transpose2d_input,
+                 SupportedTensors conv_transpose2d_bias,
                  SupportedTensors cumulative_sum_input,
                  SupportedTensors dequantize_linear_input,
                  SupportedTensors dequantize_linear_scale,
@@ -140,9 +142,11 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors batch_normalization_mean;
   SupportedTensors cast_input;
   SupportedTensors clamp_input;
-  SupportedDataTypes concat_inputs;
-  SupportedDataTypes conv2d_input;
-  SupportedDataTypes conv_transpose2d_input;
+  SupportedTensors concat_inputs;
+  SupportedTensors conv2d_input;
+  SupportedTensors conv2d_bias;
+  SupportedTensors conv_transpose2d_input;
+  SupportedTensors conv_transpose2d_bias;
   SupportedTensors cumulative_sum_input;
   SupportedTensors dequantize_linear_input;
   SupportedTensors dequantize_linear_scale;
@@ -253,7 +257,9 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.clamp_input == rhs.clamp_input &&
          lhs.concat_inputs == rhs.concat_inputs &&
          lhs.conv2d_input == rhs.conv2d_input &&
+         lhs.conv2d_bias == rhs.conv2d_bias &&
          lhs.conv_transpose2d_input == rhs.conv_transpose2d_input &&
+         lhs.conv_transpose2d_bias == rhs.conv_transpose2d_bias &&
          lhs.cumulative_sum_input == rhs.cumulative_sum_input &&
          lhs.dequantize_linear_input == rhs.dequantize_linear_input &&
          lhs.dequantize_linear_scale == rhs.dequantize_linear_scale &&

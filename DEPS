@@ -253,7 +253,7 @@ vars = {
   'screen_ai_windows_386': 'version:127.19',
 
   # siso CIPD package version.
-  'siso_version': 'git_revision:b146378738dc716f49267d22ed7b7953cdbccecb',
+  'siso_version': 'git_revision:3d58d66552de848b17cd585cfa6d5018124892ea',
 
   # download libaom test data
   'download_libaom_testdata': False,
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'e628095abe23491ec8eaf00f97ca60594cbfdce0',
+    'ef89182820ebb621b1dd196458f86e42f4324d7f',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -4364,7 +4364,7 @@ deps = {
     'packages' : [
       {
         'package': 'chromeos_internal/inputs/orca',
-        'version': 'qajSgJbVk3YxHIMjv7jgzkG-95cz9xCTj7Lv38U6sAAC'
+        'version': 'ffYwkRTIRxSe05AAE1WAEMGOMuyao83SRk8Sh4TQLikC'
       }
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4552,7 +4552,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '6500f777bfc9d464f8ccfa288b933fb4671fd574',
+        '59fe00eae13b926d575c8405d3c14d4f1683abf8',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

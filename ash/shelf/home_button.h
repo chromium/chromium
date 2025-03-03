@@ -50,6 +50,9 @@ class Shell;
 //
 // If Assistant is enabled, the button is filled in; long-pressing it will
 // launch Assistant.
+//
+// If Sunfish/Scanner is enabled, long-pressing the button will start a
+// Sunfish-behaviour capture mode session instead.
 class ASH_EXPORT HomeButton : public ShelfControlButton,
                               public ShelfButtonDelegate,
                               public views::ViewTargeterDelegate,

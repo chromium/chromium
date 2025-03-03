@@ -262,8 +262,15 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
 // milestones for this test since the new navigation might take a while to
 // arrive on the browser side, and the oldnavigation might have advanced if
 // it's not actually paused.
+// TODO(crbug.com/400273873): flaky on Linux with bfcache disabled builds. This
+// will be fixed in https://crrev.com/c/6268599.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CancelledByNewNavigation DISABLED_CancelledByNewNavigation
+#else
+#define MAYBE_CancelledByNewNavigation CancelledByNewNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
-                       CancelledByNewNavigation) {
+                       MAYBE_CancelledByNewNavigation) {
   for (NavigationMilestone milestone : all_throttleable_milestones()) {
     for (AbandonReason reason :
          {AbandonReason::kNewReloadNavigation,

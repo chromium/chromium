@@ -8,9 +8,11 @@ import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -23,7 +25,8 @@ import java.util.WeakHashMap;
 
 /** Routes notifications from WebContents to AwContentsClient and other listeners. */
 @Lifetime.WebView
-public class AwWebContentsObserver extends WebContentsObserver {
+public class AwWebContentsObserver extends WebContentsObserver
+        implements Page.PageDeletionListener {
     // TODO(tobiasjs) similarly to WebContentsObserver.mWebContents, mAwContents
     // needs to be a WeakReference, which suggests that there exists a strong
     // reference to an AwWebContentsObserver instance. This is not intentional,
@@ -53,6 +56,8 @@ public class AwWebContentsObserver extends WebContentsObserver {
     //   but there's no need for them to do that here: strongly referencing the object doesn't
     //   leak the WebView or anything.
     WeakHashMap<NavigationHandle, WeakReference<AwNavigation>> mNavigationMap;
+    // Similar reason as above, but between Page and AwPage.
+    WeakHashMap<Page, WeakReference<AwPage>> mPageMap;
 
     // Whether this webcontents has ever committed any navigation.
     private boolean mCommittedNavigation;
@@ -86,13 +91,36 @@ public class AwWebContentsObserver extends WebContentsObserver {
                 return awNavigation;
             }
         }
-        AwNavigation awNavigation = new AwNavigation(navigation);
+        AwNavigation awNavigation =
+                new AwNavigation(navigation, getAwPageFor(navigation.getCommittedPage()));
         mNavigationMap.put(navigation, new WeakReference<>(awNavigation));
         return awNavigation;
     }
 
+    private @Nullable AwPage getAwPageFor(@Nullable Page page) {
+        if (page == null) {
+            return null;
+        }
+        WeakReference<AwPage> awPageRef = mPageMap.get(page);
+        if (awPageRef != null) {
+            AwPage awPage = awPageRef.get();
+            if (awPage != null) {
+                return awPage;
+            }
+        }
+        AwPage awPage = new AwPage(page);
+        // We only keep track of pages that have been the primary page (either the current primary
+        // page, or a previously primary but now bfcached / pending deletion page).
+        assert !awPage.isPrerendering();
+        // Make sure we always track deletion of a non-prerendering page.
+        page.setPageDeletionListener(this);
+        mPageMap.put(page, new WeakReference<>(awPage));
+        return awPage;
+    }
+
     @Override
     public void didFinishLoadInPrimaryMainFrame(
+            Page page,
             GlobalRenderFrameHostId rfhId,
             GURL url,
             boolean isKnownValid,
@@ -101,6 +129,14 @@ public class AwWebContentsObserver extends WebContentsObserver {
         String validatedUrl = isKnownValid ? url.getSpec() : url.getPossiblyInvalidSpec();
         if (getClientIfNeedToFireCallback(validatedUrl) != null) {
             mLastDidFinishLoadUrl = validatedUrl;
+        }
+
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient client = awContents.getNavigationClient();
+            if (client != null) {
+                client.onPageLoadEventFired(getAwPageFor(page));
+            }
         }
     }
 
@@ -254,6 +290,26 @@ public class AwWebContentsObserver extends WebContentsObserver {
         if (client != null && navigation.isPrimaryMainFrameFragmentNavigation()) {
             // Note fragment navigations do not have a matching onPageStarted.
             client.getCallbackHelper().postOnPageFinished(url);
+        }
+    }
+
+    @Override
+    public void primaryPageChanged(Page page) {
+        // The page has become the primary page. If it was a prerendered page before, make sure we
+        // no longer consider it as one.
+        page.setIsPrerendering(false);
+        // Make sure we track the deletion of this new page.
+        page.setPageDeletionListener(this);
+    }
+
+    @Override
+    public void onWillDeletePage(Page page) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient navClient = awContents.getNavigationClient();
+            if (navClient != null && !page.isPrerendering()) {
+                navClient.onPageDeleted(getAwPageFor(page));
+            }
         }
     }
 

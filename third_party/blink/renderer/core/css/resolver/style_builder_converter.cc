@@ -2840,6 +2840,10 @@ TextEmphasisPosition StyleBuilderConverter::ConvertTextTextEmphasisPosition(
   const auto& list = To<CSSValueList>(value);
   CSSValueID first = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
   if (list.length() < 2) {
+    if (RuntimeEnabledFeatures::TextEmphasisPositionAutoEnabled() &&
+        first == CSSValueID::kAuto) {
+      return TextEmphasisPosition::kAuto;
+    }
     if (first == CSSValueID::kOver) {
       return TextEmphasisPosition::kOverRight;
     }

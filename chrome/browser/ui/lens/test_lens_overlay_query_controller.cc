@@ -151,7 +151,6 @@ void TestLensOverlayQueryController::ResetTestingState() {
   last_queried_text_.clear();
   last_queried_region_bytes_ = std::nullopt;
   last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
-  last_sent_page_content_payload_ = lens::Payload();
   last_sent_partial_content_ = lens::LensOverlayDocument();
   last_sent_underlying_content_type_ = lens::MimeType::kUnknown;
   last_sent_page_content_data_.clear();
@@ -198,8 +197,6 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     // Page content upload request.
     num_page_content_update_requests_sent_++;
     sent_page_content_objects_request_.CopyFrom(request->objects_request());
-    last_sent_page_content_payload_.CopyFrom(
-        request->objects_request().payload());
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.
     fake_server_response_string = "";

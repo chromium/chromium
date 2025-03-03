@@ -1551,6 +1551,7 @@ void HTMLCanvasElement::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
+  CanvasRenderingContextHost::Trace(visitor);
   HTMLElement::Trace(visitor);
 }
 

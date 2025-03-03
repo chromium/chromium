@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/optional_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
@@ -55,14 +54,12 @@ PreresolveJob::PreresolveJob(
     bool allow_credentials,
     net::NetworkAnonymizationKey network_anonymization_key,
     net::NetworkTrafficAnnotationTag traffic_annotation_tag,
-    std::optional<content::StoragePartitionConfig> storage_partition_config,
     PreresolveInfo* info)
     : url(url),
       num_sockets(num_sockets),
       allow_credentials(allow_credentials),
       network_anonymization_key(std::move(network_anonymization_key)),
       traffic_annotation_tag(std::move(traffic_annotation_tag)),
-      storage_partition_config(std::move(storage_partition_config)),
       info(info),
       creation_time(base::TimeTicks::Now()) {
   DCHECK_GE(num_sockets, 0);
@@ -76,7 +73,6 @@ PreresolveJob::PreresolveJob(PreconnectRequest preconnect_request,
                     preconnect_request.allow_credentials,
                     std::move(preconnect_request.network_anonymization_key),
                     kLoadingPredictorPreconnectTrafficAnnotation,
-                    /*storage_partition_config=*/std::nullopt,
                     info) {}
 
 PreresolveJob::PreresolveJob(PreresolveJob&& other) = default;
@@ -132,8 +128,7 @@ void PreconnectManager::Start(const GURL& url,
 void PreconnectManager::StartPreresolveHost(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    net::NetworkTrafficAnnotationTag traffic_annotation,
-    const content::StoragePartitionConfig* storage_partition_config) {
+    net::NetworkTrafficAnnotationTag traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsEnabled())
     return;
@@ -141,8 +136,7 @@ void PreconnectManager::StartPreresolveHost(
     return;
   PreresolveJobId job_id = preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
       url.DeprecatedGetOriginAsURL(), 0, kAllowCredentialsOnPreconnectByDefault,
-      network_anonymization_key, traffic_annotation,
-      base::OptionalFromPtr(storage_partition_config), nullptr));
+      network_anonymization_key, traffic_annotation, nullptr));
   queued_jobs_.push_front(job_id);
 
   TryToLaunchPreresolveJobs();
@@ -151,8 +145,7 @@ void PreconnectManager::StartPreresolveHost(
 void PreconnectManager::StartPreresolveHosts(
     const std::vector<GURL>& urls,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    net::NetworkTrafficAnnotationTag traffic_annotation,
-    const content::StoragePartitionConfig* storage_partition_config) {
+    net::NetworkTrafficAnnotationTag traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsEnabled())
     return;
@@ -165,8 +158,7 @@ void PreconnectManager::StartPreresolveHosts(
         preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
             url.DeprecatedGetOriginAsURL(), 0,
             kAllowCredentialsOnPreconnectByDefault, network_anonymization_key,
-            traffic_annotation, base::OptionalFromPtr(storage_partition_config),
-            nullptr));
+            traffic_annotation, nullptr));
     queued_jobs_.push_front(job_id);
   }
 
@@ -177,8 +169,7 @@ void PreconnectManager::StartPreconnectUrl(
     const GURL& url,
     bool allow_credentials,
     net::NetworkAnonymizationKey network_anonymization_key,
-    net::NetworkTrafficAnnotationTag traffic_annotation,
-    const content::StoragePartitionConfig* storage_partition_config) {
+    net::NetworkTrafficAnnotationTag traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsEnabled())
     return;
@@ -186,8 +177,7 @@ void PreconnectManager::StartPreconnectUrl(
     return;
   PreresolveJobId job_id = preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
       url.DeprecatedGetOriginAsURL(), 1, allow_credentials,
-      std::move(network_anonymization_key), traffic_annotation,
-      base::OptionalFromPtr(storage_partition_config), nullptr));
+      std::move(network_anonymization_key), traffic_annotation, nullptr));
   queued_jobs_.push_front(job_id);
 
   TryToLaunchPreresolveJobs();
@@ -208,14 +198,13 @@ void PreconnectManager::PreconnectUrl(
     int num_sockets,
     bool allow_credentials,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const content::StoragePartitionConfig* storage_partition_config) const {
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) const {
   DCHECK(url.DeprecatedGetOriginAsURL() == url);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
   if (observer_)
     observer_->OnPreconnectUrl(url, num_sockets, allow_credentials);
 
-  auto* network_context = GetNetworkContext(storage_partition_config);
+  auto* network_context = GetNetworkContext();
 
   if (num_sockets > 1 &&
       base::FeatureList::IsEnabled(
@@ -236,12 +225,11 @@ void PreconnectManager::PreconnectUrl(
 std::unique_ptr<ResolveHostClientImpl> PreconnectManager::PreresolveUrl(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const content::StoragePartitionConfig* storage_partition_config,
     ResolveHostCallback callback) const {
   DCHECK(url.DeprecatedGetOriginAsURL() == url);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
 
-  auto* network_context = GetNetworkContext(storage_partition_config);
+  auto* network_context = GetNetworkContext();
 
   return std::make_unique<ResolveHostClientImpl>(
       url, network_anonymization_key, std::move(callback), network_context);
@@ -250,12 +238,11 @@ std::unique_ptr<ResolveHostClientImpl> PreconnectManager::PreresolveUrl(
 std::unique_ptr<ProxyLookupClientImpl> PreconnectManager::LookupProxyForUrl(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const content::StoragePartitionConfig* storage_partition_config,
     ProxyLookupCallback callback) const {
   DCHECK(url.DeprecatedGetOriginAsURL() == url);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
 
-  auto* network_context = GetNetworkContext(storage_partition_config);
+  auto* network_context = GetNetworkContext();
 
   return std::make_unique<ProxyLookupClientImpl>(
       url, network_anonymization_key, std::move(callback), network_context);
@@ -289,7 +276,6 @@ void PreconnectManager::TryToLaunchPreresolveJobs() {
       // important if the unproxied DNS may contain incorrect entries.
       job->proxy_lookup_client = LookupProxyForUrl(
           job->url, job->network_anonymization_key,
-          base::OptionalToPtr(job->storage_partition_config),
           base::BindOnce(&PreconnectManager::OnProxyLookupFinished,
                          weak_factory_.GetWeakPtr(), job_id));
       if (info) {
@@ -343,7 +329,6 @@ void PreconnectManager::OnProxyLookupFinished(PreresolveJobId job_id,
   } else {
     job->resolve_host_client =
         PreresolveUrl(job->url, job->network_anonymization_key,
-                      base::OptionalToPtr(job->storage_partition_config),
                       base::BindOnce(&PreconnectManager::OnPreresolveFinished,
                                      weak_factory_.GetWeakPtr(), job_id));
   }
@@ -358,8 +343,7 @@ void PreconnectManager::FinishPreresolveJob(PreresolveJobId job_id,
   bool need_preconnect = success && job->need_preconnect();
   if (need_preconnect) {
     PreconnectUrl(job->url, job->num_sockets, job->allow_credentials,
-                  job->network_anonymization_key, job->traffic_annotation_tag,
-                  base::OptionalToPtr(job->storage_partition_config));
+                  job->network_anonymization_key, job->traffic_annotation_tag);
   }
 
   PreresolveInfo* info = job->info;
@@ -389,19 +373,12 @@ void PreconnectManager::AllPreresolvesForUrlFinished(PreresolveInfo* info) {
   preresolve_info_.erase(it);
 }
 
-network::mojom::NetworkContext* PreconnectManager::GetNetworkContext(
-    const content::StoragePartitionConfig* storage_partition_config) const {
+network::mojom::NetworkContext* PreconnectManager::GetNetworkContext() const {
   if (network_context_)
     return network_context_;
 
   auto* network_context =
-      browser_context_
-          ->GetStoragePartition(
-              storage_partition_config
-                  ? *storage_partition_config
-                  : content::StoragePartitionConfig::CreateDefault(
-                        browser_context_))
-          ->GetNetworkContext();
+      browser_context_->GetDefaultStoragePartition()->GetNetworkContext();
   DCHECK(network_context);
   return network_context;
 }

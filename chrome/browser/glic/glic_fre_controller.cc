@@ -5,20 +5,16 @@
 #include "chrome/browser/glic/glic_fre_controller.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/fre_util.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/predictors/loading_predictor.h"
-#include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -170,78 +166,6 @@ content::WebContents* GlicFreController::GetWebContents() {
     return nullptr;
   }
   return fre_view_->web_contents();
-}
-
-namespace {
-
-// TODO(jbroman): This should be updated with more specifics once more
-// information about Glic is available, with updated strings and policy details.
-constexpr net::NetworkTrafficAnnotationTag kGlicFrePreconnectTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("glic_fre_preconnect",
-                                        R"(
-    semantics {
-      sender: "Glic FRE Preconnect"
-      description:
-        "This request is issued when the Glic first-run experience is "
-        "predicted to be issued soon, to establish a connection to the "
-        "server."
-      trigger:
-        "Hovering or focusing the Glic button."
-      data:
-        "Minimal data is exchanged, though this may share network state "
-        "with credentialed requests."
-      destination: GOOGLE_OWNED_SERVICE
-      last_reviewed: "2025-02-26"
-    }
-    policy {
-      cookies_allowed: YES
-      cookies_store: "user"
-      setting:
-        "There are a number of ways to prevent this request:"
-        "A) Disable predictive operations under Settings > Performance "
-        "   > Preload pages for faster browsing and searching,"
-        "B) Disable Glic altogether"
-      chrome_policy {
-        URLBlocklist {
-          URLBlocklist: { entries: '*' }
-        }
-      }
-      chrome_policy {
-        URLAllowlist {
-          URLAllowlist { }
-        }
-      }
-    }
-    comments:
-      "This feature can be safely disabled, but enabling it may result in "
-      "faster load of the Glic first-run experience. Using either "
-      "URLBlocklist or URLAllowlist policies (or a combination of both) "
-      "limits the scope of these requests."
-)");
-
-BASE_FEATURE(kGlicFrePreconnect,
-             "GlicFrePreconnect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
-void GlicFreController::MaybePreconnect() {
-  if (!ShouldShowFreDialog() ||
-      !base::FeatureList::IsEnabled(kGlicFrePreconnect)) {
-    return;
-  }
-  GURL fre_url = glic::GetFreURL(profile_);
-  // We'll need this to be in the "same-site" socket pool for the FRE's site,
-  // since that's the one that will be used for a real page load.
-  net::NetworkAnonymizationKey anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(fre_url));
-  predictors::LoadingPredictor* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(profile_);
-  content::StoragePartitionConfig storage_partition_config =
-      GetFreStoragePartitionConfig(profile_);
-  loading_predictor->PreconnectURLIfAllowed(
-      glic::GetFreURL(profile_), /*allow_credentials=*/true, anonymization_key,
-      kGlicFrePreconnectTrafficAnnotation, &storage_partition_config);
 }
 
 // static

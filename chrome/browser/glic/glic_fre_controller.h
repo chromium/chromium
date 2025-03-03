@@ -68,13 +68,7 @@ class GlicFreController {
   // Returns the WebContents from the dialog view.
   content::WebContents* GetWebContents();
 
-  // Preconnect to the server that hosts the FRE, so that it loads faster.
-  // Does nothing if the FRE should not be shown.
-  void MaybePreconnect();
-
   bool IsShowingDialogForTesting() const;
-
-  AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 
   base::WeakPtr<GlicFreController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

@@ -3256,6 +3256,8 @@ source_set("browser") {
       "android/nfc_host.h",
       "android/overscroll_controller_android.cc",
       "android/overscroll_controller_android.h",
+      "android/page_proxy.cc",
+      "android/page_proxy.h",
       "android/render_widget_host_connector.cc",
       "android/render_widget_host_connector.h",
       "android/scoped_surface_request_manager.cc",

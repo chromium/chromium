@@ -17,7 +17,11 @@ LobsterTextInputContext::LobsterTextInputContext(
       caret_bounds(caret_bounds),
       support_image_insertion(can_insert_image) {}
 
-LobsterTextInputContext::LobsterTextInputContext() = default;
+LobsterTextInputContext::LobsterTextInputContext()
+    : LobsterTextInputContext(
+          /*text_input_type=*/ui::TextInputType::TEXT_INPUT_TYPE_NONE,
+          /*caret_bounds=*/gfx::Rect(),
+          /*can_insert_image=*/false) {}
 
 LobsterTextInputContext::~LobsterTextInputContext() = default;
 

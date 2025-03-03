@@ -19,6 +19,7 @@ import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -117,6 +118,18 @@ class WebContentsObserverProxy extends WebContentsObserver {
             observersIterator.next().renderFrameDeleted(id);
         }
         finishObserverCall();
+    }
+
+    @Override
+    @CalledByNative
+    public void primaryPageChanged(Page page) {
+        // Don't call handleObserverCall() and finishObserverCall() to explicitly allow a
+        // WebContents to be destroyed while handling an this observer call. See
+        // https://chromium-review.googlesource.com/c/chromium/src/+/2343269 for details
+        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
+        for (; observersIterator.hasNext(); ) {
+            observersIterator.next().primaryPageChanged(page);
+        }
     }
 
     @Override
@@ -271,12 +284,14 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @CalledByNative
     private void didFinishLoadInPrimaryMainFrame(
+            Page page,
             int renderProcessId,
             int renderFrameId,
             GURL url,
             boolean isKnownValid,
             @LifecycleState int frameLifecycleState) {
         didFinishLoadInPrimaryMainFrame(
+                page,
                 new GlobalRenderFrameHostId(renderProcessId, renderFrameId),
                 url,
                 isKnownValid,
@@ -285,6 +300,7 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     public void didFinishLoadInPrimaryMainFrame(
+            Page page,
             GlobalRenderFrameHostId rfhId,
             GURL url,
             boolean isKnownValid,
@@ -294,7 +310,8 @@ class WebContentsObserverProxy extends WebContentsObserver {
         for (; observersIterator.hasNext(); ) {
             observersIterator
                     .next()
-                    .didFinishLoadInPrimaryMainFrame(rfhId, url, isKnownValid, rfhLifecycleState);
+                    .didFinishLoadInPrimaryMainFrame(
+                            page, rfhId, url, isKnownValid, rfhLifecycleState);
         }
         finishObserverCall();
     }

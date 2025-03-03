@@ -4,17 +4,24 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /** Represents a navigation and is exposed to embedders. See also AwNavigationClient */
 public class AwNavigation extends AwSupportLibIsomorphic {
     private final NavigationHandle mNavigationHandle;
+    // The Page that the navigation commits into. Set to null if the navigation doesn't commit or
+    // result in a Page (e.g. 204/download)
+    private final @Nullable AwPage mPage;
 
-    public AwNavigation(NavigationHandle navigationHandle) {
+    public AwNavigation(NavigationHandle navigationHandle, @Nullable AwPage page) {
         mNavigationHandle = navigationHandle;
+        mPage = page;
     }
 
-    // TODO(crbug.com/394479273): Add Page-related functions.
+    public @Nullable AwPage getPage() {
+        return mPage;
+    }
 
     public String getUrl() {
         return mNavigationHandle.getUrl().getValidSpecOrEmpty();

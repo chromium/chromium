@@ -134,6 +134,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
@@ -3626,15 +3627,28 @@ void BaseRenderingContext2D::DrawTextInternal(
   bool bidi_override =
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
+  PlainTextPainter* text_painter =
+      RuntimeEnabledFeatures::CanvasTextNgEnabled()
+          ? &GetCanvasRenderingContextHost()->GetPlainTextPainter()
+          : nullptr;
   TextRun text_run(text, direction, bidi_override, /* normalize_space */ true);
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
   gfx::RectF bounds;
   double font_width = 0;
-  if (run_start == 0 && run_end == text.length()) [[likely]] {
-    font_width = font->Width(text_run, &bounds);
+  if (text_painter) {
+    if (run_start == 0 && run_end == text.length()) [[likely]] {
+      font_width = text_painter->ComputeInlineSize(text_run, *font, &bounds);
+    } else {
+      font_width = text_painter->ComputeSubInlineSize(text_run, run_start,
+                                                      run_end, *font, &bounds);
+    }
   } else {
-    font_width = font->SubRunWidth(text_run, run_start, run_end, &bounds);
+    if (run_start == 0 && run_end == text.length()) [[likely]] {
+      font_width = font->Width(text_run, &bounds);
+    } else {
+      font_width = font->SubRunWidth(text_run, run_start, run_end, &bounds);
+    }
   }
 
   bool use_max_width = (max_width && *max_width < font_width);
@@ -3679,14 +3693,11 @@ void BaseRenderingContext2D::DrawTextInternal(
 
   Draw<OverdrawOp::kNone>(
       [font, text = std::move(text), direction, bidi_override, location,
-       run_start, run_end,
-       canvas](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
+       run_start, run_end, canvas, text_painter](
+          cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
         TextRun text_run(text, direction, bidi_override,
                          /* normalize_space */ true);
-        TextRunPaintInfo text_run_paint_info(text_run);
-        text_run_paint_info.from = run_start;
-        text_run_paint_info.to = run_end;
         // Font::DrawType::kGlyphsAndClusters is required for printing to PDF,
         // otherwise the character to glyph mapping will not be reversible,
         // which prevents text data from being extracted from PDF files or
@@ -3699,8 +3710,18 @@ void BaseRenderingContext2D::DrawTextInternal(
         Font::DrawType draw_type = (canvas && canvas->IsPrinting())
                                        ? Font::DrawType::kGlyphsAndClusters
                                        : Font::DrawType::kGlyphsOnly;
-        font->DrawBidiText(c, text_run_paint_info, location,
-                           Font::kUseFallbackIfFontNotReady, *flags, draw_type);
+        if (text_painter) {
+          text_painter->DrawWithBidiReorder(text_run, run_start, run_end, *font,
+                                            Font::kUseFallbackIfFontNotReady,
+                                            *c, location, *flags, draw_type);
+        } else {
+          TextRunPaintInfo text_run_paint_info(text_run);
+          text_run_paint_info.from = run_start;
+          text_run_paint_info.to = run_end;
+          font->DrawBidiText(c, text_run_paint_info, location,
+                             Font::kUseFallbackIfFontNotReady, *flags,
+                             draw_type);
+        }
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
@@ -3742,9 +3763,12 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
   TextDirection direction = ToTextDirection(
       state.GetDirection(), GetCanvasRenderingContextHost(), computed_style);
 
-  return MakeGarbageCollected<TextMetrics>(font, direction,
-                                           state.GetTextBaseline().AsEnum(),
-                                           state.GetTextAlign().AsEnum(), text);
+  return MakeGarbageCollected<TextMetrics>(
+      font, direction, state.GetTextBaseline().AsEnum(),
+      state.GetTextAlign().AsEnum(), text,
+      RuntimeEnabledFeatures::CanvasTextNgEnabled()
+          ? &GetCanvasRenderingContextHost()->GetPlainTextPainter()
+          : nullptr);
 }
 
 void BaseRenderingContext2D::SnapshotStateForFilter() {

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] A remote offer with duplicate codecs generates sensible RTX references in answer
-  assert_true: Found referenced codec expected true got false
-Harness: the test ran to completion.
-

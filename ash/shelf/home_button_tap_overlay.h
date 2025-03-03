@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SHELF_ASSISTANT_OVERLAY_H_
-#define ASH_SHELF_ASSISTANT_OVERLAY_H_
+#ifndef ASH_SHELF_HOME_BUTTON_TAP_OVERLAY_H_
+#define ASH_SHELF_HOME_BUTTON_TAP_OVERLAY_H_
 
 #include <memory>
 
@@ -17,17 +17,20 @@
 
 namespace ash {
 
-class ASH_EXPORT AssistantOverlay : public views::View,
-                                    public ui::ImplicitAnimationObserver {
-  METADATA_HEADER(AssistantOverlay, views::View)
+// Overlay to display animations when the home button is tapped (with a touch
+// screen).
+// Used for features like Assistant.
+class ASH_EXPORT HomeButtonTapOverlay : public views::View,
+                                        public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(HomeButtonTapOverlay, views::View)
 
  public:
-  explicit AssistantOverlay(HomeButton* host_view);
+  explicit HomeButtonTapOverlay(HomeButton* host_view);
 
-  AssistantOverlay(const AssistantOverlay&) = delete;
-  AssistantOverlay& operator=(const AssistantOverlay&) = delete;
+  HomeButtonTapOverlay(const HomeButtonTapOverlay&) = delete;
+  HomeButtonTapOverlay& operator=(const HomeButtonTapOverlay&) = delete;
 
-  ~AssistantOverlay() override;
+  ~HomeButtonTapOverlay() override;
 
   void StartAnimation();
   void EndAnimation();
@@ -66,4 +69,4 @@ class ASH_EXPORT AssistantOverlay : public views::View,
 };
 
 }  // namespace ash
-#endif  // ASH_SHELF_ASSISTANT_OVERLAY_H_
+#endif  // ASH_SHELF_HOME_BUTTON_TAP_OVERLAY_H_

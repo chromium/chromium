@@ -15,6 +15,10 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace content {
 
 // Page represents a collection of documents with the same main document.
@@ -108,6 +112,11 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // Returns the value set by `window.setResizable(bool)` API or `std::nullopt`
   // if unset which can override `BrowserView::CanResize`.
   virtual std::optional<bool> GetResizable() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a reference to Page Java counterpart.
+  virtual const base::android::JavaRef<jobject>& GetJavaPage() = 0;
+#endif
 
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's

@@ -127,10 +127,6 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_queried_region_bytes_;
   }
 
-  lens::Payload last_sent_page_content_payload() const {
-    return last_sent_page_content_payload_;
-  }
-
   base::span<const uint8_t> last_sent_underlying_content_bytes() const {
     return last_sent_underlying_content_bytes_;
   }
@@ -339,9 +335,6 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last page content data sent by the query controller. Used to prevent
   // dangling references by the underlying content bytes span.
   std::string last_sent_page_content_data_;
-
-  // The Payload proto sent in the last page content upload.
-  lens::Payload last_sent_page_content_payload_;
 
   // The last underlying content bytes sent by the query controller.
   base::raw_span<const uint8_t> last_sent_underlying_content_bytes_;

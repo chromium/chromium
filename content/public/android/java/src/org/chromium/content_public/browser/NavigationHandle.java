@@ -55,6 +55,7 @@ public class NavigationHandle {
     private @Nullable String mMimeType;
     private boolean mIsSaveableNavigation;
     private @Nullable WebContents mWebContents;
+    private @Nullable Page mCommittedPage;
 
     private boolean mStarted;
 
@@ -216,7 +217,8 @@ public class NavigationHandle {
             boolean isExternalProtocol,
             boolean isPdf,
             String mimeType,
-            boolean isSaveableNavigation) {
+            boolean isSaveableNavigation,
+            Page currentPage) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
@@ -230,6 +232,9 @@ public class NavigationHandle {
         mIsPdf = isPdf;
         mMimeType = mimeType;
         mIsSaveableNavigation = isSaveableNavigation;
+        if (mHasCommitted && !mIsSameDocument && mIsInPrimaryMainFrame) {
+            mCommittedPage = currentPage;
+        }
     }
 
     /** Release the C++ pointer. */
@@ -482,5 +487,14 @@ public class NavigationHandle {
     public WebContents getWebContents() {
         assert mStarted;
         return assumeNonNull(mWebContents);
+    }
+
+    /*
+     * The Page that the navigation commits into. Set to null if the navigation doesn't commit or
+     * result in a Page (e.g. 204/download)
+     */
+    public @Nullable Page getCommittedPage() {
+        assert mStarted;
+        return mCommittedPage;
     }
 }

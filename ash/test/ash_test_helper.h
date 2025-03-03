@@ -18,7 +18,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/notification_center/test_notifier_settings_controller.h"
-#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -53,7 +52,6 @@ namespace ash {
 
 class AppListTestHelper;
 class AmbientAshTestHelper;
-class AshPixelTestHelper;
 class FakeDlcserviceClient;
 class FakeFwupdDownloadClient;
 class SavedDeskTestHelper;
@@ -88,9 +86,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     // If this is not set, a TestShellDelegate will be used automatically.
     std::unique_ptr<ShellDelegate> delegate;
     raw_ptr<PrefService> local_state = nullptr;
-
-    // Used only when setting up a pixel diff test.
-    std::optional<pixel_test::InitParams> pixel_test_init_params;
 
     // True if a fake global `CrasAudioHandler` should be created.
     bool create_global_cras_audio_handler = true;
@@ -240,9 +235,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       quick_pair_browser_delegate_;
   std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
       cros_hotspot_config_test_helper_;
-
-  // Used only for pixel tests.
-  std::unique_ptr<AshPixelTestHelper> pixel_test_helper_;
 
   bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;

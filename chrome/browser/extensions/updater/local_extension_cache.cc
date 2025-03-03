@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -629,7 +630,7 @@ void LocalExtensionCache::BackendMarkCacheInvalid(
     const std::string& extension_id) {
   base::FilePath invalid_cache_file =
       cache_dir.AppendASCII(kInvalidCacheIdsFileName);
-  std::string contents = base::ToString(extension_id, kExtensionIdDelimiter);
+  std::string contents = base::StrCat({extension_id, kExtensionIdDelimiter});
   bool success = false;
   if (!base::PathExists(invalid_cache_file)) {
     success = base::WriteFile(invalid_cache_file, contents);

@@ -16,5 +16,4 @@ if not TYP_DIR in sys.path:
 
 import typ
 
-os.chdir(THIS_DIR)
 sys.exit(typ.main(top_level_dir=THIS_DIR, suffixes=['*_test.py']))
