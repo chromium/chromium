@@ -1818,9 +1818,15 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
 
   syncer::SyncChangeList new_changes;
 
+  const bool separate_local_and_account_search_engines =
+      base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines);
+
   // Build maps of our sync GUIDs to syncer::SyncData.
   SyncDataMap local_data_map =
       CreateGUIDToSyncDataMap(GetAllSyncData(syncer::SEARCH_ENGINES));
+  CHECK(!separate_local_and_account_search_engines || local_data_map.empty())
+      << "No account data should be pre-existing locally.";
   SyncDataMap sync_data_map = CreateGUIDToSyncDataMap(initial_sync_data);
 
   for (SyncDataMap::const_iterator iter = sync_data_map.begin();
@@ -1848,8 +1854,7 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
 
     if (local_turl) {
       DCHECK(IsFromSync(local_turl, sync_data_map));
-      if (base::FeatureList::IsEnabled(
-              syncer::kSeparateLocalAndAccountSearchEngines)) {
+      if (separate_local_and_account_search_engines) {
         // `sync_turl` holds both the local data and the account data. Update
         // the saved entry.
         Update(local_turl, *sync_turl);
@@ -1883,8 +1888,7 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
   }
 
   // Avoid committing local data if the flag is enabled.
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSeparateLocalAndAccountSearchEngines)) {
+  if (!separate_local_and_account_search_engines) {
     // The remaining SyncData in local_data_map should be everything that needs
     // to be pushed as ADDs to sync.
     for (SyncDataMap::const_iterator iter = local_data_map.begin();
