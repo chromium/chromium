@@ -14,6 +14,7 @@
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -429,7 +430,10 @@ class FragmentPaintPropertyTreeBuilder {
   // True if, among all transform-relaed properties, there is a
   // non-identity transform that *is not* a 2D scale.
   bool has_non_scale2d_transform_ = false;
-  std::optional<gfx::RectF> clip_path_bounding_box_;
+  std::optional<gfx::RectF> precise_clip_path_rect_;
+  // Used to indicate an expanded clip path rect is required a cc clip path
+  // animation.
+  bool requires_expanded_clip_rect_ = false;
 };
 
 // True if a scroll node and a ScrollTranslation transform node are needed.
@@ -1634,16 +1638,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       std::optional<gfx::RectF> mask_clip = CSSMaskPainter::MaskBoundingBox(
           object_, context_.current.paint_offset);
       if (mask_clip || needs_mask_based_clip_path_) {
-        DCHECK(mask_clip || clip_path_bounding_box_.has_value());
+        DCHECK(mask_clip || precise_clip_path_rect_);
         gfx::RectF combined_clip =
-            mask_clip ? *mask_clip : *clip_path_bounding_box_;
+            mask_clip ? *mask_clip : *precise_clip_path_rect_;
         if (mask_clip && needs_mask_based_clip_path_)
-          combined_clip.Intersect(*clip_path_bounding_box_);
+          combined_clip.Intersect(*precise_clip_path_rect_);
         OnUpdateClip(properties_->UpdateMaskClip(
             *context_.current.clip,
             ClipPaintPropertyNode::State(
                 *context_.current.transform, combined_clip,
-                FloatRoundedRect(gfx::ToEnclosingRect(combined_clip)))));
+                FloatRoundedRect(gfx::ToEnclosingRect(combined_clip)),
+                requires_expanded_clip_rect_)));
         // We don't use MaskClip as the output clip of Effect, Mask and
         // ClipPathMask because we only want to apply MaskClip to the contents,
         // not the masks.
@@ -2197,27 +2202,45 @@ static std::optional<FloatRoundedRect> PathToRRect(const Path& path) {
 
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
-    DCHECK(!clip_path_bounding_box_.has_value());
+    DCHECK(!precise_clip_path_rect_.has_value());
     if (NeedsClipPathClipOrMask(object_,
                                 /*fully_resolve_composited_state=*/true)) {
-      clip_path_bounding_box_ =
+      precise_clip_path_rect_ =
           ClipPathClipper::LocalClipPathBoundingBox(object_);
-      if (clip_path_bounding_box_) {
-        // SVG "children" does not have a paint offset, but for <foreignObject>
-        // the paint offset can still be non-zero since it contains the 'x' and
-        // 'y' portion of the geometry. (See also comment in
-        // `NeedsPaintOffsetTranslation()`.)
+
+      if (ClipPathClipper::HasCompositeClipPathAnimation(
+              object_,
+              ClipPathClipper::CompositedStateResolutionType::kReadCache)) {
+        needs_mask_based_clip_path_ = true;
+        // If there's a composited clip path animation, we use a larger bounding
+        // rect that can encompass the entire animation, that way no new main
+        // frames are needed to resize the clip area.
+        requires_expanded_clip_rect_ = true;
+        // In the case where clip-path: none, it is okay for the precise clip
+        // path to equal the expanded rect, since we need to assign it a value
+        if (!precise_clip_path_rect_) {
+          precise_clip_path_rect_ =
+              ClipPathPaintImageGenerator::GetAnimationBoundingRect();
+        }
+      }
+
+      if (precise_clip_path_rect_ && !needs_mask_based_clip_path_) {
+        // SVG "children" does not have a paint offset, but for
+        // <foreignObject> the paint offset can still be non-zero since it
+        // contains the 'x' and 'y' portion of the geometry. (See also comment
+        // in `NeedsPaintOffsetTranslation()`.)
         const gfx::Vector2dF paint_offset =
             !object_.IsSVGChild()
                 ? gfx::Vector2dF(context_.current.paint_offset)
                 : gfx::Vector2dF();
-        clip_path_bounding_box_->Offset(paint_offset);
+        precise_clip_path_rect_->Offset(paint_offset);
         if (std::optional<Path> path =
                 ClipPathClipper::PathBasedClip(object_)) {
           path->Translate(paint_offset);
           std::optional<FloatRoundedRect> rrect;
-          // TODO(crbug.com/337191311): The optimization breaks view-transition
-          // if the bounding box of clip-path is larger than the contents.
+          // TODO(crbug.com/337191311): The optimization breaks
+          // view-transition if the bounding box of clip-path is larger than
+          // the contents.
           if (!(full_context_.direct_compositing_reasons &
                 (CompositingReason::kViewTransitionElement |
                  CompositingReason::
@@ -2225,24 +2248,25 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
             rrect = PathToRRect(*path);
           }
           ClipPaintPropertyNode::State state(
-              *context_.current.transform, *clip_path_bounding_box_,
+              *context_.current.transform, *precise_clip_path_rect_,
               rrect.value_or(FloatRoundedRect(
-                  gfx::ToEnclosingRect(*clip_path_bounding_box_))));
+                  gfx::ToEnclosingRect(*precise_clip_path_rect_))));
           if (!rrect) {
             state.clip_path = path;
           }
           OnUpdateClip(properties_->UpdateClipPathClip(*context_.current.clip,
                                                        std::move(state)));
         } else {
-          // This means that the clip-path is too complex to be represented as a
-          // Path. Will create ClipPathMask in UpdateEffect().
+          // This means that the clip-path is too complex to be represented as
+          // a Path. Will create ClipPathMask in UpdateEffect().
           needs_mask_based_clip_path_ = true;
         }
       }
     }
 
-    if (!clip_path_bounding_box_ || needs_mask_based_clip_path_)
+    if (!precise_clip_path_rect_ || needs_mask_based_clip_path_) {
       OnClearClip(properties_->ClearClipPathClip());
+    }
   }
 
   if (properties_->ClipPathClip()) {

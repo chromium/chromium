@@ -216,20 +216,13 @@ void PaintWorkletBasedClip(GraphicsContext& context,
   ClipPathPaintImageGenerator* generator =
       clip_path_owner.GetFrame()->GetClipPathPaintImageGenerator();
 
-  // The bounding rect of the clip-path animation, relative to the layout
-  // object.
-  std::optional<gfx::RectF> bounding_box =
-      ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
-  DCHECK(bounding_box);
+  // Bounding rect large enough to contain the entire animation, including
+  // clip-path: none frames.
+  gfx::RectF dst_rect = ClipPathPaintImageGenerator::GetAnimationBoundingRect();
 
-  // Pixel snap bounding rect to allow for the proper painting of partially
-  // opaque pixels
-  *bounding_box = gfx::RectF(gfx::ToEnclosingRect(*bounding_box));
-
-  // The mask image should be the same size as the bounding rect, but will have
-  // an origin of 0,0 as it has its own coordinate space.
-  gfx::RectF src_rect = gfx::RectF(bounding_box.value().size());
-  gfx::RectF dst_rect = bounding_box.value();
+  // The mask image should be the same size as the destination rect, but will
+  // have an origin of 0,0 as it has its own coordinate space.
+  gfx::RectF src_rect = gfx::RectF(dst_rect.size());
 
   float zoom = UsesZoomedReferenceBox(reference_box_object)
                    ? reference_box_object.StyleRef().EffectiveZoom()
@@ -402,11 +395,6 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
 
 std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     const LayoutObject& object) {
-  if (ClipPathClipper::HasCompositeClipPathAnimation(
-          object, CompositedStateResolutionType::kReadCache)) {
-    return ClipPathPaintImageGenerator::GetAnimationBoundingRect();
-  }
-
   if (object.IsText() || !object.StyleRef().HasClipPath())
     return std::nullopt;
 
