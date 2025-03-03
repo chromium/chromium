@@ -25,7 +25,8 @@ import java.util.WeakHashMap;
 
 /** Routes notifications from WebContents to AwContentsClient and other listeners. */
 @Lifetime.WebView
-public class AwWebContentsObserver extends WebContentsObserver {
+public class AwWebContentsObserver extends WebContentsObserver
+        implements Page.PageDeletionListener {
     // TODO(tobiasjs) similarly to WebContentsObserver.mWebContents, mAwContents
     // needs to be a WeakReference, which suggests that there exists a strong
     // reference to an AwWebContentsObserver instance. This is not intentional,
@@ -111,6 +112,8 @@ public class AwWebContentsObserver extends WebContentsObserver {
         // We only keep track of pages that have been the primary page (either the current primary
         // page, or a previously primary but now bfcached / pending deletion page).
         assert !awPage.isPrerendering();
+        // Make sure we always track deletion of a non-prerendering page.
+        page.setPageDeletionListener(this);
         mPageMap.put(page, new WeakReference<>(awPage));
         return awPage;
     }
@@ -287,6 +290,26 @@ public class AwWebContentsObserver extends WebContentsObserver {
         if (client != null && navigation.isPrimaryMainFrameFragmentNavigation()) {
             // Note fragment navigations do not have a matching onPageStarted.
             client.getCallbackHelper().postOnPageFinished(url);
+        }
+    }
+
+    @Override
+    public void primaryPageChanged(Page page) {
+        // The page has become the primary page. If it was a prerendered page before, make sure we
+        // no longer consider it as one.
+        page.setIsPrerendering(false);
+        // Make sure we track the deletion of this new page.
+        page.setPageDeletionListener(this);
+    }
+
+    @Override
+    public void onWillDeletePage(Page page) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient navClient = awContents.getNavigationClient();
+            if (navClient != null && !page.isPrerendering()) {
+                navClient.onPageDeleted(getAwPageFor(page));
+            }
         }
     }
 

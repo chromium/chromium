@@ -68,6 +68,13 @@ public abstract class WebContentsObserver {
     /** Called when a RenderFrame for renderFrameHost is deleted in the renderer process. */
     public void renderFrameDeleted(GlobalRenderFrameHostId id) {}
 
+    /**
+     * Called when a new Page has been committed as the primary page.
+     *
+     * @param page The Page that is now the primary page.
+     */
+    public void primaryPageChanged(Page page) {}
+
     public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {}
 
     /**

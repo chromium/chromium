@@ -89,6 +89,12 @@ void WebContentsObserverProxy::RenderFrameDeleted(
       render_frame_host->GetRoutingID());
 }
 
+void WebContentsObserverProxy::PrimaryPageChanged(content::Page& page) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_primaryPageChanged(env, java_observer_,
+                                                   page.GetJavaPage());
+}
+
 void WebContentsObserverProxy::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus termination_status) {
   JNIEnv* env = AttachCurrentThread();

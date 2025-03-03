@@ -122,6 +122,18 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    public void primaryPageChanged(Page page) {
+        // Don't call handleObserverCall() and finishObserverCall() to explicitly allow a
+        // WebContents to be destroyed while handling an this observer call. See
+        // https://chromium-review.googlesource.com/c/chromium/src/+/2343269 for details
+        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
+        for (; observersIterator.hasNext(); ) {
+            observersIterator.next().primaryPageChanged(page);
+        }
+    }
+
+    @Override
+    @CalledByNative
     public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {
         // Don't call handleObserverCall() and finishObserverCall() to explicitly allow a
         // WebContents to be destroyed while handling an this observer call. See
