@@ -1506,8 +1506,17 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 // The color picker's popup behaves differently on Android/iOS-Blink, this test
 // doesn't apply.
 #if !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+// TODO(crbug.com/399976873): Consistently fails on Fuchsia builders. If this is
+// expected move BUILDFLAG(IS_FUCHSIA) check above.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_GetBoundsRectIframesForColorPicker \
+  DISABLED_GetBoundsRectIframesForColorPicker
+#else
+#define MAYBE_GetBoundsRectIframesForColorPicker \
+  GetBoundsRectIframesForColorPicker
+#endif
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       GetBoundsRectIframesForColorPicker) {
+                       MAYBE_GetBoundsRectIframesForColorPicker) {
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
       <!DOCTYPE html>
       <html>
