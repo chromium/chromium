@@ -19,6 +19,10 @@ commerce::MerchantTrustSignalsV2 GetSampleProto() {
   return proto;
 }
 
+TEST(MerchantTrustValidation, NoResult) {
+  EXPECT_EQ(ValidateProto(std::nullopt), MerchantTrustStatus::kNoResult);
+}
+
 // Tests that correct proto messages are accepted.
 TEST(MerchantTrustValidation, ValidProto) {
   auto proto = GetSampleProto();
