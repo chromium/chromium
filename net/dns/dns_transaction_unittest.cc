@@ -539,7 +539,8 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
       pending_buf_size_ = buf_size;
       return ERR_IO_PENDING;
     }
-    return DoBufferCopy(read.data, read.data_len, buf, buf_size);
+    return DoBufferCopy(read.data.data(), static_cast<int>(read.data.length()),
+                        buf, buf_size);
   }
 
   void GetResponseInfo(HttpResponseInfo* info) override {
@@ -563,8 +564,9 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
     EXPECT_NE(data.result, ERR_IO_PENDING);
     if (data.result < 0)
       return ReadRawDataComplete(data.result);
-    ReadRawDataComplete(DoBufferCopy(data.data, data.data_len, pending_buf_,
-                                     pending_buf_size_));
+    ReadRawDataComplete(DoBufferCopy(data.data.data(),
+                                     static_cast<int>(data.data.length()),
+                                     pending_buf_, pending_buf_size_));
   }
   void OnWriteComplete(int rv) override {}
   void OnConnectComplete(const MockConnect& data) override {}
