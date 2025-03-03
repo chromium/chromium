@@ -23,6 +23,7 @@ struct HoverEvent;
 struct DragEvent;
 struct ChangeEvent;
 struct KeyDownEvent;
+struct SettingAccessEvent;
 
 /**
  * Dispatcher for messages sent from the DevTools frontend running in an
@@ -125,6 +126,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordDrag(const DragEvent& event) = 0;
     virtual void RecordChange(const ChangeEvent& event) = 0;
     virtual void RecordKeyDown(const KeyDownEvent& event) = 0;
+    virtual void RecordSettingAccess(const SettingAccessEvent& event) = 0;
     virtual void SendJsonRequest(DispatchCallback callback,
                                  const std::string& browser_id,
                                  const std::string& url) = 0;

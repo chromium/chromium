@@ -209,6 +209,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RecordDrag(const DragEvent& event) override;
   void RecordChange(const ChangeEvent& event) override;
   void RecordKeyDown(const KeyDownEvent& event) override;
+  void RecordSettingAccess(const SettingAccessEvent& event) override;
   void SendJsonRequest(DispatchCallback callback,
                        const std::string& browser_id,
                        const std::string& url) override;
