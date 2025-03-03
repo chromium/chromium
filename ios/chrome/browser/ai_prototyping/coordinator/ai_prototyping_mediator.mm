@@ -331,7 +331,7 @@
   std::string result =
       [self serializeEnhancedCalendarResponseToString:
                 response_result->get_response()
-                    ->As<optimization_guide::proto::EnhancedCalendarResponse>()
+                    .As<optimization_guide::proto::EnhancedCalendarResponse>()
                     .value()];
 
   [self.consumer updateQueryResult:base::SysUTF8ToNSString(result)

@@ -9,9 +9,7 @@ import "mojo/public/mojom/base/proto_wrapper.mojom";
 // Represents the result of an Enhanced Calendar response. Only one of these
 // fields can hold a value.
 union EnhancedCalendarResponseResult {
-  // TODO(crbug.com/399894950): Make non-null when generated `ProtoWrapper`
-  // header is fixed to support this union without the `?` operator.
-  mojo_base.mojom.ProtoWrapper? response;
+  mojo_base.mojom.ProtoWrapper response;
   string error;
 };
 
