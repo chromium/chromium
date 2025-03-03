@@ -667,7 +667,7 @@ No modifications.
         boolean isAndroidxRepository = repositoryPath.startsWith('third_party/androidx')
         boolean isAutorolledRepository = repositoryPath.startsWith('third_party/android_deps/autorolled')
         boolean isAndroidxDependency = dependency.id.startsWith('androidx')
-        if (isAndroidxDependency) {
+        if (isAndroidxRepository || isAndroidxDependency) {
             // Androidx targets always go to the androidx project regardless of
             // dep.isAutorolled
             return isAndroidxRepository != isAndroidxDependency
