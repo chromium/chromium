@@ -8,6 +8,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -24,6 +25,13 @@ constexpr base::TimeDelta kTokenRetryTimeDelta = base::Seconds(1);
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr base::TimeDelta kDummyTokenExpirationDuration = base::Minutes(1);
 #endif
+
+tab_groups::TabGroupId ParseTabGroupIdFromString(const std::string& value) {
+  std::optional<base::Token> token = base::Token::FromString(value);
+  CHECK(token);
+  return tab_groups::TabGroupId::FromRawToken(token.value());
+}
+
 }  // namespace
 
 DataSharingPageHandler::DataSharingPageHandler(
@@ -90,6 +98,23 @@ void DataSharingPageHandler::OpenTabGroup(const std::string& group_id) {
   browser->browser_window_features()
       ->data_sharing_open_group_helper()
       ->OpenTabGroupWhenAvailable(group_id);
+}
+
+void DataSharingPageHandler::AboutToUnShareTabGroup(
+    const std::string& tab_group_id) {
+  tab_groups::TabGroupId local_tab_group_id =
+      ParseTabGroupIdFromString(tab_group_id);
+  // TODO(crbug.com/399961647): Prefer to wait for the callback to complete.
+  tab_groups::TabGroupSyncServiceFactory::GetForProfile(GetProfile())
+      ->AboutToUnShareTabGroup(local_tab_group_id, base::DoNothing());
+}
+
+void DataSharingPageHandler::OnTabGroupUnShareComplete(
+    const std::string& tab_group_id) {
+  tab_groups::TabGroupId local_tab_group_id =
+      ParseTabGroupIdFromString(tab_group_id);
+  tab_groups::TabGroupSyncServiceFactory::GetForProfile(GetProfile())
+      ->OnTabGroupUnShareComplete(local_tab_group_id, /*success=*/true);
 }
 
 Profile* DataSharingPageHandler::GetProfile() {

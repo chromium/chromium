@@ -74,7 +74,7 @@ suite('Start flows', () => {
 
   test('Manage flow', async () => {
     DataSharingApp.setUrlForTesting(
-        'chrome-untrusted://data-sharing?flow=manage&group_id=fake_id');
+        'chrome-untrusted://data-sharing?flow=manage&group_id=fake_id&tab_group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
     testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
@@ -83,8 +83,11 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runManageFlow')[0].groupId);
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    // TODO(crbug.com/399961647): Enable the following assertions when
+    // setTimeout in` data_sharing_app.ts is removed.
+
+    // assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    // assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });
 
   test('Join flow', async () => {

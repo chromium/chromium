@@ -13,6 +13,7 @@ import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {AbslStatusCode} from '//resources/mojo/mojo/public/mojom/base/absl_status.mojom-webui.js';
+import {assert} from 'chrome-untrusted://resources/js/assert.js';
 import {CustomElement} from 'chrome-untrusted://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
@@ -308,6 +309,7 @@ export class DataSharingApp extends CustomElement implements Logger {
   private translationMap_: TranslationMap = createTranslationMap();
   private abandonJoin_: boolean = false;
   private successfullyJoined_: boolean = false;
+  private tabGroupId_: string|null = null;
 
   static get is() {
     return 'data-sharing-app';
@@ -347,6 +349,15 @@ export class DataSharingApp extends CustomElement implements Logger {
 
     if (event.intentType === LoggingIntent.ABANDON_JOIN) {
       this.abandonJoin_ = true;
+    }
+
+    if (event.intentType === LoggingIntent.STOP_SHARING) {
+      assert(this.tabGroupId_);
+      if (event.progress === Progress.STARTED) {
+        this.aboutToUnShareTabGroup(this.tabGroupId_!);
+      } else if (event.progress === Progress.SUCCEEDED) {
+        this.onTabGroupUnShareComplete(this.tabGroupId_!);
+      }
     }
   }
 
@@ -409,6 +420,14 @@ export class DataSharingApp extends CustomElement implements Logger {
         tabGroupId, groupId);
   }
 
+  private aboutToUnShareTabGroup(tabGroupId: string) {
+    this.browserProxy_.handler!.aboutToUnShareTabGroup(tabGroupId);
+  }
+
+  private onTabGroupUnShareComplete(tabGroupId: string) {
+    this.browserProxy_.handler!.onTabGroupUnShareComplete(tabGroupId);
+  }
+
   private getShareLink(params: DataSharingSdkGetLinkParams): Promise<string> {
     return this.browserProxy_.handler!
         .getShareLink(params.groupId, params.tokenSecret!)
@@ -457,6 +476,8 @@ export class DataSharingApp extends CustomElement implements Logger {
     const tokenSecret = params.get(UrlQueryParams.TOKEN_SECRET);
     const tabGroupId = params.get(UrlQueryParams.TAB_GROUP_ID);
     const parent = this.getRequiredElement('#dialog-container');
+
+    this.tabGroupId_ = tabGroupId;
 
     if (flow === FlowValues.SHARE) {
       parent.classList.add('invite');
@@ -532,7 +553,14 @@ export class DataSharingApp extends CustomElement implements Logger {
               logger: this,
             })
             .then((res) => {
-              this.browserProxy_.closeUi(res.status);
+              // There's a bug in the SDK this is returning earlier than
+              // onEvent. The setTimeout is needed to make sure onEvent is
+              // called before the UI closes.
+              // TODO(crbug.com/399961647): Remove setTimeout once the SDK is
+              // fixed.
+              setTimeout(() => {
+                this.browserProxy_.closeUi(res.status);
+              }, 100);
             });
         break;
       default:
