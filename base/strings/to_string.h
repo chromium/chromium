@@ -6,7 +6,6 @@
 #define BASE_STRINGS_TO_STRING_H_
 
 #include <concepts>
-#include <ios>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -24,21 +23,11 @@ std::string ToString(const T& values);
 
 namespace internal {
 
-// I/O manipulators are function pointers, but should be sent directly to the
-// `ostream` instead of being cast to `const void*` like other function
-// pointers.
-template <typename T>
-constexpr bool IsIomanip = false;
-template <typename T>
-  requires(std::derived_from<T, std::ios_base>)
-constexpr bool IsIomanip<T&(T&)> = true;
-
 // Function pointers implicitly convert to `bool`, so use this to avoid printing
 // function pointers as "true"/"false".
 template <typename T>
 concept WillBeIncorrectlyStreamedAsBool =
-    std::is_function_v<std::remove_pointer_t<T>> &&
-    !IsIomanip<std::remove_pointer_t<T>>;
+    std::is_function_v<std::remove_pointer_t<T>>;
 
 // Fallback case when there is no better representation.
 template <typename T>
