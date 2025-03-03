@@ -46,25 +46,17 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.clamp_input;
   }
-  static webnn::SupportedTensors concat_inputs(
+  static webnn::SupportedDataTypes concat_inputs(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.concat_inputs;
   }
-  static webnn::SupportedTensors conv2d_input(
+  static webnn::SupportedDataTypes conv2d_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.conv2d_input;
   }
-  static webnn::SupportedTensors conv2d_bias(
-      const webnn::DataTypeLimits& data_type_limits) {
-    return data_type_limits.conv2d_bias;
-  }
-  static webnn::SupportedTensors conv_transpose2d_input(
+  static webnn::SupportedDataTypes conv_transpose2d_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.conv_transpose2d_input;
-  }
-  static webnn::SupportedTensors conv_transpose2d_bias(
-      const webnn::DataTypeLimits& data_type_limits) {
-    return data_type_limits.conv_transpose2d_bias;
   }
   static webnn::SupportedTensors cumulative_sum_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -462,9 +454,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadClampInput(&out->clamp_input) &&
            data.ReadConcatInputs(&out->concat_inputs) &&
            data.ReadConv2dInput(&out->conv2d_input) &&
-           data.ReadConv2dBias(&out->conv2d_bias) &&
            data.ReadConvTranspose2dInput(&out->conv_transpose2d_input) &&
-           data.ReadConvTranspose2dBias(&out->conv_transpose2d_bias) &&
            data.ReadCumulativeSumInput(&out->cumulative_sum_input) &&
            data.ReadDequantizeLinearInput(&out->dequantize_linear_input) &&
            data.ReadDequantizeLinearScale(&out->dequantize_linear_scale) &&

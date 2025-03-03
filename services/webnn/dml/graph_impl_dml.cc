@@ -1735,18 +1735,13 @@ void CreateOperatorNodeForClamp(Adapter* adapter,
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
-void CreateOperatorNodeForConcat(const ContextProperties& context_properties,
-                                 const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForConcat(const IdToOperandMap& id_to_operand_map,
                                  const mojom::ConcatPtr& concat,
                                  GraphBuilderDml& graph_builder,
                                  IdToNodeOutputMap& id_to_node_output_map) {
   const auto& input_operand_ids = concat->input_operand_ids;
-  CHECK(std::ranges::all_of(input_operand_ids, [&](uint64_t input_operand_id) {
-    return context_properties.data_type_limits.concat_inputs.Supports(
-        id_to_operand_map.at(input_operand_id)->descriptor);
-  }));
-
   size_t input_num = input_operand_ids.size();
+
   base::FixedArray<const NodeOutput*> inputs(input_num);
   base::FixedArray<DML_TENSOR_DESC> input_dml_tensor_descs(input_num);
   for (size_t i = 0; i < input_num; ++i) {
@@ -1784,29 +1779,35 @@ void CreateOperatorNodeForConv2d(
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& conv2d = operation->get_conv2d();
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, conv2d->input_operand_id);
+  // The input tensor description may be transposed.
+  auto input_tensor_desc = input->GetTensorDesc();
+  CHECK_EQ(input_tensor_desc.GetDimensions().size(), 4u);
 
   const OperandPtr& input_operand =
       id_to_operand_map.at(conv2d->input_operand_id);
-  const OperandPtr& filter_operand =
-      id_to_operand_map.at(conv2d->filter_operand_id);
+  OperandDataType data_type = input_operand->descriptor.data_type();
   DML_CONVOLUTION_DIRECTION conv2d_direction;
   switch (conv2d->kind) {
     case mojom::Conv2d::Kind::kDirect: {
-      CHECK(context_properties.data_type_limits.conv2d_input.SupportsAll(
-          {input_operand->descriptor, filter_operand->descriptor}));
+      CHECK(context_properties.data_type_limits.conv2d_input.Has(data_type));
       conv2d_direction =
           DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_FORWARD;
       break;
     }
     case mojom::Conv2d::Kind::kTransposed: {
-      CHECK(context_properties.data_type_limits.conv_transpose2d_input
-                .SupportsAll(
-                    {input_operand->descriptor, filter_operand->descriptor}));
+      CHECK(context_properties.data_type_limits.conv_transpose2d_input.Has(
+          data_type));
       conv2d_direction =
           DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_BACKWARD;
       break;
     }
   }
+
+  const NodeOutput* filter =
+      GetNodeOutputForOperand(id_to_node_output_map, conv2d->filter_operand_id);
+  auto filter_tensor_desc = filter->GetTensorDesc();
 
   uint64_t output_id = conv2d->output_operand_id;
   // The output tensor description may be transposed.
@@ -1814,31 +1815,18 @@ void CreateOperatorNodeForConv2d(
       CreateOutputTensorDesc(id_to_operand_map, output_id);
   CHECK_EQ(output_tensor_desc.GetDimensions().size(), 4u);
 
-  const NodeOutput* input =
-      GetNodeOutputForOperand(id_to_node_output_map, conv2d->input_operand_id);
-  // The input tensor description may be transposed.
-  auto input_tensor_desc = input->GetTensorDesc();
-  const NodeOutput* filter =
-      GetNodeOutputForOperand(id_to_node_output_map, conv2d->filter_operand_id);
-  auto filter_tensor_desc = filter->GetTensorDesc();
   std::vector<const NodeOutput*> inputs = {input, filter};
   std::optional<TensorDesc> reshaped_bias_tensor_desc;
   auto& bias_operand_id = conv2d->bias_operand_id;
   if (bias_operand_id) {
-    const OperandPtr& bias_operand =
-        id_to_operand_map.at(bias_operand_id.value());
-    if (conv2d->kind == mojom::Conv2d::Kind::kDirect) {
-      CHECK(context_properties.data_type_limits.conv2d_bias.Supports(
-          bias_operand->descriptor));
-    } else {
-      CHECK(context_properties.data_type_limits.conv_transpose2d_bias.Supports(
-          bias_operand->descriptor));
-    }
-
-    const NodeOutput* bias_node_output =
-        GetNodeOutputForOperand(id_to_node_output_map, bias_operand_id.value());
+    const auto bias_node_output_iterator =
+        id_to_node_output_map.find(bias_operand_id.value());
+    CHECK(bias_node_output_iterator != id_to_node_output_map.end());
+    const NodeOutput* bias_node_output = bias_node_output_iterator->second;
+    CHECK(bias_node_output);
     const auto& bias_tensor_desc = bias_node_output->GetTensorDesc();
     const auto& bias_dims = bias_tensor_desc.GetDimensions();
+    CHECK_EQ(bias_dims.size(), 1u);
 
     // In WebNN spec bias specifies the additional 1-D tensor with the shape of
     // {outputChannels}. But for DML the expected dimensions of the BiasTensor
@@ -6405,9 +6393,8 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kConcat: {
-        CreateOperatorNodeForConcat(context_properties, id_to_operand_map,
-                                    operation->get_concat(), graph_builder,
-                                    id_to_node_output_map);
+        CreateOperatorNodeForConcat(id_to_operand_map, operation->get_concat(),
+                                    graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kConv2d: {

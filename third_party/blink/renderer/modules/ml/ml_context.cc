@@ -275,31 +275,31 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
 
   MLConcatSupportLimits* concat = MLConcatSupportLimits::Create();
   concat->setInputs(
-      SupportedTensorLimitsToTensorLimits(data_type_limits.concat_inputs));
-  concat->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.concat_inputs.data_types));
+      SupportedDataTypesToDataTypeLimits(data_type_limits.concat_inputs));
+  concat->setOutput(
+      SupportedDataTypesToDataTypeLimits(data_type_limits.concat_inputs));
   op_support_limits->setConcat(concat);
 
   MLConv2dSupportLimits* conv2d = MLConv2dSupportLimits::Create();
   conv2d->setInput(
-      SupportedTensorLimitsToTensorLimits(data_type_limits.conv2d_input));
+      SupportedDataTypesToDataTypeLimits(data_type_limits.conv2d_input));
   conv2d->setFilter(
-      SupportedTensorLimitsToTensorLimits(data_type_limits.conv2d_input));
+      SupportedDataTypesToDataTypeLimits(data_type_limits.conv2d_input));
   conv2d->setBias(
-      SupportedTensorLimitsToTensorLimits(data_type_limits.conv2d_bias));
-  conv2d->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.conv2d_input.data_types));
+      SupportedDataTypesToDataTypeLimits(data_type_limits.conv2d_input));
+  conv2d->setOutput(
+      SupportedDataTypesToDataTypeLimits(data_type_limits.conv2d_input));
   op_support_limits->setConv2d(conv2d);
 
   MLConv2dSupportLimits* conv_transpose2d = MLConv2dSupportLimits::Create();
-  conv_transpose2d->setInput(SupportedTensorLimitsToTensorLimits(
+  conv_transpose2d->setInput(SupportedDataTypesToDataTypeLimits(
       data_type_limits.conv_transpose2d_input));
-  conv_transpose2d->setFilter(SupportedTensorLimitsToTensorLimits(
+  conv_transpose2d->setFilter(SupportedDataTypesToDataTypeLimits(
       data_type_limits.conv_transpose2d_input));
-  conv_transpose2d->setBias(SupportedTensorLimitsToTensorLimits(
-      data_type_limits.conv_transpose2d_bias));
+  conv_transpose2d->setBias(SupportedDataTypesToDataTypeLimits(
+      data_type_limits.conv_transpose2d_input));
   conv_transpose2d->setOutput(SupportedDataTypesToDataTypeLimits(
-      data_type_limits.conv_transpose2d_input.data_types));
+      data_type_limits.conv_transpose2d_input));
   op_support_limits->setConvTranspose2d(conv_transpose2d);
 
   MLSingleInputSupportLimits* cumulative_sum =

@@ -165,14 +165,6 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.batch_normalization_mean
       .IntersectWith(
           {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)});
-  backend_context_properties.data_type_limits.conv2d_input.ranks.IntersectWith(
-      SupportedRanks::Exactly(4));
-  backend_context_properties.data_type_limits.conv2d_bias.ranks.IntersectWith(
-      SupportedRanks::Exactly(1));
-  backend_context_properties.data_type_limits.conv_transpose2d_input.ranks
-      .IntersectWith(SupportedRanks::Exactly(4));
-  backend_context_properties.data_type_limits.conv_transpose2d_bias.ranks
-      .IntersectWith(SupportedRanks::Exactly(1));
   backend_context_properties.data_type_limits.logical_not_input.data_types
       .RetainAll(DataTypeConstraint::kUint8);
   backend_context_properties.data_type_limits.logical_output.RetainAll(

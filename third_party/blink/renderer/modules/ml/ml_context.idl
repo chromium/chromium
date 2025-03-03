@@ -45,14 +45,19 @@ dictionary MLBatchNormalizationSupportLimits {
 };
 
 dictionary MLConcatSupportLimits {
-  MLTensorLimits inputs;
+  MLDataTypeLimits inputs;
   MLDataTypeLimits output;
 };
 
 dictionary MLConv2dSupportLimits {
-  MLTensorLimits input;
-  MLTensorLimits filter;
-  MLTensorLimits bias;
+  MLDataTypeLimits input;
+  MLDataTypeLimits filter;
+  MLDataTypeLimits bias;
+  MLDataTypeLimits output;
+};
+
+dictionary MLCumulativeSumSupportLimits {
+  MLDataTypeLimits input;
   MLDataTypeLimits output;
 };
 
