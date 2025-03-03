@@ -980,6 +980,7 @@
     {
       name: "IsSpecifiedDisplayWebkitBox",
       name_for_methods: "IsSpecifiedDisplayWebkitBox",
+      field_group: "*",
       field_template: "monotonic_flag",
       default_value: "false",
       invalidate: ["layout", "paint"],
@@ -1023,7 +1024,6 @@
     },
     {
       name: "InlineBlockBaselineEdge",
-      field_group: "*",
       field_template: "keyword",
       keywords: ["margin-box", "border-box", "content-box"],
       default_value: "margin-box",
