@@ -33,6 +33,11 @@ class ReportingEventRouter : public KeyedService {
 
   bool IsEventEnabled(const std::string& event);
 
+  void OnLoginEvent(const GURL& url,
+                    bool is_federated,
+                    const url::SchemeHostPort& federated_origin,
+                    const std::u16string& username);
+
  private:
   raw_ptr<content::BrowserContext> context_;
   raw_ptr<RealtimeReportingClient> reporting_client_;

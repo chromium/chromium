@@ -249,15 +249,6 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             "filePasswordProtected", "content_transfer_method", 12345, result);
   }
 
-  void TriggerOnLoginEvent(
-      const GURL& url,
-      const std::u16string& login_user_name,
-      url::SchemeHostPort federated_origin = url::SchemeHostPort()) {
-    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnLoginEvent(url, federated_origin.IsValid(), federated_origin,
-                       login_user_name);
-  }
-
   void TriggerOnPasswordBreachEvent(
       const std::string& trigger,
       const std::vector<std::pair<GURL, std::u16string>>& identities) {
@@ -851,96 +842,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 
   Mock::VerifyAndClearExpectations(client_.get());
   EXPECT_EQ(base::Value::Type::NONE, report.type());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEvent) {
-  SetUpRouters(
-      /*authorized=*/true,
-      /*realtime_reporting_enable=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
-
-  signin::IdentityTestEnvironment identity_test_environment;
-  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
-      ->SetIdentityManagerForTesting(
-          identity_test_environment.identity_manager());
-  identity_test_environment.MakePrimaryAccountAvailable(
-      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
-
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectLoginEvent("https://www.example.com/", false, "",
-                             profile_->GetProfileUserName(),
-                             GetProfileIdentifier(), u"*****");
-
-  TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username");
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest,
-       TestOnLoginEventNoMatchingUrlPattern) {
-  SetUpRouters(
-      /*authorized=*/true,
-      /*realtime_reporting_enable=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/{{"loginEvent", {"notexample.com"}}});
-
-  signin::IdentityTestEnvironment identity_test_environment;
-  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
-      ->SetIdentityManagerForTesting(
-          identity_test_environment.identity_manager());
-  identity_test_environment.MakePrimaryAccountAvailable(
-      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
-
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectNoReport();
-
-  TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username");
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest,
-       TestOnLoginEventWithEmailAsLoginUsername) {
-  SetUpRouters(
-      /*authorized=*/true,
-      /*realtime_reporting_enable=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
-
-  signin::IdentityTestEnvironment identity_test_environment;
-  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
-      ->SetIdentityManagerForTesting(
-          identity_test_environment.identity_manager());
-  identity_test_environment.MakePrimaryAccountAvailable(
-      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
-
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectLoginEvent("https://www.example.com/", false, "",
-                             profile_->GetProfileUserName(),
-                             GetProfileIdentifier(), u"*****@example.com");
-
-  TriggerOnLoginEvent(GURL("https://www.example.com/"),
-                      u"login-username@example.com");
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
-  SetUpRouters(
-      /*authorized=*/true,
-      /*realtime_reporting_enable=*/true,
-      /*enabled_event_names=*/{},
-      /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
-
-  signin::IdentityTestEnvironment identity_test_environment;
-  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
-      ->SetIdentityManagerForTesting(
-          identity_test_environment.identity_manager());
-  identity_test_environment.MakePrimaryAccountAvailable(
-      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
-
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectLoginEvent(
-      "https://www.example.com/", true, "https://www.google.com",
-      profile_->GetProfileUserName(), GetProfileIdentifier(), u"*****");
-
-  TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username",
-                      url::SchemeHostPort(GURL("https://www.google.com")));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {

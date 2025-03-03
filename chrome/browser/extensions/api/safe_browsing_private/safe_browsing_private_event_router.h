@@ -236,11 +236,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& scan_id,
       const int64_t content_size);
 
-  void OnLoginEvent(const GURL& url,
-                    bool is_federated,
-                    const url::SchemeHostPort& federated_origin,
-                    const std::u16string& username);
-
   void OnPasswordBreach(
       const std::string& trigger,
       const std::vector<std::pair<GURL, std::u16string>>& identities);
