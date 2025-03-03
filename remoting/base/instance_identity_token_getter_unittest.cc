@@ -33,6 +33,22 @@ constexpr char kHttpMetadataRequestUrl[] =
     "service-accounts/default/identity?audience=audience_for_testing&"
     "format=full";
 
+// This JWT is valid but decoding will fail if kStrict is used because the
+// length of the header and payload are not divisible by 4 as the padding has
+// been stripped which is how tokens received from the metadata server are
+// formatted.
+constexpr std::string_view kJwtWithoutPadding =
+    // Header
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6ImtpZC1zaWduYXR1cmUiLCJ0eXAiOiJKV1QifQ."
+    // Payload
+    "eyJhdWQiOiJhdWRpZW5jZV9mb3JfdGVzdGluZyIsImF6cCI6IjEyMzQ1IiwiZXhwIjo1NzQw"
+    "MTcsImdvb2dsZSI6eyJjb21wdXRlX2VuZ2luZSI6eyJpbnN0YW5jZV9pZCI6IjEyMzQ1Njc4"
+    "OSIsImluc3RhbmNlX25hbWUiOiJteS1pbnN0YW5jZSIsInByb2plY3RfaWQiOiJteS1wcm9q"
+    "ZWN0IiwicHJvamVjdF9udW1iZXIiOjU0MzIxLCJ6b25lIjoidXMtd2lsZC13ZXN0MS16In19"
+    "LCJpYXQiOjU3MDQxNywiaXNzIjoiRzAwZ2xlIiwic3ViIjoiMTIzNDUifQ."
+    // Signature
+    "SIGNATURE!!";
+
 base::Value::Dict CreateJwtHeaderDict() {
   return base::Value::Dict()
       .Set("typ", "JWT")
@@ -218,6 +234,21 @@ TEST_F(InstanceIdentityTokenGetterTest, SingleRequest) {
   ASSERT_EQ(url_loader_request_count(), 1U);
 }
 
+TEST_F(InstanceIdentityTokenGetterTest, JwtWithoutPadding) {
+  // Base64 decode will fail if kStrict is used.
+  SetTokenResponse(kJwtWithoutPadding);
+
+  instance_identity_token_getter().RetrieveToken(
+      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+                     base::Unretained(this)));
+
+  RunUntilQuit();
+
+  ASSERT_TRUE(token().has_value());
+  ASSERT_EQ(*token(), kJwtWithoutPadding);
+  ASSERT_EQ(url_loader_request_count(), 1U);
+}
+
 TEST_F(InstanceIdentityTokenGetterTest, MultipleRequests) {
   const int kQueuedCallbackCount = 10;
 
@@ -346,6 +377,9 @@ INSTANTIATE_TEST_SUITE_P(
         TokenParams("a." + GetBase64EncodedHeader(),
                     GetBase64EncodedPayload(),
                     "ExtraTokenSegment"),
+        TokenParams(GetBase64EncodedHeader() + "====",
+                    GetBase64EncodedPayload() + "====",
+                    "ExtraPadding"),
         TokenParams("", GetBase64EncodedPayload(), "EmptyHeader"),
         TokenParams(GetBase64EncodedHeader(), "", "EmptyPayload"),
         TokenParams(Base64EncodeDict(base::Value::Dict()),

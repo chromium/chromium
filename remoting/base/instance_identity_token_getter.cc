@@ -47,7 +47,8 @@ std::optional<base::Value::Dict> parseIdTokenPayload(std::string_view token) {
   // Parse and validate the header.
   auto encoded_header = parts[0];
   std::string decoded_header;
-  if (!base::Base64Decode(encoded_header, &decoded_header)) {
+  if (!base::Base64Decode(encoded_header, &decoded_header,
+                          base::Base64DecodePolicy::kForgiving)) {
     LOG(WARNING) << "Failed to decode instance identity token header: "
                  << encoded_header;
     return std::nullopt;
@@ -67,7 +68,8 @@ std::optional<base::Value::Dict> parseIdTokenPayload(std::string_view token) {
   // Parse and validate the payload.
   auto encoded_payload = parts[1];
   std::string decoded_payload;
-  if (!base::Base64Decode(encoded_payload, &decoded_payload)) {
+  if (!base::Base64Decode(encoded_payload, &decoded_payload,
+                          base::Base64DecodePolicy::kForgiving)) {
     LOG(WARNING) << "Failed to decode instance identity token payload: "
                  << encoded_payload;
     return std::nullopt;
