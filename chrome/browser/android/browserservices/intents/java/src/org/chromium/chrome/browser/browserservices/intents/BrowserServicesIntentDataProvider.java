@@ -664,6 +664,11 @@ public abstract class BrowserServicesIntentDataProvider {
         return getTargetNetwork() != NetId.INVALID;
     }
 
+    /** Return whether the close button is enabled and visible in the custom tab. */
+    public boolean isCloseButtonEnabled() {
+        return true;
+    }
+
     /** Return {@code true} if the service was launched for authentication. */
     public boolean isAuthTab() {
         return false;
