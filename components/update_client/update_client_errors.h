@@ -85,6 +85,8 @@ enum class UnpackerError {
   kFailedToAddToCache = 19,
   kFailedToCreateCacheDir = 20,
   kCrxCacheNotProvided = 21,
+  kCrxCacheMetadataCorrupted = 22,
+  kCrxCacheFileNotCached = 23,
 };
 
 // These errors are returned with the |kInstall| error category and

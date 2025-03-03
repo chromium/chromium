@@ -65,6 +65,10 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
                            int error,
                            int retry_after_sec);
 
+ private:
+  // `task_environment_` must outlive `update_context_`.
+  base::test::TaskEnvironment task_environment_;
+
  protected:
   void Quit();
   void RunThreads();
@@ -99,7 +103,6 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
  private:
   scoped_refptr<UpdateContext> MakeMockUpdateContext() const;
 
-  base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
   base::ScopedTempDir temp_dir_;
 };
