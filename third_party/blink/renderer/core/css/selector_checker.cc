@@ -1718,8 +1718,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           return false;
         }
       }
-      return selector.MatchNth(NthIndexCache::NthChildIndex(
-          element, selector.SelectorList(), this, &context));
+      return selector.MatchNth(
+          NthIndexCache::NthChildIndex(element, selector.SelectorList(), this,
+                                       &context, NthIndexData::kLightTree));
     case CSSSelector::kPseudoNthOfType:
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent = element.ParentElementOrDocumentFragment()) {
@@ -1744,7 +1745,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         }
       }
       return selector.MatchNth(NthIndexCache::NthLastChildIndex(
-          element, selector.SelectorList(), this, &context));
+          element, selector.SelectorList(), this, &context,
+          NthIndexData::kLightTree));
     }
     case CSSSelector::kPseudoNthLastOfType: {
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
