@@ -20,7 +20,7 @@
                 "config": "arm64_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "arm64_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -46,7 +46,7 @@
                 "config": "arm64_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "arm64_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {

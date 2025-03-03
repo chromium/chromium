@@ -18,7 +18,7 @@
               },
               "legacy_chromium_config": {
                 "build_config": "Release",
-                "config": "android",
+                "config": "x64_builder_mb",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -46,7 +46,7 @@
               },
               "legacy_chromium_config": {
                 "build_config": "Release",
-                "config": "android",
+                "config": "x64_builder_mb",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"

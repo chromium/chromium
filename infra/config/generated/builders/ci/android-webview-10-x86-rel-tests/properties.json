@@ -18,7 +18,7 @@
               },
               "legacy_chromium_config": {
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder_mb",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -50,7 +50,7 @@
               },
               "legacy_chromium_config": {
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder_mb",
                 "target_bits": 32,
                 "target_platform": "android"
               },

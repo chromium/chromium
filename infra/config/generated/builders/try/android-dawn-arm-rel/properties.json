@@ -20,7 +20,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -47,7 +47,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -79,7 +79,7 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder_rel_mb",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
