@@ -2103,6 +2103,13 @@ bool LayoutBox::ComputeBackgroundIsKnownToBeObscured() const {
     return false;
   if (StyleRef().BoxShadow())
     return false;
+  if (IsFragmented()) {
+    // The code here doesn't really understand fragmentation, but rather works
+    // in the stitched-fragments coordinate system (pretending that there's no
+    // block fragmentation, imagining that all fragments are laid out in a tall
+    // continuous strip after oneanother).
+    return false;
+  }
   return ForegroundIsKnownToBeOpaqueInRect(BackgroundPaintedExtent(),
                                            kBackgroundObscurationTestMaxDepth);
 }
