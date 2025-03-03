@@ -1194,7 +1194,11 @@ int HttpCache::Transaction::DoInitEntry() {
     return OK;
   }
 
-  if ((mode_ & READ) && read_no_vary_search_cache_ &&
+  // No-Vary-Search is only useful if we are going to read from the cache. We
+  // enable it for externally conditionalized requests as it may be useful if
+  // JavaScript is doing its own cache revalidation, and it will provide more
+  // consistent behavior.
+  if ((mode_ & READ_META) && read_no_vary_search_cache_ &&
       IsNoVarySearchApplicable()) {
     no_vary_search_use_result_ = LookupRequestInNoVarySearchCache();
   }
@@ -1943,7 +1947,7 @@ int HttpCache::Transaction::DoSendRequest() {
   if (IsUsingURLFromNoVarySearchCache()) {
     // If we are using the NoVarySearchCache, double-check that the network
     // request we are about to send is conditionalized and not a range request.
-    CHECK_EQ(mode_, READ_WRITE);
+    CHECK(mode_ & READ_META);
     CHECK(!couldnt_conditionalize_request_);
     CHECK(!partial_);
   }
