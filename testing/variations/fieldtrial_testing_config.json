@@ -17023,23 +17023,6 @@
             ]
         }
     ],
-    "PeripheralCustomization": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PeripheralCustomization",
-                        "SearchCustomizableShortcutsInLauncher",
-                        "ShortcutCustomization"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionElementPromptPositioning": [
         {
             "platforms": [
