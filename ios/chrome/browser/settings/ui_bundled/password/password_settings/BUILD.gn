@@ -69,6 +69,7 @@ source_set("password_settings_ui") {
   deps = [
     ":password_settings_constants",
     "//components/strings",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider/model:features",
     "//ios/chrome/browser/settings/ui_bundled/password:features",
@@ -83,7 +84,10 @@ source_set("password_settings_ui") {
     "//ui/base",
   ]
   public_deps = [ "//ios/chrome/browser/settings/ui_bundled:settings_root" ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "UIKit.framework",
+    "AuthenticationServices.framework",
+  ]
 }
 
 source_set("password_settings_constants") {

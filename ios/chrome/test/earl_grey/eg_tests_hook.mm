@@ -354,4 +354,9 @@ void WipeProfileIfRequested(int argc, char* argv[]) {
   [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+base::TimeDelta
+GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension() {
+  return base::Seconds(2);
+}
+
 }  // namespace tests_hook

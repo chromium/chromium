@@ -16,11 +16,15 @@
 // The shared instance PasswordAutofillStatusManager.
 + (PasswordAutoFillStatusManager*)sharedManager;
 
-// Adds observer that registers auto-fill status updates.
+// Adds observer that registers AutoFill status updates.
 - (void)addObserver:(id<PasswordAutoFillStatusObserver>)observer;
 
-// Removes observer that registers auto-fill status updates.
+// Removes observer that registers AutoFill status updates.
 - (void)removeObserver:(id<PasswordAutoFillStatusObserver>)observer;
+
+// Checks the AutoFill status and updates the observers with the status if
+// needed.
+- (void)checkAndUpdatePasswordAutoFillStatus;
 
 // Whether the observer has finished initialization.
 @property(nonatomic, assign, readonly) BOOL ready;

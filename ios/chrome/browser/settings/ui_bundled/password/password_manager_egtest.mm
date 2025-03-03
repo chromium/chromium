@@ -98,6 +98,8 @@ using testing::NavigationBarBackButton;
 namespace {
 
 constexpr base::TimeDelta kSyncActiveTimeout = base::Seconds(5);
+constexpr base::TimeDelta kReEnableTurnOnPasswordsInOtherAppsButtonTimeout =
+    base::Seconds(3);
 
 id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
   return grey_allOf(grey_accessibilityID(id),
@@ -372,12 +374,18 @@ id<GREYMatcher> PasswordDetailsMoveToAccountButton() {
 }
 
 // Returns a matcher for the "Turn on AutoFill…" button.
-id<GREYMatcher> TurnOnPasswordsInOtherAppsButton() {
-  return grey_allOf(
-      ButtonWithAccessibilityLabelId(
-          IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)),
-      grey_userInteractionEnabled(), nil);
+id<GREYMatcher> TurnOnPasswordsInOtherAppsButton(BOOL enabled = YES) {
+  id<GREYMatcher> accessibility_trait_matcher =
+      enabled
+          ? grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))
+          : grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
+  id<GREYMatcher> interaction_enabled_matcher =
+      enabled ? grey_userInteractionEnabled()
+              : grey_not(grey_userInteractionEnabled());
+  return grey_allOf(ButtonWithAccessibilityLabelId(
+                        IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL),
+                    accessibility_trait_matcher, interaction_enabled_matcher,
+                    nil);
 }
 
 // Saves two example forms in the store.
@@ -724,7 +732,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   if ([self isRunningTest:@selector
-            (testTurnOnPasswordsInOtherAppsItemVisibility)]) {
+            (testTurnOnPasswordsInOtherAppsItemVisibility)] ||
+      [self
+          isRunningTest:@selector(testTapsOnTurnOnPasswordsInOtherAppsItem)]) {
     config.features_enabled.push_back(kIOSPasskeysM2);
   }
 
@@ -3024,6 +3034,42 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   } else {
     [[EarlGrey selectElementWithMatcher:TurnOnPasswordsInOtherAppsButton()]
         assertWithMatcher:grey_nil()];
+  }
+}
+
+// Tests that the "Turn on AutoFill…" button becomes enabled when tapped, and
+// gets re-enabled after a 10 seconds delay.
+- (void)testTapsOnTurnOnPasswordsInOtherAppsItem {
+  if (@available(iOS 18, *)) {
+    REQUIRE_PASSKEYS
+
+    OpenPasswordManager();
+    OpenSettingsSubmenu();
+
+    [[EarlGrey selectElementWithMatcher:TurnOnPasswordsInOtherAppsButton()]
+        performAction:grey_tap()];
+
+    // After being pressed, the button should become disabled.
+    [[EarlGrey selectElementWithMatcher:TurnOnPasswordsInOtherAppsButton(
+                                            /*enabled=*/NO)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+
+    // The button should become enabled again after a delay (10 seconds in
+    // normal time, 2 seconds in the context of EG tests).
+    ConditionBlock condition = ^{
+      NSError* error = nil;
+      [[EarlGrey selectElementWithMatcher:TurnOnPasswordsInOtherAppsButton(
+                                              /*enabled=*/YES)]
+          assertWithMatcher:grey_sufficientlyVisible()
+                      error:&error];
+      return error == nil;
+    };
+    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                   kReEnableTurnOnPasswordsInOtherAppsButtonTimeout, condition),
+               @"Waiting for the 'Turn on AutoFill' button to become enabled.");
+  } else {
+    EARL_GREY_TEST_SKIPPED(
+        @"The 'Turn on AutoFill…' button is only available on iOS 18+.");
   }
 }
 

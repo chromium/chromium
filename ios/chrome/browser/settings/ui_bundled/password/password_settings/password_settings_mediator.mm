@@ -307,6 +307,16 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 #pragma mark - PasswordSettingsDelegate
 
+- (void)savedPasswordSwitchDidChange:(BOOL)enabled {
+  _prefService->SetBoolean(kCredentialsEnableService, enabled);
+}
+
+- (void)passwordAutoFillWasTurnedOn {
+  if (_passwordAutoFillStatusManager.ready) {
+    [_passwordAutoFillStatusManager checkAndUpdatePasswordAutoFillStatus];
+  }
+}
+
 - (void)bulkMovePasswordsToAccountButtonClicked {
   base::RecordAction(base::UserMetricsAction(
       kBulkMovePasswordsToAccountButtonClickedUserAction));
@@ -340,10 +350,6 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self.bulkMovePasswordsToAccountHandler
       showConfirmationDialogWithAlertTitle:alertTitle
                           alertDescription:alertDescription];
-}
-
-- (void)savedPasswordSwitchDidChange:(BOOL)enabled {
-  _prefService->SetBoolean(kCredentialsEnableService, enabled);
 }
 
 - (void)automaticPasskeyUpgradesSwitchDidChange:(BOOL)enabled {

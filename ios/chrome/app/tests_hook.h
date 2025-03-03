@@ -199,6 +199,12 @@ feature_engagement::FeatureActivation FETDemoModeOverride();
 // simulates launching the application with a fresh profile.
 void WipeProfileIfRequested(int argc, char* argv[]);
 
+// Delay before which the "Turn on AutoFill" button shown in Password Settings
+// can be re-enabled. If the value is 0, the default value from Password
+// Settings should not be updated.
+base::TimeDelta
+GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension();
+
 }  // namespace tests_hook
 
 #endif  // IOS_CHROME_APP_TESTS_HOOK_H_
