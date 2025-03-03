@@ -2093,6 +2093,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
              was offline after text detection"/>
   <int value="52" label="Sunfish-session started using the Ash debug shortcut"/>
   <int value="53" label="Sunfish-session started using the button in Launcher"/>
+  <int value="54"
+      label="Sunfish-session started using a long-press on the home button"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->

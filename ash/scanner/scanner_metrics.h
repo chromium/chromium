@@ -117,8 +117,9 @@ enum class ScannerFeatureUserState {
 
   kSunfishSessionStartedFromDebugShortcut = 52,
   kSunfishSessionStartedFromLauncherButton = 53,
+  kSunfishSessionStartedFromHomeButtonLongPress = 54,
 
-  kMaxValue = kSunfishSessionStartedFromLauncherButton,
+  kMaxValue = kSunfishSessionStartedFromHomeButtonLongPress,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 

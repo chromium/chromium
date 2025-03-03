@@ -19,15 +19,20 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "scanner_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 
 namespace ash {
 
@@ -283,6 +288,28 @@ TEST_F(ScannerMetricsTest, TabletLauncherButtonClicked) {
   histogram_tester.ExpectBucketCount("Ash.ScannerFeature.UserState",
                                      kSunfishSessionStartedFromLauncherButton,
                                      1);
+}
+
+TEST_F(ScannerMetricsTest, HomeButtonLongPress) {
+  base::HistogramTester histogram_tester;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  auto* delegate = static_cast<FakeScannerProfileScopedDelegate*>(
+      scanner_controller->delegate_for_testing()->GetProfileScopedDelegate());
+  ON_CALL(*delegate, CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  ASSERT_TRUE(CanShowSunfishOrScannerUi());
+
+  HomeButton* home_button =
+      GetPrimaryShelf()->shelf_widget()->navigation_widget()->GetHomeButton();
+  ui::GestureEvent long_press(
+      0, 0, ui::EF_NONE, base::TimeTicks(),
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
+  home_button->OnGestureEvent(&long_press);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      kSunfishSessionStartedFromHomeButtonLongPress, 1);
 }
 
 }  // namespace
