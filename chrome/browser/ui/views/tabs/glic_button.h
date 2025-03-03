@@ -7,12 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic_button_controller_delegate.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
 
-class TabStripController;
+class PrefService;
 
 namespace glic {
 
@@ -20,7 +22,9 @@ namespace glic {
 // TabSearchButton for sizing and appropriate theming.
 
 class GlicButton : public TabStripNudgeButton,
-                   public GlicButtonControllerDelegate {
+                   public GlicButtonControllerDelegate,
+                   public views::ContextMenuController,
+                   public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(GlicButton, TabStripNudgeButton)
 
  public:
@@ -49,7 +53,40 @@ class GlicButton : public TabStripNudgeButton,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
+
+  bool IsContextMenuShowingForTest();
+
  private:
+  // Creates the model for the context menu.
+  std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
+
+  // Callback when the context menu closes.
+  void OnMenuClosed();
+
+  PrefService* profile_prefs() {
+    return tab_strip_controller_->GetProfile()->GetPrefs();
+  }
+
+  // The model adapter for the context menu.
+  std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
+
+  // Model for the context menu.
+  std::unique_ptr<ui::MenuModel> menu_model_;
+
+  // Used to ensure the button remains highlighted while the menu is active.
+  std::optional<Button::ScopedAnchorHighlight> menu_anchor_higlight_;
+
+  // Menu runner for the context menu.
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+
   // Tab strip that contains this button.
   raw_ptr<TabStripController> tab_strip_controller_;
 

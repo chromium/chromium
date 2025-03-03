@@ -18710,6 +18710,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- Glic button context menu. -->
+    <if expr="not is_android">
+      <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
+        Unpin
+      </message>
+    </if>
+
   </messages>
 </release>
 </grit>

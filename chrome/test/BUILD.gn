@@ -3485,7 +3485,10 @@ if (!is_android) {
     ]
 
     if (enable_glic) {
-      sources += [ "../browser/ui/webui/settings/glic_handler_browsertest.cc" ]
+      sources += [
+        "../browser/ui/views/tabs/glic_button_browsertest.cc",
+        "../browser/ui/webui/settings/glic_handler_browsertest.cc",
+      ]
 
       deps += [
         "//chrome/browser/background/glic",
