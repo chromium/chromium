@@ -301,6 +301,10 @@ struct MEDIA_EXPORT H264DecRefPicMarking {
 
 struct MEDIA_EXPORT H264SliceHeader {
   H264SliceHeader();
+  H264SliceHeader(const H264SliceHeader&);
+  H264SliceHeader& operator=(const H264SliceHeader&);
+  H264SliceHeader(H264SliceHeader&&);
+  H264SliceHeader& operator=(H264SliceHeader&&);
 
   enum { kRefListSize = 32, kRefListModSize = kRefListSize };
 

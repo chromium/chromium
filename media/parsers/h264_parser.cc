@@ -216,6 +216,10 @@ H264PPS& H264PPS::operator=(H264PPS&&) noexcept = default;
 bool H264PPS::operator==(const H264PPS&) const = default;
 
 H264SliceHeader::H264SliceHeader() = default;
+H264SliceHeader::H264SliceHeader(const H264SliceHeader&) = default;
+H264SliceHeader& H264SliceHeader::operator=(const H264SliceHeader&) = default;
+H264SliceHeader::H264SliceHeader(H264SliceHeader&&) = default;
+H264SliceHeader& H264SliceHeader::operator=(H264SliceHeader&&) = default;
 
 gfx::HdrMetadataCta861_3 H264SEIContentLightLevelInfo::ToGfx() const {
   return gfx::HdrMetadataCta861_3(max_content_light_level,
