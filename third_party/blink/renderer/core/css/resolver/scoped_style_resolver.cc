@@ -353,8 +353,18 @@ void ScopedStyleResolver::AddFunctionRules(const RuleSet& rule_set) {
   const HeapVector<Member<StyleRuleFunction>> function_rules =
       rule_set.FunctionRules();
   for (StyleRuleFunction* rule : function_rules) {
-    // TODO(crbug.com/324780202): Handle @layer.
-    function_rule_map_.Set(rule->GetName(), rule);
+    auto result = function_rule_map_.insert(rule->GetName(), rule);
+    if (result.is_new_entry) {
+      continue;
+    }
+    Member<StyleRuleFunction>& stored_rule = result.stored_value->value;
+    const bool should_override =
+        !cascade_layer_map_ ||
+        cascade_layer_map_->CompareLayerOrder(stored_rule->GetCascadeLayer(),
+                                              rule->GetCascadeLayer()) <= 0;
+    if (should_override) {
+      stored_rule = rule;
+    }
   }
 }
 

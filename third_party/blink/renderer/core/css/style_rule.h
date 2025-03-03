@@ -664,12 +664,16 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
   const HeapVector<Parameter>& GetParameters() const { return parameters_; }
   const CSSSyntaxDefinition& GetReturnType() const { return return_type_; }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   AtomicString name_;
   HeapVector<Parameter> parameters_;
   CSSSyntaxDefinition return_type_;
+  Member<const CascadeLayer> layer_;
 };
 
 // An @mixin rule, representing a CSS mixin. We store all of the rules
