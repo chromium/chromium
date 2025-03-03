@@ -23,7 +23,7 @@ const INVALID_TEXT_ELEMENTS = new Set([
  * surrounding text extended by `NUMBER_OF_SURROUNDING_CHARS` before and after
  * as much as possible.
  */
-class SurroundingText {
+export class SurroundingText {
   constructor(public position: number, public text: string) {}
 }
 
@@ -154,7 +154,7 @@ function getPrevTextNode(node: Node|null): Node|null {
  * within the surrounding text, and the surrounding range.
  * @param range - the range where the user's selected point.
  */
-function getSurroundingText(range: Range): SurroundingText {
+export function getSurroundingText(range: Range): SurroundingText {
   const node = range.startContainer;
   const textContent = node.textContent;
   if (!textContent) {
@@ -187,5 +187,3 @@ function getSurroundingText(range: Range): SurroundingText {
   return new SurroundingText(
       leftText.length, leftText + middleText + rightText);
 }
-
-export {getSurroundingText, SurroundingText};

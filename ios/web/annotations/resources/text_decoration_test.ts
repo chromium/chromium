@@ -10,7 +10,7 @@ import {createChromeAnnotation, isDecorationNode, originalNodeDecorationId, repl
 import type {HTMLElementWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {expectEq, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextDecoration extends TestSuite {
+export class TestTextDecoration extends TestSuite {
   // Checks that applying a decoration works properly for the page html and the
   // Symbol tags.
   testTextDecorationReplacement() {
@@ -211,5 +211,3 @@ class TestTextDecoration extends TestSuite {
     expectEq(originalHTML, body.innerHTML);
   }
 }
-
-export {TestTextDecoration};

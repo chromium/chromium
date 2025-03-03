@@ -10,7 +10,7 @@ import {isDecorationNode} from '//ios/web/annotations/resources/text_decoration.
 import {isValidNode} from '//ios/web/annotations/resources/text_dom_utils.js';
 
 // Consumer of decoration `Node` removed callback.
-interface TextDecorationNodeRemovedConsumer {
+export interface TextDecorationNodeRemovedConsumer {
   (node: Node): void;
 }
 
@@ -18,7 +18,7 @@ interface TextDecorationNodeRemovedConsumer {
 // `unobserve` call and actually `unobserve` only when the count reaches 0.
 // The `TextDomObserver` will call it for every text node and doesn't
 // care about keeping track of observations state.
-interface CountedIntersectionObserver {
+export interface CountedIntersectionObserver {
   observe(node: Node): void;
   unobserve(node: Node): void;
 }
@@ -26,7 +26,7 @@ interface CountedIntersectionObserver {
 // Class for a DOM `MutationObserver` that handles passing on to a
 // `CountedIntersectionObserver` the text nodes that should be observed
 // (or unobserved) for viewport intersection.
-class TextDomObserver {
+export class TextDomObserver {
   constructor(
       public root: Element,
       private intersectionObserver: CountedIntersectionObserver,
@@ -122,9 +122,3 @@ class TextDomObserver {
     this.mutationCallback(this.mutationObserver.takeRecords());
   }
 }
-
-export {
-  CountedIntersectionObserver,
-  TextDomObserver,
-  TextDecorationNodeRemovedConsumer,
-};

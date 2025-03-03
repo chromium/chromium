@@ -10,7 +10,7 @@ import type {TextChunk, TextChunkConsumer} from '//ios/web/annotations/resources
 import {TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
 import {expectEq, expectNeq, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextExtractor extends TestSuite {
+export class TestTextExtractor extends TestSuite {
   // Mark:  TextChunkConsumer
 
   textChunk?: TextChunk;
@@ -105,5 +105,3 @@ class TestTextExtractor extends TestSuite {
     expectEq('345678', this.textChunk!.sections[7]!.textNode!.textContent);
   }
 }
-
-export {TestTextExtractor};

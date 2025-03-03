@@ -53,7 +53,7 @@ class FakeIntersectionObserver implements InternalIntersectionObserver {
   }
 }
 
-class TestTextIntersectionObserver extends TestSuite implements
+export class TestTextIntersectionObserver extends TestSuite implements
     TextNodeVisitor {
   // Mark: TextNodeVisitor
 
@@ -229,5 +229,3 @@ class TestTextIntersectionObserver extends TestSuite implements
     expectEq(false, !!(d3.childNodes[0] as NodeWithSymbolIndex)[observedNode]);
   }
 }
-
-export {TestTextIntersectionObserver};

@@ -12,7 +12,7 @@ import {TextDomObserver} from '//ios/web/annotations/resources/text_dom_observer
 import type {HTMLElementWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {expectEq, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextDomObserver extends TestSuite implements
+export class TestTextDomObserver extends TestSuite implements
     CountedIntersectionObserver {
   corrupted: Node[] = [];
 
@@ -124,5 +124,3 @@ class TestTextDomObserver extends TestSuite implements
     expectEq(this.corrupted[0], annotation);
   }
 }
-
-export {TestTextDomObserver};

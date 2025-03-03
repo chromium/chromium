@@ -9,7 +9,7 @@
 import {hasNoIntentDetection, isValidNode, nextLeaf, noFormatDetectionTypes, previousLeaf} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {expectEq, load, loadHead, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestDomUtils extends TestSuite {
+export class TestDomUtils extends TestSuite {
   // Builds a text string by navigating leaf nodes backward.
   iterateOnPreviousLeaf(node: Node|null, breakAtInvalid: boolean): string {
     let result = '';
@@ -100,5 +100,3 @@ class TestDomUtils extends TestSuite {
     expectEq(true, noFormatDetectionTypes().has('unit'));
   }
 }
-
-export {TestDomUtils};
