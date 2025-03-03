@@ -5383,10 +5383,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           other {These addresses will be deleted from this and your other signed-in devices.}}
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_DESCRIPTION" desc="Button description asking the user to migrate the local address to account. [iOS only]">
-          This address is only saved on this device. To use it on your other devices, move it to your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
-      </message>
-      <message name="IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_TITLE" desc="Button title asking the user to migrate the local address to account. [iOS only]">
-          Move address to account
+          This address is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_CONFIRMATION_TEXT" desc="Text shown to the user after the migration of address from local to account was succesfull [iOS only]">
                 Address moved to your account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>

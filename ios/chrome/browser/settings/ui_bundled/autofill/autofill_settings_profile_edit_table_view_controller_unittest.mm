@@ -231,7 +231,7 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest,
   EXPECT_NSEQ(
       static_cast<TableViewTextItem*>(GetTableViewItem(0, rowCnt - 1)).text,
       l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_TITLE));
+          IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_BUTTON_ITEM));
 }
 
 }  // namespace
