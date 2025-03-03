@@ -32,29 +32,29 @@ public class ProfileWebViewPrefetchCallback implements AwPrefetchCallback {
         if (operationResult.statusCode == PrefetchOperationStatusCode.SUCCESS) {
             mCallbackExecutor.execute(mCallback::onSuccess);
         } else {
-            resolvePrefetchErrorCallback(errorFromOperationResult(operationResult));
+            resolvePrefetchErrorCallback(operationResult);
         }
     }
 
     @Override
     public void onError(Throwable e) {
-        resolvePrefetchErrorCallback(new PrefetchException(e));
+        mCallback.onError(PrefetchOperationStatusCode.FAILURE, e.getMessage(), 0);
     }
 
-    private PrefetchException errorFromOperationResult(PrefetchOperationResult operationResult) {
+    private void resolvePrefetchErrorCallback(PrefetchOperationResult operationResult) {
         assert operationResult.statusCode != PrefetchOperationStatusCode.SUCCESS;
-        return switch (operationResult.statusCode) {
-            case PrefetchOperationStatusCode.FAILURE -> new PrefetchException(
-                    "Prefetch request failed");
-            case PrefetchOperationStatusCode.SERVER_FAILURE -> new PrefetchNetworkException(
-                    "Server error", operationResult.httpResponseStatusCode);
-            case PrefetchOperationStatusCode.DUPLICATE_REQUEST -> new PrefetchDuplicateException(
-                    "Duplicate prefetch request");
-            default -> new PrefetchException("Unexpected error occurred.");
-        };
-    }
-
-    private void resolvePrefetchErrorCallback(PrefetchException e) {
-        mCallbackExecutor.execute(() -> mCallback.onError(e));
+        int errorCode = 0;
+        String message;
+        switch (operationResult.statusCode) {
+            case PrefetchOperationStatusCode.FAILURE -> message = "Prefetch request failed";
+            case PrefetchOperationStatusCode.SERVER_FAILURE -> {
+                message = "Server error";
+                errorCode = operationResult.httpResponseStatusCode;
+            }
+            case PrefetchOperationStatusCode.DUPLICATE_REQUEST -> message =
+                    "Duplicate prefetch request";
+            default -> message = "Unexpected error occurred.";
+        }
+        mCallback.onError(operationResult.statusCode, message, errorCode);
     }
 }
