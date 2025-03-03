@@ -24,6 +24,7 @@
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 @protocol TextFieldViewContaining;
+class PrefService;
 namespace feature_engagement {
 class Tracker;
 }
@@ -75,6 +76,11 @@ class Tracker;
                                                          LocationBarConsumer>
 
 @property(nonatomic, assign) BOOL incognito;
+
+// TODO(crbug.com/399689234): A ViewController shouldn't directly access the
+// profile's PrefService. Instead, `LocationBarCoordinator` should pass in the
+// necessary info, e.g. via a property `BOOL isLensOverlayAvailable`.
+@property(nonatomic, assign) PrefService* profilePrefs;
 
 // The dispatcher for the share button, voice search, and long press actions.
 @property(nonatomic, weak) id<ActivityServiceCommands,

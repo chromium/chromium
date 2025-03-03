@@ -20,6 +20,7 @@
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/language_detection/core/language_detection_model.h"
+#import "components/lens/lens_overlay_permission_utils.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -247,6 +248,9 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
     model_ = [[OverflowMenuModel alloc] initWithDestinations:@[]
                                                 actionGroups:@[]];
+
+    CreateProfilePrefs();
+    CreateLocalStatePrefs();
   }
 
   void TearDown() override {
@@ -269,6 +273,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
     mediator_.isIncognito = is_incognito;
     mediator_.menuOrderer = orderer_;
     mediator_.baseViewController = baseViewController_;
+    mediator_.localStatePrefs = localStatePrefs_.get();
+    mediator_.profilePrefs = profilePrefs_.get();
     SetUpReadingList();
     return mediator_;
   }
@@ -286,6 +292,10 @@ class OverflowMenuMediatorTest : public PlatformTest {
     profilePrefs_->registry()->RegisterBooleanPref(
         bookmarks::prefs::kEditBookmarksEnabled,
         /*default_value=*/true);
+    profilePrefs_->registry()->RegisterIntegerPref(
+        lens::prefs::kLensOverlaySettings,
+        static_cast<int>(
+            lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
   }
 
   void CreateLocalStatePrefs() {
@@ -488,14 +498,12 @@ TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
 // Tests that the mediator is returning the right number of items and sections
 // for the Tools Menu type.
 TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
-  CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
-  mediator_.localStatePrefs = localStatePrefs_.get();
   mediator_.model = model_;
 
   NSUInteger number_of_action_items = 6;
 
-  if (IsLensOverlayAvailable()) {
+  if (IsLensOverlayAvailable(profilePrefs_.get())) {
     number_of_action_items++;
   }
 
@@ -535,11 +543,9 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
 // Tests that the items returned by the mediator are correctly enabled on a
 // WebPage.
 TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
-  CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.localStatePrefs = localStatePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
@@ -554,11 +560,9 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
 // Tests that the items returned by the mediator are correctly enabled on the
 // NTP.
 TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
-  CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.localStatePrefs = localStatePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
@@ -576,13 +580,11 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
 TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
-  CreateProfilePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.profilePrefs = profilePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
@@ -672,7 +674,6 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
   // Set the objects needed to detect the signed in managed account.
   mediator_.authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
-  mediator_.profilePrefs = profile_->GetPrefs();
 
   // Force model update.
   mediator_.model = model_;
@@ -804,13 +805,11 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   SetUpActiveWebState();
 
   CreateMediator(/*is_incognito=*/NO);
-  CreateProfilePrefs();
   SetUpBookmarks();
   bookmark_model_->AddURL(bookmark_model_->mobile_node(), 0,
                           base::SysNSStringToUTF16(@"Test bookmark"),
                           bookmarkedURL);
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.profilePrefs = profilePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
@@ -839,9 +838,7 @@ TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
   SetUpActiveWebState();
 
   CreateMediator(/*is_incognito=*/NO);
-  CreateProfilePrefs();
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.profilePrefs = profilePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
@@ -857,15 +854,11 @@ TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
 TEST_F(OverflowMenuMediatorTest, TestWhatsNewEnabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
-  CreateProfilePrefs();
-  CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.profilePrefs = profilePrefs_.get();
-  mediator_.localStatePrefs = localStatePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
@@ -908,8 +901,6 @@ TEST_F(OverflowMenuMediatorTest, TestEligibleIdentityErrorWhenSyncOff) {
   ON_CALL(syncService, GetUserActionableError())
       .WillByDefault(Return(kEligibleIdentityErrorWhenSyncOff));
   mediator_.syncService = &syncService;
-  CreateLocalStatePrefs();
-  mediator_.localStatePrefs = localStatePrefs_.get();
   mediator_.model = model_;
 
   // Verify that the Settings destination is put at
@@ -931,8 +922,6 @@ TEST_F(OverflowMenuMediatorTest, TestNoEligibleIdentityErrorWhenSyncOff) {
   ON_CALL(syncService, GetUserActionableError())
       .WillByDefault(Return(kIneligibleIdentityErrorWhenSyncOff));
   mediator_.syncService = &syncService;
-  CreateLocalStatePrefs();
-  mediator_.localStatePrefs = localStatePrefs_.get();
   mediator_.model = model_;
 
   // Verify that the Settings destination it still there and does not have the
@@ -955,8 +944,6 @@ TEST_F(OverflowMenuMediatorTest, TestSyncError) {
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
   mediator_.syncService = &syncService;
-  CreateLocalStatePrefs();
-  mediator_.localStatePrefs = localStatePrefs_.get();
   mediator_.model = model_;
 
   // Verify that the Settings destination is put at the front of the
@@ -978,8 +965,6 @@ TEST_F(OverflowMenuMediatorTest, TestNoSyncError) {
       .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
   SetupSyncServiceEnabledExpectations(&syncService);
   mediator_.syncService = &syncService;
-  CreateLocalStatePrefs();
-  mediator_.localStatePrefs = localStatePrefs_.get();
   mediator_.model = model_;
 
   // Verify that the Settings destination it still there and does not have the
@@ -995,7 +980,6 @@ TEST_F(OverflowMenuMediatorTest, TestNoSyncError) {
 TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
-  CreateProfilePrefs();
   CreateMediator(/*is_incognito=*/NO);
   // Show the new label badge for What's New.
   ON_CALL(tracker_, ShouldTriggerHelpUI(testing::Ref(
@@ -1006,9 +990,6 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.profilePrefs = profilePrefs_.get();
-  CreateLocalStatePrefs();
-  mediator_.localStatePrefs = localStatePrefs_.get();
 
   syncer::MockSyncService syncService;
   ON_CALL(syncService, GetUserActionableError())
@@ -1038,8 +1019,6 @@ TEST_F(OverflowMenuMediatorTest, TestSettingsBlueDotBadge) {
       .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
   SetupSyncServiceEnabledExpectations(&syncService);
   mediator_.syncService = &syncService;
-  CreateLocalStatePrefs();
-  mediator_.localStatePrefs = localStatePrefs_.get();
   mediator_.hasSettingsBlueDot = YES;
   mediator_.model = model_;
 

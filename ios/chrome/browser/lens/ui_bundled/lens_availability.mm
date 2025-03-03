@@ -80,10 +80,10 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
   return lens_support_status == LensSupportStatus::LensSearchSupported;
 }
 
-bool IsLensContextMenuUnifiedExperienceEnabled() {
+bool IsLensContextMenuUnifiedExperienceEnabled(const PrefService* prefs) {
   bool featureEnabled =
       base::FeatureList::IsEnabled(kEnableLensContextMenuUnifiedExperience);
-  return IsLensOverlayAvailable() && featureEnabled;
+  return IsLensOverlayAvailable(prefs) && featureEnabled;
 }
 
 }  // namespace lens_availability

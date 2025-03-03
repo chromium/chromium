@@ -63,6 +63,8 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 @implementation LensOverlayMediator {
   /// Whether the browser is off the record.
   BOOL _isIncognito;
+  /// The profile pref service.
+  raw_ptr<const PrefService> _profilePrefs;
   /// Search engine observer.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   /// Orchestrates the navigation in the bottom sheet of the lens result page.
@@ -75,9 +77,11 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   LensOverlayFilterState _currentFilterState;
 }
 
-- (instancetype)initWithIsIncognito:(BOOL)isIncognito {
+- (instancetype)initWithProfilePrefs:(const PrefService*)profilePrefs
+                         isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
+    _profilePrefs = profilePrefs;
     _isIncognito = isIncognito;
     _navigationManager = std::make_unique<LensOverlayNavigationManager>(self);
   }
@@ -127,7 +131,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
       _thumbnailRemoved || _currentLensResult.isTextSelection;
   if (isUnimodalTextQuery) {
     if (textClobbered) {
-      if (IsLensOverlaySameTabNavigationEnabled()) {
+      if (IsLensOverlaySameTabNavigationEnabled(_profilePrefs)) {
         __weak LensOverlayMediator* weakSelf = self;
         // Delay navigation until after omnibox defocus and toolbar button hide
         // animations complete. This ensures a smooth transition and avoids

@@ -81,6 +81,8 @@ class SideSwipeMediatorTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
+    original_web_state->SetBrowserState(profile_.get());
+
     browser_->GetWebStateList()->InsertWebState(std::move(original_web_state));
 
     side_swipe_mediator_ = [[SideSwipeMediator alloc]
@@ -110,6 +112,7 @@ TEST_F(SideSwipeMediatorTest, TestConstructor) {
 // Tests that pages that need to use Chromium native swipe
 TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabled) {
   auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
   auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
   fake_navigation_manager->SetVisibleItem(item.get());
@@ -167,6 +170,7 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
   ASSERT_FALSE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
   fake_web_state->SetView(content_view_);
   CRWWebViewScrollViewProxy* scroll_view_proxy =
       [[CRWWebViewScrollViewProxy alloc] init];

@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/variations/scoped_variations_ids_provider.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
@@ -85,10 +86,13 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     UIWindow* window =
         [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 520)];
     OCMStub([mock_scene_state window]).andReturn(window);
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    profile_state_.profile = profile_.get();
+    OCMStub([mock_scene_state profileState]).andReturn(profile_state_);
     browser_ = std::make_unique<TestBrowser>(profile_, mock_scene_state);
     dispatcher_ = [[CommandDispatcher alloc] init];
 
-    GetApplicationContext()->GetLocalState()->SetInteger(
+    profile_->GetPrefs()->SetInteger(
         lens::prefs::kLensOverlaySettings,
         static_cast<int>(
             lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
@@ -128,14 +132,16 @@ class LensOverlayCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     // Tab helper
-    web_state_ = std::make_unique<web::FakeWebState>();
-    LensOverlayTabHelper::CreateForWebState(web_state_.get());
-    SnapshotTabHelper::CreateForWebState(web_state_.get());
-    tab_helper_ = LensOverlayTabHelper::FromWebState(web_state_.get());
+    std::unique_ptr<web::FakeWebState> web_state =
+        std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(profile_.get());
+    LensOverlayTabHelper::CreateForWebState(web_state.get());
+    SnapshotTabHelper::CreateForWebState(web_state.get());
+    tab_helper_ = LensOverlayTabHelper::FromWebState(web_state.get());
 
     // Attach SnapshotTabHelper to allow snapshot generation.
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
-    SnapshotTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
+    SnapshotTabHelper::FromWebState(web_state.get())->SetDelegate(delegate_);
 
     // Add a fake view to the delgate, which will be used to capture snapshots.
     CGRect frame = {CGPointZero, CGSizeMake(300, 400)};
@@ -143,7 +149,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     delegate_.view.backgroundColor = [UIColor blueColor];
 
     // Mark the only web state as active.
-    browser_.get()->GetWebStateList()->InsertWebState(std::move(web_state_));
+    browser_.get()->GetWebStateList()->InsertWebState(std::move(web_state));
     browser_.get()->GetWebStateList()->ActivateWebStateAt(0);
 
     // Increment the fullscreen disabled counter.
@@ -200,8 +206,8 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   LensOverlayCoordinator* coordinator_;
   raw_ptr<TestProfileIOS> profile_;
+  ProfileState* profile_state_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<web::WebState> web_state_;
   UIViewController* base_view_controller_;
   base::test::ScopedFeatureList feature_list_;
   ScopedKeyWindow scoped_window_;

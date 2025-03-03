@@ -215,7 +215,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser
                                          overflowMenuDelegate:self];
 
-  BOOL escapeHatchEnabled = IsLVFEscapeHatchEnabled();
+  BOOL escapeHatchEnabled =
+      IsLVFEscapeHatchEnabled(self.browser->GetProfile()->GetPrefs());
   config.useTrailingDismissButton = !escapeHatchEnabled;
 
   __weak __typeof(self) weakSelf = self;
@@ -248,8 +249,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return;
   }
   Browser* browser = self.browser;
+  ProfileIOS* profile = browser->GetProfile();
   _mediator = [[LensOverlayMediator alloc]
-      initWithIsIncognito:browser->GetProfile()->IsOffTheRecord()];
+      initWithProfilePrefs:profile->GetPrefs()
+               isIncognito:profile->IsOffTheRecord()];
   _mediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
 
@@ -268,7 +271,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  CHECK(IsLensOverlayAvailable());
+  CHECK(IsLensOverlayAvailable(self.browser->GetProfile()->GetPrefs()));
   [super start];
 
   Browser* browser = self.browser;
@@ -420,7 +423,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
         [self showResultsBottomSheet];
       }
     } else {
-      if (IsLVFEscapeHatchEnabled()) {
+      if (IsLVFEscapeHatchEnabled(self.browser->GetProfile()->GetPrefs())) {
         [self scheduleTooltipHintDisplayIfNecessary];
       }
     }
@@ -515,7 +518,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     _associatedTabHelper->RecordSheetDimensionState(SheetDimensionStateHidden);
     _associatedTabHelper->ClearViewportSnapshot();
     _associatedTabHelper->UpdateSnapshot();
-    if (IsLensOverlaySameTabNavigationEnabled()) {
+    if (self.browser && IsLensOverlaySameTabNavigationEnabled(
+                            self.browser->GetProfile()->GetPrefs())) {
       _associatedTabHelper->ClearInvokationNavigationId();
     }
   }
@@ -716,7 +720,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     _associatedTabHelper->RecordSheetDimensionState(
         _resultsPagePresenter.sheetDimension);
   }
-  if (IsLensOverlaySameTabNavigationEnabled()) {
+  if (IsLensOverlaySameTabNavigationEnabled(
+          self.browser->GetProfile()->GetPrefs())) {
     [self openURLInSameTab:URL];
   } else {
     [self openURLInNewTab:URL];
@@ -869,7 +874,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return;
   }
 
-  if (!IsLVFEscapeHatchEnabled() || ![self shouldShowTooltipHint]) {
+  if (!IsLVFEscapeHatchEnabled(self.browser->GetProfile()->GetPrefs()) ||
+      ![self shouldShowTooltipHint]) {
     return;
   }
 
@@ -1286,7 +1292,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   // The Lens overlay is locked to portrait. Skip displaying the restoration
   // window on landscape to avoid stretching the snapshot.
-  if (IsLandscape(sceneWindow) && !IsLensOverlayLandscapeOrientationEnabled()) {
+  if (IsLandscape(sceneWindow) && !IsLensOverlayLandscapeOrientationEnabled(
+                                      self.browser->GetProfile()->GetPrefs())) {
     return;
   }
 

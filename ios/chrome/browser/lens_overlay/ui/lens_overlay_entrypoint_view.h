@@ -9,10 +9,14 @@
 
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 
+class PrefService;
+
 // The location bar lens overlay entrypoint UIButton.
 @interface LensOverlayEntrypointButton : ExtendedTouchTargetButton
 
-- (instancetype)init;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithProfilePrefs:(const PrefService*)profilePrefs;
 
 @end
 

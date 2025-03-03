@@ -122,6 +122,7 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/search_engines:test_support",
     "//components/variations:test_support",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/model",

@@ -488,10 +488,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kLensCameraAssistedSearchPolicyAllowed,
                                 true);
 
-  registry->RegisterIntegerPref(
-      lens::prefs::kLensOverlaySettings,
-      static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
-
   // Registers prefs to count the remaining number of times autofill branding
   // animation should perform. Defaults to 2, which is the maximum number of
   // times a user should see autofill branding animation after installation.
@@ -964,6 +960,23 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
 
+  safety_check_prefs::RegisterPrefs(registry);
+
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, -1);
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness, -1);
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+      -1);
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+      -1);
+
+  registry->RegisterIntegerPref(
+      lens::prefs::kLensOverlaySettings,
+      static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
+
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAutologinEnabled, true);
   registry->RegisterListPref(kReverseAutologinRejectedEmailList);
@@ -1024,21 +1037,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 12/2024.
   registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
-
-  // Added 02/2025
-  safety_check_prefs::RegisterPrefs(registry);
-
-  // Added 02/2025
-  registry->RegisterIntegerPref(
-      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, -1);
-  registry->RegisterIntegerPref(
-      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness, -1);
-  registry->RegisterIntegerPref(
-      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
-      -1);
-  registry->RegisterIntegerPref(
-      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
-      -1);
 }
 
 // This method should be periodically pruned of year+ old migrations.

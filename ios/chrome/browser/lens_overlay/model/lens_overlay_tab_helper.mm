@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -24,7 +25,7 @@ const char kMimeTypePDF[] = "application/pdf";
 
 LensOverlayTabHelper::LensOverlayTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
-  CHECK(IsLensOverlayAvailable());
+  CHECK(IsLensOverlayAvailable(GetProfilePrefs()));
   web_state->AddObserver(this);
 }
 
@@ -40,8 +41,8 @@ void LensOverlayTabHelper::SetLensOverlayUIAttachedAndAlive(
   is_ui_attached_and_alive_ = is_ui_attached_and_alive;
   invokation_navigation_id_ = 0;
 
-  if (IsLensOverlaySameTabNavigationEnabled() && is_ui_attached_and_alive &&
-      web_state_) {
+  if (IsLensOverlaySameTabNavigationEnabled(GetProfilePrefs()) &&
+      is_ui_attached_and_alive && web_state_) {
     const web::NavigationManager* navigation_manager =
         web_state_->GetNavigationManager();
 
@@ -86,9 +87,9 @@ void LensOverlayTabHelper::DidStartNavigation(
   const web::NavigationItem* pending_item =
       navigation_manager ? navigation_manager->GetPendingItem() : nullptr;
 
-  if (IsLensOverlaySameTabNavigationEnabled() && is_ui_attached_and_alive_ &&
-      navigation_context && !navigation_context->IsSameDocument() &&
-      pending_item) {
+  if (IsLensOverlaySameTabNavigationEnabled(GetProfilePrefs()) &&
+      is_ui_attached_and_alive_ && navigation_context &&
+      !navigation_context->IsSameDocument() && pending_item) {
     if (invokation_navigation_id_ == pending_item->GetUniqueID()) {
       [commands_handler_ showLensUI:NO];
     } else {
@@ -116,8 +117,8 @@ void LensOverlayTabHelper::DidFinishNavigation(
 
   // Fallback if invokation failed during startNavigation (e.g GetPendingItem
   // returns null)
-  if (IsLensOverlaySameTabNavigationEnabled() && is_ui_attached_and_alive_ &&
-      navigation_item) {
+  if (IsLensOverlaySameTabNavigationEnabled(GetProfilePrefs()) &&
+      is_ui_attached_and_alive_ && navigation_item) {
     if (invokation_navigation_id_ == navigation_item->GetUniqueID()) {
       [commands_handler_ showLensUI:NO];
     } else {
@@ -129,7 +130,7 @@ void LensOverlayTabHelper::DidFinishNavigation(
 void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
   CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
-  if (IsLensOverlaySameTabNavigationEnabled()) {
+  if (IsLensOverlaySameTabNavigationEnabled(GetProfilePrefs())) {
     if (web_state_->GetNavigationManager()) {
       web::NavigationItem* visibleItem =
           web_state_->GetNavigationManager()->GetVisibleItem();
@@ -198,7 +199,7 @@ void LensOverlayTabHelper::UpdateSnapshot() {
 void LensOverlayTabHelper::UpdateSnapshotStorage() {
   // Skip updating the snapshot storage if the Lens Overlay is not invoked on
   // the current navigation item.
-  if (IsLensOverlaySameTabNavigationEnabled() &&
+  if (IsLensOverlaySameTabNavigationEnabled(GetProfilePrefs()) &&
       !IsLensOverlayInvokedOnCurrentNavigationItem()) {
     return;
   }
@@ -261,6 +262,13 @@ void LensOverlayTabHelper::ReleaseSnapshotAuxiliaryWindows() {
 UIEdgeInsets LensOverlayTabHelper::GetSnapshotInsets() {
   DCHECK(snapshot_controller_);
   return snapshot_controller_->GetSnapshotInsets();
+}
+
+PrefService* LensOverlayTabHelper::GetProfilePrefs() {
+  CHECK(web_state_, kLensOverlayNotFatalUntil);
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return profile->GetPrefs();
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(LensOverlayTabHelper)
