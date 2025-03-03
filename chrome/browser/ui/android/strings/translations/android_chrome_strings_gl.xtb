@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Contido enviado desde <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Cartafoles de fluxo para gardar marcadores abertos a pantalla completa</translation>
 <translation id="1327257854815634930">O historial de navegación está aberto</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, pestana nova ou actualizada</translation>
 <translation id="1331212799747679585">Chrome non se pode actualizar. Máis opcións</translation>
 <translation id="1332501820983677155">Atallos das funcións de Google Chrome</translation>
 <translation id="1333491156693005331">Comprobado recentemente</translation>
@@ -203,7 +202,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1925021887439448749">Introducir enderezo web personalizado</translation>
 <translation id="1928618076168182477">Mostrando vista visual</translation>
 <translation id="1928696683969751773">Actualizacións</translation>
-<translation id="1933845786846280168">Pestana seleccionada</translation>
 <translation id="1939549834451474504">Os contrasinais deixarán de funcionar en breve porque os servizos de Google Play non están dispoñibles. Podes facer unha copia dos contrasinais gardados antes de que deixen de funcionar. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Gardar contrasinais</translation>
 <translation id="1944535645109964458">Non hai claves de acceso dispoñibles</translation>
@@ -430,7 +428,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2976550651269220761">Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google.\nProba a esperar uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="2977350910003566746">Ordenando pola data de última apertura</translation>
 <translation id="297771753501244313">Ordenar: Última apertura</translation>
-<translation id="2979025552038692506">Pestana do modo de incógnito seleccionada</translation>
 <translation id="2979639724566107830">Abre o marcador nunha ventá nova</translation>
 <translation id="2981364137500752533">Podes ter ata 5 ventás.</translation>
 <translation id="2983102365694924129">En función da túa actividade nun sitio. Esta opción de configuración está desactivada.</translation>
@@ -621,7 +618,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3902562446536395999">Ordenando do A ao Z</translation>
 <translation id="3908308510347173149">Actualizar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Ordenando do Z ao A</translation>
-<translation id="3918415141610210050">Pestana</translation>
 <translation id="3924911262913579434">A función <ph name="SAFE_BROWSING_MODE" /> está activada</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combinar os meus datos</translation>
@@ -644,7 +640,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4024768890073681126">O teu pai ou nai xestiona o teu navegador</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Continúa ata <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Grupo sen nome</translation>
 <translation id="4044708993631234325">Panel inferior</translation>
 <translation id="4045441967987592849">Volver abrir</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana estándar con actividade nova en grupos de pestanas compartidos}other{<ph name="TABS_COUNT_MANY" /> pestanas estándar con actividade nova en grupos de pestanas compartidos}}</translation>
@@ -1736,7 +1731,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8840953339110955557">Esta páxina pode ser diferente da versión en liña.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Oculto</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />: pestana</translation>
 <translation id="8854223127042600341">Consultar os teus ficheiros sen conexión</translation>
 <translation id="885480114717186641">Podes solicitar o sitio para ordenadores para o anfitrión <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obter descricións</translation>

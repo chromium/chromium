@@ -134,7 +134,7 @@ void raw_ptr_variables() {
 
   int index = 1;
   // Expected rewrite:
-  // raw_ptr<char> buf7 = (buf6 + index).data();
+  // raw_ptr<char> buf7 = buf6.subspan(index).data();
   raw_ptr<char> buf7 = buf6 + index;
   (void)buf7;
 }

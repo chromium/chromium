@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - దీనిని పంపిన పరికరం <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">బుక్‌మార్క్‌ను సేవ్ చేయడానికి సంబంధించిన దశల ఫోల్డర్‌లు ఫుల్-స్క్రీన్‌లో తెరవబడ్డాయి</translation>
 <translation id="1327257854815634930">నావిగేషన్ హిస్టరీ తెరిచి ఉంది</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, కొత్త లేదా అప్‌డేట్ చేసిన ట్యాబ్</translation>
 <translation id="1331212799747679585">Chromeని అప్‌డేట్ చేయడం సాధ్యపడదు. మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="1332501820983677155">Google Chrome లక్షణ షార్ట్‌కట్‌లు</translation>
 <translation id="1333491156693005331">ఇటీవల చెక్ చేసింది</translation>
@@ -204,7 +203,6 @@
 <translation id="1925021887439448749">అనుకూల వెబ్ అడ్రస్‌ను నమోదు చేయండి</translation>
 <translation id="1928618076168182477">విజువల్ వీక్షణను చూపుతోంది</translation>
 <translation id="1928696683969751773">అప్‌డేట్‌లు</translation>
-<translation id="1933845786846280168">ఎంచుకున్న ట్యాబ్</translation>
 <translation id="1939549834451474504">ఈ పరికరంలో Google Play సర్వీసులు అందుబాటులో లేవు, కాబట్టి ఇక పాస్‌వర్డ్‌లను మీరు యాక్సెస్ చేయలేరు. మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లకు యాక్సెస్‌ను కోల్పోయే ముందు వాటి కాపీని రూపొందించండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">పాస్‌వర్డ్‌‌లను సేవ్ చేయండి</translation>
 <translation id="1944535645109964458">పాస్-కీలు ఏవీ అందుబాటులో లేవు</translation>
@@ -431,7 +429,6 @@
 <translation id="2976550651269220761">మీ Chrome డేటాలో కొంత భాగం ఇంకా మీ Google ఖాతాలో సేవ్ కాలేదు.\nసైన్ అవుట్ చేయడానికి ముందు, కొన్ని నిమిషాలు వేచి ఉండండి. మీరు ఇప్పుడు సైన్ అవుట్ చేస్తే, ఈ డేటా తొలగించబడుతుంది.</translation>
 <translation id="2977350910003566746">చివరిగా తెరిచిన దాని ఆధారంగా క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
 <translation id="297771753501244313">'చివరిగా తెరిచినది' వారీగా క్రమపద్ధతిలో అమర్చండి</translation>
-<translation id="2979025552038692506">ఎంచుకున్న అజ్ఞాత ట్యాబ్</translation>
 <translation id="2979639724566107830">కొత్త విండోలో తెరవండి</translation>
 <translation id="2981364137500752533">మీరు 5 విండోల వరకు తెరవవచ్చు.</translation>
 <translation id="2983102365694924129">సైట్‌లోని మీ యాక్టివిటీ ఆధారంగా. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
@@ -622,7 +619,6 @@
 <translation id="3902562446536395999">A నుండి Z వరకు క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />ని అప్‌డేట్ చేయి</translation>
 <translation id="3911609878849982353">Z నుండి A వరకు క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
-<translation id="3918415141610210050">ట్యాబ్</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ఆన్‌లో ఉంది</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">నా డేటాను కలపండి</translation>
@@ -645,7 +641,6 @@
 <translation id="4024768890073681126">మీ బ్రౌజర్‌ను పేరెంట్ మేనేజ్ చేస్తోంది</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# గం}other{# గం}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను కొనసాగించండి</translation>
-<translation id="404352903042073578">పేరు లేని గ్రూప్</translation>
 <translation id="4044708993631234325">దిగువున ఉన్న షీట్</translation>
 <translation id="4045441967987592849">మళ్లీ తెరవండి</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{షేర్ చేసిన ట్యాబ్ గ్రూప్‌లలో కొత్త యాక్టివిటీతో <ph name="TABS_COUNT_ONE" /> స్టాండర్డ్ ట్యాబ్}other{షేర్ చేసిన ట్యాబ్ గ్రూప్‌లలో కొత్త యాక్టివిటీతో <ph name="TABS_COUNT_MANY" /> స్టాండర్డ్ ట్యాబ్‌లు}}</translation>
@@ -1738,7 +1733,6 @@
 <translation id="8840953339110955557">ఈ పేజీ మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">దాచబడింది</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, ట్యాబ్</translation>
 <translation id="8854223127042600341">మీ ఆఫ్‌లైన్ ఫైళ్లను చూడండి</translation>
 <translation id="885480114717186641">మీరు <ph name="HOST_NAME" /> కోసం డెస్క్‌టాప్ సైట్‌ను రిక్వెస్ట్ చేయవచ్చు</translation>
 <translation id="8856607253650333758">వివరణలను పొందండి</translation>

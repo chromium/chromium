@@ -3652,7 +3652,6 @@ HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
 <translation id="3663124775601519286">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> içinde Translator API'nin kullanımına izin verilir.
 
       Politika, Devre Dışı değerine ayarlanırsa Translator API'nin kullanımına izin verilmez.</translation>
-<translation id="3664164569472125114"><ph name="GLIC" /> erişimini kontrol etme</translation>
 <translation id="3665437376055221832">Yalnızca otomatik seçimle eşleşen sertifika olmadığında kullanıcıdan seçim yapmasını iste.</translation>
 <translation id="3667467644216039144">Kullanıcı tüm tarayıcı pencerelerini kapattığında silinmesi gereken tarama verisi türlerinin listesini yapılandırır.
 
@@ -7550,7 +7549,6 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, ekran görü
 <translation id="6383774771168138899"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandırır</translation>
 <translation id="6384542789059421431">Varsayılan arama motoru sonuç sayfalarının, tarayıcı yan panelinde gösterilmesini etkinleştir.</translation>
 <translation id="6389240462871677239">Yalıtılmış web uygulaması kaynaklarının, Controlled Frame'i kullanmasına izin ver</translation>
-<translation id="6389858262577493180"><ph name="GLIC" /> kullanımını etkinleştir</translation>
 <translation id="6390338862225976270"><ph name="PRODUCT_NAME" /> ürününün geliştirici araçlarında bulunan bu özellikler, ilave hata ayıklama bilgileri sağlamak için üretken yapay zeka modellerini kullanır. Bu özellikleri kullanmak için <ph name="PRODUCT_NAME" /> ürününün hata mesajı, yığın izleme (stack trace), kod snippet'i ve ağ istekleri gibi verileri toplayıp Google'ın sahip olduğu ve üretken yapay zeka modeli kullanan bir sunucuya göndermesi gerekir. Ağ isteklerindeki yanıt gövdesi veya kimlik doğrulama ve çerez başlıkları, sunucuya gönderilen verilere dahil edilmez.
 
 0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
@@ -8171,7 +8169,6 @@ Bu politika, Chrome 114 sürümüne kadar <ph name="SYNC_DISABLED_POLICY_NAME" /
 <translation id="6766216162565713893">Sitelerin, yakınlardaki bir Bluetooth cihazına erişmek için kullanıcıdan izin istemesine izin ver</translation>
 <translation id="6770454900105963262">Aktif kiosk oturumlarıyla ilgili bilgileri raporla</translation>
 <translation id="6774132787348495175">Kullanıcıların, Linux uygulamalarını desteklemek için gerekli olan sanal makineleri kullanmasına izin verme</translation>
-<translation id="6776202826080834193">Bu politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar <ph name="GLIC" /> özelliğini kullanabilir. Bu politika Devre Dışı değerine ayarlanırsa kullanıcılar <ph name="GLIC" /> ile etkileşime giremez. Sekme şeridindeki düğme gizlenir ve başka bir profilde etkinleştirilmediği sürece <ph name="GLIC" /> klavye kısayoluyla kullanılamaz.</translation>
 <translation id="678121785914414680">İndirildiğinde otomatik olarak açılması gereken dosya türleri listesidir. Dosya türü listelenirken baştaki ayırıcının eklenmemesi gerektiğinden, ".txt" yerine "txt" yazın.
 
 Otomatik olarak açılması gereken türdeki dosyalar, yine de etkinleştirilmiş güvenli tarama kontrollerine tabidir ve bu kontrollerden geçmezse açılmaz.
@@ -11390,7 +11387,6 @@ Bu politika yalnızca <ph name="FULL_RESTORE_ENABLED_NAME" /> politikası doğru
       Doğru değerine ayarlanırsa cihazın sistem bilgileri raporlanır.</translation>
 <translation id="9131419675479917141">Kullanıcıların zayıf bir PIN belirlemesine izin ver ancak uyarı göster</translation>
 <translation id="913195841488580904">URL listesine erişimi engelle</translation>
-<translation id="9132345265506256744"><ph name="GLIC" /> kullanımını devre dışı bırak.</translation>
 <translation id="9133526448421932754">Klavye arka ışığı sarı</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" /> proxy'sini etkinleştir</translation>
 <translation id="9135095804754272364">USB cihazı algılandığında bildirim göster</translation>

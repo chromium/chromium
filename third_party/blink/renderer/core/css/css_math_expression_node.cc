@@ -4498,16 +4498,19 @@ double CSSMathExpressionSiblingFunction::ComputeDouble(
     return nth_index_cache->NthChildIndex(const_cast<Element&>(*element),
                                           /*filter=*/nullptr,
                                           /*selector_checker=*/nullptr,
-                                          /*context=*/nullptr);
+                                          /*context=*/nullptr,
+                                          NthIndexData::kFlatTree);
   } else {
     return nth_index_cache->NthChildIndex(const_cast<Element&>(*element),
                                           /*filter=*/nullptr,
                                           /*selector_checker=*/nullptr,
-                                          /*context=*/nullptr) +
+                                          /*context=*/nullptr,
+                                          NthIndexData::kFlatTree) +
            nth_index_cache->NthLastChildIndex(const_cast<Element&>(*element),
                                               /*filter=*/nullptr,
                                               /*selector_checker=*/nullptr,
-                                              /*context=*/nullptr) -
+                                              /*context=*/nullptr,
+                                              NthIndexData::kFlatTree) -
            1;
   }
 }

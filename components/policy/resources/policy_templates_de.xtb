@@ -3588,7 +3588,6 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
 <translation id="3663124775601519286">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, darf die Translator API in <ph name="PRODUCT_NAME" /> verwendet werden.
 
       Ist die Richtlinie deaktiviert, darf die Translator API nicht verwendet werden.</translation>
-<translation id="3664164569472125114">Zugriff auf <ph name="GLIC" /> steuern</translation>
 <translation id="3665437376055221832">Nutzer nur dann auffordern, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
 <translation id="3667467644216039144">Konfiguriert eine Liste von Browserdatentypen, die beim Schließen aller Browserfenster gelöscht werden sollen.
 
@@ -7422,7 +7421,6 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
 <translation id="6383774771168138899">Konfiguration des <ph name="CLOUD_UPLOAD_NAME" />-Ablaufs für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Dadurch werden die Suchergebnisseiten der Standardsuchmaschine in der Seitenleiste des Browsers angezeigt.</translation>
 <translation id="6389240462871677239">Ursprüngen isolierter Web-Apps erlauben, Controlled Frame zu verwenden</translation>
-<translation id="6389858262577493180">Verwendung von <ph name="GLIC" /> aktivieren</translation>
 <translation id="6390338862225976270">Bei diesen Funktionen in den Entwicklertools von <ph name="PRODUCT_NAME" /> werden generative KI-Modelle eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein generatives KI‑Modell ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
 
 „0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
@@ -8022,7 +8020,6 @@ Bis Chrome 114 musste die Richtlinie <ph name="SYNC_DISABLED_POLICY_NAME" /> au
 <translation id="6766216162565713893">Websites dürfen den Nutzer um Zugriff auf ein Bluetooth-Gerät in der Nähe bitten</translation>
 <translation id="6770454900105963262">Informationen zu aktiven Kiosksitzungen senden</translation>
 <translation id="6774132787348495175">Nicht zulassen, dass Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
-<translation id="6776202826080834193">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer die Funktion „<ph name="GLIC" />“ verwenden. Wenn diese Richtlinie deaktiviert ist, können Nutzer nicht mit <ph name="GLIC" /> interagieren. Die Schaltfläche in der Tableiste ist ausgeblendet und <ph name="GLIC" /> ist nicht über eine Tastenkombination verfügbar, es sei denn, sie ist in einem anderen Profil aktiviert.</translation>
 <translation id="678121785914414680">Liste von Dateitypen, die nach dem Download automatisch geöffnet werden sollen. Das vorangestellte Trennzeichen sollte beim Aufführen der Dateitypen nicht mit angegeben werden. Gib also beispielsweise „txt“ und nicht „.txt“ an.
 
 Dateitypen, die automatisch geöffnet werden sollen, unterliegen dennoch den aktivierten Safe Browsing-Prüfungen und werden nicht geöffnet, falls sie diese nicht bestehen.
@@ -11173,7 +11170,6 @@ Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_REST
       Ist sie auf "true" gesetzt, werden Systeminformationen zum Gerät ausgegeben.</translation>
 <translation id="9131419675479917141">Nutzer dürfen schwache PIN festlegen, aber Warnung anzeigen</translation>
 <translation id="913195841488580904">Zugriff auf aufgelistete URLs blockieren</translation>
-<translation id="9132345265506256744">Verwendung von <ph name="GLIC" /> deaktivieren.</translation>
 <translation id="9133526448421932754">Tastaturbeleuchtungsfarbe „Gelb“</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" />-Proxy aktivieren</translation>
 <translation id="9135095804754272364">Benachrichtigen, wenn ein USB-Gerät erkannt wird</translation>

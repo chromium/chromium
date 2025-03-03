@@ -69,6 +69,7 @@ def _ParseEditsFromStdin(build_directory):
     A dictionary mapping filenames to the associated edits.
   """
   path_to_resolved_path = {}
+
   def _ResolvePath(path):
     if path in path_to_resolved_path:
       return path_to_resolved_path[path]
@@ -166,7 +167,6 @@ _INCLUDE_INSERTION_POINT_REGEX_TEMPLATE = r'''
     )
 '''
 
-
 _NEWLINE_CHARACTERS = [ord('\n'), ord('\r')]
 
 
@@ -212,8 +212,7 @@ def _SkipOverPreviousComment(contents, index):
   # Is the previous line a non-comment?  If so, just return `index`.
   new_index = _FindStartOfPreviousLine(contents, index)
   prev_text = contents[new_index:index]
-  _COMMENT_START_REGEX = b"^  \s*  (  //  |  \*  )"
-  if not re.search(_COMMENT_START_REGEX, prev_text, re.VERBOSE):
+  if not re.search(br"^  \s*  (  //  |  \*  )", prev_text, re.VERBOSE):
     return index
 
   # Otherwise skip over the previous line + continue skipping via recursion.
@@ -466,9 +465,10 @@ suppress this behavior is to replace the text with a single space or similar
 
   filenames = set(_GetFilesFromGit(args.path_filter))
   edits = _ParseEditsFromStdin(args.p)
-  return _ApplyEdits(
-      {k: v
-       for k, v in edits.items() if os.path.realpath(k) in filenames})
+  return _ApplyEdits({
+      k: v
+      for k, v in edits.items() if os.path.realpath(k) in filenames
+  })
 
 
 if __name__ == '__main__':

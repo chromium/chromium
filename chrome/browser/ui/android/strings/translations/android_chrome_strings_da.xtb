@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – sendt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Mapper i flow til lagring af bogmærker er åbnet i fuld højde</translation>
 <translation id="1327257854815634930">Navigationsoversigt er åbnet</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, ny eller opdateret fane</translation>
 <translation id="1331212799747679585">Chrome kan ikke opdateres. Flere valgmuligheder</translation>
 <translation id="1332501820983677155">Funktionsgenveje i Google Chrome</translation>
 <translation id="1333491156693005331">Tjekket for nylig</translation>
@@ -204,7 +203,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1925021887439448749">Angiv tilpasset webadresse</translation>
 <translation id="1928618076168182477">Visuel visning anvendes</translation>
 <translation id="1928696683969751773">Opdateringer</translation>
-<translation id="1933845786846280168">Valgt fane</translation>
 <translation id="1939549834451474504">Du mister snart adgangen til dine gemte adgangskoder, fordi Google Play-tjenester ikke længere er tilgængelige. Du kan lave en kopi af adgangskoderne, før du mister adgangen. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Gem adgangskoder</translation>
 <translation id="1944535645109964458">Ingen tilgængelige adgangsnøgler</translation>
@@ -431,7 +429,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2976550651269220761">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto.\nPrøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="2977350910003566746">Sorteres efter sidst åbnet</translation>
 <translation id="297771753501244313">Sortér efter sidst åbnet</translation>
-<translation id="2979025552038692506">Valgt inkognitofane</translation>
 <translation id="2979639724566107830">Åbn i nyt vindue</translation>
 <translation id="2981364137500752533">Du kan have op til 5 vinduer.</translation>
 <translation id="2983102365694924129">Baseret på din aktivitet på et website. Denne indstilling er deaktiveret.</translation>
@@ -622,7 +619,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3902562446536395999">Sorteres fra A til Å</translation>
 <translation id="3908308510347173149">Opdater <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sorteres fra Å til A</translation>
-<translation id="3918415141610210050">Fane</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> er aktiveret</translation>
 <translation id="3927692899758076493">Sans serif</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
@@ -645,7 +641,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4024768890073681126">Din browser administreres af din forælder</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t.}one{# t.}other{# t.}}</translation>
 <translation id="4042941173059740150">Fortsæt til <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Unavngiven gruppe</translation>
 <translation id="4044708993631234325">Felt i bunden</translation>
 <translation id="4045441967987592849">Genåbn</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardfane med ny aktivitet i delte fanegrupper}one{<ph name="TABS_COUNT_MANY" /> standardfane med ny aktivitet i delte fanegrupper}other{<ph name="TABS_COUNT_MANY" /> standardfaner med ny aktivitet i delte fanegrupper}}</translation>
@@ -1740,7 +1735,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8840953339110955557">Denne side kan afvige fra onlineversionen.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skjult</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, fane</translation>
 <translation id="8854223127042600341">Se dine offlinefiler</translation>
 <translation id="885480114717186641">Du kan anmode om computerwebsitet for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Få beskrivelser</translation>

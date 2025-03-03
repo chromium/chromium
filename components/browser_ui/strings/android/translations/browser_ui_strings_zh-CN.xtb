@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">建议的搜索</translation>
 <translation id="3658847490588580244">默认浏览器底部动作条</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
+<translation id="3676777756440746804">禁止网站向您请求使用其保存的与您相关的信息</translation>
 <translation id="3697164069658504920">开启此设置后，网站可以请求使用 USB 设备。关闭此设置后，网站无法使用 USB 设备。</translation>
 <translation id="3707034683772193706">您访问的网站可将少量信息保存在 Chrome 中，主要用于验证您不是机器人</translation>
 <translation id="3709818294139939629">已撤消网站对文件的访问权限</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">打开手机上的“设置”</translation>
 <translation id="3933121352599513978">收起不需要的请求（推荐）</translation>
 <translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
+<translation id="3965467402665811906">网站可以请求使用其保存的与您相关的信息</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3991845972263764475">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，总大小不明</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> 可以在您浏览以下网站时使用您的相关信息</translation>
 <translation id="3992684624889376114">关于此页面</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4046123991198612571">下一曲</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">无法重置受管理的设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟现实设备和数据（推荐）</translation>
 <translation id="4936863036653376783">您可以在所有设备的“标签页分组”部分找到您的分组</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> 已被禁止使用您在以下网站上的信息</translation>
 <translation id="4953688446973710931">开启此设置后，网站可以请求自动下载多个文件。关闭此设置后，网站无法自动下载多个文件。</translation>
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="497421865427891073">前进</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>
 <translation id="8541410041357371550">该网站会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告</translation>
+<translation id="854876774113449365">您访问的网站可能会嵌入来自其他网站的内容，例如图片、广告和文字。这些其他网站可能会向您请求权限，以便在您浏览相关网站时使用之前保存的与您相关的信息。<ph name="BEGIN_LINK" />详细了解嵌入式内容<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">如何显示请求</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="857943718398505171">允许（推荐）</translation>
+<translation id="8593422116412089302">开启此设置后，网站可以请求使用其保存的与您相关的信息。关闭此设置后，网站无法请求使用其保存的与您相关的信息。</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">开启此设置后，系统会显示网站的桌面版视图。关闭此设置后，系统会显示网站的移动版视图。</translation>
 <translation id="8670078035093027626">默认浏览器底部动作条已全屏打开</translation>

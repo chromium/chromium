@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" />: gesendet von <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Ablauf zum Speichern von Lesezeichen ist vollständig geöffnet</translation>
 <translation id="1327257854815634930">Der Navigationsverlauf ist geöffnet</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, neuer oder aktualisierter Tab</translation>
 <translation id="1331212799747679585">Chrome kann nicht aktualisiert werden. Weitere Optionen</translation>
 <translation id="1332501820983677155">Tastenkombinationen für Google Chrome-Funktionen</translation>
 <translation id="1333491156693005331">Vor Kurzem geprüft</translation>
@@ -203,7 +202,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1925021887439448749">Benutzerdefinierte Webadresse eingeben</translation>
 <translation id="1928618076168182477">Visuelle Ansicht wird angezeigt</translation>
 <translation id="1928696683969751773">Aktualisierungen</translation>
-<translation id="1933845786846280168">Ausgewählter Tab</translation>
 <translation id="1939549834451474504">Deine Passwörter funktionieren bald nicht mehr, weil die Google Play-Dienste nicht verfügbar sind. Du kannst eine Kopie deiner gespeicherten Passwörter erstellen, bevor du diese nicht mehr verwenden kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Passwörter speichern</translation>
 <translation id="1944535645109964458">Keine Passkeys verfügbar</translation>
@@ -430,7 +428,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2976550651269220761">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.\nWarte ein paar Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="2977350910003566746">Nach „Zuletzt geöffnet“ sortieren</translation>
 <translation id="297771753501244313">Nach „Zuletzt geöffnet“ sortieren</translation>
-<translation id="2979025552038692506">Ausgewählter Inkognitotab</translation>
 <translation id="2979639724566107830">In neuem Fenster öffnen</translation>
 <translation id="2981364137500752533">Du kannst bis zu 5 Fenster nutzen.</translation>
 <translation id="2983102365694924129">Basierend auf deinen Aktivitäten auf einer Website. Diese Einstellung ist deaktiviert.</translation>
@@ -621,7 +618,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3902562446536395999">Von A bis Z sortieren</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> aktualisieren</translation>
 <translation id="3911609878849982353">Von Z bis A sortieren</translation>
-<translation id="3918415141610210050">Tab</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ist aktiv</translation>
 <translation id="3927692899758076493">Serifenlose Schrift</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
@@ -644,7 +640,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4024768890073681126">Dein Browser wird von deinen Eltern verwaltet</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Weiter zu <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Unbenannte Gruppe</translation>
 <translation id="4044708993631234325">Tabellenblatt am unteren Rand</translation>
 <translation id="4045441967987592849">Noch einmal öffnen</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> Standard-Tab mit neuer Aktivität in freigegebenen Tabgruppen}other{<ph name="TABS_COUNT_MANY" /> Standard-Tabs mit neuer Aktivität in freigegebenen Tabgruppen}}</translation>
@@ -1736,7 +1731,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8840953339110955557">Diese Seite unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Verborgen</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Offlinedateien ansehen</translation>
 <translation id="885480114717186641">Du kannst die Desktopwebsite für <ph name="HOST_NAME" /> anfordern</translation>
 <translation id="8856607253650333758">Beschreibungen erhalten</translation>

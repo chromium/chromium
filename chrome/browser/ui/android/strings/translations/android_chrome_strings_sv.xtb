@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Skickades från <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Mappar i flöde för att spara bokmärken har öppnats över hela skärmen</translation>
 <translation id="1327257854815634930">Navigeringshistoriken har öppnats</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, ny eller uppdaterad flik</translation>
 <translation id="1331212799747679585">Det går inte att uppdatera Chrome. Fler alternativ</translation>
 <translation id="1332501820983677155">Kortkommandon för funktioner i Google Chrome</translation>
 <translation id="1333491156693005331">Kontrollerades nyligen</translation>
@@ -203,7 +202,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1925021887439448749">Ange en anpassad webbadress</translation>
 <translation id="1928618076168182477">Visar visuell vy</translation>
 <translation id="1928696683969751773">Uppdateringar</translation>
-<translation id="1933845786846280168">Vald flik</translation>
 <translation id="1939549834451474504">Lösenorden slutar snart att fungera eftersom Google Play-tjänster inte är tillgängliga. Du kan kopiera dina sparade lösenord innan de slutar fungera. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Spara lösenord</translation>
 <translation id="1944535645109964458">Inga nycklar är tillgängliga</translation>
@@ -430,7 +428,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2976550651269220761">Viss Chrome-data har inte sparats i ditt Google-konto ännu.\nTesta att vänta i några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="2977350910003566746">Sorterar efter senast öppnade</translation>
 <translation id="297771753501244313">Sortera efter sist öppnad</translation>
-<translation id="2979025552038692506">Vald inkognitoflik</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2981364137500752533">Du kan ha upp till fem fönster.</translation>
 <translation id="2983102365694924129">Baserat på din aktivitet på en webbplats. Inställningen är inaktiverad.</translation>
@@ -622,7 +619,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3902562446536395999">Sorterar från A till Ö</translation>
 <translation id="3908308510347173149">Uppdatera <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Sorterar från Ö till A</translation>
-<translation id="3918415141610210050">Flik</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> är på</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Slå ihop data</translation>
@@ -645,7 +641,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4024768890073681126">Webbläsaren hanteras av din förälder</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# tim}other{# tim}}</translation>
 <translation id="4042941173059740150">Fortsätt till <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Namnlös grupp</translation>
 <translation id="4044708993631234325">Ark på nedre delen av skärmen</translation>
 <translation id="4045441967987592849">Öppna igen</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardflik med ny aktivitet i delade flikgrupper}other{<ph name="TABS_COUNT_MANY" /> standardflikar med ny aktivitet i delade flikgrupper}}</translation>
@@ -1737,7 +1732,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8840953339110955557">Sidan kan skilja sig från onlineversionen.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Dold</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, flik</translation>
 <translation id="8854223127042600341">Se dina offlinefiler</translation>
 <translation id="885480114717186641">Du kan begära webbplatsen för datorn för <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Få beskrivningar</translation>

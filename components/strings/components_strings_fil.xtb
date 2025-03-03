@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">I-load ang page sa ibang pagkakataon</translation>
 <translation id="1010225406377140704">Makipag-ugnayan sa sender para humingi ng bagong link</translation>
 <translation id="1011206368273183593">Ihinahanda ang mga file</translation>
+<translation id="1012264210825687872">Kapag nasuri mo na ang iyong order, dapat kang mag-sign in sa o gumawa ng <ph name="BNPL_ISSUER_NAME" /> account. Awtomatikong ili-link ang account na ito sa Google Pay.</translation>
 <translation id="1014509239502131234">Ina-undo ang resulta</translation>
 <translation id="1015730422737071372">Magbigay ng mga karagdagang detalye</translation>
 <translation id="1019413721762100891">I-off</translation>
@@ -660,6 +661,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2145193671493396738">Balitang Pang-ekonomiya</translation>
 <translation id="214556005048008348">Kanselahin ang pagbabayad</translation>
 <translation id="2147117373852943630">Mga Instrumentong Pangmusika</translation>
+<translation id="2147254250314124496">Gusto ng <ph name="EMBEDDED_URL" /> na gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
 <translation id="2148613324460538318">Magdagdag ng Card</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2149968176347646218">Hindi secure ang koneksyon</translation>
@@ -691,6 +693,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2187317261103489799">Tukuyin (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
+<translation id="2198071643181968308">Matuto pa tungkol sa <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Button na thumbs down, pindutin ang Enter para magbukas ng form para sa pagsusumite ng detalyadong feedback kung bakit mo na-dislike ang suhestyong ito</translation>
 <translation id="2202627062836089804">likod ng iyong card</translation>
 <translation id="2204482073374652408">Natapos na ang pag-update!</translation>
@@ -2318,6 +2321,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Kailangan ng Chrome ng access sa <ph name="PERMISSION" /> ng iyong device</translation>
 <translation id="510644072453496781">Cardboard (End)</translation>
+<translation id="5106648964679263509">Napunan ang virtual card para sa <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108881358339761672">Hindi secure ang site</translation>
 <translation id="5109892411553231226">Pamahalaan ang Mga Paraan ng Pagbabayad</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2513,6 +2517,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
             <ph name="LIST_ITEM" />Impormasyong inilalagay sa mga form
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Baligtarin ang pagkakasunod-sunod nang nakatihaya</translation>
+<translation id="5445340838622821110">Sa susunod na magbayad ka, mapupunan ang isang one-time na numero ng virtual card. Para lang sa pagbiling ito ang numerong ito. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Payagan ang <ph name="SITE" /> na gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
 <translation id="5452270690849572955">Hindi makita ang <ph name="HOST_NAME" /> page na ito</translation>
 <translation id="5452923259299906094">Magbayad gamit ang eWallet at Pix</translation>
@@ -3332,6 +3337,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6917795328362592458">Nakita sa isang data breach ang password na kakagamit mo lang. Para ma-secure ang iyong mga account, inirerekomenda ng Password Manager na tingnan mo ang iyong mga naka-save na password.</translation>
 <translation id="6917873303492266709">Para mag-share ng, sumali sa, at mag-collaborate sa mga grupo ng tab, buksan ang mga setting at i-on ang Payagan ang pag-sign in sa Chrome</translation>
 <translation id="6921197121276419421">Pinapayagang mag-install ng mga web app</translation>
+<translation id="69238565902785824">Kapag pinanatili mong naka-link ang iyong account, matutulungan ka nitong makapagbayad nang mas mabilis gamit ang <ph name="BNPL_ISSUER_NAME" />, pero puwede mo itong i-unlink sa pamamagitan ng pagpunta sa <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Piliin kung makikita mo ang mga benepisyo ng iyong card sa pag-checkout (nalalapat ang mga tuntunin ng bangko)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body Art</translation>
@@ -3397,6 +3403,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="701757816833614688">Pag-aaral ng Visual Arts at Disenyo</translation>
 <translation id="702275896380648118">Tinutukoy ng site na ito ang mga bagay na gusto mo at pagkatapos ay nagmumungkahi ito ng mga ad sa iba pang site. Kinukuha rin ng site na ito ang mga paksa ng ad mo mula sa Chrome para magpakita sa iyo ng higit pang kaugnay na ad.</translation>
 <translation id="7023162328967545559">Babala ng admin</translation>
+<translation id="7023765275461720661">I-link ang account at magbayad gamit ang <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7030164307377592766">baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad</translation>
 <translation id="7031646650991750659">Aling mga Google Play app ang na-install mo</translation>
@@ -3619,6 +3626,7 @@ Mga karagdagang detalye:
 <translation id="741204030948306876">Oo, sali ako</translation>
 <translation id="7416351320495623771">Pamahalaan ang Mga Password...</translation>
 <translation id="7416898721136759658">Mga Grant, Scholarship, at Pinansyal na Tulong</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Programming</translation>
 <translation id="7419091773564635591">Mga Computer at Electronics</translation>
 <translation id="7419106976560586862">Path ng Profile</translation>
@@ -3665,6 +3673,7 @@ Mga karagdagang detalye:
 <translation id="7485085230273446323">Negosyo at Industriya</translation>
 <translation id="7485870689360869515">Walang nahanap na data.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">Titingnan ng <ph name="BNPL_ISSUER_NAME" /> ang pagiging kwalipikado mo (hindi ito makakaapekto sa iyong credit score). Kung maaaprubahan, magbibigay ang <ph name="BNPL_ISSUER_NAME" /> ng mga plan sa pagbabayad na mapagpipilian mo at para makumpleto ang iyong pagbili.</translation>
 <translation id="7489392576326061356">Mga Shampoo at Conditioner</translation>
 <translation id="7495528107193238112">Naka-block ang content na ito. Makipag-ugnayan sa may-ari ng site para maayos ang isyu.</translation>
 <translation id="749865518782565832">Pagtutubero</translation>

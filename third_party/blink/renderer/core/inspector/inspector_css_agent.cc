@@ -46,6 +46,8 @@
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/css_function_declarations_rule.h"
+#include "third_party/blink/renderer/core/css/css_function_descriptors.h"
 #include "third_party/blink/renderer/core/css/css_function_rule.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
@@ -1355,7 +1357,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         css_property_registrations,
     std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*
         css_font_palette_values_rule,
-    std::optional<int>* parent_layout_node_id) {
+    std::optional<int>* parent_layout_node_id,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionRule>>*
+        css_function_rules) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
     return response;
@@ -1532,6 +1536,23 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     }
   }
 
+  DocumentStyleSheets::iterator css_style_sheets_for_document_it =
+      document_to_css_style_sheets_.find(&document);
+  if (css_style_sheets_for_document_it != document_to_css_style_sheets_.end() &&
+      resolver.MatchedRules()) {
+    HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>
+        function_hash_map;
+    CollectReferencedFunctionRules(document,
+                                   *css_style_sheets_for_document_it->value,
+                                   *resolver.MatchedRules(), function_hash_map);
+    if (!function_hash_map.empty()) {
+      *css_function_rules =
+          std::make_unique<protocol::Array<protocol::CSS::CSSFunctionRule>>();
+      for (const auto& [scoped_name, rule] : function_hash_map) {
+        (*css_function_rules)->emplace_back(BuildObjectForFunctionRule(rule));
+      }
+    }
+  }
   return protocol::Response::Success();
 }
 
@@ -3356,6 +3377,113 @@ void InspectorCSSAgent::CollectScopesFromRule(
     scopes_list->emplace_back(BuildScopeObject(scope_rule));
     rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::ScopeRule);
   }
+}
+
+std::unique_ptr<protocol::CSS::CSSFunctionConditionNode>
+InspectorCSSAgent::BuildObjectForFunctionConditionNode(CSSConditionRule* rule) {
+  return protocol::CSS::CSSFunctionConditionNode::create()
+      .setConditionText(rule->ConditionTextInternal())
+      .setChildren(BuildArrayForFunctionNodeChildren(rule->cssRules()))
+      .build();
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionNode>>
+InspectorCSSAgent::BuildArrayForFunctionNodeChildren(CSSRuleList* rule_list) {
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionNode>> result =
+      std::make_unique<protocol::Array<protocol::CSS::CSSFunctionNode>>();
+
+  const unsigned length = rule_list->length();
+  for (unsigned i = 0; i < length; ++i) {
+    CSSRule* rule = rule_list->item(i);
+    std::unique_ptr<protocol::CSS::CSSFunctionNode> function_node =
+        protocol::CSS::CSSFunctionNode::create().build();
+    switch (rule->GetType()) {
+      case CSSRule::kFunctionDeclarationsRule: {
+        CSSFunctionDeclarationsRule* function_rule =
+            To<CSSFunctionDeclarationsRule>(rule);
+        InspectorStyleSheet* inspector_style_sheet =
+            BindStyleSheet(function_rule->parentStyleSheet());
+        function_node->setStyle(inspector_style_sheet->BuildObjectForStyle(
+            function_rule->style(), nullptr));
+        break;
+      }
+      case CSSRule::kContainerRule: {
+        CSSContainerRule* container_rule = To<CSSContainerRule>(rule);
+        std::unique_ptr<protocol::CSS::CSSFunctionConditionNode> condition =
+            BuildObjectForFunctionConditionNode(container_rule);
+        condition->setContainerQueries(
+            BuildContainerQueryObject(container_rule));
+        function_node->setCondition(std::move(condition));
+        break;
+      }
+      case CSSRule::kMediaRule: {
+        CSSMediaRule* media_rule = To<CSSMediaRule>(rule);
+        std::unique_ptr<protocol::CSS::CSSFunctionConditionNode> condition =
+            BuildObjectForFunctionConditionNode(media_rule);
+        String source_url =
+            media_rule->parentStyleSheet()->Contents()->BaseURL();
+        if (source_url.empty()) {
+          source_url = InspectorDOMAgent::DocumentURLString(
+              media_rule->parentStyleSheet()->OwnerDocument());
+        }
+        condition->setMedia(
+            BuildMediaObject(media_rule->media(), kMediaListSourceMediaRule,
+                             source_url, media_rule->parentStyleSheet()));
+        function_node->setCondition(std::move(condition));
+        break;
+      }
+      case CSSRule::kSupportsRule: {
+        CSSSupportsRule* supports_rule = To<CSSSupportsRule>(rule);
+        std::unique_ptr<protocol::CSS::CSSFunctionConditionNode> condition =
+            BuildObjectForFunctionConditionNode(supports_rule);
+        condition->setSupports(BuildSupportsObject(supports_rule));
+        function_node->setCondition(std::move(condition));
+        break;
+      }
+      default:
+        DCHECK(false) << "Unexpected rule type: " << rule->GetType();
+        break;
+    }
+    result->emplace_back(std::move(function_node));
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::CSS::CSSFunctionRule>
+InspectorCSSAgent::BuildObjectForFunctionRule(CSSFunctionRule* function_rule) {
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(function_rule->parentStyleSheet());
+  std::unique_ptr<protocol::CSS::Value> name =
+      protocol::CSS::Value::create().setText(function_rule->name()).build();
+
+  if (CSSRuleSourceData* source_data =
+          inspector_style_sheet->SourceDataForRule(function_rule)) {
+    name->setRange(inspector_style_sheet->BuildSourceRangeObject(
+        source_data->rule_header_range));
+  }
+
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionParameter>>
+      parameters = std::make_unique<
+          protocol::Array<protocol::CSS::CSSFunctionParameter>>();
+  for (const auto& parameter : function_rule->getParameters()) {
+    parameters->emplace_back(protocol::CSS::CSSFunctionParameter::create()
+                                 .setName(parameter->name())
+                                 .setType(parameter->type())
+                                 .build());
+  }
+  std::unique_ptr<protocol::CSS::CSSFunctionRule> result =
+      protocol::CSS::CSSFunctionRule::create()
+          .setName(std::move(name))
+          .setOrigin(inspector_style_sheet->Origin())
+          .setParameters(std::move(parameters))
+          .setChildren(
+              BuildArrayForFunctionNodeChildren(function_rule->cssRules()))
+          .build();
+  if (inspector_style_sheet->CanBindOrigin() &&
+      !inspector_style_sheet->Id().empty()) {
+    result->setStyleSheetId(inspector_style_sheet->Id());
+  }
+  return result;
 }
 
 InspectorStyleSheetForInlineStyle* InspectorCSSAgent::AsInspectorStyleSheet(

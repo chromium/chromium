@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – A(z) <ph name="DEVICE_NAME" /> eszközről</translation>
 <translation id="1320912611264252795">A könyvjelzőmentési folyamat teljes magasságban van megnyitva</translation>
 <translation id="1327257854815634930">Megnyitotta a navigációs előzményeket</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, új vagy frissített lap</translation>
 <translation id="1331212799747679585">A Chrome frissítése nem lehetséges. További lehetőségek</translation>
 <translation id="1332501820983677155">A Google Chrome-funkciók billentyűparancsai</translation>
 <translation id="1333491156693005331">Nemrég ellenőrizve</translation>
@@ -204,7 +203,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1925021887439448749">Írja be az egyéni internetcímet</translation>
 <translation id="1928618076168182477">A vizuális nézet megjelenítése folyamatban van</translation>
 <translation id="1928696683969751773">Frissítések</translation>
-<translation id="1933845786846280168">Kiválasztott lap</translation>
 <translation id="1939549834451474504">A jelszavak hamarosan nem fognak működni, mert a Google Play-szolgáltatások nem állnak rendelkezésre. A mentett jelszavairól másolatot készíthet, mielőtt működésképtelenné válnak. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1943432128510653496">Jelszavak mentése</translation>
 <translation id="1944535645109964458">Nincsenek rendelkezésre álló azonosítókulcsok</translation>
@@ -431,7 +429,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2976550651269220761">A Chrome egyes adatait még nem mentette a rendszer a Google-fiókjába.\nA kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="2977350910003566746">Rendezés folyamatban: legutóbb megnyitottak szerint</translation>
 <translation id="297771753501244313">Legutóbbiak szerint</translation>
-<translation id="2979025552038692506">Kiválasztott inkognitó lap</translation>
 <translation id="2979639724566107830">Megnyitás új ablakban</translation>
 <translation id="2981364137500752533">Legfeljebb öt ablak lehet nyitva.</translation>
 <translation id="2983102365694924129">A webhelyen végzett tevékenységei alapján. Ez a beállítás ki van kapcsolva.</translation>
@@ -622,7 +619,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3902562446536395999">Rendezés folyamatban: A-tól Z-ig</translation>
 <translation id="3908308510347173149">A(z) <ph name="PRODUCT_NAME" /> frissítése</translation>
 <translation id="3911609878849982353">Rendezés folyamatban: Z-től A-ig</translation>
-<translation id="3918415141610210050">Lap</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> aktív</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Adataim egyesítése</translation>
@@ -645,7 +641,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4024768890073681126">Böngésződet a szülőd kezeli</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# órája}other{# órája}}</translation>
 <translation id="4042941173059740150">Folytassa a(z) <ph name="SITE_ETLD_PLUS_ONE" /> használatát a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Név nélküli csoport</translation>
 <translation id="4044708993631234325">Alsó lap</translation>
 <translation id="4045441967987592849">Újbóli megnyitás</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> normál lap új tevékenységgel megosztott lapcsoportokban}other{<ph name="TABS_COUNT_MANY" /> normál lap új tevékenységgel megosztott lapcsoportokban}}</translation>
@@ -1740,7 +1735,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8840953339110955557">Az oldal eltérhet az online változattól.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Rejtett</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" /> lap</translation>
 <translation id="8854223127042600341">Offline fájlok megtekintése</translation>
 <translation id="885480114717186641">Kérheti asztali webhely megjelenítését a következőhöz: <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Leírások lekérése</translation>

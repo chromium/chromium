@@ -225,6 +225,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
+
+  // Returns true iff the resource provider is (a) using a GPU channel for
+  // software SharedImages and (b) that channel has been lost.
   virtual bool IsSharedBitmapGpuChannelLost() const;
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,

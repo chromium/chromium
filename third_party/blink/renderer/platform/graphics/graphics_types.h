@@ -30,10 +30,6 @@
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace gfx {
-class ColorSpace;
-}
-
 namespace WTF {
 class String;
 }
@@ -45,20 +41,6 @@ using DynamicRangeLimit = ::cc::PaintFlags::DynamicRangeLimitMixture;
 enum AlphaDisposition {
   kPremultiplyAlpha,
   kDontChangeAlpha,
-};
-
-enum class PredefinedColorSpace {
-  kSRGB,
-  kRec2020,
-  kP3,
-  kRec2100HLG,
-  kRec2100PQ,
-  kSRGBLinear,
-};
-
-enum class CanvasPixelFormat {
-  kUint8,
-  kF16,
 };
 
 enum ImageEncodingMimeType {
@@ -162,12 +144,6 @@ PLATFORM_EXPORT bool ParseLineCap(const WTF::String&, LineCap&);
 
 PLATFORM_EXPORT WTF::String LineJoinName(LineJoin);
 PLATFORM_EXPORT bool ParseLineJoin(const WTF::String&, LineJoin&);
-
-// Return the gfx::ColorSpace or SkColorSpace for a PredefinedColorSpace.
-PLATFORM_EXPORT gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
-    PredefinedColorSpace color_space);
-PLATFORM_EXPORT sk_sp<SkColorSpace> PredefinedColorSpaceToSkColorSpace(
-    PredefinedColorSpace color_space);
 
 }  // namespace blink
 

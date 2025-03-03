@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Haltu inni á heimaskjánum</translation>
 <translation id="1832848789136765277">Staðfestu að þetta sért þú til að hafa alltaf aðgang að samstillingargögnunum þínum</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bókamerki var vistað á Google-reikningnum þínum: {email}}one{Bókamerki voru vistuð á Google-reikningnum þínum: {email}}other{Bókamerki voru vistuð á Google-reikningnum þínum: {email}}}</translation>
+<translation id="1838089197478136166">Opna í Veski?</translation>
 <translation id="183878838231635348">Þetta spjald sýnir persónuverndar- og öryggisvandamál sem öryggisathugun greinir sjálfkrafa.</translation>
 <translation id="1845230888742614096">Halda hópnum</translation>
 <translation id="1854463785401910334">Leita í opnum flipum</translation>
@@ -301,6 +302,7 @@
 <translation id="2230173723195178503">Vefsíða sótt</translation>
 <translation id="2236949375853147973">Mín virkni</translation>
 <translation id="2240256190924001613">Uppsetningarprófíll í boði</translation>
+<translation id="2244080985779413662">Þetta vefsvæði vill sækja skrá og opna hana í veskinu þínu.</translation>
 <translation id="2245007488813216650">Þýðir…</translation>
 <translation id="2249119578464404734">Ýttu á leitartáknið efst á skjánum</translation>
 <translation id="2251686759395008410">Valmynd → Ferill</translation>
@@ -1361,6 +1363,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6761393919622941301">Hljóð</translation>
 <translation id="6779455296366983087">Vefskoðunargögnum verður eytt</translation>
 <translation id="6790502149545262384">Fljótlega sérðu fréttir frá <ph name="CHANNEL_NAME" /> þegar þú opnar nýjan flipa.</translation>
+<translation id="6794476726485507147">Veldu dagsetningu og tíma til að fá áminningu um að fara aftur á þessa síðu</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bókamerki var vistað á Google-reikningnum þínum: {email}}one{{count} bókamerki var vistað á Google-reikningnum þínum: {email}}other{{count} bókamerki voru vistuð á Google-reikningnum þínum: {email}}}</translation>
 <translation id="6830728435402077660">Ekki öruggt</translation>
@@ -1641,6 +1644,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8023170444051056234">Þú munt umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og honum verður eytt úr öllum tækjunum þínum</translation>
 <translation id="8023878949384262191">Stækkar hlutann.</translation>
 <translation id="8027581147000338959">Opna í nýjum glugga</translation>
+<translation id="8029092694585014252">Stilla áminningu</translation>
 <translation id="8032569120109842252">Fylgist með</translation>
 <translation id="8035133914807600019">Ný mappa…</translation>
 <translation id="8035412398498507358">Myndir</translation>

@@ -372,6 +372,12 @@ clang::SourceRange getExprRange(const clang::Expr* expr,
             call_expr->getRParenLoc().getLocWithOffset(1)};
   }
 
+  if (auto* binary_op = clang::dyn_cast_or_null<clang::BinaryOperator>(expr)) {
+    return {expr->getBeginLoc(),
+            getExprRange(binary_op->getRHS(), source_manager, lang_options)
+                .getEnd()};
+  }
+
   return {
       expr->getBeginLoc(),
       clang::Lexer::getLocForEndOfToken(expr->getExprLoc(), 0u, source_manager,
@@ -410,7 +416,7 @@ static clang::SourceRange getSourceRange(
             getExprRange(expr, source_manager, lang_opts).getEnd()};
   }
   if (auto* op = result.Nodes.getNodeAs<clang::Expr>("binaryOperator")) {
-    auto* sub_expr = result.Nodes.getNodeAs<clang::Expr>("bin_op_rhs");
+    auto* sub_expr = result.Nodes.getNodeAs<clang::Expr>("binary_op_rhs");
     auto end_loc = getExprRange(sub_expr, source_manager, lang_opts).getEnd();
     return {op->getBeginLoc(), end_loc};
   }
@@ -638,22 +644,76 @@ static void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
   const clang::Expr* deref_expr =
       result.Nodes.getNodeAs<clang::Expr>("deref_expr");
   const clang::SourceManager& source_manager = *result.SourceManager;
+  auto begin_range = clang::SourceRange(
+      deref_expr->getBeginLoc(), deref_expr->getBeginLoc().getLocWithOffset(1));
+  auto end_range = clang::SourceRange(getSourceRange(result).getEnd());
+
+  // Replacement to delete the leading '*'
+  std::string begin_replacement_text = " ";
+  std::string end_replacement_text = "[0]";
+  if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
+    // For unaryOperators we still encapsulate the expression with parenthesis.
+    begin_replacement_text = "(";
+    end_replacement_text = ")[0]";
+  }
+
+  EmitReplacement(GetRHS(result),
+                  GetReplacementDirective(begin_range, begin_replacement_text,
+                                          source_manager));
+
+  EmitReplacement(
+      GetRHS(result),
+      GetReplacementDirective(end_range, end_replacement_text, source_manager));
+}
+
+static clang::SourceLocation GetBinaryOperationOperatorLoc(
+    const clang::Expr* expr,
+    const MatchFinder::MatchResult& result) {
+  if (auto* binary_op = clang::dyn_cast_or_null<clang::BinaryOperator>(expr)) {
+    return binary_op->getOperatorLoc();
+  }
+
+  if (auto* binary_op =
+          clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr)) {
+    return binary_op->getOperatorLoc();
+  }
+
+  if (auto* binary_op =
+          clang::dyn_cast_or_null<clang::CXXRewrittenBinaryOperator>(expr)) {
+    return binary_op->getOperatorLoc();
+  }
+
+  // Not supposed to get here.
+  llvm::errs()
+      << "\n"
+         "Error: GetBinaryOperationOperatorLoc() encountered an unexpected "
+         "expression.\n"
+         "Expected on of clang::BinaryOperator, clang::CXXOperatorCallExpr, "
+         "clang::CXXRewrittenBinaryOperator \n";
+  DumpMatchResult(result);
+  assert(false && "Unexpected binaryOperation Node");
+}
+
+static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
-  auto source_range = clang::SourceRange(deref_expr->getBeginLoc(),
-                                         getSourceRange(result).getEnd());
+  auto* binary_operation =
+      result.Nodes.getNodeAs<clang::Expr>("binary_operation");
+  auto* binary_op_RHS = result.Nodes.getNodeAs<clang::Expr>("binary_op_rhs");
+  auto source_range = clang::SourceRange(
+      GetBinaryOperationOperatorLoc(binary_operation, result),
+      getExprRange(binary_op_RHS, source_manager, lang_opts).getEnd());
+
   std::string initial_text =
       clang::Lexer::getSourceText(
           clang::CharSourceRange::getCharRange(source_range), source_manager,
           lang_opts)
           .str();
 
-  std::string replacement_text = initial_text.substr(1) + "[0]";
-  if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator") ||
-      result.Nodes.getNodeAs<clang::Expr>("binaryOperator")) {
-    replacement_text = "(" + initial_text.substr(1) + ")[0]";
-  }
-
+  // initial_text includes the binary operator as the first character.
+  // We make sure to trim it from the replacement string.
+  std::string replacement_text = ".subspan(" + initial_text.substr(1) + ")";
   EmitReplacement(
       GetRHS(result),
       GetReplacementDirective(source_range, replacement_text, source_manager));
@@ -717,19 +777,23 @@ void EraseMemberCall(const std::string& node,
 }
 
 // Return a replacement that appends `.data()` to the matched expression.
-std::string AppendDataCall(const MatchFinder::MatchResult& result) {
+void AppendDataCall(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
-  const clang::ASTContext& ast_context = *result.Context;
-  const auto& lang_opts = ast_context.getLangOpts();
-  auto rep_range = getSourceRange(result);
-  std::string initial_text =
-      clang::Lexer::getSourceText(
-          clang::CharSourceRange::getCharRange(rep_range), source_manager,
-          lang_opts)
-          .str();
-  std::string replacement_text =
-      initial_text.empty() ? ".data()" : "(" + initial_text + ").data()";
-  return GetReplacementDirective(rep_range, replacement_text, source_manager);
+  auto rep_range = clang::SourceRange(getSourceRange(result).getEnd());
+
+  std::string replacement_text = ".data()";
+
+  if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
+    // Insert enclosing parenthesis for expressions with UnaryOperators
+    auto begin_range = clang::SourceRange(getSourceRange(result).getBegin());
+    EmitReplacement(GetRHS(result),
+                    GetReplacementDirective(begin_range, "(", source_manager));
+    replacement_text = ").data()";
+  }
+
+  EmitReplacement(
+      GetRHS(result),
+      GetReplacementDirective(rep_range, replacement_text, source_manager));
 }
 
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
@@ -808,7 +872,7 @@ void AddSpanFrontierChange(const std::string& lhs_key,
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
-  auto rep_range = getSourceRange(result);
+  auto rep_range = clang::SourceRange(getSourceRange(result).getEnd());
 
   // If we're inside a macro the rep_range computed above is going to be
   // incorrect because it will point into the file where the macro is defined.
@@ -821,8 +885,16 @@ void AddSpanFrontierChange(const std::string& lhs_key,
           clang::CharSourceRange::getCharRange(rep_range), source_manager,
           lang_opts)
           .str();
-  std::string replacement_text =
-      initial_text.empty() ? ".data()" : "(" + initial_text + ").data()";
+  std::string replacement_text = ".data()";
+
+  if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
+    // Insert enclosing parenthesis for expressions with UnaryOperators
+    auto begin_range = clang::SourceRange(getSourceRange(result).getBegin());
+    EmitFrontier(lhs_key, rhs_key,
+                 GetReplacementDirective(begin_range, "(", source_manager));
+    replacement_text = ").data()";
+  }
+
   EmitFrontier(
       lhs_key, rhs_key,
       GetReplacementDirective(rep_range, replacement_text, source_manager));
@@ -1712,6 +1784,48 @@ raw_ptr_plugin::FilterFile PathsToExclude() {
   return raw_ptr_plugin::FilterFile(paths_to_exclude_lines);
 }
 
+class ExprVisitor
+    : public clang::ast_matchers::internal::BoundNodesTreeBuilder::Visitor {
+ public:
+  void visitMatch(
+      const clang::ast_matchers::BoundNodes& BoundNodesView) override {
+    assert(expr_ == nullptr &&
+           "Encountered more than one expression with match id 'LHS'.");
+    expr_ = BoundNodesView.getNodeAs<clang::Expr>("LHS");
+  }
+  const clang::Expr* expr_ = nullptr;
+};
+const clang::Expr* FindLHSExpr(
+    clang::ast_matchers::internal::BoundNodesTreeBuilder& matches) {
+  ExprVisitor v;
+  matches.visitMatches(&v);
+  return v.expr_;
+}
+
+// This allows us to unpack binaryOperations recursively until we reach the node
+// matching InnerMatcher. This is necessary to handle expressions of the form:
+//    buf + expr1 - expr2 + expr3;
+// which need to be rewritten to:
+//    buf.subspan(expr1 - expr2 + expr3);
+AST_MATCHER_P(clang::Expr,
+              binary_plus_or_minus_operation,
+              clang::ast_matchers::internal::Matcher<clang::Expr>,
+              InnerMatcher) {
+  auto bin_op_matcher = expr(ignoringParenCasts(
+      binaryOperation(anyOf(hasOperatorName("+"), hasOperatorName("-")),
+                      hasLHS(expr(binaryOperation(anyOf(hasOperatorName("+"),
+                                                        hasOperatorName("-"))))
+                                 .bind("LHS")))));
+
+  clang::ast_matchers::internal::BoundNodesTreeBuilder matches;
+  if (bin_op_matcher.matches(Node, Finder, &matches)) {
+    const clang::Expr* n = FindLHSExpr(matches);
+    auto matcher = binary_plus_or_minus_operation(InnerMatcher);
+    return matcher.matches(*n, Finder, Builder);
+  }
+  return InnerMatcher.matches(Node, Finder, Builder);
+}
+
 class Spanifier {
  public:
   explicit Spanifier(
@@ -1853,8 +1967,13 @@ class Spanifier {
     auto rhs_exprs_without_size_nodes =
         expr(ignoringParenCasts(anyOf(
                  rhs_expr,
-                 binaryOperation(hasOperatorName("+"), hasLHS(rhs_expr),
-                                 hasRHS(expr().bind("bin_op_rhs")))
+                 binaryOperation(
+                     binary_plus_or_minus_operation(binaryOperation(
+                         hasLHS(rhs_expr), hasOperatorName("+"),
+                         unless(raw_ptr_plugin::isInMacroLocation()))),
+                     hasRHS(expr().bind("binary_op_rhs")),
+                     unless(hasParent(binaryOperation(
+                         anyOf(hasOperatorName("+"), hasOperatorName("-"))))))
                      .bind("binaryOperator"),
                  unaryOperator(hasOperatorName("++"), hasUnaryOperand(rhs_expr))
                      .bind("unaryOperator"),
@@ -1974,9 +2093,23 @@ class Spanifier {
                          "std::(size|begin|end|empty|swap|ranges::)")))),
                  forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
                                           parmVarDecl())));
-    Match(buffer_to_external_func, [](const MatchFinder::MatchResult& result) {
-      EmitReplacement(GetRHS(result), AppendDataCall(result));
-    });
+    Match(buffer_to_external_func, AppendDataCall);
+
+    // Handles expressions of the form:
+    // a + m, a + n + m, ...
+    // which need to be rewritten to:
+    // a.subspan(m), a.subspan(n + m), ...
+    auto binary_op = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        expr(ignoringParenCasts(binaryOperation(
+            binary_plus_or_minus_operation(
+                binaryOperation(hasLHS(rhs_expr), hasOperatorName("+"),
+                                unless(raw_ptr_plugin::isInMacroLocation()))
+                    .bind("binary_operation")),
+            hasRHS(expr().bind("binary_op_rhs")),
+            unless(hasParent(binaryOperation(
+                anyOf(hasOperatorName("+"), hasOperatorName("-")))))))));
+    Match(binary_op, AdaptBinaryOperation);
 
     // Handles assignment:
     // a = b;

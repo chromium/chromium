@@ -320,6 +320,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5605834417512968703">Pumili ng kahit anong bagay na hahanapin gamit ang Paghahanap ng Larawan o pindutin ang escape para lumabas sa Paghahanap ng Larawan</translation>
+<translation id="5618818588972826921">Pumili ng anumang text o larawan na hahanapin gamit ang Paghahanap ng Larawan o pindutin ang escape para lumabas sa Paghahanap ng Larawan</translation>
 <translation id="5623402015214259806">{0,plural, =0{May available na update sa Chromium}=1{May available na update sa Chromium}one{# araw nang may available na update sa Chromium}other{# na araw nang may available na update sa Chromium}}</translation>
 <translation id="5643865575100044307">Palaging i-delete ang data ng site mula sa iyong device kapag isinasara mo ang Chromium</translation>
 <translation id="5653831366781983928">Paki-restart ang Chromium ngayon</translation>
@@ -595,5 +596,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="983803489796659991">Hindi na-install dahil walang anumang data ng hash para sa application ang server ng update.</translation>
 <translation id="985498048907240953">Gamitin ang Chromium nang Walang Account</translation>
 <translation id="985602178874221306">Ang Mga May-akda ng Chromium</translation>
+<translation id="989970834842471429">Pumili ng anumang text o larawan na hahanapin gamit ang Paghahanap ng Larawan</translation>
 <translation id="992780518932311116">Para magamit ang iyong lokasyon, bigyan ng access ang Chromium sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 </translationbundle>

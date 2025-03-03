@@ -481,18 +481,6 @@ void SerializeLayer(LayerImpl& layer,
     case mojom::LayerType::kPicture: {
       PictureLayerImpl& picture_layer = static_cast<PictureLayerImpl&>(layer);
       wire.is_backdrop_filter_mask = picture_layer.is_backdrop_filter_mask();
-      if (wire.is_backdrop_filter_mask) {
-        // Serialize the contents resource ID for the layer serving as a
-        // backdrop filter.
-        viz::ResourceId resource_id;
-        gfx::Size mask_texture_size;
-        gfx::SizeF mask_uv_size;
-        picture_layer.GetContentsResourceId(&resource_id, &mask_texture_size,
-                                            &mask_uv_size);
-        wire.resource_id = resource_id;
-        wire.texture_size = mask_texture_size;
-        wire.uv_size = mask_uv_size;
-      }
 
       if (picture_layer.GetRasterSource()->IsSolidColor()) {
         wire.solid_color = picture_layer.GetRasterSource()->GetSolidColor();

@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">稍後再載入頁面</translation>
 <translation id="1010225406377140704">請與傳送者聯絡，要求對方提供新連結</translation>
 <translation id="1011206368273183593">正在準備檔案</translation>
+<translation id="1012264210825687872">確認訂單後，你必須登入「<ph name="BNPL_ISSUER_NAME" />」或建立帳戶。這個帳戶會自動連結至 Google Pay。</translation>
 <translation id="1014509239502131234">復原結果</translation>
 <translation id="1015730422737071372">提供其他詳細資訊</translation>
 <translation id="1019413721762100891">關閉</translation>
@@ -690,6 +691,7 @@
 <translation id="2187317261103489799">偵測 (預設)</translation>
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="2194856509914051091">注意事項</translation>
+<translation id="2198071643181968308">進一步瞭解「<ph name="BNPL_ISSUER_NAME" />」</translation>
 <translation id="2200678913752027654">「不喜歡」按鈕，按下 Enter 鍵即可開啟意見回饋表單，詳細說明為何不喜歡這項建議</translation>
 <translation id="2202627062836089804">卡片背面</translation>
 <translation id="2204482073374652408">更新完成！</translation>
@@ -2316,6 +2318,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome 需要使用裝置的<ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">紙板 (封邊)</translation>
+<translation id="5106648964679263509">已填入「<ph name="BNPL_ISSUER_NAME" />」的虛擬卡片資訊</translation>
 <translation id="5108881358339761672">這是不安全的網站</translation>
 <translation id="5109892411553231226">管理付款方式</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2511,6 +2514,7 @@
             <ph name="LIST_ITEM" />在表單中輸入的資訊
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
+<translation id="5445340838622821110">分期付款時，系統會填入一次性虛擬卡號。這個號碼僅適用於這筆交易。<ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">允許 <ph name="SITE" /> 使用與你相關的既有資訊</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 網頁</translation>
 <translation id="5452923259299906094">使用電子錢包和 Pix 付款</translation>
@@ -3330,6 +3334,7 @@
 <translation id="6917795328362592458">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，密碼管理工具建議你立即檢查已儲存的密碼。</translation>
 <translation id="6917873303492266709">如要分享、加入分頁群組並在其中協作，請前往設定頁面開啟「允許登入 Chrome」</translation>
 <translation id="6921197121276419421">已允許安裝網頁應用程式</translation>
+<translation id="69238565902785824">保持帳戶連結有助於更快透過「<ph name="BNPL_ISSUER_NAME" />」付款。如要取消連結，可以前往 <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> 取消</translation>
 <translation id="6924013822850225188">選擇是否在結帳時查看卡片福利 (依據銀行條款規定)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">人體藝術</translation>
@@ -3395,6 +3400,7 @@
 <translation id="701757816833614688">視覺藝術與設計教育</translation>
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
 <translation id="7023162328967545559">管理員警告</translation>
+<translation id="7023765275461720661">要連結帳戶並透過「<ph name="BNPL_ISSUER_NAME" />」付款嗎？</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030164307377592766">修改填入付款方式的設定</translation>
 <translation id="7031646650991750659">你安裝的 Google Play 應用程式</translation>
@@ -3617,6 +3623,7 @@
 <translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7416351320495623771">管理密碼…</translation>
 <translation id="7416898721136759658">補助金、獎學金與財務補助</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">程式設計</translation>
 <translation id="7419091773564635591">電腦和電子產品</translation>
 <translation id="7419106976560586862">設定檔路徑</translation>
@@ -3663,6 +3670,7 @@
 <translation id="7485085230273446323">工商業</translation>
 <translation id="7485870689360869515">找不到任何資料。</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">「<ph name="BNPL_ISSUER_NAME" />」會確認資格，這不會影響你的信用評分。如果核准，「<ph name="BNPL_ISSUER_NAME" />」就會提供付款方案供你選擇，讓你完成購買程序。</translation>
 <translation id="7489392576326061356">洗髮精與潤髮乳</translation>
 <translation id="7495528107193238112">這項內容已遭到封鎖，請聯絡網站擁有者以修正問題。</translation>
 <translation id="749865518782565832">水管工程</translation>

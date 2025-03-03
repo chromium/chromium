@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/format_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/browser_sync/sync_to_signin_migration.h"
@@ -26,10 +27,85 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// Returns the title associated to the given user sign-in state.
+// `account_profile_switch` is true if the flow was triggered for an account or
+// profile switching.
+// `signed_in_user_state` sign-in&sync state for the current primary account.
+NSString* GetActionSheetCoordinatorTitle(
+    signin::IdentityManager* identity_manager,
+    SignedInUserState signed_in_user_state,
+    bool account_profile_switch) {
+  switch (signed_in_user_state) {
+    case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin:
+      // This dialog is triggered only if there is unsync data.
+      return l10n_util::GetNSString(
+          IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_TITLE);
+    case SignedInUserState::kManagedAccountAndMigratedFromSyncing: {
+      std::u16string hostedDomain =
+          HostedDomainForPrimaryAccount(identity_manager);
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT,
+          hostedDomain);
+    }
+    case SignedInUserState::kManagedAccountClearsDataOnSignout: {
+      return account_profile_switch
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SWITCH_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT);
+    }
+  }
+  NOTREACHED();
+}
+
+// Returns the message associated to the given user sign-in state. Can return
+// nil.
+// `account_profile_switch` is true if the flow was triggered for an account or
+// profile switching.
+// `signed_in_user_state` sign-in&sync state for the current primary account.
+NSString* GetActionSheetCoordinatorMessage(
+    AuthenticationService* authentication_service,
+    SignedInUserState signed_in_user_state,
+    bool account_profile_switch) {
+  switch (signed_in_user_state) {
+    case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin: {
+      // This dialog is triggered only if there is unsync data.
+      NSString* userEmail =
+          authentication_service
+              ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+              .userEmail;
+      return account_profile_switch
+                 ? l10n_util::GetNSStringF(
+                       IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BODY,
+                       base::SysNSStringToUTF16(userEmail))
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA);
+    }
+    case SignedInUserState::kManagedAccountClearsDataOnSignout:
+      // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause
+      // tabs to be closed, see `MainControllerAuthenticationServiceDelegate::
+      //    ClearBrowsingDataForSignedinPeriod`.
+      return base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
+    case SignedInUserState::kManagedAccountAndMigratedFromSyncing: {
+      return nil;
+    }
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 std::u16string HostedDomainForPrimaryAccount(
     signin::IdentityManager* identity_manager) {
@@ -223,4 +299,149 @@ SignedInUserState GetSignedInUserState(
     return SignedInUserState::kManagedAccountClearsDataOnSignout;
   }
   return SignedInUserState::kNotSyncingAndReplaceSyncWithSignin;
+}
+
+bool ForceLeavingPrimaryAccountConfirmationDialog(
+    SignedInUserState signed_in_user_state) {
+  switch (signed_in_user_state) {
+    case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin:
+      return false;
+    case SignedInUserState::kManagedAccountClearsDataOnSignout:
+    case SignedInUserState::kManagedAccountAndMigratedFromSyncing:
+      if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+        // TODO(crbug.com/375604649): Might need to update this implementation
+        // for pre-existing managed account in the personal profile.
+        return false;
+      } else {
+        return true;
+      }
+  }
+  NOTREACHED();
+}
+
+ActionSheetCoordinator* GetLeavingPrimaryAccountConfirmationDialog(
+    UIViewController* base_view_controller,
+    Browser* browser,
+    UIView* anchor_view,
+    CGRect anchor_rect,
+    SignedInUserState signed_in_user_state,
+    bool account_profile_switch,
+    LeavingPrimaryAccountConfirmationDialogCompletion completion) {
+  ProfileIOS* profile = browser->GetProfile();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  NSString* title = GetActionSheetCoordinatorTitle(
+      identity_manager, signed_in_user_state, account_profile_switch);
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  NSString* message = GetActionSheetCoordinatorMessage(
+      authentication_service, signed_in_user_state, account_profile_switch);
+  ActionSheetCoordinator* actionSheetCoordinator =
+      [[ActionSheetCoordinator alloc]
+          initWithBaseViewController:base_view_controller
+                             browser:browser
+                               title:title
+                             message:message
+                                rect:anchor_rect
+                                view:anchor_view];
+  switch (signed_in_user_state) {
+    case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin: {
+      // This dialog is triggered only if there is unsynced data.
+      actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
+      NSString* const signOutButtonTitle =
+          account_profile_switch
+              ? l10n_util::GetNSString(
+                    IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)
+              : l10n_util::GetNSString(
+                    IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_BUTTON);
+      [actionSheetCoordinator
+          addItemWithTitle:signOutButtonTitle
+                    action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_UNO"));
+                      signin_metrics::
+                          RecordSignoutConfirmationFromDataLossAlert(
+                              signin_metrics::SignoutDataLossAlertReason::
+                                  kSignoutWithUnsyncedData,
+                              true);
+                      completion(YES);
+                    }
+                     style:UIAlertActionStyleDestructive];
+      [actionSheetCoordinator
+          addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                    action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Cancel_Regular_UNO"));
+                      signin_metrics::
+                          RecordSignoutConfirmationFromDataLossAlert(
+                              signin_metrics::SignoutDataLossAlertReason::
+                                  kSignoutWithUnsyncedData,
+                              false);
+                      completion(NO);
+                    }
+                     style:UIAlertActionStyleCancel];
+      break;
+    }
+    case SignedInUserState::kManagedAccountClearsDataOnSignout: {
+      actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
+      NSString* const signOutButtonTitle =
+          account_profile_switch
+              ? l10n_util::GetNSString(
+                    IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)
+              : l10n_util::GetNSString(
+                    IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON);
+      [actionSheetCoordinator
+          addItemWithTitle:signOutButtonTitle
+                    action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Managed_ClearDataOnSignout"));
+                      signin_metrics::
+                          RecordSignoutConfirmationFromDataLossAlert(
+                              signin_metrics::SignoutDataLossAlertReason::
+                                  kSignoutWithClearDataForManagedUser,
+                              true);
+                      completion(YES);
+                    }
+                     style:UIAlertActionStyleDestructive];
+      [actionSheetCoordinator
+          addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                    action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Cancel_Managed_ClearDataOnSignout"));
+                      signin_metrics::
+                          RecordSignoutConfirmationFromDataLossAlert(
+                              signin_metrics::SignoutDataLossAlertReason::
+                                  kSignoutWithClearDataForManagedUser,
+                              false);
+                      completion(NO);
+                    }
+                     style:UIAlertActionStyleCancel];
+      break;
+    }
+    case SignedInUserState::kManagedAccountAndMigratedFromSyncing: {
+      if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+        actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
+      }
+      NSString* const clearFromDeviceTitle =
+          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON);
+      [actionSheetCoordinator
+          addItemWithTitle:clearFromDeviceTitle
+                    action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Managed_Syncing"));
+                      completion(YES);
+                    }
+                     style:UIAlertActionStyleDestructive];
+      [actionSheetCoordinator
+          addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                    action:^{
+                      base::RecordAction(
+                          base::UserMetricsAction("Signin_Signout_Cancel"));
+                      completion(NO);
+                    }
+                     style:UIAlertActionStyleCancel];
+      break;
+    }
+  }
+  return actionSheetCoordinator;
 }

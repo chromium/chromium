@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">按住主畫面</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1836891464494477513">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{書籤已儲存至 Google 帳戶 ({email})}}</translation>
+<translation id="1838089197478136166">要在「錢包」中開啟嗎？</translation>
 <translation id="183878838231635348">此資訊卡會顯示「安全檢查」功能自動偵測到的任何私隱或安全問題。</translation>
 <translation id="1845230888742614096">保留群組</translation>
 <translation id="1854463785401910334">在開啟的分頁中搜尋</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">您的 iPad 最近已還原，可能已變更預設瀏覽器。</translation>
 <translation id="1901366738768303267">如何使用此功能？</translation>
 <translation id="1901600657316773839">保留所選項目</translation>
+<translation id="1902277226107477495">已關閉地址偵測，你可前往「設定」重啟此功能。</translation>
 <translation id="1904580727789512086">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="1911619930368729126">上載至「Google 雲端硬碟」</translation>
 <translation id="1923342640370224680">前一個小時</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="2240256190924001613">有可用的設定描述檔</translation>
+<translation id="2244080985779413662">此網站想下載檔案並在「錢包」中開啟。</translation>
 <translation id="2245007488813216650">正在翻譯…</translation>
 <translation id="2249119578464404734">輕按畫面頂部的「搜尋」圖示</translation>
 <translation id="2251686759395008410">「選單」→「記錄」</translation>
@@ -1361,6 +1364,7 @@
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6790502149545262384">不久後，您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
+<translation id="6794476726485507147">選擇要提醒自己再次瀏覽此頁的日期和時間</translation>
 <translation id="681368974849482173">已建立項目</translation>
 <translation id="6825078212112407882">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>
 <translation id="6830728435402077660">不安全</translation>
@@ -1488,6 +1492,7 @@
 <translation id="7425053386765766120">新增付款方法…</translation>
 <translation id="7425346204213733349">系統不會將您變更的書籤、記錄、密碼和其他設定繼續同步至您的 Google 帳戶，但 Google 帳戶內現有的資料仍會保留。</translation>
 <translation id="742664698522525515">要保留群組嗎？</translation>
+<translation id="7431851541687113774">關閉地址偵測</translation>
 <translation id="7431991332293347422">控制系統如何使用您的瀏覽記錄，為您提供個人化的搜尋內容和其他服務</translation>
 <translation id="7435356471928173109">已由管理員關閉</translation>
 <translation id="7438481509621345350">您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
@@ -1641,6 +1646,7 @@
 <translation id="8023170444051056234">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
 <translation id="8023878949384262191">展開嗰個部份。</translation>
 <translation id="8027581147000338959">在新視窗中開啟</translation>
+<translation id="8029092694585014252">設定提醒</translation>
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8035133914807600019">新增資料夾…</translation>
 <translation id="8035412398498507358">相片</translation>

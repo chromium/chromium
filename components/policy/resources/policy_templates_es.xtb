@@ -424,6 +424,23 @@ Si se inhabilita la política o se deja sin definir, la configuración de restau
 La política independiente <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> puede usarse para impedir que esta función cambie a HTTPS algunos nombres de host o patrones de nombre de host concretos.</translation>
 <translation id="1342918903685430097">Configurar la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> en el dispositivo</translation>
 <translation id="1343128241903870688">Inhabilitar los informes sobre las aplicaciones del dispositivo</translation>
+<translation id="1345276795096570241">Inhabilita el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los proveedores de identidades que se indican.
+
+Si añades el valor <ph name="POLICY_VALUE_ALL" />, se inhabilitarán todos los proveedores de identidades admitidos para el inicio de sesión único.
+
+Si añades el valor <ph name="POLICY_VALUE_MICROSOFT" />, se inhabilitará la compatibilidad de Chrome con el inicio de sesión único para el proveedor de identidades en la nube de Microsoft®.
+
+Si no se define esta política, se habilitarán todos los proveedores de identidades admitidos de <ph name="PRODUCT_NAME" />.
+
+En el caso de los proveedores de identidades que se han habilitado en <ph name="PRODUCT_NAME" /> y que ha configurado el administrador en el dispositivo, los usuarios que inicien sesión una vez en su cuenta usando ese proveedor de identidades (en cualquier aplicación que admita <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />) podrán iniciar sesión automáticamente en propiedades web usando ese proveedor de identidades. La información relativa a la autenticación del usuario se transmite al proveedor de identidades en la nube del usuario en cada evento de autenticación.
+
+Notas:
+
+<ph name="PRODUCT_NAME" /> no admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en los modos Incógnito o Invitado.
+
+<ph name="PRODUCT_NAME" /> solo admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los siguientes proveedores de identidades: Microsoft.
+
+Esta función está disponible a partir de <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1347198119056266798">Esta política está obsoleta. Te recomendamos que utilices <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> y <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Esta política se ignorará si se asigna un valor a las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta).
 
       Permite forzar las consultas en la Búsqueda web de Google para que se realicen con la función Búsqueda Segura activada e impide que los usuarios modifiquen esta opción. Además, esta opción fuerza el modo restringido moderado en YouTube.
@@ -3595,7 +3612,6 @@ Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KE
 <translation id="3663124775601519286">Si se habilita esta política o no se define, se permitirá el uso de la API Translator en <ph name="PRODUCT_NAME" />.
 
       Si se inhabilita esta política, no se permitirá el uso de la API Translator.</translation>
-<translation id="3664164569472125114">Controlar el acceso de <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">Pedirle al usuario que realice una acción solo si no hay ningún certificado que coincida con la selección automática.</translation>
 <translation id="3667467644216039144">Configura una lista de los tipos de datos de navegación que se deben eliminar cuando el usuario cierra todas las ventanas del navegador.
 
@@ -7474,7 +7490,6 @@ Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio
 <translation id="6383774771168138899">Configura el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren páginas de resultados del buscador predeterminado en un panel lateral del navegador.</translation>
 <translation id="6389240462871677239">Permitir que los orígenes de aplicaciones web aisladas usen Controlled Frame</translation>
-<translation id="6389858262577493180">Habilitar el uso de <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Estas funciones de DevTools de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recoger datos como mensajes de error, rastreos de la pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor que pertenece a Google y ejecuta un modelo de IA generativa. En los datos enviados al servidor no se incluyen el cuerpo de las respuestas ni los encabezados de autenticación y cookies de las solicitudes de red.
 
 Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
@@ -8076,7 +8091,6 @@ Hasta Chrome 114, esta política requería que se asignara el valor true a la po
 <translation id="6766216162565713893">Permitir que los sitios le pidan permiso al usuario para acceder a dispositivos Bluetooth cercanos</translation>
 <translation id="6770454900105963262">Informar sobre sesiones del kiosco activas</translation>
 <translation id="6774132787348495175">No permitir que los usuarios usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
-<translation id="6776202826080834193">Si esta política se habilita o no se define, los usuarios podrán usar la función <ph name="GLIC" />. Si se inhabilita esta política, los usuarios no podrán interactuar con <ph name="GLIC" />. El botón de la barra de pestañas se ocultará y <ph name="GLIC" /> no estará disponible mediante una combinación de teclas, a menos que se habilite en otro perfil.</translation>
 <translation id="678121785914414680">Lista de tipos de archivo que deberían abrirse automáticamente al descargarse. No se debe incluir el separador inicial al añadir un tipo de archivo a la lista, así que añade "txt" en lugar de ".txt".
 
 Los archivos de los tipos que se deben abrir automáticamente seguirán estando sujetos a las comprobaciones de Navegación segura y no se abrirán si no las superan.
@@ -11252,7 +11266,6 @@ Esta política solo tendrá efecto si se le asigna el valor true a la política 
       Si se le asigna el valor "Verdadero", se enviará información sobre el sistema del dispositivo.</translation>
 <translation id="9131419675479917141">Permitir que los usuarios definan un PIN poco seguro, pero mostrarles una advertencia</translation>
 <translation id="913195841488580904">Bloquear el acceso a una lista de URLs</translation>
-<translation id="9132345265506256744">Inhabilitar el uso de <ph name="GLIC" /></translation>
 <translation id="9133526448421932754">Color amarillo para la retroiluminación del teclado</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>

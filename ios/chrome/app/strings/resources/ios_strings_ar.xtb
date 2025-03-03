@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">انقُر مع الاستمرار على الشاشة الرئيسية</translation>
 <translation id="1832848789136765277">لضمان إمكانية الوصول دائمًا إلى البيانات التي تتم مزامنتها، عليك إثبات هويتك.</translation>
 <translation id="1836891464494477513">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ الإشارتين المرجعيتَين في حسابك على Google‏ ({email}).}few{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
+<translation id="1838089197478136166">‏"هل المطلوب فتح الملف في تطبيق Apple Wallet؟" (Open in Wallet?‎)</translation>
 <translation id="183878838231635348">تعرض هذه البطاقة أي مشاكل تتعلّق بالخصوصية أو الأمان يتم رصدها تلقائيًا من خلال ميزة "تأكيد السلامة".</translation>
 <translation id="1845230888742614096">الاحتفاظ بمجموعة علامات التبويب</translation>
 <translation id="1854463785401910334">البحث في علامات التبويب المفتوحة</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">‏تمّت استعادة بيانات هاتف iPad مؤخرًا، وبالتالي هناك احتمالية أن يكون المتصفِّح التلقائي تغيّر.</translation>
 <translation id="1901366738768303267">كيف يمكن استخدام هذه الميزة؟</translation>
 <translation id="1901600657316773839">الاحتفاظ بالاختيار</translation>
+<translation id="1902277226107477495">ميزة رصد العناوين غير مفعَّلة، يمكنك إعادة تفعيلها في "الإعدادات".</translation>
 <translation id="1904580727789512086">‏يتم حفظ عناوين URL التي تنتقل إليها في حسابك على Google.</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
 <translation id="1923342640370224680">آخر ساعة</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
 <translation id="2236949375853147973">نشاطي</translation>
 <translation id="2240256190924001613">ملف تحميل الإعدادات متوفِّر</translation>
+<translation id="2244080985779413662">‏"يطلب هذا الموقع الإلكتروني تنزيل ملف وفتحه في تطبيق Apple Wallet" ‏(This website wants to download a file and open it in your Wallet).</translation>
 <translation id="2245007488813216650">جارٍ الترجمة…</translation>
 <translation id="2249119578464404734">انقر على الرمز "بحث" في أعلى الشاشة</translation>
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
@@ -1359,6 +1362,7 @@
 <translation id="6761393919622941301">الصوت</translation>
 <translation id="6779455296366983087">سيتم حذف بيانات التصفُّح</translation>
 <translation id="6790502149545262384">قريبًا، ستظهر لك قصص من "<ph name="CHANNEL_NAME" />" عند فتح علامة تبويب جديدة.</translation>
+<translation id="6794476726485507147">يُرجى اختيار تاريخ ووقت لتلقّي إشعار تذكير بالرجوع إلى هذه الصفحة</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏تمّ حفظ إشارة مرجعية واحدة في حسابك على Google‏ ({email})}zero{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}two{‏تمّ حفظ إشارتَين مرجعيتَين ({count}) في حسابك على Google‏ ({email})}few{‏تمّ حفظ {count} إشارات مرجعية في حسابك على Google‏ ({email})}many{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}other{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}}</translation>
 <translation id="6830728435402077660">غير آمن</translation>
@@ -1486,6 +1490,7 @@
 <translation id="7425053386765766120">إضافة طريقة دفع…</translation>
 <translation id="7425346204213733349">‏لن تتم بعد الآن مزامنة التغييرات التي تطرأ على الإشارات المرجعية والسجلّ وكلمات المرور وغيرها من الإعدادات مع حسابك على Google، ولكن ستظل بياناتك الحالية مخزّنة في حسابك على Google.</translation>
 <translation id="742664698522525515">هل المطلوب الاحتفاظ بمجموعة علامات التبويب؟</translation>
+<translation id="7431851541687113774">إيقاف ميزة رصد العناوين</translation>
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7438481509621345350">ستظهر لك قصص من <ph name="CHANNEL_NAME" /> عند فتح علامة تبويب جديدة</translation>
@@ -1639,6 +1644,7 @@
 <translation id="8023170444051056234">ستفقد على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع أجهزتك</translation>
 <translation id="8023878949384262191">توسيع القسم.</translation>
 <translation id="8027581147000338959">الفتح في نافذة جديدة</translation>
+<translation id="8029092694585014252">ضبط تذكير</translation>
 <translation id="8032569120109842252">المواقع التي تتابعها</translation>
 <translation id="8035133914807600019">مجلد جديد...</translation>
 <translation id="8035412398498507358">‏صور Google</translation>

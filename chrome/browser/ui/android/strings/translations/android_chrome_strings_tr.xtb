@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> cihazından gönderildi</translation>
 <translation id="1320912611264252795">Yer işareti kaydetme akışı klasörleri tam ekranda açıldı</translation>
 <translation id="1327257854815634930">Gezinme geçmişi açık</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, yeni veya güncellenmiş sekme</translation>
 <translation id="1331212799747679585">Chrome güncellenemiyor. Diğer seçenekler</translation>
 <translation id="1332501820983677155">Google Chrome'un özellik kısayolları</translation>
 <translation id="1333491156693005331">Yakın zamanda kontrol edildi</translation>
@@ -203,7 +202,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1925021887439448749">Özel web adresini girin</translation>
 <translation id="1928618076168182477">Görsel görünüm gösteriliyor</translation>
 <translation id="1928696683969751773">Güncellemeler</translation>
-<translation id="1933845786846280168">Seçili Sekme</translation>
 <translation id="1939549834451474504">Google Play Hizmetleri kullanılamadığı için şifreler yakında çalışmayı durduracak. Çalışmayı durdurmadan önce kayıtlı şifrelerinizin kopyasını oluşturabilirsiniz. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="1943432128510653496">Şifreleri kaydet</translation>
 <translation id="1944535645109964458">Geçiş anahtarı yok</translation>
@@ -430,7 +428,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2976550651269220761">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.\nOturumu kapatmadan önce birkaç dakika beklemeyi deneyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="2977350910003566746">Son açılana göre sıralanıyor</translation>
 <translation id="297771753501244313">Son açılana göre sırala</translation>
-<translation id="2979025552038692506">Seçili Gizli Sekme</translation>
 <translation id="2979639724566107830">Yeni pencerede aç</translation>
 <translation id="2981364137500752533">En fazla 5 pencere açabilirsiniz.</translation>
 <translation id="2983102365694924129">Bir sitedeki etkinliğinize dayalı. Bu ayar kapalı.</translation>
@@ -621,7 +618,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3902562446536395999">A'dan Z'ye sıralanıyor</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> cihazı güncelle</translation>
 <translation id="3911609878849982353">Z'den A'ya sıralanıyor</translation>
-<translation id="3918415141610210050">Sekme</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> açık</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Verilerimi birleştir</translation>
@@ -644,7 +640,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4024768890073681126">Tarayıcınız, ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# sa.}other{# sa.}}</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> sitesinde <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kimliğinizle devam edin</translation>
-<translation id="404352903042073578">Adsız grup</translation>
 <translation id="4044708993631234325">Alt sayfa</translation>
 <translation id="4045441967987592849">Yeniden aç</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Paylaşılan sekme gruplarında yeni etkinlik içeren <ph name="TABS_COUNT_ONE" /> standart sekme}other{Paylaşılan sekme gruplarında yeni etkinlik içeren <ph name="TABS_COUNT_MANY" /> standart sekme}}</translation>
@@ -1736,7 +1731,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8840953339110955557">Bu sayfa, web'deki sürümden farklı olabilir.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Gizli</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, sekme</translation>
 <translation id="8854223127042600341">Çevrimdışı dosyalarınızı görün</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" /> masaüstü sitesini isteyebilirsiniz</translation>
 <translation id="8856607253650333758">Açıklama al</translation>

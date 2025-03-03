@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> cihazından göndərilib</translation>
 <translation id="1320912611264252795">Əlfəcin saxlama prosesi qovluqları tam hündürlükdə açılıb</translation>
 <translation id="1327257854815634930">Naviqasiya tarixçəsi açıqdır</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, yeni və ya güncəllənmiş tab</translation>
 <translation id="1331212799747679585">Chrome güncəllənmədi. Digər seçimlər</translation>
 <translation id="1332501820983677155">Google Chrome funksiya qısayolları</translation>
 <translation id="1333491156693005331">Bu yaxınlarda yoxlayıb</translation>
@@ -204,7 +203,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1925021887439448749">Fərdi veb ünvanı daxil edin</translation>
 <translation id="1928618076168182477">Vizual görünüş göstərilir</translation>
 <translation id="1928696683969751773">Güncəlləşmələr</translation>
-<translation id="1933845786846280168">Seçilmiş Panel</translation>
 <translation id="1939549834451474504">Google Play xidmətləri əlçatan olmadığı üçün parollar tezliklə işləməyəcək. Yadda saxlanan parollar işlədiyi müddətcə onların surətini çıxara bilərsiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Parolları yadda saxlayın</translation>
 <translation id="1944535645109964458">Əlçatan giriş açarı yoxdur</translation>
@@ -431,7 +429,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2976550651269220761">Müəyyən Chrome datanız hələ Google Hesabında yadda saxlanılmayıb.\nÇıxmazdan əvvəl bir neçə dəqiqə gözləyin. İndi çıxsanız, bu data silinəcək.</translation>
 <translation id="2977350910003566746">Sonuncu açılan əsasında çeşidlənir</translation>
 <translation id="297771753501244313">Çeşidləyin: Son açılan</translation>
-<translation id="2979025552038692506">Seçilmiş Gizli Panel</translation>
 <translation id="2979639724566107830">Yeni pəncərədə açın</translation>
 <translation id="2981364137500752533">5-ə qədər pəncərəniz ola bilər.</translation>
 <translation id="2983102365694924129">Saytdakı fəaliyyətinizə əsaslanır. Bu ayar deaktivdir.</translation>
@@ -622,7 +619,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3902562446536395999">A-dan Z-yə çeşidlənir</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> məhsulunu güncəlləyin</translation>
 <translation id="3911609878849982353">Z-dən A-ya çeşidlənir</translation>
-<translation id="3918415141610210050">Tab</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> aktivdir</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Datamı birləşdirin</translation>
@@ -645,7 +641,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4024768890073681126">Brauzeri valideyn idarə edir</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# saat}other{# saat}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə <ph name="SITE_ETLD_PLUS_ONE" /> saytına davam edin</translation>
-<translation id="404352903042073578">Adsız qrup</translation>
 <translation id="4044708993631234325">Aşağıdakı vərəq</translation>
 <translation id="4045441967987592849">Yenidən açın</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Paylaşılan tab qruplarında yeni fəaliyyəti olan <ph name="TABS_COUNT_ONE" /> standart tab}other{Paylaşılan tab qruplarında yeni fəaliyyəti olan <ph name="TABS_COUNT_MANY" /> standart tab}}</translation>
@@ -1738,7 +1733,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8840953339110955557">Bu səhifə onlayn versiyadan fərqli ola bilər.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Gizli</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, tab</translation>
 <translation id="8854223127042600341">Oflayn fayllarınıza baxın</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" /> üçün masaüstü saytı tələb edə bilərsiniz</translation>
 <translation id="8856607253650333758">Təsvirləri əldə edin</translation>

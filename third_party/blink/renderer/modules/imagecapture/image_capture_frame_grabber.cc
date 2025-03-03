@@ -22,6 +22,7 @@
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -39,31 +40,23 @@
 
 namespace WTF {
 // Template specialization of [1], needed to be able to pass callbacks
-// that have ScopedWebCallbacks paramaters across threads.
+// that have ScopedPromiseResolver parameters across threads.
 //
 // [1] third_party/blink/renderer/platform/wtf/cross_thread_copier.h.
 template <typename T>
-struct CrossThreadCopier<blink::ScopedWebCallbacks<T>>
-    : public CrossThreadCopierPassThrough<blink::ScopedWebCallbacks<T>> {
+struct CrossThreadCopier<blink::ScopedPromiseResolver<T>>
+    : public CrossThreadCopierPassThrough<blink::ScopedPromiseResolver<T>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::ScopedWebCallbacks<T>;
-  static blink::ScopedWebCallbacks<T> Copy(
-      blink::ScopedWebCallbacks<T> pointer) {
-    return pointer;
+  using Type = blink::ScopedPromiseResolver<T>;
+  static blink::ScopedPromiseResolver<T> Copy(
+      blink::ScopedPromiseResolver<T> value) {
+    return value;
   }
 };
 
 }  // namespace WTF
 
 namespace blink {
-
-namespace {
-
-void OnError(std::unique_ptr<ImageCaptureGrabFrameCallbacks> callbacks) {
-  callbacks->OnError();
-}
-
-}  // anonymous namespace
 
 // Ref-counted class to receive a single VideoFrame on IO thread, convert it and
 // send it to |task_runner|, where this class is created and destroyed.
@@ -315,24 +308,29 @@ ImageCaptureFrameGrabber::~ImageCaptureFrameGrabber() {
 
 void ImageCaptureFrameGrabber::GrabFrame(
     MediaStreamComponent* component,
-    std::unique_ptr<ImageCaptureGrabFrameCallbacks> callbacks,
+    ScriptPromiseResolver<ImageBitmap>* resolver,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!!callbacks);
+  DCHECK(resolver);
 
   DCHECK(component && component->GetPlatformTrack());
   DCHECK_EQ(MediaStreamSource::kTypeVideo, component->GetSourceType());
 
   if (frame_grab_in_progress_) {
     // Reject grabFrame()s too close back to back.
-    callbacks->OnError();
+    resolver->Reject();
     return;
   }
 
-  auto scoped_callbacks = MakeScopedWebCallbacks(
-      std::move(callbacks),
-      base::BindPostTask(task_runner, WTF::BindOnce(&OnError)));
+  ScopedPromiseResolver<ImageBitmap> scoped_resolver(
+      resolver,
+      base::BindPostTask(
+          task_runner,
+          WTF::BindOnce(
+              [](Persistent<ScriptPromiseResolver<ImageBitmap>> resolver) {
+                resolver->Reject();
+              })));
 
   // A SingleShotFrameHandler is bound and given to the Track to guarantee that
   // only one VideoFrame is converted and delivered to OnSkImage(), otherwise
@@ -356,24 +354,27 @@ void ImageCaptureFrameGrabber::GrabFrame(
           base::MakeRefCounted<SingleShotFrameHandler>(
               CrossThreadBindOnce(&ImageCaptureFrameGrabber::OnSkImage,
                                   weak_factory_.GetWeakPtr(),
-                                  std::move(scoped_callbacks)),
+                                  std::move(scoped_resolver)),
               std::move(task_runner)))),
       MediaStreamVideoSink::IsSecure::kNo,
       MediaStreamVideoSink::UsesAlpha::kDefault);
 }
 
 void ImageCaptureFrameGrabber::OnSkImage(
-    ScopedWebCallbacks<ImageCaptureGrabFrameCallbacks> callbacks,
+    ScopedPromiseResolver<ImageBitmap> resolver,
     sk_sp<SkImage> image) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   timeout_task_handle_.Cancel();
   MediaStreamVideoSink::DisconnectFromTrack();
   frame_grab_in_progress_ = false;
-  if (image)
-    callbacks.PassCallbacks()->OnSuccess(image);
-  else
-    callbacks.PassCallbacks()->OnError();
+
+  if (image) {
+    resolver.TakeResolver()->Resolve(MakeGarbageCollected<ImageBitmap>(
+        UnacceleratedStaticBitmapImage::Create(std::move(image))));
+  } else {
+    resolver.TakeResolver()->Reject();
+  }
 }
 
 void ImageCaptureFrameGrabber::OnTimeout() {

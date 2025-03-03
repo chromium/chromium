@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Kosketa aloitusnäyttöä pitkään</translation>
 <translation id="1832848789136765277">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy synkronoituun dataasi</translation>
 <translation id="1836891464494477513">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email})}other{Kirjanmerkit tallennettu Google-tilillesi ({email})}}</translation>
+<translation id="1838089197478136166">Avataanko tiedosto Walletissa?</translation>
 <translation id="183878838231635348">Kortissa näkyvät yksityisyys- tai tietoturvaongelmat, jotka turvatarkistus havaitsee puolestasi automaattisesti.</translation>
 <translation id="1845230888742614096">Säilytä ryhmä</translation>
 <translation id="1854463785401910334">Hae avoimilta välilehdiltä</translation>
@@ -301,6 +302,7 @@
 <translation id="2230173723195178503">Verkkosivu ladattiin.</translation>
 <translation id="2236949375853147973">Omat tapahtumat</translation>
 <translation id="2240256190924001613">Konfigurointiprofiili saatavilla</translation>
+<translation id="2244080985779413662">Verkkosivusto haluaa ladata tiedoston ja avata sen Walletissa.</translation>
 <translation id="2245007488813216650">Käännetään…</translation>
 <translation id="2249119578464404734">Napauta näytön yläreunasta hakukuvaketta</translation>
 <translation id="2251686759395008410">Valikko → Historia</translation>
@@ -1361,6 +1363,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Selausdatasi poistetaan</translation>
 <translation id="6790502149545262384">Näet pian tarinoita täältä avatessasi uuden välilehden: <ph name="CHANNEL_NAME" />.</translation>
+<translation id="6794476726485507147">Valitse päivämäärä ja kellonaika, jolloin saat muistutusilmoituksen tälle sivulle palaamisesta</translation>
 <translation id="681368974849482173">Kohde luotiin</translation>
 <translation id="6825078212112407882">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email})}other{{count} kirjanmerkkiä tallennettu Google-tilillesi ({email})}}</translation>
 <translation id="6830728435402077660">Ei turvallinen</translation>
@@ -1641,6 +1644,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8023170444051056234">Menetät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja se poistetaan kaikilta laitteiltasi</translation>
 <translation id="8023878949384262191">Laajentaa osion.</translation>
 <translation id="8027581147000338959">Avaa uudessa ikkunassa</translation>
+<translation id="8029092694585014252">Aseta muistutus</translation>
 <translation id="8032569120109842252">Seurataan</translation>
 <translation id="8035133914807600019">Uusi kansio…</translation>
 <translation id="8035412398498507358">Kuvat</translation>

@@ -81,6 +81,7 @@
 <translation id="131461803491198646">Xarxa domèstica, no itinerància</translation>
 <translation id="1327977588028644528">Passarel·la</translation>
 <translation id="1328223165223065150">Color de fons de pantalla</translation>
+<translation id="1329478709358066995">Transcripció:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajusta a l'àrea d'escaneig</translation>
 <translation id="1343442362630695901">llac de sal</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">Sobre el fons</translation>
 <translation id="6939667434404433010">Cerca el nom de la gravació</translation>
 <translation id="6939766318048400022">Cafeteria</translation>
+<translation id="6942253772720771875">Comparteix els teus suggeriments o descriu el problema</translation>
 <translation id="6943893908656559156">Identitat remota (opcional)</translation>
 <translation id="6953137545147683679">or</translation>
 <translation id="6957231940976260713">Nom del servei</translation>
@@ -1598,6 +1600,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
 <translation id="8403988360557588704">Pintura de <ph name="ART_FEATURE" /> d'estil <ph name="ART_MOVEMENT" /></translation>
+<translation id="8409219750150841791">Resum generat:</translation>
 <translation id="8410244574650205435">Detectat automàticament</translation>
 <translation id="8420955526972171689">Executa proves i resol els problemes relacionats amb el maquinari</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8626489604350149811">Més accions per a <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Porpra clar</translation>
 <translation id="8647595191512746911">Transcripció d'àudio</translation>
+<translation id="8648578954147795914">Noms generats:</translation>
 <translation id="8650852232143958317">Emporta't els teus fitxers de Gmail i Google Drive amb tu</translation>
 <translation id="8651481478098336970">activa el volum</translation>
 <translation id="8655295600908251630">Canal</translation>
@@ -1784,6 +1788,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="9218016617214286986">Mostra els APN coneguts</translation>
 <translation id="932327136139879170">Inici</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">Comprova que el micròfon estigui connectat o prova de reiniciar el Chromebook</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="950520315903467048">Falta la tecla per a <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Comparar les veus al llarg de la gravació perquè la transcripció reflecteixi què ha dit cada interlocutor i en quin moment</translation>

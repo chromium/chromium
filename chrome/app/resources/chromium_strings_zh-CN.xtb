@@ -317,6 +317,7 @@
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5605834417512968703">选择任意内容即可使用图片搜索功能进行搜索，按 Esc 键可退出图片搜索功能</translation>
+<translation id="5618818588972826921">选择任何文字或图片即可使用图片搜索功能进行搜索，按 Esc 键可退出图片搜索功能</translation>
 <translation id="5623402015214259806">{0,plural, =0{有一项可用的 Chromium 更新}=1{有一项可用的 Chromium 更新}other{有一项可用的 Chromium 更新（已发布 # 天）}}</translation>
 <translation id="5643865575100044307">始终在关闭 Chromium 时删除设备上的网站数据</translation>
 <translation id="5653831366781983928">请立即重启 Chromium</translation>
@@ -592,5 +593,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="983803489796659991">更新服务器没有应用的任何哈希数据，因此安装失败。</translation>
 <translation id="985498048907240953">在不登录账号的情况下使用 Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">选择任何文字或图片即可使用图片搜索功能进行搜索</translation>
 <translation id="992780518932311116">如需使用位置信息，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chromium 访问权限</translation>
 </translationbundle>

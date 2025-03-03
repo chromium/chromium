@@ -1435,45 +1435,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1" label="No change"/>
 </enum>
 
-<enum name="MoveMigratorResumeStep">
-  <int value="0" label="Start"/>
-  <int value="1" label="MoveSplitItems"/>
-  <int value="2" label="MoveLacrosItems"/>
-  <int value="3" label="MoveTmpDir"/>
-  <int value="4" label="Completed"/>
-</enum>
-
-<enum name="MoveMigratorTaskStatus">
-  <int value="0" label="Succeeded"/>
-  <int value="1" label="Cancelled"/>
-  <int value="2" label="PreMigrationCleanUpDeleteLacrosDirFailed"/>
-  <int value="3" label="PreMigrationCleanUpDeleteTmpDirFailed"/>
-  <int value="4" label="PreMigrationCleanUpDeleteTmpSplitDirFailed"/>
-  <int value="5" label="PreMigrationCleanUpNotEnoughSpace"/>
-  <int value="6" label="SetupLacrosDirCreateTmpDirFailed"/>
-  <int value="7" label="SetupLacrosDirCreateTmpProfileDirFailed"/>
-  <int value="8" label="SetupLacrosDirCopyTargetItemsFailed"/>
-  <int value="9" label="SetupLacrosDirWriteFirstRunSentinelFileFailed"/>
-  <int value="10" label="SetupAshDirCreateSplitDirFailed"/>
-  <int value="11" label="SetupAshDirMigrateLevelDBForLocalStateFailed"/>
-  <int value="12" label="SetupAshDirMigrateLevelDBForStateFailed"/>
-  <int value="13" label="SetupAshDirMigratePreferencesFailed"/>
-  <int value="14" label="MoveLacrosItemsToNewDirNoWritePerm"/>
-  <int value="15" label="MoveLacrosItemsToNewDirMoveFailed"/>
-  <int value="16" label="MoveSplitItemsToOriginalDirMoveSplitItemsFailed"/>
-  <int value="17" label="MoveSplitItemsToOriginalDirCreateDirFailed"/>
-  <int value="18" label="MoveSplitItemsToOriginalDirMoveExtensionsFailed"/>
-  <int value="19" label="MoveSplitItemsToOriginalDirMoveIndexedDBFailed"/>
-  <int value="20" label="MoveTmpDirToLacrosDirMoveFailed"/>
-  <int value="21" label="SetupAshDirCreateDirFailed"/>
-  <int value="22" label="SetupAshDirCopyExtensionsFailed"/>
-  <int value="23" label="SetupAshDirCopyIndexedDBFailed"/>
-  <int value="24" label="SetupAshDirMigrateLevelDBForSyncDataFailed"/>
-  <int value="25" label="SetupAshDirCopyStorageFailed"/>
-  <int value="26" label="MoveSplitItemsToOriginalDirMoveStorageFailed"/>
-  <int value="27" label="MoveLacrosItemsCreateDirFailed"/>
-</enum>
-
 <enum name="MultitaskMenuActionType">
   <int value="0" label="Half split button was pressed"/>
   <int value="1" label="Fullscreen button was pressed"/>

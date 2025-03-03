@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">এই ছাইটসমূহ অনুবাদ কৰাৰ সুবিধা প্ৰদান নকৰিব</translation>
 <translation id="1145536944570833626">পূর্বে থকা ডেটা মচক।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeত খুলিব। অব্যাহত ৰাখি আপুনি <ph name="BEGIN_LINK1" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু ChromeOSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে।</translation>
+<translation id="1154555449933432029">Google Password Managerত আপোনাৰ কোনো পাছৱৰ্ড ছেভ কৰা নাই।</translation>
 <translation id="115483310321669804">পাছৱৰ্ড <ph name="PASSWORD" /> ব্যৱহাৰ কৰক</translation>
 <translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
 <translation id="1174479719160874822">Chromeএ স্ক্ৰীনখনৰ আকাৰ সৰু হ’লে ম’বাইল ছাইটৰ বাবে অনুৰোধ কৰিব</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />ৰ পৰা পঠিওৱা</translation>
 <translation id="1320912611264252795">বুকমাৰ্ক ছেভ কৰাৰ ফ্ল’ৰ ফ'ল্ডাৰসমূহ পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="1327257854815634930">নেভিগেশ্বন ইতিহাস খোলা আছে</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, নতুন বা আপডে’ট কৰা টেব</translation>
 <translation id="1331212799747679585">Chrome আপডে’ট কৰিব নোৱাৰি। অধিক বিকল্প</translation>
 <translation id="1332501820983677155">Google Chromeৰ সুবিধাৰ শ্বৰ্টকাট</translation>
 <translation id="1333491156693005331">শেহতীয়াকৈ পৰীক্ষা কৰা হৈছে</translation>
@@ -203,7 +203,6 @@
 <translation id="1925021887439448749">কাষ্টম ৱেব ঠিকনা দিয়ক</translation>
 <translation id="1928618076168182477">ভিজুৱেল ভিউ দেখুৱাই থকা হৈছে</translation>
 <translation id="1928696683969751773">আপডে’টসমূহ</translation>
-<translation id="1933845786846280168">বাছনি কৰা টেব</translation>
 <translation id="1939549834451474504">Google Play সেৱা উপলব্ধ নোহোৱাৰ বাবে পাছৱৰ্ডসমূহে সোনকালে কাম কৰা বন্ধ কৰিব। সেইসমূহে কাম কৰা বন্ধ কৰাৰ আগতে আপুনি আপোনাৰ ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ প্ৰতিলিপি কৰিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="1944535645109964458">কোনো পাছকী উপলব্ধ নহয়</translation>
@@ -430,7 +429,6 @@
 <translation id="2976550651269220761">আপোনাৰ কিছুমান Chromeৰ ডেটা এতিয়াও আপোনাৰ Google একাউণ্টত ছেভ কৰা হোৱা নাই।\nছাইন আউট কৰাৰ পূৰ্বে কেইমিনিটমান অপেক্ষা কৰি চাওক। যদি আপুনি এতিয়াই ছাইন আউট কৰে, এই ডেটাখিনি মচি পেলোৱা হ’ব।</translation>
 <translation id="2977350910003566746">শেহতীয়াকৈ খোলা অনুসৰি সজাই থকা হৈছে</translation>
 <translation id="297771753501244313">শেহতীয়াকৈ খোলা অনুসৰি সজাওক</translation>
-<translation id="2979025552038692506">বাছনি কৰা ইনকগনিট’ টেব</translation>
 <translation id="2979639724566107830">নতুন ৱিণ্ড'ত খোলক</translation>
 <translation id="2981364137500752533">আপোনাৰ ৫ খনলৈকে ৱিণ্ড’ থাকিব পাৰে।</translation>
 <translation id="2983102365694924129">এটা ছাইটত আপোনাৰ কাৰ্যকলাপৰ ওপৰত ভিত্তি কৰি। এই ছেটিংটো অফ হৈ আছে।</translation>
@@ -621,7 +619,6 @@
 <translation id="3902562446536395999">Aৰ পৰা Zলৈ সজাই থকা হৈছে</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> আপডে’ট কৰক</translation>
 <translation id="3911609878849982353">Zৰ পৰা Aলৈ সজাই থকা হৈছে</translation>
-<translation id="3918415141610210050">টেব</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> অন আছে</translation>
 <translation id="3927692899758076493">ছান্‌ছ-ছেৰিফ</translation>
 <translation id="3928666092801078803">মোৰ ডেটা সংযুক্ত কৰক</translation>
@@ -644,7 +641,6 @@
 <translation id="4024768890073681126">আপোনাৰ অভিভাৱকে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />লৈ অব্যাহত ৰাখক</translation>
-<translation id="404352903042073578">নামবিহীন গোট</translation>
 <translation id="4044708993631234325">তলৰ শ্বীট</translation>
 <translation id="4045441967987592849">পুনৰ খোলক</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{শ্বেয়াৰ কৰা টেবৰ গোটত নতুন কাৰ্যকলাপৰ সৈতে <ph name="TABS_COUNT_ONE" /> টা মানক টেব}one{শ্বেয়াৰ কৰা টেবৰ গোটত নতুন কাৰ্যকলাপৰ সৈতে <ph name="TABS_COUNT_MANY" /> টা মানক টেব}other{শ্বেয়াৰ কৰা টেবৰ গোটত নতুন কাৰ্যকলাপৰ সৈতে <ph name="TABS_COUNT_MANY" /> টা মানক টেব}}</translation>
@@ -1371,10 +1367,12 @@
 <translation id="7224097611345298931">Chrome আৰু <ph name="CHROME_CHANNEL" />ৰ বাবে কেৱল এইটো ডিভাইচত ছেভ কৰি থোৱা আটাইবোৰ পাছৱৰ্ড একত্ৰিত কৰা হৈছে। আপুনি দুয়োটা এপতে আপোনাৰ আটাইবোৰ ছেভ কৰি থোৱা পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰিব।</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড বাকী আছে}one{# টা ডাউনল’ড বাকী আছে}other{# টা ডাউনল’ড বাকী আছে}}</translation>
 <translation id="7230064152164845085">ইনক’গনিট’লৈ সলনি কৰক</translation>
+<translation id="7237724030342645845">Google Password Managerএ কাম কৰা বন্ধ কৰিছে</translation>
 <translation id="72415438529550637">পাছৱৰ্ডৰ পৰামৰ্শ বন্ধ কৰা হৈছে।</translation>
 <translation id="7260367682327802201">আপোনাৰ Android ডিভাইচত একেধৰণৰ এটা ছেটিং থাকিব পাৰে। যদি Chrome আৰু আপোনাৰ Android ডিভাইচত বিজ্ঞাপনৰ জোখ-মাখ অন কৰা হয়, কোনো কোম্পানীয়ে আপুনি চোৱা সমগ্ৰ ছাইট আৰু আপুনি ব্যৱহাৰ কৰা এপত বিজ্ঞাপনৰ ফলপ্ৰসূতা জোখ-মাখ কৰিবলৈ সক্ষম হ’ব পাৰে।</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />ত <ph name="ONE_TIME_CODE" /> দাখিল কৰিবনে?</translation>
 <translation id="7274013316676448362">অৱৰোধ কৰা ছাইট</translation>
+<translation id="7276868533747677875">আপুনি যদি আগতে পাছৱৰ্ড ৰপ্তানি কৰিছে, আপোনাৰ ডিভাইচত থকা এটা CSV ফাইল বিচাৰক আৰু সেইটো আপোনাৰ পচন্দৰ পাছৱৰ্ড পৰিচালকলৈ আমদানি কৰক।</translation>
 <translation id="7289049772085228972">আপোনাৰ ওচৰত Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা আছে</translation>
 <translation id="7289303553784750393">যদি আপুনি অনলাইন কিন্তু এই সমস্যাটো হৈ আছে, তেন্তে <ph name="SITE_ETLD_PLUS_ONE" />ত অব্যাহত ৰাখিবলৈ আপুনি আন উপায় চেষ্টা কৰিব পাৰে।</translation>
 <translation id="7290209999329137901">নতুন নাম দিয়াৰ সুবিধা উপলব্ধ নহয়</translation>
@@ -1549,6 +1547,7 @@
 <translation id="8027395186860110042">পাছৱৰ্ডসমূহে সোনকালে কাম কৰা বন্ধ কৰিব পাৰে</translation>
 <translation id="8027863900915310177">ডাউনল’ড কৰি ক’ত ছেভ কৰিব লাগে বাছনি কৰক</translation>
 <translation id="8030852056903932865">অনুমোদন জনাওক</translation>
+<translation id="8031805944372049238">Google Password Managerত পাছৱৰ্ড ছেভ কৰি ব্যৱহাৰ কৰা আৰম্ভ কৰিবলৈ, Google Play সেৱা আপডে’ট কৰক।</translation>
 <translation id="8032569120109842252">ফ’ল’ কৰি থকা হৈছে</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকী আছে</translation>
 <translation id="8037801708772278989">এইমাত্ৰ পৰীক্ষা কৰা হৈছে</translation>
@@ -1736,7 +1735,6 @@
 <translation id="8840953339110955557">এই পৃষ্ঠাটো অনলাইন সংস্কৰণতকৈ বেলেগ হ’ব পাৰে।</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">লুকুওৱা হৈছে</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, টেব</translation>
 <translation id="8854223127042600341">আপোনাৰ অফলাইন ফাইলসমূহ চাওক</translation>
 <translation id="885480114717186641">আপুনি <ph name="HOST_NAME" />ৰ ডেস্কটপৰ ছাইটৰ বাবে অনুৰোধ কৰিব পাৰে</translation>
 <translation id="8856607253650333758">বিৱৰণ লাভ কৰক</translation>

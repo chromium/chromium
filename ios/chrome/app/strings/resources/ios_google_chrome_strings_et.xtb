@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">Teie parool salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="1146503048444965320">Ava Chrome'is uus vaheleht</translation>
 <translation id="1166460004393506534">Kustuta Chrome'is sirvimisandmed</translation>
+<translation id="1171255741903316750">Lülitage sisse valik „Lukusta Chrome'i sulgemisel inkognito vahelehed”</translation>
 <translation id="1179527450541388808">Avage Chromium kiiremini iPadi avakuva doki kaudu.</translation>
 <translation id="1180362651362502943">Jätkake Google’i kontol Chrome’i andmete kasutamist.</translation>
 <translation id="1200396280085622191">Saate Chrome'i kasutada igal ajal, kui puudutate sõnumites ja muudes rakendustes linke.</translation>
@@ -45,6 +46,7 @@ Tasub teada
 <translation id="1917964099031477364">See konto ja kõik salvestamata andmed eemaldatakse Chrome'ist ja muudest selles seadmes olevatest Google'i rakendustest.</translation>
 <translation id="1919130412786645364">Luba Chrome'i sisselogimine</translation>
 <translation id="1965935827552890526">Lõpetage teises avatud Chrome'i aknas pooleliolev toiming.</translation>
+<translation id="1973910962341002002">Lülitage üksuse „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” seadetes sisse valik „Chrome”</translation>
 <translation id="1984705450038014246">Chrome'i andmete sünkroonimine</translation>
 <translation id="1987779152850321833">Viige lõpule allolevad soovitatavad toimingud, et Chrome'i parimal moel kasutada.</translation>
 <translation id="2055826352861631739">Kasutage iPadis vaikimisi Chrome'i</translation>
@@ -96,10 +98,13 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3303503998967553377">Chrome'i toimingute kasutamine iOS-is</translation>
 <translation id="3348862487678490430">Lisa Chrome'i lugemisloendi üksus</translation>
+<translation id="3357827134511189025">Logige mis tahes rakenduses sisse oma salvestatud paroolide ja pääsuvõtmetega, kasutades funktsiooni Chrome automaattäite jaoks</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{See juhtub siis, kui Chrome'i ei kasutata {THRESHOLD} minuti jooksul}other{See juhtub siis, kui Chrome'i ei kasutata {THRESHOLD} minuti jooksul}}</translation>
 <translation id="3367797402528056312">Viige Chrome'i seadistamine lõpule</translation>
 <translation id="3371064404604898522">Määra Chrome vaikebrauseriks</translation>
 <translation id="3399930248910934354">Avage Chrome'i seaded.</translation>
+<translation id="3440830787838130530">Jagage peregrupiga parooli koopiat lihtsalt ja turvaliselt Google’i paroolihalduris</translation>
+<translation id="3460369101684070455">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige funktsioon Chrome automaattäite jaoks</translation>
 <translation id="3472587960215700950">Chrome kasutab Google Mapsi, et anda teile tuvastatud aadresside kohta juhiseid ja kohalikku teavet.</translation>
 <translation id="3503014945441706099">Hankige ka sellele Chrome'i profiilile täiustatud ohutu sirvimise funktsioon</translation>
 <translation id="3522659714780527202">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, lülitage sisse sünkroonimine</translation>
@@ -181,6 +186,7 @@ Oodake enne konto vahetamist paar minutit. Kui vahetate kohe kontot, siis need a
 <translation id="5998675059699164418">Teie organisatsioon nõuab, et logiksite Chrome'i kasutamiseks sisse.</translation>
 <translation id="6021312115739110405">Teie jaoks Google’i loodud kohandatud voog. Sisaldab uudiseid, sporti ja ilmateadet.</translation>
 <translation id="6022659036123304283">Isikupärastage Chrome'i</translation>
+<translation id="6132075343662013154">Chrome pakub võimalust parool salvestada</translation>
 <translation id="6132149203299792222">Paroolide, järjehoidjate ja muu sisu sünkroonimiseks logige sisse oma Google'i kontoga.</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Otsing Chrome'ist</translation>
@@ -228,6 +234,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="7061455974939528301">Hoidke Chrome'i ikooni all ja puudutage valikut „Edit home screen”</translation>
 <translation id="7065813315247345131">Chrome teisaldamine dokki</translation>
 <translation id="7124339256045485976">Hoidke Chrome ajakohasena</translation>
+<translation id="7145599899567697473">Salvestage paroolid ja täitke need automaatselt Chrome'is</translation>
 <translation id="7161390184744336561">Google Chrome on aegunud</translation>
 <translation id="7165736900384873061">Google Chrome'i QR-skanneri kasutamise alustamine</translation>
 <translation id="7175129790242719365">Chrome'i nõuanne: logige Chrome'i sisse</translation>
@@ -261,6 +268,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="7693590760643069321">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="7698568245838009292">Chrome soovib juurdepääsu kaamerale</translation>
 <translation id="7707877166818730835">Ava Chrome'is minu viimane vaheleht</translation>
+<translation id="7747746207470479571">Funktsiooni „Chrome automaattäite jaoks” abil saate hõlpsasti juurdepääsu oma paroolidele ja pääsuvõtmetele</translation>
 <translation id="776305366874821582">Chrome'i saab kiiremini avada iPhone'i avakuva dokist.</translation>
 <translation id="7780154209050837198">Chrome'i kasutamiseks parimal moel logige Chrome'i sisse oma Google'i kontoga.</translation>
 <translation id="7787205077729386167">Avage iOS-is Chrome'i seaded, seejärel puudutage valikut „Vaikebrauserirakendus” ja valige Chrome.</translation>
@@ -281,6 +289,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="8136856065410661948">Seda kasutatakse Chrome'i ja Google Lensi kaudu teie Apple'i rakenduses Calendar sündmuste loomiseks.</translation>
 <translation id="8154120522323162874">Kasutage Chrome'i parimal moel, jätkates brauseri seadistamist.</translation>
 <translation id="8160472928944011082">Chrome'i ei saa värskendada</translation>
+<translation id="8245080522851805544">Hoidke Chrome'i sulgemisel oma sirvimine privaatsena seadme autentimise abil</translation>
 <translation id="8248887045858762645">Chrome'i nõuanne</translation>
 <translation id="8265730590513812063">Avage Chrome'i menüü</translation>
 <translation id="8317674518145175158">Makseviise ja aadresse ei krüpteerita. Chrome’i sirvimisajalugu ei sünkroonita.

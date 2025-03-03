@@ -19,8 +19,6 @@
 namespace password_manager {
 
 namespace {
-constexpr std::string_view kExportedPasswordsFileName = "ChromePasswords.csv";
-
 void LogExportResult(LoginDbDeprecationExportResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.UPM.LoginDbDeprecationExport.Result", result);

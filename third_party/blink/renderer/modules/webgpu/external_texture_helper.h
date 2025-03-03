@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 
 namespace gfx {
 class ColorSpace;

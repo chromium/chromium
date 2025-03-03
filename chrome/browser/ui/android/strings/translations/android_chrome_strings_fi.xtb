@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Lähetetty laitteelta <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Kirjanmerkin tallennusvaiheet avattu koko näytön kokoisena</translation>
 <translation id="1327257854815634930">Navigointihistoria avattu</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, uusi tai päivitetty välilehti</translation>
 <translation id="1331212799747679585">Chromea ei voi päivittää. Lisää vaihtoehtoja</translation>
 <translation id="1332501820983677155">Google Chromen ominaisuuksien pikanäppäimet</translation>
 <translation id="1333491156693005331">Tarkistettu äskettäin</translation>
@@ -203,7 +202,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1925021887439448749">Lisää muokattu verkko-osoite</translation>
 <translation id="1928618076168182477">Näytetään visuaalinen näkymä</translation>
 <translation id="1928696683969751773">Päivitykset</translation>
-<translation id="1933845786846280168">Valittu välilehti</translation>
 <translation id="1939549834451474504">Salasanat lakkaavat pian toimimasta, koska Google Play Palvelut ei ole käytettävissä. Voit luoda kopion tallennetuista salasanoista ennen kuin ne lakkaavat toimimasta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Salasanojen tallentaminen</translation>
 <translation id="1944535645109964458">Avainkoodeja ei ole saatavilla</translation>
@@ -430,7 +428,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2976550651269220761">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi.\nOdota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="2977350910003566746">Lajitellaan avaamisajan mukaan</translation>
 <translation id="297771753501244313">Lajittele: avaamisaika</translation>
-<translation id="2979025552038692506">Valittu incognito-välilehti</translation>
 <translation id="2979639724566107830">Avaa uudessa ikkunassa</translation>
 <translation id="2981364137500752533">Sinulla voi olla enintään viisi ikkunaa.</translation>
 <translation id="2983102365694924129">Perustuu toimintaasi sivustolla. Tämä asetus on poissa päältä.</translation>
@@ -621,7 +618,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3902562446536395999">Lajitellaan A:sta Z:aan</translation>
 <translation id="3908308510347173149">Päivitä <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Lajitellaan Z:sta A:han</translation>
-<translation id="3918415141610210050">Sarkain</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on päällä</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Yhdistä tiedot</translation>
@@ -644,7 +640,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4024768890073681126">Vanhempasi hallinnoi selainta</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Jatka sovellukseen <ph name="SITE_ETLD_PLUS_ONE" /> kumppanin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kanssa</translation>
-<translation id="404352903042073578">Nimetön ryhmä</translation>
 <translation id="4044708993631234325">Alapaneeli</translation>
 <translation id="4045441967987592849">Avaa uudelleen</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tavallinen välilehti, jolla on uutta toimintaa jaetuissa välilehtiryhmissä}other{<ph name="TABS_COUNT_MANY" /> tavallista välilehteä, joilla on uutta toimintaa jaetuissa välilehtiryhmissä}}</translation>
@@ -1736,7 +1731,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8840953339110955557">Tämä sivu saattaa poiketa verkossa olevasta versiosta.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Piilotettu</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, välilehti</translation>
 <translation id="8854223127042600341">Katso offline-tiedostojasi</translation>
 <translation id="885480114717186641">Voit pyytää tietokonesivustoa osoitteesta <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Muodosta kuvaukset</translation>

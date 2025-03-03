@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Mantén pulsada la pantalla de inicio</translation>
 <translation id="1832848789136765277">Verifica tu identidad para asegurarte de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1836891464494477513">{count,plural, =1{Marcador guardado en tu cuenta de Google ({email})}other{Marcadores guardados en tu cuenta de Google ({email})}}</translation>
+<translation id="1838089197478136166">¿Abrir en Wallet?</translation>
 <translation id="183878838231635348">Esta tarjeta muestra los problemas de privacidad o seguridad que haya detectado automáticamente la comprobación de seguridad.</translation>
 <translation id="1845230888742614096">Conservar grupo</translation>
 <translation id="1854463785401910334">Buscar en pestañas abiertas</translation>
@@ -301,6 +302,7 @@
 <translation id="2230173723195178503">Página web cargada</translation>
 <translation id="2236949375853147973">Mi Actividad</translation>
 <translation id="2240256190924001613">Perfil de configuración disponible</translation>
+<translation id="2244080985779413662">Este sitio web quiere descargar un archivo y abrirlo en tu Wallet.</translation>
 <translation id="2245007488813216650">Traduciendo…</translation>
 <translation id="2249119578464404734">En la parte superior de la pantalla, toca el icono de búsqueda</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
@@ -1361,6 +1363,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Tus datos de navegación se eliminarán</translation>
 <translation id="6790502149545262384">Pronto verás historias de <ph name="CHANNEL_NAME" /> cuando abras una pestaña nueva.</translation>
+<translation id="6794476726485507147">Elige una fecha y una hora para recibir una notificación de recordatorio para volver a esta página</translation>
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcador guardado en tu cuenta de Google ({email})}other{{count} marcadores guardados en tu cuenta de Google ({email})}}</translation>
 <translation id="6830728435402077660">No es seguro</translation>
@@ -1641,6 +1644,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8023170444051056234">Perderás inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se eliminará de todos tus dispositivos</translation>
 <translation id="8023878949384262191">Amplía la sección.</translation>
 <translation id="8027581147000338959">Abrir en una ventana nueva</translation>
+<translation id="8029092694585014252">Añadir recordatorio</translation>
 <translation id="8032569120109842252">Siguiendo</translation>
 <translation id="8035133914807600019">Nueva carpeta…</translation>
 <translation id="8035412398498507358">Fotos</translation>

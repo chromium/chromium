@@ -3729,7 +3729,6 @@ incluir ambos en los certificados RSA para HTTPS.</translation>
 <translation id="3663124775601519286">Si habilitas la política o no la estableces, se permitirá el uso de la API de Translator en <ph name="PRODUCT_NAME" />.
 
       Si la inhabilitas, no se permitirá el uso de la API de Translator.</translation>
-<translation id="3664164569472125114">Controlar el acceso de <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">Solo notificar al usuario cuando ningún certificado coincide con la selección automática</translation>
 <translation id="3667467644216039144">Configura una lista de los tipos de datos de navegación que deben borrarse cuando el usuario cierra todas las ventanas del navegador.
 
@@ -7767,7 +7766,6 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
 <translation id="6383774771168138899">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
 <translation id="6389240462871677239">Permitir que los orígenes de apps web aisladas usen Controlled Frame</translation>
-<translation id="6389858262577493180">Habilitar el uso de <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
 
 0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de origen y comentarios escritos, según la función. Es posible que personas revisen los datos para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
@@ -8400,12 +8398,6 @@ Hasta la versión 114 de Chrome, esta política requería que se estableciera la
 <translation id="6766216162565713893">Permitir que los sitios soliciten permiso al usuario para acceder a un dispositivo Bluetooth cercano</translation>
 <translation id="6770454900105963262">Informar datos sobre las sesiones de kiosco activas</translation>
 <translation id="6774132787348495175">No permitir que los usuarios usen las máquinas virtuales necesarias para admitir apps de Linux</translation>
-<translation id="6776202826080834193">Si habilitas esta política o no la estableces, los usuarios podrán usar la función de
-<ph name="GLIC" />. Si inhabilitas esta política,
-los usuarios no podrán interactuar con <ph name="GLIC" />. El botón de la
-barra de
-pestañas se oculta y <ph name="GLIC" /> no está disponible mediante la
-combinación de teclas, a menos que se habilite en otro perfil.</translation>
 <translation id="678121785914414680">Lista de los tipos de archivos que se deben abrir automáticamente cuando se descargan. Cuando se enumera el tipo de archivo, no debe incluirse el separador principal. Por lo tanto, usa "txt" en lugar de ".txt".
 
 Si habilitas la Navegación segura, esta función revisará los archivos que se pueden abrir automáticamente. Si los archivos no son seguros, no se abrirán.
@@ -11686,7 +11678,6 @@ Esta política solo tendrá efecto si estableces la política <ph name="FULL_RES
       Si la estableces como verdadera, se enviará información sobre el sistema del dispositivo.</translation>
 <translation id="9131419675479917141">Permitir que los usuarios establezcan un PIN poco seguro, pero mostrar una advertencia</translation>
 <translation id="913195841488580904">Bloquear el acceso a una lista de las URL</translation>
-<translation id="9132345265506256744">Inhabilitar el uso de <ph name="GLIC" />.</translation>
 <translation id="9133526448421932754">Color amarillo para la retroiluminación del teclado</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>

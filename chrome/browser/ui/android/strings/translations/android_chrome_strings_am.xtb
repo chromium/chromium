@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">እነዚህን ጣቢያዎች ለትርጉም አታቅርብ</translation>
 <translation id="1145536944570833626">ነባሩን ውሂብ ይሰርዙ።</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> በChrome ውስጥ ይከፈታል። በመቀጠልዎ በ<ph name="BEGIN_LINK1" />Google አገልግሎት ውል<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle Chrome እና የChromeOS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" /> ይስማማሉ።</translation>
+<translation id="1154555449933432029">በGoogle የይለፍ ቃል አስተዳዳሪ ውስጥ የተቀመጡ የይለፍ ቃላት የሉዎትም።</translation>
 <translation id="115483310321669804">የይለፍ ቃል <ph name="PASSWORD" /> ይጠቀሙ</translation>
 <translation id="1173894706177603556">ዳግም ሰይም</translation>
 <translation id="1174479719160874822">Chrome ማያ ገፁ በሚጠብበት ጊዜ የተንቀሳቃሽ ስልክ ጣቢያን ይጠይቃል</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - ከ<ph name="DEVICE_NAME" /> የተላከ</translation>
 <translation id="1320912611264252795">የዕልባት ማስቀመጥ ፍሰት አቃፊዎች በሙሉ ቁመት ላይ ተከፍተዋል</translation>
 <translation id="1327257854815634930">የዳሰሳ ታሪክ ተከፍቷል</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />፣ አዲስ ወይም የተዘመነ ትር</translation>
 <translation id="1331212799747679585">Chrome መዘመን አይችልም። ተጨማሪ አማራጮች</translation>
 <translation id="1332501820983677155">የGoogle Chrome ባህሪ አቋራጮች</translation>
 <translation id="1333491156693005331">በቅርቡ የተፈተሸ</translation>
@@ -203,7 +203,6 @@
 <translation id="1925021887439448749">ብጁ የድር አድራሻ ያስገቡ</translation>
 <translation id="1928618076168182477">የሚታይ ነገር ዕይታን በማሳየት ላይ</translation>
 <translation id="1928696683969751773">ዝማኔዎች</translation>
-<translation id="1933845786846280168">የተመረጠው ትር</translation>
 <translation id="1939549834451474504">የGoogle Play አገልግሎቶች ስለማይገኙ የይለፍ ቃላት በቅርቡ መሥራት ያቆማሉ። መሥራት ከማቆማቸው በፊት የተቀመጡ የይለፍ ቃላትዎን ቅጂ ማድረግ ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">የይለፍ ቃላትን አስቀምጥ</translation>
 <translation id="1944535645109964458">ምንም የይለፍ ቁልፎች አይገኙም</translation>
@@ -430,7 +429,6 @@
 <translation id="2976550651269220761">አንዳንድ የእርስዎ የChrome ውሂብ በGoogle መለያዎ ውስጥ እስካሁን አልተቀመጠም።\nዘግተው ከመውጣትዎ በፊት ጥቂት ደቂቃዎች በመጠበቅ ይሞክሩ። አሁን ዘግተው ከወጡ ይህ ውሂብ ይሰረዛል።</translation>
 <translation id="2977350910003566746">መጨረሻ ላይ በተከፈተው በመደርደር ላይ</translation>
 <translation id="297771753501244313">መጨረሻ በተከፈተ ደርድር</translation>
-<translation id="2979025552038692506">የተመረጠው ማንነት የማያሳውቅ ትር</translation>
 <translation id="2979639724566107830">በአዲስ መስኮት ክፈት</translation>
 <translation id="2981364137500752533">እስከ 5 መስኮቶች ሊኖሩዎት ይችላሉ።</translation>
 <translation id="2983102365694924129">በአንድ ጣቢያ ላይ ባለዎት እንቅስቃሴ ላይ የተመሠረተ። ይህ ቅንብር ጠፍቷል።</translation>
@@ -621,7 +619,6 @@
 <translation id="3902562446536395999">ከA እስከ Z በመደርደር ላይ</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />ን ያዘምኑ</translation>
 <translation id="3911609878849982353">ከZ እስከ A በመደርደር ላይ</translation>
-<translation id="3918415141610210050">ትር</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> በርቷል</translation>
 <translation id="3927692899758076493">ሳንስ ሰሪፍ</translation>
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>
@@ -644,7 +641,6 @@
 <translation id="4024768890073681126">የእርስዎ አሳሽ በወላጅዎ የሚተዳደር ነው</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ሰዓ}one{# ሰዓቶች}other{# ሰዓቶች}}</translation>
 <translation id="4042941173059740150">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይቀጥሉ</translation>
-<translation id="404352903042073578">ያልተሰየመ ቡድን</translation>
 <translation id="4044708993631234325">የግርጌ ሉህ</translation>
 <translation id="4045441967987592849">ዳግም ክፈት</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያለው <ph name="TABS_COUNT_ONE" /> መደበኛ ትር}one{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያለው <ph name="TABS_COUNT_MANY" /> መደበኛ ትር}other{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያላቸው <ph name="TABS_COUNT_MANY" /> መደበኛ ትሮች}}</translation>
@@ -1371,10 +1367,12 @@
 <translation id="7224097611345298931">በዚህ መሣሪያ ላይ ለChrome የተቀመጡ ሁሉም የይለፍ ቃላት እና <ph name="CHROME_CHANNEL" /> ተዋህደዋል። በሁለቱም መተግበሪያዎች ላይ ሁሉንም የተቀመጡ የይለፍ ቃላትዎን በራስ-ሰር መሙላት ይችላሉ።</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ውርድን በመጠባበቅ ላይ}one{# ውርዶችን በመጠባበቅ ላይ}other{# ውርዶችን በመጠባበቅ ላይ}}</translation>
 <translation id="7230064152164845085">ወደ ማንነት የማያሳውቅ ቀይር</translation>
+<translation id="7237724030342645845">Google የይለፍ ቃል አስተዳዳሪ መስራት አቁሟል</translation>
 <translation id="72415438529550637">የይለፍ ቃል ጥቆማ ተዘግቷል።</translation>
 <translation id="7260367682327802201">የእርስዎ Android መሣሪያ ተመሳሳይ ቅንብር ሊያካትት ይችላል። የማስታወቂያ ልኬት በChrome እና በእርስዎ Android መሣሪያ ውስጥ ከበራ አንድ ኩባንያ የማስታወቂያ ውጤታማነትን በመላው እርስዎ በሚጎበኟቸው ድር ጣቢያዎች እና በሚጠቀሙባቸው መተግበሪያዎች ላይ ሊለካ ይችላል።</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> ወደ <ph name="ORIGIN" /> ይግባ?</translation>
 <translation id="7274013316676448362">የታገደ ጣቢያ</translation>
+<translation id="7276868533747677875">ከዚህ ቀደም የይለፍ ቃላትን ወደ ውጭ ከላኩ በመሣሪያዎ ላይ CSV ፋይል ይፈልጉ እና ወደ እርስዎ ተመራጭ የሚስጥር ቁልፍ አስተዳዳሪ ያምጧቸው።</translation>
 <translation id="7289049772085228972">የChrome ከሁሉም የበለጠ ጠንካራ ደህንነት አለዎት</translation>
 <translation id="7289303553784750393">በመስመር ላይ ከሆኑ ነገር ግን ይህ ችግር መከስቱን ከቀጠለ፣ በ<ph name="SITE_ETLD_PLUS_ONE" /> ላይ ለመቀጠል ሌሎች መንገዶችን መሞከር ይችላሉ።</translation>
 <translation id="7290209999329137901">ዳግም መሰየም የለም</translation>
@@ -1549,6 +1547,7 @@
 <translation id="8027395186860110042">የይለፍ ቃላት በቅርቡ መሥራት ሊያቆሙ</translation>
 <translation id="8027863900915310177">የት እንደሚያወርዱ ይምረጡ</translation>
 <translation id="8030852056903932865">አጽድቅ</translation>
+<translation id="8031805944372049238">በGoogle የይለፍ ቃል አስተዳዳሪ የይለፍ ቃላትን ማስቀመጥ እና መጠቀም ለመጀመር Google Play አገልግሎቶችን ያዘምኑ።</translation>
 <translation id="8032569120109842252">የምከተላቸው</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ቀኖች ይቀራሉ</translation>
 <translation id="8037801708772278989">አሁን ተፈትሿል</translation>
@@ -1736,7 +1735,6 @@
 <translation id="8840953339110955557">ይህ ገፅ ከመስመር ላይ ስሪቱ የተለየ ሊሆን ይችላል።</translation>
 <translation id="8847988622838149491">ዩ ኤስ ቢ</translation>
 <translation id="8849001918648564819">ተደብቋል</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />፣ ትር</translation>
 <translation id="8854223127042600341">የእርስዎን ከመስመር ውጭ ፋይሎች ይመልከቱ</translation>
 <translation id="885480114717186641">የ<ph name="HOST_NAME" />ን የዴስክቶፕ ጣቢያ መጠየቅ ይችላሉ</translation>
 <translation id="8856607253650333758">መግለጫዎችን ያግኙ</translation>

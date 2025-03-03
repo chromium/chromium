@@ -123,7 +123,7 @@ void raw_ptr_variables() {
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
   base::raw_span<char> buf5 = buf4;
-  buf5 = buf5 + 1;
+  buf5 = buf5.subspan(1);
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
@@ -136,7 +136,7 @@ void raw_ptr_variables() {
 
   int index = 1;
   // Expected rewrite:
-  // raw_ptr<char> buf7 = (buf6 + index).data();
-  raw_ptr<char> buf7 = (buf6 + index).data();
+  // raw_ptr<char> buf7 = buf6.subspan(index).data();
+  raw_ptr<char> buf7 = buf6.subspan(index).data();
   (void)buf7;
 }

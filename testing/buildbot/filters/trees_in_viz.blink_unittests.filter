@@ -1,4 +1,5 @@
-# TODO(crbug.com/391154470): Diagnose and resolve these tests crashing.
+# TODO(crbug.com/389147356): Implement single-threaded mode, which all of these
+# tests operate in.
 -EventHandlingWebFrameWidgetSimTest.NonRafAlignedEventWithUpdate
 -EventHandlingWebFrameWidgetSimTest.NonRafAlignedEventWithoutUpdateAfterUpdate
 -EventHandlingWebFrameWidgetSimTest.RafAlignedEventWithUpdate

@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Эдгээр сайтыг орчуулахыг бүү санал болго</translation>
 <translation id="1145536944570833626">Одоо байгаа өгөгдлийг устгана уу.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />-г Chrome-д нээнэ. Үргэлжлүүлснээр та <ph name="BEGIN_LINK1" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS-н үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна.</translation>
+<translation id="1154555449933432029">Танд Google Нууц үгний менежерт хадгалсан нууц үг байхгүй байна.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> нууц үгийг ашиглах</translation>
 <translation id="1173894706177603556">Нэр солих</translation>
 <translation id="1174479719160874822">Дэлгэц нарийн үед Chrome мобайл сайтын хүсэлт тавина</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-с илгээсэн</translation>
 <translation id="1320912611264252795">Хавчуурганы хадгалах урсгалын фолдеруудыг бүтэн өндөртэйгээр нээсэн</translation>
 <translation id="1327257854815634930">Навигацын түүх нээлттэй байна</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, шинэ эсвэл шинэчилсэн таб</translation>
 <translation id="1331212799747679585">Chrome-г шинэчлэх боломжгүй байна. Бусад сонголт</translation>
 <translation id="1332501820983677155">Google Chrome онцлогийн товчлол</translation>
 <translation id="1333491156693005331">Саяхан шалгасан</translation>
@@ -203,7 +203,6 @@
 <translation id="1925021887439448749">Тохируулсан веб хаяг оруулах</translation>
 <translation id="1928618076168182477">Визуал харагдах байдлыг харуулж байна</translation>
 <translation id="1928696683969751773">Шинэчлэл</translation>
-<translation id="1933845786846280168">Сонгосон таб</translation>
 <translation id="1939549834451474504">Google Play үйлчилгээ боломжгүй тул нууц үгнүүд удахгүй ажиллахаа болино Та хадгалсан нууц үгнүүдээ ажиллахаа болихоос нь өмнө хуулбарыг нь үүсгэх боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Нууц үг хадгалах</translation>
 <translation id="1944535645109964458">Боломжтой passkey байхгүй</translation>
@@ -430,7 +429,6 @@
 <translation id="2976550651269220761">Таны Chrome-н зарим өгөгдлийг одоогоор Google Бүртгэлд тань хадгалаагүй байна.\nГарахаасаа өмнө хэдэн минут хүлээж үзнэ үү. Хэрэв та одоо гарвал энэ өгөгдлийг устгана.</translation>
 <translation id="2977350910003566746">Сүүлд нээснээр нь эрэмбэлж байна</translation>
 <translation id="297771753501244313">Сүүлд нээснээр эрэмбэлэх</translation>
-<translation id="2979025552038692506">Сонгосон нууцлалын таб</translation>
 <translation id="2979639724566107830">Шинэ цонхонд нээх</translation>
 <translation id="2981364137500752533">Та 5 хүртэлх цонхтой байж болно.</translation>
 <translation id="2983102365694924129">Таны сайт дээрх үйл ажиллагаанд тулгуурласан. Энэ тохиргоо унтраалттай байна.</translation>
@@ -621,7 +619,6 @@
 <translation id="3902562446536395999">А-с Я руу эрэмбэлж байна</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />-г шинэчлэх</translation>
 <translation id="3911609878849982353">Я-с А руу эрэмбэлж байна</translation>
-<translation id="3918415141610210050">Таб</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> идэвхтэй байна</translation>
 <translation id="3927692899758076493">Санс сериф</translation>
 <translation id="3928666092801078803">Миний өгөгдлийг нэгтгэх</translation>
@@ -644,7 +641,6 @@
 <translation id="4024768890073681126">Таны хөтчийг танай эцэг эх удирддаг</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# цаг}other{# цаг}}</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> руу <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р үргэлжлүүлэх</translation>
-<translation id="404352903042073578">Нэргүй бүлэг</translation>
 <translation id="4044708993631234325">Доод хүснэгт</translation>
 <translation id="4045441967987592849">Дахин нээх</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Хуваалцсан табын бүлгүүдэд шинэ үйл ажиллагаатай <ph name="TABS_COUNT_ONE" /> стандарт таб}other{Хуваалцсан табын бүлгүүдэд шинэ үйл ажиллагаатай <ph name="TABS_COUNT_MANY" /> стандарт таб}}</translation>
@@ -1371,10 +1367,12 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7224097611345298931">Chrome болон <ph name="CHROME_CHANNEL" />-д зориулж энэ төхөөрөмжид хадгалсан бүх нууц үгийг нэгтгэсэн. Та хоёр аппад хоёуланд нь хадгалсан бүх нууц үгээ автоматаар бөглөх боломжтой.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 таталт хүлээгдэж байна}other{# таталт хүлээгдэж байна}}</translation>
 <translation id="7230064152164845085">Нууцлалтай горим руу сэлгэх</translation>
+<translation id="7237724030342645845">Google Нууц үгний менежер ажиллахаа больсон</translation>
 <translation id="72415438529550637">Нууц үгний зөвлөмжийг хаасан.</translation>
 <translation id="7260367682327802201">Таны Android төхөөрөмж ижил төстэй тохиргоог агуулж болно. Хэрэв Chrome болон таны Android төхөөрөмж дээр зарын хэмжилтийг асаасан бол компани таны зочилдог веб сайтууд болон ашигладаг аппууд дээрх зарын үр нөлөөг хэмжих боломжтой.</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" />-г <ph name="ORIGIN" />-д илгээх үү?</translation>
 <translation id="7274013316676448362">Блоклосон сайт</translation>
+<translation id="7276868533747677875">Хэрэв та өмнө нь нууц үг экспортолсон бол төхөөрөмж дээрээсээ CSV файлыг хайж, тухайн нууц үгийг сонгосон нууц үгний менежер лүүгээ импортолно уу.</translation>
 <translation id="7289049772085228972">Танд Chrome-н хамгийн хүчирхэг хамгаалалт байна</translation>
 <translation id="7289303553784750393">Хэрэв та онлайн байгаа хэдий ч энэ асуудал тохиолдсоор байвал <ph name="SITE_ETLD_PLUS_ONE" />-д үргэлжлүүлэх бусад аргыг турших боломжтой.</translation>
 <translation id="7290209999329137901">Нэр өөрчлөх боломжгүй байна</translation>
@@ -1549,6 +1547,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8027395186860110042">Нууц үгнүүд удахгүй ажиллахаа больж магадгүй</translation>
 <translation id="8027863900915310177">Хаана татаж авахыг сонгох</translation>
 <translation id="8030852056903932865">Зөвшөөрөх</translation>
+<translation id="8031805944372049238">Google Нууц үгний менежерийг ашиглан нууц үг хадгалж, ашиглаж эхлэхийн тулд Google Play үйлчилгээг шинэчилнэ үү.</translation>
 <translation id="8032569120109842252">Дагаж буй</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> өдөр үлдсэн</translation>
 <translation id="8037801708772278989">Дөнгөж сая шалгасан</translation>
@@ -1736,7 +1735,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8840953339110955557">Энэ хуудас онлайн хувилбараас өөр байж болзошгүй.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Нуусан</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, цонх</translation>
 <translation id="8854223127042600341">Офлайн файлуудаа харах</translation>
 <translation id="885480114717186641">Та <ph name="HOST_NAME" />-н компьютерын сайтыг хүсэх боломжтой</translation>
 <translation id="8856607253650333758">Тайлбар авах</translation>

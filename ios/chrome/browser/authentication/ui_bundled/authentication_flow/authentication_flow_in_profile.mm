@@ -376,7 +376,7 @@ enum class AuthenticationFlowInProfileState {
   NOTREACHED();
 }
 
-- (void)didAcceptToContinueWithUnsyncedData:(BOOL)acceptToContinue {
+- (void)didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue {
   // Unsynced data confirmation dialog should not be shown. See the explaination
   // in `-[AuthenticationFlowInProfile
   // didFetchUnsyncedDataWithUnsyncedDataTypes:]`.

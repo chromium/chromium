@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Изпратено от <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Папките за потока за запазване на отметка са отворени на пълната височина</translation>
 <translation id="1327257854815634930">Историята на навигацията е отворена</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" /> – нов или актуализиран раздел</translation>
 <translation id="1331212799747679585">Chrome не може да се актуализира. Още опции</translation>
 <translation id="1332501820983677155">Комбинации за функции на Google Chrome</translation>
 <translation id="1333491156693005331">Наскоро бе извършена проверка</translation>
@@ -203,7 +202,6 @@
 <translation id="1925021887439448749">Въведете персонализиран уеб адрес</translation>
 <translation id="1928618076168182477">Показва се детайлният изглед</translation>
 <translation id="1928696683969751773">Актуализации</translation>
-<translation id="1933845786846280168">Избран раздел</translation>
 <translation id="1939549834451474504">Паролите скоро ще спрат да работят, защото услугите за Google Play не са налице. Можете да направите копие на запазените си пароли, преди да спрат да работят. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Запазени пароли</translation>
 <translation id="1944535645109964458">Няма налични кодове за достъп</translation>
@@ -430,7 +428,6 @@
 <translation id="2976550651269220761">Някои от данните ви в Chrome още не са запазени в профила ви в Google.\nИзчакайте няколко минути, преди да излезете от него. Ако излезете сега, тези данни ще бъдат изтрити.</translation>
 <translation id="2977350910003566746">Сортиране по последно отваряне</translation>
 <translation id="297771753501244313">Сорт. по посл. отваряне</translation>
-<translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
 <translation id="2979639724566107830">Отваряне в нов прозорец</translation>
 <translation id="2981364137500752533">Можете да отворите до 5 прозореца.</translation>
 <translation id="2983102365694924129">Въз основа на активността ви в даден сайт. Тази настройка е изключена.</translation>
@@ -621,7 +618,6 @@
 <translation id="3902562446536395999">Сортиране от А до Я</translation>
 <translation id="3908308510347173149">Актуализиране на <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Сортиране от Я до А</translation>
-<translation id="3918415141610210050">Раздел</translation>
 <translation id="3924911262913579434">Режимът „<ph name="SAFE_BROWSING_MODE" />“ е включен</translation>
 <translation id="3927692899758076493">Безсерифен</translation>
 <translation id="3928666092801078803">Комбиниране на данните ми</translation>
@@ -644,7 +640,6 @@
 <translation id="4024768890073681126">Браузърът се управлява от родител</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
 <translation id="4042941173059740150">Продължаване към <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Група без име</translation>
 <translation id="4044708993631234325">Долен лист</translation>
 <translation id="4045441967987592849">Повторно отваряне</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартен раздел с нова активност в споделените групи раздели}other{<ph name="TABS_COUNT_MANY" /> стандартни раздела с нова активност в споделените групи раздели}}</translation>
@@ -1736,7 +1731,6 @@
 <translation id="8840953339110955557">Тази страница може да се различава от онлайн версията.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Скрито</translation>
-<translation id="8853345339104747198">„<ph name="TAB_TITLE" />“ – раздел</translation>
 <translation id="8854223127042600341">Преглед на офлайн файловете ви</translation>
 <translation id="885480114717186641">Можете да заявите настолната версия на сайта <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Получаване на описания</translation>

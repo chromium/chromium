@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Mantén premuda la pantalla d'inici</translation>
 <translation id="1832848789136765277">Per assegurar-te de poder accedir a les dades sincronitzades en qualsevol moment, verifica la teva identitat</translation>
 <translation id="1836891464494477513">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google, {email}}other{Les adreces d'interès s'han desat al teu Compte de Google, {email}}}</translation>
+<translation id="1838089197478136166">Vols que s'obri a Wallet?</translation>
 <translation id="183878838231635348">Aquesta targeta mostra qualsevol problema de privadesa o de seguretat que la funció Comprovació de seguretat detecta automàticament.</translation>
 <translation id="1845230888742614096">Conserva el grup</translation>
 <translation id="1854463785401910334">Cerca a les pestanyes obertes</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">L'iPad s'ha restaurat recentment, i és possible que el navegador predeterminat hagi canviat</translation>
 <translation id="1901366738768303267">Com puc utilitzar aquesta funció?</translation>
 <translation id="1901600657316773839">Conserva la selecció</translation>
+<translation id="1902277226107477495">La detecció d'adreces està desactivada. Torna a activar-la a Configuració.</translation>
 <translation id="1904580727789512086">Els URL que visites es desen al teu Compte de Google</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
 <translation id="1923342640370224680">Darrera hora</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
 <translation id="2236949375853147973">La meva activitat</translation>
 <translation id="2240256190924001613">Perfil de configuració disponible</translation>
+<translation id="2244080985779413662">Aquest lloc web vol baixar un fitxer i obrir-lo a Wallet.</translation>
 <translation id="2245007488813216650">S'està traduint…</translation>
 <translation id="2249119578464404734">A la part superior de la pantalla, toca la icona de cerca</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
@@ -1361,6 +1364,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6761393919622941301">Àudio</translation>
 <translation id="6779455296366983087">Les dades de navegació se suprimiran</translation>
 <translation id="6790502149545262384">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
+<translation id="6794476726485507147">Tria la data i l'hora en què vols rebre una notificació de recordatori per tornar a visitar aquesta pàgina</translation>
 <translation id="681368974849482173">S'ha creat un element.</translation>
 <translation id="6825078212112407882">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google, {email}}other{S'han desat {count} adreces d'interès al teu Compte de Google, {email}}}</translation>
 <translation id="6830728435402077660">No segura</translation>
@@ -1488,6 +1492,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7425053386765766120">Afegeix una forma de pagament…</translation>
 <translation id="7425346204213733349">Els canvis que es facin a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració es deixaran de sincronitzar amb el Compte de Google. No obstant això, les dades actuals hi continuaran emmagatzemades.</translation>
 <translation id="742664698522525515">Vols conservar el grup?</translation>
+<translation id="7431851541687113774">Desactiva la detecció d'adreces</translation>
 <translation id="7431991332293347422">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca i més</translation>
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7438481509621345350">Quan obris una pestanya nova, ara veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
@@ -1641,6 +1646,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8023170444051056234">Perdràs immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els teus dispositius</translation>
 <translation id="8023878949384262191">Desplega la secció.</translation>
 <translation id="8027581147000338959">Obre en una finestra nova</translation>
+<translation id="8029092694585014252">Configura el recordatori</translation>
 <translation id="8032569120109842252">Seguint</translation>
 <translation id="8035133914807600019">Carpeta nova…</translation>
 <translation id="8035412398498507358">Fotos</translation>

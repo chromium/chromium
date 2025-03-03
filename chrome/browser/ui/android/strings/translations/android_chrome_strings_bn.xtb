@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> থেকে পাঠানো হয়েছে</translation>
 <translation id="1320912611264252795">বুকমার্ক সেভ ফ্লো ফোল্ডার পূর্ণ উচ্চতায় খোলা হয়েছে</translation>
 <translation id="1327257854815634930">নেভিগেশনের ইতিহাস খোলা হয়েছে</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, নতুন বা আপডেট করা ট্যাব</translation>
 <translation id="1331212799747679585">Chrome আপডেট হচ্ছে না। আরও বিকল্প</translation>
 <translation id="1332501820983677155">Google Chrome এর বাছাই করা শর্টকাটগুলি</translation>
 <translation id="1333491156693005331">সম্প্রতি চেক করা হয়েছে</translation>
@@ -203,7 +202,6 @@
 <translation id="1925021887439448749">কাস্টম ওয়েব ঠিকানা লিখুন</translation>
 <translation id="1928618076168182477">ভিজ্যুয়াল ভিউ দেখানো হচ্ছে</translation>
 <translation id="1928696683969751773">আপডেট</translation>
-<translation id="1933845786846280168">নির্বাচিত ট্যাবগুলি</translation>
 <translation id="1939549834451474504">Google Play পরিষেবা উপলভ্য নয় বলে পাসওয়ার্ড শীঘ্রই কাজ করা বন্ধ করে দেবে। আপনার সেভ করা পাসওয়ার্ডগুলি কাজ বন্ধ করে দেওয়ার আগে সেগুলি কপি করতে পারবেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">পাসওয়ার্ডগুলি সেভ করুন</translation>
 <translation id="1944535645109964458">কোনও 'পাসকী' উপলভ্য নেই</translation>
@@ -430,7 +428,6 @@
 <translation id="2976550651269220761">আপনার Chrome ডেটা কিছুটা এখনও Google অ্যাকাউন্টে সেভ হয়নি।\n সাইন-আউট করার আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখনই সাইন-আউট করলে, এই ডেটা মুছে যাবে।</translation>
 <translation id="2977350910003566746">শেষবার খোলা হয়েছে অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="297771753501244313">আগেরবার খোলার সময় অনুযায়ী সাজান</translation>
-<translation id="2979025552038692506">নির্বাচিত ছদ্মবেশী ট্যাবগুলি</translation>
 <translation id="2979639724566107830">নতুন উইন্ডোতে খুলুন</translation>
 <translation id="2981364137500752533">আপনি ৫টির বেশি উইন্ডো খুলতে পারবেন না।</translation>
 <translation id="2983102365694924129">সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে। এই সেটিংটি বন্ধ করা আছে।</translation>
@@ -621,7 +618,6 @@
 <translation id="3902562446536395999">A থেকে Z অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> আপডেট করুন</translation>
 <translation id="3911609878849982353">Z থেকে A অনুযায়ী সাজানো হচ্ছে</translation>
-<translation id="3918415141610210050">ট্যাব</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> চালু করা আছে</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">আমার ডেটা একত্রিত করুন</translation>
@@ -644,7 +640,6 @@
 <translation id="4024768890073681126">আপনার অভিভাবক ব্রাউজার ম্যানেজ করছেন</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যান</translation>
-<translation id="404352903042073578">নামবিহীন গ্রুপ</translation>
 <translation id="4044708993631234325">স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="4045441967987592849">আবার খুলুন</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_ONE" />টি স্ট্যান্ডার্ড ট্যাব}one{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_MANY" />টি স্ট্যান্ডার্ড ট্যাব}other{শেয়ার করা ট্যাব গ্রুপে নতুন অ্যাক্টিভিটি সহ <ph name="TABS_COUNT_MANY" />টি স্ট্যান্ডার্ড ট্যাব}}</translation>
@@ -1736,7 +1731,6 @@
 <translation id="8840953339110955557">এই পৃষ্ঠাটি হয়ত অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">লুকানো আছে</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, ট্যাব</translation>
 <translation id="8854223127042600341">অফলাইনে সেভ করা আপনার ফাইলগুলি দেখুন</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" />-এর জন্য আপনি ডেস্কটপ সাইটের অনুরোধ করতে পারেন</translation>
 <translation id="8856607253650333758">বিবরণ পান</translation>

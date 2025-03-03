@@ -67,10 +67,9 @@ enum class AuthenticationState {
   // Check if there are unsynced data with the primary account, in the current
   // profile.
   kCheckUnsyncedData,
-  // Display unsynced data confirmation, if there are any (based on
-  // `kCheckUnsyncedData` step).
-  // The dialog needs to be shown weither there is profile switching or not.
-  kAskUnsyncedDataConfirmationIfNeeded,
+  // Display confirmation dialog when the user is already signed in, based on
+  // unsynced data and if the primary account is a managed account.
+  kShowLeavingPrimaryAccountConfirmationIfNeeded,
   kFetchManagedStatus,
   kFetchProfileSeparationPoliciesIfNeeded,
   kShowManagedConfirmationIfNeeded,
@@ -385,7 +384,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   switch (_state) {
     case AuthenticationState::kBegin:
     case AuthenticationState::kCheckUnsyncedData:
-    case AuthenticationState::kAskUnsyncedDataConfirmationIfNeeded:
+    case AuthenticationState::kShowLeavingPrimaryAccountConfirmationIfNeeded:
     case AuthenticationState::kFetchManagedStatus:
     case AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded:
     case AuthenticationState::kShowManagedConfirmationIfNeeded:
@@ -416,8 +415,9 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case AuthenticationState::kBegin:
       return AuthenticationState::kCheckUnsyncedData;
     case AuthenticationState::kCheckUnsyncedData:
-      return AuthenticationState::kAskUnsyncedDataConfirmationIfNeeded;
-    case AuthenticationState::kAskUnsyncedDataConfirmationIfNeeded:
+      return AuthenticationState::
+          kShowLeavingPrimaryAccountConfirmationIfNeeded;
+    case AuthenticationState::kShowLeavingPrimaryAccountConfirmationIfNeeded:
       return AuthenticationState::kFetchManagedStatus;
     case AuthenticationState::kFetchManagedStatus:
       return AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded;
@@ -493,8 +493,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       [self checkUnsyncedDataStep];
       return;
 
-    case AuthenticationState::kAskUnsyncedDataConfirmationIfNeeded:
-      [self askUnsyncedDataConfirmationIfNeededStep];
+    case AuthenticationState::kShowLeavingPrimaryAccountConfirmationIfNeeded:
+      [self showLeavingPrimaryAccountConfirmationIfNeededStep];
       return;
 
     case AuthenticationState::kFetchManagedStatus:
@@ -580,17 +580,29 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [_performer fetchUnsyncedDataWithSyncService:syncService];
 }
 
-- (void)askUnsyncedDataConfirmationIfNeededStep {
+- (void)showLeavingPrimaryAccountConfirmationIfNeededStep {
   CHECK(_unsyncedDataTypes.has_value(), base::NotFatalUntil::M140);
-  if (_unsyncedDataTypes.value().empty()) {
+  ProfileIOS* profile = _browser->GetProfile()->GetOriginalProfile();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  PrefService* profilePrefService = profile->GetPrefs();
+  SignedInUserState signedInUserState = GetSignedInUserState(
+      authenticationService, identityManager, profilePrefService);
+  if (!ForceLeavingPrimaryAccountConfirmationDialog(signedInUserState) &&
+      _unsyncedDataTypes.value().empty()) {
     [self continueFlow];
     return;
   }
-  [_performer showUnsyncedDataConfirmationWithBaseViewController:
-                  _presentingViewController
-                                                         browser:_browser
-                                                      anchorView:_anchorView
-                                                      anchorRect:_anchorRect];
+  [_performer
+      showLeavingPrimaryAccountConfirmationWithBaseViewController:
+          _presentingViewController
+                                                          browser:_browser
+                                                signedInUserState:
+                                                    signedInUserState
+                                                       anchorView:_anchorView
+                                                       anchorRect:_anchorRect];
 }
 
 // Fetches ManagedAccountsSigninRestriction policy, if needed.
@@ -898,10 +910,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-- (void)didAcceptToContinueWithUnsyncedData:(BOOL)acceptToContinue {
-  // TODO(crbug.com/375604649): Need to abort sign-in if `acceptToContinue` is
-  // `NO`.
-  [self continueFlow];
+- (void)didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue {
+  if (acceptToContinue) {
+    [self continueFlow];
+  } else {
+    [self cancelFlowWithReason:CancelationReason::kUserCanceled];
+  }
 }
 
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {

@@ -1683,10 +1683,7 @@ ScriptPromise<ImageBitmap> ImageCapture::grabFrame(ScriptState* script_state) {
     return promise;
   }
 
-  auto resolver_callback_adapter =
-      std::make_unique<CallbackPromiseAdapter<ImageBitmap, void>>(resolver);
-  frame_grabber_->GrabFrame(stream_track_->Component(),
-                            std::move(resolver_callback_adapter),
+  frame_grabber_->GrabFrame(stream_track_->Component(), resolver,
                             ExecutionContext::From(script_state)
                                 ->GetTaskRunner(TaskType::kDOMManipulation),
                             grab_frame_timeout_);

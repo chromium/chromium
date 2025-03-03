@@ -81,6 +81,7 @@
 <translation id="131461803491198646">የቤት አውታረ መረብ፣ የሌላን እየተጠቀመ አይደለም</translation>
 <translation id="1327977588028644528">አግባቢ ፍኖት</translation>
 <translation id="1328223165223065150">የልጣፍ ቀለም</translation>
+<translation id="1329478709358066995">የጽሑፍ ግልባጭ፦</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ከመቃኛ አካባቢ ጋር አመጣጥን</translation>
 <translation id="1343442362630695901">የጨው ሀይቅ</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">ስለ ዳራ</translation>
 <translation id="6939667434404433010">የቅጂ ስምን ይፈልጉ</translation>
 <translation id="6939766318048400022">ካፌ</translation>
+<translation id="6942253772720771875">ግብረመልስዎን ያጋሩ ወይም ችግርዎን ይግለጹ</translation>
 <translation id="6943893908656559156">የርቀት ማንነት (ከተፈለገ)</translation>
 <translation id="6953137545147683679">ወርቃማ</translation>
 <translation id="6957231940976260713">የአገልግሎት ስም</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">ይህ <ph name="DEVICE_TYPE" /> በድርጅት የሚተዳደር ነው</translation>
 <translation id="8398927464629426868">መሣሪያው በአሁኑ ጊዜ ኃይል እየሞላ ወይም እያስወገደ ያለበት ፍጥነት</translation>
 <translation id="8403988360557588704">የ<ph name="ART_FEATURE" /> የቀለም ሥዕል በ<ph name="ART_MOVEMENT" /> ቅጥ</translation>
+<translation id="8409219750150841791">የመነጨ ማጠቃለያ፦</translation>
 <translation id="8410244574650205435">በራስ-ሰር ተገኝቷል</translation>
 <translation id="8420955526972171689">ለሃርድዌር ችግሮች ሙከራዎችን እና መላ ፍለጋን ያሂዱ</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811">ለ<ph name="APN_NAME" /> ተጨማሪ እርምጃዎች</translation>
 <translation id="86356131183441916">ፈዛዛ ወይን ጠጅ</translation>
 <translation id="8647595191512746911">የኦዲዮ ጽሑፍ ግልባጭ</translation>
+<translation id="8648578954147795914">የመነጩ ስሞች፦</translation>
 <translation id="8650852232143958317">የእርስዎን Gmail እና Google Drive ፋይሎች ከእርስዎ ጋር ይውሰዱ</translation>
 <translation id="8651481478098336970">ድምፅ ዝጋ</translation>
 <translation id="8655295600908251630">ሰርጥ</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">የታወቁ ኤፒኤኖችን አሳይ</translation>
 <translation id="932327136139879170">መነሻ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">ማይክሮፎንዎ እንደተገናኘ ያረጋግጡ ወይም የእርስዎን Chromebook እንደገና ማስጀመር ይሞክሩ</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="950520315903467048">የ<ph name="DIRECTION" /> ቁልፉ ይጎድላል። <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ጽሁፍ ግልባጩ እያንዳንዱ ተናጋር ምን እና መቼ እንደተናገረ እንዲያንጸባርቅ በቅጂው ላይ ድምፆችን ያነጻጽሩ</translation>

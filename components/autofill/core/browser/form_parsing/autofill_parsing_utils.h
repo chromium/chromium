@@ -65,7 +65,8 @@ enum class RegexFeature : uint8_t {
   kAutofillUseNLAddressModel = 6,
   kAutofillSupportLastNamePrefix = 7,
   kAutofillEnableLoyaltyCardsFilling = 8,
-  kMaxValue = kAutofillEnableLoyaltyCardsFilling
+  kAutofillImproveCityFieldClassification = 9,
+  kMaxValue = kAutofillImproveCityFieldClassification
 };
 
 // Returns a `DenseSet` containing all `RegexFeature`s whose corresponding

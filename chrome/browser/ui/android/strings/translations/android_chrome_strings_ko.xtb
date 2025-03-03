@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">이 사이트 번역 옵션 제공 안 함</translation>
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
+<translation id="1154555449933432029">Google 비밀번호 관리자에 저장된 비밀번호가 없습니다.</translation>
 <translation id="115483310321669804">비밀번호(<ph name="PASSWORD" />) 사용</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1174479719160874822">화면이 좁을 때 Chrome에서 모바일 사이트를 요청합니다</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />에서 전송</translation>
 <translation id="1320912611264252795">북마크 저장 흐름 폴더가 전체 높이로 열림</translation>
 <translation id="1327257854815634930">탐색 기록 열림</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, 새 탭 또는 업데이트된 탭</translation>
 <translation id="1331212799747679585">Chrome을 업데이트할 수 없습니다. 옵션 더보기</translation>
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
 <translation id="1333491156693005331">최근에 확인됨</translation>
@@ -203,7 +203,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1925021887439448749">맞춤 웹 주소 입력</translation>
 <translation id="1928618076168182477">시각적 뷰 표시 중</translation>
 <translation id="1928696683969751773">업데이트</translation>
-<translation id="1933845786846280168">선택된 탭</translation>
 <translation id="1939549834451474504">Google Play 서비스를 사용할 수 없으므로 비밀번호가 곧 작동하지 않게 됩니다. 비밀번호가 작동을 중지하기 전에 저장된 비밀번호의 사본을 만들 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">비밀번호 저장</translation>
 <translation id="1944535645109964458">패스키 없음</translation>
@@ -430,7 +429,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2976550651269220761">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.\n잠시 기다렸다가 로그아웃해 보세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="2977350910003566746">마지막으로 연 시간순으로 정렬</translation>
 <translation id="297771753501244313">최근 연 날짜순으로 정렬</translation>
-<translation id="2979025552038692506">선택된 시크릿 탭</translation>
 <translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2981364137500752533">최대 5개의 창을 열 수 있습니다.</translation>
 <translation id="2983102365694924129">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
@@ -621,7 +619,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3902562446536395999">오름차순으로 정렬</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> 업데이트</translation>
 <translation id="3911609878849982353">내림차순으로 정렬</translation>
-<translation id="3918415141610210050">Tab</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> 사용 중</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">내 데이터 결합하기</translation>
@@ -644,7 +641,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4024768890073681126">내 브라우저는 부모님이 관리합니다.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{#시간}other{#시간}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" /> 계속하기</translation>
-<translation id="404352903042073578">이름이 지정되지 않은 그룹</translation>
 <translation id="4044708993631234325">하단 시트</translation>
 <translation id="4045441967987592849">다시 열기</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{공유 탭 그룹에 새로운 활동이 있는 일반 탭 <ph name="TABS_COUNT_ONE" />개}other{공유 탭 그룹에 새로운 활동이 있는 일반 탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
@@ -1371,10 +1367,12 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7224097611345298931">이 기기에만 저장된 Chrome 및 <ph name="CHROME_CHANNEL" />의 모든 비밀번호가 병합되었습니다. 두 앱 모두에서 저장된 비밀번호를 자동 완성할 수 있습니다.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{다운로드 1개 대기 중}other{다운로드 #개 대기 중}}</translation>
 <translation id="7230064152164845085">시크릿 모드로 전환</translation>
+<translation id="7237724030342645845">Google 비밀번호 관리자 작동이 중지됨</translation>
 <translation id="72415438529550637">비밀번호 추천이 종료되었습니다.</translation>
 <translation id="7260367682327802201">Android 기기에 비슷한 설정이 포함되어 있을 수 있습니다. Chrome과 Android 기기에서 광고 측정이 사용 설정되어 있으면 회사에서 사용자가 방문하는 웹사이트와 사용하는 앱에서 광고 효과를 측정할 수 있습니다.</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" />에 <ph name="ONE_TIME_CODE" /> 코드를 제출하시겠습니까?</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
+<translation id="7276868533747677875">이전에 비밀번호를 내보낸 경우 기기에서 CSV 파일을 찾아 원하는 비밀번호 관리자로 가져오세요.</translation>
 <translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다</translation>
 <translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 <ph name="SITE_ETLD_PLUS_ONE" />에서 계속하기 위한 다른 방법을 시도해 보세요.</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>
@@ -1549,6 +1547,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8027395186860110042">비밀번호가 곧 작동하지 않을 수 있습니다</translation>
 <translation id="8027863900915310177">다운로드 위치 선택</translation>
 <translation id="8030852056903932865">승인</translation>
+<translation id="8031805944372049238">Google 비밀번호 관리자로 비밀번호를 저장하고 사용하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="8032569120109842252">팔로우 중</translation>
 <translation id="8037750541064988519"><ph name="DAYS" />일 남음</translation>
 <translation id="8037801708772278989">조금 전에 확인됨</translation>
@@ -1736,7 +1735,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8840953339110955557">이 페이지는 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">숨김</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, 탭</translation>
 <translation id="8854223127042600341">오프라인 파일 보기</translation>
 <translation id="885480114717186641"><ph name="HOST_NAME" />의 데스크톱 사이트를 요청할 수 있습니다.</translation>
 <translation id="8856607253650333758">설명 보기</translation>

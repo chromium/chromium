@@ -6,6 +6,7 @@
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
 <translation id="1070329623210597193">Fail yang boleh dilihat atau diedit oleh laman ini</translation>
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberitahu kami sebab anda membenarkan kuki pihak ketiga. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
+<translation id="1074758928858737435">Anda boleh meminta untuk melihat versi desktop laman</translation>
 <translation id="1085696779717592361">Gunakan Chrome Secara Lalai</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
@@ -32,6 +33,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> laman}other{<ph name="SITE_COUNT" /> laman}}</translation>
 <translation id="1500473259453106018">Sembunyikan kad penurunan harga pada tab</translation>
 <translation id="1510341833810331442">Laman tidak dibenarkan menyimpan data pada peranti anda</translation>
+<translation id="1538031354170655462">Laman biasanya menggunakan Komunikasi Medan Dekat (NFC) untuk berfungsi dengan tag atau peranti berdekatan, seperti mengimbas lencana atau membuat bayaran tanpa sentuhan</translation>
 <translation id="1547123415014299762">Kuki pihak ketiga dibenarkan</translation>
 <translation id="1593426485665524382">Tindakan baharu tersedia berdekatan bahagian atas skrin</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -115,6 +117,7 @@
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2682367912565197520">Padamkan tahap zum yang disimpan</translation>
 <translation id="2683434792633810741">Padam &amp; tetapkan semula?</translation>
+<translation id="2685514716378236873">Tidak Dibenarkan</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
 <translation id="2726059656860238749">Lancarkan Chrome dengan Omnibox difokuskan dapat mengurangkan masa permulaan pada peranti bawahan.</translation>
@@ -211,12 +214,14 @@
 <translation id="3955193568934677022">Benarkan tapak untuk memainkan kandungan yang dilindungi (disyorkan)</translation>
 <translation id="3965467402665811906">Laman boleh meminta untuk menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
+<translation id="3981465354637804599">Laman biasanya memaparkan iklan agar dapat memberikan kandungan atau perkhidmatan percuma. Akan tetapi, sesetengah laman diketahui memaparkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="3987993985790029246">Salin pautan</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> boleh menggunakan maklumat anda ketika anda menyemak imbas</translation>
 <translation id="3992684624889376114">Perihal halaman ini</translation>
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="4046123991198612571">Lagu seterusnya</translation>
+<translation id="4077310749977440510">Laman biasanya membaca papan keratan anda untuk ciri seperti mengekalkan format teks yang anda salin</translation>
 <translation id="4149890623864272035">Adakah anda pasti mahu memadamkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk laman web ini?</translation>
 <translation id="4149994727733219643">Paparan ringkas bagi halaman web</translation>
 <translation id="4151930093518524179">Zum lalai</translation>
@@ -224,6 +229,7 @@
 <translation id="4169549551965910670">Disambungkan kepada peranti USB</translation>
 <translation id="4194328954146351878">Tanya sebelum membenarkan laman melihat dan menukar maklumat pada peranti NFC (disyorkan)</translation>
 <translation id="4200726100658658164">Buka Tetapan Lokasi</translation>
+<translation id="421742575134139848">Laman mungkin memainkan bunyi untuk memberikan audio bagi muzik, video dan media lain</translation>
 <translation id="4226663524361240545">Pemberitahuan boleh menggetarkan peranti</translation>
 <translation id="4259722352634471385">Navigasi disekat: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Laman boleh terus menjalankan penyegerakan untuk menyelesaikan tugas, seperti memuat naik foto atau menghantar mesej sembang selepas anda meninggalkan laman itu.</translation>
@@ -247,6 +253,7 @@
 <translation id="4566417217121906555">Redamkan mikrofon</translation>
 <translation id="4570913071927164677">Butiran</translation>
 <translation id="4598549027014564149">Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman, walaupun laman berkaitan. Aktiviti penyemakan imbas anda tidak digunakan untuk perkara seperti memeribadikan iklan. Ciri pada sesetengah laman mungkin tidak berfungsi.</translation>
+<translation id="461356340001513807">Membolehkan anda log masuk ke laman web menggunakan akaun anda yang memiliki perkhidmatan identiti</translation>
 <translation id="4619615317237390068">Tab daripada peranti lain</translation>
 <translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
@@ -430,6 +437,7 @@
 <translation id="7000754031042624318">Dimatikan dalam tetapan Android</translation>
 <translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="7053983685419859001">Sekat</translation>
+<translation id="7055552182600664515">Untuk memainkan kandungan yang dilindungi oleh hak cipta, laman mungkin perlu menggunakan perkhidmatan perlindungan kandungan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' sudah lapuk. Sila kemas kinikan apl.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> dipilih. Pilihan tersedia berhampiran bahagian atas skrin</translation>

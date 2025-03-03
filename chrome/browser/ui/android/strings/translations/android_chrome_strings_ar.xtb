@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">عدم اقتراح ترجمة لهذه المواقع الإلكترونية</translation>
 <translation id="1145536944570833626">سيتم حذف البيانات الحالية.</translation>
 <translation id="1150263420752757504">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">‏ليس لديك كلمات مرور محفوظة في "مدير كلمات المرور في Google".</translation>
 <translation id="115483310321669804">استخدام كلمة المرور "<ph name="PASSWORD" />"</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1174479719160874822">‏سيطلب Chrome الوصول إلى الموقع الإلكتروني المخصّص للأجهزة الجوالة إذا كان حجم الشاشة صغيرًا</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - تم الإرسال من <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">تم فتح مجلدات مسار حفظ الإشارات المرجعية بطول الشاشة.</translation>
 <translation id="1327257854815634930">يتم فتح سجلّ التنقُّل.</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />، علامة تبويب جديدة أو تمّ تعديلها</translation>
 <translation id="1331212799747679585">‏يتعذَّر تحديث Chrome. يُرجى الاطِّلاع على مزيد من الخيارات</translation>
 <translation id="1332501820983677155">‏اختصارات ميزات Google Chrome</translation>
 <translation id="1333491156693005331">تم إجراء عملية التحقّق مؤخرًا</translation>
@@ -203,7 +203,6 @@
 <translation id="1925021887439448749">إدخال عنوان الويب المُخصص</translation>
 <translation id="1928618076168182477">يتمّ إظهار العرض الموسَّع</translation>
 <translation id="1928696683969751773">التحديثات</translation>
-<translation id="1933845786846280168">علامة تبويب محددة</translation>
 <translation id="1939549834451474504">‏ستفقد قريبًا إمكانية الوصول إلى كلمات المرور بسبب عدم توفّر "خدمات Google Play". يمكنك إنشاء نسخة من كلمات المرور المحفوظة قبل توقُّف الخدمة عن العمل. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">حفظ كلمات المرور</translation>
 <translation id="1944535645109964458">ما مِن مفاتيح مرور متوفّرة</translation>
@@ -431,7 +430,6 @@
 <translation id="2976550651269220761">‏لم يتم حفظ بعض بيانات Chrome في حسابك على Google إلى الآن.\nيُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا سجّلْت الخروج الآن، سيتم حذف هذه البيانات.</translation>
 <translation id="2977350910003566746">جارٍ الترتيب حسب آخِر استخدام</translation>
 <translation id="297771753501244313">الترتيب حسب آخِر استخدام</translation>
-<translation id="2979025552038692506">علامة تبويب محددة للتصفح المتخفي</translation>
 <translation id="2979639724566107830">الفتح في نافذة جديدة</translation>
 <translation id="2981364137500752533">يمكنك فتح 5 نوافذ بحد أقصى.</translation>
 <translation id="2983102365694924129">تستند هذه الاقتراحات إلى نشاطك على المواقع الإلكترونية. هذا الإعداد غير مفعَّل.</translation>
@@ -623,7 +621,6 @@
 <translation id="3902562446536395999">جارٍ الترتيب أبجديًا من أ إلى ي</translation>
 <translation id="3908308510347173149">تحديث <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">جارٍ الترتيب أبجديًا من ي إلى أ</translation>
-<translation id="3918415141610210050">علامة تبويب</translation>
 <translation id="3924911262913579434">وضع <ph name="SAFE_BROWSING_MODE" /> مفعّل.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">دمج البيانات التابعة لي</translation>
@@ -646,7 +643,6 @@
 <translation id="4024768890073681126">يتولّى أحد والدَيك إدارة متصفِّحك.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{ساعة واحدة (#)}zero{# ساعة}two{ساعتان (#)}few{# ساعات}many{# ساعةً}other{# ساعة}}</translation>
 <translation id="4042941173059740150">المتابعة إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">مجموعة لم تتم تسميتها</translation>
 <translation id="4044708993631234325">بطاقة سفلية</translation>
 <translation id="4045441967987592849">إعادة فتح</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{علامة تبويب عادية واحدة (<ph name="TABS_COUNT_ONE" />) تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}zero{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}two{علامتا تبويب عاديتان (<ph name="TABS_COUNT_MANY" />) تتضمّنان نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}few{‫<ph name="TABS_COUNT_MANY" /> علامات تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}many{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}other{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}}</translation>
@@ -1373,10 +1369,12 @@
 <translation id="7224097611345298931">‏تم دمج كل كلمات المرور المحفوظة على هذا الجهاز فقط في Chrome و"<ph name="CHROME_CHANNEL" />". ويمكنك ملء جميع كلمات المرور المحفوظة تلقائيًا في كلا التطبيقين.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{هناك تنزيل واحد مُعلَّق}zero{هناك # تنزيل مُعلَّق}two{هناك تنزيلان (#) مُعلَّقان}few{هناك # عمليات تنزيل مُعلَّقة}many{هناك # تنزيلًا مُعلَّقًا}other{هناك # تنزيل مُعلَّق}}</translation>
 <translation id="7230064152164845085">التبديل إلى وضع التصفّح المتخفي</translation>
+<translation id="7237724030342645845">‏توقُّف "مدير كلمات المرور في Google" عن العمل</translation>
 <translation id="72415438529550637">تم إغلاق اقتراح كلمة المرور.</translation>
 <translation id="7260367682327802201">‏قد يتضمّن جهاز Android إعدادًا مشابهًا. في حال تفعيل الإعداد "قياس أداء الإعلانات" في Chrome وعلى جهاز Android، يمكن للشركات قياس مدى فعالية الإعلان المعروض على المواقع الإلكترونية التي تزورها والتطبيقات التي تستخدمها.</translation>
 <translation id="727288900855680735">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="ORIGIN" />؟</translation>
 <translation id="7274013316676448362">تم حظر الموقع.</translation>
+<translation id="7276868533747677875">‏إذا سبق لك تصدير كلمات المرور، يمكنك البحث عن ملف CSV على جهازك واستيرادها إلى مدير كلمات المرور المفضّل لديك.</translation>
 <translation id="7289049772085228972">‏يوفِّر لك Chrome أعلى مستويات الأمان.</translation>
 <translation id="7289303553784750393">في حالة استمرار حدوث هذه المشكلة أثناء اتصالك بالإنترنت، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="7290209999329137901">إعادة التسمية غير متوفرة</translation>
@@ -1552,6 +1550,7 @@
 <translation id="8027395186860110042">قد تفقد قريبًا إمكانية الوصول إلى كلمات المرور</translation>
 <translation id="8027863900915310177">اختيار مكان التنزيل</translation>
 <translation id="8030852056903932865">أوافق</translation>
+<translation id="8031805944372049238">‏لبدء حفظ كلمات المرور واستخدامها من خلال "مدير كلمات المرور في Google"، يجب تحديث خدمات Google Play.</translation>
 <translation id="8032569120109842252">المواقع التي تتابعها</translation>
 <translation id="8037750541064988519">عدد الأيام المتبقية: <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">كلمات المرور التي تم التحقق منها الآن</translation>
@@ -1740,7 +1739,6 @@
 <translation id="8840953339110955557">قد تختلف هذه الصفحة عن الإصدار الوارد على الإنترنت.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">مخفي</translation>
-<translation id="8853345339104747198">علامة التبويب <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">الاطّلاع على ملفاتك بلا إنترنت</translation>
 <translation id="885480114717186641">يمكنك طلب الإصدار المتوافق مع أجهزة الكمبيوتر المكتبي للموقع الإلكتروني <ph name="HOST_NAME" />.</translation>
 <translation id="8856607253650333758">عرض أوصاف الصور</translation>

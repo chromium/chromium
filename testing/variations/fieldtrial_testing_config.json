@@ -17277,7 +17277,6 @@
                     "enable_features": [
                         "PlusAddressAndroidOpenGmsCoreManagementPage",
                         "PlusAddressFallbackFromContextMenu",
-                        "PlusAddressGlobalToggle",
                         "PlusAddressPreallocation",
                         "PlusAddressesEnabled"
                     ]

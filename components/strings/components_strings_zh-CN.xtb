@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">保存网页以供日后加载</translation>
 <translation id="1010225406377140704">请联系发送者获取新的链接</translation>
 <translation id="1011206368273183593">正在准备文件</translation>
+<translation id="1012264210825687872">查看订单后，您必须登录或创建<ph name="BNPL_ISSUER_NAME" />账号。此账号将自动与 Google Pay 关联。</translation>
 <translation id="1014509239502131234">正在撤消结果</translation>
 <translation id="1015730422737071372">提供其他详细信息</translation>
 <translation id="1019413721762100891">已关闭</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">经济新闻</translation>
 <translation id="214556005048008348">取消付款</translation>
 <translation id="2147117373852943630">乐器</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> 想使用其保存的与您相关的信息</translation>
 <translation id="2148613324460538318">添加支付卡</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149968176347646218">连接不安全</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">检测（默认）</translation>
 <translation id="2188375229972301266">多孔（底部）</translation>
 <translation id="2194856509914051091">注意事项</translation>
+<translation id="2198071643181968308">详细了解<ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">“不喜欢”按钮，按 Enter 键可打开一个反馈表单，您可以在表单中详细说明不喜欢此建议的原因</translation>
 <translation id="2202627062836089804">卡背面</translation>
 <translation id="2204482073374652408">更新已完成！</translation>
@@ -2314,6 +2317,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome 需要访问设备的<ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">纸板（封边）</translation>
+<translation id="5106648964679263509">已填写<ph name="BNPL_ISSUER_NAME" />的虚拟卡信息</translation>
 <translation id="5108881358339761672">网站不安全</translation>
 <translation id="5109892411553231226">管理付款方式</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2509,6 +2513,7 @@
             <ph name="LIST_ITEM" />在表单中填写的信息
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">逆转顺序，正面朝上</translation>
+<translation id="5445340838622821110">分期付款时，系统会填写一次性虚拟卡号。此号码仅用于本次购买交易。<ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">允许 <ph name="SITE" /> 使用其保存的与您相关的信息</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 的网页</translation>
 <translation id="5452923259299906094">使用电子钱包和 Pix 付款</translation>
@@ -3327,6 +3332,7 @@
 <translation id="6917795328362592458">系统检测到，您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，密码管理工具建议您检查已保存的所有密码。</translation>
 <translation id="6917873303492266709">如需分享、加入标签页分组并在其中协作，请打开“设置”并开启“允许登录 Chrome”</translation>
 <translation id="6921197121276419421">允许安装 Web 应用</translation>
+<translation id="69238565902785824">让账号保持关联状态有助于您更快地通过<ph name="BNPL_ISSUER_NAME" />付款，不过您可以前往 <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> 解除关联</translation>
 <translation id="6924013822850225188">选择是否在结账时显示凭卡可享福利（需遵守银行条款）</translation>
 <translation id="6925267999184670015">北美洲 B+</translation>
 <translation id="6926216138694948720">人体艺术</translation>
@@ -3392,6 +3398,7 @@
 <translation id="701757816833614688">视觉艺术与设计教育</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7023162328967545559">管理员警告</translation>
+<translation id="7023765275461720661">要关联账号并使用<ph name="BNPL_ISSUER_NAME" />付款吗？</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7030164307377592766">修改用于填充付款方式的设置</translation>
 <translation id="7031646650991750659">您已安装的 Google Play 应用</translation>
@@ -3614,6 +3621,7 @@
 <translation id="741204030948306876">立即开启</translation>
 <translation id="7416351320495623771">管理密码…</translation>
 <translation id="7416898721136759658">助学金、奖学金与经济资助</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">编程</translation>
 <translation id="7419091773564635591">计算机与电子产品</translation>
 <translation id="7419106976560586862">个人资料路径</translation>
@@ -3660,6 +3668,7 @@
 <translation id="7485085230273446323">工商业</translation>
 <translation id="7485870689360869515">找不到数据。</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" />将检查您是否符合资格要求（这不会影响您的信用评分）。如果获得批准，<ph name="BNPL_ISSUER_NAME" />将提供付款方案供您选择，以便您完成购买交易。</translation>
 <translation id="7489392576326061356">洗发水和护发素</translation>
 <translation id="7495528107193238112">该内容被屏蔽了。请联系网站所有者以解决此问题。</translation>
 <translation id="749865518782565832">管道维修</translation>

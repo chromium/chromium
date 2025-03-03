@@ -112,7 +112,7 @@ CrasDevice::CrasDevice(struct libcras_node_info* node, DeviceType type)
   rc = libcras_node_info_get_type(node, &type_str);
   if (rc) {
     LOG(ERROR) << "Failed to get the node type: " << rc;
-    node_type = nullptr;
+    node_type = "";
   }
   node_type = type_str;
 

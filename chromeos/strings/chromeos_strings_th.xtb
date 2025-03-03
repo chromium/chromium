@@ -503,6 +503,7 @@
 <translation id="3373141842870501561">วอลเปเปอร์การเคลื่อนที่ของโลก</translation>
 <translation id="33736539805963175">พื้นหลัง <ph name="LETTERS_COLOR" /> พร้อมตัวอักษร <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">พิเศษ</translation>
+<translation id="3395147534045164351">เปิด/ปิดการจับตำแหน่ง</translation>
 <translation id="3404249063913988450">เปิดใช้โปรแกรมรักษาหน้าจอ</translation>
 <translation id="3413935475507503304">คลิก "ถัดไป" เพื่อดำเนินการอัปเดตต่อ</translation>
 <translation id="3428551088151258685">กลางแจ้ง</translation>
@@ -652,6 +653,7 @@
 <translation id="4113067922640381334">ตอนนี้คุณเข้าถึง<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />วอลเปเปอร์<ph name="END_LINK_WALLPAPER_SUBPAGE" />ใหม่ได้แล้ว</translation>
 <translation id="4117637339509843559">โหมดมืด</translation>
 <translation id="4126551873361000548">กรอกลับ 10 วินาที</translation>
+<translation id="4128271910628504223">ป้อนพรอมต์ เช่น "วาดป่าที่ปกคลุมด้วยหมอก"</translation>
 <translation id="4130035430755296270">ลากเมาส์ไปเรื่อยๆ เพื่อดูตัวเลือกเลย์เอาต์เพิ่มเติม</translation>
 <translation id="4130750466177569591">ฉันยอมรับ</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
@@ -859,6 +861,7 @@
 <translation id="5050042263972837708">ชื่อกลุ่ม</translation>
 <translation id="5051044138948155788">เหลือเพียงหน้าเดียว ระบบจะนำคุณไปยังหน้าจอเริ่มต้นการสแกน</translation>
 <translation id="5053233795640754917">หยุดชั่วคราว</translation>
+<translation id="5056587122125565772">สร้างรูปภาพ</translation>
 <translation id="5078711626843651677">ระบบจะเก็บรูปแบบเสียงไว้ในอุปกรณ์ชั่วคราวจนกว่าจะติดป้ายกำกับผู้พูดเสร็จสมบูรณ์ คุณปิดการดำเนินการนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="5078983345702708852">ล้ำสมัย</translation>
 <translation id="5087864757604726239">กลับ</translation>

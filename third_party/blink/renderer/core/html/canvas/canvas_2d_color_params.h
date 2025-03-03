@@ -8,11 +8,17 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace blink {
+
+enum class CanvasPixelFormat {
+  kUint8,
+  kF16,
+};
 
 // Parameters used by CanvasRenderingContext2D and
 // OffscreenCanvasRenderingContext2D.

@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Mga iminumungkahing paghahanap</translation>
 <translation id="3658847490588580244">Bottom sheet ng default browser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}one{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}other{<ph name="RWS_MEMBERS_COUNT" /> na site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}}</translation>
+<translation id="3676777756440746804">Naka-block ang mga site sa paghiling sa iyo na gamitin ang impormasyong na-save ng mga ito tungkol sa iyo</translation>
 <translation id="3697164069658504920">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga USB device. Kapag naka-off, hindi makakagamit ng mga USB device ang mga site.</translation>
 <translation id="3707034683772193706">Puwedeng mag-save ng kaunting impormasyon sa Chrome ang isang site na binibisita mo, para lang ma-validate na hindi ka bot</translation>
 <translation id="3709818294139939629">Inalis ang file access ng site</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Sa iyong telepono, buksan ang Mga Setting</translation>
 <translation id="3933121352599513978">I-collapse ang mga hindi gustong request (inirerekomenda)</translation>
 <translation id="3955193568934677022">Pahintulutan ang mga site na mag-play ng pinoprotektahang content (inirerekomenda)</translation>
+<translation id="3965467402665811906">Puwedeng humiling ang mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="3987993985790029246">Kopyahin ang link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992308058851451478">Magagamit ng <ph name="SITE" /> ang iyong impormasyon habang nagba-browse ka</translation>
 <translation id="3992684624889376114">Tungkol sa page na ito</translation>
 <translation id="4002066346123236978">Pamagat</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Hindi puwedeng i-reset ang mga pinapamahalaang setting</translation>
 <translation id="4887024562049524730">Magtanong bago payagan ang mga site na gamitin ang iyong virtual reality device at data (inirerekomenda)</translation>
 <translation id="4936863036653376783">Mahahanap mo ang iyong mga grupo sa seksyon ng grupo ng tab sa lahat ng device mo</translation>
+<translation id="4945443401464700059">Naka-block ang <ph name="SITE" /> sa paggamit ng iyong impormasyon sa</translation>
 <translation id="4953688446973710931">Kapag naka-on, puwedeng hilingin ng mga site na awtomatikong mag-download ng maraming file. Kapag naka-off, hindi awtomatikong makakapag-download ng maraming file ang mga site.</translation>
 <translation id="4962975101802056554">Bawiin ang lahat ng pahintulot para sa device</translation>
 <translation id="497421865427891073">Sumulong</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">I-block ang mga site sa pagkonekta sa mga device</translation>
 <translation id="8525306231823319788">Buong screen</translation>
 <translation id="8541410041357371550">Kinukuha ng site na ito ang iyong mga paksa ng ad mula sa Chrome para magpakita pa sa iyo ng mga may kaugnayang ad</translation>
+<translation id="854876774113449365">Puwedeng mag-embed ng content mula sa iba pang site ang mga site na binibisita mo, halimbawa, mga larawan, ad, at text. Puwedeng humingi ng pahintulot ang iba pang site na ito para gumamit ng impormasyong na-save ng mga ito tungkol sa iyo habang bina-browse mo ang site. <ph name="BEGIN_LINK" />Matuto pa tungkol sa naka-embed na content<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Paano ipapakita ang mga request</translation>
 <translation id="8558480467877843976">Magagamit mo na ngayon ang Chrome sa tuwing magbo-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
+<translation id="8593422116412089302">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo. Kapag naka-off, hindi puwedeng hilingin sa iyo ng mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo.</translation>
 <translation id="8609465669617005112">Ilipat sa itaas</translation>
 <translation id="8617611086246832542">Kapag naka-on, ipinapakita ang desktop view ng mga website. Kapag naka-off, ipinapakita ang mobile view ng mga website.</translation>
 <translation id="8670078035093027626">Binuksan nang buo ang bottom sheet ng default browser</translation>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.settings;
+package org.chromium.chrome.browser.password_manager.settings;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
+import org.chromium.chrome.browser.settings.MainSettings;
+import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.transit.settings.PreferenceFacility;
 import org.chromium.chrome.test.transit.settings.SettingsActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
@@ -42,17 +44,22 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-/** Public Transit tests for the app menu. */
+/**
+ * Public Transit tests for the passwords preference item, parameterized by the passwords access
+ * loss warning type.
+ */
 @RunWith(ParameterizedRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(
         reason =
                 "The tests can't be batched because the functionality under test is set up during"
                         + " Chrome start up.")
-public class PasswordsPreferenceTest {
+public class PasswordsPreferenceAccessLossTest {
     @ClassRule
     public static SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(MainSettings.class);
+
+    private final String mName;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -69,14 +76,18 @@ public class PasswordsPreferenceTest {
     private static List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet()
-                            .value(PasswordAccessLossWarningType.NO_GMS_CORE)
+                            .value(PasswordAccessLossWarningType.NO_GMS_CORE, "NoGmsCore")
                             .name("NoGmsCore"),
-                    new ParameterSet().value(PasswordAccessLossWarningType.NO_UPM).name("NoUpm"),
                     new ParameterSet()
-                            .value(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED)
+                            .value(PasswordAccessLossWarningType.NO_UPM, "NoUpm")
+                            .name("NoUpm"),
+                    new ParameterSet()
+                            .value(
+                                    PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
+                                    "NewGmsCoreMigrationFailed")
                             .name("NewGmsCoreMigrationFailed"),
                     new ParameterSet()
-                            .value(PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM)
+                            .value(PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM, "OnlyAccountGms")
                             .name("OnlyAccountGms"));
 
     SettingsActivityPublicTransitEntryPoints mEntryPoints =
@@ -84,8 +95,10 @@ public class PasswordsPreferenceTest {
 
     private @PasswordAccessLossWarningType int mWarningType;
 
-    public PasswordsPreferenceTest(@PasswordAccessLossWarningType int warningType) {
+    public PasswordsPreferenceAccessLossTest(
+            @PasswordAccessLossWarningType int warningType, String name) {
         mWarningType = warningType;
+        mName = name;
     }
 
     @Before
@@ -106,7 +119,7 @@ public class PasswordsPreferenceTest {
         SettingsStation<MainSettings> page = mEntryPoints.startMainSettingsNonBatched();
         PreferenceFacility passwordsPref = page.scrollToPref(MainSettings.PREF_PASSWORDS);
 
-        mRenderTestRule.render(passwordsPref.getPrefView(), "passwords_preference");
+        mRenderTestRule.render(passwordsPref.getPrefView(), "passwords_preference_" + mName);
         TransitAsserts.assertFinalDestination(page);
     }
 }

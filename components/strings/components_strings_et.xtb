@@ -3020,6 +3020,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6351658970066645919">Sirvimisandmete kustutamine</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Puudub}=1{1 parool (loendile <ph name="DOMAIN_LIST" />, sünkroonitud)}=2{2 parooli (loendile <ph name="DOMAIN_LIST" />, sünkroonitud)}other{# parooli (loendile <ph name="DOMAIN_LIST" />, sünkroonitud)}}</translation>
 <translation id="6355392890578844978">Seda brauserit ei halda ettevõte ega muu organisatsioon. Selle seadme tegevusi võidakse hallata ka väljaspool Chromiumi. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Vahelehegrupid „<ph name="GROUP_TITLE_1" />“ ja „<ph name="GROUP_TITLE_2" />“ ei ole enam saadaval</translation>
 <translation id="6358088212770985041">muuda makseviise</translation>
 <translation id="6358450015545214790">Mida need tähendavad?</translation>
 <translation id="6360213755783740931">Vaadake lisateavet pahavarakaitse kohta</translation>

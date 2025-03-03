@@ -429,6 +429,23 @@ dapat digunakan untuk mengecualikan nama host atau pola nama host tertentu agar 
 diupgrade ke HTTPS oleh fitur ini.</translation>
 <translation id="1342918903685430097">Mengonfigurasi versi minimum <ph name="PRODUCT_OS_NAME" /> yang diizinkan untuk perangkat.</translation>
 <translation id="1343128241903870688">Nonaktifkan pelaporan info aplikasi perangkat</translation>
+<translation id="1345276795096570241">Nonaktifkan Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> untuk penyedia identitas yang tercantum.
+
+Dengan menambahkan nilai <ph name="POLICY_VALUE_ALL" />, semua penyedia identitas yang didukung untuk SSO akan dinonaktifkan.
+
+Dengan menambahkan nilai <ph name="POLICY_VALUE_MICROSOFT" />, dukungan untuk Single Sign-On bagi penyedia identitas cloud Microsoft® di Chrome akan dinonaktifkan.
+
+Jika kebijakan ini tidak disetel, semua penyedia identitas yang didukung oleh <ph name="PRODUCT_NAME" /> akan diaktifkan.
+
+Pengguna yang login ke akunnya di aplikasi apa pun yang mendukung <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, menggunakan penyedia identitas yang diaktifkan di <ph name="PRODUCT_NAME" /> dan dikonfigurasi di perangkat oleh administrator, dapat login ke properti web menggunakan penyedia identitas tersebut secara otomatis. Informasi yang berkaitan dengan informasi autentikasi pengguna akan dikirimkan ke penyedia identitas cloud pengguna untuk setiap peristiwa autentikasi.
+
+Catatan:
+
+<ph name="PRODUCT_NAME" /> tidak mendukung Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> dalam mode Samaran atau Tamu.
+
+<ph name="PRODUCT_NAME" /> hanya mendukung Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> untuk penyedia identitas berikut: Microsoft.
+
+Fitur ini tersedia mulai <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1347198119056266798">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> dan <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Kebijakan ini diabaikan jika salah satu dari kebijakan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> atau <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (tidak digunakan lagi) ditetapkan.
 
       Memaksa kueri di Google Penelusuran Web untuk dijalankan dengan SafeSearch disetel ke aktif dan mencegah pengguna mengubah setelan ini. Setelan ini juga memaksa Mode Terbatas Menengah di YouTube.
@@ -3741,7 +3758,6 @@ menyertakan keduanya di sertifikat RSA yang ditujukan untuk HTTPS.</translation>
 <translation id="3663124775601519286">Jika kebijakan ini disetel ke Aktif atau tidak disetel, penggunaan Translator API di <ph name="PRODUCT_NAME" /> akan diizinkan.
 
       Jika kebijakan ini disetel ke Nonaktif, penggunaan Translator API tidak akan diizinkan.</translation>
-<translation id="3664164569472125114">Mengontrol akses <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">Hanya minta pengguna saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3667467644216039144">Mengonfigurasi daftar jenis data penjelajahan yang harus dihapus saat pengguna menutup semua jendela browser.
 
@@ -7781,7 +7797,6 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan
 <translation id="6383774771168138899">Mengonfigurasi alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Izinkan halaman hasil penelusuran mesin telusur default ditampilkan di panel samping Browser.</translation>
 <translation id="6389240462871677239">Mengizinkan origin Aplikasi Web Terisolasi menggunakan Controlled Frame</translation>
-<translation id="6389858262577493180">Aktifkan penggunaan <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Fitur di DevTools <ph name="PRODUCT_NAME" /> ini menggunakan model AI generatif untuk memberikan informasi proses debug tambahan. Untuk menggunakan fitur ini, <ph name="PRODUCT_NAME" /> harus mengumpulkan data seperti pesan error, stack trace, cuplikan kode, dan permintaan jaringan, lalu mengirimkannya ke server milik Google, yang menjalankan model AI generatif. Isi respons atau autentikasi dan header cookie dalam permintaan jaringan tidak disertakan dalam data yang dikirim ke server.
 
 Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi sumber, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
@@ -8412,11 +8427,6 @@ Hingga Chrome 114, kebijakan ini mewajibkan kebijakan <ph name="SYNC_DISABLED_PO
 <translation id="6766216162565713893">Izinkan situs meminta pengguna memberikan akses ke perangkat Bluetooth di sekitar</translation>
 <translation id="6770454900105963262">Melaporkan informasi tentang sesi kios aktif</translation>
 <translation id="6774132787348495175">Jangan izinkan pengguna menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
-<translation id="6776202826080834193">Jika kebijakan ini disetel ke Aktif atau tidak disetel, pengguna dapat menggunakan fitur
-<ph name="GLIC" />. Jika kebijakan ini disetel ke Nonaktif, pengguna
-tidak akan dapat berinteraksi dengan <ph name="GLIC" />. Tombol di kolom tab
-akan disembunyikan dan <ph name="GLIC" /> tidak akan tersedia melalui
-pintasan keyboard, kecuali jika diaktifkan di profil lain.</translation>
 <translation id="678121785914414680">Daftar jenis file yang seharusnya terbuka otomatis saat didownload. Pemisah di awal tidak boleh disertakan saat mencantumkan jenis file, jadi cantumkan "txt", bukan ".txt".
 
 File dengan jenis yang seharusnya terbuka otomatis tetap tunduk pada pemeriksaan Safe Browsing yang diaktifkan dan tidak akan dibuka jika gagal dalam pemeriksaan tersebut.
@@ -11671,7 +11681,6 @@ Kebijakan ini hanya berlaku jika kebijakan <ph name="FULL_RESTORE_ENABLED_NAME" 
       Jika disetel ke benar (true), informasi sistem perangkat akan dilaporkan.</translation>
 <translation id="9131419675479917141">Izinkan pengguna menyetel PIN lemah, tetapi tampilkan peringatan</translation>
 <translation id="913195841488580904">Blokir akses ke daftar URL</translation>
-<translation id="9132345265506256744">Nonaktifkan penggunaan <ph name="GLIC" />.</translation>
 <translation id="9133526448421932754">Warna lampu latar keyboard kuning</translation>
 <translation id="9135033364005346124">Mengaktifkan proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Menampilkan notifikasi saat perangkat USB terdeteksi</translation>

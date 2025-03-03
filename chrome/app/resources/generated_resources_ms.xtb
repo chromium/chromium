@@ -4084,6 +4084,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah diluluskan}other{# sambungan telah diluluskan}}</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Sekurang-kurangnya <ph name="INSTALL_SIZE" /> ruang disyorkan untuk Linux.</translation>
+<translation id="3824203811509979971">Ringkaskan kandungan atau tanya soalan</translation>
 <translation id="3824621460022590830">Token pendaftaran peranti tidak sah. Sila hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Log masuk untuk melihat tab daripada peranti lain</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ingat pilihan saya untuk jenis fail ini: <ph name="FILE_TYPES" />}other{Ingat pilihan saya untuk jenis fail ini: <ph name="FILE_TYPES" />}}</translation>
@@ -4270,6 +4271,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3948985214866944547">Kebanyakan orang menyekat perkongsian lokasi yang tepat untuk laman ini</translation>
 <translation id="394984172568887996">Diimport Daripada IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> untuk menjadikan kerja memuat turun fail lebih selamat</translation>
+<translation id="3950479158728806902">Buat kunci laluan secara automatik untuk log masuk dengan lebih pantas</translation>
 <translation id="3950820424414687140">Log masuk</translation>
 <translation id="3950841222883198950">Penaip suara</translation>
 <translation id="3953834000574892725">Akaun saya</translation>
@@ -5198,6 +5200,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4624054169152573743">Tema warna</translation>
 <translation id="4625078469366263107">Dayakan Apl</translation>
 <translation id="4625905218692741757">Warna lalai kelabu</translation>
+<translation id="4627107755957573804">Benarkan laman dan apl meningkatkan akaun sedia ada untuk menggunakan kunci laluan</translation>
 <translation id="4627442949885028695">Teruskan daripada peranti lain</translation>
 <translation id="4628762811416793313">Penyediaan bekas Linux tidak lengkap. Sila cuba lagi.</translation>
 <translation id="4629521233550547305">Buka profil <ph name="PROFILE_NAME" /></translation>
@@ -5781,6 +5784,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5053233576223592551">Tambahkan Nama Pengguna</translation>
 <translation id="505347685865235222">Kumpulan tidak bernama - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054634168672649013">{COUNT,plural, =1{Anda perlu menukar kata laluan ini sekarang}other{Anda perlu menukar kata laluan ini sekarang}}</translation>
+<translation id="5056587122125565772">Buat imej</translation>
 <translation id="5056950756634735043">Menyambung kepada bekas</translation>
 <translation id="5057110919553308744">Apabila anda mengklik sambungan</translation>
 <translation id="5057127674016624293">Pengimbasan mengambil lebih lama daripada jangkaan</translation>
@@ -5891,6 +5895,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="512642543295077915">Search + undur ruang</translation>
 <translation id="5126611267288187364">Lihat perubahan</translation>
 <translation id="5127620150973591153">ID sambungan selamat: <ph name="TOKEN" /></translation>
+<translation id="5127780364354669658">Ringkaskan kandungan atau tanya soalan.</translation>
 <translation id="5127881134400491887">Urus sambungan rangkaian</translation>
 <translation id="5127934926273826089">Bunga</translation>
 <translation id="5127986747308934633">Pentadbir anda mengawal peranti anda</translation>
@@ -10161,6 +10166,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8195854162863398249">Lumpuhkan <ph name="FEATURE_NAME" /></translation>
 <translation id="8195920051450756553">Lengah sebelum mengaktifkan kekunci yang sama sekali lagi</translation>
 <translation id="8197673340773315084">Tambah nama atau label seperti Kerja atau Peribadi</translation>
+<translation id="8198181050118789419">Tema: <ph name="THEME_NAME" /></translation>
 <translation id="8198456017687137612">Menghantar tab</translation>
 <translation id="8199300056570174101">Sifat Rangkaian (Perkhidmatan) dan Peranti</translation>
 <translation id="8200772114523450471">Sambung semula</translation>
@@ -10246,7 +10252,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8258027225380843424">Pengimportan berjaya!</translation>
 <translation id="8259048637628995340">Sambungkan telefon Android anda untuk pengalaman yang lancar</translation>
 <translation id="8260177673299865994">Perlindungan muat turun ditingkatkan</translation>
-<translation id="8260473380156923937">Apl Chrome akan ditamatkan tidak lama lagi. Untuk alternatif, hubungi pembangun atau kenalan perkhidmatan IT anda.</translation>
 <translation id="8260864402787962391">Tetikus</translation>
 <translation id="8261378640211443080">Sambungan ini tidak disenaraikan dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
 <translation id="8261506727792406068">Padam</translation>
@@ -11419,6 +11424,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Tetikus USB disambungkan</translation>
 <translation id="9075413375877487220">Sambungan ini tidak dipercayai oleh Penyemakan Imbas Selamat Dipertingkat.</translation>
+<translation id="9075985558450420812">Masukkan gesaan tersuai atau serlahkan teks untuk membuat imej.</translation>
 <translation id="9076523132036239772">Maaf, e-mel atau kata laluan anda tidak dapat disahkan. Cuba menyambung ke rangkaian dahulu.</translation>
 <translation id="9076821103818989526">Panel sisi</translation>
 <translation id="9076977315710973122">Perkongsian SMB</translation>

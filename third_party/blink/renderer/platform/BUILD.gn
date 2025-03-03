@@ -1185,6 +1185,8 @@ component("platform") {
     "graphics/picture_snapshot.h",
     "graphics/platform_paint_worklet_layer_painter.cc",
     "graphics/platform_paint_worklet_layer_painter.h",
+    "graphics/predefined_color_space.cc",
+    "graphics/predefined_color_space.h",
     "graphics/profiling_canvas.cc",
     "graphics/profiling_canvas.h",
     "graphics/raster_dark_mode_filter_impl.cc",

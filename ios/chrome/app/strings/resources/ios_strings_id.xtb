@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Sentuh lama layar utama</translation>
 <translation id="1832848789136765277">Untuk memastikan Anda selalu dapat mengakses data yang disinkronkan, verifikasi diri Anda</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}}other{Bookmark disimpan di Akun Google Anda, {email}}}</translation>
+<translation id="1838089197478136166">Buka di Wallet?</translation>
 <translation id="183878838231635348">Kartu ini menampilkan setiap masalah privasi atau keamanan yang otomatis terdeteksi oleh Pemeriksaan Keamanan untuk Anda.</translation>
 <translation id="1845230888742614096">Simpan Grup</translation>
 <translation id="1854463785401910334">Telusuri tab yang terbuka</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">iPad Anda baru-baru ini dipulihkan, yang mungkin telah mengubah browser default Anda.</translation>
 <translation id="1901366738768303267">Bagaimana cara menggunakan fitur ini?</translation>
 <translation id="1901600657316773839">Simpan pilihan</translation>
+<translation id="1902277226107477495">Deteksi alamat dinonaktifkan. Aktifkan kembali di Setelan.</translation>
 <translation id="1904580727789512086">URL yang Anda buka disimpan ke Akun Google Anda</translation>
 <translation id="1911619930368729126">Upload ke Google Drive</translation>
 <translation id="1923342640370224680">Sejam Terakhir</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Halaman web dimuat</translation>
 <translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="2240256190924001613">Profil konfigurasi tersedia</translation>
+<translation id="2244080985779413662">Situs ini ingin mendownload file dan membukanya di Wallet Anda.</translation>
 <translation id="2245007488813216650">Menerjemahkan…</translation>
 <translation id="2249119578464404734">Di bagian atas layar, ketuk ikon Penelusuran</translation>
 <translation id="2251686759395008410">Menu → Histori</translation>
@@ -1361,6 +1364,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
 <translation id="6790502149545262384">Sebentar lagi, Anda akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
+<translation id="6794476726485507147">Pilih tanggal dan waktu untuk menerima notifikasi pengingat guna membuka kembali halaman ini</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}}other{{count} bookmark disimpan di Akun Google Anda, {email}}}</translation>
 <translation id="6830728435402077660">Tidak aman</translation>
@@ -1488,6 +1492,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7425053386765766120">Tambahkan metode pembayaran…</translation>
 <translation id="7425346204213733349">Perubahan pada bookmark, histori, sandi, dan setelan lainnya tidak akan disinkronkan lagi dengan Akun Google. Namun, data yang sudah ada akan tetap disimpan di Akun Google Anda.</translation>
 <translation id="742664698522525515">Simpan grup?</translation>
+<translation id="7431851541687113774">Nonaktifkan deteksi alamat</translation>
 <translation id="7431991332293347422">Kontrol cara histori penjelajahan digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="7438481509621345350">Anda sekarang akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
@@ -1641,6 +1646,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8023170444051056234">Anda akan langsung kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan grup tersebut akan dihapus dari semua perangkat Anda</translation>
 <translation id="8023878949384262191">Luaskan bagian.</translation>
 <translation id="8027581147000338959">Buka di Jendela Baru</translation>
+<translation id="8029092694585014252">Setel pengingat</translation>
 <translation id="8032569120109842252">Mengikuti</translation>
 <translation id="8035133914807600019">Folder baru…</translation>
 <translation id="8035412398498507358">Foto</translation>

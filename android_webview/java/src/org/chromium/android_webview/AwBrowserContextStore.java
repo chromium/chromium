@@ -34,7 +34,7 @@ public class AwBrowserContextStore {
     /**
      * Get the named context's relative path, without loading it in.
      *
-     * <p>Will return null if the context doesn't exist.
+     * <p>Will return an empty string if the context doesn't exist.
      */
     public static String getNamedContextPathForTesting(String name) {
         return AwBrowserContextStoreJni.get().getNamedContextPathForTesting(name); // IN-TEST

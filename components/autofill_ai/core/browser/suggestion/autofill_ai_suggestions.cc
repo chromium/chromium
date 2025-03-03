@@ -386,15 +386,21 @@ std::vector<Suggestion> CreateFillingSuggestions(
 
       base::optional_ref<const AttributeInstance> attribute =
           entity.attribute(*attribute_type);
-      const std::u16string attribute_value =
-          attribute
-              ? attribute->GetInfo(attribute->GetTopLevelType(), app_locale)
-              : u"";
-      if (attribute_value.empty()) {
+      if (!attribute) {
         continue;
       }
 
-      attribute_type_to_value.emplace_back(*attribute_type, attribute_value);
+      const std::u16string full_attribute_value =
+          attribute->GetInfo(attribute->GetTopLevelType(), app_locale);
+      const std::u16string attribute_value =
+          attribute->GetInfo(field->Type().GetStorableType(), app_locale);
+
+      if (full_attribute_value.empty() || attribute_value.empty()) {
+        continue;
+      }
+
+      attribute_type_to_value.emplace_back(*attribute_type,
+                                           full_attribute_value);
       field_to_value.emplace_back(field->global_id(), attribute_value);
     }
 

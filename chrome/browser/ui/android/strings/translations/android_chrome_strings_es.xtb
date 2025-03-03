@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Enviado desde <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Flujo para guardar marcador abierto a altura completa</translation>
 <translation id="1327257854815634930">El historial de navegación está abierto</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, pestaña nueva o actualizada</translation>
 <translation id="1331212799747679585">No se ha podido actualizar Chrome. Más opciones</translation>
 <translation id="1332501820983677155">Combinaciones de teclas de funciones de Google Chrome</translation>
 <translation id="1333491156693005331">Comprobado recientemente</translation>
@@ -203,7 +202,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1925021887439448749">Introduce una dirección web personalizada</translation>
 <translation id="1928618076168182477">Mostrando vista visual</translation>
 <translation id="1928696683969751773">Actualizaciones</translation>
-<translation id="1933845786846280168">Pestaña seleccionada</translation>
 <translation id="1939549834451474504">Las contraseñas dejarán de funcionar pronto porque Servicios de Google Play no está disponible. Puedes hacer una copia de tus contraseñas guardadas antes de que esto ocurra. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Guardar contraseñas</translation>
 <translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
@@ -430,7 +428,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2976550651269220761">Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google.\nEspera unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="2977350910003566746">Ordenados por última apertura</translation>
 <translation id="297771753501244313">Ordenar: último abierto</translation>
-<translation id="2979025552038692506">Pestaña de incógnito seleccionada</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
 <translation id="2981364137500752533">Puedes tener hasta 5 ventanas.</translation>
 <translation id="2983102365694924129">Se basa en tu actividad en un sitio. Esta opción está desactivada.</translation>
@@ -621,7 +618,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3902562446536395999">Ordenados de la A a la Z</translation>
 <translation id="3908308510347173149">Actualizar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Ordenados de la Z a la A</translation>
-<translation id="3918415141610210050">Pestaña</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> activada</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combinar mis datos</translation>
@@ -644,7 +640,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4024768890073681126">Tu padre o madre gestiona tu navegador</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Sigue usando <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Grupo sin nombre</translation>
 <translation id="4044708993631234325">Hoja inferior</translation>
 <translation id="4045441967987592849">Reabrir</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña estándar con actividad nueva en grupos de pestañas compartidos}other{<ph name="TABS_COUNT_MANY" /> pestañas estándar con actividad nueva en grupos de pestañas compartidos}}</translation>
@@ -1736,7 +1731,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8840953339110955557">Esta página puede ser distinta de la versión online.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Oculto</translation>
-<translation id="8853345339104747198">Pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Ver tus archivos sin conexión</translation>
 <translation id="885480114717186641">Puedes solicitar el sitio para ordenadores de <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obtener descripciones</translation>

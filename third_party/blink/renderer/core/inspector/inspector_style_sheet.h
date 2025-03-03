@@ -215,6 +215,8 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   bool DeleteRule(const SourceRange&, ExceptionState&);
   std::unique_ptr<protocol::Array<String>> CollectClassNames();
   CSSStyleSheet* PageStyleSheet() { return page_style_sheet_.Get(); }
+  String Origin() { return origin_; }
+  bool CanBindOrigin();
 
   std::unique_ptr<protocol::CSS::CSSStyleSheetHeader>
   BuildObjectForStyleSheetInfo();
@@ -236,7 +238,6 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
       Element*);
   std::unique_ptr<protocol::CSS::SelectorList> BuildObjectForSelectorList(
       CSSStyleRule*);
-
   std::unique_ptr<protocol::CSS::SourceRange> RuleHeaderSourceRange(CSSRule*);
   std::unique_ptr<protocol::CSS::SourceRange> MediaQueryExpValueSourceRange(
       CSSRule*,

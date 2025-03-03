@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Στάλθηκε από <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Φάκελοι ροής αποθήκευσης σελιδοδείκτη ανοιγμένοι στο πλήρες ύψος</translation>
 <translation id="1327257854815634930">Το ιστορικό περιήγησης έχει ανοίξει</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, νέα ή ενημερωμένη καρτέλα</translation>
 <translation id="1331212799747679585">Δεν είναι δυνατή η ενημέρωση του Chrome. Περισσότερες επιλογές</translation>
 <translation id="1332501820983677155">Συντομεύσεις λειτουργιών Google Chrome</translation>
 <translation id="1333491156693005331">Ελέγχθηκε πρόσφατα</translation>
@@ -204,7 +203,6 @@
 <translation id="1925021887439448749">Εισαγάγετε προσαρμοσμένη διεύθυνση ιστού</translation>
 <translation id="1928618076168182477">Εμφάνιση οπτικής προβολής</translation>
 <translation id="1928696683969751773">Ενημερώσεις</translation>
-<translation id="1933845786846280168">Επιλεγμένη καρτέλα</translation>
 <translation id="1939549834451474504">Οι κωδικοί πρόσβασης θα σταματήσουν να λειτουργούν σύντομα, επειδή οι υπηρεσίες Google Play δεν είναι διαθέσιμες. Μπορείτε να δημιουργήσετε ένα αντίγραφο των αποθηκευμένων κωδικών πρόσβασης πριν σταματήσουν να λειτουργούν. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Αποθήκευση κωδικών πρόσβασης</translation>
 <translation id="1944535645109964458">Δεν υπάρχουν διαθέσιμα κλειδιά πρόσβασης</translation>
@@ -431,7 +429,6 @@
 <translation id="2976550651269220761">Ορισμένα δεδομένα του Chrome δεν έχουν αποθηκευτεί ακόμα στον Λογαριασμό σας Google.\nΔοκιμάστε να περιμένετε λίγα λεπτά πριν αποσυνδεθείτε. Εάν αποσυνδεθείτε τώρα, αυτά τα δεδομένα θα διαγραφούν.</translation>
 <translation id="2977350910003566746">Ταξινόμηση κατά τελευταίο άνοιγμα</translation>
 <translation id="297771753501244313">Ταξιν. κατά τελ. άνοιγμα</translation>
-<translation id="2979025552038692506">Επιλεγμένη καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="2979639724566107830">Άνοιγμα σε νέο παράθυρο</translation>
 <translation id="2981364137500752533">Μπορείτε να έχετε έως 5 παράθυρα.</translation>
 <translation id="2983102365694924129">Βάσει της δραστηριότητάς σας σε έναν ιστότοπο. Αυτή η ρύθμιση είναι απενεργοποιημένη.</translation>
@@ -622,7 +619,6 @@
 <translation id="3902562446536395999">Ταξινόμηση από το Α έως το Ω</translation>
 <translation id="3908308510347173149">Ενημέρωση <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Ταξινόμηση από το Ω έως το A</translation>
-<translation id="3918415141610210050">Καρτέλα</translation>
 <translation id="3924911262913579434">Η λειτουργία <ph name="SAFE_BROWSING_MODE" /> είναι ενεργή.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Συνδυασμός των δεδομένων μου</translation>
@@ -645,7 +641,6 @@
 <translation id="4024768890073681126">Η διαχείριση του προγράμματος περιήγησης γίνεται από τον γονέα σου</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
 <translation id="4042941173059740150">Συνέχεια σε <ph name="SITE_ETLD_PLUS_ONE" /> με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Ομάδα χωρίς όνομα</translation>
 <translation id="4044708993631234325">Φύλλο κάτω μέρους</translation>
 <translation id="4045441967987592849">Εκ νέου άνοιγμα</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> τυπική καρτέλα με νέα δραστηριότητα σε ομάδες κοινόχρηστων καρτελών}other{<ph name="TABS_COUNT_MANY" /> τυπικές καρτέλες με νέα δραστηριότητα σε ομάδες κοινόχρηστων καρτελών}}</translation>
@@ -1740,7 +1735,6 @@
 <translation id="8840953339110955557">Αυτή η σελίδα μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Κρυφή</translation>
-<translation id="8853345339104747198">Καρτέλα <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Δείτε τα αρχεία εκτός σύνδεσης</translation>
 <translation id="885480114717186641">Μπορείτε να ζητήσετε τον ιστότοπο για υπολογιστές του <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Λήψη περιγραφών</translation>

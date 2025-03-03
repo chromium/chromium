@@ -10,7 +10,6 @@
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
-#include "components/memory_system/buildflags.h"
 #include "components/memory_system/memory_system_features.h"
 #include "components/memory_system/parameters.h"
 #include "partition_alloc/buildflags.h"

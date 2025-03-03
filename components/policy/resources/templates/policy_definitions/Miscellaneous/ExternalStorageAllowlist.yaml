@@ -18,7 +18,7 @@ schema:
   items:
     $ref: UsbDeviceId
   type: array
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:135-
 tags: []
 type: dict

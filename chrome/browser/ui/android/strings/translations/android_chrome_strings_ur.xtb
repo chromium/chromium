@@ -77,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> سے ارسال کردہ</translation>
 <translation id="1320912611264252795">بُک مارک محفوظ کرنے کے فلو فولڈرز پوری اونچائی پر کھلے ہوئے ہیں</translation>
 <translation id="1327257854815634930">نیویگیشن کی سرگزشت کھلی ہوئی ہے</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />، نیا یا اپ ڈیٹ کردہ ٹیب</translation>
 <translation id="1331212799747679585">‏Chrome کو اپ ڈیٹ نہیں کیا جا سکتا ہے۔ مزید اختیارات</translation>
 <translation id="1332501820983677155">‏Google Chrome خصوصیت کے شارٹ کٹس</translation>
 <translation id="1333491156693005331">حال ہی میں چیک کردہ</translation>
@@ -204,7 +203,6 @@
 <translation id="1925021887439448749">حسب ضرورت ویب پتہ درج کریں</translation>
 <translation id="1928618076168182477">ویژوئل منظر دکھایا جا رہا ہے</translation>
 <translation id="1928696683969751773">اپ ڈيٹس</translation>
-<translation id="1933845786846280168">منتخب ٹیب</translation>
 <translation id="1939549834451474504">‏پاس ورڈز جلد ہی کام کرنا بند کر دیں گے کیونکہ Google Play سروسز دستیاب نہیں ہیں۔ آپ اپنے محفوظ کردہ پاس ورڈز کے کام بند کرنے سے پہلے ان کی ایک کاپی بنا سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">پاس ورڈز محفوظ کریں</translation>
 <translation id="1944535645109964458">کوئی پاس کی دستیاب نہیں ہے</translation>
@@ -431,7 +429,6 @@
 <translation id="2976550651269220761">‏آپ کا کچھ Chrome ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔\nسائن آؤٹ کرنے سے پہلے کچھ منٹ انتظار کر کے دیکھیں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="2977350910003566746">آخری بار کھولا گیا کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
 <translation id="297771753501244313">بلحاظ آخری بار کھولا گیا سے ترتیب دیں</translation>
-<translation id="2979025552038692506">منتخب پوشیدگی ٹیب</translation>
 <translation id="2979639724566107830">نئی ونڈو میں کھولیں</translation>
 <translation id="2981364137500752533">آپ 5 ونڈوز تک کھول سکتے ہیں۔</translation>
 <translation id="2983102365694924129">سائٹ پر آپ کی سرگرمی کی بنیاد پر۔ یہ ترتیب آف ہے۔</translation>
@@ -622,7 +619,6 @@
 <translation id="3902562446536395999">‏A سے Z تک ترتیب دیا جا رہا ہے</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> اپ ڈیٹ کریں</translation>
 <translation id="3911609878849982353">‏Z سے A تک ترتیب دیا جا رہا ہے</translation>
-<translation id="3918415141610210050">ٹیب</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> آن ہے</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">میرا ڈیٹا ملائیں</translation>
@@ -645,7 +641,6 @@
 <translation id="4024768890073681126">آپ کا براؤزر آپ کے والدین کے زیر انتظام ہے</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# گھنٹہ}other{# گھنٹے}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> کو جاری رکھیں</translation>
-<translation id="404352903042073578">بغیر نام کے گروپ</translation>
 <translation id="4044708993631234325">نیچے کی شیٹ</translation>
 <translation id="4045441967987592849">دوبارہ کھولیں</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_ONE" /> معیاری ٹیب}other{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_MANY" /> معیاری ٹیبز}}</translation>
@@ -1740,7 +1735,6 @@
 <translation id="8840953339110955557">یہ صفحہ آن لائن ورژن سے مختلف ہو سکتا ہے۔</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">پوشیدہ</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />، ٹیب</translation>
 <translation id="8854223127042600341">اپنی آف لائن فائلز دیکھیں</translation>
 <translation id="885480114717186641">آپ <ph name="HOST_NAME" /> کے لیے ڈیسک ٹاپ سائٹ کی درخواست کر سکتے ہیں</translation>
 <translation id="8856607253650333758">تفصیلات حاصل کریں</translation>

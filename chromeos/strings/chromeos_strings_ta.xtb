@@ -81,6 +81,7 @@
 <translation id="131461803491198646">உள்ளூர் நெட்வொர்க், ரோமிங் இல்லை</translation>
 <translation id="1327977588028644528">கேட்வே</translation>
 <translation id="1328223165223065150">வால்பேப்பரின் நிறம்</translation>
+<translation id="1329478709358066995">டிரான்ஸ்கிரிப்ட்:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ஸ்கேன் செய்யும் பகுதிக்கு ஏற்பப் பொருத்து</translation>
 <translation id="1343442362630695901">உப்பு ஏரி</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">பின்னணி பற்றி</translation>
 <translation id="6939667434404433010">ரெக்கார்டிங்கின் பெயரைத் தேடுங்கள்</translation>
 <translation id="6939766318048400022">கஃபே</translation>
+<translation id="6942253772720771875">கருத்தைப் பகிருங்கள் அல்லது சிக்கலை விவரியுங்கள்</translation>
 <translation id="6943893908656559156">தொலைநிலை அடையாளம் (விருப்பத்தேர்வு)</translation>
 <translation id="6953137545147683679">பொன்னிற</translation>
 <translation id="6957231940976260713">சேவைப் பெயர்</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை நிறுவனம் நிர்வகிக்கிறது</translation>
 <translation id="8398927464629426868">தற்போது சாதனத்தில் சார்ஜ் ஏறும் அல்லது குறையும் வீதம்</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ஸ்டைலில் <ph name="ART_FEATURE" /> இன் ஓவியம்</translation>
+<translation id="8409219750150841791">உருவாக்கப்பட்ட சுருக்க விவரம்:</translation>
 <translation id="8410244574650205435">தானாகக் கண்டறியப்பட்டது</translation>
 <translation id="8420955526972171689">வன்பொருள் சிக்கல்களைக் கண்டறிய சோதனைகளை இயக்கலாம், பிழையறிந்து திருத்தலாம்</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" />க்கான கூடுதல் செயல்கள்</translation>
 <translation id="86356131183441916">வெளிர் ஊதா</translation>
 <translation id="8647595191512746911">ஆடியோ டிரான்ஸ்கிரிப்ஷன்</translation>
+<translation id="8648578954147795914">உருவாக்கப்பட்ட பெயர்கள்:</translation>
 <translation id="8650852232143958317">உங்கள் Gmail மற்றும் Google Drive ஃபைல்களை உங்களுடனே வைத்திருங்கள்</translation>
 <translation id="8651481478098336970">ஒலியை அடக்கும்</translation>
 <translation id="8655295600908251630">சேனல்</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">அறியப்பட்ட APNகளைக் காட்டு</translation>
 <translation id="932327136139879170">முகப்பு</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">உங்கள் மைக் இணைக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும் அல்லது உங்கள் Chromebookகை மீண்டும் தொடங்கவும்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" />க்குப் பட்டன் ஒதுக்கப்படவில்லை. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ஒவ்வொருவரும் என்ன பேசினார்கள், எப்போது பேசினார்கள் என்பதை டிரான்ஸ்கிரிப்ட்டில் காட்ட ரெக்கார்டிங் முழுவதிலும் குரல்களை ஒப்பிடுதல்.</translation>

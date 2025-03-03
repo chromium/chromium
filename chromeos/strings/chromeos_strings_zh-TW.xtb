@@ -81,6 +81,7 @@
 <translation id="131461803491198646">家用網路，非漫遊狀態</translation>
 <translation id="1327977588028644528">閘道</translation>
 <translation id="1328223165223065150">桌布顏色</translation>
+<translation id="1329478709358066995">轉錄稿：</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">符合掃描區大小</translation>
 <translation id="1343442362630695901">鹽湖</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">關於背景</translation>
 <translation id="6939667434404433010">搜尋錄音檔名稱</translation>
 <translation id="6939766318048400022">咖啡廳</translation>
+<translation id="6942253772720771875">分享意見回饋或說明你的問題</translation>
 <translation id="6943893908656559156">遠端識別 (選用)</translation>
 <translation id="6953137545147683679">金色</translation>
 <translation id="6957231940976260713">服務名稱</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">這部 <ph name="DEVICE_TYPE" /> 是由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電速率</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" />風格的<ph name="ART_FEATURE" />畫作</translation>
+<translation id="8409219750150841791">生成的摘要：</translation>
 <translation id="8410244574650205435">已自動偵測</translation>
 <translation id="8420955526972171689">針對硬體問題進行測試及疑難排解</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811">可對 <ph name="APN_NAME" /> 執行的其他動作</translation>
 <translation id="86356131183441916">淺紫色</translation>
 <translation id="8647595191512746911">音訊轉錄</translation>
+<translation id="8648578954147795914">生成的名稱：</translation>
 <translation id="8650852232143958317">將 Gmail 和 Google 雲端硬碟檔案帶著走</translation>
 <translation id="8651481478098336970">靜音</translation>
 <translation id="8655295600908251630">版本</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">顯示已知 APN</translation>
 <translation id="932327136139879170">首頁</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">請確認已接上麥克風，你也可以試著重新啟動 Chromebook</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="950520315903467048">缺少「<ph name="DIRECTION" />」的按鍵。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">比較整段錄音中的語音，並在轉錄稿中標出每位講者所說的內容和說話時間</translation>

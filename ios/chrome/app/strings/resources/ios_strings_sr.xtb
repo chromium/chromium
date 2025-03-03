@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Додирните и задржите почетни екран</translation>
 <translation id="1832848789136765277">Да бисте били сигурни да увек можете да приступате синхронизованим подацима, потврдите да сте то ви</translation>
 <translation id="1836891464494477513">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}}one{Обележивачи су сачувани на Google налогу, {email}}few{Обележивачи су сачувани на Google налогу, {email}}other{Обележивачи су сачувани на Google налогу, {email}}}</translation>
+<translation id="1838089197478136166">Желите да отворите у Новчанику?</translation>
 <translation id="183878838231635348">Ова картица приказује све проблеме у вези са приватношћу или безбедношћу које Провера безбедности аутоматски открије.</translation>
 <translation id="1845230888742614096">Задржи групу</translation>
 <translation id="1854463785401910334">Претражите отворене картице</translation>
@@ -302,6 +303,7 @@
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
 <translation id="2236949375853147973">Моје активности</translation>
 <translation id="2240256190924001613">Доступан профил конфигурације</translation>
+<translation id="2244080985779413662">Овај веб-сајт жели да преузме фајл и отвори га у Новчанику.</translation>
 <translation id="2245007488813216650">Преводи се…</translation>
 <translation id="2249119578464404734">У врху екрана додирните икону Претрага</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
@@ -1362,6 +1364,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6761393919622941301">Звук</translation>
 <translation id="6779455296366983087">Подаци прегледања ће бити избрисани</translation>
 <translation id="6790502149545262384">Ускоро ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
+<translation id="6794476726485507147">Одаберите датум и време да бисте добили обавештење о подсетнику да поново посетите ову страницу</translation>
 <translation id="681368974849482173">Ставка је направљена</translation>
 <translation id="6825078212112407882">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}}one{{count} обележивач је сачуван на Google налогу, {email}}few{{count} обележивача су сачувана на Google налогу, {email}}other{{count} обележивача је сачувано на Google налогу, {email}}}</translation>
 <translation id="6830728435402077660">Није безбедно</translation>
@@ -1643,6 +1646,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8023170444051056234">Одмах ћете изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја</translation>
 <translation id="8023878949384262191">Проширује одељак.</translation>
 <translation id="8027581147000338959">Отвори у новом прозору</translation>
+<translation id="8029092694585014252">Подеси подсетник</translation>
 <translation id="8032569120109842252">Пратите</translation>
 <translation id="8035133914807600019">Нови фолдер...</translation>
 <translation id="8035412398498507358">Слике</translation>

@@ -229,6 +229,29 @@ TEST_F(MerchantTrustServiceTest, SampleData) {
   run_loop.Run();
 }
 
+// Tests that if the proto is empty, no data is returned.
+TEST_F(MerchantTrustServiceTest, NoResult) {
+  base::HistogramTester t;
+  OptimizationMetadata metadata;
+  metadata.set_any_metadata({});
+  SetResponse(GURL("https://foo.com"), OptimizationGuideDecision::kTrue,
+              metadata);
+
+  base::RunLoop run_loop;
+  service()->GetMerchantTrustInfo(
+      GURL("https://foo.com"),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& url,
+             std::optional<page_info::MerchantData> info) {
+            ASSERT_FALSE(info.has_value());
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+  t.ExpectUniqueSample("Security.PageInfo.MerchantTrustStatus",
+                       MerchantTrustStatus::kNoResult, 1);
+}
+
 // Tests that status is recorded as not valid when a proto is missing a field
 // and no data is returned.
 TEST_F(MerchantTrustServiceTest, InvalidProto) {

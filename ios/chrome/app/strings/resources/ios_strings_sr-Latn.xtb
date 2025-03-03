@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Dodirnite i zadržite početni ekran</translation>
 <translation id="1832848789136765277">Da biste bili sigurni da uvek možete da pristupate sinhronizovanim podacima, potvrdite da ste to vi</translation>
 <translation id="1836891464494477513">{count,plural, =1{Obeleživač je sačuvan na Google nalogu, {email}}one{Obeleživači su sačuvani na Google nalogu, {email}}few{Obeleživači su sačuvani na Google nalogu, {email}}other{Obeleživači su sačuvani na Google nalogu, {email}}}</translation>
+<translation id="1838089197478136166">Želite da otvorite u Novčaniku?</translation>
 <translation id="183878838231635348">Ova kartica prikazuje sve probleme u vezi sa privatnošću ili bezbednošću koje Provera bezbednosti automatski otkrije.</translation>
 <translation id="1845230888742614096">Zadrži grupu</translation>
 <translation id="1854463785401910334">Pretražite otvorene kartice</translation>
@@ -302,6 +303,7 @@
 <translation id="2230173723195178503">Veb-stranica je učitana</translation>
 <translation id="2236949375853147973">Moje aktivnosti</translation>
 <translation id="2240256190924001613">Dostupan profil konfiguracije</translation>
+<translation id="2244080985779413662">Ovaj veb-sajt želi da preuzme fajl i otvori ga u Novčaniku.</translation>
 <translation id="2245007488813216650">Prevodi se…</translation>
 <translation id="2249119578464404734">U vrhu ekrana dodirnite ikonu Pretraga</translation>
 <translation id="2251686759395008410">Meni → Istorija</translation>
@@ -1362,6 +1364,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6761393919622941301">Zvuk</translation>
 <translation id="6779455296366983087">Podaci pregledanja će biti izbrisani</translation>
 <translation id="6790502149545262384">Uskoro ćete videti priče sa <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
+<translation id="6794476726485507147">Odaberite datum i vreme da biste dobili obaveštenje o podsetniku da ponovo posetite ovu stranicu</translation>
 <translation id="681368974849482173">Stavka je napravljena</translation>
 <translation id="6825078212112407882">{count,plural, =1{Obeleživač je sačuvan na Google nalogu, {email}}one{{count} obeleživač je sačuvan na Google nalogu, {email}}few{{count} obeleživača su sačuvana na Google nalogu, {email}}other{{count} obeleživača je sačuvano na Google nalogu, {email}}}</translation>
 <translation id="6830728435402077660">Nije bezbedno</translation>
@@ -1643,6 +1646,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8023170444051056234">Odmah ćete izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će biti izbrisana sa svih uređaja</translation>
 <translation id="8023878949384262191">Proširuje odeljak.</translation>
 <translation id="8027581147000338959">Otvori u novom prozoru</translation>
+<translation id="8029092694585014252">Podesi podsetnik</translation>
 <translation id="8032569120109842252">Pratite</translation>
 <translation id="8035133914807600019">Novi folder...</translation>
 <translation id="8035412398498507358">Slike</translation>

@@ -381,6 +381,45 @@ TEST_F(ContentVerifierTest, JSAndHTMLAlwaysVerified) {
   }
 }
 
+TEST_F(ContentVerifierTest, CaseInsensitivePaths) {
+  if (content_verifier_utils::IsFileAccessCaseSensitive()) {
+    return;
+  }
+
+  std::vector<std::pair<std::string, std::string>> lower_upper = {
+      {"a.png", "A.png"},
+      {"ä.png", "Ä.png"},
+      {"æ.png", "Æ.png"},
+      {"ф.png", "Ф.png"},
+  };
+
+  for (const auto& [lower, upper] : lower_upper) {
+    const auto lower_path = base::FilePath::FromUTF8Unsafe(lower);
+    const auto upper_path = base::FilePath::FromUTF8Unsafe(upper);
+    UpdateBrowserImagePaths({});
+
+    // |path| would be treated as unclassified resource, so it gets verified.
+    EXPECT_TRUE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_TRUE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+
+    // If |path| is specified as browser image, it doesn't get verified.
+    UpdateBrowserImagePaths({lower_path});
+    EXPECT_FALSE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_FALSE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+
+    // The case of the image path shouldn't matter.
+    UpdateBrowserImagePaths({upper_path});
+    EXPECT_FALSE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_FALSE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+  }
+}
+
 TEST_F(ContentVerifierTest, AlwaysVerifiedPathsWithVariants) {
   FilePathVariants kAlwaysVerifiedTestCases[] = {
       // JS files are always verified.

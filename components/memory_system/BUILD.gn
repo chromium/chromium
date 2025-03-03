@@ -9,17 +9,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 
-buildflag_header("memory_system_buildflags") {
-  header = "buildflags.h"
-
-  # If creating a profiling build include the allocation recorder
-  # unconditionally. This way we ensure that the recorder is covered by the
-  # profile even if the profiling device doesn't support MTE.
-  force_allocation_trace_recorder = chrome_pgo_phase == 1
-
-  flags = [ "FORCE_ALLOCATION_TRACE_RECORDER=$force_allocation_trace_recorder" ]
-}
-
 # We use a source set instead of a component. Using a component leads to
 # duplicate symbols when creating a component build.
 source_set("memory_system") {
@@ -40,9 +29,9 @@ source_set("memory_system") {
   ]
 
   deps = [
-    ":memory_system_buildflags",
     "//base",
     "//base/allocator:buildflags",
+    "//build/config/compiler:compiler_buildflags",
     "//components/gwp_asan/buildflags",
     "//components/sampling_profiler:profile_params",
   ]

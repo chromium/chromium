@@ -252,6 +252,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1419305130220238697">Butang urus muat turun dalam Chrome, aktifkan untuk mengurus fail yang telah anda muat turun dalam Chrome</translation>
 <translation id="1420345875188552368">Kaedah pembayaran automatik yang disimpan boleh digunakan untuk pembayaran ini. Untuk mematikan e-Dompet dalam Chrome, akses <ph name="BEGIN_LINK1" />tetapan pembayaran<ph name="END_LINK1" /> anda</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> untuk membolehkan penggandingan</translation>
+<translation id="1421484961346698724">Akaun dipadamkan</translation>
 <translation id="14222610277930434">Sering Anda Lawati</translation>
 <translation id="1422930527989633628">Boleh meminta untuk menemukan peranti Bluetooth berdekatan</translation>
 <translation id="1426410128494586442">Ya</translation>
@@ -3025,6 +3026,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6351658970066645919">Padamkan Data Semakan Imbas</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tiada}=1{1 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}=2{2 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}other{# kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}}</translation>
 <translation id="6355392890578844978">Penyemak imbas ini tidak diurus oleh syarikat atau organisasi lain. Aktiviti pada peranti ini mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="6357546827188504216">Kumpulan tab "<ph name="GROUP_TITLE_1" />" dan "<ph name="GROUP_TITLE_2" />" tidak tersedia lagi</translation>
 <translation id="6358088212770985041">edit kaedah pembayaran</translation>
 <translation id="6358450015545214790">Apakah maksudnya?</translation>
 <translation id="6360213755783740931">Ketahui lebih lanjut tentang perlindungan Perisian Hasad</translation>

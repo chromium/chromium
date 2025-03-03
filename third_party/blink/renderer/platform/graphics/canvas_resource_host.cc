@@ -287,9 +287,8 @@ bool CanvasResourceHost::IsResourceValid() {
     return false;
   }
 
-  // For software rendering with CanvasResourceProvider::kSharedBitmap
+  // For software rendering
   if (resource_provider_ &&
-      resource_provider_->GetType() == CanvasResourceProvider::kSharedBitmap &&
       resource_provider_->IsSharedBitmapGpuChannelLost()) {
     shared_bitmap_gpu_channel_lost_ = true;
     ReplaceResourceProvider(nullptr);

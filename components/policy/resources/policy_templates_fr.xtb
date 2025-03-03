@@ -424,6 +424,23 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de re
 La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter que cette fonctionnalité mette à niveau des noms d'hôte ou des modèles du nom d'hôte spécifiques vers HTTPS.</translation>
 <translation id="1342918903685430097">Configurer la version <ph name="PRODUCT_OS_NAME" /> minimale autorisée pour l'appareil.</translation>
 <translation id="1343128241903870688">Désactiver les rapports sur les infos des applis de l'appareil</translation>
+<translation id="1345276795096570241">Désactivez l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> pour les fournisseurs d'identité listés.
+
+Si vous ajoutez la valeur <ph name="POLICY_VALUE_ALL" />, tous les fournisseurs d'identité pris en charge pour l'authentification unique sont désactivés.
+
+Si vous ajoutez la valeur <ph name="POLICY_VALUE_MICROSOFT" />, la prise en charge de l'authentification unique pour le fournisseur d'identité cloud Microsoft® dans Chrome sera désactivée.
+
+Si vous ne configurez pas cette règle, tous les fournisseurs d'identité pris en charge par <ph name="PRODUCT_NAME" /> seront activés.
+
+Pour les fournisseurs d'identité activés dans <ph name="PRODUCT_NAME" /> et configurés sur l'appareil par l'administrateur, les utilisateurs qui se connectent une fois via ce fournisseur d'identité, sur n'importe quelle appli compatible avec <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, peuvent être connectés automatiquement aux propriétés Web utilisant ce fournisseur d'identité. Les informations concernant l'authentification de l'utilisateur sont transmises au fournisseur d'identité cloud de l'utilisateur pour chaque événement d'authentification.
+
+Remarques :
+
+<ph name="PRODUCT_NAME" /> ne prend pas en charge l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en mode navigation privée ou Invité.
+
+<ph name="PRODUCT_NAME" /> ne prend en charge l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> que pour le fournisseur d'identité suivant : Microsoft.
+
+Cette fonctionnalité est disponible à partir de <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1347198119056266798">Cette règle est obsolète. Veuillez utiliser <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> et <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Cette règle est ignorée si les règles <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> ou <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsolète) sont configurées.
 
       SafeSearch est obligatoirement activé pour la recherche sur le Web Google, et ce paramètre ne peut pas être modifié par l'utilisateur. Ce paramètre impose également l'application du mode restreint modéré sur YouTube.
@@ -3585,7 +3602,6 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
 <translation id="3663124775601519286">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisation de l'API Translator est autorisée dans <ph name="PRODUCT_NAME" />.
 
       Si cette règle est désactivée, l'utilisation de l'API Translator n'est pas autorisée.</translation>
-<translation id="3664164569472125114">Contrôler l'accès à <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">N'inviter l'utilisateur que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
 <translation id="3667467644216039144">Configure une liste des types de données de navigation devant être supprimés lorsque l'utilisateur ferme toutes les fenêtres du navigateur.
 
@@ -7434,7 +7450,6 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par 
 <translation id="6383774771168138899">Configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Activer l'affichage des pages de résultats du moteur de recherche par défaut dans un panneau latéral du navigateur.</translation>
 <translation id="6389240462871677239">Autoriser les origines d'applications Web isolées à utiliser Controlled Frame</translation>
-<translation id="6389858262577493180">Activer l'utilisation de <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Ces fonctionnalités des outils de développement de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour fournir des informations de débogage supplémentaires. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données telles que les messages d'erreur, les traces de la pile, les extraits de code et les requêtes réseau, puis les envoyer à un serveur de Google qui exécute un modèle d'IA générative. Le corps de la réponse ou les en-têtes d'authentification et de cookies dans les requêtes réseau ne sont pas inclus dans les données envoyées au serveur.
 
 0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties, des documents source et des commentaires écrits. Elles pourront également être examinées par des réviseurs humains dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
@@ -8035,7 +8050,6 @@ Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLE
 <translation id="6766216162565713893">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil Bluetooth à proximité</translation>
 <translation id="6770454900105963262">Envoyer des rapports sur les sessions Kiosque actives</translation>
 <translation id="6774132787348495175">Ne pas autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
-<translation id="6776202826080834193">Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent utiliser la fonctionnalité <ph name="GLIC" />. Si cette règle est désactivée, les utilisateurs ne peuvent pas interagir avec <ph name="GLIC" />. Le bouton de la barre d'onglets est masqué et <ph name="GLIC" /> n'est pas disponible via un raccourci clavier, sauf s'il est activé dans un autre profil.</translation>
 <translation id="678121785914414680">Cette règle permet de lister les types de fichiers à ouvrir automatiquement une fois téléchargés. Les extensions doivent être indiquées sans le séparateur qui les précède (par exemple, "txt" et non ".txt").
 
 Ces fichiers à ouvrir automatiquement restent soumis aux vérifications de la navigation sécurisée (si activée) et ne seront ouverts que si le résultat est concluant.
@@ -11188,7 +11202,6 @@ Pour que cette règle soit effective, la règle <ph name="FULL_RESTORE_ENABLED_N
       Si la règle est définie sur "True", ces informations sont transmises.</translation>
 <translation id="9131419675479917141">Autoriser les utilisateurs à définir un code peu sécurisé, mais afficher un avertissement</translation>
 <translation id="913195841488580904">Bloquer l'accès à une liste d'URL</translation>
-<translation id="9132345265506256744">Désactiver l'utilisation de <ph name="GLIC" />.</translation>
 <translation id="9133526448421932754">Rétroéclairage du clavier jaune</translation>
 <translation id="9135033364005346124">Activer le proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Afficher une notification lorsqu'un périphérique USB est détecté</translation>

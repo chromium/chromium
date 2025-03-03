@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">Хуудсыг дараа ачаалах</translation>
 <translation id="1010225406377140704">Шинэ холбоос хүсэхийн тулд илгээгчтэй холбогдоно уу</translation>
 <translation id="1011206368273183593">Файлуудыг бэлтгэж байна</translation>
+<translation id="1012264210825687872">Та захиалгаа хянасны дараа <ph name="BNPL_ISSUER_NAME" /> бүртгэлд нэвтрэх эсвэл тухайн бүртгэлийг үүсгэх ёстой. Энэ бүртгэлийг Google Pay-д автоматаар холбоно.</translation>
 <translation id="1014509239502131234">Үр дүнг гаргахаа больж байна</translation>
 <translation id="1015730422737071372">Дэлгэрэнгүй мэдээлэл өгөх</translation>
 <translation id="1019413721762100891">Унтраалттай</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">Эдийн засгийн мэдээ</translation>
 <translation id="214556005048008348">Төлбөрийг цуцлах</translation>
 <translation id="2147117373852943630">Хөгжмийн зэмсгүүд</translation>
+<translation id="2147254250314124496"><ph name="EMBEDDED_URL" /> таны талаар хадгалсан мэдээллээ ашиглахыг хүсэж байна</translation>
 <translation id="2148613324460538318">Карт нэмэх</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2149968176347646218">Холболт аюултай байна</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">Илрүүлэх (өгөгдмөл)</translation>
 <translation id="2188375229972301266">Доод буланд олон нүх цоолох</translation>
 <translation id="2194856509914051091">Анхаарч үзэх зүйлс</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" />-н талаар нэмэлт мэдээлэл авах</translation>
 <translation id="2200678913752027654">"Муу" товч, танд энэ зөвлөмж яагаад таалагдаагүй талаар нарийвчилсан санал хүсэлт илгээхэд зориулсан маягтыг нээхийн тулд Enter дээр дарна уу</translation>
 <translation id="2202627062836089804">таны картын ар тал</translation>
 <translation id="2204482073374652408">Шинэчилж дууслаа!</translation>
@@ -2319,6 +2322,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chrome-д таны төхөөрөмжийн <ph name="PERMISSION" />-д хандах эрх шаардлагатай</translation>
 <translation id="510644072453496781">Цаасан хайрцаг (ирмэгийн)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" />-н виртуал картыг бөглөсөн</translation>
 <translation id="5108881358339761672">Сайт аюултай байна</translation>
 <translation id="5109892411553231226">Төлбөрийн хэрэгслүүдийг удирдах</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2514,6 +2518,7 @@
             <ph name="LIST_ITEM" />Маягтуудад оруулсан мэдээлэл
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Нүүрээр нь дээш харуулж, хуудасны урвуу дарааллаар</translation>
+<translation id="5445340838622821110">Таныг цаг хугацааны явцад төлөхөд нэг удаагийн виртуал картын дугаарыг бөглөдөг. Энэ дугаар нь зөвхөн уг худалдан авалтад зориулагдсан. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" />-д таны талаар хадгалсан мэдээллээ ашиглахыг зөвшөөрнө үү</translation>
 <translation id="5452270690849572955">Энэ <ph name="HOST_NAME" /> хуудас олдсонгүй</translation>
 <translation id="5452923259299906094">Цахим хэтэвч, Pix-р төлөх</translation>
@@ -3332,6 +3337,7 @@
 <translation id="6917795328362592458">Таны дөнгөж сая ашигласан нууц үгийг өгөгдлийн зөрчлөөс оллоо. Таны бүртгэлүүдийг хамгаалахын тулд Нууц үгний менежер хадгалсан нууц үгнүүдээ шалгахыг зөвлөж байна.</translation>
 <translation id="6917873303492266709">Табын бүлэг хуваалцах, нэгдэх, хамтран ажиллахын тулд тохиргоог нээж, Chrome-д нэвтрэхийг зөвшөөрөхийг асаана уу</translation>
 <translation id="6921197121276419421">Веб аппликэйшнүүдийг суулгахыг зөвшөөрсөн</translation>
+<translation id="69238565902785824">Бүртгэлээ холбоотой байлгах нь танд <ph name="BNPL_ISSUER_NAME" />-р илүү хурдан төлөхөд туслах хэдий ч та <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /> руу очиж салгах боломжтой</translation>
 <translation id="6924013822850225188">Та тооцоо хийх үедээ картынхаа үр өгөөжийг харах эсэхийг сонгоно уу (банкны нөхцөл хэрэгжинэ)</translation>
 <translation id="6925267999184670015">Хойд Америкийн B+</translation>
 <translation id="6926216138694948720">Боди арт</translation>
@@ -3397,6 +3403,7 @@
 <translation id="701757816833614688">Визуал урлаг болон дизайны боловсрол</translation>
 <translation id="702275896380648118">Энэ сайт таны дуртай зүйлсийг тодорхойлж, дараа нь бусад сайтад зар санал болгодог. Энэ сайт мөн танд илүү хамааралтай зар харуулахын тулд таны зарын сэдвүүдийг Chrome-с авдаг.</translation>
 <translation id="7023162328967545559">Админы сануулга</translation>
+<translation id="7023765275461720661">Бүртгэл холбоод, <ph name="BNPL_ISSUER_NAME" />-р төлбөр төлөх үү?</translation>
 <translation id="7029809446516969842">Нууц үг</translation>
 <translation id="7030164307377592766">төлбөрийн хэрэгсэл бөглөх тохиргоог өөрчлөх</translation>
 <translation id="7031646650991750659">Таны Google Play-н ямар апп суулгасан болох</translation>
@@ -3618,6 +3625,7 @@
 <translation id="741204030948306876">Тийм, би зөвшөөрч байна</translation>
 <translation id="7416351320495623771">Нууц үгийг удирдах...</translation>
 <translation id="7416898721136759658">Тусламж, тэтгэлэг болон санхүүгийн тусламж</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">Программчлал</translation>
 <translation id="7419091773564635591">Компьютер, цахилгаан бараанууд</translation>
 <translation id="7419106976560586862">Профайлын зам</translation>
@@ -3664,6 +3672,7 @@
 <translation id="7485085230273446323">Бизнес, аж үйлдвэр</translation>
 <translation id="7485870689360869515">Мэдээлэл байхгүй байна.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> нь таны зохих эрхтэй байдлыг шалгана (энэ нь таны зээлийн оноонд нөлөөлөхгүй). Зөвшөөрсөн тохиолдолд <ph name="BNPL_ISSUER_NAME" /> танд сонголт хийх, худалдан авалтаа гүйцээх төлбөрийн багцыг гаргаж өгнө.</translation>
 <translation id="7489392576326061356">Шампунь болон ангижруулагч</translation>
 <translation id="7495528107193238112">Энэ контентыг блоклосон байна. Асуудлыг шийдвэрлэхийн тулд сайтын өмчлөгчтэй холбогдоно уу.</translation>
 <translation id="749865518782565832">Сантехникийн үйлчилгээ</translation>

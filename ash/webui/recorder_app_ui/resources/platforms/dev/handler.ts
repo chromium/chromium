@@ -97,7 +97,8 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
 
   override async load(): Promise<Model<T>> {
     console.log('model installation requested');
-    if (this.state.value.kind === 'notInstalled') {
+    if (this.state.value.kind !== 'installed' &&
+        this.state.value.kind !== 'installing') {
       this.state.value = {kind: 'installing', progress: 0};
       // Simulate the loading of model.
       let progress = 0;
@@ -106,7 +107,11 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
         // 4% per 200 ms -> simulate 5 seconds for the whole installation.
         progress += 4;
         if (progress >= 100) {
-          this.state.value = {kind: 'installed'};
+          if (this.platformHandler.forceGenAiModelDownloadError.value) {
+            this.state.value = {kind: 'error'};
+          } else {
+            this.state.value = {kind: 'installed'};
+          }
           break;
         }
         this.state.value = {kind: 'installing', progress};
@@ -124,6 +129,9 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
       return {kind: 'error', error: ModelResponseError.GENERAL};
     }
     const model = await this.load();
+    if (this.state.value.kind !== 'installed') {
+      return {kind: 'error', error: ModelResponseError.GENERAL};
+    }
     try {
       return await model.execute(content, language);
     } finally {
@@ -377,6 +385,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     () => devSettings.value.forceLanguageSelection,
   );
 
+  readonly forceGenAiModelDownloadError = computed(
+    () => devSettings.value.forceGenAiModelDownloadError,
+  );
+
   override init(): Promise<void> {
     document.body.appendChild(this.errorView);
     settingsInit();
@@ -503,6 +515,12 @@ export class PlatformHandler extends PlatformHandlerBase {
         s.forceLanguageSelection = target.selected;
       });
     }
+    function handleForceGenAiModelDownloadErrorChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.forceGenAiModelDownloadError = target.selected;
+      });
+    }
     // TODO(pihsun): Move the dev toggle to a separate component, so we don't
     // need to inline the styles.
     const labelStyle = {
@@ -570,6 +588,19 @@ export class PlatformHandler extends PlatformHandlerBase {
           >
           </cros-switch>
           Toggle can force language selection display
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): Use select for model error enum.
+          -->
+          <cros-switch
+            @change=${handleForceGenAiModelDownloadErrorChange}
+            .selected=${this.forceGenAiModelDownloadError.value}
+          >
+          </cros-switch>
+          Toggle to force GenAI model fail to install
         </label>
       </div>
     `;

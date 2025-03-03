@@ -347,6 +347,7 @@
 <translation id="5727531838415286053">Si Chrome t'ha inclòs aleatòriament en una prova activa, el teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix els interessos de manera contínua cada mes, i s'actualitzen tret que els suprimeixis.</translation>
 <translation id="5736850870166430177">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura</translation>
 <translation id="5756509061973259733">Ja existeix un perfil de Chrome amb aquest compte en aquest dispositiu</translation>
+<translation id="5759947850379142561">Selecciona qualsevol text o imatge per cercar-lo amb Google Lens o prem Esc per sortir de Google Lens</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">No s'ha pogut iniciar Chrome. Torna-ho a provar.</translation>
 <translation id="5809516625706423866">No es pot connectar a Internet. Error d'HTTP "401 Unauthorized". Comprova la configuració del servidor intermediari.</translation>
@@ -449,6 +450,7 @@
 <translation id="7071827361006050863">Chrome suprimirà les dades de navegació aviat</translation>
 <translation id="7085332316435785646">Tria si vols incloure l'historial de Chrome per obtenir experiències més personalitzades als serveis de Google</translation>
 <translation id="7088681679121566888">Chrome està actualitzat</translation>
+<translation id="7096221564931416126">Selecciona qualsevol text o imatge per cercar-lo amb Google Lens</translation>
 <translation id="7098166902387133879">Google Chrome està utilitzant el micròfon.</translation>
 <translation id="7099479769133613710">Reinicia per actualitzar &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Gestor de tasques - Google Chrome</translation>

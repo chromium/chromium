@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">不询问是否翻译这些网站</translation>
 <translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
+<translation id="1154555449933432029">您未在 Google 密码管理工具中保存任何密码。</translation>
 <translation id="115483310321669804">使用密码 <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1174479719160874822">当屏幕较窄时，Chrome 会请求改用移动网站</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - 发送者：<ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">书签保存流程文件夹已全屏打开</translation>
 <translation id="1327257854815634930">导航历史记录已打开</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />，新标签页或更新后的标签页</translation>
 <translation id="1331212799747679585">Chrome 无法更新。更多选项</translation>
 <translation id="1332501820983677155">Google Chrome 功能快捷键</translation>
 <translation id="1333491156693005331">近期检查过</translation>
@@ -203,7 +203,6 @@
 <translation id="1925021887439448749">输入自定义网址</translation>
 <translation id="1928618076168182477">当前显示的是直观视图</translation>
 <translation id="1928696683969751773">更新</translation>
-<translation id="1933845786846280168">所选的标签页</translation>
 <translation id="1939549834451474504">由于无法使用 Google Play 服务，已保存的密码即将失效。您可以在密码失效之前备份这些密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">保存密码</translation>
 <translation id="1944535645109964458">没有可用的通行密钥</translation>
@@ -430,7 +429,6 @@
 <translation id="2976550651269220761">部分 Chrome 数据尚未保存到您的 Google 账号。\n请尝试等待几分钟再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="2977350910003566746">按上次打开时间排序</translation>
 <translation id="297771753501244313">按上次打开时间排序</translation>
-<translation id="2979025552038692506">所选的无痕模式标签页</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
 <translation id="2981364137500752533">您最多只能打开 5 个窗口。</translation>
 <translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
@@ -621,7 +619,6 @@
 <translation id="3902562446536395999">按从 A 到 Z 排序</translation>
 <translation id="3908308510347173149">更新 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">按从 Z 到 A 排序</translation>
-<translation id="3918415141610210050">标签页</translation>
 <translation id="3924911262913579434">已开启“<ph name="SAFE_BROWSING_MODE" />”</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">合并我的数据</translation>
@@ -644,7 +641,6 @@
 <translation id="4024768890073681126">您的浏览器由您的家长管理</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小时}other{# 小时}}</translation>
 <translation id="4042941173059740150">继续通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">未命名分组</translation>
 <translation id="4044708993631234325">底部动作条</translation>
 <translation id="4045441967987592849">重新打开</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标准标签页，在分享的标签页分组中有新活动}other{<ph name="TABS_COUNT_MANY" /> 个标准标签页，在分享的标签页分组中有新活动}}</translation>
@@ -1369,10 +1365,12 @@
 <translation id="7224097611345298931">已合并 Chrome 和 <ph name="CHROME_CHANNEL" />中仅保存在此设备上的所有密码。您可在这两个应用内自动填充所有已保存的密码。</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{有 1 项下载尚待处理}other{有 # 项下载尚待处理}}</translation>
 <translation id="7230064152164845085">切换到无痕模式</translation>
+<translation id="7237724030342645845">Google 密码管理工具已停止运行</translation>
 <translation id="72415438529550637">已关闭密码建议。</translation>
 <translation id="7260367682327802201">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了“广告衡量”，相关公司或许就能在您访问的网站和使用的应用中衡量广告的效果。</translation>
 <translation id="727288900855680735">将 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" />？</translation>
 <translation id="7274013316676448362">禁止访问的网站</translation>
+<translation id="7276868533747677875">如果您之前导出了密码，请在设备上查找 CSV 文件，然后将其导入您首选的密码管理工具。</translation>
 <translation id="7289049772085228972">您已获享 Chrome 的最强安全保护</translation>
 <translation id="7289303553784750393">如果您已联网，但此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="7290209999329137901">不可重命名</translation>
@@ -1547,6 +1545,7 @@
 <translation id="8027395186860110042">密码可能即将失效</translation>
 <translation id="8027863900915310177">选择要下载到何处</translation>
 <translation id="8030852056903932865">批准</translation>
+<translation id="8031805944372049238">如需开始使用 Google 密码管理工具保存和使用密码，请更新 Google Play 服务。</translation>
 <translation id="8032569120109842252">已关注</translation>
 <translation id="8037750541064988519">还剩 <ph name="DAYS" /> 天</translation>
 <translation id="8037801708772278989">刚刚检查过</translation>
@@ -1734,7 +1733,6 @@
 <translation id="8840953339110955557">此网页可能与在线版本有所不同。</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">已隐藏</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />，标签页</translation>
 <translation id="8854223127042600341">查看您的离线文件</translation>
 <translation id="885480114717186641">您可以请求访问 <ph name="HOST_NAME" /> 的桌面版网站</translation>
 <translation id="8856607253650333758">获取说明</translation>

@@ -198,7 +198,7 @@ std::u16string FieldClassificationModelEncoder::StandardizeString(
   }
 
   if (encoding_parameters_.lowercase()) {
-    standardized_input = base::ToLowerASCII(standardized_input);
+    standardized_input = base::i18n::ToLower(standardized_input);
   }
 
   base::ReplaceChars(

@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> પરથી મોકલેલ</translation>
 <translation id="1320912611264252795">બુકમાર્ક સાચવવાના ફ્લોના ફોલ્ડરો સંપૂર્ણ ઊંચાઈએ ખુલ્લા છે</translation>
 <translation id="1327257854815634930">નૅવિગેશન ઇતિહાસ ખુલ્લો છે</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, નવું કે અપડેટ કરેલું ટૅબ</translation>
 <translation id="1331212799747679585">Chrome અપડેટ કરી શકાતું નથી. વધુ વિકલ્પો</translation>
 <translation id="1332501820983677155">Google Chrome સુવિધાના શૉર્ટકટ્સ</translation>
 <translation id="1333491156693005331">તાજેતરમાં ચેક કર્યું</translation>
@@ -203,7 +202,6 @@
 <translation id="1925021887439448749">કસ્ટમ વેબ ઍડ્રેસ દાખલ કરો</translation>
 <translation id="1928618076168182477">વિઝ્યુઅલ વ્યૂ બતાવી રહ્યાં છે</translation>
 <translation id="1928696683969751773">અપડેટ</translation>
-<translation id="1933845786846280168">પસંદ કરેલ ટૅબ</translation>
 <translation id="1939549834451474504">પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે કારણ કે Google Play સેવાઓ ઉપલબ્ધ નથી. તમારા સાચવેલા પાસવર્ડ કામ કરવાનું બંધ કરે તે પહેલાં તમે તેની કૉપિ બનાવી શકો છો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">પાસવર્ડ સાચવો</translation>
 <translation id="1944535645109964458">કોઈ પાસકી ઉપલબ્ધ નથી</translation>
@@ -430,7 +428,6 @@
 <translation id="2976550651269220761">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.\nસાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
 <translation id="2977350910003566746">'છેલ્લે ખોલાયા' અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="297771753501244313">છેલ્લે ખોલાયા મુજબ સૉર્ટ કરો</translation>
-<translation id="2979025552038692506">પસંદ કરેલ છૂપું ટૅબ</translation>
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
 <translation id="2981364137500752533">તમે વધુમાં વધુ 5 વિન્ડો ખોલી શકો છો.</translation>
 <translation id="2983102365694924129">કોઈ સાઇટ પરની તમારી પ્રવૃત્તિના આધારે. આ સેટિંગ બંધ છે.</translation>
@@ -621,7 +618,6 @@
 <translation id="3902562446536395999">Aથી Z અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> અપડેટ કરો</translation>
 <translation id="3911609878849982353">Zથી A અનુસાર સૉર્ટ કરી રહ્યાં છીએ</translation>
-<translation id="3918415141610210050">ટૅબ</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ચાલુ છે</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">મારા ડેટાને સંયોજિત કરો</translation>
@@ -644,7 +640,6 @@
 <translation id="4024768890073681126">તમારા માતાપિતા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# કલાક}one{# કલાક}other{# કલાક}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખો</translation>
-<translation id="404352903042073578">નામ વિનાનું ગ્રૂપ</translation>
 <translation id="4044708993631234325">બોટમ શીટ</translation>
 <translation id="4045441967987592849">ફરી ખોલો</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{શેર કરેલા ટૅબના ગ્રૂપમાં નવી ઍક્ટિવિટી ધરાવતું <ph name="TABS_COUNT_ONE" /> સ્ટૅન્ડર્ડ ટૅબ}one{શેર કરેલા ટૅબના ગ્રૂપમાં નવી ઍક્ટિવિટી ધરાવતું <ph name="TABS_COUNT_MANY" /> સ્ટૅન્ડર્ડ ટૅબ}other{શેર કરેલા ટૅબના ગ્રૂપમાં નવી ઍક્ટિવિટી ધરાવતા <ph name="TABS_COUNT_MANY" /> સ્ટૅન્ડર્ડ ટૅબ}}</translation>
@@ -1736,7 +1731,6 @@
 <translation id="8840953339110955557">આ પેજ ઑનલાઇન વર્ઝનથી અલગ હોય શકે છે.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, ટેબ</translation>
 <translation id="8854223127042600341">તમારી ઑફલાઇન ફાઇલો જુઓ</translation>
 <translation id="885480114717186641">તમે <ph name="HOST_NAME" /> માટે ડેસ્કટૉપ સાઇટની વિનંતી કરી શકો છો</translation>
 <translation id="8856607253650333758">વર્ણનો મેળવો</translation>

@@ -206,6 +206,7 @@
 <translation id="1827529786398596735">Pridržite začetni zaslon</translation>
 <translation id="1832848789136765277">Če želite poskrbeti, da boste vedno lahko dostopali do sinhroniziranih podatkov, potrdite, da ste to vi.</translation>
 <translation id="1836891464494477513">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{Zaznamki so shranjeni v računu Google, {email}}two{Zaznamki so shranjeni v računu Google, {email}}few{Zaznamki so shranjeni v računu Google, {email}}other{Zaznamki so shranjeni v računu Google, {email}}}</translation>
+<translation id="1838089197478136166">Želite odpreti v Google Denarnici?</translation>
 <translation id="183878838231635348">Na tej kartici so prikazane vse težave z zasebnostjo ali varnostjo, ki jih varnostno preverjanje samodejno zazna.</translation>
 <translation id="1845230888742614096">Ohrani skupino</translation>
 <translation id="1854463785401910334">Iskanje po odprtih zavihkih</translation>
@@ -225,6 +226,7 @@
 <translation id="189531189292803889">iPad je bil nedavno obnovljen, zaradi česar se je morda spremenil privzeti brskalnik.</translation>
 <translation id="1901366738768303267">Kako lahko uporabljam to funkcijo?</translation>
 <translation id="1901600657316773839">Ohrani izbiro</translation>
+<translation id="1902277226107477495">Zaznavanje naslova je izklopljeno. Znova ga lahko vklopite v nastavitvah.</translation>
 <translation id="1904580727789512086">URL-ji, ki jih obiščete, se shranijo v račun Google.</translation>
 <translation id="1911619930368729126">Prenos v Google Drive</translation>
 <translation id="1923342640370224680">Zadnja ura</translation>
@@ -301,6 +303,7 @@
 <translation id="2230173723195178503">Spletna stran je naložena</translation>
 <translation id="2236949375853147973">Moja dejavnost</translation>
 <translation id="2240256190924001613">Profil konfiguracije je na voljo</translation>
+<translation id="2244080985779413662">To spletno mesto želi prenesti datoteko in jo odpreti v Denarnici.</translation>
 <translation id="2245007488813216650">Prevajanje …</translation>
 <translation id="2249119578464404734">Na vrhu zaslona se dotaknite ikone za iskanje</translation>
 <translation id="2251686759395008410">Meni → Zgodovina</translation>
@@ -1361,6 +1364,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6761393919622941301">Zvok</translation>
 <translation id="6779455296366983087">Podatki brskanja bodo izbrisani</translation>
 <translation id="6790502149545262384">Kmalu bodo prikazane novice s spletnega mesta <ph name="CHANNEL_NAME" />, ko boste odprli nov zavihek.</translation>
+<translation id="6794476726485507147">Izberite datum in uro, ko želite prejeti opomnik za vnovični obisk te strani</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6825078212112407882">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{{count} zaznamek je shranjen v računu Google, {email}}two{{count} zaznamka sta shranjena v računu Google, {email}}few{{count} zaznamki so shranjeni v računu Google, {email}}other{{count} zaznamkov je shranjenih v računu Google, {email}}}</translation>
 <translation id="6830728435402077660">Ni varno</translation>
@@ -1488,6 +1492,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7425053386765766120">Dodajanje plačilnega sredstva …</translation>
 <translation id="7425346204213733349">Spremembe zaznamkov, zgodovine, gesel in drugih nastavitev ne bodo več sinhronizirane z Google Računom. Obstoječi podatki bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="742664698522525515">Želite ohraniti skupino?</translation>
+<translation id="7431851541687113774">Izklopite zaznavanje naslova</translation>
 <translation id="7431991332293347422">Nadziranje, kako se zgodovina brskanja uporabi za prilagajanje Iskanja Google in drugega</translation>
 <translation id="7435356471928173109">Izklopil skrbnik</translation>
 <translation id="7438481509621345350">Poslej bodo prikazane novice s spletnega mesta <ph name="CHANNEL_NAME" />, ko boste odprli nov zavihek.</translation>
@@ -1641,6 +1646,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8023170444051056234">Takoj boste izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh vaših naprav</translation>
 <translation id="8023878949384262191">Razširi razdelek.</translation>
 <translation id="8027581147000338959">Odpri v novem oknu</translation>
+<translation id="8029092694585014252">Nastavi opomnik</translation>
 <translation id="8032569120109842252">Spremljate</translation>
 <translation id="8035133914807600019">Nova mapa …</translation>
 <translation id="8035412398498507358">Foto</translation>

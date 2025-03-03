@@ -320,6 +320,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5579324208890605088">Greška pri pokretanju: pokrenite program za instalaciju kao redovan korisnik, a ne kao administrator.</translation>
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="5605834417512968703">Izaberite bilo šta za pretragu pomoću pretrage slika ili pritisnite Escape da biste izašli iz pretrage slika</translation>
+<translation id="5618818588972826921">Izaberite bilo koji tekst ili sliku za pretragu pomoću pretrage slika ili pritisnite Escape da biste izašli iz pretrage slika</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno već # dan}few{Ažuriranje za Chromium je dostupno već # dana}other{Ažuriranje za Chromium je dostupno već # dana}}</translation>
 <translation id="5643865575100044307">Uvek izbrišite podatke o sajtovima sa uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
@@ -595,5 +596,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="983803489796659991">Instalacija nije uspela zato što server za ažuriranje nema nikakve heširane podatke za aplikaciju.</translation>
 <translation id="985498048907240953">Koristite Chromium bez naloga</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="989970834842471429">Izaberite bilo koji tekst ili sliku za pretragu pomoću pretrage slika</translation>
 <translation id="992780518932311116">Da biste koristili lokaciju, odobrite Chromium-u pristup u <ph name="BEGIN_LINK" />podešavanjima sistema<ph name="END_LINK" /></translation>
 </translationbundle>

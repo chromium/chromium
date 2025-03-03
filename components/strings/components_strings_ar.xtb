@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">تحميل الصفحة لاحقًا</translation>
 <translation id="1010225406377140704">يُرجى التواصل مع المُرسِل لطلب رابط جديد</translation>
 <translation id="1011206368273183593">جارٍ تحضير الملفات</translation>
+<translation id="1012264210825687872">‏بعد مراجعة طلبك، عليك تسجيل الدخول أو إنشاء حساب على <ph name="BNPL_ISSUER_NAME" />. وسيتم ربط هذا الحساب تلقائيًا بخدمة Google Pay.</translation>
 <translation id="1014509239502131234">جارٍ التراجع عن تحميل النتيجة</translation>
 <translation id="1015730422737071372">تقديم تفاصيل إضافية</translation>
 <translation id="1019413721762100891">غير مفعّل</translation>
@@ -660,6 +661,7 @@
 <translation id="2145193671493396738">أخبار عن الاقتصاد</translation>
 <translation id="214556005048008348">إلغاء الدفع</translation>
 <translation id="2147117373852943630">آلات موسيقية</translation>
+<translation id="2147254250314124496">يطلب <ph name="EMBEDDED_URL" /> استخدام المعلومات التي تم حفظها عنك</translation>
 <translation id="2148613324460538318">إضافة بطاقة</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2149968176347646218">الاتصال بهذا الموقع الإلكتروني غير آمن</translation>
@@ -691,6 +693,7 @@
 <translation id="2187317261103489799">اكتشاف (تلقائي)</translation>
 <translation id="2188375229972301266">عمل عدة ثقوب في الأسفل</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
+<translation id="2198071643181968308">مزيد من المعلومات حول <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">‏الزر "لا يعجبني": اضغط على Enter لفتح نموذج لإرسال ملاحظات مفصّلة حول سبب عدم إعجابك بهذا الاقتراح</translation>
 <translation id="2202627062836089804">الجهة الخلفية للبطاقة</translation>
 <translation id="2204482073374652408">تم الانتهاء من التحديث</translation>
@@ -2320,6 +2323,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">‏يحتاج Chrome إلى إذن باستخدام <ph name="PERMISSION" /> على جهازك</translation>
 <translation id="510644072453496781">ورق مقوّى (طرف)</translation>
+<translation id="5106648964679263509">تم ملء بيانات البطاقة الافتراضية لـ <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108881358339761672">الموقع الإلكتروني غير آمن</translation>
 <translation id="5109892411553231226">إدارة طُرق الدفع</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2515,6 +2519,7 @@
           <ph name="LIST_ITEM" />المعلومات التي تم إدخالها في النماذج
         <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ترتيب عكسي والوجه للأعلى</translation>
+<translation id="5445340838622821110">عند الدفع على أقساط، يتم ملء رقم بطاقة افتراضية لمرة واحدة. وهذا الرقم مخصّص لعملية الشراء هذه فقط. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">السماح للموقع الإلكتروني <ph name="SITE" /> باستخدام معلوماتك المحفوظة عليه</translation>
 <translation id="5452270690849572955">لا يمكن العثور على صفحة <ph name="HOST_NAME" /> هذه.</translation>
 <translation id="5452923259299906094">‏الدفع باستخدام المحفظة الإلكترونية وPix</translation>
@@ -3334,6 +3339,7 @@
 <translation id="6917795328362592458">‏استُخدمت كلمة المرور التي أدخلتها للتو في عملية اختراق للبيانات. لتأمين حساباتك، ينصح "مدير كلمات المرور" في Google بالتحقّق من كلمات المرور المحفوظة.</translation>
 <translation id="6917873303492266709">‏لمشاركة مجموعات علامات التبويب والانضمام إليها والتعاون فيها، افتح الإعدادات وفعِّل خيار "السماح بتسجيل الدخول إلى Chrome"</translation>
 <translation id="6921197121276419421">يُسمح بتثبيت تطبيقات الويب</translation>
+<translation id="69238565902785824">يساعد إبقاء حسابك مرتبطًا على إجراء عمليات الدفع بسرعة أكبر باستخدام <ph name="BNPL_ISSUER_NAME" />، ويمكنك إلغاء ربطه من خلال الانتقال إلى <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">يمكنك اختيار ما إذا كنت تريد عرض مزايا بطاقتك عند الدفع (تنطبق أحكام المصرف)</translation>
 <translation id="6925267999184670015">‏‫B+‎ شمال أمريكا</translation>
 <translation id="6926216138694948720">فن الجسد</translation>
@@ -3399,6 +3405,7 @@
 <translation id="701757816833614688">دراسة فنون بصرية وتصميم</translation>
 <translation id="702275896380648118">‏يحدّد هذا الموقع الإلكتروني اهتماماتك، ثم يقدّم إلى المواقع الإلكترونية الأخرى اقتراحات عن الإعلانات ذات الصلة باهتماماتك. ويتعرّف أيضًا هذا الموقع الإلكتروني من خلال Chrome على مواضيع الإعلانات التي تهمّك، وذلك بهدف عرض إعلانات وثيقة الصلة باهتماماتك.</translation>
 <translation id="7023162328967545559">تحذير من المشرف</translation>
+<translation id="7023765275461720661">هل تريد ربط الحساب والدفع باستخدام <ph name="BNPL_ISSUER_NAME" />؟</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7030164307377592766">تعديل الإعدادات لملء بيانات طُرق الدفع.</translation>
 <translation id="7031646650991750659">‏تطبيقات Google Play التي ثبّتها</translation>
@@ -3621,6 +3628,7 @@
 <translation id="741204030948306876">نعم، أوافق</translation>
 <translation id="7416351320495623771">إدارة كلمات المرور…</translation>
 <translation id="7416898721136759658">منح دراسية ومنح تعليمية ودعم مالي</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">برمجة</translation>
 <translation id="7419091773564635591">أجهزة الكمبيوتر والأجهزة الإلكترونية</translation>
 <translation id="7419106976560586862">مسار الملف الشخصي</translation>
@@ -3667,6 +3675,7 @@
 <translation id="7485085230273446323">أنشطة تجارية وصناعية</translation>
 <translation id="7485870689360869515">لم يتم العثور على بيانات.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">ستتحقّق <ph name="BNPL_ISSUER_NAME" /> من أهليتك (لن يؤثّر ذلك على درجة الائتمان). وفي حال الموافقة، ستقدّم لك خدمة <ph name="BNPL_ISSUER_NAME" /> خطط دفع للاختيار من بينها وإكمال عملية الشراء.</translation>
 <translation id="7489392576326061356">شامبو وبلسم</translation>
 <translation id="7495528107193238112">هذا المحتوى محظور. يمكنك التواصل مع مالك الموقع الإلكتروني لحلّ المشكلة.</translation>
 <translation id="749865518782565832">سِباكة</translation>

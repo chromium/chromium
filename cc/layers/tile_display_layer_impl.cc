@@ -231,6 +231,13 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
       // LayerContextImpl to ensure that it gets added to the CompositorFrame.
       CHECK_EQ(tilings_.size(), 1u);
       CHECK(iter->resource());
+      resource_id_ = iter->resource()->resource.id;
+      texture_size_ = iter->resource()->resource.size;
+      gfx::SizeF requested_tile_size =
+          gfx::SizeF(iter.CurrentTiling()->tile_size());
+      uv_size_ =
+          gfx::SizeF(requested_tile_size.width() / texture_size_.width(),
+                     requested_tile_size.height() / texture_size_.height());
       used_resources.push_back(iter->resource()->resource);
       client_->DidAppendQuadsWithResources(used_resources);
       return;

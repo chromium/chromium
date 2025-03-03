@@ -211,8 +211,7 @@ void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses(
 }
 
 bool PlusAddressPreallocator::IsEnabled() const {
-  if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
-      !settings_->GetIsPlusAddressesEnabled()) {
+  if (!settings_->GetIsPlusAddressesEnabled()) {
     return false;
   }
 

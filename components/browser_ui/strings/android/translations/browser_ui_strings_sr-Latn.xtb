@@ -184,6 +184,7 @@
 <translation id="3628308229821498208">Predložene pretrage</translation>
 <translation id="3658847490588580244">Donja tabela podrazumevanog pregledača</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> sajta u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> sajtova u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}}</translation>
+<translation id="3676777756440746804">Sajtovima je onemogućeno da traže da koriste informacije koje su sačuvali o vama</translation>
 <translation id="3697164069658504920">Kada je uključeno, sajtovi mogu da traže da koriste USB uređaje. Kada je isključeno, sajtovi ne mogu da koriste USB uređaje.</translation>
 <translation id="3707034683772193706">Sajt koji posećujete može da sačuva malu količinu informacija u Chrome-u, uglavnom da bi potvrdio da niste bot</translation>
 <translation id="3709818294139939629">Uklonjen je pristup sajta fajlu</translation>
@@ -208,9 +209,11 @@
 <translation id="3922092564198021702">Na telefonu otvorite Podešavanja</translation>
 <translation id="3933121352599513978">Skupi neželjene zahteve (preporučeno)</translation>
 <translation id="3955193568934677022">Dozvoli sajtovima da puštaju zaštićeni sadržaj (preporučeno)</translation>
+<translation id="3965467402665811906">Sajtovi mogu da zatraže da koriste informacije koje su sačuvali o vama</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992308058851451478"><ph name="SITE" /> može da koristi vaše podatke dok pregledate</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4046123991198612571">Sledeća pesma</translation>
@@ -263,6 +266,7 @@
 <translation id="4883854917563148705">Podešavanja kojima se upravlja ne mogu da se resetuju</translation>
 <translation id="4887024562049524730">Pre nego što dozvolite sajtovima da koriste uređaj i podatke virtuelne realnosti prikazuje se upit (preporučeno)</translation>
 <translation id="4936863036653376783">Grupe ćete pronaći u odeljku za grupe kartica na svim uređajima</translation>
+<translation id="4945443401464700059"><ph name="SITE" /> je onemogućen da koristi vaše podatke na</translation>
 <translation id="4953688446973710931">Kada je uključeno, sajtovi mogu da traže da automatski preuzimaju više fajlova. Kada je isključeno, sajtovi ne mogu automatski da preuzimaju više fajlova.</translation>
 <translation id="4962975101802056554">Opozovite sve dozvole za uređaj</translation>
 <translation id="497421865427891073">Kretanje unapred</translation>
@@ -532,9 +536,11 @@
 <translation id="851751545965956758">Onemogući sajtovima da se povezuju sa uređajima</translation>
 <translation id="8525306231823319788">Ceo ekran</translation>
 <translation id="8541410041357371550">Ovaj sajt prima podatke o vašim temama oglasa iz Chrome-a da bi vam prikazivao relevantnije oglase.</translation>
+<translation id="854876774113449365">Sajtovi koje posećujete mogu da ugrade sadržaj sa drugih sajtova, na primer, slike, oglase i tekst. Ovi drugi sajtovi mogu da traže dozvolu za korišćenje informacija koje su sačuvali tokom pregledanja sajta. <ph name="BEGIN_LINK" />Saznajte više o ugrađenom sadržaju<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Kako da pregledate zahteve</translation>
 <translation id="8558480467877843976">Sada možete da koristite Chrome svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
+<translation id="8593422116412089302">Kada je uključeno, sajtovi mogu da traže da koriste informacije koje su sačuvali o vama. Kada je isključeno, sajtovi ne mogu da traže da koriste informacije koje su sačuvali o vama.</translation>
 <translation id="8609465669617005112">Premesti nagore</translation>
 <translation id="8617611086246832542">Kada je uključeno, vidi se prikaz veb-sajtova za računare. Kada je isključeno, vidi se prikaz veb-sajtova za mobilne uređaje.</translation>
 <translation id="8670078035093027626">Donja tabela podrazumevanog pregledača je otvorena na celom ekranu</translation>

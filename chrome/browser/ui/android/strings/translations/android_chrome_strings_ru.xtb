@@ -37,6 +37,7 @@
 <translation id="1142732900304639782">Не предлагать перевести эти сайты</translation>
 <translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1150263420752757504">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="1154555449933432029">У вас нет сохраненных паролей.</translation>
 <translation id="115483310321669804">Использовать пароль <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1174479719160874822">Если экран узкий, Chrome будет запрашивать мобильный сайт.</translation>
@@ -76,7 +77,6 @@
 <translation id="1303507811548703290">Домен: <ph name="DOMAIN" />. Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1320912611264252795">Страница сохранения закладки, открытая на весь экран</translation>
 <translation id="1327257854815634930">История переходов открыта</translation>
-<translation id="1328235593824723509">Новая или обновленная вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="1331212799747679585">Не удалось обновить Chrome. Другие настройки</translation>
 <translation id="1332501820983677155">Функции Google Chrome</translation>
 <translation id="1333491156693005331">Проверено недавно</translation>
@@ -203,7 +203,6 @@
 <translation id="1925021887439448749">Введите веб-адрес</translation>
 <translation id="1928618076168182477">Включен расширенный вид</translation>
 <translation id="1928696683969751773">Обновления</translation>
-<translation id="1933845786846280168">Выбранная вкладка</translation>
 <translation id="1939549834451474504">Сохраненные пароли скоро перестанут работать, потому что сервисы Google Play недоступны. Чтобы не потерять пароли, вы можете сделать их копию. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Сохранение паролей</translation>
 <translation id="1944535645109964458">Ключи доступа не найдены</translation>
@@ -430,7 +429,6 @@
 <translation id="2976550651269220761">Часть данных Chrome ещё не сохранена в аккаунте Google.\nПодождите несколько минут. Если вы выйдете из аккаунта сейчас, эти данные будут удалены.</translation>
 <translation id="2977350910003566746">Сортировка по дате использования</translation>
 <translation id="297771753501244313">По дате использования</translation>
-<translation id="2979025552038692506">Выбранная вкладка инкогнито</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2981364137500752533">Можно открыть не более пяти окон.</translation>
 <translation id="2983102365694924129">Подбираются на основе ваших действий на сайте. Параметр отключен.</translation>
@@ -621,7 +619,6 @@
 <translation id="3902562446536395999">Сортировка по алфавиту (от А до Я)</translation>
 <translation id="3908308510347173149">Обновить: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Сортировка по алфавиту (от Я до А)</translation>
-<translation id="3918415141610210050">Вкладка</translation>
 <translation id="3924911262913579434">Включен режим "<ph name="SAFE_BROWSING_MODE" />"</translation>
 <translation id="3927692899758076493">Без засечек</translation>
 <translation id="3928666092801078803">Объединить данные</translation>
@@ -644,7 +641,6 @@
 <translation id="4024768890073681126">Этим браузером управляет родитель</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
 <translation id="4042941173059740150">Продолжите на <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Группа без названия</translation>
 <translation id="4044708993631234325">Нижний экран</translation>
 <translation id="4045441967987592849">Открыть</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная вкладка с новым действием. Она помещена в группу вкладок с общим доступом.}one{<ph name="TABS_COUNT_MANY" /> стандартная вкладка с новым действием. Они помещены в группу вкладок с общим доступом.}few{<ph name="TABS_COUNT_MANY" /> стандартные вкладки с новым действием. Они помещены в группу вкладок с общим доступом.}many{<ph name="TABS_COUNT_MANY" /> стандартных вкладок с новым действием. Они помещены в группу вкладок с общим доступом.}other{<ph name="TABS_COUNT_MANY" /> стандартной вкладки с новым действием. Они помещены в группу вкладок с общим доступом.}}</translation>
@@ -1371,10 +1367,12 @@
 <translation id="7224097611345298931">Все пароли, сохраненные только на этом устройстве в Chrome и <ph name="CHROME_CHANNEL" />, были объединены. Вы можете подставлять сохраненные пароли в обоих приложениях с помощью автозаполнения.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ожидание скачивания 1 файла…}one{Ожидание скачивания # файла…}few{Ожидание скачивания # файлов…}many{Ожидание скачивания # файлов…}other{Ожидание скачивания # файла…}}</translation>
 <translation id="7230064152164845085">Включение режима инкогнито</translation>
+<translation id="7237724030342645845">Google Менеджер паролей больше не работает</translation>
 <translation id="72415438529550637">Раздел с предложенным паролем закрыт.</translation>
 <translation id="7260367682327802201">На вашем устройстве Android может быть похожая функция. Если оценка эффективности рекламы включена в Chrome и на устройстве Android, компании смогут оценивать эффективность рекламы на посещаемых вами сайтах и в приложениях, которые вы используете.</translation>
 <translation id="727288900855680735">Отправить код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Заблокированный сайт</translation>
+<translation id="7276868533747677875">Если вы раньше экспортировали пароли, они хранятся на устройстве в виде файла CSV. Их можно импортировать в любой менеджер паролей.</translation>
 <translation id="7289049772085228972">Выбран максимальный уровень защиты в Chrome.</translation>
 <translation id="7289303553784750393">Если у вас есть подключение к интернету, но проблема не решается, попробуйте другие способы авторизации, чтобы продолжить работу на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Переименование невозможно</translation>
@@ -1549,6 +1547,7 @@
 <translation id="8027395186860110042">Сохраненные пароли скоро могут перестать работать</translation>
 <translation id="8027863900915310177">Куда скачать?</translation>
 <translation id="8030852056903932865">Разрешить</translation>
+<translation id="8031805944372049238">Чтобы начать пользоваться Google Менеджером паролей, обновите сервисы Google Play.</translation>
 <translation id="8032569120109842252">Вы подписаны</translation>
 <translation id="8037750541064988519">Осталось <ph name="DAYS" /> дн.</translation>
 <translation id="8037801708772278989">Проверено только что.</translation>
@@ -1736,7 +1735,6 @@
 <translation id="8840953339110955557">Страница может отличаться от онлайн-версии.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Скрытые</translation>
-<translation id="8853345339104747198">Вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="8854223127042600341">Посмотреть скачанные файлы</translation>
 <translation id="885480114717186641">Вы можете переключиться на полную версию сайта <ph name="HOST_NAME" />.</translation>
 <translation id="8856607253650333758">Генерировать описания</translation>

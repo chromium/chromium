@@ -3667,7 +3667,6 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
 <translation id="3663124775601519286">Se la policy viene impostata su Attivata o se non viene configurata, l'utilizzo dell'API Translator in <ph name="PRODUCT_NAME" /> è consentito.
 
       Se viene impostata su Disattivata, l'utilizzo dell'API Translator non è consentito.</translation>
-<translation id="3664164569472125114">Controllo accessi <ph name="GLIC" /></translation>
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
 <translation id="3667467644216039144">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente.
 
@@ -7553,7 +7552,6 @@ Se la policy non viene configurata, significa che <ph name="PRODUCT_OS_NAME" /> 
 <translation id="6383774771168138899">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
 <translation id="6389240462871677239">Consenti alle origini delle app web isolate di utilizzare Controlled Frame</translation>
-<translation id="6389858262577493180">Attiva l'uso di <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Queste funzionalità in DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di AI generativa per fornire maggiori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di AI generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
 
 0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
@@ -8178,7 +8176,6 @@ Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name
 <translation id="6766216162565713893">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo Bluetooth nelle vicinanze.</translation>
 <translation id="6770454900105963262">Segnala informazioni sulle sessioni kiosk attive</translation>
 <translation id="6774132787348495175">Non consentire agli utenti di usare le macchine virtuali necessarie per supportare le app Linux</translation>
-<translation id="6776202826080834193">Se la policy viene attivata o se non viene configurata, gli utenti possono usare la funzionalità <ph name="GLIC" />. Se la policy viene disattivata, gli utenti non possono interagire con <ph name="GLIC" />; il pulsante nella tabstrip viene nascosto e <ph name="GLIC" /> non è disponibile tramite la scorciatoia da tastiera, a meno che non venga attivato in un altro profilo.</translation>
 <translation id="678121785914414680">Elenco dei tipi di file che dovrebbero essere aperti automaticamente al termine del download. Il separatore iniziale non deve essere incluso nell'elenco dei tipi di file, quindi usa "txt" anziché ".txt".
 
 I tipi di file che dovrebbero essere aperti automaticamente saranno comunque soggetti ai controlli attivi di Navigazione sicura e non verranno aperti se non superano questi controlli.
@@ -11373,7 +11370,6 @@ Questa policy ha effetto soltanto se la policy <ph name="FULL_RESTORE_ENABLED_NA
       Se è impostata su True, le informazioni sul sistema del dispositivo vengono segnalate.</translation>
 <translation id="9131419675479917141">Consenti agli utenti di impostare un PIN inefficace, ma mostra un avviso</translation>
 <translation id="913195841488580904">Blocca l'accesso a un elenco di URL</translation>
-<translation id="9132345265506256744">Disattiva l'uso di <ph name="GLIC" />.</translation>
 <translation id="9133526448421932754">Colore della retroilluminazione della tastiera giallo</translation>
 <translation id="9135033364005346124">Attiva proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Mostra una notifica quando viene rilevato un dispositivo USB</translation>

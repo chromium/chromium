@@ -460,6 +460,7 @@
 <translation id="1303101771013849280">ለኤችቲኤምኤል ፋይል እልባት ያደርጋል</translation>
 <translation id="1303671224831497365">ምንም የብሉቱዝ መሣሪያዎች አልተገኙም</translation>
 <translation id="130491383855577612">Linux መተግበሪያዎች እና ፋይሎች በተሳካ ሁኔታ ተተክተዋል</translation>
+<translation id="1306373239538745517">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{1 ቅጥያ እና በዚህ መሣሪያ ላይ ይስቀመጠውን ውሂብ ያስወግዱ}one{{ACCOUNT_EXTENSIONS_COUNT} ቅጥያ እና በዚህ መሣሪያ ላይ ይስቀመጠውን ውሂብ ያስወግዱ}other{{ACCOUNT_EXTENSIONS_COUNT} ቅጥያዎች እና በዚህ መሣሪያ ላይ ይስቀመጡትን ውሂብ ያስወግዱ}}</translation>
 <translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" />ን ክፈት</translation>
 <translation id="1306606229401759371">ቅንብሮችን ቀይር</translation>
 <translation id="1307165550267142340">የእርስዎ ፒን ተፈጥሯል</translation>
@@ -1215,6 +1216,7 @@
 <translation id="1826192255355608658">የChrome አሳሽ ዕልባቶችዎን፣ የይለፍ ቃላትዎን፣ ታሪክዎን እና ሌሎችንም ያስምሩ</translation>
 <translation id="1826516787628120939">በመፈተሸ ላይ</translation>
 <translation id="1826657447823925402">የተገላቢጦሽ ማሸብለል ተሰናክሏል</translation>
+<translation id="1827416268933303617"><ph name="COLOR_NAME" /> ቀለም</translation>
 <translation id="1827504459960247692">የመገናኛ ነጥብ ስም</translation>
 <translation id="1828378091493947763">ይህ ተሰኪ በዚህ መሣሪያ ላይ አይደገፍም</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;ሁሉንም ክፈት}=1{&amp;ዕልባት ክፈት}one{&amp;ሁሉንም ({COUNT}) ክፈት}other{&amp;ሁሉንም ({COUNT}) ክፈት}}</translation>
@@ -6716,6 +6718,7 @@
 <translation id="5749214722697335450">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ Google በመላክ የAndroid ተሞክሮዎ እንዲሻሻል ያግዙ። ይህ የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። እንዲሁም አንዳንድ ውሑድ ውሂብ የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛል። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር ከበራ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል። <ph name="BEGIN_LINK1" />ስለ መለኪያዎች የበለጠ ይረዱ<ph name="BEGIN_LINK1_END" />የበለጠ ለመረዳት<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">የእንደ ሞደም መሰካት ዝግጁነትን ፈትሽ</translation>
+<translation id="5752346055178471785">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{ይህ ቅጥያ በእርስዎ Google መለያ ውስጥ ተቀምጧል፣ ነገር ግን በዚህ መሣሪያ ላይ ብቻ ያስቀመጠው ማንኛውም ውሂብ ሊሰረዝ ይችላል።}one{ይህ ቅጥያ በእርስዎ Google መለያ ውስጥ ተቀምጧል፣ ነገር ግን በዚህ መሣሪያ ላይ ብቻ ያስቀመጠው ማንኛውም ውሂብ ሊሰረዝ ይችላል}other{እነዚህ ቅጥያዎች በእርስዎ Google መለያ ውስጥ ተቀምጠዋል፣ ነገር ግን በዚህ መሣሪያ ላይ ብቻ ያስቀመጡት ማንኛውም ውሂብ ሊሰረዝ ይችላል}}</translation>
 <translation id="5753570386948603678">ከታሪክ ሰርዝ</translation>
 <translation id="5756163054456765343">የእገዛ ማዕከል</translation>
 <translation id="5757187557809630523">ቀጣይ ትራክ</translation>
@@ -10228,7 +10231,6 @@ nil</translation>
 <translation id="8258027225380843424">ማምጣት ተሳክቷል</translation>
 <translation id="8259048637628995340">እንከን የለሽ ተሞክሮ ለማግኘት የAndroid ስልክዎን ያገናኙ</translation>
 <translation id="8260177673299865994">የማውረድ ጥበቃን ያሻሽሉ</translation>
-<translation id="8260473380156923937">Chrome መተግበሪያዎች በቅርቡ ይቋረጣሉ። ለአማራጮች ገንቢውን ወይም የአይቲ የአገልግሎት ዕውቂያዎን ያነጋግሩ።</translation>
 <translation id="8260864402787962391">መዳፊት</translation>
 <translation id="8261378640211443080">ይህ ቅጥያ በ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ውስጥ ያልተጠቀሰ ሲሆን እርስዎ ሳያውቁት የታከለ ሊሆን ይችላል።</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>

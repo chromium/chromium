@@ -119,7 +119,7 @@ base::Value::List ToList(std::optional<base::ValueView> val) {
   }
   base::Value result = val->ToValue();
   if (!result.is_list()) {
-    ADD_FAILURE() << "val is not a dictionary";
+    ADD_FAILURE() << "val is not a list";
     return base::Value::List();
   }
   return std::move(result).TakeList();

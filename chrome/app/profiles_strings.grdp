@@ -638,6 +638,12 @@
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE" desc="Title of the dialog disclaiming information about the profile they are about to create.">
       Set up a new profile
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TURN_SYNC_ON_TITLE" desc="Title the dialog disclaiming information about the profile they are about to create, this is shown when the user was already signed into a profile.">
+      This profile will now be managed
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TURN_SYNC_ON_SUBTITLE" desc="Subtitle the dialog disclaiming information about the profile they are about to create, this is shown when the user was already signed into a profile.">
+      Your organization, <ph name="ACCOUNT_MANAGER">$1<ex>example.com</ex></ph>, will be able to view some information, including
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
       Your profile is managed by your organization, which can view some information, including
     </message>
@@ -704,6 +710,9 @@
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the school profile they will create or keep it separate.">
       Do you want to create a new profile for school?
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TURN_SYNC_ON_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the managed profile they will create or keep it separate, this is shown when the user was already signed into a profile.">
+      What would you like to do with your existing profile data?
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the new profile they will create or keep it separate.">
       Keep existing browsing data separate from this new profile?
     </message>
@@ -713,20 +722,29 @@
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
       Yes, keep my data separate from work (recommended)
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TURN_SYNC_ON_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile, this is shown when the user was already signed into a profile.">
+      Create a new profile for work and keep my existing data separate
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_SCHOOL_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
       Yes, keep my data separate from school
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_WORK_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
       Yes, keep my data separate from work
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created personal profile.">
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created managed profile.">
       Data that is saved only on this device will remain in the existing profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_TURN_SYNC_ON_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created managed profile, this is shown when the user was already signed into a profile.">
+      Data that is saved only on this device will remain in the existing profile. It will not sync to <ph name="EMAIL">$1<ex>example.com</ex></ph>
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
       No, continue to work in this profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created school profile.">
       No, continue to use for school in this profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_TURN_SYNC_ON_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created managed profile, this is shown when the user was already signed into a profile">
+      Continue to sync with this profile and merge the data
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
       Your organization will be able to see and manage any existing browsing data, such as passwords and more
@@ -737,23 +755,23 @@
         other {your browsing history of # sites}}
     </message>
     <message name="IDS_BOOKMARKS_COUNT" desc="Text describing the number of bookmarks">
-      {BOOKMARKS_COUNT, plural,
-        =1 {# extension}
-        other {# extensions}}
-    </message>
-    <message name="IDS_EXTENSIONS_COUNT" desc="Text describing the number of extensions">
       {EXTENSIONS_COUNT, plural,
         =1 {# bookmark}
         other {# bookmarks}}
     </message>
+    <message name="IDS_EXTENSIONS_COUNT" desc="Text describing the number of extensions">
+      {BOOKMARKS_COUNT, plural,
+        =1 {# extension}
+        other {# extensions}}
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_THREE_COUNTS_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
-      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, <ph name="NUMBERED_ITEM_3">$3<ex>your browsing history of 5 sites</ex></ph>, and more
+      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, <ph name="NUMBERED_ITEM_3">$3<ex>your browsing history of 5 sites</ex></ph>, and more. Your organization will be able to see and manage this data
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_TWO_COUNTS_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
-      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, and more
+      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, and more. Your organization will be able to see and manage this data
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_ONE_COUNT_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
-      You currently have <ph name="NUMBERED_ITEM">$1<ex>10 bookmarks</ex></ph>, and more
+      You currently have <ph name="NUMBERED_ITEM">$1<ex>10 bookmarks</ex></ph>, and more. Your organization will be able to see and manage this data
     </message>
 
     <!-- Supervised user profile signin IPH -->
@@ -1074,6 +1092,9 @@
       =1 {This extension is saved in your Google Account, but any data it’s saved only on this device may be deleted}
       other {These extensions are saved in your Google Account, but any data they've saved only on this device may be deleted}
       }
+    </message>
+    <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TOOLTIP_ICON_ARIA_LABEL" desc="Label for the icon that shows the tooltip when hovered for the Extensions section in the Signout Confirmation dialog.">
+      Get more info
     </message>
   </if>
 </grit-part>

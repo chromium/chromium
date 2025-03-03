@@ -318,6 +318,7 @@
 <translation id="5579324208890605088">Error saat sistem dimulai: jalankan penginstal sebagai pengguna biasa, bukan sebagai administrator.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5605834417512968703">Pilih item untuk ditelusuri dengan Penelusuran Gambar atau tekan escape untuk keluar dari Penelusuran Gambar</translation>
+<translation id="5618818588972826921">Pilih teks atau gambar untuk ditelusuri dengan Penelusuran Gambar atau tekan escape untuk keluar dari Penelusuran Gambar</translation>
 <translation id="5623402015214259806">{0,plural, =0{Update Chromium tersedia}=1{Update Chromium tersedia}other{Update Chromium telah tersedia selama # hari}}</translation>
 <translation id="5643865575100044307">Selalu menghapus data situs dari perangkat saat Anda menutup Chromium</translation>
 <translation id="5653831366781983928">Mulai ulang Chromium sekarang</translation>
@@ -593,5 +594,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="983803489796659991">Penginstalan gagal karena server update tidak memiliki data hash apa pun untuk aplikasi.</translation>
 <translation id="985498048907240953">Gunakan Chromium Tanpa Akun</translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
+<translation id="989970834842471429">Pilih teks atau gambar untuk ditelusuri dengan Penelusuran Gambar</translation>
 <translation id="992780518932311116">Untuk menggunakan lokasi, beri Chromium akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
 </translationbundle>

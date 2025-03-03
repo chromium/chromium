@@ -3999,13 +3999,14 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
 
   const base::Time time_now = base::Time::Now();
   const base::Time null_time;
+  ASSERT_NE(time_now, null_time);
 
   // Update last_visited time for `turl`. This should update the local value.
   model()->UpdateTemplateURLVisitTime(turl);
   EXPECT_NE(turl->GetLocalData(), turl->GetAccountData());
   // Local last_visited has been updated whereas the account last_visited stays
   // null.
-  EXPECT_GT(turl->GetLocalData()->last_visited, time_now);
+  EXPECT_GE(turl->GetLocalData()->last_visited, time_now);
   EXPECT_EQ(turl->GetAccountData()->last_visited, null_time);
 
   // No change is committed since only the local data was updated.

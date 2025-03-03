@@ -76,7 +76,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – odesláno ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Složky v postupu uložení záložky otevřené na celou výšku</translation>
 <translation id="1327257854815634930">Historie navigace je otevřená</translation>
-<translation id="1328235593824723509"><ph name="TAB_TITLE" />, nová nebo aktualizovaná karta</translation>
 <translation id="1331212799747679585">Chrome nelze aktualizovat. Další možnosti</translation>
 <translation id="1332501820983677155">Zkratky funkcí prohlížeče Google Chrome</translation>
 <translation id="1333491156693005331">Zkontrolováno nedávno</translation>
@@ -203,7 +202,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1925021887439448749">Zadejte vlastní webovou adresu</translation>
 <translation id="1928618076168182477">Je zobrazeno vizuální zobrazení</translation>
 <translation id="1928696683969751773">Aktualizace</translation>
-<translation id="1933845786846280168">Vybraná karta</translation>
 <translation id="1939549834451474504">Hesla brzy přestanou fungovat, protože služby Google Play nejsou k dispozici. Můžete si vytvořit kopii uložených hesel, než přestanou fungovat. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1943432128510653496">Ukládání hesel</translation>
 <translation id="1944535645109964458">Nejsou k dispozici žádné přístupové klíče</translation>
@@ -430,7 +428,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2976550651269220761">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google.\nZkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="2977350910003566746">Řazení podle posledního otevření</translation>
 <translation id="297771753501244313">Seřadit podle posledního otevření</translation>
-<translation id="2979025552038692506">Vybraná anonymní karta</translation>
 <translation id="2979639724566107830">Otevřít v novém okně</translation>
 <translation id="2981364137500752533">Můžete mít až 5 oken.</translation>
 <translation id="2983102365694924129">Na základě vaší aktivity na webu. Toto nastavení je vypnuté.</translation>
@@ -621,7 +618,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3902562446536395999">Řazení od A do Z</translation>
 <translation id="3908308510347173149">Aktualizovat <ph name="PRODUCT_NAME" /></translation>
 <translation id="3911609878849982353">Řazení od Z do A</translation>
-<translation id="3918415141610210050">Karta</translation>
 <translation id="3924911262913579434">Režim <ph name="SAFE_BROWSING_MODE" /> je zapnutý</translation>
 <translation id="3927692899758076493">Bezpatková</translation>
 <translation id="3928666092801078803">Sloučit má data</translation>
@@ -644,7 +640,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4024768890073681126">Tvůj prohlížeč spravují rodiče</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}few{# h}many{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Pokračujte na web <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="404352903042073578">Skupina bez názvu</translation>
 <translation id="4044708993631234325">Spodní tabulka</translation>
 <translation id="4045441967987592849">Znovu otevřít</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardní karta s novou aktivitou ve sdílených skupinách karet}few{<ph name="TABS_COUNT_MANY" /> standardní karty s novou aktivitou ve sdílených skupinách karet}many{<ph name="TABS_COUNT_MANY" /> standardní karty s novou aktivitou ve sdílených skupinách karet}other{<ph name="TABS_COUNT_MANY" /> standardních karet s novou aktivitou ve sdílených skupinách karet}}</translation>
@@ -1736,7 +1731,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8840953339110955557">Tato stránka se může od online verze lišit.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skryté</translation>
-<translation id="8853345339104747198"><ph name="TAB_TITLE" />, karta</translation>
 <translation id="8854223127042600341">Zobrazte si soubory offline</translation>
 <translation id="885480114717186641">Můžete požádat o web <ph name="HOST_NAME" /> pro počítače</translation>
 <translation id="8856607253650333758">Zobrazovat popisy</translation>

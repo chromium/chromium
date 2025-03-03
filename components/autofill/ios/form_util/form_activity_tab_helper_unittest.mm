@@ -186,6 +186,9 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
   histogram_tester_.ExpectUniqueSample(kProgrammaticFormSubmissionHistogram,
                                        false, 1);
 
+  histogram_tester_.ExpectUniqueSample(kFormSubmissionOutcomeHistogram, 0, 1);
+  histogram_tester_.ExpectTotalCount(kInvalidSubmittedFormReasonHistogram, 0);
+
   // Verify that there isn't any form activity metric recorded as the form
   // submit signals aren't covered.
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount", 0);

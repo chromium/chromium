@@ -81,6 +81,7 @@
 <translation id="131461803491198646">ホーム ネットワーク、ローミングなし</translation>
 <translation id="1327977588028644528">ゲートウェイ</translation>
 <translation id="1328223165223065150">壁紙の色</translation>
+<translation id="1329478709358066995">文字起こし:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
 <translation id="1343442362630695901">塩湖</translation>
@@ -1274,6 +1275,7 @@
 <translation id="6930597342185648547">背景について</translation>
 <translation id="6939667434404433010">録音名を検索</translation>
 <translation id="6939766318048400022">カフェ</translation>
+<translation id="6942253772720771875">フィードバックまたは問題の内容を記入してください</translation>
 <translation id="6943893908656559156">リモート ID（オプション）</translation>
 <translation id="6953137545147683679">金色</translation>
 <translation id="6957231940976260713">サービス名</translation>
@@ -1598,6 +1600,7 @@
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> スタイルの <ph name="ART_FEATURE" /> の絵画</translation>
+<translation id="8409219750150841791">自動生成された要約:</translation>
 <translation id="8410244574650205435">自動的に検出</translation>
 <translation id="8420955526972171689">ハードウェアの問題に関するテストとトラブルシューティングを行う</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1642,6 +1645,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> に対するその他の操作</translation>
 <translation id="86356131183441916">ライトパープル</translation>
 <translation id="8647595191512746911">音声文字起こし</translation>
+<translation id="8648578954147795914">自動生成された名前:</translation>
 <translation id="8650852232143958317">Gmail と Google ドライブのファイルを移動</translation>
 <translation id="8651481478098336970">音量をミュート</translation>
 <translation id="8655295600908251630">チャンネル</translation>
@@ -1784,6 +1788,7 @@
 <translation id="9218016617214286986">既知の APN を表示</translation>
 <translation id="932327136139879170">ホーム</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="940663759301549538">マイクが接続されていることを確認するか、Chromebook を再起動してみてください</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> のキーが設定されていません。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">録音全体で音声を比較し、それぞれのスピーカーが話したタイミングと内容を文字起こしに反映させる</translation>

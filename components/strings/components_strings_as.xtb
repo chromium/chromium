@@ -8,6 +8,7 @@
 <translation id="1010200102790553230">পৃষ্ঠাটো পাছত ল'ড কৰক</translation>
 <translation id="1010225406377140704">এটা নতুন লিংকৰ অনুৰোধ কৰিবলৈ প্ৰেৰকগৰাকীৰ সৈতে যোগাযোগ কৰক</translation>
 <translation id="1011206368273183593">ফাইল সাজু কৰি থকা হৈছে</translation>
+<translation id="1012264210825687872">আপুনি আপোনাৰ অৰ্ডাৰটো পৰ্যালোচনা কৰাৰ পাছত আপুনি ছাইন ইন কৰিবই লাগিব বা এটা <ph name="BNPL_ISSUER_NAME" /> একাউণ্ট সৃষ্টি কৰিব লাগিব। এই একাউণ্টটো স্বয়ংক্ৰিয়ভাৱে Google Payৰ সৈতে লিংক কৰা হ’ব।</translation>
 <translation id="1014509239502131234">ফলাফল পূৰ্বৰ দৰে কৰি থকা হৈছে</translation>
 <translation id="1015730422737071372">অতিৰিক্ত বিৱৰণ প্ৰদান কৰক</translation>
 <translation id="1019413721762100891">অফ</translation>
@@ -691,6 +692,7 @@
 <translation id="2187317261103489799">চিনাক্তকৰক (ডিফ’ল্ট)</translation>
 <translation id="2188375229972301266">তলৰ অংশত একাধিক পাঞ্চ কৰক</translation>
 <translation id="2194856509914051091">বিবেচনা কৰিব লগা বিষয়</translation>
+<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" />ৰ বিষয়ে অধিক জানক</translation>
 <translation id="2200678913752027654">থাম্বছ ডাউন বুটাম, আপুনি এই পৰামৰ্শটো কিয় ভাল পোৱা নাই তাৰ ওপৰত বিতং মতামত দাখিল কৰাৰ বাবে এখন ফৰ্ম খুলিবলৈ Enter টিপক</translation>
 <translation id="2202627062836089804">আপোনাৰ কাৰ্ডৰ পিছফালে</translation>
 <translation id="2204482073374652408">আপডে’ট কৰা সম্পূৰ্ণ হৈছে!</translation>
@@ -2314,6 +2316,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5106405387002409393">Chromeএ আপোনাৰ ডিভাইচৰ <ph name="PERMISSION" /> এক্সছ কৰাৰ প্ৰয়োজন</translation>
 <translation id="510644072453496781">কাৰ্ডব’ৰ্ড (এণ্ড)</translation>
+<translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" />ৰ বাবে ভাৰ্ছুৱেল কাৰ্ড পূৰ হৈছে</translation>
 <translation id="5108881358339761672">ছাইটটো সুৰক্ষিত নহয়</translation>
 <translation id="5109892411553231226">পৰিশোধ পদ্ধতি পৰিচালনা কৰক</translation>
 <translation id="5112422516732747637">A5</translation>
@@ -2509,6 +2512,7 @@
             <ph name="LIST_ITEM" />ফৰ্মত দিয়া তথ্য
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ওপৰমুখীয়াকৈ বিপৰীত ক্ৰম</translation>
+<translation id="5445340838622821110">আপুনি পৰিশোধ কৰি গৈ থাকিলে, এটা এবাৰ ব্যৱহাৰ কৰিব পৰা ভাৰ্ছুৱেল কাৰ্ড নম্বৰ পূৰ হৈ যায়। এই নম্বৰটো কেৱল এই ক্ৰয়টোৰ বাবেহে। <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" />এ আপোনাৰ বিষয়ে ছেভ কৰি ৰখা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="5452270690849572955">এই <ph name="HOST_NAME" />ৰ পৃষ্ঠাটো বিচাৰিব নোৱাৰি</translation>
 <translation id="5452923259299906094">eWallet আৰু Pixৰ জৰিয়তে পৰিশোধ কৰক</translation>
@@ -3327,6 +3331,7 @@
 <translation id="6917795328362592458">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এক ডেটা উলংঘনত বিচাৰি পোৱা গৈছে। আপোনাৰ একাউণ্টসমূহ সুৰক্ষিত কৰিবলৈ Password Managerএ আপোনাৰ ছেভ হৈ থকা পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="6917873303492266709">টেবৰ গোটসমূহ শ্বেয়াৰ কৰিবলৈ, সেইবোৰত যোগদান কৰিবলৈ আৰু সেইবোৰৰ জৰিয়তে সহযোগিতা কৰিবলৈ, ছেটিং খোলক আৰু Chromeত ছাইন ইন কৰাৰ অনুমতি দিয়ক অন কৰক</translation>
 <translation id="6921197121276419421">ৱেব এপ্‌ ইনষ্টল কৰাৰ অনুমতি দিয়া হৈছে</translation>
+<translation id="69238565902785824">আপোনাৰ একাউণ্টটো লিংক কৰি ৰাখিলে <ph name="BNPL_ISSUER_NAME" />ৰ সৈতে দ্ৰুতভাৱে পৰিশোধ কৰাত সহায় হয়, কিন্তু আপুনি <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" />লৈ গৈ সেইটো আনলিংক কৰিব পাৰে</translation>
 <translation id="6924013822850225188">চেকআউটৰ সময়ত আপুনি আপোনাৰ কাৰ্ডৰ লাভসমূহ দেখা পাব নে নাই বাছনি কৰক (বেংকৰ চৰ্তাৱলী প্ৰযোজ্য)</translation>
 <translation id="6925267999184670015">উত্তৰ আমেৰিকাৰ B+</translation>
 <translation id="6926216138694948720">বডি আৰ্ট</translation>
@@ -3392,6 +3397,7 @@
 <translation id="701757816833614688">ভিজুৱেল আৰ্ট আৰু ডিজাইন সম্পৰ্কীয় শিক্ষা</translation>
 <translation id="702275896380648118">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে। আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰাও আপোনাৰ বিজ্ঞাপনৰ বিষয়সমূহ লাভ কৰে।</translation>
 <translation id="7023162328967545559">প্ৰশাসকে দিয়া সকীয়নি</translation>
+<translation id="7023765275461720661">একাউণ্ট লিংক কৰি <ph name="BNPL_ISSUER_NAME" />ৰ জৰিয়তে পৰিশোধ কৰিবনে?</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
 <translation id="7030164307377592766">পৰিশোধ পদ্ধতি পূৰ কৰিবলৈ ছেটিং সংশোধন কৰক</translation>
 <translation id="7031646650991750659">আপুনি কোনবোৰ Google Play এপ্‌ ইনষ্টল কৰিছে</translation>
@@ -3613,6 +3619,7 @@
 <translation id="741204030948306876">হয়, মই সন্মত</translation>
 <translation id="7416351320495623771">পাছৱৰ্ড পৰিচালনা কৰক…</translation>
 <translation id="7416898721136759658">অনুদান, জলপানি আৰু বিত্তীয় সহায়</translation>
+<translation id="741772962178517671">Affirm</translation>
 <translation id="7418620734632363981">প্ৰ’গ্ৰামিং</translation>
 <translation id="7419091773564635591">কম্পিউটাৰ আৰু ইলেক্ট্ৰ’নিক্স</translation>
 <translation id="7419106976560586862">প্ৰ’ফাইলৰ পথ</translation>
@@ -3659,6 +3666,7 @@
 <translation id="7485085230273446323">ব্যৱসায় আৰু ঔদ্যোগিক</translation>
 <translation id="7485870689360869515">কোনো ডেটা বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" />এ আপোনাৰ যোগ্যতা পৰীক্ষা কৰিব (ই আপোনাৰ ক্ৰেডিট স্ক’ৰ প্ৰভাৱিত নকৰে)। যদি অনুমোদন জনোৱা হয়, তেন্তে <ph name="BNPL_ISSUER_NAME" />এ আপোনাক কিছুমান পৰিশোধৰ আঁচনিৰ মাজৰ পৰা এটা আঁচনি বাছনি কৰি আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰিব দিব।</translation>
 <translation id="7489392576326061356">শ্বেম্পু আৰু কণ্ডিশ্বনাৰ</translation>
 <translation id="7495528107193238112">এই সমলটো অৱৰোধ কৰা হৈছে। সমস্যাটো সমাধান কৰিবলৈ ছাইটৰ গৰাকীৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="749865518782565832">প্লামিং</translation>
