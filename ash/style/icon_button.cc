@@ -718,14 +718,8 @@ std::pair<ui::ImageModel, ui::ImageModel> IconButton::VectorImages(
     return {ui::ImageModel(), ui::ImageModel()};
   }
 
-  ui::ImageModel new_normal_image_model;
-  if (auto sk_color = color.GetSkColor()) {
-    new_normal_image_model =
-        ui::ImageModel::FromVectorIcon(*icon, *sk_color, icon_size);
-  } else {
-    new_normal_image_model =
-        ui::ImageModel::FromVectorIcon(*icon, *color.GetColorId(), icon_size);
-  }
+  ui::ImageModel new_normal_image_model =
+      ui::ImageModel::FromVectorIcon(*icon, color, icon_size);
 
   ui::ImageModel disabled_image_model = ui::ImageModel::FromVectorIcon(
       *icon, cros_tokens::kCrosSysDisabled, icon_size);

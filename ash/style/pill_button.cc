@@ -423,14 +423,9 @@ void PillButton::UpdateIconColor() {
 
   // If custom icon color is set, use it to set icon color.
   if (icon_color_) {
-    if (auto color = icon_color_->GetSkColor()) {
-      SetImageModel(views::Button::STATE_NORMAL,
-                    ui::ImageModel::FromVectorIcon(*icon_, *color, kIconSize));
-    } else {
-      SetImageModel(views::Button::STATE_NORMAL,
-                    ui::ImageModel::FromVectorIcon(
-                        *icon_, *icon_color_->GetColorId(), kIconSize));
-    }
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(*icon_, *icon_color_, kIconSize));
   } else {
     // Otherwise, use default color ID to set icon color.
     auto default_color_id = GetDefaultButtonTextIconColorId(type_);

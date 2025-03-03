@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 
 namespace gfx {
 class ImageSkia;
@@ -25,16 +26,10 @@ class COMPONENT_EXPORT(UI_BASE) ThemedVectorIcon {
  public:
   ThemedVectorIcon();
   explicit ThemedVectorIcon(const gfx::VectorIcon* icon,
-                            ColorId color_id = kColorMenuIcon,
+                            ui::ColorVariant color = kColorMenuIcon,
                             int icon_size = 0,
                             const gfx::VectorIcon* badge = nullptr);
   explicit ThemedVectorIcon(const VectorIconModel& vector_icon_model);
-  // TODO (kylixrd): Remove this once all the hard-coded uses of color are
-  // removed.
-  ThemedVectorIcon(const gfx::VectorIcon* icon,
-                   SkColor color,
-                   int icon_size = 0,
-                   const gfx::VectorIcon* badge = nullptr);
 
   // Copyable and moveable
   ThemedVectorIcon(const ThemedVectorIcon& other);
@@ -57,7 +52,7 @@ class COMPONENT_EXPORT(UI_BASE) ThemedVectorIcon {
 
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   int icon_size_ = 0;
-  absl::variant<ColorId, SkColor> color_ = gfx::kPlaceholderColor;
+  ui::ColorVariant color_;
   raw_ptr<const gfx::VectorIcon> badge_ = nullptr;
 };
 

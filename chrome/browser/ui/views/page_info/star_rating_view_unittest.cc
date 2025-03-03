@@ -30,21 +30,21 @@ class StarRatingViewTest : public views::ViewsTestBase {
     const ui::VectorIconModel& model =
         view()->GetVectorIconModelForIndexForTesting(index);
     return model.vector_icon()->name == vector_icons::kStarIcon.name &&
-           model.color_id() == kColorStarRatingFullIcon;
+           model.color() == kColorStarRatingFullIcon;
   }
 
   bool IsHalfStarIconAt(int index) {
     const ui::VectorIconModel& model =
         view()->GetVectorIconModelForIndexForTesting(index);
     return model.vector_icon()->name == vector_icons::kStarHalfIcon.name &&
-           model.color_id() == kColorStarRatingFullIcon;
+           model.color() == kColorStarRatingFullIcon;
   }
 
   bool IsEmptyStarIconAt(int index) {
     const ui::VectorIconModel& model =
         view()->GetVectorIconModelForIndexForTesting(index);
     return model.vector_icon()->name == vector_icons::kStarIcon.name &&
-           model.color_id() == kColorStarRatingEmptyIcon;
+           model.color() == kColorStarRatingEmptyIcon;
   }
 
  private:

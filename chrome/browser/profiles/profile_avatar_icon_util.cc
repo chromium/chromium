@@ -499,11 +499,7 @@ ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size) {
             gfx::Size(size, size)));
   }
   const ui::VectorIconModel& model = image.GetVectorIcon();
-  if (model.has_color()) {
-    return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color(),
-                                          size);
-  }
-  return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color_id(),
+  return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color(),
                                         size);
 }
 
