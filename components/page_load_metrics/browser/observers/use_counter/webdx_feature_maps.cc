@@ -79,6 +79,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kOffscreenCanvas, WebDXFeature::kOffscreenCanvas},
           {WebFeature::kV8StorageManager_GetDirectory_Method,
            WebDXFeature::kOriginPrivateFileSystem},
+          {WebFeature::kV8Window_FetchLater_Method, WebDXFeature::kFetchLater},
           {WebFeature::kV8Window_ShowOpenFilePicker_Method,
            WebDXFeature::kFileSystemAccess},
           {WebFeature::kV8Window_ShowSaveFilePicker_Method,
