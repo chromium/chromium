@@ -48659,6 +48659,7 @@ should be able to be added at any place in this file.
   <suffix name="kActionShowAddressesBubbleOrPage"
       label="Show addresses action"/>
   <suffix name="kActionShowChromeLabs" label="Show Chrome Labs action"/>
+  <suffix name="kActionShowDownloads" label="Show downloads action"/>
   <suffix name="kActionShowPasswordsBubbleOrPage"
       label="Show passwords bubble or page action"/>
   <suffix name="kActionShowPaymentsBubbleOrPage"
@@ -48666,7 +48667,6 @@ should be able to be added at any place in this file.
   <suffix name="kActionShowTranslate" label="Show translate action"/>
   <suffix name="kActionSidePanelShowBookmarks"
       label="Show bookmarks side panel action"/>
-  <suffix name="kActionSidePanelShowFeed" label="Show feed side panel action"/>
   <suffix name="kActionSidePanelShowHistoryCluster"
       label="Show history clusster side panel action"/>
   <suffix name="kActionSidePanelShowLensOverlayResults"
@@ -48675,10 +48675,6 @@ should be able to be added at any place in this file.
       label="Show read anything side panel action"/>
   <suffix name="kActionSidePanelShowReadingList"
       label="Show reading list side panel action"/>
-  <suffix name="kActionSidePanelShowSearchCompanion"
-      label="Show search companion side panel action"/>
-  <suffix name="kActionSidePanelShowUserNote"
-      label="Show user note side panel action"/>
   <suffix name="kActionTaskManager" label="Task manager action"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu"/>

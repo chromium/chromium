@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/action_suffix_reader.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -64,6 +66,8 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
         PinnedToolbarActionsModelFactory::GetInstance(),
         base::BindRepeating(&PinnedToolbarActionsContainerTest::
                                 BuildPinnedToolbarActionsModel));
+    factories.emplace_back(HistoryServiceFactory::GetInstance(),
+                           HistoryServiceFactory::GetDefaultFactory());
     return factories;
   }
 
@@ -617,4 +621,27 @@ TEST_F(PinnedToolbarActionsContainerTest, ActiveActionSkipsExecution) {
   pinned_button->OnMouseReleased(release_event);
 
   EXPECT_FALSE(pinned_button->ShouldSkipExecutionForTesting());
+}
+
+TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
+  // Verify all pinnable buttons have a suffix listed in actions.xml.
+  actions::ActionItemVector action_items;
+  actions::ActionManager::Get().GetActions(
+      action_items,
+      browser_view()->browser()->GetActions()->root_action_item());
+  size_t pinnable_count =
+      std::ranges::count_if(action_items, [](actions::ActionItem* action) {
+        return action->GetProperty(actions::kActionItemPinnableKey) ==
+               std::underlying_type_t<actions::ActionPinnableState>(
+                   actions::ActionPinnableState::kPinnable);
+      });
+  const auto pinnable_action_suffixes = base::ReadActionSuffixesForAction(
+      "Actions.PinnedToolbarButtonActivation");
+  EXPECT_EQ(1U, pinnable_action_suffixes.size());
+#if BUILDFLAG(IS_CHROMEOS)
+  // Downloads action item does not exist for ChromeOS.
+  EXPECT_EQ(pinnable_count, pinnable_action_suffixes[0].size() - 1);
+#else
+  EXPECT_EQ(pinnable_count, pinnable_action_suffixes[0].size());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
