@@ -32,6 +32,17 @@ bool HasOpportunityToShow(
       !system_checks.Has(ash::LobsterSystemCheck::kInvalidInputField));
 }
 
+void RecordEntryPointImpressionMetric(LobsterEntryPoint entry_point) {
+  switch (entry_point) {
+    case LobsterEntryPoint::kQuickInsert:
+      RecordLobsterState(LobsterMetricState::kQuickInsertTriggerImpression);
+      return;
+    case LobsterEntryPoint::kRightClickMenu:
+      RecordLobsterState(LobsterMetricState::kRightClickTriggerImpression);
+      return;
+  }
+}
+
 }  // namespace
 
 LobsterController::Trigger::Trigger(
@@ -117,6 +128,9 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
     return nullptr;
   }
 
+  // Creates the trigger point if the status is either enabled, or requires
+  // consent.
+  RecordEntryPointImpressionMetric(entry_point);
   return std::make_unique<Trigger>(std::move(client), entry_point,
                                    text_input_context.support_image_insertion
                                        ? LobsterMode::kInsert
