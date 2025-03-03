@@ -29,11 +29,11 @@
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
     (syncer::DataTypeSet)unsyncedDataTypes;
 
-// Called once the user accepts or refuses the unsynced data confirmation
-// dialog. See `-[AuthenticationFlowPerformer
-// showUnsyncedDataConfirmationWithBaseViewController:browser:anchorView:
-// anchorRect:]`.
-- (void)didAcceptToContinueWithUnsyncedData:(BOOL)acceptToContinue;
+// Called once the user accepts or refuses to leave the primary account.
+// See `-[AuthenticationFlowPerformer
+// showLeavingPrimaryAccountConfirmationWithBaseViewController:browser:
+// anchorView:anchorRect:]`.
+- (void)didAcceptToLeavePrimaryAccount:(BOOL)acceptToContinue;
 
 // Indicates that the identity managed status was fetched.
 - (void)didFetchManagedStatus:(NSString*)hostedDomain;
