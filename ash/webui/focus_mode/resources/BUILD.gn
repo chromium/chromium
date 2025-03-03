@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 build_webui("build") {
   grd_prefix = "ash_focus_mode"

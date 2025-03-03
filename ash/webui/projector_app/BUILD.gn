@@ -4,9 +4,8 @@
 
 import("//ash/webui/projector_app/projector_app.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "Projector App is ash-chrome only")
+assert(is_chromeos, "Projector App is ChromeOS only")
 
 static_library("projector_app") {
   sources = [

@@ -4,13 +4,12 @@
 
 import("//ash/webui/boca_ui/boca_app.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Boca App is ash-chrome only")
+assert(is_chromeos, "Boca App is ChromeOS only")
 
 static_library("boca_ui") {
   sources = [

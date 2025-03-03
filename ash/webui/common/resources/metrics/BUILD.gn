@@ -6,7 +6,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
-assert(is_chromeos_ash, "WebUI Structured Metrics supported in ash-chrome only")
+assert(is_chromeos, "WebUI Structured Metrics supported in ChromeOS only")
 
 # Copies mojo files and code generated files to target directory.
 copy("copy_files") {

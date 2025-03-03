@@ -4,7 +4,7 @@
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_chromeos_ash, "Status Area Internals is ash-chrome only")
+assert(is_chromeos, "Status Area Internals is ChromeOS only")
 
 build_webui("build") {
   grd_prefix = "ash_status_area_internals"
