@@ -3003,7 +3003,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.ClientType" enum="OCRClientType"
-    expires_after="2025-05-01">
+    expires_after="2026-03-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records the client type of each OCR request.</summary>
@@ -3080,6 +3080,16 @@ even if they fit the naming pattern. -->
   <summary>
     Records the language that is detected most when OCR is performed on a PDF
     page.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.Oversize.ClientType"
+    enum="OCRClientType" expires_after="2026-03-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the client type of the OCR requests that are over the OCR resolution
+    threshold and will be downsized before processsing.
   </summary>
 </histogram>
 
