@@ -26,6 +26,8 @@ found in the LICENSE file.
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/tab_group_list_bottom_sheet_title_text_margin_top"
+      android:layout_marginBottom="@dimen/tab_group_list_bottom_sheet_title_text_margin_bottom"
+      android:layout_marginStart="@dimen/tab_group_list_first_element_left_right_margin"
       android:text="@string/tab_group_list_bottom_sheet_title"
       tools:text="@string/tab_group_list_bottom_sheet_title"
       android:textAppearance="@style/TextAppearance.Headline.Primary"
