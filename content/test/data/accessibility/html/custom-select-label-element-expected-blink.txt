@@ -6,5 +6,6 @@ rootWebArea
 ++++++++++inlineTextBox name='labeltext '
 ++++++comboBoxSelect collapsed name='labeltext' value='one'
 ++++++++menuListPopup invisible ispopup=auto
-++++++++++menuListOption name='one' selected=true
-++++++++++menuListOption invisible name='two' selected=false
+++++++++++genericContainer invisible
+++++++++++++menuListOption name='one' selected=true
+++++++++++++menuListOption invisible name='two' selected=false

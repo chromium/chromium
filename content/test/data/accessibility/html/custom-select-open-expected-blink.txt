@@ -2,17 +2,18 @@ rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer
 ++++++comboBoxSelect expanded focusable name='Currency for purchase' value='USD' setSize=5 posInSet=3 haspopup=menu
-++++++++button ignored invisible
-++++++++++genericContainer ignored invisible
-++++++++++++image ignored invisible
+++++++++genericContainer ignored
+++++++++++button ignored invisible
 ++++++++++++genericContainer ignored invisible
+++++++++++++++image ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++++staticText ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++staticText ignored invisible
 ++++++++++++genericContainer ignored invisible
-++++++++++++++staticText ignored invisible
-++++++++++genericContainer ignored invisible
 ++++++++menuListPopup activedescendantId=menuListOption setSize=5 ispopup=auto
 ++++++++++genericContainer ignored
 ++++++++++++menuListOption focusable name='EUR Euro' setSize=5 posInSet=1 selected=false

@@ -6,7 +6,8 @@ rootWebArea
 ++++++++++inlineTextBox name='How often?'
 ++++++comboBoxSelect collapsed required name='How often?' invalidState=true
 ++++++++menuListPopup invisible ispopup=auto
-++++++++++menuListOption selected=true
-++++++++++menuListOption invisible name='Week' selected=false
-++++++++++menuListOption invisible name='Month' selected=false
-++++++++++menuListOption invisible name='Year' selected=false
+++++++++++genericContainer ignored invisible
+++++++++++++menuListOption selected=true
+++++++++++++menuListOption invisible name='Week' selected=false
+++++++++++++menuListOption invisible name='Month' selected=false
+++++++++++++menuListOption invisible name='Year' selected=false

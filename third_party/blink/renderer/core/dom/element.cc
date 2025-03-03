@@ -8242,6 +8242,39 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
       return true;
     }
   }
+
+  // The ::picker(select) UA popover element is display:none by default because
+  // it's a popover which would prevent style from being calculated on it and
+  // its flat tree descendants when its not shown.
+  // In the case that the picker is appearance:auto/none:
+  //   We need computed style for all flat tree descendants of the picker in
+  //   order to get computed style for options. These computed styles are used
+  //   by InternalPopupMenu/ExternalPopupMenu for styling options in the native
+  //   picker. They are also used during layout by MenuListSelectType to
+  //   populate the style of its MenuListInnerElement. In order to do this,
+  //   return true from this method.
+  // In the case that the picker is appearance:base-select:
+  //   We can't return true from this method or else it will mess with top layer
+  //   animations of the popover - @starting-style won't work properly. However,
+  //   we still want to know whether the picker has appearance:base-select or
+  //   not in order to make changes in the accessibility tree among many other
+  //   things. In order to do this, we set a bit on the select while we still
+  //   have access to the computed style here.
+  if (HTMLSelectElement::IsPopoverForAppearanceBase(this)) {
+    HTMLSelectElement* select = To<HTMLSelectElement>(OwnerShadowHost());
+    if (const ComputedStyle* select_style = select->GetComputedStyle()) {
+      // The picker isn't allowed to have appearance:base-select unless the
+      // select does too.
+      bool is_base_appearance =
+          style.EffectiveAppearance() == AppearanceValue::kBaseSelect &&
+          select_style->EffectiveAppearance() == AppearanceValue::kBaseSelect;
+      select->SetIsAppearanceBasePickerForDisplayNone(is_base_appearance);
+      if (!is_base_appearance) {
+        return true;
+      }
+    }
+  }
+
   return style.Display() == EDisplay::kContents;
 }
 
@@ -8967,14 +9000,11 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   }
   if (pseudo_id == kPseudoIdCheckMark) {
     // We want to avoid the performance cost of generating the checkmark for
-    // old-style selects.  While it is technically needed only when we have an
-    // appearance:base picker, we condition it on an appearance:base button
-    // instead, since we can do that without re-entering style recalc.
+    // old-style selects.
     auto is_option_in_appearance_base_select = [](const Element* e) {
       if (const auto* option = DynamicTo<HTMLOptionElement>(e)) {
         if (const HTMLSelectElement* select = option->OwnerSelectElement()) {
-          return select->IsAppearanceBaseButton(
-              HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle);
+          return select->IsAppearanceBasePicker();
         }
       }
       return false;
