@@ -1212,75 +1212,10 @@ TEST_F(HttpCacheSimpleGetTest, DelayedCacheLock) {
   TestLoadTimingNetworkRequest(load_timing_info);
 }
 
-TEST_F(HttpCacheTest, GetExperimentMode) {
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {}, {net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-             net::features::kSplitCacheByMainFrameNavigationInitiator,
-             net::features::kSplitCacheByNavigationInitiator});
-
-    EXPECT_EQ(HttpCache::ExperimentMode::kStandard,
-              HttpCache::GetExperimentMode());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-        {net::features::kSplitCacheByMainFrameNavigationInitiator,
-         net::features::kSplitCacheByNavigationInitiator});
-
-    EXPECT_EQ(HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean,
-              HttpCache::GetExperimentMode());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {net::features::kSplitCacheByMainFrameNavigationInitiator},
-        {net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-         net::features::kSplitCacheByNavigationInitiator});
-
-    EXPECT_EQ(HttpCache::ExperimentMode::kMainFrameNavigationInitiator,
-              HttpCache::GetExperimentMode());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {net::features::kSplitCacheByNavigationInitiator},
-        {net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-         net::features::kSplitCacheByMainFrameNavigationInitiator});
-
-    EXPECT_EQ(HttpCache::ExperimentMode::kNavigationInitiator,
-              HttpCache::GetExperimentMode());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-         net::features::kSplitCacheByMainFrameNavigationInitiator},
-        {net::features::kSplitCacheByNavigationInitiator});
-
-    EXPECT_EQ(HttpCache::ExperimentMode::kStandard,
-              HttpCache::GetExperimentMode());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {net::features::kSplitCacheByMainFrameNavigationInitiator,
-         net::features::kSplitCacheByNavigationInitiator},
-        {net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean});
-
-    EXPECT_EQ(HttpCache::ExperimentMode::kStandard,
-              HttpCache::GetExperimentMode());
-  }
-}
-
 enum class SplitCacheTestCase {
   kDisabled,
   kEnabledTripleKeyed,
   kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator
 };
 
 const struct {
@@ -1288,11 +1223,7 @@ const struct {
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
     {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator}};
+     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
 
 class HttpCacheTestSplitCacheFeature
     : public HttpCacheTest,
@@ -1346,9 +1277,7 @@ INSTANTIATE_TEST_SUITE_P(
     HttpCacheTestSplitCacheFeature,
     testing::ValuesIn(
         {SplitCacheTestCase::kDisabled, SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-         SplitCacheTestCase::kEnabledTriplePlusNavInitiator}),
+         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case SplitCacheTestCase::kDisabled:
@@ -1357,10 +1286,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "SplitCacheNikFrameSiteEnabled";
         case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
           return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
-        case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-          return "SplitCacheEnabledTriplePlusMainFrameNavigationInitiator";
-        case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-          return "SplitCacheEnabledTriplePlusNavigationInitiator";
       }
     });
 
@@ -11509,17 +11434,8 @@ TEST_P(HttpCacheTestSplitCacheFeature, SplitCache) {
       NOTREACHED();
     case SplitCacheTestCase::kEnabledTripleKeyed:
     case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
       // The `is_subframe_document_resource` being true is enough to cause a
       // different cache partition to be used.
-      break;
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-      // The `is_subframe_document_resource` bit is not used, in favor of using
-      // the request initiator. Note that with this partitioning scheme a
-      // navigation and a resource will share a cache partition if the
-      // navigation has a same-site initiator, so for this test set a cross-site
-      // initiator.
-      subframe_document_trans_info.initiator = origin_b;
       break;
   }
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
@@ -11617,8 +11533,6 @@ TEST_P(HttpCacheTestSplitCacheFeature, GenerateCacheKeyForRequestFailures) {
       break;
     case SplitCacheTestCase::kEnabledTripleKeyed:
     case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
       is_request_cacheable = false;
       break;
   }
@@ -11633,40 +11547,18 @@ TEST_P(HttpCacheTestSplitCacheFeature, GenerateCacheKeyForRequestFailures) {
   opaque_initiator_main_frame_request.is_main_frame_navigation = true;
   opaque_initiator_main_frame_request.initiator = url::Origin();
 
-  switch (GetParam()) {
-    case SplitCacheTestCase::kDisabled:
-    case SplitCacheTestCase::kEnabledTripleKeyed:
-    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-      is_request_cacheable = true;
-      break;
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-      is_request_cacheable = false;
-      break;
-  }
   cache_key = HttpCache::GenerateCacheKeyForRequest(
       &opaque_initiator_main_frame_request);
-  EXPECT_EQ(is_request_cacheable, cache_key.has_value());
+  EXPECT_TRUE(cache_key.has_value());
 
   // Same as above but for a renderer-initiated subframe navigation.
   HttpRequestInfo opaque_initiator_subframe_request = cacheable_request;
   opaque_initiator_subframe_request.is_subframe_document_resource = true;
   opaque_initiator_subframe_request.initiator = url::Origin();
 
-  switch (GetParam()) {
-    case SplitCacheTestCase::kDisabled:
-    case SplitCacheTestCase::kEnabledTripleKeyed:
-    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-      is_request_cacheable = true;
-      break;
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-      is_request_cacheable = false;
-      break;
-  }
   cache_key =
       HttpCache::GenerateCacheKeyForRequest(&opaque_initiator_subframe_request);
-  EXPECT_EQ(is_request_cacheable, cache_key.has_value());
+  EXPECT_TRUE(cache_key.has_value());
 }
 TEST_F(HttpCacheTest, SplitCacheEnabledByDefault) {
   HttpCache::ClearGlobalsForTesting();

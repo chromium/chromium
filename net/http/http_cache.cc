@@ -81,6 +81,7 @@ bool g_enable_split_cache = false;
 const char HttpCache::kDoubleKeyPrefix[] = "_dk_";
 const char HttpCache::kDoubleKeySeparator[] = " ";
 const char HttpCache::kSubframeDocumentResourcePrefix[] = "s_";
+const char HttpCache::kCrossSiteMainFrameNavigationPrefix[] = "cn_";
 
 HttpCache::DefaultBackend::DefaultBackend(
     CacheType type,
@@ -626,29 +627,6 @@ bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo* request) {
     if (request->network_isolation_key.IsTransient()) {
       return false;
     }
-    // If the initiator is opaque, it would serialize to 'null' if used, which
-    // would mean that navigations initiated from all opaque origins would share
-    // a cache partition. To avoid this, we won't cache navigations where the
-    // initiator is an opaque origin if the initiator would be used as part of
-    // the cache key.
-    if (request->initiator.has_value() && request->initiator->opaque()) {
-      switch (HttpCache::GetExperimentMode()) {
-        case HttpCache::ExperimentMode::kStandard:
-        case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
-          break;
-        case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
-          if (request->is_main_frame_navigation) {
-            return false;
-          }
-          break;
-        case HttpCache::ExperimentMode::kNavigationInitiator:
-          if (request->is_main_frame_navigation ||
-              request->is_subframe_document_resource) {
-            return false;
-          }
-          break;
-      }
-    }
   }
   return true;
 }
@@ -680,58 +658,26 @@ std::string HttpCache::GenerateCacheKey(
     // with invalid whitespace character |kDoubleKeySeparator|.
     CHECK(!network_isolation_key.IsTransient());
 
-    const ExperimentMode experiment_mode = HttpCache::GetExperimentMode();
     std::string_view subframe_document_resource_prefix;
     if (is_subframe_document_resource) {
-      switch (experiment_mode) {
-        case HttpCache::ExperimentMode::kStandard:
-        case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
-        case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
-          subframe_document_resource_prefix = kSubframeDocumentResourcePrefix;
-          break;
-        case HttpCache::ExperimentMode::kNavigationInitiator:
-          // No need to set `subframe_document_resource_prefix` if we are
-          // keying all cross-site navigations on initiator below.
-          break;
-      }
+      subframe_document_resource_prefix = kSubframeDocumentResourcePrefix;
     }
 
-    std::string navigation_experiment_prefix;
-    if (initiator.has_value() &&
-        (is_mainframe_navigation || is_subframe_document_resource)) {
+    std::string_view is_cross_site_main_frame_navigation_prefix;
+    if (initiator.has_value() && is_mainframe_navigation &&
+        base::FeatureList::IsEnabled(
+            net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean)) {
       const auto initiator_site = net::SchemefulSite(*initiator);
       const bool is_initiator_cross_site =
           initiator_site != net::SchemefulSite(url);
-
       if (is_initiator_cross_site) {
-        switch (experiment_mode) {
-          case HttpCache::ExperimentMode::kStandard:
-            break;
-          case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
-            if (is_mainframe_navigation) {
-              navigation_experiment_prefix = "csnb_ ";
-            }
-            break;
-          case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
-            if (is_mainframe_navigation) {
-              CHECK(!initiator_site.opaque());
-              navigation_experiment_prefix =
-                  base::StrCat({"mfni_", initiator_site.Serialize(), " "});
-            }
-            break;
-          case HttpCache::ExperimentMode::kNavigationInitiator:
-            if (is_mainframe_navigation || is_subframe_document_resource) {
-              CHECK(!initiator_site.opaque());
-              navigation_experiment_prefix =
-                  base::StrCat({"ni_", initiator_site.Serialize(), " "});
-            }
-            break;
-        }
+        is_cross_site_main_frame_navigation_prefix =
+            kCrossSiteMainFrameNavigationPrefix;
       }
     }
     isolation_key = base::StrCat(
         {kDoubleKeyPrefix, subframe_document_resource_prefix,
-         navigation_experiment_prefix,
+         is_cross_site_main_frame_navigation_prefix,
          *network_isolation_key.ToCacheKeyString(), kDoubleKeySeparator});
   }
 
@@ -744,33 +690,6 @@ std::string HttpCache::GenerateCacheKey(
   return base::StringPrintf("%c/%" PRId64 "/%s%s", credential_key,
                             upload_data_identifier, isolation_key.c_str(),
                             HttpUtil::SpecForRequest(url).c_str());
-}
-
-// static
-HttpCache::ExperimentMode HttpCache::GetExperimentMode() {
-  bool cross_site_main_frame_navigation_boolean_enabled =
-      base::FeatureList::IsEnabled(
-          net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean);
-  bool main_frame_navigation_initiator_enabled = base::FeatureList::IsEnabled(
-      net::features::kSplitCacheByMainFrameNavigationInitiator);
-  bool navigation_initiator_enabled = base::FeatureList::IsEnabled(
-      net::features::kSplitCacheByNavigationInitiator);
-
-  if (cross_site_main_frame_navigation_boolean_enabled) {
-    if (main_frame_navigation_initiator_enabled ||
-        navigation_initiator_enabled) {
-      return ExperimentMode::kStandard;
-    }
-    return ExperimentMode::kCrossSiteInitiatorBoolean;
-  } else if (main_frame_navigation_initiator_enabled) {
-    if (navigation_initiator_enabled) {
-      return ExperimentMode::kStandard;
-    }
-    return ExperimentMode::kMainFrameNavigationInitiator;
-  } else if (navigation_initiator_enabled) {
-    return ExperimentMode::kNavigationInitiator;
-  }
-  return ExperimentMode::kStandard;
 }
 
 // static

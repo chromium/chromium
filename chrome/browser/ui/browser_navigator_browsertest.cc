@@ -1851,19 +1851,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, ViewSourceUrlMatching) {
 enum class SplitCacheTestCase {
   kEnabledTripleKeyed,
   kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator
 };
 const struct {
   const SplitCacheTestCase test_case;
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
     {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator}};
+     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
 
 class BrowserNavigatorSplitHttpCacheTest
     : public BrowserNavigatorTest,
@@ -1887,19 +1881,13 @@ INSTANTIATE_TEST_SUITE_P(
     BrowserNavigatorSplitHttpCacheTest,
     testing::ValuesIn(
         {SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-         SplitCacheTestCase::kEnabledTriplePlusNavInitiator}),
+         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case (SplitCacheTestCase::kEnabledTripleKeyed):
           return "TripleKeyed";
         case (SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool):
           return "TriplePlusCrossSiteMainFrameNavigationBool";
-        case (SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator):
-          return "TriplePlusMainFrameNavigationInitiator";
-        case (SplitCacheTestCase::kEnabledTriplePlusNavInitiator):
-          return "TriplePlusNavigationInitiator";
       }
     });
 

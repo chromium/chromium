@@ -76,7 +76,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "net/test/scoped_mutually_exclusive_feature_list.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/cors.h"
@@ -281,8 +280,6 @@ class ProfileNetworkContextServiceCacheSameBrowsertest
         {}, {
                 net::features::kSplitCacheByNetworkIsolationKey,
                 net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-                net::features::kSplitCacheByMainFrameNavigationInitiator,
-                net::features::kSplitCacheByNavigationInitiator,
             });
   }
   ~ProfileNetworkContextServiceCacheSameBrowsertest() override = default;
@@ -327,13 +324,6 @@ class ProfileNetworkContextServiceCacheChangeBrowsertest
   ProfileNetworkContextServiceCacheChangeBrowsertest() {
     split_cache_always_enabled_feature_list_.InitAndEnableFeatureWithParameters(
         net::features::kSplitCacheByNetworkIsolationKey, {});
-
-    split_cache_experiment_always_disabled_feature_list_.InitWithFeatures(
-        {}, {
-                net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-                net::features::kSplitCacheByMainFrameNavigationInitiator,
-                net::features::kSplitCacheByNavigationInitiator,
-            });
   }
   ~ProfileNetworkContextServiceCacheChangeBrowsertest() override = default;
 
@@ -341,8 +331,6 @@ class ProfileNetworkContextServiceCacheChangeBrowsertest
 
  private:
   base::test::ScopedFeatureList split_cache_always_enabled_feature_list_;
-  base::test::ScopedFeatureList
-      split_cache_experiment_always_disabled_feature_list_;
 };
 
 // The first time we load, even if we're in an experiment there's no reset
@@ -388,13 +376,6 @@ class ProfileNetworkContextServiceCacheCredentialsBrowserTest
   ProfileNetworkContextServiceCacheCredentialsBrowserTest() {
     split_cache_always_enabled_feature_list_.InitAndEnableFeatureWithParameters(
         net::features::kSplitCacheByIncludeCredentials, {});
-
-    split_cache_experiment_always_disabled_feature_list_.InitWithFeatures(
-        {}, {
-                net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-                net::features::kSplitCacheByMainFrameNavigationInitiator,
-                net::features::kSplitCacheByNavigationInitiator,
-            });
   }
   ~ProfileNetworkContextServiceCacheCredentialsBrowserTest() override = default;
 
@@ -402,8 +383,6 @@ class ProfileNetworkContextServiceCacheCredentialsBrowserTest
 
  private:
   base::test::ScopedFeatureList split_cache_always_enabled_feature_list_;
-  base::test::ScopedFeatureList
-      split_cache_experiment_always_disabled_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
@@ -438,127 +417,6 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
       local_state->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
       "None None None scoped_feature_list_trial_group");
-}
-
-// This subclass adds tests for the 2024 HTTP Cache keying experiment flags.
-enum class HttpCache2024ExperimentTestCase {
-  kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator,
-  kControlGroup
-};
-
-const struct {
-  const HttpCache2024ExperimentTestCase test_case;
-  base::test::FeatureRef feature;
-} kTestCaseToFeatureMapping[] = {
-    {HttpCache2024ExperimentTestCase::
-         kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {HttpCache2024ExperimentTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {HttpCache2024ExperimentTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator},
-    {HttpCache2024ExperimentTestCase::kControlGroup,
-     net::features::kHttpCacheKeyingExperimentControlGroup2024}};
-
-class ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest
-    : public ProfileNetworkContextServiceBrowsertest,
-      public testing::WithParamInterface<HttpCache2024ExperimentTestCase> {
- public:
-  ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest()
-      : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMapping) {
-    // Override any configured experiments for the
-    // SplitCacheByNetworkIsolationKey feature.
-    split_cache_always_enabled_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kSplitCacheByNetworkIsolationKey, {});
-  }
-
-  const char* GetExperimentString() {
-    switch (GetParam()) {
-      case HttpCache2024ExperimentTestCase::
-          kEnabledTriplePlusCrossSiteMainFrameNavBool:
-        return "20240814-CrossSiteNavBool";
-      case HttpCache2024ExperimentTestCase::
-          kEnabledTriplePlusMainFrameNavInitiator:
-        return "20240814-MainFrameNavigationInitiator";
-      case HttpCache2024ExperimentTestCase::kEnabledTriplePlusNavInitiator:
-        return "20240814-NavigationInitiator";
-      case HttpCache2024ExperimentTestCase::kControlGroup:
-        return "20240814-ExperimentControlGroup";
-    }
-  }
-
-  base::HistogramTester histograms_;
-
- private:
-  net::test::ScopedMutuallyExclusiveFeatureList
-      split_cache_experiment_feature_list_;
-  base::test::ScopedFeatureList split_cache_always_enabled_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest,
-    testing::ValuesIn(
-        {HttpCache2024ExperimentTestCase::
-             kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         HttpCache2024ExperimentTestCase::
-             kEnabledTriplePlusMainFrameNavInitiator,
-         HttpCache2024ExperimentTestCase::kEnabledTriplePlusNavInitiator,
-         HttpCache2024ExperimentTestCase::kControlGroup}),
-    [](const testing::TestParamInfo<HttpCache2024ExperimentTestCase>& info) {
-      switch (info.param) {
-        case HttpCache2024ExperimentTestCase::
-            kEnabledTriplePlusCrossSiteMainFrameNavBool:
-          return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
-        case HttpCache2024ExperimentTestCase::
-            kEnabledTriplePlusMainFrameNavInitiator:
-          return "SplitCacheEnabledTriplePlusMainFrameNavigationInitiator";
-        case HttpCache2024ExperimentTestCase::kEnabledTriplePlusNavInitiator:
-          return "SplitCacheEnabledTriplePlusNavigationInitiator";
-        case (HttpCache2024ExperimentTestCase::kControlGroup):
-          return "ControlGroup";
-      }
-    });
-
-IN_PROC_BROWSER_TEST_P(
-    ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest,
-    PRE_TestCacheResetParameter) {
-  NavigateToCreateHttpCache();
-  CheckCacheResetStatus(&histograms_, false);
-
-  // At this point, we have already called the initialization.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK_EQ(
-      local_state->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      base::StrCat({"scoped_feature_list_trial_group None None None ",
-                    GetExperimentString()}));
-  // Set the local state for the next test.
-  local_state->SetString(
-      "profile_network_context_service.http_cache_finch_experiment_groups",
-      "None None None None");
-}
-
-// The second time we load we know the state, which was "None None None None"
-// for the previous test, so we should see a reset being in an experiment.
-IN_PROC_BROWSER_TEST_P(
-    ProfileNetworkContextServiceCacheKeySchemeExperimentBrowserTest,
-    TestCacheResetParameter) {
-  NavigateToCreateHttpCache();
-  CheckCacheResetStatus(&histograms_, true);
-
-  // At this point, we have already called the initialization once.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK_EQ(
-      local_state->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      base::StrCat({"scoped_feature_list_trial_group None None None ",
-                    GetExperimentString()}));
 }
 
 class ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest
