@@ -27,16 +27,13 @@ class DownloadProtectionDelegateDesktop : public DownloadProtectionDelegate {
   // DownloadProtectionDelegate:
   bool ShouldCheckDownloadUrl(download::DownloadItem* item) const override;
   bool ShouldCheckClientDownload(download::DownloadItem* item) const override;
-  bool IsSupportedDownload(download::DownloadItem& item,
+  bool IsSupportedDownload(const download::DownloadItem& item,
                            const base::FilePath& target_path) const override;
   const GURL& GetDownloadRequestUrl() const override;
   net::NetworkTrafficAnnotationTag
   CompleteClientDownloadRequestTrafficAnnotation(
       const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
       const override;
-  float GetAllowlistedDownloadSampleRate() const override;
-  float GetUnsupportedFileSampleRate(
-      const base::FilePath& filename) const override;
 
  private:
   const GURL download_request_url_;

@@ -77,11 +77,6 @@ static_library("safe_browsing") {
   ]
 
   if (is_android) {
-    sources += [
-      "download_protection/download_protection_delegate_android.cc",
-      "download_protection/download_protection_delegate_android.h",
-    ]
-
     deps += [
       "//chrome/browser/password_manager/android:utils",
       "//components/safe_browsing/android:safe_browsing_api_handler",
@@ -152,6 +147,8 @@ static_library("safe_browsing") {
       "download_protection/download_item_metadata.h",
       "download_protection/download_protection_delegate.cc",
       "download_protection/download_protection_delegate.h",
+      "download_protection/download_protection_delegate_desktop.cc",
+      "download_protection/download_protection_delegate_desktop.h",
       "download_protection/download_protection_observer.cc",
       "download_protection/download_protection_observer.h",
       "download_protection/download_protection_service.cc",
@@ -306,8 +303,6 @@ static_library("safe_browsing") {
         "download_protection/download_feedback.h",
         "download_protection/download_feedback_service.cc",
         "download_protection/download_feedback_service.h",
-        "download_protection/download_protection_delegate_desktop.cc",
-        "download_protection/download_protection_delegate_desktop.h",
         "download_protection/path_sanitizer.cc",
         "download_protection/path_sanitizer.h",
         "extension_telemetry/cookies_get_all_signal.cc",

@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/telemetry/android/android_telemetry_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
@@ -68,7 +67,8 @@ void ServicesDelegateAndroid::Initialize() {
       (services_creator_ &&
        services_creator_->CanCreateDownloadProtectionService())
           ? services_creator_->CreateDownloadProtectionService()
-          : CreateDownloadProtectionService());
+          // TODO(crbug.com/397407934): Implement this.
+          : nullptr);
 }
 
 void ServicesDelegateAndroid::SetDatabaseManagerForTest(
@@ -83,11 +83,7 @@ void ServicesDelegateAndroid::ShutdownServices() {
   ServicesDelegate::ShutdownServices();
 }
 
-void ServicesDelegateAndroid::RefreshState(bool enable) {
-  if (download_service_) {
-    download_service_->SetEnabled(enable);
-  }
-}
+void ServicesDelegateAndroid::RefreshState(bool enable) {}
 
 std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
 ServicesDelegateAndroid::CreatePreferenceValidationDelegate(Profile* profile) {
@@ -130,20 +126,6 @@ void ServicesDelegateAndroid::RemoveTelemetryService(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (telemetry_service_ && telemetry_service_->profile() == profile)
     telemetry_service_.reset();
-}
-
-DownloadProtectionService*
-ServicesDelegateAndroid::CreateDownloadProtectionService() {
-  auto delegate = std::make_unique<DownloadProtectionDelegateAndroid>();
-  auto download_service = std::make_unique<DownloadProtectionService>(
-      safe_browsing_service_, std::move(delegate));
-  return download_service.release();
-}
-
-void ServicesDelegateAndroid::OnProfileWillBeDestroyed(Profile* profile) {
-  if (download_service_) {
-    download_service_->RemovePendingDownloadRequests(profile);
-  }
 }
 
 }  // namespace safe_browsing
