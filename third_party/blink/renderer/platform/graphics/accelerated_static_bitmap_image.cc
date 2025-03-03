@@ -140,10 +140,10 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     viz::ReleaseCallback release_callback)
     : StaticBitmapImage(orientation),
       shared_image_(std::move(shared_image)),
-      sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
-                                       sk_color_type,
-                                       alpha_type,
-                                       std::move(sk_color_space))),
+      size_(size),
+      sk_color_type_(sk_color_type),
+      alpha_type_(alpha_type),
+      sk_color_space_(std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       mailbox_ref_(
           base::MakeRefCounted<MailboxRef>(sync_token,

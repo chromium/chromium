@@ -14,8 +14,6 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
-struct SkImageInfo;
-
 namespace gpu {
 class ClientSharedImage;
 struct ExportedSharedImage;
@@ -131,17 +129,11 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   PaintImage PaintImageForCurrentFrame() override;
 
-  gfx::Size GetSize() const override {
-    return gfx::Size(sk_image_info_.width(), sk_image_info_.height());
-  }
-  SkAlphaType GetAlphaType() const override {
-    return sk_image_info_.alphaType();
-  }
-  SkColorType GetSkColorType() const override {
-    return sk_image_info_.colorType();
-  }
+  gfx::Size GetSize() const override { return size_; }
+  SkAlphaType GetAlphaType() const override { return alpha_type_; }
+  SkColorType GetSkColorType() const override { return sk_color_type_; }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
-    return sk_image_info_.refColorSpace();
+    return sk_color_space_;
   }
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
@@ -174,7 +166,10 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   void InitializeTextureBacking(GLuint shared_image_texture_id);
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  const SkImageInfo sk_image_info_;
+  gfx::Size size_;
+  SkColorType sk_color_type_;
+  SkAlphaType alpha_type_;
+  sk_sp<SkColorSpace> sk_color_space_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<MailboxRef> mailbox_ref_;
