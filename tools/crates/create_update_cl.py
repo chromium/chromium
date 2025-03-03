@@ -687,7 +687,7 @@ def GitClUpload(*args):
     # to suppress a prompt, although I am not sure what prompt + why that prompt
     # appears.
     Git("cl", "upload", "--bypass-hooks", "--force", "-o", "banned-words~skip",
-        *args)
+        "--squash", *args)
 
 
 def GitCommit(args, title, error_if_no_changes=True):
