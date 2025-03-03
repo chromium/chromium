@@ -7,6 +7,7 @@
 
 #import <optional>
 #import <set>
+#import <variant>
 
 #import "base/unguessable_token.h"
 #import "base/values.h"
@@ -30,6 +31,36 @@ class FormData;
 class FormFieldData;
 class FieldDataManager;
 struct FrameTokenWithPredecessor;
+
+// Enumeration representing the various reasons why form data extraction might
+// fail.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(InvalidSubmittedFormReasonIOS)
+enum class ExtractFormDataFailure {
+  // The form data is missing the "name" field.
+  kMissingName = 0,
+  // The form name does not match the expected name when filtering.
+  kFilteredNameMismatch = 1,
+  // The form data is missing the "origin" field.
+  kMissingOrigin = 2,
+  // The form origin does not match the expected origin.
+  kOriginMismatch = 3,
+  // The form data is missing the "host_frame" field.
+  kMissingHostFrame = 4,
+  // The host frame token is invalid.
+  kInvalidHostFrame = 5,
+  // The frame ID does not match the host frame parameter.
+  kFrameIdMismatch = 6,
+  // The form data is missing the "fields" list.
+  kMissingFields = 7,
+  //  Failed to extract data from one or more form fields.
+  kInvalidField = 8,
+  kMaxValue = kInvalidField,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:InvalidSubmittedFormReasonIOS)
 
 // Checks if current context is secure from an autofill standpoint.
 bool IsContextSecureForWebState(web::WebState* web_state);
@@ -69,8 +100,26 @@ std::optional<std::vector<FormData>> ExtractFormsData(
 // `frame_id`. Returns nullopt if a form can not be extracted. Returns nullopt
 // if |filtered| == true and |form["name"]| != |formName|. Returns false if
 // |form["origin"]| != |form_frame_origin|. Returns an std::optional that
-// contains a FormData if the conversion succeeds.
+// contains a FormData if the conversion succeeds. Use ExtractFormDataOrFailure
+// instead if you need to know the reason for failure.
 std::optional<FormData> ExtractFormData(
+    const base::Value::Dict& form,
+    bool filtered,
+    const std::u16string& form_name,
+    const GURL& main_frame_url,
+    const url::Origin& form_frame_origin,
+    const FieldDataManager& field_data_manager,
+    const std::string& frame_id,
+    LocalFrameToken host_frame = LocalFrameToken());
+
+// Converts |form| into FormData.
+// `host_frame` is the isolated world frame corresponding to the page content
+// world frame where the forms were extracted. For forms extracted in the
+// isolated world pass a null `host_frame` as the frame token is derived from
+// `frame_id`. Returns a std::variant containing either a FormData if the
+// conversion succeeds, or an ExtractFormDataFailure enum indicating the reason
+// for failure.
+std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
     const base::Value::Dict& form,
     bool filtered,
     const std::u16string& form_name,

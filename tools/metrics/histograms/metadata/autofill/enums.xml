@@ -3518,6 +3518,24 @@ Called by update_autofill_enums.py.-->
   <int value="737" label="DRIVERS_LICENSE_ISSUE_DATE_TAG: Accepted"/>
 </enum>
 
+<!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->
+
+<enum name="FormSubmissionOutcomeIOS">
+  <summary>
+    Defines possible outcomes of handling a form submission message on iOS.
+  </summary>
+  <int value="0" label="Handled"/>
+  <int value="1" label="Invalid message body"/>
+  <int value="2" label="No frame ID"/>
+  <int value="3" label="No frame"/>
+  <int value="4" label="Is main frame discrepancy"/>
+  <int value="5" label="Missing href"/>
+  <int value="6" label="Missing form data"/>
+  <int value="7" label="Form extraction failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/ios/form_util/form_activity_tab_helper.mm:FormSubmissionOutcomeIOS) -->
+
 <enum name="IbanCountry">
   <int value="0" label="Unsupport"/>
   <int value="1" label="AD (Andorra)"/>
@@ -3653,6 +3671,25 @@ Called by update_autofill_enums.py.-->
   <int value="16"
       label="The text of a &lt;select&gt; element's first &lt;option&gt;"/>
 </enum>
+
+<!-- LINT.IfChange(InvalidSubmittedFormReasonIOS) -->
+
+<enum name="InvalidSubmittedFormReasonIOS">
+  <summary>
+    Represents the various reasons why form data extraction might fail on iOS.
+  </summary>
+  <int value="0" label="Missing name"/>
+  <int value="1" label="Filtered name mismatch"/>
+  <int value="2" label="Missing origin"/>
+  <int value="3" label="Origin mismatch"/>
+  <int value="4" label="Missing host frame"/>
+  <int value="5" label="Invalid host frame"/>
+  <int value="6" label="Frame ID mismatch"/>
+  <int value="7" label="Missing fields"/>
+  <int value="8" label="Invalid field"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/ios/browser/autofill_util.h:InvalidSubmittedFormReasonIOS) -->
 
 <enum name="LocalCardMigrationPrompt">
   <int value="0" label="Intermediate bubble shown"/>

@@ -23,6 +23,12 @@ class FormActivityObserver;
 inline constexpr char kProgrammaticFormSubmissionHistogram[] =
     "Autofill.iOS.FormSubmission.IsProgrammatic";
 
+inline constexpr char kFormSubmissionOutcomeHistogram[] =
+    "Autofill.iOS.FormSubmission.Outcome";
+
+inline constexpr char kInvalidSubmittedFormReasonHistogram[] =
+    "Autofill.iOS.FormSubmission.Outcome.InvalidFormReason";
+
 // Processes user activity messages for web page forms and forwards the form
 // activity event to FormActivityObserver.
 class FormActivityTabHelper

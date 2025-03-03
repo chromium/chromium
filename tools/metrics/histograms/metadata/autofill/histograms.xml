@@ -3483,6 +3483,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.iOS.FormSubmission.Outcome"
+    enum="FormSubmissionOutcomeIOS" expires_after="M137">
+  <owner>eic@google.com</owner>
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the outcome of a form submission on iOS. This histogram tracks the
+    various reasons why a form submission message received by the browser
+    process from the renderer may be invalid or successfully handled. Recorded
+    when the browser process receives a form submission message from the
+    renderer. iOS only.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.iOS.FormSubmission.Outcome.InvalidFormReason"
+    enum="InvalidSubmittedFormReasonIOS" expires_after="M137">
+  <owner>eic@google.com</owner>
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the reason why a submitted form data was found invalid by the
+    browser process. Recorded when the browser process receives a form
+    submission message from the renderer. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.iOS.TriggeredFormExtractionFromDriver.{Range}"
     units="count" expires_after="2025-06-11">
   <owner>vincb@google.com</owner>
