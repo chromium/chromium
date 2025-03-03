@@ -288,7 +288,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   signin::SigninChoice result;
   browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
-          account_info, /*is_oidc_account=*/false, /*force_new_profile=*/true,
+          account_info, /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false, /*force_new_profile=*/true,
           /*show_link_data_option=*/true,
           /*process_user_choice_callback=*/
           base::BindOnce([](signin::SigninChoice* result,

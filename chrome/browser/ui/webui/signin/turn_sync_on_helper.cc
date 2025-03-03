@@ -222,16 +222,18 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     signin_metrics::PromoAction signin_promo_action,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode,
-    bool is_sync_promo)
-    : TurnSyncOnHelper(
-          profile,
-          signin_access_point,
-          signin_promo_action,
-          account_id,
-          signin_aborted_mode,
-          std::make_unique<TurnSyncOnHelperDelegateImpl>(browser,
-                                                         is_sync_promo),
-          base::OnceClosure()) {
+    bool is_sync_promo,
+    bool turn_sync_on_signed_profile)
+    : TurnSyncOnHelper(profile,
+                       signin_access_point,
+                       signin_promo_action,
+                       account_id,
+                       signin_aborted_mode,
+                       std::make_unique<TurnSyncOnHelperDelegateImpl>(
+                           browser,
+                           is_sync_promo,
+                           turn_sync_on_signed_profile),
+                       base::OnceClosure()) {
   // If this is a promo, the account should not be removed on abort.
   CHECK(!is_sync_promo ||
         signin_aborted_mode == SigninAbortedMode::KEEP_ACCOUNT);

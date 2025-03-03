@@ -148,13 +148,18 @@ class TurnSyncOnHelper {
   // Convenience constructor using the default delegate and empty callback.
   // `is_sync_promo` is true if the sync confirmation dialog is offered as an
   // option. It is false if the user explicitly initiated the flow.
+  // `turn_sync_on_signed_profile` is true if the user was already signed in
+  // before starting the sync flow. Used by UIs to decide whether the signin
+  // proposition value should be shown, and what state should the user be in if
+  // they cancel.
   TurnSyncOnHelper(Profile* profile,
                    Browser* browser,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
                    const CoreAccountId& account_id,
                    SigninAbortedMode signin_aborted_mode,
-                   bool is_sync_promo);
+                   bool is_sync_promo,
+                   bool turn_sync_on_signed_profile = false);
 
   TurnSyncOnHelper(const TurnSyncOnHelper&) = delete;
   TurnSyncOnHelper& operator=(const TurnSyncOnHelper&) = delete;
