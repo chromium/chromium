@@ -114,6 +114,20 @@
   }
 
   /*
+   * For ANSI Canadian Bilingual keyboard, the usual right ctrl key is
+   * replaced by another key.
+   */
+  #caHybridKey {
+    display: none;
+  }
+  [data-region-code='ca.hybridansi'] #rightCtrlKey {
+    display: none;
+  }
+  [data-region-code='ca.hybridansi'] #caHybridKey {
+    display: block;
+  }
+
+  /*
    * On ISO and JIS, the Enter key is L-shaped (with the backslash key moved
    * down one row). To achieve this with elements that fit in the grid, two
    * separate elements are placed on the grid, with their corners and
@@ -316,7 +330,8 @@
       data-show-assistant-key$="[[showAssistantKey]]"
       data-show-fn-and-globe-keys$="[[showFnAndGlobeKeys_]]"
       data-bottom-left-layout$="[[bottomLeftLayout]]"
-      data-bottom-right-layout$="[[bottomRightLayout]]">
+      data-bottom-right-layout$="[[bottomRightLayout]]"
+      data-region-code$="[[regionCode]]">
     <!--
       Most keys aren't labelled here, as their glyphs are set from the
       appropriate layout in keyboard_layouts.js. The exceptions are keys that
@@ -527,6 +542,7 @@
     </template>
 
     <keyboard-key id="rightCtrlKey" main-glyph="ctrl" data-code="97"></keyboard-key>
+    <keyboard-key id="caHybridKey" data-code="86"></keyboard-key>
 
     <div id="arrowKeyCluster">
       <template is="dom-if"
