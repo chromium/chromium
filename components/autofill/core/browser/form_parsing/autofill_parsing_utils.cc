@@ -34,6 +34,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillSupportLastNamePrefix;
     case RegexFeature::kAutofillEnableLoyaltyCardsFilling:
       return &features::kAutofillEnableLoyaltyCardsFilling;
+    case RegexFeature::kAutofillImproveCityFieldClassification:
+      return &features::kAutofillImproveCityFieldClassification;
   }
   NOTREACHED();
 }
