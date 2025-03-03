@@ -43,6 +43,7 @@ gclient_gn_args = [
   'checkout_android_prebuilts_build_tools',
   'checkout_clang_coverage_tools',
   'checkout_copybara',
+  'checkout_glic_e2e_tests',
   'checkout_ios_webkit',
   'checkout_nacl',
   'checkout_openxr',
@@ -127,6 +128,10 @@ vars = {
   # Checkout legacy src_internal. This variable is ignored if
   # checkout_src_internal is set as false.
   'checkout_legacy_src_internal': True,
+
+
+  # Checkout test code and archives for glic E2E tests.
+  'checkout_glic_e2e_tests': False,
 
   # For super-internal deps. Set by the official builders.
   'checkout_google_internal': False,
@@ -4304,6 +4309,12 @@ deps = {
       'url': Var('chrome_git') + '/chrome/browser/glic/resources/internal.git' + '@' +
         '89532f0a6353b07720c49fec94c811bbed424592',
       'condition': 'checkout_src_internal',
+  },
+
+  'src/chrome/browser/glic/test/internal': {
+      'url': Var('chrome_git') + '/chrome/browser/glic/test/internal.git' + '@' +
+        'bb36c7416bd13b7dc244bb6178e02d9487ede0ae',
+      'condition': 'checkout_glic_e2e_tests',
   },
 
   'src/chrome/browser/google/linkdoctor_internal': {
