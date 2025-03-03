@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.ui.fast_checkout.data;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A profile, similar to the one used by the PersonalDataManager. */
+@NullMarked
 public class FastCheckoutAutofillProfile {
     private final String mGUID;
     private final boolean mIsLocal;
