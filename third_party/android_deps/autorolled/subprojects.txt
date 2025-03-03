@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,6 +19,4 @@
 # - No target in this project depends on forwarded internal dependencies.
 
 # *** START OF LIST ***
-../androidx/cipd/build.gradle:androidx
-# Commented out until the first roll is done.
-#./autorolled/cipd/build.gradle:autorolled
+../../androidx/cipd/build.gradle:androidx
