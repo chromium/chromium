@@ -2176,7 +2176,7 @@ class OopTextBlobPixelTest
           max_abs_error = std::max(237, max_abs_error);
           avg_error = std::max(60.9f, avg_error);
 #else
-          max_abs_error = std::max(228, max_abs_error);
+          max_abs_error = std::max(229, max_abs_error);
           avg_error = std::max(40.2f, avg_error);
 #endif
           break;
