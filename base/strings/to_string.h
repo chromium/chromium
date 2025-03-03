@@ -19,8 +19,8 @@
 
 namespace base {
 
-template <typename... Ts>
-std::string ToString(const Ts&... values);
+template <typename T>
+std::string ToString(const T& values);
 
 namespace internal {
 
@@ -136,14 +136,12 @@ struct ToStringHelper<std::tuple<T...>> {
 }  // namespace internal
 
 // Converts any type to a string, preferring defined operator<<() or ToString()
-// methods if they exist. If multiple `values` are given, returns the
-// concatenation of the result of applying `ToString` to each value.
-template <typename... Ts>
-std::string ToString(const Ts&... values) {
+// methods if they exist.
+template <typename T>
+std::string ToString(const T& value) {
   std::ostringstream ss;
-  (...,
-   internal::ToStringHelper<std::remove_cvref_t<decltype(values)>>::Stringify(
-       values, ss));
+  internal::ToStringHelper<std::remove_cvref_t<decltype(value)>>::Stringify(
+      value, ss);
   return ss.str();
 }
 

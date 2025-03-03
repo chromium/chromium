@@ -65,9 +65,6 @@ std::ostream& operator<<(std::ostream& os, const StreamableTestEnum& value) {
 TEST(ToStringTest, UserDefinedStreamable) {
   // Type with user-defined <<.
   EXPECT_EQ(ToString(StreamableTestEnum::kGreeting), "hello");
-  EXPECT_EQ(ToString(StreamableTestEnum::kGreeting, " ",
-                     StreamableTestEnum::kLocation),
-            "hello world");
 }
 
 TEST(ToStringTest, UserDefinedToString) {
@@ -96,12 +93,6 @@ TEST(ToStringTest, ScopedEnum) {
 TEST(ToStringTest, WideChars) {
   EXPECT_EQ(ToString(u'a'), "97");
   EXPECT_EQ(ToString(L'a'), "97");
-}
-
-TEST(ToStringTest, IoManip) {
-  // I/O manipulators should have their expected effect, not be printed as
-  // function pointers.
-  EXPECT_EQ(ToString("42 in hex is ", std::hex, 42), "42 in hex is 2a");
 }
 
 TEST(ToStringTest, Tuple) {
