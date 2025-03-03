@@ -310,7 +310,8 @@ using segmentation_platform::TipIdentifier;
   // TODO(crbug.com/366182129): Move Safety Check provisional notification
   // enrollment to `SafetyCheckNotificationClient` once
   // `ProvisionalPushNotificationUtil` circular dependencies are fixed.
-  if (IsSafetyCheckNotificationsEnabled()) {
+  if (IsSafetyCheckNotificationsEnabled() &&
+      ProvisionalSafetyCheckNotificationsEnabled()) {
     [ProvisionalPushNotificationUtil
         enrollUserToProvisionalNotificationsForClientIds:
             {PushNotificationClientId::kSafetyCheck}
