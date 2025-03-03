@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Dummy implementation of data_sharing_sdk.js for non-branded build.
-import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkResponse, DeleteGroupParams, LeaveGroupParams, ReadGroupsParams, ReadGroupsResult, RunCloseFlowParams, RunInviteFlowParams, RunJoinFlowParams, RunManageFlowParams} from './data_sharing_sdk_types.js';
+import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkResponse, DeleteGroupParams, LeaveGroupParams, ReadGroupsParams, ReadGroupsResult, RunCloseFlowParams, RunDeleteFlowParams, RunInviteFlowParams, RunJoinFlowParams, RunManageFlowParams} from './data_sharing_sdk_types.js';
 import {Code} from './data_sharing_sdk_types.js';
 
 // Add something to the dialog to tell which flow it is.
@@ -94,6 +94,10 @@ export class DataSharingSdkImpl implements DataSharingSdk {
   }
   runCloseFlow(_params: RunCloseFlowParams): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake close dialog');
+    return new Promise(() => {});
+  }
+  runDeleteFlow(_params: RunDeleteFlowParams): Promise<DataSharingSdkResponse> {
+    appendTextForTesting('A fake delete dialog');
     return new Promise(() => {});
   }
 

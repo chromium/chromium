@@ -177,6 +177,9 @@ export function createTranslationMap(): TranslationMap {
           loadTimeData.getString('deleteLastDialogHeader'),
       [StaticMessageKey.KEEP_GROUP]: loadTimeData.getString('keepGroup'),
       [StaticMessageKey.DELETE_GROUP]: loadTimeData.getString('deleteGroup'),
+      [StaticMessageKey.DELETE_FLOW_HEADER]:
+          loadTimeData.getString('deleteFlowHeader'),
+      [StaticMessageKey.DELETE]: loadTimeData.getString('delete'),
     },
     dynamic: {
       /** Invite flow */
@@ -277,6 +280,9 @@ export function createTranslationMap(): TranslationMap {
               return '';
             }
           },
+      [DynamicMessageKey.GET_DELETE_FLOW_DESCRIPTION_CONTENT]: () =>
+          loadTimeData.getStringF(
+              'deleteFlowDescriptionContent', getTabGroupName()),
     },
   };
 }
