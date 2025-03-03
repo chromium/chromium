@@ -9078,3 +9078,6 @@ crbug.com/397870172 [ Linux ] external/wpt/css/css-scroll-snap/selection-target.
 crbug.com/398165466 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screenshots.js [ Failure Pass Timeout ]
 
 crbug.com/387898495 fast/mediastream/MediaStreamTrack-applyConstraints.html [ Failure Pass ]
+
+# Gardener 2025-03-03
+crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-fill-img.html [ Failure Pass ]
