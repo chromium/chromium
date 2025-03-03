@@ -1659,6 +1659,14 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
     DCHECK_NE(danger_type,
               download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);
 
+#if BUILDFLAG(IS_ANDROID)
+    // If Android download protection is in telemetry-only mode, discard the
+    // danger_type derived from the DownloadCheckResult.
+    if (safe_browsing::kMaliciousApkDownloadCheckTelemetryOnly.Get()) {
+      danger_type = item->GetDangerType();
+    }
+#endif
+
     if (item->GetState() == DownloadItem::COMPLETE &&
         (item->GetDangerType() ==
              download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||

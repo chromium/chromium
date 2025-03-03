@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -81,7 +82,9 @@ class DownloadProtectionService {
       SafeBrowsingServiceImpl* sb_service,
       std::unique_ptr<DownloadProtectionDelegate> delegate);
 
-  // Same as above, but creates the default delegate instance.
+  // Same as above, but creates the default delegate instance. This is meant as
+  // a convenience for tests. Prefer the constructor above that explicitly
+  // provides the delegate, if possible.
   explicit DownloadProtectionService(SafeBrowsingServiceImpl* sb_service);
 
   DownloadProtectionService(const DownloadProtectionService&) = delete;
@@ -127,12 +130,15 @@ class DownloadProtectionService {
   // delivered asynchronously via the given callback.  This method must be
   // called on the UI thread, and the callback will also be invoked on the UI
   // thread.  Pre-condition: !info.download_url_chain.empty().
+  // The caller should check ShouldCheckDownloadUrl() beforehand; this is not
+  // verified in this method.
   virtual void CheckDownloadUrl(download::DownloadItem* item,
                                 CheckDownloadCallback callback);
 
   // Returns true iff the download specified by |info| should be scanned by
   // CheckClientDownload() for malicious content.
-  virtual bool IsSupportedDownload(const download::DownloadItem& item,
+  // May modify the DownloadItem with a SupportsUserData::Data.
+  virtual bool IsSupportedDownload(download::DownloadItem& item,
                                    const base::FilePath& target_path) const;
 
   virtual void CheckPPAPIDownloadRequest(
@@ -167,6 +173,7 @@ class DownloadProtectionService {
   bool enabled() const { return enabled_; }
 
   DownloadProtectionDelegate* delegate() { return delegate_.get(); }
+  const DownloadProtectionDelegate* delegate() const { return delegate_.get(); }
 
   // Returns the URL that will be contacted for download protection requests.
   const GURL& GetDownloadRequestUrl() const;
@@ -196,7 +203,7 @@ class DownloadProtectionService {
   base::CallbackListSubscription RegisterPPAPIDownloadRequestCallback(
       const PPAPIDownloadRequestCallback& callback);
 
-  double allowlist_sample_rate() const { return allowlist_sample_rate_; }
+  double allowlist_sample_rate() const;
 
   static void SetDownloadProtectionData(
       download::DownloadItem* item,
@@ -285,6 +292,7 @@ class DownloadProtectionService {
  private:
   friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
+  template <bool UseMockDbManager>
   friend class DownloadProtectionServiceTestBase;
   friend class DownloadDangerPromptTest;
   friend class CheckClientDownloadRequestBase;
@@ -446,7 +454,8 @@ class DownloadProtectionService {
   std::set<std::string> manual_blocklist_hashes_;
 
   // Rate of allowlisted downloads we sample to send out download ping.
-  double allowlist_sample_rate_;
+  // Overrides the value provided by the delegate. Intended for testing only.
+  std::optional<double> allowlist_sample_rate_ = std::nullopt;
 
   // DownloadProtectionObserver to send real time reports for dangerous download
   // events and handle special user actions on the download.

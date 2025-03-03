@@ -4,17 +4,22 @@
 
 #include "chrome/browser/safe_browsing/download_protection/download_protection_delegate.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.h"
+#else
 #include "chrome/browser/safe_browsing/download_protection/download_protection_delegate_desktop.h"
+#endif
 
 namespace safe_browsing {
 
 // static
 std::unique_ptr<DownloadProtectionDelegate>
 DownloadProtectionDelegate::CreateForPlatform() {
-  // Temporarily creates a Desktop delegate unconditionally.
-  // TODO(crbug.com/397407934): Implement and use the proper delegate for
-  // Android.
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<DownloadProtectionDelegateAndroid>();
+#else
   return std::make_unique<DownloadProtectionDelegateDesktop>();
+#endif
 }
 
 }  // namespace safe_browsing

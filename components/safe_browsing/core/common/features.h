@@ -236,7 +236,18 @@ BASE_DECLARE_FEATURE(kMaliciousApkDownloadCheck);
 // telemetry-only, and only for Enhanced Protection users. If false (default),
 // then ClientDownloadRequests for APK downloads on Android are active for all
 // Safe Browsing-enabled users, and may show warnings.
-extern const base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly;
+BASE_DECLARE_FEATURE_PARAM(bool, kMaliciousApkDownloadCheckTelemetryOnly);
+
+// Sampling percentage for ClientDownloadRequests for APK downloads on Android.
+// If this parameter is N, then a given (supported) download has a N% chance of
+// sending a ClientDownloadRequest. The value should be between 0 and 100, and
+// defaults to 100 (i.e. no downsampling).
+BASE_DECLARE_FEATURE_PARAM(int, kMaliciousApkDownloadCheckSamplePercentage);
+
+// Allows a fieldtrial config to override the APK download check service URL. If
+// empty (default), the default hardcoded URL will be used.
+extern const base::FeatureParam<std::string>
+    kMaliciousApkDownloadCheckServiceUrlOverride;
 #endif
 
 // Killswitch for fetching and executing the notification content detection

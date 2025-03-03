@@ -53,10 +53,16 @@ class ServicesDelegateAndroid : public ServicesDelegate {
   void CreateTelemetryService(Profile* profile) override;
   void RemoveTelemetryService(Profile* profile) override;
 
+  // Creates DownloadProtectionService instance and releases ownership to
+  // caller.
+  DownloadProtectionService* CreateDownloadProtectionService();
+
+  // Notifies DownloadProtectionService of profile shutdown.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // The telemetry service tied to the current profile.
   std::unique_ptr<AndroidTelemetryService> telemetry_service_;
 
-  // TODO(crbug.com/397407934): This is currently only non-null in tests.
   std::unique_ptr<DownloadProtectionService> download_service_;
 
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;

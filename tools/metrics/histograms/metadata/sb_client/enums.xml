@@ -169,6 +169,34 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="ALLOWLIST_MATCH_METRIC"/>
 </enum>
 
+<!-- LINT.IfChange(SBClientDownloadAndroidDownloadProtectionOutcome) -->
+
+<enum name="SBClientDownloadAndroidDownloadProtectionOutcome">
+  <int value="0" label="ClientDownloadRequest not sent: Other reason"/>
+  <int value="1" label="ClientDownloadRequest sent"/>
+  <int value="2"
+      label="ClientDownloadRequest not sent: Android download protection
+             disabled"/>
+  <int value="3" label="ClientDownloadRequest not sent: No display name"/>
+  <int value="4"
+      label="ClientDownloadRequest not sent: Display name from DownloadItem
+             is not a supported file type"/>
+  <int value="5"
+      label="ClientDownloadRequest not sent: Display name from Java is not a
+             supported file type"/>
+  <int value="6" label="ClientDownloadRequest not sent: Empty URL chain"/>
+  <int value="7" label="ClientDownloadRequest not sent: Invalid URL"/>
+  <int value="8"
+      label="ClientDownloadRequest not sent: Unsupported URL scheme"/>
+  <int value="9" label="ClientDownloadRequest not sent: Remote file"/>
+  <int value="10" label="ClientDownloadRequest not sent: Local file"/>
+  <int value="11" label="ClientDownloadRequest not sent: Not sampled"/>
+  <int value="12"
+      label="ClientDownloadRequest not sent: Service misconfigured"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.h:DownloadProtectionOutcome) -->
+
 <enum name="SBClientDownloadCheckDownloadStats">
   <int value="0" label="INVALID_URL"/>
   <int value="1" label="SB_DISABLED"/>

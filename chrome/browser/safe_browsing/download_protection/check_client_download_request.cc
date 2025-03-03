@@ -24,6 +24,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/common/pref_names.h"
@@ -224,11 +225,16 @@ bool CheckClientDownloadRequest::IsSupportedDownload(
     *reason = final_url.has_host() ? REASON_REMOTE_FILE : REASON_LOCAL_FILE;
     return false;
   }
+  // On Android, ignore REASON_NOT_BINARY_FILE, because it is derived from
+  // FileTypePolicies, which are currently only applicable to desktop platforms.
+  // TODO(chlily): Refactor/fix FileTypePolicies and then remove this exception.
+#if !BUILDFLAG(IS_ANDROID)
   // This check should be last, so we know the earlier checks passed.
   if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(target_path)) {
     *reason = REASON_NOT_BINARY_FILE;
     return false;
   }
+#endif
   return true;
 }
 
@@ -266,6 +272,11 @@ void CheckClientDownloadRequest::NotifySendRequest(
   UMA_HISTOGRAM_COUNTS_100(
       "SafeBrowsing.ReferrerURLChainSize.DownloadAttribution",
       request->referrer_chain().size());
+#if BUILDFLAG(IS_ANDROID)
+  DownloadProtectionDelegateAndroid::MetricsData::SetOutcome(
+      item_, DownloadProtectionDelegateAndroid::MetricsData::
+                 DownloadProtectionOutcome::kClientDownloadRequestSent);
+#endif
 }
 
 void CheckClientDownloadRequest::SetDownloadProtectionData(
@@ -380,6 +391,11 @@ void CheckClientDownloadRequest::NotifyRequestFinished(
 
   DVLOG(2) << "SafeBrowsing download verdict for: " << item_->DebugString(true)
            << " verdict:" << reason << " result:" << static_cast<int>(result);
+
+#if BUILDFLAG(IS_ANDROID)
+  DownloadProtectionDelegateAndroid::MetricsData::GetOrCreate(item_)
+      ->LogToHistogram();
+#endif
 
   item_->RemoveObserver(this);
 }

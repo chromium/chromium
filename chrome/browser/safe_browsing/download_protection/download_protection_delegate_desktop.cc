@@ -10,6 +10,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -20,6 +21,9 @@ namespace {
 
 const char kDownloadRequestUrl[] =
     "https://sb-ssl.google.com/safebrowsing/clientreport/download";
+
+// We sample 1% of allowlisted downloads to still send out download pings.
+const double kAllowlistDownloadSampleRate = 0.01;
 
 // The API key should not change so we can construct this GURL once and cache
 // it.
@@ -60,7 +64,7 @@ bool DownloadProtectionDelegateDesktop::ShouldCheckClientDownload(
 }
 
 bool DownloadProtectionDelegateDesktop::IsSupportedDownload(
-    const download::DownloadItem& item,
+    download::DownloadItem& item,
     const base::FilePath& target_path) const {
   DownloadCheckResultReason ignored_reason = REASON_MAX;
   // TODO(nparker): Remove the CRX check here once can support
@@ -110,6 +114,24 @@ net::NetworkTrafficAnnotationTag DownloadProtectionDelegateDesktop::
             }
             last_reviewed: "2025-02-25"
           })");
+}
+
+float DownloadProtectionDelegateDesktop::GetAllowlistedDownloadSampleRate()
+    const {
+  return kAllowlistDownloadSampleRate;
+}
+
+float DownloadProtectionDelegateDesktop::GetUnsupportedFileSampleRate(
+    const base::FilePath& filename) const {
+  // If this extension is specifically marked as SAMPLED_PING (as are
+  // all "unknown" extensions), we may want to sample it. Sampling it means
+  // we'll send a "light ping" with private info removed, and we won't
+  // use the verdict.
+  const FileTypePolicies* policies = FileTypePolicies::GetInstance();
+  return policies->PingSettingForFile(filename) ==
+                 DownloadFileType::SAMPLED_PING
+             ? policies->SampledPingProbability()
+             : 0.0;
 }
 
 }  // namespace safe_browsing
