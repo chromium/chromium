@@ -150,7 +150,6 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   ExtensionIconVariants icon_variants = GetIconVariants(*extension);
 
   // Add any install warnings, handle errors, and then clear out diagnostics.
-  // TODO(crbug.com/41419485): If there is an error, warnings can be omitted.
   auto& diagnostics = icon_variants.get_diagnostics();
   for (auto& diagnostic : diagnostics) {
     // If any error exists, do not load the extension.
