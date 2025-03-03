@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -37,6 +38,10 @@ BASE_FEATURE(kUseSharedBitmapProviderForSoftwareCompositing,
 CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
                                                        const gfx::Size& size)
     : CanvasResourceHost(size), host_type_(host_type) {}
+
+void CanvasRenderingContextHost::Trace(Visitor* visitor) const {
+  visitor->Trace(plain_text_painter_);
+}
 
 void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {
   if (did_record_canvas_size_to_uma_)
@@ -367,6 +372,15 @@ gfx::ColorSpace CanvasRenderingContextHost::GetRenderingContextColorSpace()
     const {
   return RenderingContext() ? RenderingContext()->GetColorSpace()
                             : gfx::ColorSpace::CreateSRGB();
+}
+
+PlainTextPainter& CanvasRenderingContextHost::GetPlainTextPainter() {
+  DCHECK(RuntimeEnabledFeatures::CanvasTextNgEnabled());
+  if (!plain_text_painter_) {
+    plain_text_painter_ =
+        MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas);
+  }
+  return *plain_text_painter_;
 }
 
 bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
