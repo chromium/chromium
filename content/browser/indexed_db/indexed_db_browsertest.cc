@@ -968,7 +968,7 @@ std::unique_ptr<net::test_server::HttpResponse> ServePath(
   return std::move(http_response);
 }
 
-#if !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
 void CorruptDatabase(const base::FilePath& idb_data_path) {
   int num_files = 0;
   int num_errors = 0;
