@@ -252,13 +252,11 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
           }));
 }
 
-- (void)signOutProfile:(ProfileIOS*)profile {
-  // TODO(crbug.com/375604649): Skip sign out if the identity to sign-in is in a
-  // different profile.
+- (void)signOutForAccountSwitchWithProfile:(ProfileIOS*)profile {
   __weak __typeof(_delegate) weakDelegate = _delegate;
   AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings, ^{
-        [weakDelegate didSignOut];
+        [weakDelegate didSignOutForAccountSwitch];
       });
 }
 

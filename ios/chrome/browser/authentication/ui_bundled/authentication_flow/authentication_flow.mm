@@ -757,7 +757,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       IdentityManagerFactory::GetForProfile(profile);
   _accountSwitchingBatchClosureRunner =
       identityManager->StartBatchOfPrimaryAccountChanges();
-  [_performer signOutProfile:profile];
+  [_performer signOutForAccountSwitchWithProfile:profile];
 }
 
 // Sets the primary identity for the current profile.
@@ -896,7 +896,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 #pragma mark AuthenticationFlowPerformerDelegate
 
-- (void)didSignOut {
+- (void)didSignOutForAccountSwitch {
   [self continueFlow];
 }
 
