@@ -51,7 +51,13 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the second iteration Autofill with AI.
+// If enabled, the client may trigger the server model for AutofillAI type
+// predictions.
+BASE_FEATURE(kAutofillAiServerModel,
+             "AutofillAiServerModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the second iteration AutofillAI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
 BASE_FEATURE(kAutofillAiWithDataSchema,
              "AutofillAiWithDataSchema",
