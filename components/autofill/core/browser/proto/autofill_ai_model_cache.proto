@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package autofill;
+
+import "components/optimization_guide/proto/features/forms_classifications.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message AutofillAiModelCacheEntryWithMetadata {
+  // The actual model server response.
+  optimization_guide.proto.AutofillAiTypeResponse server_response = 1;
+
+  // The time the cache entry was generated serialized in microseconds since
+  // the Windows epoch.
+  int64 creation_time = 2;
+}

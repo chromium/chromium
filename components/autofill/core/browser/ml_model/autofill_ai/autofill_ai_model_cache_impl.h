@@ -6,9 +6,15 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_CACHE_IMPL_H_
 
 #include <map>
+#include <memory>
+#include <string>
 
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
+#include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/leveldb_proto/public/proto_database.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 
 namespace leveldb_proto {
@@ -17,9 +23,17 @@ class ProtoDatabaseProvider;
 
 namespace autofill {
 
+// TODO(crbug.com/389631477): Investigate adding this to the snapshot file
+// collector.
+inline constexpr base::FilePath::StringViewType
+    kAutofillAiModelCacheDatabaseFileName =
+        FILE_PATH_LITERAL("AutofillAiModelCache");
+
 // `AutofillAiModelCacheImpl` implements `AutofillAiModelCache` using a
 // LevelDB as a persistence layer and a map as an in-memory cache to allow
 // synchronous access.
+// TODO(crbug.com/389631477): Implement a maximum size of the cache.
+// TODO(crbug.com/389631477): Implement a maximum lifetime for cache entries.
 class AutofillAiModelCacheImpl : public AutofillAiModelCache {
  public:
   AutofillAiModelCacheImpl(leveldb_proto::ProtoDatabaseProvider* db_provider,
@@ -35,7 +49,31 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache {
   bool Contains(FormSignature form_signature) const override;
 
  private:
-  std::map<FormSignature, CacheEntry> in_memory_cache_;
+  using CacheEntryWithMetadata = AutofillAiModelCacheEntryWithMetadata;
+
+  void UpdateInDatabase(FormSignature form_signature,
+                        const CacheEntryWithMetadata& entry);
+
+  void OnDatabaseInit(leveldb_proto::Enums::InitStatus status);
+  void OnDatabaseLoadKeysAndEntries(
+      bool success,
+      std::unique_ptr<std::map<std::string, CacheEntryWithMetadata>> entries);
+
+  base::WeakPtr<AutofillAiModelCacheImpl> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  // An in-memory cache that allows for synchronous access. Should contain the
+  // same content as the database.
+  std::map<FormSignature, CacheEntryWithMetadata> in_memory_cache_;
+
+  // The database. Use only if `db_initialized_` is `true`.
+  std::unique_ptr<leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>> db_;
+
+  // Whether the database has been initialized successfully.
+  bool db_initialized_ = false;
+
+  base::WeakPtrFactory<AutofillAiModelCacheImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
