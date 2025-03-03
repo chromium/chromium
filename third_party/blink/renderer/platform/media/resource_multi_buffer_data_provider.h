@@ -63,6 +63,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   void DidReceiveData(base::span<const char> data_length) override;
   void DidFinishLoading() override;
   void DidFail(const WebURLError&) override;
+  void Invalidate() override;
 
   // Use protected instead of private for testing purposes.
  protected:
@@ -126,6 +127,8 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
 
   // Is the client an audio element?
   bool is_client_audio_element_ = false;
+
+  bool invalidated_ = false;
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

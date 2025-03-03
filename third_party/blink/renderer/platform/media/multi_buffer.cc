@@ -455,6 +455,12 @@ void MultiBuffer::OnDataProviderEvent(DataProvider* provider_tmp) {
   }
 }
 
+void MultiBuffer::StopWriters() {
+  for (auto& entry : writer_index_) {
+    entry.second->Invalidate();
+  }
+}
+
 void MultiBuffer::MergeFrom(MultiBuffer* other) {
   {
     base::AutoLock auto_lock(data_lock_);

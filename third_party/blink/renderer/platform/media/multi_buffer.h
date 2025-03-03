@@ -129,6 +129,10 @@ class PLATFORM_EXPORT MultiBuffer {
     // Ask the data provider to stop giving us data.
     // It's ok if the effect is not immediate.
     virtual void SetDeferred(bool deferred) = 0;
+
+    // Invalidates this data provider. Used during teardown to stop any pending
+    // read events from beginning.
+    virtual void Invalidate() = 0;
   };
 
   // MultiBuffers use a global shared LRU to free memory.
@@ -298,6 +302,9 @@ class PLATFORM_EXPORT MultiBuffer {
   // some data for us. Also called when it might be appropriate
   // for a provider in a deferred state to wake up.
   void OnDataProviderEvent(DataProvider* provider);
+
+  // Stops all existing writers.
+  void StopWriters();
 
  protected:
   // Create a new writer at |pos| and return it.

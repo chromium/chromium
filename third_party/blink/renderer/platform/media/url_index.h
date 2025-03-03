@@ -137,6 +137,8 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // This must be called after the response arrives.
   bool is_cors_cross_origin() const { return is_cors_cross_origin_; }
 
+  void StopWriters() { multibuffer_.StopWriters(); }
+
   // Notifies the url index that this is currently used.
   // The url <-> URLData mapping will be eventually be invalidated if
   // this is not called regularly.
