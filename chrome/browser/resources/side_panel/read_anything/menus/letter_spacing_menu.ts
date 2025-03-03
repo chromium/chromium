@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './simple_action_menu.js';
-import '../read_anything_toolbar.css.js';
+import '../toolbar_styles_shared.css.js';
 
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
