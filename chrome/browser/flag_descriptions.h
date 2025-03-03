@@ -3659,9 +3659,6 @@ extern const char kFastPairKeyboardsDescription[];
 extern const char kFastPairPwaCompanionName[];
 extern const char kFastPairPwaCompanionDescription[];
 
-extern const char kFastPairDevicesBluetoothSettingsName[];
-extern const char kFastPairDevicesBluetoothSettingsDescription[];
-
 extern const char kFrameSinkDesktopCapturerInCrdName[];
 extern const char kFrameSinkDesktopCapturerInCrdDescription[];
 

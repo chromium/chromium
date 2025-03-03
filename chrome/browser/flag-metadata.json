@@ -4484,14 +4484,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "fast-pair-devices-bluetooth-settings",
-    "owners": [
-      "//ash/quick_pair/OWNERS",
-      "jackshira@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "fast-pair-handshake-long-term-refactor",
     "owners": [
       "//ash/quick_pair/OWNERS",
