@@ -22,9 +22,7 @@ ci.defaults.set(
     properties = {
         "perf_dashboard_machine_group": "ChromiumANGLE",
     },
-    # TODO: crbug.com/400387818 - Fix chromium -> angle autoroller, otherwise
-    # GN args and builder properties aren't synced.
-    reclient_enabled = True,
+    reclient_enabled = False,
     service_account = ci.gpu.SERVICE_ACCOUNT,
     shadow_service_account = ci.gpu.SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
