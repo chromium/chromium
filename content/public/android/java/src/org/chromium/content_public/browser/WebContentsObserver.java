@@ -177,14 +177,24 @@ public abstract class WebContentsObserver {
 
     /**
      * Notifies that the document has finished loading for the primary main frame.
+     *
+     * @param page The Page whose document has finished loading.
      * @param rfhId Identifier of the navigating frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
     public void documentLoadedInPrimaryMainFrame(
-            GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {}
+            Page page, GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {}
+
+    /**
+     * Notifies that the first contentful paint happened on the primary main frame.
+     *
+     * @param page The Page where the first contentful paint happened.
+     */
+    public void firstContentfulPaintInPrimaryMainFrame(Page page) {}
 
     /**
      * Notifies that a navigation entry has been committed.
+     *
      * @param details Details of committed navigation entry.
      */
     public void navigationEntryCommitted(LoadCommittedDetails details) {}

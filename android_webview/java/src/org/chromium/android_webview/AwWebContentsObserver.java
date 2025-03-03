@@ -141,6 +141,29 @@ public class AwWebContentsObserver extends WebContentsObserver
     }
 
     @Override
+    public void documentLoadedInPrimaryMainFrame(
+            Page page, GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient client = awContents.getNavigationClient();
+            if (client != null) {
+                client.onPageDOMContentLoadedEventFired(getAwPageFor(page));
+            }
+        }
+    }
+
+    @Override
+    public void firstContentfulPaintInPrimaryMainFrame(Page page) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            AwNavigationClient client = awContents.getNavigationClient();
+            if (client != null) {
+                client.onFirstContentfulPaint(getAwPageFor(page));
+            }
+        }
+    }
+
+    @Override
     public void didStartLoading(GURL gurl) {
         AwContents awContents = mAwContents.get();
         if (awContents != null) {

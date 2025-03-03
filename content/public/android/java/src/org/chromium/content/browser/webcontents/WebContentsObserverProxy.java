@@ -318,18 +318,36 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @CalledByNative
     private void documentLoadedInPrimaryMainFrame(
-            int renderProcessId, int renderFrameId, @LifecycleState int rfhLifecycleState) {
+            Page page,
+            int renderProcessId,
+            int renderFrameId,
+            @LifecycleState int rfhLifecycleState) {
         documentLoadedInPrimaryMainFrame(
-                new GlobalRenderFrameHostId(renderProcessId, renderFrameId), rfhLifecycleState);
+                page,
+                new GlobalRenderFrameHostId(renderProcessId, renderFrameId),
+                rfhLifecycleState);
     }
 
     @Override
     public void documentLoadedInPrimaryMainFrame(
-            GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {
+            Page page, GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
         for (; observersIterator.hasNext(); ) {
-            observersIterator.next().documentLoadedInPrimaryMainFrame(rfhId, rfhLifecycleState);
+            observersIterator
+                    .next()
+                    .documentLoadedInPrimaryMainFrame(page, rfhId, rfhLifecycleState);
+        }
+        finishObserverCall();
+    }
+
+    @CalledByNative
+    @Override
+    public void firstContentfulPaintInPrimaryMainFrame(Page page) {
+        handleObserverCall();
+        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
+        for (; observersIterator.hasNext(); ) {
+            observersIterator.next().firstContentfulPaintInPrimaryMainFrame(page);
         }
         finishObserverCall();
     }
