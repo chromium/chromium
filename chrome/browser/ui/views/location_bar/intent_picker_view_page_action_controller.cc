@@ -16,27 +16,16 @@
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
-namespace content {
-class WebContents;
-}
-
 IntentPickerViewPageActionController::IntentPickerViewPageActionController(
-    tabs::TabInterface* tab_interface)
-    : tab_interface_(*tab_interface) {
-  CHECK_NE(tab_interface, nullptr);
+    tabs::TabInterface& tab_interface)
+    : tab_interface_(tab_interface) {
+  CHECK(base::FeatureList::IsEnabled(features::kPageActionsMigration));
 }
 
 void IntentPickerViewPageActionController::UpdatePageActionVisibility(
     bool should_show_icon) {
-  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
-    return;
-  }
-  content::WebContents* const web_contents = tab_interface_->GetContents();
-  if (!web_contents) {
-    return;
-  }
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  Profile* const profile =
+      tab_interface_->GetBrowserWindowInterface()->GetProfile();
   if (profile->IsOffTheRecord()) {
     return;
   }

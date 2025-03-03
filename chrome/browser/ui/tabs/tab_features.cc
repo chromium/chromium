@@ -196,7 +196,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             *page_action_controller());
 
     intent_picker_view_page_action_controller_ =
-        std::make_unique<IntentPickerViewPageActionController>(&tab);
+        std::make_unique<IntentPickerViewPageActionController>(tab);
   }
 
   customize_chrome_side_panel_controller_ =
