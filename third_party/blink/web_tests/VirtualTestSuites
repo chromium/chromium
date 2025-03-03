@@ -43,7 +43,7 @@
     ],
     "args": ["--enable-features=AlignSurfaceLayerImplToPixelGrid"],
     "owners": ["wjmaclean@chromium.org", "pdr@chromium.org"],
-    "expires": "Mar 1, 2025"
+    "expires": "Sep 1, 2025"
   },
   {
     "prefix": "pna-permission",
