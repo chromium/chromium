@@ -188,9 +188,7 @@ to the change description. If the merge request is for multiple changes, add
 to all other change descriptions.
 
 Once the cherry-pick has landed, a bot will update the *Merge* field with
-*Merged-###* label and remove *Approved-###* if the commit references the issue.
-If for some reason the commit did not reference the issue, manually update the
-*Merge* field with *Merged-### and remove *Approved-###*.
+*Merged-###* label. If `Fixed:` was used, the bug will be closed.
 
 ### Using Gerrit UI
 
