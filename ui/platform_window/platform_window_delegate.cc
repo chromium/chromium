@@ -31,7 +31,7 @@ bool PlatformWindowDelegate::State::WillProduceFrameOnUpdateFrom(
   // OnWindowStateChanged will schedule relayout even without the bounds change.
   return old.window_state != window_state ||
          old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
-         old.window_scale != window_scale || old.raster_scale != raster_scale;
+         old.window_scale != window_scale;
 }
 
 std::string PlatformWindowDelegate::State::ToString() const {
@@ -41,7 +41,6 @@ std::string PlatformWindowDelegate::State::ToString() const {
   result << ", bounds_dip = " << bounds_dip.ToString();
   result << ", size_px = " << size_px.ToString();
   result << ", window_scale = " << window_scale;
-  result << ", raster_scale = " << raster_scale;
   result << ", ui_scale = " << ui_scale;
   result << ", occlusion_state = " << static_cast<int>(occlusion_state);
   result << "}";
