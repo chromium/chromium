@@ -651,6 +651,7 @@ void ScannerController::OpenFeedbackDialog(
     const AccountId& account_id,
     manta::proto::ScannerAction action,
     scoped_refptr<base::RefCountedMemory> screenshot) {
+  RecordScannerFeatureUserState(ScannerFeatureUserState::kFeedbackFormOpened);
   base::Value::Dict action_dict = ScannerActionToDict(std::move(action));
 
   std::optional<std::string> user_facing_string = ValueToUserFacingString(

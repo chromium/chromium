@@ -2095,6 +2095,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="53" label="Sunfish-session started using the button in Launcher"/>
   <int value="54"
       label="Sunfish-session started using a long-press on the home button"/>
+  <int value="55" label="Feedback dialog was opened"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->
