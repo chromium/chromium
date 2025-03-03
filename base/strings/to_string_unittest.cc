@@ -8,6 +8,8 @@
 #include <ostream>
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -118,6 +120,26 @@ TEST(ToStringTest, FunctionPointer) {
 
   // Functions should be treated like function pointers.
   EXPECT_EQ(ToString(Func), ToString(&Func));
+}
+
+TEST(ToStringTest, Pointer) {
+  int i = 42;
+  std::string result_string = ToString(&i);
+
+  // The result of ToString() on a pointer is a string that begins with "0x" on
+  // all platforms except for Windows...
+  ASSERT_GT(result_string.size(), 2);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_NE(result_string.substr(0, 2), "0x");
+#else
+  EXPECT_EQ(result_string.substr(0, 2), "0x");
+#endif
+
+  // ... and whose contents is the hex representation of the value of the actual
+  // pointer value.
+  uint64_t result_int;
+  ASSERT_TRUE(HexStringToUInt64(result_string, &result_int));
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(&i), result_int);
 }
 
 class OverloadsAddressOp {
