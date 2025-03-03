@@ -42,8 +42,6 @@ class FastPairDelegate {
   virtual void SetAdapterStateController(
       AdapterStateController* adapter_state_controller) = 0;
   virtual void SetDeviceNameManager(DeviceNameManager* device_name_manager) = 0;
-  virtual std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
-  GetFastPairableDeviceProperties() = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

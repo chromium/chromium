@@ -33,7 +33,6 @@ export function createDefaultBluetoothDevice(
       imageInfo: null,
     },
     nickname: nickname || null,
-    fastPairableDevicePairingState: null,
   };
 }
 
