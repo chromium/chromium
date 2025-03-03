@@ -43,6 +43,17 @@ void RecordEntryPointImpressionMetric(LobsterEntryPoint entry_point) {
   }
 }
 
+void RecordEntryPointConsentRequiredMetric(LobsterEntryPoint entry_point) {
+  switch (entry_point) {
+    case LobsterEntryPoint::kQuickInsert:
+      RecordLobsterState(LobsterMetricState::kQuickInsertTriggerNeedsConsent);
+      return;
+    case LobsterEntryPoint::kRightClickMenu:
+      RecordLobsterState(LobsterMetricState::kRightClickTriggerNeedsConsent);
+      return;
+  }
+}
+
 }  // namespace
 
 LobsterController::Trigger::Trigger(
@@ -126,6 +137,10 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
       RecordLobsterBlockedReason(failed_reason);
     }
     return nullptr;
+  }
+
+  if (system_state.status == LobsterStatus::kConsentNeeded) {
+    RecordEntryPointConsentRequiredMetric(entry_point);
   }
 
   // Creates the trigger point if the status is either enabled, or requires
