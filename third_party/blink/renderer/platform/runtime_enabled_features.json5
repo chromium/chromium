@@ -2053,10 +2053,6 @@
       status: "stable",
     },
     {
-      name: "FindTextInReadonlyTextInput",
-      status: "experimental",
-    },
-    {
       name: "Fledge",
       status: "stable",
       base_feature: "none",

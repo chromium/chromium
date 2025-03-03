@@ -35,7 +35,6 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/functional/function_ref.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
@@ -118,14 +117,6 @@ class BLINK_EXPORT WebNode {
   WebElement QuerySelector(const WebString& selector) const;
 
   std::vector<WebElement> QuerySelectorAll(const WebString& selector) const;
-
-  // Returns the contents of the first descendant that is either (1) an element
-  // containing only text or (2) a readonly text input, whose text contains the
-  // given substring, if the validity checker returns true for it. The substring
-  // search is ASCII case insensitive.
-  WebString FindTextInElementWith(
-      const WebString& substring,
-      base::FunctionRef<bool(const WebString&)> validity_checker) const;
 
   // Returns all Text nodes where `regex` would match for the text inside of
   // the node, case-insensitive. This function does not normalize adjacent Text
