@@ -5,7 +5,6 @@
 import os.path
 import sys
 import tempfile
-from typing import cast
 import unittest
 
 # Force local directory to be in front of sys.path to avoid importing different
@@ -32,20 +31,53 @@ def _TempCacheFile():
   return file_path
 
 
+def _MockInputFromTestFile(relative_path: str) -> (MockInputApi, str):
+  """ Returns a MockInputApi that list a file relative to test_data/ as changed.
+
+  The provided file is read and its contents are provided to the MockInputApi.
+
+  Args:
+    relative_path: The relative path to the file to mock.
+
+  Returns:
+    A MockInputApi that lists the provided file as only one changed and full
+    path to that file.
+  """
+  full_path = f'{os.path.dirname(__file__)}/test_data/{relative_path}'
+  with open(full_path, 'r') as f:
+    contents = f.read()
+
+  mock_input_api = MockInputApi()
+  mock_input_api.presubmit_local_path = _BASE_DIR
+  mock_input_api.files = [
+      MockAffectedFile(full_path, [contents]),
+  ]
+  return (mock_input_api, full_path)
+
+
+def _MockInputFromString(path: str, contents: str) -> MockInputApi:
+  """ Returns a MockInputApi with single changed file with given contents.Api.
+
+  Args:
+    path: Fake path to the file to mock.
+    contents: The contents of the file to mock.
+
+  Returns:
+    A MockInputApi that lists the provided file as only one changed.
+  """
+  mock_input_api = MockInputApi()
+  mock_input_api.presubmit_local_path = _BASE_DIR
+  mock_input_api.files = [
+      MockAffectedFile(path, [contents]),
+  ]
+  return mock_input_api
+
+
 class MetricsPresubmitTest(unittest.TestCase):
 
   def testCheckHistogramFormattingFailureIsDetected(self):
-    malformed_histograms_path = (
-        f'{os.path.dirname(__file__)}'
-        '/test_data/tokens/token_errors_histograms.xml')
-
-    with open(malformed_histograms_path, 'r') as f:
-      malformed_contents = f.read()
-    mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = _BASE_DIR
-    mock_input_api.files = [
-        MockAffectedFile(malformed_histograms_path, malformed_contents),
-    ]
+    (mock_input_api, malformed_histograms_path
+     ) = _MockInputFromTestFile('tokens/token_errors_histograms.xml')
 
     results = PRESUBMIT.ExecuteCheckHistogramFormatting(
         mock_input_api,
@@ -70,10 +102,6 @@ class MetricsPresubmitTest(unittest.TestCase):
         ' fix the reported errors.')
 
   def testCheckWebViewHistogramsAllowlistOnUploadFailureIsDetected(self):
-    missing_allow_list_entries_histograms_path = (
-        f'{os.path.dirname(__file__)}'
-        '/test_data'
-        '/no_allowlist_entries_histograms.xml')
     valid_enums_path = (f'{os.path.dirname(__file__)}'
                         '/test_data'
                         '/example_valid_enums.xml')
@@ -81,14 +109,8 @@ class MetricsPresubmitTest(unittest.TestCase):
                               '/test_data'
                               '/allowlist_example.txt')
 
-    with open(missing_allow_list_entries_histograms_path, 'r') as f:
-      invalid_histograms_contents = f.read()
-    mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = _BASE_DIR
-    mock_input_api.files = [
-        MockAffectedFile(missing_allow_list_entries_histograms_path,
-                         invalid_histograms_contents),
-    ]
+    (mock_input_api, missing_allow_list_entries_histograms_path
+     ) = _MockInputFromTestFile('no_allowlist_entries_histograms.xml')
 
     results = PRESUBMIT.ExecuteCheckWebViewHistogramsAllowlistOnUpload(
         mock_input_api,
@@ -106,12 +128,8 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(results[0].type, 'error')
 
   def testCheckBooleansAreEnumsFailureIsDetected(self):
-    mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = _BASE_DIR
-    mock_input_api.files = [
-        MockAffectedFile('histograms.xml',
-                         ['<histogram name="Foo" units="Boolean" />']),
-    ]
+    mock_input_api = _MockInputFromString(
+        'histograms.xml', '<histogram name="Foo" units="Boolean" />')
 
     results = PRESUBMIT.ExecuteCheckBooleansAreEnums(mock_input_api,
                                                      MockOutputApi())
@@ -119,25 +137,16 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertRegex(
         results[0].message.replace('\n', ' '),
         '.*You are using .units. for a boolean histogram, but you should be'
-        ' using\s+.enum. instead\.')
+        ' using\\s+.enum. instead\\.')
     self.assertEqual(results[0].type, 'promptOrNotify')
 
   def testCheckHistogramFormattingPasses(self):
-    valid_histograms_path = (f'{os.path.dirname(__file__)}'
-                             '/test_data'
-                             '/example_valid_histograms.xml')
     valid_enums_path = (f'{os.path.dirname(__file__)}'
                         '/test_data'
                         '/example_valid_enums.xml')
 
-    with open(valid_histograms_path, 'r') as f:
-      valid_contents = f.read()
-
-    mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = _BASE_DIR
-    mock_input_api.files = [
-        MockAffectedFile(valid_histograms_path, valid_contents),
-    ]
+    (mock_input_api, valid_histograms_path
+     ) = _MockInputFromTestFile('example_valid_histograms.xml')
 
     results = PRESUBMIT.ExecuteCheckHistogramFormatting(
         mock_input_api,
@@ -150,9 +159,6 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
   def testCheckWebViewHistogramsAllowlistOnUploadPasses(self):
-    valid_histograms_path = (f'{os.path.dirname(__file__)}'
-                             '/test_data'
-                             '/example_valid_histograms.xml')
     valid_enums_path = (f'{os.path.dirname(__file__)}'
                         '/test_data'
                         '/example_valid_enums.xml')
@@ -160,14 +166,8 @@ class MetricsPresubmitTest(unittest.TestCase):
                               '/test_data'
                               '/allowlist_example.txt')
 
-    with open(valid_histograms_path, 'r') as f:
-      valid_contents = f.read()
-
-    mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = _BASE_DIR
-    mock_input_api.files = [
-        MockAffectedFile(valid_histograms_path, valid_contents),
-    ]
+    (mock_input_api, valid_histograms_path
+     ) = _MockInputFromTestFile('example_valid_histograms.xml')
 
     results = PRESUBMIT.ExecuteCheckWebViewHistogramsAllowlistOnUpload(
         mock_input_api,
@@ -180,12 +180,8 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
   def testCheckBooleansAreEnumsPasses(self):
-    mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = _BASE_DIR
-    mock_input_api.files = [
-        MockAffectedFile('histograms.xml',
-                         ['<histogram name="Foo" enum="Boolean" />']),
-    ]
+    mock_input_api = _MockInputFromString(
+        'histograms.xml', '<histogram name="Foo" enum="Boolean" />')
 
     results = PRESUBMIT.ExecuteCheckBooleansAreEnums(mock_input_api,
                                                      MockOutputApi())
@@ -193,39 +189,32 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
   def _CacheSize(self, cache_file_path, observed_directory_path):
-    cache = PresubmitCache(cache_file_path,observed_directory_path)
+    cache = PresubmitCache(cache_file_path, observed_directory_path)
     return len(cache.InspectCacheForTesting().data)
 
   def testSecondCheckOnTheSameDataReturnsSameResult(self):
     test_cache_file = _TempCacheFile()
-    mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = _BASE_DIR
-    mock_input_api.files = [
-        MockAffectedFile('histograms.xml',
-                         ['<histogram name="Foo" units="Boolean" />']),
-    ]
+    mock_input_api = _MockInputFromString(
+        'histograms.xml', '<histogram name="Foo" units="Boolean" />')
 
     # The cache should be empty before we run any presubmit checks.
     self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 0)
 
-    results = PRESUBMIT.CheckBooleansAreEnums(
-        mock_input_api,
-        MockOutputApi(),
-        cache_file_path=test_cache_file)
+    results = PRESUBMIT.CheckBooleansAreEnums(mock_input_api,
+                                              MockOutputApi(),
+                                              cache_file_path=test_cache_file)
     self.assertEqual(len(results), 1)
     self.assertRegex(
         results[0].message.replace('\n', ' '),
         '.*You are using .units. for a boolean histogram, but you should be'
-        ' using\s+.enum. instead\.')
+        ' using\\s+.enum. instead\\.')
     self.assertEqual(results[0].type, 'promptOrNotify')
 
     # The cache should now store a single entry for the check above.
     self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 1)
 
     second_results = PRESUBMIT.CheckBooleansAreEnums(
-        mock_input_api,
-        MockOutputApi(),
-        cache_file_path=test_cache_file)
+        mock_input_api, MockOutputApi(), cache_file_path=test_cache_file)
     self.assertEqual(len(second_results), 1)
     self.assertEqual(results[0].message, second_results[0].message)
     self.assertEqual(results[0].type, second_results[0].type)
@@ -236,20 +225,15 @@ class MetricsPresubmitTest(unittest.TestCase):
 
   def testSecondCheckOnTheSameDataReturnsSameEmptyResult(self):
     test_cache_file = _TempCacheFile()
-    mock_input_api = MockInputApi()
-    mock_input_api.presubmit_local_path = _BASE_DIR
-    mock_input_api.files = [
-        MockAffectedFile('histograms.xml',
-                         ['<histogram name="Foo" enum="Boolean" />']),
-    ]
+    mock_input_api = _MockInputFromString(
+        'histograms.xml', '<histogram name="Foo" enum="Boolean" />')
 
     # The cache should be empty before we run any presubmit checks.
     self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 0)
 
-    results = PRESUBMIT.CheckBooleansAreEnums(
-        mock_input_api,
-        MockOutputApi(),
-        cache_file_path=test_cache_file)
+    results = PRESUBMIT.CheckBooleansAreEnums(mock_input_api,
+                                              MockOutputApi(),
+                                              cache_file_path=test_cache_file)
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(results), 0)
 
@@ -257,9 +241,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(self._CacheSize(test_cache_file, _BASE_DIR), 1)
 
     second_results = PRESUBMIT.CheckBooleansAreEnums(
-        mock_input_api,
-        MockOutputApi(),
-        cache_file_path=test_cache_file)
+        mock_input_api, MockOutputApi(), cache_file_path=test_cache_file)
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(second_results), 0)
 
@@ -286,10 +268,9 @@ class MetricsPresubmitTest(unittest.TestCase):
     # The cache should be empty before we run any presubmit checks.
     self.assertEqual(self._CacheSize(test_cache_file, test_dir), 0)
 
-    results = PRESUBMIT.CheckBooleansAreEnums(
-        mock_input_api,
-        MockOutputApi(),
-        cache_file_path=test_cache_file)
+    results = PRESUBMIT.CheckBooleansAreEnums(mock_input_api,
+                                              MockOutputApi(),
+                                              cache_file_path=test_cache_file)
     # Zero results mean that there were no errors reported.
     self.assertEqual(len(results), 0)
 
@@ -304,20 +285,56 @@ class MetricsPresubmitTest(unittest.TestCase):
     ]
 
     second_results = PRESUBMIT.CheckBooleansAreEnums(
-        mock_input_api,
-        MockOutputApi(),
-        cache_file_path=test_cache_file)
+        mock_input_api, MockOutputApi(), cache_file_path=test_cache_file)
 
     self.assertEqual(len(second_results), 1)
     self.assertRegex(
         second_results[0].message.replace('\n', ' '),
         '.*You are using .units. for a boolean histogram, but you should be'
-        ' using\s+.enum. instead\.')
+        ' using\\s+.enum. instead\\.')
     self.assertEqual(second_results[0].type, 'promptOrNotify')
 
     # The cache should now have an extra entry as the second check was done on
     # a different version of the file.
     self.assertEqual(self._CacheSize(test_cache_file, test_dir), 2)
+
+  def testRegisteredVariantsArePassingValidation(self):
+    valid_tokens_histograms_relative_paths = [
+        'tokens/variants_inline_histograms.xml',
+        'tokens/variants_out_of_line_explicit_histograms.xml',
+        'tokens/variants_out_of_line_implicit_histograms.xml',
+    ]
+    for relative_path in valid_tokens_histograms_relative_paths:
+      (mock_input_api, input_path) = _MockInputFromTestFile(relative_path)
+
+      results = PRESUBMIT.ExecuteCheckHistogramFormatting(
+          mock_input_api,
+          MockOutputApi(),
+          allow_test_paths=True,
+          xml_paths_override=[input_path])
+
+      self.assertEqual(len(results), 0)
+
+  def testNonregisteredVariantsAreFailingValidation(self):
+    (mock_input_api, input_path
+     ) = _MockInputFromTestFile('tokens/variants_missing_histograms.xml')
+
+    results = PRESUBMIT.ExecuteCheckHistogramFormatting(
+        mock_input_api,
+        MockOutputApi(),
+        allow_test_paths=True,
+        xml_paths_override=[input_path, _TOP_LEVEL_ENUMS_PATH])
+
+    self.assertEqual(len(results), 1)
+
+    # validate_format.py also reports all errors as Histogram malformatted
+    # errors, detailed errors are printed and the error itself refers back
+    # to validate_format.py.
+    self.assertEqual(results[0].type, 'error')
+    self.assertRegex(
+        results[0].message,
+        'Histograms are not well-formatted; please run .*validate_format.py and'
+        ' fix the reported errors.')
 
 
 if __name__ == '__main__':

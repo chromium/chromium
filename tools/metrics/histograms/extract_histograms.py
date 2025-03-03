@@ -344,7 +344,7 @@ def _ProcessBaseHistogramAttribute(node, histogram_entry):
 # }
 
 
-def _ExtractTokens(histogram, variants_dict):
+def ExtractTokens(histogram, variants_dict):
   """Extracts tokens and variants from the given histogram element.
 
   Args:
@@ -540,7 +540,7 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
         histogram_entry['enum'] = enums[enum_name]
 
     # Find <token> tag.
-    tokens, have_token_errors = _ExtractTokens(histogram, variants_dict)
+    tokens, have_token_errors = ExtractTokens(histogram, variants_dict)
     have_errors = have_errors or have_token_errors
     if tokens:
       histogram_entry['tokens'] = tokens
