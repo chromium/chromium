@@ -16,46 +16,46 @@ namespace network_time {
 
 // Update as follows:
 //
-// curl -i "http://clients2.google.com/time/1/current?cup2key=8:123123123"
+// curl -i "http://clients2.google.com/time/1/current?cup2key=9:123123123"
 //
-// where 8 is the key version and 123123123 is the nonce.  Copy the response
+// where 9 is the key version and 123123123 is the nonce.  Copy the response
 // and the x-cup-server-proof header into |kGoodTimeResponseBody| and
 // |kGoodTimeResponseServerProofHeader| respectively, and the
 // 'current_time_millis' value of the response into
 // |kGoodTimeResponseHandlerJsTime|.  Do this five times, so that the five
 // requests appear in order below.
 const char* kGoodTimeResponseBody[] = {
-    ")]}'\n{\"current_time_millis\":1707850276713,\"server_nonce\":3."
-    "12767027640506E-119}",
-    ")]}'\n{\"current_time_millis\":1707850276847,\"server_nonce\":-5."
-    "835329309579494E-23}",
-    ")]}'\n{\"current_time_millis\":1707850276975,\"server_nonce\":4."
-    "012053606543568E-64}",
-    ")]}'\n{\"current_time_millis\":1707850277110,\"server_nonce\":-4."
-    "979081124791505E145}",
-    ")]}'\n{\"current_time_millis\":1707850277238,\"server_nonce\":7."
-    "324863778238033E240}"};
+    ")]}'\n{\"current_time_millis\":1740704215210,\"server_nonce\":9."
+    "745905051023761E19}",
+    ")]}'\n{\"current_time_millis\":1740704303680,\"server_nonce\":5."
+    "980509301132054E-279}",
+    ")]}'\n{\"current_time_millis\":1740704348254,\"server_nonce\":-1."
+    "9206278609497336E158}",
+    ")]}'\n{\"current_time_millis\":1740704410539,\"server_nonce\":2."
+    "8152807398526608E54}",
+    ")]}'\n{\"current_time_millis\":1740704459047,\"server_nonce\":2."
+    "934095446221426E135}"};
 
 const char* kGoodTimeResponseServerProofHeader[] = {
-    "3045022054b5032071e0e1b8254c0aaf3b5d1c241508e60690ca3a431b70ac1cabbd6dbd02"
-    "2100f49ab1dac93b7787d2a918e30f06c948fef9d46811140b52f978bb963e171d85:"
+    "3045022100a2bd5c42903ba33e71fab61df42c4d92100e7f3af1e5123ac127be7972349f10"
+    "02207cc0cd0a3b96f9ee1bb1d7e405f35f8adabfa757c368c253fe4eee65baa39300:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "3044022056349d9bf7037653721d510b8d034f10e108c18b52894787adbf701ce7f399c302"
-    "202ee2a43ccc91d9ed69b2ba830e2a391446030848ede1a7b40654feac9a579b1e:"
+    "304502206642abea1998c7bcba589d0381da0a3b630c4d400b8bc1e066da22f21d9e628b02"
+    "2100efef9b1be15f5c4de123c14daf0155fe4512156491c871c0170e1da7df53c769:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "3044022014ceed219cab9d0e9a429c7c6c8f2c21f7a1f335ff8f666352b128fa0d847ce802"
-    "200a59aec15ecb0450ad8abfe96dc331b7aa2e136c4e193484b8fd8b575146080a:"
+    "304402201ef61d4f677e3837b661e79c6a9e153ee3e46444600565a2aeff603e60ab2b6102"
+    "2077c6c22b5324575bdafe956d282ab2b5ac6d6ed2fb4204277530726fa3404c4c:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "3044022070c5f7bb0b6536940e11f063b6b9e4822435f08bf96cf90f89e95b27f537940202"
-    "200a49bf1c5f16b802a47982f819621026d3f28e986b7f65866f20eef89e8499f6:"
+    "3046022100e263fe9c2541fb98ebcf5f7998f0957b4f3994d565cf0e97b9eaf33fb14ad6a8"
+    "022100fa7d688f4fc929d31ab79a155f0b119739d0a7e5ab84da69495cdc47dbcb4a93:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "30460221009ee20fd89cc2933d95c9069db4fb95d0dde12b6308cd0f6902f88b34b1a80a20"
-    "022100bae4573e1177be340523038b65b6f0658b270b9698f1db353379d95821b3ea66:"
+    "30460221008fa418b8a9f934ff1ae305f9e956faf0e73c8c1cab05437e43d3d5bd2aa22a3b"
+    "022100f98811ca4b3663e94b6ce1ee7b1214e00ff9944e8bd37121f36b78c57d0f7261:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
 };
 
 const double kGoodTimeResponseHandlerJsTime[] = {
-    1707850276713, 1707850276847, 1707850276975, 1707850277110, 1707850277238};
+    1740704215210, 1740704303680, 1740704348254, 1740704410539, 1740704459047};
 
 std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
     const net::test_server::HttpRequest& request) {
