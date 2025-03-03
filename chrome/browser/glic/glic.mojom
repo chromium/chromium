@@ -361,6 +361,13 @@ interface WebClientHandler {
   // Scrolls to and (optionally) highlights content specified by `params`.
   // Returns an error reason if the scroll fails, or null otherwise.
   ScrollTo(ScrollToParams params) => (ScrollToErrorReason? error_reason);
+
+  // Enrolls Chrome in the synthetic experiment group specified by
+  // trial_name.group_name. Enrollment will start when the API is called and end
+  // when Chrome closes.
+  SetSyntheticExperimentState(string trial_name,
+                              string group_name);
+
 };
 
 // State of the glic panel.

@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
+#include "chrome/browser/glic/glic_synthetic_trial_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
@@ -95,6 +96,11 @@ class GlicKeyedService : public KeyedService {
   void SetContextAccessIndicator(bool show);
   void NotifyWindowIntentToShow();
 
+  // Accessor for the GlicSyntheticTrialManager singleton. This exists as a
+  // singleton so that it may be shared across multiple profiles.
+  raw_ptr<GlicSyntheticTrialManager> synthetic_trial_manager() {
+    return GlicSyntheticTrialManager::GetInstance();
+  }
   // Callback for changes to focused tab data.
   using FocusedTabChangedCallback =
       base::RepeatingCallback<void(FocusedTabData)>;

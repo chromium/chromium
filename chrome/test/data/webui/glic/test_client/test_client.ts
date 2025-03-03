@@ -70,6 +70,10 @@ interface PageElementTypes {
   fileDropList: HTMLDivElement;
   showDirectoryPicker: HTMLButtonElement;
   failInitializationCheckbox: HTMLInputElement;
+  setExperiment: HTMLButtonElement;
+  trialName: HTMLInputElement;
+  groupName: HTMLInputElement;
+  setExperimentStatus: HTMLSpanElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -637,6 +641,14 @@ window.addEventListener('load', () => {
     } catch (error) {
       $.desktopScreenshotErrorReason!.innerText = `Caught error: ${error}`;
     }
+  });
+  $.setExperiment.addEventListener('click', async () => {
+    const trialName = $.trialName.value;
+    const groupName = $.groupName.value;
+    $.setExperimentStatus!.innerText +=
+        `\nSetting experiment: ${trialName} ${groupName}`;
+    await getBrowser()!.setSyntheticExperimentState!(trialName, groupName);
+    $.setExperimentStatus!.innerText += '\nExperiment State Set.';
   });
 });
 
