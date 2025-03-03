@@ -63,6 +63,7 @@ source_set("unit_tests") {
     ":contextual_cueing",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser:global_features",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",
     "//pdf:buildflags",

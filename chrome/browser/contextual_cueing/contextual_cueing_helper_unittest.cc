@@ -8,6 +8,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
@@ -15,6 +16,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -72,14 +76,15 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     ChromeRenderViewHostTestHarness::SetUp();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    local_state_ = std::make_unique<TestingPrefServiceSimple>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
     optimization_guide::model_execution::prefs::RegisterProfilePrefs(
         pref_service_->registry());
-    local_state_->registry()->RegisterBooleanPref(
-        ::prefs::kComponentUpdatesEnabled, true, PrefRegistry::LOSSY_PREF);
 
     ((FakeOptimizationGuideKeyedService*)
          OptimizationGuideKeyedServiceFactory::GetForProfile(profile()))
@@ -87,9 +92,14 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
             std::make_unique<
                 optimization_guide::ModelExecutionFeaturesController>(
                 pref_service_.get(), identity_test_env_.identity_manager(),
-                local_state_.get(),
+                profile_manager_->local_state()->Get(),
                 optimization_guide::ModelExecutionFeaturesController::
                     DogfoodStatus::NON_DOGFOOD));
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void EnableSignIn() {
@@ -124,9 +134,9 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
