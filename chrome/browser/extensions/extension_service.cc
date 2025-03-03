@@ -304,14 +304,14 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
   // installed by returning false.
   install_stage_tracker->ReportInstallationStage(
       info.extension_id, InstallStageTracker::Stage::PENDING);
-  if (!pending_extension_manager()->AddFromExternalUpdateUrl(
+  if (!pending_extension_manager_->AddFromExternalUpdateUrl(
           info.extension_id, info.install_parameter, info.update_url,
           info.download_location, info.creation_flags,
           info.mark_acknowledged)) {
     // We can reach here if the extension from an equal or higher priority
     // source is already present in the |pending_extension_list_|. No need to
     // report the failure in this case.
-    if (!pending_extension_manager()->IsIdPending(info.extension_id)) {
+    if (!pending_extension_manager_->IsIdPending(info.extension_id)) {
       install_stage_tracker->ReportFailure(
           info.extension_id,
           InstallStageTracker::FailureReason::PENDING_ADD_FAILED);
@@ -330,7 +330,7 @@ void ExtensionService::OnExternalProviderUpdateComplete(
     const std::vector<ExternalInstallInfoUpdateUrl>& update_url_extensions,
     const std::vector<ExternalInstallInfoFile>& file_extensions,
     const std::set<std::string>& removed_extensions) {
-  // Update pending_extension_manager() with the new extensions first.
+  // Update pending_extension_manager_ with the new extensions first.
   for (const auto& extension : update_url_extensions) {
     OnExternalExtensionUpdateUrlFound(extension, false);
   }
@@ -477,10 +477,6 @@ ExtensionService::ExtensionService(
                           base::Unretained(this)));
 }
 
-PendingExtensionManager* ExtensionService::pending_extension_manager() {
-  return pending_extension_manager_;
-}
-
 CorruptedExtensionReinstaller*
 ExtensionService::corrupted_extension_reinstaller() {
   return &corrupted_extension_reinstaller_;
@@ -608,7 +604,7 @@ scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
   const std::string& id = file.extension_id;
 
   const PendingExtensionInfo* pending_extension_info =
-      pending_extension_manager()->GetById(id);
+      pending_extension_manager_->GetById(id);
 
   const Extension* extension = registry_->GetInstalledExtension(id);
   if (!pending_extension_info && !extension) {
@@ -1284,7 +1280,7 @@ void ExtensionService::OnExtensionInstalled(
       extension_registrar_->GetDisableReasonsOnInstalled(extension);
   std::string install_parameter;
   const PendingExtensionInfo* pending_extension_info =
-      pending_extension_manager()->GetById(id);
+      pending_extension_manager_->GetById(id);
   bool is_reinstall_for_corruption =
       corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
           extension->id());
@@ -1300,7 +1296,7 @@ void ExtensionService::OnExtensionInstalled(
         ExtensionSyncService::Get(profile_)->DeleteThemeDoNotUse(*extension);
       }
 
-      pending_extension_manager()->Remove(id);
+      pending_extension_manager_->Remove(id);
 
       ExtensionManagement* management =
           ExtensionManagementFactory::GetForBrowserContext(profile());
@@ -1320,7 +1316,7 @@ void ExtensionService::OnExtensionInstalled(
     }
 
     install_parameter = pending_extension_info->install_parameter();
-    pending_extension_manager()->Remove(id);
+    pending_extension_manager_->Remove(id);
   } else if (!is_reinstall_for_corruption) {
     // We explicitly want to re-enable an uninstalled external
     // extension; if we're here, that means the user is manually
@@ -1548,7 +1544,7 @@ bool ExtensionService::OnExternalExtensionFileFound(
   }
 
   // If the extension is already pending, don't start an install.
-  if (!pending_extension_manager()->AddFromExternalFile(
+  if (!pending_extension_manager_->AddFromExternalFile(
           info.extension_id, info.crx_location, info.version,
           info.creation_flags, info.mark_acknowledged)) {
     return false;
@@ -1556,7 +1552,7 @@ bool ExtensionService::OnExternalExtensionFileFound(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (extension_misc::IsDemoModeChromeApp(info.extension_id)) {
-    pending_extension_manager()->Remove(info.extension_id);
+    pending_extension_manager_->Remove(info.extension_id);
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1606,7 +1602,7 @@ void ExtensionService::InstallationFromExternalFileFinished(
     // When installation is finished, the extension should not remain in the
     // pending extension manager. For successful installations this is done in
     // OnExtensionInstalled handler.
-    pending_extension_manager()->Remove(extension_id);
+    pending_extension_manager_->Remove(extension_id);
   }
 }
 

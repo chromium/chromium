@@ -246,8 +246,8 @@ class TestKioskLoaderVisitor
       return false;
     }
 
-    if (!extension_service_->pending_extension_manager()->IsIdPending(
-            extension->id())) {
+    if (!extensions::PendingExtensionManager::Get(browser_context_)
+             ->IsIdPending(extension->id())) {
       return false;
     }
 
@@ -268,8 +268,9 @@ class TestKioskLoaderVisitor
       return false;
     }
 
-    if (!extension_service_->pending_extension_manager()->IsIdPending(
-            extension_id)) {
+    extensions::PendingExtensionManager* pending_extension_manager =
+        extensions::PendingExtensionManager::Get(browser_context_);
+    if (!pending_extension_manager->IsIdPending(extension_id)) {
       return false;
     }
 
@@ -277,7 +278,7 @@ class TestKioskLoaderVisitor
     pending_update_urls_.erase(extension_id);
     extensions::InstallTracker::Get(browser_context_)
         ->OnFinishCrxInstall(base::FilePath(), extension_id, nullptr, false);
-    extension_service_->pending_extension_manager()->Remove(extension_id);
+    pending_extension_manager->Remove(extension_id);
     return true;
   }
 
@@ -292,9 +293,10 @@ class TestKioskLoaderVisitor
       return false;
     }
 
-    if (!extension_service_->pending_extension_manager()->AddFromExternalFile(
-            info.extension_id, info.crx_location, info.version,
-            info.creation_flags, info.mark_acknowledged)) {
+    if (!extensions::PendingExtensionManager::Get(browser_context_)
+             ->AddFromExternalFile(info.extension_id, info.crx_location,
+                                   info.version, info.creation_flags,
+                                   info.mark_acknowledged)) {
       return false;
     }
 
@@ -311,7 +313,7 @@ class TestKioskLoaderVisitor
       return false;
     }
 
-    if (!extension_service_->pending_extension_manager()
+    if (!extensions::PendingExtensionManager::Get(browser_context_)
              ->AddFromExternalUpdateUrl(
                  info.extension_id, info.install_parameter, info.update_url,
                  info.download_location, info.creation_flags,

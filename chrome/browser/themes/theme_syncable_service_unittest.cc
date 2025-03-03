@@ -482,9 +482,7 @@ TEST_F(ThemeSyncableServiceTest, SetCurrentThemeCustomTheme_Extension_Install) {
   // The theme is not installed yet and thus, the default theme is still used.
   EXPECT_TRUE(fake_theme_service_->UsingDefaultTheme());
   EXPECT_TRUE(HasThemeSyncTriggeredExtensionInstallation());
-  EXPECT_TRUE(extensions::ExtensionSystem::Get(profile_.get())
-                  ->extension_service()
-                  ->pending_extension_manager()
+  EXPECT_TRUE(extensions::PendingExtensionManager::Get(profile_.get())
                   ->HasPendingExtensionFromSync());
 }
 
@@ -3512,9 +3510,11 @@ class ThemeSyncableServiceTestForThemeExtension
     ASSERT_FALSE(
         extensions::ExtensionRegistry::Get(profile())->GetExtensionById(
             kCustomThemeId, extensions::ExtensionRegistry::EVERYTHING));
-    ASSERT_FALSE(service_->pending_extension_manager()->HasPendingExtensions());
+    ASSERT_FALSE(extensions::PendingExtensionManager::Get(profile())
+                     ->HasPendingExtensions());
 
-    pending_extension_manager_ = service_->pending_extension_manager();
+    pending_extension_manager_ =
+        extensions::PendingExtensionManager::Get(profile());
     extension_registry_ = extensions::ExtensionRegistry::Get(profile());
   }
 

@@ -418,7 +418,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   // These extensions are not yet installed. They come from group policy
   // and external install sources.
   const PendingExtensionManager* pending_extension_manager =
-      service_->pending_extension_manager();
+      PendingExtensionManager::Get(profile_);
   const CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
       service_->corrupted_extension_reinstaller();
 
@@ -698,7 +698,7 @@ bool ExtensionUpdater::GetPingDataForExtension(const ExtensionId& id,
 
 bool ExtensionUpdater::IsExtensionPending(const ExtensionId& id) {
   DCHECK(alive_);
-  return service_->pending_extension_manager()->IsIdPending(id);
+  return PendingExtensionManager::Get(profile_)->IsIdPending(id);
 }
 
 bool ExtensionUpdater::GetExtensionExistingVersion(const ExtensionId& id,

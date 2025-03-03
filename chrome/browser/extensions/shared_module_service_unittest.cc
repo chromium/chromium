@@ -128,7 +128,7 @@ TEST_F(SharedModuleServiceUnitTest, AddDependentSharedModules) {
       std::vector<std::string>(1, import_id), extension_id, "1.0");
 
   PendingExtensionManager* pending_extension_manager =
-      service()->pending_extension_manager();
+      PendingExtensionManager::Get(profile());
 
   // Verify that we don't currently want to install the imported module.
   EXPECT_FALSE(pending_extension_manager->IsIdPending(import_id));

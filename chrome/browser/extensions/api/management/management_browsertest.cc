@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
   EXPECT_TRUE(registry->disabled_extensions().empty());
 
   extensions::PendingExtensionManager* pending_extension_manager =
-      service->pending_extension_manager();
+      extensions::PendingExtensionManager::Get(profile());
 
   // The code that reads external_extensions.json uses this method to inform
   // the extensions::ExtensionService of an extension to download.  Using the

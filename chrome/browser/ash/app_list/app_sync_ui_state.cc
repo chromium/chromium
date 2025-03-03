@@ -15,7 +15,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 
 namespace {
 
@@ -131,10 +130,9 @@ void AppSyncUIState::CheckAppSync() {
   }
 
   const bool synced = sync_service_->IsSyncFeatureActive();
-  const bool has_pending_extension = extensions::ExtensionSystem::Get(profile_)
-                                         ->extension_service()
-                                         ->pending_extension_manager()
-                                         ->HasPendingExtensionFromSync();
+  const bool has_pending_extension =
+      extensions::PendingExtensionManager::Get(profile_)
+          ->HasPendingExtensionFromSync();
 
   if (synced && !has_pending_extension)
     SetStatus(STATUS_NORMAL);

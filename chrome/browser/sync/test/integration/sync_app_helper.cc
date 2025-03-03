@@ -104,9 +104,7 @@ AppStateMap GetAppStates(Profile* profile) {
   }
 
   const extensions::PendingExtensionManager* pending_extension_manager =
-      extensions::ExtensionSystem::Get(profile)
-          ->extension_service()
-          ->pending_extension_manager();
+      extensions::PendingExtensionManager::Get(profile);
 
   std::list<std::string> pending_crx_ids =
       pending_extension_manager->GetPendingIdsForUpdateCheck();

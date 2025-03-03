@@ -13,12 +13,6 @@ TestExtensionService::TestExtensionService() = default;
 
 TestExtensionService::~TestExtensionService() = default;
 
-extensions::PendingExtensionManager*
-TestExtensionService::pending_extension_manager() {
-  ADD_FAILURE();
-  return nullptr;
-}
-
 extensions::CorruptedExtensionReinstaller*
 TestExtensionService::corrupted_extension_reinstaller() {
   ADD_FAILURE();

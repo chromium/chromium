@@ -561,12 +561,9 @@ void ExtensionSyncService::ApplySyncData(
         PendingUpdate(extension_sync_data.version(), reenable_after_update);
     check_for_updates = true;
   } else if (state == NOT_INSTALLED) {
-    if (!extension_service()->pending_extension_manager()->AddFromSync(
-            id,
-            extension_sync_data.update_url(),
-            extension_sync_data.version(),
-            ShouldAllowInstall,
-            extension_sync_data.remote_install())) {
+    if (!extensions::PendingExtensionManager::Get(profile_)->AddFromSync(
+            id, extension_sync_data.update_url(), extension_sync_data.version(),
+            ShouldAllowInstall, extension_sync_data.remote_install())) {
       LOG(WARNING) << "Could not add pending extension for " << id;
       // This means that the extension is already pending installation, with a
       // non-INTERNAL location.  Add to pending_sync_data, even though it will

@@ -579,7 +579,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     // so by adding it as a pending extension and then triggering an
     // auto-update cycle.
     const bool kRemoteInstall = false;
-    if (!extension_service->pending_extension_manager()->AddFromSync(
+    if (!extensions::PendingExtensionManager::Get(profile_)->AddFromSync(
             id, update_url, base::Version(), &IsTheme, kRemoteInstall)) {
       LOG(WARNING) << "Could not add pending extension for " << id;
       return ThemeSyncState::kFailed;
@@ -920,9 +920,7 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
     MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(), *local_theme_specifics);
     if (remote_extension_theme_pending_install_) {
       extensions::PendingExtensionManager* pending_extension_manager =
-          extensions::ExtensionSystem::Get(profile_)
-              ->extension_service()
-              ->pending_extension_manager();
+          extensions::PendingExtensionManager::Get(profile_);
       // If the theme extension is still pending installation, remove from the
       // queue.
       if (const extensions::PendingExtensionInfo* extension =

@@ -87,9 +87,6 @@ class ExtensionServiceInterface {
  public:
   virtual ~ExtensionServiceInterface() = default;
 
-  // Gets the object managing the set of pending extensions.
-  virtual PendingExtensionManager* pending_extension_manager() = 0;
-
   // Gets the object managing reinstalls of the corrupted extensions.
   virtual CorruptedExtensionReinstaller* corrupted_extension_reinstaller() = 0;
 
@@ -194,7 +191,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // ExtensionServiceInterface implementation.
   //
-  PendingExtensionManager* pending_extension_manager() override;
   CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override;
   scoped_refptr<CrxInstaller> CreateUpdateInstaller(
       const CRXFileInfo& file,

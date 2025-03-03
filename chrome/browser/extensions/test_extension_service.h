@@ -26,7 +26,6 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   ~TestExtensionService() override;
 
   // ExtensionServiceInterface implementation.
-  extensions::PendingExtensionManager* pending_extension_manager() override;
   extensions::CorruptedExtensionReinstaller* corrupted_extension_reinstaller()
       override;
 
