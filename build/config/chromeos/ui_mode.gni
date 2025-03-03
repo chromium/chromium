@@ -5,25 +5,9 @@
 import("//build/config/chromeos/args.gni")
 
 declare_args() {
-  # Deprecated, use is_chromeos_lacros.
-  #
-  # This controls UI configuration for Chrome.
-  # If this flag is set, we assume Chrome runs on Chrome OS devices, using
-  # Wayland (instead of X11).
-  #
-  # TODO(crbug.com/40118868):
-  # Define chromeos_product instead, which takes either "browser" or "ash".
-  # Re-define the following variables as:
-  # is_chromeos_lacros = chromeos_product == "browser"
-  # is_chromeos_ash = chromeos_product == "ash"
   chromeos_is_browser_only = false
 }
 
-# is_chromeos_{ash,lacros} is used to specify that it is specific to either
-# ash or lacros chrome for chromeos. For platform specific logic that
-# applies to both, use is_chromeos instead.
-# .gn files are evaluated multiple times for each toolchain.
-# is_chromeos_{ash,lacros} should be set true only for builds with target
-# toolchains.
+# THIS WHOLE FILE WILL BE DELETED.
+# Lacros is gone. There is only one kind of ChromeOS build. Use is_chromeos.
 is_chromeos_ash = is_chromeos && !chromeos_is_browser_only
-is_chromeos_lacros = is_chromeos && chromeos_is_browser_only

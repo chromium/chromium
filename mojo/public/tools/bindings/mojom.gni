@@ -766,11 +766,6 @@ template("mojom") {
         "is_chromeos",
         "is_chromeos_ash",
       ]
-    } else if (is_chromeos_lacros) {
-      enabled_features += [
-        "is_chromeos",
-        "is_chromeos_lacros",
-      ]
     } else if (is_fuchsia) {
       enabled_features += [ "is_fuchsia" ]
     } else if (is_ios) {
