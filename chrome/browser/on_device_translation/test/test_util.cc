@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -44,7 +45,7 @@ void MockComponentManager::DoNotExpectCallRegisterLanguagePackComponent() {
 }
 
 void MockComponentManager::ExpectCallRegisterLanguagePackComponentAndInstall(
-    std::vector<LanguagePackKey> language_pack_keys) {
+    const base::span<const LanguagePackKey>& language_pack_keys) {
   auto& expectation =
       EXPECT_CALL(*this, RegisterTranslateKitLanguagePackComponent(_));
   for (const auto expected_key : language_pack_keys) {
@@ -146,6 +147,12 @@ std::string CreateFakeDictionaryData(const std::string_view sourceLang,
 }
 
 void TestSimpleTranslationWorks(Browser* browser,
+                                LanguagePackKey language_pack_key) {
+  TestSimpleTranslationWorks(browser, GetSourceLanguageCode(language_pack_key),
+                             GetTargetLanguageCode(language_pack_key));
+}
+
+void TestSimpleTranslationWorks(Browser* browser,
                                 const std::string_view sourceLang,
                                 const std::string_view targetLang) {
   // Translate "hello" from `sourceLang` to `targetLang`.
@@ -169,6 +176,13 @@ void TestSimpleTranslationWorks(Browser* browser,
                                       sourceLang, targetLang))
                 .ExtractString(),
             base::StringPrintf("%s to %s: hello", sourceLang, targetLang));
+}
+
+void TestCreateTranslator(Browser* browser,
+                          LanguagePackKey language_pack_key,
+                          const std::string_view result) {
+  TestCreateTranslator(browser, GetSourceLanguageCode(language_pack_key),
+                       GetTargetLanguageCode(language_pack_key), result);
 }
 
 // Tests that the createTranslator() returns the expected result.

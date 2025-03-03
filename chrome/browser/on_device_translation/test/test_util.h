@@ -56,7 +56,7 @@ class MockComponentManager : public ComponentManager {
   // language pack key in `language_pack_keys` and install the fake language
   // pack later as a result of the call.
   void ExpectCallRegisterLanguagePackComponentAndInstall(
-      std::vector<LanguagePackKey> language_pack_keys);
+      const base::span<const LanguagePackKey>& language_pack_keys);
 
   // Installs the mock TranslateKit component.
   // The mock component's translate method returns the concatenation of the
@@ -109,10 +109,15 @@ std::string CreateFakeDictionaryData(const std::string_view sourceLang,
 // Tests that the simple translation works. The dictionary data generated using
 // CreateFakeDictionaryData() must be installed to pass the test.
 void TestSimpleTranslationWorks(Browser* browser,
+                                LanguagePackKey language_pack_key);
+void TestSimpleTranslationWorks(Browser* browser,
                                 const std::string_view sourceLang,
                                 const std::string_view targetLang);
 
 // Tests that the createTranslator() returns the expected result.
+void TestCreateTranslator(Browser* browser,
+                          LanguagePackKey language_pack_key,
+                          const std::string_view result);
 void TestCreateTranslator(Browser* browser,
                           const std::string_view sourceLang,
                           const std::string_view targetLang,
