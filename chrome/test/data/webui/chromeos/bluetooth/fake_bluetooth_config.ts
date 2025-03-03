@@ -84,7 +84,6 @@ export class FakeBluetoothConfig implements CrosBluetoothConfigInterface {
       systemState: BluetoothSystemState.kDisabled,
       modificationState: BluetoothModificationState.kCannotModifyBluetooth,
       pairedDevices: [],
-      fastPairableDevices: [],
     };
   }
 

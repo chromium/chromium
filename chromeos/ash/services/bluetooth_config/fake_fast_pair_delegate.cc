@@ -15,25 +15,10 @@ void FakeFastPairDelegate::SetDeviceImageInfo(const std::string& device_id,
   mac_address_to_images_[device_id] = images;
 }
 
-void FakeFastPairDelegate::SetFastPairableDeviceProperties(
-    std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
-        fast_pairable_device_properties) {
-  fast_pairable_device_properties_.clear();
-  for (auto& fast_pairable_device : fast_pairable_device_properties) {
-    fast_pairable_device_properties_.push_back(fast_pairable_device.Clone());
-  }
-
-  NotifyFastPairableDevicesChanged(fast_pairable_device_properties_);
-}
-
+// Unimplemented.
 std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
 FakeFastPairDelegate::GetFastPairableDeviceProperties() {
-  std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
-      fast_pairable_device_properties;
-  for (const auto& paired_device : fast_pairable_device_properties_) {
-    fast_pairable_device_properties.push_back(paired_device.Clone());
-  }
-  return fast_pairable_device_properties;
+  return std::vector<mojom::PairedBluetoothDevicePropertiesPtr>();
 }
 
 void FakeFastPairDelegate::SetAdapterStateController(
