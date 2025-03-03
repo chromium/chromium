@@ -5,10 +5,8 @@
 #include "ash/lobster/lobster_controller.h"
 
 #include <memory>
-#include <string_view>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/lobster/lobster_metrics_recorder.h"
 #include "ash/lobster/lobster_session_impl.h"
@@ -17,8 +15,7 @@
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
-#include "base/command_line.h"
-#include "base/hash/sha1.h"
+#include "ash/shell.h"
 
 namespace ash {
 
