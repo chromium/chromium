@@ -1237,6 +1237,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ExplicitSigninMigration.FromSync" enum="BooleanSuccess"
+    expires_after="2025-07-02">
+  <owner>droger@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <summary>
+    Logs a record in the &quot;Success&quot; bucket when a sync profile is
+    migrated to explicit browser sign-in. Recorded on profile load, before
+    histogram Signin.ExplicitSigninMigration is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Extensions.GaiaRemoteConsentFlowResult"
     enum="GaiaRemoteConsentFlowResult" expires_after="2025-06-05">
   <owner>alexilin@chromium.org</owner>

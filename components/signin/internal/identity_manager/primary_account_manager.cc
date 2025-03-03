@@ -39,6 +39,12 @@ BASE_FEATURE(kRestorePrimaryAccountInfo,
              base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
+// Kill switch needed to control the migration of sync profiles to also be
+// explicit sign-in.
+BASE_FEATURE(kMigrateSyncToExplicitSignin,
+             "kMigrateSyncToExplicitSignin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Registers that the sign in occurred with an explicit user action.
 // Affected by all signin sources except when signing in to Chrome caused by a
 // web sign in or by an unknown source.
@@ -268,6 +274,20 @@ PrimaryAccountManager::PrimaryAccountManager(
   // PrimaryAccountManager is initialized once the primary account and consent
   // level are loaded.
   CHECK(primary_account_.has_value());
+
+  bool migrated_sync_user_to_explicit_sign_in = false;
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      base::FeatureList::IsEnabled(kMigrateSyncToExplicitSignin) &&
+      !prefs->GetBoolean(prefs::kExplicitBrowserSignin) &&
+      HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // A profile that is opted in to sync can be migrated to explicit browser
+    // sign-in as the user has explicitly signed in to the browser when they
+    // opted in to sync.
+    scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
+    migrated_sync_user_to_explicit_sign_in = true;
+  }
+  base::UmaHistogramBoolean("Signin.ExplicitSigninMigration.FromSync",
+                            migrated_sync_user_to_explicit_sign_in);
 
   // `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is set for sync
   // users and new signed in users. It is not cleared on sign out.

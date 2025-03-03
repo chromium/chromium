@@ -1606,7 +1606,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, MigrationWithSettings) {
   Profile* profile = browser()->profile();
-  // The user is still signed in implicitly.
+  // The user is migrated to be signed in explicitly.
   ASSERT_EQ(signin::GetPrimaryAccountConsentLevel(GetIdentityManager()),
             signin::ConsentLevel::kSync);
   ASSERT_TRUE(gaia::AreEmailsSame(
@@ -1614,7 +1614,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, MigrationWithSettings) {
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
           .email,
       kMainGmailEmail));
-  ASSERT_FALSE(profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_TRUE(profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // Account storage was not enabled yet.
   AccountStorageStatus account_storage_status = GetAccountStorageStatus();
