@@ -224,19 +224,14 @@ std::optional<std::vector<T>> DataModelsFromJSON(
 // If parsing fails the error is logged and std::nullopt is returned.
 std::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
     const std::string& file_content) {
-  std::optional<base::Value> json = base::JSONReader::Read(file_content);
-  if (!json.has_value()) {
+  std::optional<base::Value::Dict> json =
+      base::JSONReader::ReadDict(file_content);
+  if (!json) {
     LOG(ERROR) << "Failed to parse JSON file.";
     return std::nullopt;
   }
-  if (!json->is_dict()) {
-    LOG(ERROR) << "JSON is not a dictionary at it's top level.";
-    return std::nullopt;
-  }
-  const base::Value::List* const profiles_json =
-      json->GetDict().FindList(kKeyProfiles);
-  const base::Value::List* const cards_json =
-      json->GetDict().FindList(kKeyCreditCards);
+  const base::Value::List* const profiles_json = json->FindList(kKeyProfiles);
+  const base::Value::List* const cards_json = json->FindList(kKeyCreditCards);
   if (!cards_json && !profiles_json) {
     LOG(ERROR) << "JSON has no " << kKeyProfiles << " or " << kKeyCreditCards
                << " keys.";
