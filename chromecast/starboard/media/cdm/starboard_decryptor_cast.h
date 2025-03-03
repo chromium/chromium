@@ -110,8 +110,8 @@ class StarboardDecryptorCast : public CastCdm {
   // logical/conceptual file, and its stored in the cache at
   // ~/.cache/cobalt/wvcdm.dat.
   void SendProvisionRequest(int ticket,
-                            const std::string& session_id,
-                            const std::vector<uint8_t>& content);
+                            std::string session_id,
+                            const std::string& content);
 
   // Called by starboard (via CallOnSessionUpdateRequest) once a new session has
   // been created.
@@ -119,8 +119,8 @@ class StarboardDecryptorCast : public CastCdm {
                               int ticket,
                               StarboardDrmStatus status,
                               StarboardDrmSessionRequestType type,
-                              std::optional<std::string> error_message,
-                              std::optional<std::string> session_id,
+                              std::string error_message,
+                              std::string session_id,
                               std::vector<uint8_t> content);
 
   // Called by starboard (via CallOnSessionUpdated) once a session has been
@@ -128,23 +128,22 @@ class StarboardDecryptorCast : public CastCdm {
   void OnSessionUpdated(void* drm_system,
                         int ticket,
                         StarboardDrmStatus status,
-                        std::optional<std::string> error_message,
-                        std::optional<std::string> session_id);
+                        std::string error_message,
+                        std::string session_id);
 
   // Called by starboard (via CallOnKeyStatusesChanged) when the status of keys
   // change.
-  void OnKeyStatusesChanged(
-      void* drm_system,
-      std::string session_id,
-      std::vector<std::pair<StarboardDrmKeyId, StarboardDrmKeyStatus>>
-          key_ids_and_statuses);
+  void OnKeyStatusesChanged(void* drm_system,
+                            std::string session_id,
+                            std::vector<StarboardDrmKeyId> key_ids,
+                            std::vector<StarboardDrmKeyStatus> key_statuses);
 
   // Called by starboard (via CallOnCertificateUpdated) when a certificate has
   // been updated.
   void OnCertificateUpdated(void* drm_system,
                             int ticket,
                             StarboardDrmStatus status,
-                            std::optional<std::string> error_message);
+                            std::string error_message);
 
   // Called by starboard (via CallOnSessionClosed) when a session has closed.
   void OnSessionClosed(void* drm_system, std::string session_id);
@@ -156,12 +155,10 @@ class StarboardDecryptorCast : public CastCdm {
                                          int ticket,
                                          StarboardDrmStatus status,
                                          StarboardDrmSessionRequestType type,
-                                         const char* error_message,
-                                         const void* session_id,
-                                         int session_id_size,
-                                         const void* content,
-                                         int content_size,
-                                         const char* url);
+                                         std::string error_message,
+                                         std::string session_id,
+                                         std::vector<uint8_t> content,
+                                         std::string url);
 
   // Calls OnSessionUpdated for `context`, which is an instance of
   // StarboardDecryptorCast.
@@ -169,20 +166,17 @@ class StarboardDecryptorCast : public CastCdm {
                                    void* context,
                                    int ticket,
                                    StarboardDrmStatus status,
-                                   const char* error_message,
-                                   const void* session_id,
-                                   int session_id_size);
+                                   std::string error_message,
+                                   std::string session_id);
 
   // Calls OnKeyStatusesChanged for `context`, which is an instance of
   // StarboardDecryptorCast.
   static void CallOnKeyStatusesChanged(
       void* drm_system,
       void* context,
-      const void* session_id,
-      int session_id_size,
-      int number_of_keys,
-      const StarboardDrmKeyId* key_ids,
-      const StarboardDrmKeyStatus* key_statuses);
+      std::string session_id,
+      std::vector<StarboardDrmKeyId> key_ids,
+      std::vector<StarboardDrmKeyStatus> key_statuses);
 
   // Calls OnCertificateUpdated for `context`, which is an instance of
   // StarboardDecryptorCast.
@@ -190,14 +184,13 @@ class StarboardDecryptorCast : public CastCdm {
                                        void* context,
                                        int ticket,
                                        StarboardDrmStatus status,
-                                       const char* error_message);
+                                       std::string error_message);
 
   // Calls OnSessionClosed for `context`, which is an instance of
   // StarboardDecryptorCast.
   static void CallOnSessionClosed(void* drm_system,
                                   void* context,
-                                  const void* session_id,
-                                  int session_id_size);
+                                  std::string session_id);
 
   // Called when provisioning the device, in response to an individualization
   // request.
