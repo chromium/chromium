@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+
 #include <algorithm>
 #include <optional>
 #include <vector>
@@ -1713,6 +1715,7 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           132, "emshack@chromium.org",
           "Shown in app menu when Tab Declutter menu item is enabled.")));
 
+#if BUILDFLAG(ENABLE_GLIC)
   // This is a custom UI new badge that uses a small help bubble to annotate the
   // element instead of a badge.
   registry.RegisterFeature(user_education::NewBadgeSpecification(
@@ -1730,6 +1733,7 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(132, "agale@chromium.org",
                                "Shown in the glic settings page when the user "
                                "wants to change the keyboard shortcut.")));
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 std::unique_ptr<user_education::FeaturePromoControllerCommon>

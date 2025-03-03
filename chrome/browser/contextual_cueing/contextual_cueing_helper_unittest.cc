@@ -29,6 +29,8 @@
 
 namespace contextual_cueing {
 
+#if BUILDFLAG(ENABLE_GLIC)
+
 class FakeOptimizationGuideKeyedService
     : public testing::NiceMock<MockOptimizationGuideKeyedService> {
  public:
@@ -70,8 +72,7 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   ContextualCueingHelperTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         contextual_cueing::kContextualCueing},
+        {features::kGlic, features::kTabstripComboButton, kContextualCueing},
         {});
   }
 
@@ -139,8 +140,6 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-#if BUILDFLAG(ENABLE_GLIC)
 
 TEST_F(ContextualCueingHelperTest, NullTabHelperWithoutSignin) {
   ContextualCueingHelper::MaybeCreateForWebContents(web_contents());

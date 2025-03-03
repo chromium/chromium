@@ -45,7 +45,9 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {
             features::kTabOrganization,
+#if BUILDFLAG(ENABLE_GLIC)
             features::kGlic,
+#endif
             features::kTabstripComboButton,
             features::kTabstripDeclutter,
             contextual_cueing::kContextualCueing,
