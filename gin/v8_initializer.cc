@@ -291,6 +291,7 @@ void SetFlags(IsolateHolder::ScriptMode mode,
 // safeguard against accidentally breaking the web).
 void SetDefaultEnabledFeatureFlags() {
   SetV8Flags("--js-float16array");
+  SetV8Flags("--js-explicit-resource-management");
 }
 
 // Sets feature controlled V8 flags.
