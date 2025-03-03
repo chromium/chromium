@@ -4579,8 +4579,7 @@
     },
     // Fix for https://crbug.com/41329214.
     {
-      name: "UpdateSelectionOnNodeInsertion",
-      status: "stable"
+      name: "UpdateSelectionOnNodeInsertion"
     },
     {
       name: "URLPatternCompareComponent",

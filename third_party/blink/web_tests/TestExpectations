@@ -7133,6 +7133,9 @@ crbug.com/1502709 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1443872 [ Fuchsia ] editing/selection/4402375.html [ Failure ]
 crbug.com/1443872 [ Fuchsia ] paint/invalidation/selection/selection-in-composited-scrolling-container.html [ Failure ]
 
+# TODO(crbug.com/396359045): Re-enable this test when crash is reproduced
+crbug.com/396359045 editing/selection/update-selection-on-node-insertion.html [ Failure ]
+
 # Disable test temporarily to allow DevTools change to pass
 crbug.com/1294251 http/tests/devtools/elements/styles-3/styles-add-invalid-property.js [ Failure Pass Timeout ]
 
