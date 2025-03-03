@@ -92,7 +92,7 @@ void BackgroundTracingAgentImpl::OnHistogramChanged(
   auto track = perfetto::NamedTrack("HistogramSamples");
   uint64_t flow_id =
       event_id.value_or(base::trace_event::GetNextGlobalTraceId());
-  TRACE_EVENT("toplevel,latency", "HistogramSampleTrigger", track,
+  TRACE_EVENT_INSTANT("toplevel,latency", "HistogramSampleTrigger", track,
               [&](perfetto::EventContext ctx) {
                 perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
                     ctx.event()->set_chrome_histogram_sample();
