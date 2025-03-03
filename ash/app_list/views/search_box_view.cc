@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/app_list/views/search_box_view.h"
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -130,21 +126,23 @@ constexpr int kLensColorIconSize = 24;
 
 // The default PlaceholderTextTypes used for productivity launcher. Randomly
 // selected when placeholder text would be shown.
-constexpr SearchBoxView::PlaceholderTextType kDefaultPlaceholders[] = {
-    SearchBoxView::PlaceholderTextType::kShortcuts,
-    SearchBoxView::PlaceholderTextType::kTabs,
-    SearchBoxView::PlaceholderTextType::kSettings,
-    SearchBoxView::PlaceholderTextType::kImages,
-};
+constexpr auto kDefaultPlaceholders =
+    std::to_array<SearchBoxView::PlaceholderTextType>({
+        SearchBoxView::PlaceholderTextType::kShortcuts,
+        SearchBoxView::PlaceholderTextType::kTabs,
+        SearchBoxView::PlaceholderTextType::kSettings,
+        SearchBoxView::PlaceholderTextType::kImages,
+    });
 
 // PlaceholderTextTypes used for productivity launcher for cloud gaming devices.
 // Randomly selected when placeholder text would be shown.
-constexpr SearchBoxView::PlaceholderTextType kGamingPlaceholders[4] = {
-    SearchBoxView::PlaceholderTextType::kShortcuts,
-    SearchBoxView::PlaceholderTextType::kTabs,
-    SearchBoxView::PlaceholderTextType::kSettings,
-    SearchBoxView::PlaceholderTextType::kGames,
-};
+constexpr auto kGamingPlaceholders =
+    std::to_array<SearchBoxView::PlaceholderTextType>({
+        SearchBoxView::PlaceholderTextType::kShortcuts,
+        SearchBoxView::PlaceholderTextType::kTabs,
+        SearchBoxView::PlaceholderTextType::kSettings,
+        SearchBoxView::PlaceholderTextType::kGames,
+    });
 
 constexpr gfx::RoundedCornersF kAssistantButtonBackgroundRadiiLTR = {
     18,
