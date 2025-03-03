@@ -20,7 +20,7 @@
                 "config": "main_builder"
               },
               "legacy_chromium_config": {
-                "config": "android",
+                "config": "main_builder",
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
