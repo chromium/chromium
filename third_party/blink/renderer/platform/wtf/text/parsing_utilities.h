@@ -142,6 +142,16 @@ void ReverseSkipWhile(const CharType*& position, const CharType* start) {
     --position;
 }
 
+template <typename CharType, bool predicate(CharType)>
+[[nodiscard]] size_t ReverseSkipWhile(base::span<const CharType> chars,
+                                      size_t position,
+                                      size_t start) {
+  while (position >= start && predicate(chars[position])) {
+    --position;
+  }
+  return position;
+}
+
 }  // namespace WTF
 
 using WTF::SkipExactly;

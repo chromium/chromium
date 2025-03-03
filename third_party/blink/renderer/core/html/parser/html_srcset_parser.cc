@@ -29,14 +29,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -78,34 +74,34 @@ struct DescriptorToken {
   unsigned LastIndex() { return start + length - 1; }
 
   template <typename CharType>
-  int ToInt(const CharType* attribute, bool& is_valid) {
+  int ToInt(base::span<const CharType> attribute, bool& is_valid) {
     unsigned position = 0;
     // Make sure the integer is a valid non-negative integer
     // https://html.spec.whatwg.org/C/#valid-non-negative-integer
     unsigned length_excluding_descriptor = length - 1;
     while (position < length_excluding_descriptor) {
-      if (!IsASCIIDigit(*(attribute + start + position))) {
+      if (!IsASCIIDigit(attribute[start + position])) {
         is_valid = false;
         return 0;
       }
       ++position;
     }
-    return CharactersToInt(base::span<const CharType>(
-                               attribute + start, length_excluding_descriptor),
-                           WTF::NumberParsingOptions(), &is_valid);
+    return CharactersToInt(
+        attribute.subspan(start, length_excluding_descriptor),
+        WTF::NumberParsingOptions(), &is_valid);
   }
 
   template <typename CharType>
-  float ToFloat(const CharType* attribute, bool& is_valid) {
+  float ToFloat(base::span<const CharType> attribute, bool& is_valid) {
     // Make sure the is a valid floating point number
     // https://html.spec.whatwg.org/C/#valid-floating-point-number
     unsigned length_excluding_descriptor = length - 1;
-    if (length_excluding_descriptor > 0 && *(attribute + start) == '+') {
+    if (length_excluding_descriptor > 0 && attribute[start] == '+') {
       is_valid = false;
       return 0;
     }
     Decimal result = ParseToDecimalForNumberType(
-        String(base::span(attribute + start, length_excluding_descriptor)));
+        String(attribute.subspan(start, length_excluding_descriptor)));
     is_valid = result.IsFinite();
     if (!is_valid)
       return 0;
@@ -114,84 +110,87 @@ struct DescriptorToken {
 };
 
 template <typename CharType>
-static void AppendDescriptorAndReset(const CharType* attribute_start,
-                                     const CharType*& descriptor_start,
-                                     const CharType* position,
+static void AppendDescriptorAndReset(base::span<const CharType> attribute_span,
+                                     std::optional<size_t>& descriptor_start,
+                                     const size_t position,
                                      Vector<DescriptorToken>& descriptors) {
-  if (position > descriptor_start) {
+  auto descriptor_start_value = descriptor_start.value_or(0);
+  if (position > descriptor_start_value) {
     descriptors.push_back(DescriptorToken(
-        static_cast<unsigned>(descriptor_start - attribute_start),
-        static_cast<unsigned>(position - descriptor_start)));
+        static_cast<unsigned>(descriptor_start_value),
+        static_cast<unsigned>(position - descriptor_start_value)));
   }
-  descriptor_start = nullptr;
+  descriptor_start = std::nullopt;
 }
 
-// The following is called appendCharacter to match the spec's terminology.
-template <typename CharType>
-static void AppendCharacter(const CharType* descriptor_start,
-                            const CharType* position) {
+static void AppendCharacter(std::optional<size_t>& descriptor_start,
+                            const size_t position) {
   // Since we don't copy the tokens, this just set the point where the
   // descriptor tokens start.
-  if (!descriptor_start)
+  if (!descriptor_start) {
     descriptor_start = position;
+  }
+}
+
+static constexpr bool IsEOF(size_t position, size_t size) {
+  return position >= size;
 }
 
 template <typename CharType>
-static bool IsEOF(const CharType* position, const CharType* end) {
-  return position >= end;
-}
-
-template <typename CharType>
-static void TokenizeDescriptors(const CharType* attribute_start,
-                                const CharType*& position,
-                                const CharType* attribute_end,
+static void TokenizeDescriptors(base::span<const CharType> attribute_span,
+                                size_t& position,
                                 Vector<DescriptorToken>& descriptors) {
   DescriptorTokenizerState state = kTokenStart;
-  const CharType* descriptors_start = position;
-  const CharType* current_descriptor_start = descriptors_start;
+  const size_t descriptors_start = position;
+  std::optional<size_t> current_descriptor_start = descriptors_start;
+  size_t attribute_size = attribute_span.size();
   while (true) {
     switch (state) {
-      case kTokenStart:
-        if (IsEOF(position, attribute_end)) {
-          AppendDescriptorAndReset(attribute_start, current_descriptor_start,
-                                   attribute_end, descriptors);
+      case kTokenStart: {
+        if (IsEOF(position, attribute_size)) {
+          AppendDescriptorAndReset(attribute_span, current_descriptor_start,
+                                   attribute_size, descriptors);
           return;
         }
-        if (IsComma(*position)) {
-          AppendDescriptorAndReset(attribute_start, current_descriptor_start,
+
+        auto character = attribute_span[position];
+        if (IsComma(character)) {
+          AppendDescriptorAndReset(attribute_span, current_descriptor_start,
                                    position, descriptors);
           ++position;
           return;
         }
-        if (IsHTMLSpace(*position)) {
-          AppendDescriptorAndReset(attribute_start, current_descriptor_start,
+        if (IsHTMLSpace(character)) {
+          AppendDescriptorAndReset(attribute_span, current_descriptor_start,
                                    position, descriptors);
           current_descriptor_start = position + 1;
           state = kAfterToken;
-        } else if (*position == '(') {
+        } else if (character == '(') {
           AppendCharacter(current_descriptor_start, position);
           state = kInParenthesis;
         } else {
           AppendCharacter(current_descriptor_start, position);
         }
         break;
+      }
       case kInParenthesis:
-        if (IsEOF(position, attribute_end)) {
-          AppendDescriptorAndReset(attribute_start, current_descriptor_start,
-                                   attribute_end, descriptors);
+        if (IsEOF(position, attribute_size)) {
+          AppendDescriptorAndReset(attribute_span, current_descriptor_start,
+                                   attribute_size, descriptors);
           return;
         }
-        if (*position == ')') {
-          AppendCharacter(current_descriptor_start, position);
+        if (attribute_span[position] == ')') {
+          AppendCharacter(current_descriptor_start, position + 1);
           state = kTokenStart;
         } else {
           AppendCharacter(current_descriptor_start, position);
         }
         break;
       case kAfterToken:
-        if (IsEOF(position, attribute_end))
+        if (IsEOF(position, attribute_size)) {
           return;
-        if (!IsHTMLSpace(*position)) {
+        }
+        if (!IsHTMLSpace(attribute_span[position])) {
           state = kTokenStart;
           current_descriptor_start = position;
           --position;
@@ -215,7 +214,7 @@ static void SrcsetError(Document* document, String message) {
 }
 
 template <typename CharType>
-static bool ParseDescriptors(const CharType* attribute,
+static bool ParseDescriptors(base::span<const CharType> attribute,
                              Vector<DescriptorToken>& descriptors,
                              DescriptorParsingResult& result,
                              Document* document) {
@@ -282,7 +281,7 @@ static bool ParseDescriptors(const String& attribute,
                              Document* document) {
   // FIXME: See if StringView can't be extended to replace DescriptorToken here.
   return WTF::VisitCharacters(attribute, [&](auto chars) {
-    return ParseDescriptors(chars.data(), descriptors, result, document);
+    return ParseDescriptors(chars, descriptors, result, document);
   });
 }
 
@@ -290,45 +289,47 @@ static bool ParseDescriptors(const String& attribute,
 template <typename CharType>
 static void ParseImageCandidatesFromSrcsetAttribute(
     const String& attribute,
-    const CharType* attribute_start,
-    unsigned length,
+    base::span<const CharType> attribute_span,
     Vector<ImageCandidate>& image_candidates,
     Document* document) {
-  const CharType* position = attribute_start;
-  const CharType* attribute_end = position + length;
+  size_t position = 0;
+  size_t attribute_size = attribute_span.size();
 
-  while (position < attribute_end) {
+  while (position < attribute_size) {
     // 4. Splitting loop: Collect a sequence of characters that are space
     // characters or U+002C COMMA characters.
-    SkipWhile<CharType, IsHTMLSpaceOrComma<CharType>>(position, attribute_end);
-    if (position == attribute_end) {
+    position = SkipWhile<CharType, IsHTMLSpaceOrComma<CharType>>(attribute_span,
+                                                                 position);
+    if (position == attribute_size) {
       // Contrary to spec language - descriptor parsing happens on each
       // candidate, so when we reach the attributeEnd, we can exit.
       break;
     }
-    const CharType* image_url_start = position;
+    const size_t image_url_start = position;
 
     // 6. Collect a sequence of characters that are not space characters, and
     // let that be url.
-    SkipUntil<CharType, IsHTMLSpace<CharType>>(position, attribute_end);
-    const CharType* image_url_end = position;
+    position =
+        SkipUntil<CharType, IsHTMLSpace<CharType>>(attribute_span, position);
+    size_t image_url_end = position;
 
     DescriptorParsingResult result;
 
     // 8. If url ends with a U+002C COMMA character (,)
-    if (IsComma(*(position - 1))) {
+    if (IsComma(attribute_span[position - 1])) {
       // Remove all trailing U+002C COMMA characters from url.
       image_url_end = position - 1;
-      ReverseSkipWhile<CharType, IsComma>(image_url_end, image_url_start);
+      image_url_end = ReverseSkipWhile<CharType, IsComma>(
+          attribute_span, image_url_end, image_url_start);
       ++image_url_end;
       // If url is empty, then jump to the step labeled splitting loop.
       if (image_url_start == image_url_end)
         continue;
     } else {
-      SkipWhile<CharType, IsHTMLSpace<CharType>>(position, attribute_end);
+      position =
+          SkipWhile<CharType, IsHTMLSpace<CharType>>(attribute_span, position);
       Vector<DescriptorToken> descriptor_tokens;
-      TokenizeDescriptors(attribute_start, position, attribute_end,
-                          descriptor_tokens);
+      TokenizeDescriptors(attribute_span, position, descriptor_tokens);
       // Contrary to spec language - descriptor parsing happens on each
       // candidate. This is a black-box equivalent, to avoid storing descriptor
       // lists for each candidate.
@@ -341,17 +342,17 @@ static void ParseImageCandidatesFromSrcsetAttribute(
                     mojom::ConsoleMessageSource::kOther,
                     mojom::ConsoleMessageLevel::kWarning,
                     String("Dropped srcset candidate ") +
-                        JSONValue::QuoteString(String(
-                            base::span(image_url_start, image_url_end)))));
+                        JSONValue::QuoteString(String(attribute_span.subspan(
+                            image_url_start,
+                            image_url_end - image_url_start)))));
           }
         }
         continue;
       }
     }
 
-    DCHECK_GT(image_url_end, attribute_start);
     unsigned image_url_starting_position =
-        static_cast<unsigned>(image_url_start - attribute_start);
+        static_cast<unsigned>(image_url_start);
     DCHECK_GT(image_url_end, image_url_start);
     unsigned image_url_length =
         static_cast<unsigned>(image_url_end - image_url_start);
@@ -369,14 +370,13 @@ static void ParseImageCandidatesFromSrcsetAttribute(
   if (attribute.IsNull())
     return;
 
-  if (attribute.Is8Bit())
-    ParseImageCandidatesFromSrcsetAttribute<LChar>(
-        attribute, attribute.Characters8(), attribute.length(),
-        image_candidates, document);
-  else
+  if (attribute.Is8Bit()) {
+    ParseImageCandidatesFromSrcsetAttribute<LChar>(attribute, attribute.Span8(),
+                                                   image_candidates, document);
+  } else {
     ParseImageCandidatesFromSrcsetAttribute<UChar>(
-        attribute, attribute.Characters16(), attribute.length(),
-        image_candidates, document);
+        attribute, attribute.Span16(), image_candidates, document);
+  }
 }
 
 static unsigned SelectionLogic(Vector<ImageCandidate*>& image_candidates,
