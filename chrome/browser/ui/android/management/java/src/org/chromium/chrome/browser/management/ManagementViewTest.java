@@ -242,4 +242,136 @@ public class ManagementViewTest {
         Assert.assertEquals(View.GONE, view.mReportVersion.getVisibility());
         Assert.assertEquals(View.VISIBLE, view.mReportLegacyTech.getVisibility());
     }
+
+    @Test
+    public void testThreatProtection_disabled() {
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isEnterpriseRealTimeUrlCheckModeEnabled(mMockProfile);
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+
+        Assert.assertEquals(View.GONE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+    }
+
+    @Test
+    public void testThreatProtection_reportingEnabled() {
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isEnterpriseRealTimeUrlCheckModeEnabled(mMockProfile);
+        doReturn(true)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+
+        view.mThreatProtectionMore.performClick();
+
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.VISIBLE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+    }
+
+    @Test
+    public void testThreatProtection_urlCheckEnabled() {
+        doReturn(true)
+                .when(mMockManagedBrowserUtilNatives)
+                .isEnterpriseRealTimeUrlCheckModeEnabled(mMockProfile);
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+
+        view.mThreatProtectionMore.performClick();
+
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.VISIBLE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+    }
+
+    @Test
+    public void testThreatProtection_allEnabled() {
+        doReturn(true)
+                .when(mMockManagedBrowserUtilNatives)
+                .isEnterpriseRealTimeUrlCheckModeEnabled(mMockProfile);
+        doReturn(true)
+                .when(mMockManagedBrowserUtilNatives)
+                .isOnSecurityEventEnterpriseConnectorEnabled(mMockProfile);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.GONE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.GONE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+
+        view.mThreatProtectionMore.performClick();
+
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionTitle.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionMore.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionSecurityEvent.getVisibility());
+        Assert.assertEquals(
+                View.VISIBLE, view.mThreatProtectionSecurityEventDescription.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mThreatProtectionPageVisited.getVisibility());
+        Assert.assertEquals(
+                View.VISIBLE, view.mThreatProtectionPageVisitedDescription.getVisibility());
+    }
 }

@@ -62,6 +62,24 @@ public class ManagementMediator {
                         .with(
                                 ManagementProperties.LEGACY_TECH_REPORTING_TEXT,
                                 getLegacyTechReportingClickableText())
+                        .with(
+                                ManagementProperties.URL_FILTERING_ENABLED,
+                                ManagedBrowserUtils.isEnterpriseRealTimeUrlCheckModeEnabled(
+                                        profile))
+                        .with(ManagementProperties.URL_FILTERING_TEXT, getUrlFilteringText())
+                        .with(
+                                ManagementProperties.URL_FILTERING_DESCRIPTION_TEXT,
+                                getUrlFilteringDescriptionText())
+                        .with(
+                                ManagementProperties.SECURITY_EVENT_REPORTING_ENABLED,
+                                ManagedBrowserUtils.isOnSecurityEventEnterpriseConnectorEnabled(
+                                        profile))
+                        .with(
+                                ManagementProperties.SECURITY_EVENT_REPORTING_TEXT,
+                                getSecurityEventReportingText())
+                        .with(
+                                ManagementProperties.SECURITY_EVENT_REPORTING_DESCRIPTION_TEXT,
+                                getSecurityEventReportingDescriptionText())
                         .build();
     }
 
@@ -88,6 +106,10 @@ public class ManagementMediator {
         return bullet;
     }
 
+    private SpannableString buildString(int stringResId) {
+        return new SpannableString(mHost.getContext().getString(stringResId));
+    }
+
     private SpannableStringBuilder getProfileReportingText() {
         SpannableStringBuilder spannableString = new SpannableStringBuilder();
         spannableString
@@ -107,6 +129,34 @@ public class ManagementMediator {
         spannableString.append(learn_more_link);
 
         return spannableString;
+    }
+
+    private SpannableStringBuilder getUrlFilteringText() {
+        return new SpannableStringBuilder()
+                .append(buildString(R.string.management_connectors_event))
+                .append(": ")
+                .append(buildString(R.string.management_page_visited_event));
+    }
+
+    private SpannableStringBuilder getUrlFilteringDescriptionText() {
+        return new SpannableStringBuilder()
+                .append(buildString(R.string.management_connectors_visible_data))
+                .append(": ")
+                .append(buildString(R.string.management_page_visited_visible_data));
+    }
+
+    private SpannableStringBuilder getSecurityEventReportingText() {
+        return new SpannableStringBuilder()
+                .append(buildString(R.string.management_connectors_event))
+                .append(": ")
+                .append(buildString(R.string.management_enterprise_reporting_event));
+    }
+
+    private SpannableStringBuilder getSecurityEventReportingDescriptionText() {
+        return new SpannableStringBuilder()
+                .append(buildString(R.string.management_connectors_visible_data))
+                .append(": ")
+                .append(buildString(R.string.management_enterprise_reporting_visible_data));
     }
 
     private boolean isLegacyTechReportingEnabled(PrefService prefs) {

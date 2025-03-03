@@ -38,6 +38,25 @@ class ManagementProperties {
     public static final PropertyModel.WritableObjectPropertyKey<SpannableString>
             LEGACY_TECH_REPORTING_TEXT = new PropertyModel.WritableObjectPropertyKey<>();
 
+    public static final PropertyModel.ReadableBooleanPropertyKey SECURITY_EVENT_REPORTING_ENABLED =
+            new PropertyModel.ReadableBooleanPropertyKey();
+
+    public static final PropertyModel.ReadableObjectPropertyKey<SpannableStringBuilder>
+            SECURITY_EVENT_REPORTING_TEXT = new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyModel.ReadableObjectPropertyKey<SpannableStringBuilder>
+            SECURITY_EVENT_REPORTING_DESCRIPTION_TEXT =
+                    new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyModel.ReadableBooleanPropertyKey URL_FILTERING_ENABLED =
+            new PropertyModel.ReadableBooleanPropertyKey();
+
+    public static final PropertyModel.ReadableObjectPropertyKey<SpannableStringBuilder>
+            URL_FILTERING_TEXT = new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyModel.ReadableObjectPropertyKey<SpannableStringBuilder>
+            URL_FILTERING_DESCRIPTION_TEXT = new PropertyModel.WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE,
         BROWSER_IS_MANAGED,
@@ -47,6 +66,12 @@ class ManagementProperties {
         PROFILE_REPORTING_IS_ENABLED,
         PROFILE_REPORTING_TEXT,
         LEGACY_TECH_REPORTING_IS_ENABLED,
-        LEGACY_TECH_REPORTING_TEXT
+        LEGACY_TECH_REPORTING_TEXT,
+        SECURITY_EVENT_REPORTING_ENABLED,
+        SECURITY_EVENT_REPORTING_TEXT,
+        SECURITY_EVENT_REPORTING_DESCRIPTION_TEXT,
+        URL_FILTERING_ENABLED,
+        URL_FILTERING_TEXT,
+        URL_FILTERING_DESCRIPTION_TEXT,
     };
 }
