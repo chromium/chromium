@@ -148,6 +148,14 @@ BASE_FEATURE_PARAM(std::string,
                    /*name=*/"MaskedDomainListExperimentalVersion",
                    /*default_value=*/"");
 
+// When enabled, the MaskedDomainList will be split into two separate lists,
+// one for regular browsing and one for incognito browsing.
+BASE_FEATURE_PARAM(bool,
+                   kSplitMaskedDomainList,
+                   &kMaskedDomainList,
+                   /*name=*/"SplitMaskedDomainList",
+                   /*default_value=*/false);
+
 // When enabled, if the MaskedDomainList is used at all, it will use the
 // flatbuffer implementation (the `MaskedDomainList` class) instead of the
 // `UrlMatcherWithBypass` implementation.

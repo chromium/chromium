@@ -49,7 +49,7 @@ class IpProtectionCoreImpl
           ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
-      bool use_regular_mdl = false);
+      bool ip_protection_incognito);
   ~IpProtectionCoreImpl() override;
 
   // IpProtectionCore implementation.

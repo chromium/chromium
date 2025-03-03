@@ -80,9 +80,11 @@ class MockIpProtectionCore : public IpProtectionCore {
  public:
   explicit MockIpProtectionCore(
       MaskedDomainListManager* masked_domain_list_manager,
-      bool use_regular_mdl = false)
+      // Default is set to true which is needed for the default MDL type.
+      bool ip_protection_incognito = true)
       : masked_domain_list_manager_(masked_domain_list_manager) {
-    mdl_type_ = use_regular_mdl ? MdlType::kRegularBrowsing : MdlType::kDefault;
+    mdl_type_ =
+        ip_protection_incognito ? MdlType::kDefault : MdlType::kRegularBrowsing;
   }
 
   bool IsMdlPopulated() override {
