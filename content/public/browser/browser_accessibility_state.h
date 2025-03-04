@@ -87,8 +87,8 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Called when an accessibility client is detected, using a heuristic.
   // These methods indicate the presence of AXMode::kScreenReader, which is
   // a misnomer because it is used by many clients, and not just screen readers.
-  // Methods with "KnownAssistiveTech" in the name deal with actual
-  // screen reader usage.
+  // Methods with "KnownScreenReader" or KnownAssistiveTech" in the name deal
+  // with actual screen reader or assistive tech usage.
   virtual void OnScreenReaderDetected() = 0;
 
   // Called when kScreenReader mode should be turned off.
@@ -100,17 +100,20 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   virtual void SetKnownScreenReaderAppActive(bool is_active) = 0;
 
   enum AssistiveTech {
+    // Use kUnknown if dependent on an expensive computation in
+    // UpdateKnownAssistiveTechSlow() that hasn't yet run.
     kNone = 0,
-    kChromeVox = 1,
-    kJaws = 2,
-    kNarrator = 3,
-    kNvda = 4,
-    kOrca = 5,
-    kSupernova = 6,
-    kTalkback = 7,
-    kVoiceOver = 8,
-    kZoomText = 9,
-    kMaxValue = 9
+    kUnknown = 1,
+    kChromeVox = 2,
+    kJaws = 3,
+    kNarrator = 4,
+    kNvda = 5,
+    kOrca = 6,
+    kSupernova = 7,
+    kTalkback = 8,
+    kVoiceOver = 9,
+    kZoomText = 10,
+    kMaxValue = 10
   };
 
   virtual AssistiveTech ActiveKnownAssistiveTech() = 0;

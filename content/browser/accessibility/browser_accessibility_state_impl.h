@@ -151,6 +151,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   virtual void UpdateHistogramsOnUIThread();
   virtual void UpdateHistogramsOnOtherThread();
 
+  // The presence of an AssistiveTech is still unknown.
+  // Well be updated via SetKnownScreenReaderAppActive() or
+  // UpdateKnownAssistiveTechSlow().
+  bool awaiting_known_assistive_tech_computation_ = true;
+
  private:
   // Called by `OnScreenReaderStopped` as a delayed task. If accessibility
   // support has not been re-enabled by the time the delay has expired, we clear

@@ -466,16 +466,17 @@ void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
 
 void BrowserAccessibilityStateImplAndroid::SetKnownScreenReaderAppActive(
     bool is_known_screen_reader_running) {
-  is_talkback_active_ = is_known_screen_reader_running;
-
   static auto* ax_talkback_crash_key = base::debug::AllocateCrashKeyString(
       "ax_talkback", base::debug::CrashKeySize::Size32);
 
   if (is_known_screen_reader_running) {
     base::debug::SetCrashKeyString(ax_talkback_crash_key, "true");
-  } else {
+  } else if (is_talkback_active_) {
     base::debug::ClearCrashKeyString(ax_talkback_crash_key);
   }
+
+  is_talkback_active_ = is_known_screen_reader_running;
+  awaiting_known_assistive_tech_computation_ = false;
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.Talkback",
                         is_known_screen_reader_running);
@@ -483,6 +484,9 @@ void BrowserAccessibilityStateImplAndroid::SetKnownScreenReaderAppActive(
 
 BrowserAccessibilityState::AssistiveTech
 BrowserAccessibilityStateImplAndroid::ActiveKnownAssistiveTech() {
+  if (awaiting_known_assistive_tech_computation_) {
+    return kUnknown;
+  }
   return is_talkback_active_ ? kTalkback : kNone;
 }
 

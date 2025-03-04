@@ -987,15 +987,16 @@ Unknown properties are collapsed to zero. -->
     technologies such as screen readers.
   </summary>
   <int value="0" label="None"/>
-  <int value="1" label="ChromeVox"/>
-  <int value="2" label="JAWS"/>
-  <int value="3" label="Narrator"/>
-  <int value="4" label="NVDA"/>
-  <int value="5" label="Orca"/>
-  <int value="6" label="Supernova"/>
-  <int value="7" label="Talkback"/>
-  <int value="8" label="VoiceOver"/>
-  <int value="9" label="ZoomText"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="ChromeVox"/>
+  <int value="3" label="JAWS"/>
+  <int value="4" label="Narrator"/>
+  <int value="5" label="NVDA"/>
+  <int value="6" label="Orca"/>
+  <int value="7" label="Supernova"/>
+  <int value="8" label="Talkback"/>
+  <int value="9" label="VoiceOver"/>
+  <int value="10" label="ZoomText"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/browser_accessibility_state.h:AssistiveTech) -->

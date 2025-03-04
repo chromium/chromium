@@ -311,10 +311,10 @@ void BrowserAccessibilityStateImpl::UpdateKnownAssistiveTechSlow() {
 void BrowserAccessibilityStateImpl::SetKnownScreenReaderAppActive(
     bool is_active) {
   // Currently only meaningful on macOS, for VoiceOver detection,
-  // and ChromeOS for ChromeVox detection.
+  // ChromeOS for ChromeVox detection, Android for Talkback detection, and
+  // unit tests.
   // Other platforms detect specific, known screen reader apps in the
   // OS-specific subclass.
-  NOTREACHED();
 }
 
 BrowserAccessibilityState::AssistiveTech

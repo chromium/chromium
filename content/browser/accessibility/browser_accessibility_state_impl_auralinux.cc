@@ -103,6 +103,8 @@ void BrowserAccessibilityStateImplAuralinux::UpdateKnownAssistiveTechSlow() {
   } else {
     base::debug::ClearCrashKeyString(ax_orca_crash_key);
   }
+
+  awaiting_known_assistive_tech_computation_ = false;
 }
 
 void BrowserAccessibilityStateImplAuralinux::UpdateUniqueUserHistograms() {
@@ -114,6 +116,9 @@ void BrowserAccessibilityStateImplAuralinux::UpdateUniqueUserHistograms() {
 
 BrowserAccessibilityState::AssistiveTech
 BrowserAccessibilityStateImplAuralinux::ActiveKnownAssistiveTech() {
+  if (awaiting_known_assistive_tech_computation_) {
+    return kUnknown;
+  }
   return is_orca_active_ ? kOrca : kNone;
 }
 
