@@ -21,6 +21,24 @@ class SiteEngagementService;
 // average daily notification counts and site engagement score.
 class DisruptiveNotificationPermissionsManager {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(RevocationResult)
+  enum class RevocationResult {
+    kNotAllowedContentSetting = 0,
+    kInvalidContentSetting = 1,
+    kNotSiteScopedContentSetting = 2,
+    kManagedContentSetting = 3,
+    kAlreadyInRevokeList = 4,
+    kFalsePositive = 5,
+    kNotDisruptive = 6,
+    kRevoke = 7,
+    kNoRevokeDefaultBlock = 8,
+    kMaxValue = kNoRevokeDefaultBlock,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:DisruptiveNotificationRevocationResult)
+
   explicit DisruptiveNotificationPermissionsManager(
       scoped_refptr<HostContentSettingsMap> hcsm,
       site_engagement::SiteEngagementService* site_engagement_service);
