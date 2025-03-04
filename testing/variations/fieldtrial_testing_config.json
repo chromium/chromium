@@ -16738,24 +16738,6 @@
             ]
         }
     ],
-    "PdfCr23": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfCr23"
-                    ]
-                }
-            ]
-        }
-    ],
     "PdfInkSignatures": [
         {
             "platforms": [
