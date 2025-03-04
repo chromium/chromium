@@ -1792,6 +1792,11 @@ void LensOverlayQueryController::SendFullImageLatencyGen204IfEnabled(
     base::TimeTicks start_time_ticks,
     bool is_translate_query,
     std::string vit_query_param_value) {
+  SendInitialLatencyGen204IfNotAlreadySent(
+      LatencyType::kInvocationToInitialFullPageObjectsResponseReceived,
+      vit_query_param_value,
+      *latest_full_image_request_data_->request_id_.get());
+
   SendLatencyGen204IfEnabled(
       is_translate_query ? lens::LensOverlayGen204Controller::LatencyType::
                                kFullPageTranslateRequestFetchLatency
