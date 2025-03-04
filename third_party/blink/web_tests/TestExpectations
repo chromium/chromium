@@ -2765,10 +2765,6 @@ crbug.com/388319476 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/cs
 crbug.com/388319476 [ Win ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/parsing/pseudo-elements-invalid.html [ Crash ]
 crbug.com/388319476 [ Mac13 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-rendering-invalidation.html [ Crash ]
 crbug.com/388319476 [ Win ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-rendering-invalidation.html [ Crash ]
-crbug.com/388326074 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/concat.https.any.html?cpu [ Crash Timeout ]
-crbug.com/388326074 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/concat.https.any.html?cpu [ Crash Timeout ]
-crbug.com/388326074 [ Mac15 ] virtual/webnn-service-on-npu/external/wpt/webnn/validation_tests/gather.https.any.html?npu [ Crash ]
-crbug.com/388326074 [ Mac15 ] virtual/webnn-service-on-npu/external/wpt/webnn/validation_tests/softsign.https.any.html?npu [ Crash ]
 crbug.com/388063576 [ Mac14 ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Skip Timeout ]
 crbug.com/388081043 [ Win ] external/wpt/editing/other/paste-clipboard-change.tentative.html?id=contenteditable [ Crash ]
 crbug.com/388081043 [ Mac14 ] external/wpt/editing/other/paste-clipboard-change.tentative.html?id=contenteditable [ Crash ]
@@ -3171,7 +3167,6 @@ crbug.com/358399788 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/
 crbug.com/358399788 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-direct.tentative.html [ Failure ]
 crbug.com/358456309 [ Mac15-arm64 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
 crbug.com/358456309 [ Mac15 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
-crbug.com/358192613 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Crash Pass ]
 crbug.com/358192560 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.html [ Failure ]
 crbug.com/358192560 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-nested.html [ Failure ]
 crbug.com/358192560 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/normal-goes-up.html [ Failure ]
@@ -3397,7 +3392,6 @@ crbug.com/626703 virtual/produce-compile-hints/external/wpt/fetch/api/basic/requ
 crbug.com/626703 [ Mac ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video.https.html [ Pass Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-text/text-justify/text-justify-word-separators.html [ Failure ]
-crbug.com/626703 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?gpu [ Skip Timeout ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-nearly-transparent.html [ Timeout ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-transparent.html [ Timeout ]
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-background.html [ Timeout ]
@@ -8746,10 +8740,6 @@ crbug.com/365127791 [ Win11 ] virtual/text-antialias/emoticons.html [ Failure Pa
 crbug.com/365127791 [ Win11 ] virtual/text-antialias/fallback-traits-fixup.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] virtual/text-antialias/font-format-support-color-cff2.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] virtual/text-antialias/unicode-fallback-font.html [ Failure Pass ]
-crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/clamp.https.any.html?gpu [ Failure Pass ]
-crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/conv2d.https.any.html?gpu [ Failure Pass ]
-crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/sign.https.any.html?gpu [ Failure Pass ]
-crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling.https.any.html?gpu [ Failure Pass ]
 
 # Fontations
 crbug.com/372053413 [ Linux ] external/wpt/css/css-fonts/font-size-adjust-010.html [ Failure ]
@@ -8870,21 +8860,6 @@ crbug.com/377938333 external/wpt/webdriver/tests/interop/beforeunload_prompt.py 
 # Gardener 2024-11-08
 crbug.com/377927602 external/wpt/selection/caret/collapse-pre-linestart-1.html [ Failure Pass ]
 
-# Temporarily add TestExpectation for mac-rel and mac14-blink-rel try builder testing
-# To be removed once crbug.com/375028401 is resolved
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?cpu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/pooling.https.any.html?cpu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?cpu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?npu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/pooling.https.any.html?npu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?npu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?npu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?gpu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.html?gpu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Failure Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?gpu [ Pass Timeout ]
-
 # Flaky failure on Mac
 crbug.com/379847900 [ Mac ] fast/spatial-navigation/snav-overlapping-elements.html [ Failure Pass ]
 
@@ -8949,15 +8924,6 @@ crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-ima
 
 # Gardener 2024-12-17
 crbug.com/384549646 virtual/threaded/external/wpt/css/css-view-transitions/navigation/chromium-paint-holding-timeout.html [ Failure Pass Timeout ]
-
-# Tests elementwise-{logical,binary}.https.{any,any.worker}.html?cpu are known to occasionally fail in general and to timeout on Linux bots.
-# Some of the following were set by the Gardener on 2024-11-26 and on 2024-11-29. The rest on 2024-12-18.
-crbug.com/381085690 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Failure Pass Timeout ]
-crbug.com/381085690 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Failure Pass ]
-crbug.com/381085690 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Failure Pass ]
-crbug.com/381428629 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass Timeout ]
-crbug.com/381428629 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass ]
-crbug.com/381428629 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass ]
 
 # Gardener 2024-12-18
 crbug.com/352331034 [ Debug Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-svg-only-for-print.html [ Failure Pass ]
