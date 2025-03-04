@@ -209,18 +209,18 @@ export class ViewerInkHostElement extends PolymerElement {
     frame.src = 'ink/index.html';
     await new Promise(resolve => frame.onload = resolve);
     this.ink_ = await frame.contentWindow!.initInk();
-    this.ink_!.addUndoStateListener(
+    this.ink_.addUndoStateListener(
         e => this.dispatchEvent(
             new CustomEvent('undo-state-changed', {detail: e})));
-    await this.ink_!.setPdf(data);
+    await this.ink_.setPdf(data);
     this.state_ = State.ACTIVE;
     this.viewportChanged();
     // Wait for the next task to avoid a race where Ink drops the background
     // color.
     await new Promise(resolve => setTimeout(resolve));
-    this.ink_!.setOutOfBoundsColor(BACKGROUND_COLOR);
+    this.ink_.setOutOfBoundsColor(BACKGROUND_COLOR);
     const spacing = PAGE_SHADOW.top + PAGE_SHADOW.bottom;
-    this.ink_!.setPageSpacing(spacing);
+    this.ink_.setPageSpacing(spacing);
     this.style.visibility = 'visible';
   }
 

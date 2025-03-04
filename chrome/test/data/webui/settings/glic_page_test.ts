@@ -373,7 +373,7 @@ suite('GlicPage', function() {
     assertTrue(!!glicRow);
     assertTrue(isVisible(glicRow));
 
-    glicRow!.click();
+    glicRow.click();
     assertEquals(
         routes.GEMINI.path, Router.getInstance().getCurrentRoute().path);
   });

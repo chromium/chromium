@@ -69,7 +69,7 @@ suite('SimplifiedSelection', function() {
 
   function callTextReceivedTimeout() {
     assertTrue(textReceivedTimeoutFunction !== undefined);
-    textReceivedTimeoutFunction!();
+    textReceivedTimeoutFunction();
   }
 
   async function dispatchDetextTextInRegionEvent() {

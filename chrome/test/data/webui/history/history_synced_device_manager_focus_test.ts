@@ -46,7 +46,7 @@ suite('<history-synced-device-manager>', function() {
     await waitForFocusGridUpdate();
 
     let cards =
-        element.shadowRoot!.querySelectorAll('history-synced-device-card');
+        element.shadowRoot.querySelectorAll('history-synced-device-card');
     assertTrue(!!cards[0]);
     assertTrue(!!cards[1]);
 
@@ -94,7 +94,7 @@ suite('<history-synced-device-manager>', function() {
     element.sessionList = sessionList.slice();
     await waitForFocusGridUpdate();
 
-    cards = element.shadowRoot!.querySelectorAll('history-synced-device-card');
+    cards = element.shadowRoot.querySelectorAll('history-synced-device-card');
     assertTrue(!!cards[0]);
     assertTrue(!!cards[1]);
 
@@ -113,7 +113,7 @@ suite('<history-synced-device-manager>', function() {
     element.sessionList = sessionList.slice();
     await waitForFocusGridUpdate();
 
-    cards = element.shadowRoot!.querySelectorAll('history-synced-device-card');
+    cards = element.shadowRoot.querySelectorAll('history-synced-device-card');
     assertTrue(!!cards[1]);
 
     // Pressing down goes to the next card.

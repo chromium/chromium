@@ -45,14 +45,14 @@ chrome.test.runTests([
 
     chrome.test.assertTrue(viewerToolbar.annotationMode);
     chrome.test.assertTrue(
-        !viewerToolbar.shadowRoot!.querySelector('viewer-annotations-bar'));
+        !viewerToolbar.shadowRoot.querySelector('viewer-annotations-bar'));
 
     viewerToolbar.toggleAnnotation();
     await microtasksFinished();
 
     chrome.test.assertFalse(viewerToolbar.annotationMode);
     chrome.test.assertTrue(
-        !viewerToolbar.shadowRoot!.querySelector('viewer-annotations-bar'));
+        !viewerToolbar.shadowRoot.querySelector('viewer-annotations-bar'));
     chrome.test.succeed();
   },
   // Ink1 disables some toolbar buttons when in annotation mode, but Ink2 does

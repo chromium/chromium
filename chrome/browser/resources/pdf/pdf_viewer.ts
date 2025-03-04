@@ -503,7 +503,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private waitForSidenavTransition_(): Promise<void> {
     return eventToPromise(
         'transitionend',
-        this.shadowRoot!.querySelector<ViewerPdfSidenavElement>(
+        this.shadowRoot.querySelector<ViewerPdfSidenavElement>(
             '#sidenav-container')!);
   }
 

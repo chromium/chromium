@@ -77,7 +77,7 @@ suite('SelectionOverlay', function() {
   });
 
   function getTextSelectionLayer(): TextLayerBase {
-    return selectionOverlayElement.getTextSelectionLayerForTesting()!;
+    return selectionOverlayElement.getTextSelectionLayerForTesting();
   }
 
   function getWordNodes(): NodeListOf<Element> {

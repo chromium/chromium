@@ -113,7 +113,7 @@ function setInputField(dialog: HTMLElement, input: string) {
   const menu = dialog.shadowRoot!.querySelector<HTMLElement>('#dialog')!;
   const inputField = menu.querySelector<HTMLInputElement>('#usernameInput');
   assertTrue(!!inputField);
-  inputField!.value = input;
+  inputField.value = input;
 }
 
 /**
