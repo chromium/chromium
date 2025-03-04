@@ -69,7 +69,6 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_error_test_util.h"
-#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -477,10 +476,8 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
 bool DeveloperPrivateApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
     const base::Value::List& args) {
-  return api_test_utils::RunFunction(
-      function.get(), args.Clone(),
-      std::make_unique<ExtensionFunctionDispatcher>(profile()),
-      api_test_utils::FunctionMode::kNone);
+  return api_test_utils::RunFunction(function.get(), args.Clone(), profile(),
+                                     api_test_utils::FunctionMode::kNone);
 }
 
 const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {

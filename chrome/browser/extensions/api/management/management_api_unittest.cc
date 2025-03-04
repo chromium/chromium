@@ -45,7 +45,6 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
-#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -131,9 +130,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
 bool ManagementApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
     const base::Value::List& args) {
-  auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
-  return api_test_utils::RunFunction(function.get(), args.Clone(),
-                                     std::move(dispatcher),
+  return api_test_utils::RunFunction(function.get(), args.Clone(), profile(),
                                      api_test_utils::FunctionMode::kNone);
 }
 
