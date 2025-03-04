@@ -12,7 +12,7 @@ namespace {
 using Dict = base::Value::Dict;
 
 const char kGetBnplPaymentInstrumentForFetchingUrlRequestPath[] =
-    "payments/apis/chromepaymentsservice/getpaymentinstrument";
+    "payments/apis-secure/chromepaymentsservice/getpaymentinstrument";
 }  // namespace
 
 GetBnplPaymentInstrumentForFetchingUrlRequest::

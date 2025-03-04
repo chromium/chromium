@@ -56,7 +56,7 @@ class GetBnplPaymentInstrumentForFetchingVcnRequestTest : public testing::Test {
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestUrlPath) {
   EXPECT_EQ(request_->GetRequestUrlPath(),
-            "payments/apis/chromepaymentsservice/getpaymentinstrument");
+            "payments/apis-secure/chromepaymentsservice/getpaymentinstrument");
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
