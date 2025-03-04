@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
@@ -594,8 +595,13 @@ void OutlookCalendarPageHandler::OnJsonParsed(
         continue;
       }
       created_attachment->icon_url = icon_url;
-      std::string attachment_url =
-          kBaseAttachmentResourceUrl + *event_id + "/" + *id;
+
+      std::string event_id_escaped =
+          base::EscapeUrlEncodedData(*event_id, true);
+      std::string attachment_id_escaped = base::EscapeUrlEncodedData(*id, true);
+      std::string url_path = event_id_escaped + "/" + attachment_id_escaped;
+      GURL attachment_url = GURL(kBaseAttachmentResourceUrl).Resolve(url_path);
+
       // Set `resource_url` prematurely because the request to check whether the
       // attachment page exists is handled asynchronously. This way the request
       // can finish before possibly incorrectly resetting the URLs. The urls
@@ -603,9 +609,9 @@ void OutlookCalendarPageHandler::OnJsonParsed(
       // unsuccessful and it is not yet time to make another request.
       if (!ntp_features::kNtpOutlookCalendarModuleDisableAttachmentsParam
                .Get()) {
-        created_attachment->resource_url = GURL(attachment_url);
+        created_attachment->resource_url = attachment_url;
       }
-      last_attachment_resource_url = attachment_url;
+      last_attachment_resource_url = attachment_url.spec();
       created_event->attachments.push_back(std::move(created_attachment));
     }
 
