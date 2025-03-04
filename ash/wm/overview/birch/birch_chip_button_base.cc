@@ -40,7 +40,7 @@ void BirchChipButtonBase::UpdateRoundedCorners(bool selection_widget_visible) {
           : gfx::RoundedCornersF(kRoundedCornerRadius);
   SetBorder(std::make_unique<views::HighlightBorder>(
       rounded_corners, views::HighlightBorder::Type::kHighlightBorderNoShadow));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       selection_widget_visible ? kCoralSelectionShownBackgroundColorId
                                : kBackgroundColorId,
       rounded_corners));

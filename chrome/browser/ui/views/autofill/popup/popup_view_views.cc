@@ -964,8 +964,7 @@ void PopupViewViews::CreateSuggestionViews() {
   const int kInterItemsPadding = GetContentsVerticalPadding();
   const std::vector<Suggestion> suggestions = controller_->GetSuggestions();
 
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
   rows_.reserve(suggestions.size());
   size_t current_line_number = 0u;
@@ -1096,7 +1095,7 @@ void PopupViewViews::CreateSuggestionViews() {
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBackground(
-              views::CreateThemedSolidBackground(ui::kColorDropdownBackground))
+              views::CreateSolidBackground(ui::kColorDropdownBackground))
           .Build();
 
   if (IsFooterScrollable()) {

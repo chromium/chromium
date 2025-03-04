@@ -81,8 +81,8 @@ class FeatureTilePixelTest : public AshTestBase {
         views::BoxLayout::CrossAxisAlignment::kCenter);
     // The tile colors have transparency, so set a background color so they
     // render like in production.
-    contents->SetBackground(views::CreateThemedSolidBackground(
-        cros_tokens::kCrosSysSystemBaseElevated));
+    contents->SetBackground(
+        views::CreateSolidBackground(cros_tokens::kCrosSysSystemBaseElevated));
   }
 
   void TearDown() override {

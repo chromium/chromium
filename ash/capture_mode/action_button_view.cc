@@ -80,7 +80,7 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kActionButtonRadius));
   shadow_->SetRoundedCornerRadius(kActionButtonRadius);
   capture_mode_util::SetHighlightBorder(

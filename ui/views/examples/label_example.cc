@@ -174,7 +174,7 @@ void LabelExample::AddCustomLabel(View* container) {
   std::unique_ptr<View> control_container = std::make_unique<View>();
   control_container->SetBorder(CreateThemedSolidBorder(
       2, ExamplesColorIds::kColorLabelExampleCustomBorder));
-  control_container->SetBackground(CreateThemedSolidBackground(
+  control_container->SetBackground(CreateSolidBackground(
       ExamplesColorIds::kColorLabelExampleCustomBackground));
   control_container->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));

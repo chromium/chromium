@@ -117,7 +117,7 @@ ActiveSessionAuthView::ActiveSessionAuthView(const AccountId& account_id,
   AddVerticalSpace(this, kAuthContainerBottomDistanceDp);
 
   // Set the background.
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysBaseElevated, kActiveSessionAuthViewCornerRadiusDp));
 
   // Set the view as a dialog for a11y purposes.

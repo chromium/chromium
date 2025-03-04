@@ -63,7 +63,7 @@ MediaViewControllerBase::MediaViewControllerBase(
 
     base_view_->SetBorder(views::CreateThemedRoundedRectBorder(
         kBorderThickness, kRoundedRadius, ui::kColorMenuBackground));
-    base_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+    base_view_->SetBackground(views::CreateRoundedRectBackground(
         ui::kColorMenuBackground, kRoundedRadius));
   }
 

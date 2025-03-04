@@ -202,7 +202,7 @@ void GameDashboardButton::UpdateViews() {
                   kAlphaForButtonBorder)));
 
   const bool enabled = GetEnabled();
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       enabled ? GetBackgroundEnabledColorId(is_recording_)
               : cros_tokens::kCrosSysDisabledContainer,
       container_corner_radius_));

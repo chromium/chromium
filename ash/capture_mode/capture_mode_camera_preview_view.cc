@@ -123,7 +123,7 @@ CameraPreviewView::CameraPreviewView(
 
   resize_button_->SetPaintToLayer();
   resize_button_->layer()->SetFillsBoundsOpaquely(false);
-  resize_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+  resize_button_->SetBackground(views::CreateRoundedRectBackground(
       kColorAshShieldAndBase80,
       resize_button_->GetPreferredSize().height() / 2.f));
 

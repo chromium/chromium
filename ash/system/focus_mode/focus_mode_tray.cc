@@ -88,7 +88,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
     // Set the background color is not opaque.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase, kTaskItemViewCornerRadius));
 
     const bool is_network_connected = glanceables_util::IsNetworkConnected();

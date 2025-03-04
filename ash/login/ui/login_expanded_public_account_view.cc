@@ -797,7 +797,7 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
       on_dismissed_(on_dismissed),
       event_handler_(
           std::make_unique<LoginExpandedPublicAccountEventHandler>(this)) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kJellyRoundRectCornerRadiusDp));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kJellyRoundRectCornerRadiusDp,
@@ -829,8 +829,7 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   separator_ = box_layout_view_->AddChildView(std::make_unique<views::View>());
   const ui::ColorId separator_color_id =
       static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator);
-  separator_->SetBackground(
-      views::CreateThemedSolidBackground(separator_color_id));
+  separator_->SetBackground(views::CreateSolidBackground(separator_color_id));
 
   right_pane_ = new RightPaneView(
       base::BindRepeating(&LoginExpandedPublicAccountView::ShowWarningDialog,

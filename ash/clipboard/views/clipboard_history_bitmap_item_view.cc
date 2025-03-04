@@ -170,7 +170,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
         .BuildChildren();
 
     // Distinguish the image from rest of the menu with a colored background.
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSeparator,
         ClipboardHistoryViews::kImageBackgroundCornerRadius));
   }

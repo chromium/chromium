@@ -195,7 +195,7 @@ void ArrowButtonView::LoadingAnimationDelegate::AnimationProgressed(
 }
 
 void ArrowButtonView::SetBackgroundColorId(ui::ColorId color_id) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       color_id, GetPreferredSize().width() / 2, 2 * kBorderForFocusRingDp));
 }
 

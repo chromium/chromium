@@ -89,8 +89,7 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
                   gfx::Insets::VH(kBetweenContentsAndButtonsSpacing, 0))
       .SetCollapseMargins(true)
       .SetIgnoreDefaultMainAxisMargins(true);
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorPrimaryBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorPrimaryBackground));
 
   // Painted to layer so view can be semi-transparent and set rounded corners.
   SetPaintToLayer();
@@ -121,7 +120,7 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
                   .SetImage(ui::ImageModel::FromVectorIcon(
                       kMahiSparkIcon, ui::kColorSysOnPrimaryContainer,
                       kImageViewIconSize))
-                  .SetBackground(views::CreateThemedSolidBackground(
+                  .SetBackground(views::CreateSolidBackground(
                       ui::kColorSysPrimaryContainer))
                   // Painted to layer to set rounded corners.
                   .SetPaintToLayer()

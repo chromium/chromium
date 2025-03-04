@@ -288,7 +288,7 @@ void Combobox::SetBorderColorId(ui::ColorId color_id) {
 }
 
 void Combobox::SetBackgroundColorId(ui::ColorId color_id) {
-  SetBackground(CreateThemedRoundedRectBackground(color_id, GetCornerRadius()));
+  SetBackground(CreateRoundedRectBackground(color_id, GetCornerRadius()));
 }
 
 void Combobox::SetForegroundColorId(ui::ColorId color_id) {

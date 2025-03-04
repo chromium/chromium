@@ -62,7 +62,7 @@ class AuthHeaderPixelTest : public AshTestBase {
     std::unique_ptr<AuthHeaderView> header_view =
         std::make_unique<AuthHeaderView>(account_id, kTitle, kDescription);
 
-    header_view->SetBackground(views::CreateThemedRoundedRectBackground(
+    header_view->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated, 0));
 
     widget_->SetSize(header_view->GetPreferredSize());

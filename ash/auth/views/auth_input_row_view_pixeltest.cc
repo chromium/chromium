@@ -65,7 +65,7 @@ class InputRowWithPasswordPixelTest : public AshTestBase {
 
     container_view->SetPreferredSize(gfx::Size({500, 400}));
 
-    container_view->SetBackground(views::CreateThemedRoundedRectBackground(
+    container_view->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated, 0));
 
     auth_input_ =

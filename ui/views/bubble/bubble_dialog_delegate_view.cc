@@ -1100,10 +1100,10 @@ void BubbleDialogDelegate::UpdateFrameColors() {
   // through, so explicitly paint a background color.
   const bool contents_layer_opaque =
       contents_view->layer() && contents_view->layer()->fills_bounds_opaquely();
-  contents_view->SetBackground(
-      contents_layer_opaque || force_create_contents_background_
-          ? CreateSolidOrThemedBackground(background_color())
-          : nullptr);
+  contents_view->SetBackground(contents_layer_opaque ||
+                                       force_create_contents_background_
+                                   ? CreateSolidBackground(background_color())
+                                   : nullptr);
 }
 
 void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {

@@ -345,7 +345,7 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
   }
 
   if (part_state == OmniboxPartState::IPH) {
-    return views::CreateThemedRoundedRectBackground(
+    return views::CreateRoundedRectBackground(
         GetOmniboxBackgroundColorId(part_state),
         /*radius=*/kIPHBackgroundBorderRadius,
         /*for_border_thickness=*/0);
@@ -353,7 +353,7 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
 
   const float half_row_height = OmniboxMatchCellView::kRowHeight / 2;
   gfx::RoundedCornersF radii = {0, half_row_height, half_row_height, 0};
-  return views::CreateThemedRoundedRectBackground(
+  return views::CreateRoundedRectBackground(
       GetOmniboxBackgroundColorId(part_state), radii);
 }
 

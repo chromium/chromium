@@ -126,7 +126,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Background.
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kHoldingSpaceCornerRadius));
 
   // Layer.

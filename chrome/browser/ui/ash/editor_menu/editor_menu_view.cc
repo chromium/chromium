@@ -267,7 +267,7 @@ const char* EditorMenuView::GetWidgetNameForTest() {
 }
 
 void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       ui::kColorPrimaryBackground,
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kMenuRadius)));

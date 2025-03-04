@@ -525,7 +525,7 @@ class ContentsSeparator : public views::View {
  public:
   ContentsSeparator() {
     SetBackground(
-        views::CreateThemedSolidBackground(kColorToolbarContentAreaSeparator));
+        views::CreateSolidBackground(kColorToolbarContentAreaSeparator));
     SetPaintToLayer();
 
     // BrowserViewLayout will respect either the height or width of this,
@@ -5889,7 +5889,7 @@ void BrowserView::OnImmersiveRevealStarted() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   top_container()->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorFrameActive));
+      views::CreateSolidBackground(ui::kColorFrameActive));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

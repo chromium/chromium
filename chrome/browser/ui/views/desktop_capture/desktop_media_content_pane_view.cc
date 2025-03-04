@@ -19,9 +19,9 @@ DesktopMediaContentPaneView::DesktopMediaContentPaneView(
     std::unique_ptr<views::View> content_view,
     std::unique_ptr<ShareAudioView> share_audio_view) {
   float bottom_radius = 8;
-  SetBackground(views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
-                                                         /*top_radius=*/0,
-                                                         bottom_radius));
+  SetBackground(views::CreateRoundedRectBackground(ui::kColorSysSurface4,
+                                                   /*top_radius=*/0,
+                                                   bottom_radius));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(0)));

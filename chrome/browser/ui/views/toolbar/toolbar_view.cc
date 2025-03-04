@@ -315,7 +315,7 @@ void ToolbarView::Init() {
       download_button_->Hide();
     }
     container_view_->SetBackground(
-        views::CreateThemedSolidBackground(kColorLocationBarBackground));
+        views::CreateSolidBackground(kColorLocationBarBackground));
     container_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)

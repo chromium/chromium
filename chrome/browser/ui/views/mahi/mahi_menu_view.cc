@@ -203,7 +203,7 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
     : chromeos::editor_menu::PreTargetHandlerView(
           chromeos::editor_menu::CardType::kMahiDefaultMenu),
       surface_(surface) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       ui::kColorPrimaryBackground,
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kMenuRadius)));
@@ -463,7 +463,7 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
   auto input_container =
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               ui::kColorSysStateHoverOnSubtle, kInputContainerCornerRadius))
           .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
           .SetProperty(views::kMarginsKey,

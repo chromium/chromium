@@ -75,7 +75,7 @@ ErrorMessageToast::ErrorMessageToast(views::Button::PressedCallback callback,
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));
-  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+  SetBackground(views::CreateSolidBackground(background_color_id));
 
   const auto* const typography_provider = TypographyProvider::Get();
   error_message_label_ = AddChildView(

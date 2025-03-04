@@ -71,8 +71,7 @@ void OverlayDialog::AddedToWidget() {
 
 void OverlayDialog::OnThemeChanged() {
   views::View::OnThemeChanged();
-  SetBackground(
-      views::CreateThemedSolidBackground(ash::kColorAshShieldAndBase60));
+  SetBackground(views::CreateSolidBackground(ash::kColorAshShieldAndBase60));
 }
 
 OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,

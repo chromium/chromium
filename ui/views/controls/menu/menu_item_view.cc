@@ -340,7 +340,7 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     submenu_->SetBorderColorId(submenu_background_color);
     if (submenu_background_color.has_value()) {
       submenu_->SetBackground(
-          views::CreateThemedSolidBackground(submenu_background_color.value()));
+          views::CreateSolidBackground(submenu_background_color.value()));
     }
   }
   DCHECK_LE(index, submenu_->children().size());

@@ -40,7 +40,7 @@ std::unique_ptr<views::View> CreatePreviewBadge() {
       gfx::Insets::TLBR(kVerticalInset, kLeftInset, kVerticalInset,
                         kRightInset),
       ui::kColorSysTertiaryContainer));
-  badge_view->SetBackground(views::CreateThemedRoundedRectBackground(
+  badge_view->SetBackground(views::CreateRoundedRectBackground(
       ui::kColorSysTertiaryContainer, kRoundedRadius));
 
   const int kIconSize = 12;

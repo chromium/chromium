@@ -250,7 +250,7 @@ DeskMiniView::DeskMiniView(
             ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
     desk_shortcut_view_->SetBackground(
-        views::CreateThemedSolidBackground(background_color_id));
+        views::CreateSolidBackground(background_color_id));
 
     desk_shortcut_view_->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(

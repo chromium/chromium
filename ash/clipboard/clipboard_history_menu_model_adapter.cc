@@ -195,7 +195,7 @@ void InsertFooterContentV2(
 
   container->AddChildView(
       views::Builder<views::BoxLayoutView>()
-          .SetBackground(views::CreateThemedRoundedRectBackground(
+          .SetBackground(views::CreateRoundedRectBackground(
               cros_tokens::kCrosSysSystemOnBase1,
               ClipboardHistoryViews::kFooterContentV2BackgroundCornerRadius))
           .SetBetweenChildSpacing(

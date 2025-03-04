@@ -149,8 +149,8 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
                                   media_display_page_);
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      theme_.background_color_id, kBackgroundCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(theme_.background_color_id,
+                                                   kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kBackgroundInsets));
 
@@ -253,9 +253,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
       controls_column, static_cast<int>(MediaSessionAction::kPlay),
       media_message_center::kPlayArrowIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
-  play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-      theme_.play_button_container_color_id,
-      kPlayPauseButtonSize.height() / 2));
+  play_pause_button_->SetBackground(
+      views::CreateRoundedRectBackground(theme_.play_button_container_color_id,
+                                         kPlayPauseButtonSize.height() / 2));
 
   // `controls_row` holds all the available media action buttons and the
   // progress view.
@@ -377,7 +377,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
         std::make_unique<views::BoxLayoutView>());
     separator->SetInsideBorderInsets(kDeviceSelectorSeparatorLineInsets);
     separator->SetBackground(
-        views::CreateThemedSolidBackground(theme_.separator_color_id));
+        views::CreateSolidBackground(theme_.separator_color_id));
     device_selector_view_separator_->SetFlexForView(separator, 1);
 
     // Create the device selector view.
@@ -413,7 +413,7 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
         media_message_center::kPauseIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
         theme_.pause_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
         theme_.pause_button_container_color_id,
         kPlayPauseButtonSize.height() / 2));
   } else {
@@ -422,7 +422,7 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
         media_message_center::kPlayArrowIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         theme_.play_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
         theme_.play_button_container_color_id,
         kPlayPauseButtonSize.height() / 2));
   }

@@ -159,7 +159,7 @@ CaptureLabelView::CaptureLabelView(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBase80));
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);

@@ -157,7 +157,7 @@ class ShellView : public views::BoxLayoutView,
     auto builder =
         views::Builder<views::BoxLayoutView>(this)
             .SetBackground(
-                views::CreateThemedSolidBackground(ui::kColorWindowBackground))
+                views::CreateSolidBackground(ui::kColorWindowBackground))
             .SetOrientation(views::BoxLayout::Orientation::kVertical);
 
     if (!Shell::ShouldHideToolbar()) {

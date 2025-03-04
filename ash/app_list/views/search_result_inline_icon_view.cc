@@ -68,7 +68,7 @@ void SearchResultInlineIconView::SetIcon(const gfx::VectorIcon& icon) {
                     ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                     : cros_tokens::kCrosSysOnSurface);
 
-    icon_image_->SetBackground(views::CreateThemedRoundedRectBackground(
+    icon_image_->SetBackground(views::CreateRoundedRectBackground(
         use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                               : cros_tokens::kCrosSysSurface,
         kContentCornerRadius));
@@ -105,7 +105,7 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
     label_->SetEnabledColor(use_modified_styling_
                                 ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                                 : cros_tokens::kCrosSysOnSurface);
-    label_->SetBackground(views::CreateThemedRoundedRectBackground(
+    label_->SetBackground(views::CreateRoundedRectBackground(
         use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                               : cros_tokens::kCrosSysSurface,
         kContentCornerRadius));

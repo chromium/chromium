@@ -166,8 +166,8 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      kColorAshShieldAndBaseOpaque, kRoundedCornerRadiusDp));
+  SetBackground(views::CreateRoundedRectBackground(kColorAshShieldAndBaseOpaque,
+                                                   kRoundedCornerRadiusDp));
 
   // The icon size has to be defined later if the image will be visible.
   message_icon_ = AddChildView(std::make_unique<views::ImageView>());

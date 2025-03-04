@@ -129,7 +129,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
               .CopyAddressTo(&background_view)
               .SetPreferredSize(kPreferredSize)
               .SetUseDefaultFillLayout(true)
-              .SetBackground(views::CreateThemedRoundedRectBackground(
+              .SetBackground(views::CreateRoundedRectBackground(
                   cros_tokens::kCrosSysSystemBaseElevated,
                   kSaveDeskCornerRadius)),
           views::Builder<views::FlexLayoutView>()

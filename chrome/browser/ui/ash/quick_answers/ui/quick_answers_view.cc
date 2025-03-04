@@ -388,8 +388,7 @@ QuickAnswersView::QuickAnswersView(
           this,
           base::BindRepeating(&QuickAnswersView::GetFocusableViews,
                               base::Unretained(this)))) {
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorPrimaryBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorPrimaryBackground));
   SetUseDefaultFillLayout(true);
 
   std::unique_ptr<views::FlexLayout> main_view_layout =

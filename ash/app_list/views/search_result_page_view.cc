@@ -99,7 +99,7 @@ SearchResultPageView::SearchResultPageView() {
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+  SetBackground(views::CreateSolidBackground(background_color_id));
 
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetFillsBoundsOpaquely(false);

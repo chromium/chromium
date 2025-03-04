@@ -71,7 +71,7 @@ InformedRestoreAppImageView::InformedRestoreAppImageView(
                                           cros_tokens::kCrosSysPrimary));
 
   if (type_ == Type::kItem) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         informed_restore::kIconBackgroundColorId, kItemIconBackgroundRounding));
   }
 

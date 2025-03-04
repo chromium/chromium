@@ -407,7 +407,7 @@ void AddSignedInChipToProfileMenuItem(
               views::Builder<views::Label>()
                   .SetText(GetSigninStatusChipString(profile))
                   .CopyAddressTo(&profile_chip_label)
-                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                  .SetBackground(views::CreateRoundedRectBackground(
                       item->IsSelected()
                           ? ui::kColorAppMenuProfileRowChipHovered
                           : ui::kColorAppMenuProfileRowChipBackground,
@@ -432,7 +432,7 @@ void AddSignedInChipToProfileMenuItem(
       item->AddSelectedChangedCallback(base::BindRepeating(
           [](MenuItemView* menu_item_view, View* child_view,
              int corner_radius) {
-            child_view->SetBackground(views::CreateThemedRoundedRectBackground(
+            child_view->SetBackground(views::CreateRoundedRectBackground(
                 menu_item_view->IsSelected()
                     ? ui::kColorAppMenuProfileRowChipHovered
                     : ui::kColorAppMenuProfileRowChipBackground,

@@ -603,8 +603,8 @@ void Combobox::ShowDropDownMenu() {
   UpdateExpandedCollapsedAccessibleState();
   UpdateAccessibleAccessibleActiveDescendantId();
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      kComboboxActiveColorId, kComboboxRoundedCorners));
+  SetBackground(views::CreateRoundedRectBackground(kComboboxActiveColorId,
+                                                   kComboboxRoundedCorners));
   title_->SetEnabledColor(kActiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));

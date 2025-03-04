@@ -106,7 +106,7 @@ class ExamplesWindowContents : public WidgetDelegateView,
   ExamplesWindowContents(base::OnceClosure on_close, ExampleVector examples)
       : on_close_(std::move(on_close)) {
     SetHasWindowSizeControls(true);
-    SetBackground(CreateThemedSolidBackground(ui::kColorDialogBackground));
+    SetBackground(CreateSolidBackground(ui::kColorDialogBackground));
 
     auto* layout = SetLayoutManager(
         std::make_unique<views::BoxLayout>(BoxLayout::Orientation::kVertical));

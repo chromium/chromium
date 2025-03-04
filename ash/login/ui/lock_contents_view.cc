@@ -269,8 +269,8 @@ class UserAddingScreenIndicator : public views::View {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase80, kBubbleBorderRadius));
+    SetBackground(views::CreateRoundedRectBackground(kColorAshShieldAndBase80,
+                                                     kBubbleBorderRadius));
   }
 
   UserAddingScreenIndicator(const UserAddingScreenIndicator&) = delete;

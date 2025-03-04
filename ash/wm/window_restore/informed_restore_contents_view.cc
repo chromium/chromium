@@ -84,7 +84,7 @@ constexpr int kScreenshotMinHeight = 88;
 
 InformedRestoreContentsView::InformedRestoreContentsView() :
     creation_time_(base::TimeTicks::Now()) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
   SetInsideBorderInsets(kContentsInsets);
@@ -292,7 +292,7 @@ InformedRestoreContentsView::CreateSettingsButtonBuilder() {
                      weak_ptr_factory_.GetWeakPtr()),
                  kSettingsIcon, kSettingsIconSize))
       .CopyAddressTo(&settings_button_)
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase, kSettingsIconSize))
       .SetID(informed_restore::kSettingsButtonID)
       .SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS));

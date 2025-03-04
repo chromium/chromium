@@ -43,7 +43,7 @@ QuickInsertGifView::QuickInsertGifView(
     : original_dimensions_(original_dimensions) {
   // Show a placeholder rect while the gif loads.
   views::Builder<QuickInsertGifView>(this)
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysAppBaseShaded, kQuickInsertGifCornerRadius))
       .SetImage(ui::ImageModel::FromImageSkia(
           image_util::CreateEmptyImage(original_dimensions)))

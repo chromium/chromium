@@ -340,7 +340,7 @@ void ToastView::AnimateIn() {
       GetScaleTransformation(bubble_frame_view->bounds()));
   bubble_frame_view->layer()->SetOpacity(0);
   GetDialogClientView()->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorToastBackgroundProminent));
+      views::CreateSolidBackground(ui::kColorToastBackgroundProminent));
   GetDialogClientView()->layer()->SetOpacity(0);
   views::AnimationBuilder()
       .Once()

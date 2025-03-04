@@ -88,7 +88,7 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
   set_corner_radius(kCornerRadius);
   set_use_custom_frame(true);
   SetBackground(
-      views::CreateThemedSolidBackground(kColorBorealisSplashScreenBackground));
+      views::CreateSolidBackground(kColorBorealisSplashScreenBackground));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
 

@@ -1108,7 +1108,7 @@ void LockDebugView::AuthInputRowView() {
 
   container_view->SetPreferredSize(gfx::Size({500, 400}));
 
-  container_view->SetBackground(views::CreateThemedRoundedRectBackground(
+  container_view->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, 0));
 
   container_view->AddChildView(std::make_unique<ash::AuthInputRowView>(

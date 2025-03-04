@@ -48,7 +48,7 @@ MediaCoordinator::MediaCoordinator(
 
     media_view_->SetBorder(views::CreateThemedRoundedRectBorder(
         kBorderThickness, kRoundedRadius, ui::kColorSysSurface4));
-    media_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+    media_view_->SetBackground(views::CreateRoundedRectBackground(
         ui::kColorSysSurface4, kRoundedRadius));
   }
 

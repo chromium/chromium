@@ -54,7 +54,7 @@ QuickInsertSubmenuView::QuickInsertSubmenuView(
                        /*inside_border_insets=*/kInsets))
       ->set_cross_axis_alignment(
           views::BoxLayout::CrossAxisAlignment::kStretch);
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
 
   // Don't allow submenus within submenus.

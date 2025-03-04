@@ -57,8 +57,7 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetBetweenChildSpacing(informed_restore::kScreenshotIconRowChildSpacing);
   SetInsideBorderInsets(kIconRowInsets);
-  SetBackground(
-      views::CreateThemedSolidBackground(kColorAshShieldAndBaseOpaque));
+  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBaseOpaque));
   // Do not flip this view in RTL, since the cutout in
   // `InformedRestoreContentsView` is not flipped.
   SetMirrored(false);
@@ -97,7 +96,7 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
               .SetPreferredSize(
                   informed_restore::kScreenshotIconRowImageViewSize)
               .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
-              .SetBackground(views::CreateThemedRoundedRectBackground(
+              .SetBackground(views::CreateRoundedRectBackground(
                   cros_tokens::kCrosSysPrimaryContainer,
                   informed_restore::kScreenshotIconRowIconSize / 2.0))
               .Build());

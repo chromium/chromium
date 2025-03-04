@@ -201,8 +201,7 @@ class BorderedScrollView : public views::ScrollView {
   };
 
   BorderedScrollView() : border_insets_(gfx::Insets::VH(1, 0)) {
-    SetBackground(
-        views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+    SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
     // The border color will be set to the theme color in OnThemeChanged, but we
     // need to initialize the view with an empty border so that the correct
     // bounds are computed.
@@ -302,8 +301,8 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
                   sheet_view->SetID(static_cast<int>(sheet_id));
                 }
 
-                sheet_view->SetBackground(views::CreateThemedSolidBackground(
-                    ui::kColorDialogBackground));
+                sheet_view->SetBackground(
+                    views::CreateSolidBackground(ui::kColorDialogBackground));
 
                 // Paint the sheets to layers, otherwise the MD buttons (which
                 // do paint to a layer) won't do proper clipping.
@@ -335,7 +334,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
                               content_view->layer()->SetFillsBoundsOpaquely(
                                   true);
                               content_view->SetBackground(
-                                  views::CreateThemedSolidBackground(
+                                  views::CreateSolidBackground(
                                       ui::kColorDialogBackground));
                             })));
 
@@ -491,7 +490,7 @@ void PaymentRequestSheetController::PopulateSheetHeaderView(
 
   container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
   container->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+      views::CreateSolidBackground(ui::kColorDialogBackground));
   views::BoxLayout* layout =
       container->SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_cross_axis_alignment(

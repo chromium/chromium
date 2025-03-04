@@ -1406,7 +1406,7 @@ void AshNotificationView::OnThemeChanged() {
        right_content()->height() - icon_view()->GetImageDrawingSize().height() >
            kSmallImageBackgroundThreshold)) {
     icon_view()->set_apply_rounded_corners(false);
-    right_content()->SetBackground(views::CreateThemedRoundedRectBackground(
+    right_content()->SetBackground(views::CreateRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,
         message_center::kImageCornerRadius));
   }

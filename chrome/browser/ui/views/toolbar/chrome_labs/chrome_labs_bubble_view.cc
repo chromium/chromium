@@ -76,7 +76,7 @@ class ChromeLabsFooter : public views::View {
                      .SetStyle(ui::ButtonStyle::kProminent)
                      .Build());
     SetBackground(
-        views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+        views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
     SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
     SetProperty(

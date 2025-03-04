@@ -354,7 +354,7 @@ ReturnToAppPanel::ReturnToAppContainer::ReturnToAppContainer()
   layout_manager_ = SetLayoutManager(std::move(flex_layout));
   AdjustLayoutForExpandCollapseState(/*expanded=*/false);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kReturnToAppPanelRadius));
 }
 

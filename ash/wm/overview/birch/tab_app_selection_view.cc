@@ -259,7 +259,7 @@ class TabAppSelectionView::TabAppSelectionItemView
       close_button_->layer()->SetOpacity(selected ? 1.f : 0.f);
       close_button_->SetEnabled(selected);
     }
-    SetBackground(selected_ ? views::CreateThemedSolidBackground(
+    SetBackground(selected_ ? views::CreateSolidBackground(
                                   cros_tokens::kCrosSysHoverOnSubtle)
                             : nullptr);
   }
@@ -347,7 +347,7 @@ class TabAppSelectionView::UserFeedbackView : public views::BoxLayoutView {
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
     SetInsideBorderInsets(kUserFeedbackInsets);
     SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBaseOpaque,
         kUserFeedbackContainerCornerRadius, 0));
     SetBetweenChildSpacing(kUserFeedbackChildSpacing);
@@ -497,7 +497,7 @@ TabAppSelectionView::TabAppSelectionView(const base::Token& group_id,
   tab_app_items_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   tab_app_items_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  tab_app_items_view->SetBackground(views::CreateThemedRoundedRectBackground(
+  tab_app_items_view->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque,
       kTabAppItemsContainerCornerRadius, 0));
 

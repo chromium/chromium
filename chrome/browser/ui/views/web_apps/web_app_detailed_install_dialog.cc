@@ -123,8 +123,8 @@ class ScrollButton : public views::ImageButton {
       : views::ImageButton(std::move(callback)) {
     ConfigureVectorImageButton(this);
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        ui::kColorButtonBackground, web_app::kIconSize / 2));
+    SetBackground(views::CreateRoundedRectBackground(ui::kColorButtonBackground,
+                                                     web_app::kIconSize / 2));
 
     views::HighlightPathGenerator::Install(
         this,

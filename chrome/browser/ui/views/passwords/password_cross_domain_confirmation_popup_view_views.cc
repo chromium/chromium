@@ -49,8 +49,7 @@ PasswordCrossDomainConfirmationPopupViewViews::
     : autofill::PopupBaseView(controller,
                               parent_widget,
                               views::Widget::InitParams::Activatable::kYes) {
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
   auto* layout_provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(

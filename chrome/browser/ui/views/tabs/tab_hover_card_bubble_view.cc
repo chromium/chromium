@@ -223,8 +223,8 @@ class TabHoverCardBubbleView::ThumbnailView
     switch (image_type) {
       case ImageType::kNone:
       case ImageType::kNoneButWaiting:
-        image_view->SetBackground(views::CreateSolidOrThemedBackground(
-            bubble_view_->background_color()));
+        image_view->SetBackground(
+            views::CreateSolidBackground(bubble_view_->background_color()));
         break;
       case ImageType::kPlaceholder:
         image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);

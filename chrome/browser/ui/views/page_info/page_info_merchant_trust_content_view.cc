@@ -182,7 +182,7 @@ PageInfoMerchantTrustContentView::CreateHatsButton() {
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON),
       std::u16string());
   hats_button->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorSysNeutralContainer));
+      views::CreateSolidBackground(ui::kColorSysNeutralContainer));
   hats_button->SetProperty(views::kElementIdentifierKey, kHatsButtonId);
   hats_button->SetVisible(false);
   hats_button->SetBorder(

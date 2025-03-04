@@ -315,7 +315,7 @@ PlusAddressCreationDialogDelegate::PlusAddressContainerView::
           .Build());
   generation_message_->SetLineHeight(2 * generation_message_->GetLineHeight());
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       // TODO(b/342330801): Figure out the correct color for the
       // background and move the definition to the mixer.
       ui::kColorSysHeaderContainer,

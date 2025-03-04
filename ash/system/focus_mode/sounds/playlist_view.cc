@@ -55,9 +55,8 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
   // Set the `playlist_image_button_` background color and the opacity for the
   // initial loading state.
   SetCanProcessEventsWithinSubtree(false);
-  playlist_image_button_->SetBackground(
-      views::CreateThemedRoundedRectBackground(cros_tokens::kCrosSysOnSurface,
-                                               kLoadingBackgroundCornerRadius));
+  playlist_image_button_->SetBackground(views::CreateRoundedRectBackground(
+      cros_tokens::kCrosSysOnSurface, kLoadingBackgroundCornerRadius));
   playlist_image_button_->SetPaintToLayer();
   playlist_image_button_->layer()->SetFillsBoundsOpaquely(false);
   playlist_image_button_->layer()->SetOpacity(kLoadingLayerOpacity);
@@ -74,7 +73,7 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
 
   // Set the `title_label_` background color and the opacity for the initial
   // loading state.
-  title_label_->SetBackground(views::CreateThemedRoundedRectBackground(
+  title_label_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysOnSurface, kLoadingBackgroundCornerRadius));
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);

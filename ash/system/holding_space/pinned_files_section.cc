@@ -162,7 +162,7 @@ class FilesAppChip : public views::Button {
     views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
     // Background.
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         kColorAshControlBackgroundColorInactive, kFilesAppChipHeight / 2.f));
   }
 };

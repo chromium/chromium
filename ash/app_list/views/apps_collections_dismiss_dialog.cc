@@ -68,7 +68,7 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kDialogContentInsets));
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysBaseElevated, kDialogRoundedCornerRadius));
 
   SetBorder(std::make_unique<views::HighlightBorder>(

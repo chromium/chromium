@@ -70,7 +70,7 @@ SystemToastView::SystemToastView(const std::u16string& text,
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+  SetBackground(views::CreateSolidBackground(background_color_id));
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 

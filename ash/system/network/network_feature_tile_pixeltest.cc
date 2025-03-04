@@ -80,8 +80,8 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
         views::BoxLayout::CrossAxisAlignment::kCenter);
     // The tile colors have transparency, so set a background color so they
     // render like in production.
-    contents->SetBackground(views::CreateThemedSolidBackground(
-        cros_tokens::kCrosSysSystemBaseElevated));
+    contents->SetBackground(
+        views::CreateSolidBackground(cros_tokens::kCrosSysSystemBaseElevated));
 
     feature_tile_ =
         widget_->GetContentsView()->AddChildView(std::move(feature_tile));

@@ -392,8 +392,8 @@ void FeatureTile::UpdateColors() {
           ? std::make_unique<ProgressBackground>(
                 /*progress_color_id=*/cros_tokens::kCrosSysHighlightShape,
                 /*background_color_id=*/background_color)
-          : views::CreateThemedRoundedRectBackground(background_color,
-                                                     corner_radius_));
+          : views::CreateRoundedRectBackground(background_color,
+                                               corner_radius_));
 
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetBaseColorId(toggled_

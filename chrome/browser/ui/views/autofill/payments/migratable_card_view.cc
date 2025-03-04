@@ -48,7 +48,7 @@ MigratableCardView::MigratableCardView(
 
   checkbox_uncheck_text_container_ =
       AddChildView(views::Builder<views::View>()
-                       .SetBackground(views::CreateThemedSolidBackground(
+                       .SetBackground(views::CreateSolidBackground(
                            ui::kColorBubbleFooterBackground))
                        .Build());
   views::BoxLayout* layout = checkbox_uncheck_text_container_->SetLayoutManager(

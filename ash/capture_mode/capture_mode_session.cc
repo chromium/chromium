@@ -3038,7 +3038,7 @@ void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
 
     auto size_label = std::make_unique<views::Label>();
     size_label->SetEnabledColor(kColorAshTextColorPrimary);
-    size_label->SetBackground(views::CreateThemedRoundedRectBackground(
+    size_label->SetBackground(views::CreateRoundedRectBackground(
         kColorAshShieldAndBase80, kSizeLabelBorderRadius));
     size_label->SetAutoColorReadabilityEnabled(false);
     dimensions_label_widget_->SetContentsView(std::move(size_label));

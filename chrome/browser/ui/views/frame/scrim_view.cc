@@ -23,7 +23,7 @@ ScrimView::ScrimView() {
   // kColorSysStateScrim is a semi-transparent black which has no effect on a
   // pure black background. In contrast, macOS sheet uses a semi-transparent
   // grey scrim which lightens a dark background.
-  SetBackground(views::CreateThemedSolidBackground(ui::kColorSysStateScrim));
+  SetBackground(views::CreateSolidBackground(ui::kColorSysStateScrim));
   SetVisible(false);
 }
 

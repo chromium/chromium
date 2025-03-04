@@ -177,7 +177,7 @@ TabListRowView::TabListRowView(
   views::ImageView* const favicon = row_container->AddChildView(
       std::make_unique<views::ImageView>(tab_ui_helper->GetFavicon()));
 
-  favicon->SetBackground(views::CreateThemedRoundedRectBackground(
+  favicon->SetBackground(views::CreateRoundedRectBackground(
       ui::kColorSysNeutralContainer, kFaviconCornerRadius));
   favicon->SetBorder(views::CreateThemedRoundedRectBorder(
       kFaviconBorderThickness, kFaviconCornerRadius,

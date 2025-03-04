@@ -83,7 +83,7 @@ void ChannelIndicatorView::OnThemeChanged() {
       session_manager::SessionState::ACTIVE) {
     // User is logged in, set image view colors.
     if (image_view()) {
-      image_view()->SetBackground(views::CreateThemedRoundedRectBackground(
+      image_view()->SetBackground(views::CreateRoundedRectBackground(
           channel_indicator_utils::GetBgColorJelly(channel_),
           (IsHorizontalAlignment() ? GetLocalBounds().width()
                                    : GetLocalBounds().height()) /
@@ -97,7 +97,7 @@ void ChannelIndicatorView::OnThemeChanged() {
 
   // User is not logged in, set label colors.
   if (label()) {
-    label()->SetBackground(views::CreateThemedRoundedRectBackground(
+    label()->SetBackground(views::CreateRoundedRectBackground(
         channel_indicator_utils::GetBgColorJelly(channel_),
         kIndicatorBgCornerRadius));
     label()->SetEnabledColor(
@@ -144,7 +144,7 @@ void ChannelIndicatorView::SetImageOrText() {
                                            : gfx::Insets::VH(0, kBorderInset)));
     image_view()->SetBorder(
         views::CreateEmptyBorder(gfx::Insets(kIconBackgroundInset)));
-    image_view()->SetBackground(views::CreateThemedRoundedRectBackground(
+    image_view()->SetBackground(views::CreateRoundedRectBackground(
         channel_indicator_utils::GetBgColorJelly(channel_),
         (IsHorizontalAlignment() ? GetLocalBounds().width()
                                  : GetLocalBounds().height()) /
@@ -173,7 +173,7 @@ void ChannelIndicatorView::SetImageOrText() {
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(kBorderInset, 0)));
   label()->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(0, kBorderInset)));
-  label()->SetBackground(views::CreateThemedRoundedRectBackground(
+  label()->SetBackground(views::CreateRoundedRectBackground(
       channel_indicator_utils::GetBgColorJelly(channel_),
       kIndicatorBgCornerRadius));
   label()->SetEnabledColor(channel_indicator_utils::GetFgColorJelly(channel_));

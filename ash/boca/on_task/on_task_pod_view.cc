@@ -44,7 +44,7 @@ OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysPrimaryContainer, kPodBorderRadius));
 
   AddShortcutButtons();

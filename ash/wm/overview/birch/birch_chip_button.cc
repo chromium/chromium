@@ -136,7 +136,7 @@ std::unique_ptr<views::ImageView> CreatePrimaryImageView(
       .SetBorder(views::CreateEmptyBorder(
           gfx::Insets((kPrimaryIconViewSize - icon_size) / 2)))
       .SetBackground(rounded_corners
-                         ? views::CreateThemedRoundedRectBackground(
+                         ? views::CreateRoundedRectBackground(
                                kIconBackgroundColorId, rounded_corners.value())
                          : nullptr)
       .Build();
@@ -188,7 +188,7 @@ std::unique_ptr<views::ImageView> CreateSecondaryImageView(
       .SetImageSize(gfx::Size(kSecondaryIconImageSize, kSecondaryIconImageSize))
       .SetPosition(kSecondaryIconOffset)
       .SetSize(gfx::Size(kSecondaryIconViewSize, kSecondaryIconViewSize))
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           kSecondaryIconBackgroundColorId, kSecondaryIconViewSize / 2))
       .SetBorder(views::CreateThemedRoundedRectBorder(
           1, kSecondaryIconViewSize / 2,

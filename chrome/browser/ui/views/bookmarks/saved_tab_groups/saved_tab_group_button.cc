@@ -228,7 +228,7 @@ void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
 
 void SavedTabGroupButton::UpdateButtonLayout() {
   SetEnabledTextColors(GetSavedTabGroupForegroundColorId(tab_group_color_id_));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       GetTabGroupBookmarkColorId(tab_group_color_id_), kButtonRadius));
 
   // Adjust the insets so the share icon can fit within the bounds of this

@@ -60,12 +60,12 @@ class PasswordAuthView::LoginPasswordRow : public views::View {
 
  public:
   LoginPasswordRow() {
-      SetBackground(views::CreateThemedRoundedRectBackground(
-          cros_tokens::kCrosSysSystemBaseElevated,
-          kLoginPasswordRowRoundedRectRadius));
-      SetBorder(std::make_unique<views::HighlightBorder>(
-          kLoginPasswordRowRoundedRectRadius,
-          views::HighlightBorder::Type::kHighlightBorderNoShadow));
+    SetBackground(views::CreateRoundedRectBackground(
+        cros_tokens::kCrosSysSystemBaseElevated,
+        kLoginPasswordRowRoundedRectRadius));
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kLoginPasswordRowRoundedRectRadius,
+        views::HighlightBorder::Type::kHighlightBorderNoShadow));
   }
 
   ~LoginPasswordRow() override = default;

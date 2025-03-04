@@ -294,10 +294,8 @@ void RecentActivityBubbleDialogView::CreateTabActivity() {
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true);
-  tab_activity_container_->SetBackground(
-      views::CreateThemedRoundedRectBackground(
-          kColorSharingRecentActivityDialogActivityContainer,
-          container_radius));
+  tab_activity_container_->SetBackground(views::CreateRoundedRectBackground(
+      kColorSharingRecentActivityDialogActivityContainer, container_radius));
 
   // Skip creating the content if there is no tab activity to show.
   if (!should_show_tab_activity) {
@@ -357,10 +355,8 @@ void RecentActivityBubbleDialogView::CreateGroupActivity() {
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true);
-  group_activity_container_->SetBackground(
-      views::CreateThemedRoundedRectBackground(
-          kColorSharingRecentActivityDialogActivityContainer,
-          container_radius));
+  group_activity_container_->SetBackground(views::CreateRoundedRectBackground(
+      kColorSharingRecentActivityDialogActivityContainer, container_radius));
 
   int group_rows_added = 0;
   for (int i = 0; i < max_rows; i++) {

@@ -290,7 +290,7 @@ void ShareThisTabDialogView::SetupAudioToggle() {
   audio_toggle_container->SetProperty(views::kMarginsKey,
                                       gfx::Insets::TLBR(8, 0, 0, 0));
   audio_toggle_container->SetBackground(
-      views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4, 8));
+      views::CreateRoundedRectBackground(ui::kColorSysSurface4, 8));
 
   views::ImageView* audio_icon_view = audio_toggle_container->AddChildView(
       std::make_unique<views::ImageView>());

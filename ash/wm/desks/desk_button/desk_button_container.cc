@@ -243,7 +243,7 @@ void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {
 
 void DeskButtonContainer::UpdateUi(const Desk* active_desk) {
   SetBackground(zero_state_ ? nullptr
-                            : views::CreateThemedRoundedRectBackground(
+                            : views::CreateRoundedRectBackground(
                                   cros_tokens::kCrosSysSystemOnBase,
                                   kDeskButtonContainerCornerRadius));
   desk_button_->SetZeroState(zero_state_);

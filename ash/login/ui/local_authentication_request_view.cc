@@ -168,7 +168,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       background_color_id,
       kLocalAuthenticationRequestViewRoundedCornerRadiusDp));
 

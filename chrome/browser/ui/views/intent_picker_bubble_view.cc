@@ -211,7 +211,7 @@ class IntentPickerAppGridButton : public views::Button {
     }
 
     SetBackground(
-        views::CreateThemedRoundedRectBackground(color, kGridItemBorderRadius));
+        views::CreateRoundedRectBackground(color, kGridItemBorderRadius));
   }
 
   void OnPressed(const ui::Event& event) {

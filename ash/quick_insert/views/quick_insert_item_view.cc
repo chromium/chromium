@@ -167,7 +167,7 @@ void QuickInsertItemView::UpdateClipPathForFocusRingWithInsetGap() {
 void QuickInsertItemView::UpdateBackground() {
   if (GetState() == views::Button::ButtonState::STATE_HOVERED ||
       item_state_ == QuickInsertItemView::ItemState::kPseudoFocused) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysHoverOnSubtle, corner_radius_));
   } else {
     SetBackground(nullptr);

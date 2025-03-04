@@ -51,7 +51,7 @@ QuickInsertMainContainerView::QuickInsertMainContainerView() {
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kQuickInsertContainerBorderRadius,

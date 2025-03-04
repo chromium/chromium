@@ -262,8 +262,7 @@ UserConsentView::UserConsentView(
                                         base::Unretained(this))),
       use_refreshed_design_(use_refreshed_design) {
   SetUseDefaultFillLayout(true);
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorPrimaryBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorPrimaryBackground));
 
   views::FlexLayoutView* content;
   views::FlexLayoutView* buttons_container;
@@ -287,7 +286,7 @@ UserConsentView::UserConsentView(
           .SetInteriorMargin(kMainViewInsets)
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .AddChild(views::Builder<views::FlexLayoutView>()
-                        .SetBackground(views::CreateThemedRoundedRectBackground(
+                        .SetBackground(views::CreateRoundedRectBackground(
                             ui::kColorSysPrimaryContainer,
                             kIconBackgroundCornerRadiusDip))
                         .SetMainAxisAlignment(views::LayoutAlignment::kCenter)

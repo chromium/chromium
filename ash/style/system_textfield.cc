@@ -270,7 +270,7 @@ void SystemTextfield::UpdateBackground() {
     return;
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       background_color_id_.value_or(cros_tokens::kCrosSysHoverOnSubtle),
       corner_radius_));
 }

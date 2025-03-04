@@ -20,7 +20,7 @@ AxExample::AxExample() : ExampleBase("Accessibility Features") {}
 AxExample::~AxExample() = default;
 
 void AxExample::CreateExampleView(View* container) {
-  container->SetBackground(CreateThemedSolidBackground(
+  container->SetBackground(CreateSolidBackground(
       ExamplesColorIds::kColorAccessibilityExampleBackground));
   FlexLayout* const layout =
       container->SetLayoutManager(std::make_unique<FlexLayout>());
