@@ -4602,7 +4602,7 @@ Kebijakan ini digunakan untuk menonaktifkan upgrade otomatis konten campuran di 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perilaku default akan diterapkan.
 
       Perhatikan bahwa fitur ini hanya didukung di dalam lingkungan jaringan internal Google.</translation>
-<translation id="4269859918103560644">Izinkan pengguna untuk memutuskan</translation>
+<translation id="4269859918103560644">Izinkan pengguna menentukan</translation>
 <translation id="4271245613154024710">Menyetel kebijakan ini akan menentukan Aplikasi Web Terisolasi (IWA) mana yang dapat terhubung ke kartu smart menggunakan Web Smart Card API tanpa meminta izin kepada pengguna. Kebijakan ini tidak menerima karakter pengganti.
 
 Kebijakan ini menggantikan <ph name="POLICY_NAME" />; khususnya, nilai daftar yang tidak diizinkan <ph name="ALL_ISOLATED_WEB_APPS" /> berarti bahwa semua IWA tidak akan dapat terhubung ke pembaca kartu smart (pengguna bahkan tidak akan dimintai izin) kecuali untuk IWA yang tercantum dalam kebijakan ini.
