@@ -19,6 +19,51 @@
 
 namespace blink {
 
+String CaptureCurrentScriptUrl(v8::Isolate* isolate) {
+  DCHECK(isolate);
+  if (!isolate->InContext()) {
+    return String();
+  }
+
+  v8::Local<v8::String> script_name =
+      v8::StackTrace::CurrentScriptNameOrSourceURL(isolate);
+  return ToCoreStringWithNullCheck(isolate, script_name);
+}
+
+Vector<String> CaptureScriptUrlsFromCurrentStack(v8::Isolate* isolate,
+                                                 wtf_size_t unique_url_count) {
+  Vector<String> unique_urls;
+
+  if (!isolate || !isolate->InContext()) {
+    return unique_urls;
+  }
+
+  // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you
+  // need is the url of the script at the top of the stack. See
+  // crbug.com/1057211 for more detail.
+  // Get at most 10 frames, regardless of the requested url count, to minimize
+  // the performance impact.
+  v8::Local<v8::StackTrace> stack_trace =
+      v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/10);
+
+  int frame_count = stack_trace->GetFrameCount();
+  for (int i = 0; i < frame_count; ++i) {
+    v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, i);
+    v8::Local<v8::String> script_name = frame->GetScriptName();
+    if (script_name.IsEmpty() || !script_name->Length()) {
+      continue;
+    }
+    String url = ToCoreString(isolate, script_name);
+    if (!unique_urls.Contains(url)) {
+      unique_urls.push_back(std::move(url));
+    }
+    if (unique_urls.size() == unique_url_count) {
+      break;
+    }
+  }
+  return unique_urls;
+}
+
 std::unique_ptr<SourceLocation> CaptureSourceLocation(
     ExecutionContext* execution_context) {
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace =

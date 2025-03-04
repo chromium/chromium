@@ -6,6 +6,7 @@
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -17,7 +18,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -117,7 +117,7 @@ void HttpEquiv::ProcessHttpEquivOriginTrial(LocalDOMWindow* window,
   // NOTE: The external script origin is not considered security-critical. See
   // the comment thread in the design doc for details:
   // https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA/edit?disco=AAAAJyG8StI
-  Vector<String> candidate_scripts = GetScriptUrlsFromCurrentStack(
+  Vector<String> candidate_scripts = CaptureScriptUrlsFromCurrentStack(
       window->GetIsolate(), /*unique_url_count=*/3);
   Vector<scoped_refptr<SecurityOrigin>> external_origins;
   for (const String& external_script : candidate_scripts) {
