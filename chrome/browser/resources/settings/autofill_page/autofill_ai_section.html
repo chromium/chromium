@@ -92,9 +92,9 @@
        should not be able to add entities. -->
   <!-- TODO(crbug.com/393318914): Disable also if the toggle is turned off. -->
   <cr-button id="addEntity" class="header-aligned-button"
-      disabled$="[[ineligibleUser]]" on-click="onAddEntityClick_">
-    <!-- TODO(crbug.com/393318914): Use settings localized strings provider. -->
-    Add
+      disabled$="[[ineligibleUser]]" on-click="onAddButtonClick_">
+    $i18n{add}
+    <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>
   </cr-button>
 </div>
 <ul id="entries" class="list-frame vertical-list">
@@ -114,6 +114,19 @@
     $i18n{autofillAiUserAnnotationsNone}
   </li>
 </ul>
+
+<cr-lazy-render id="addMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <template is="dom-repeat" items="[[completeEntityList_]]">
+        <button id="addSpecificEntity" class="dropdown-item"
+            on-click="onAddEntityInstanceFromDropdownClick_">
+          [[item.typeNameAsString]]
+        </button>
+      </template>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
 
 <cr-lazy-render id="actionMenu">
   <template>

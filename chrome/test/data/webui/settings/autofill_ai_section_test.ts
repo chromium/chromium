@@ -77,6 +77,7 @@ suite('AutofillAiSectionUiTest', function() {
   let entitiesListElement: HTMLElement;
   let entityDataManager: TestEntityDataManagerProxy;
   let testEntity: chrome.autofillPrivate.EntityInstance;
+  let testEntityTypes: chrome.autofillPrivate.EntityType[];
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -85,7 +86,7 @@ suite('AutofillAiSectionUiTest', function() {
 
     testEntity = {
       type: {
-        typeName: 3,
+        typeName: 2,
         typeNameAsString: 'Car',
         addEntityString: 'Add car',
         editEntityString: 'Edit car',
@@ -109,6 +110,20 @@ suite('AutofillAiSectionUiTest', function() {
       guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
       nickname: 'My car',
     };
+    testEntityTypes = [
+      {
+        typeName: 2,
+        typeNameAsString: 'Car',
+        addEntityString: 'Add car',
+        editEntityString: 'Edit car',
+      },
+      {
+        typeName: 0,
+        typeNameAsString: 'Passport',
+        addEntityString: 'Add passport',
+        editEntityString: 'Edit passport',
+      },
+    ];
     const testEntityInstancesWithLabels:
         chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
@@ -122,6 +137,7 @@ suite('AutofillAiSectionUiTest', function() {
         entitySubLabel: 'Passport',
       },
     ];
+    entityDataManager.setGetAllEntityTypesResponse(testEntityTypes);
     entityDataManager.setloadEntityInstancesResponse(
         testEntityInstancesWithLabels);
 
@@ -157,7 +173,7 @@ suite('AutofillAiSectionUiTest', function() {
         3, listItems.length, '2 entities and a hidden element were loaded.');
     assertTrue(listItems[0]!.textContent!.includes('Toyota'));
     assertTrue(listItems[1]!.textContent!.includes('John Doe'));
-    assertTrue(listItems[2]!.hidden);
+    assertFalse(isVisible(listItems[2]!));
   });
 
   test('testRemoveEntityConfirmed', async function() {
@@ -193,7 +209,7 @@ suite('AutofillAiSectionUiTest', function() {
         2, listItems.length,
         'only one entity and a hidden element should be present.');
     assertTrue(listItems[0]!.textContent!.includes('John Doe'));
-    assertTrue(listItems[1]!.hidden);
+    assertFalse(isVisible(listItems[1]!));
   });
 
   test('testRemoveEntityCancelled', async function() {
@@ -226,43 +242,100 @@ suite('AutofillAiSectionUiTest', function() {
         '2 entities and a hidden element should still be present.');
     assertTrue(listItems[0]!.textContent!.includes('Toyota'));
     assertTrue(listItems[1]!.textContent!.includes('John Doe'));
-    assertTrue(listItems[2]!.hidden);
+    assertFalse(isVisible(listItems[2]!));
   });
 
-  test('testEditEntityDialogOpenAndConfirm', async function() {
-    entityDataManager.setGetEntityInstanceByGuidResponse(testEntity);
+  interface AddOrEditDialogParamsInterface {
+    // True if the user is adding an entity instance, false if the user is
+    // editing an entity instance.
+    add: boolean;
+    // The title of the test.
+    title: string;
+  }
 
-    const actionMenuButton =
-        entitiesListElement.querySelector<HTMLElement>('#moreButton');
-    assertTrue(!!actionMenuButton);
-    actionMenuButton.click();
+  const addOrEditEntityDialogParams: AddOrEditDialogParamsInterface[] = [
+    {add: true, title: 'testAddEntityDialogOpenAndConfirm'},
+    {add: false, title: 'testEditEntityDialogOpenAndConfirm'},
+  ];
+
+  addOrEditEntityDialogParams.forEach(
+      (params) => test(params.title, async function() {
+        if (params.add) {
+          // Open the add entity instance dialog.
+          const addButton =
+              section.shadowRoot!.querySelector<HTMLElement>('#addEntity');
+          assertTrue(!!addButton);
+          addButton.click();
+          await flushTasks();
+
+          const addSpecificEntityButton =
+              section.shadowRoot!.querySelector<HTMLElement>(
+                  '#addSpecificEntity');
+          assertTrue(!!addSpecificEntityButton);
+          addSpecificEntityButton.click();
+          await flushTasks();
+        } else {
+          // Open the edit entity instance dialog.
+          entityDataManager.setGetEntityInstanceByGuidResponse(testEntity);
+
+          const actionMenuButton =
+              entitiesListElement.querySelector<HTMLElement>('#moreButton');
+          assertTrue(!!actionMenuButton);
+          actionMenuButton.click();
+          await flushTasks();
+
+          const editButton =
+              section.shadowRoot!.querySelector<HTMLElement>('#menuEditEntity');
+
+          assertTrue(!!editButton);
+          editButton.click();
+          await flushTasks();
+        }
+
+        // Check that the dialog is populated with the correct entity instance
+        // information.
+        const addOrEditEntityDialog =
+            section.shadowRoot!
+                .querySelector<SettingsAutofillAiAddOrEditDialogElement>(
+                    '#addOrEditEntityDialog');
+        assertTrue(!!addOrEditEntityDialog);
+        if (params.add) {
+          assertDeepEquals(
+              testEntityTypes[0], addOrEditEntityDialog.entity!.type);
+          assertEquals(0, addOrEditEntityDialog.entity!.attributes.length);
+          await flushTasks();
+        } else {
+          assertDeepEquals(testEntity, addOrEditEntityDialog.entity);
+        }
+
+        // Simulate the dialog was confirmed.
+        addOrEditEntityDialog.dispatchEvent(
+            new CustomEvent('autofill-ai-add-or-edit-done', {
+              bubbles: true,
+              composed: true,
+              detail: testEntity,
+            }));
+
+        const addedOrEditedEntity =
+            await entityDataManager.whenCalled('addOrUpdateEntityInstance');
+        assertDeepEquals(testEntity, addedOrEditedEntity);
+      }));
+
+  test('testAddButtonShowsEntityList', async function() {
+    const addButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#addEntity');
+    assertTrue(!!addButton);
+    addButton.click();
     await flushTasks();
 
-    const editButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuEditEntity');
-
-    assertTrue(!!editButton);
-    editButton.click();
-    await flushTasks();
-
-    const editEntityDialog =
-        section.shadowRoot!
-            .querySelector<SettingsAutofillAiAddOrEditDialogElement>(
-                '#addOrEditEntityDialog');
-    assertTrue(!!editEntityDialog);
-    assertDeepEquals(testEntity, editEntityDialog.entity);
-
-    // Simulate the dialog was confirmed.
-    editEntityDialog.dispatchEvent(
-        new CustomEvent('autofill-ai-add-or-edit-done', {
-          bubbles: true,
-          composed: true,
-          detail: testEntity,
-        }));
-
-    const editedEntity =
-        await entityDataManager.whenCalled('addOrUpdateEntityInstance');
-    assertDeepEquals(testEntity, editedEntity);
+    const addSpecificEntityButtons =
+        section.shadowRoot!.querySelectorAll<HTMLElement>('#addSpecificEntity');
+    assertEquals(testEntityTypes.length, addSpecificEntityButtons.length);
+    for (const index in testEntityTypes) {
+      assertTrue(
+          addSpecificEntityButtons[index]!.textContent!.includes(
+              testEntityTypes[index]!.typeNameAsString));
+    }
   });
 
   test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {

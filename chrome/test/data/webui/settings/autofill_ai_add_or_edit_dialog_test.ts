@@ -28,7 +28,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
 
     testEntity = {
       type: {
-        typeName: 3,
+        typeName: 2,
         typeNameAsString: 'Car',
         addEntityString: 'Add car',
         editEntityString: 'Edit car',
@@ -78,29 +78,80 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         testAttributeTypes);
 
     dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
-    dialog.entity = testEntity;
-    dialog.dialogTitle = testEntity.type.editEntityString;
-    document.body.appendChild(dialog);
-    return flushTasks();
   });
 
-  ['Confirmed', 'Canceled'].forEach(
-      (param) => test('testEditEntity' + param, async function() {
-        const newAttributeValue = 'John Steven';
-        const expectedEditedEntity = structuredClone(testEntity);
-        expectedEditedEntity!.attributes[0]!.value = newAttributeValue;
+  interface AddOrEditParamsInterface {
+    // Whether the add or edit dialog should be confirmed or cancelled.
+    confirmed: boolean;
+    // True if the user is adding an entity instance, false if the user is
+    // editing an entity instance.
+    add: boolean;
+    // The title of the test.
+    title: string;
+  }
 
+  const addOrEditEntityParams: AddOrEditParamsInterface[] = [
+    {confirmed: true, add: true, title: 'testAddEntityConfirmed'},
+    {confirmed: true, add: false, title: 'testEditEntityConfirmed'},
+    {confirmed: false, add: true, title: 'testAddEntityCancelled'},
+    {confirmed: false, add: false, title: 'testEditEntityCancelled'},
+  ];
+
+  addOrEditEntityParams.forEach(
+      (params) => test(params.title, async function() {
+        const newAttributeValue = 'John Steven';
+        let expectedEntity: chrome.autofillPrivate.EntityInstance;
+
+        // Populate the dialog's entity and title and set expectations.
+        if (params.add) {
+          expectedEntity = {
+            type: testEntity.type,
+            attributes: [
+              {
+                type: {
+                  typeName: 8,
+                  typeNameAsString: 'Owner',
+                },
+                value: newAttributeValue,
+              },
+            ],
+            guid: '',
+            nickname: '',
+          };
+
+          dialog.entity = {
+            type: testEntity.type,
+            attributes: [],
+            guid: '',
+            nickname: '',
+          };
+          dialog.dialogTitle = testEntity.type.addEntityString;
+        } else {
+          expectedEntity = structuredClone(testEntity);
+          expectedEntity.attributes[0]!.value = newAttributeValue;
+
+          dialog.entity = structuredClone(testEntity);
+          dialog.dialogTitle = testEntity.type.editEntityString;
+        }
+        document.body.appendChild(dialog);
+        await flushTasks();
+
+        // Verify that the dialog title is correct.
         const dialogTitle =
             dialog.shadowRoot!.querySelector<HTMLElement>('div[slot="title"]');
-        assertTrue(dialogTitle!.textContent!.includes('Edit car'));
+        assertTrue(
+            dialogTitle!.textContent!.includes(
+                params.add ? 'Add car' : 'Edit car'));
 
+        // Edit first field.
         const firstAttributeField =
             dialog.shadowRoot!.querySelector<CrInputElement>('#attributeField');
         assertTrue(!!firstAttributeField);
         firstAttributeField.value = newAttributeValue;
         await flushTasks();
 
-        if (param === 'Confirmed') {
+        if (params.confirmed) {
+          // Verify that the entity instance was changed.
           const saveButton =
               dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
           assertTrue(!!saveButton);
@@ -113,8 +164,9 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           await flushTasks();
 
           assertFalse(dialog.$.dialog.getNative().open);
-          assertDeepEquals(expectedEditedEntity, dialogConfirmedEvent.detail);
+          assertDeepEquals(expectedEntity, dialogConfirmedEvent.detail);
         } else {
+          // Verify that the entity instance was not changed.
           const cancelButton =
               dialog.shadowRoot!.querySelector<HTMLElement>('.cancel-button');
           assertTrue(!!cancelButton);
@@ -127,7 +179,11 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         }
       }));
 
-  test('testEditEntityValidationError', async function() {
+  test('testAddOrEditEntityValidationError', async function() {
+    dialog.entity = testEntity;
+    document.body.appendChild(dialog);
+    await flushTasks();
+
     // The validation error should not be visible yet and the save button
     // should be enabled.
     const validationError =

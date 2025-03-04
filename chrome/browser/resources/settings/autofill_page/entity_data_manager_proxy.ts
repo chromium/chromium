@@ -5,6 +5,7 @@
 type AttributeType = chrome.autofillPrivate.AttributeType;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
+type EntityType = chrome.autofillPrivate.EntityType;
 
 /**
  * This interface defines the autofill API wrapper that combines entity data
@@ -33,6 +34,11 @@ export interface EntityDataManagerProxy {
   getEntityInstanceByGuid(guid: string): Promise<EntityInstance>;
 
   /**
+   * Returns a list of all possible entities that exist.
+   */
+  getAllEntityTypes(): Promise<EntityType[]>;
+
+  /**
    * Returns a list of all possible attributes that can be set on an entity.
    */
   getAllAttributeTypesForEntity(entityType: number): Promise<AttributeType[]>;
@@ -53,6 +59,10 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
 
   getEntityInstanceByGuid(guid: string) {
     return chrome.autofillPrivate.getEntityInstanceByGuid(guid);
+  }
+
+  getAllEntityTypes() {
+    return chrome.autofillPrivate.getAllEntityTypes();
   }
 
   getAllAttributeTypesForEntity(entityType: number) {
