@@ -3283,6 +3283,11 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     }
   }
 
+  EditContext* edit_context = editContext();
+  if (edit_context && edit_context->GetExecutionContext() != context) {
+    edit_context->SetExecutionContext(context);
+  }
+
   if (parentElement() && parentElement()->IsInCanvasSubtree()) {
     SetIsInCanvasSubtree(true);
   }
