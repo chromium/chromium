@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -347,6 +348,15 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
 
   LogPersistentNotificationShownMetrics(notification_data, origin,
                                         notification.origin_url());
+
+  // Logs metrics for proposed disruptive notification revocation when
+  // displaying a persistent notification. Disruptive are notifications with
+  // high notification volume and low site engagement score.
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
+      base::PassKey<PlatformNotificationServiceImpl>(),
+      notification.origin_url());
+  DisruptiveNotificationPermissionsManager::LogMetrics(
+      profile_, notification.origin_url(), source_id);
 }
 
 void PlatformNotificationServiceImpl::CloseNotification(

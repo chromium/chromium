@@ -20334,6 +20334,58 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SafetyHub.DisruptiveNotificationRevocations.FalsePositive">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Recorded when an increase in site engagement score was detected for a site
+    that was previously put in a potential revocation list for disruptive
+    notification permissions. The metrics will be recorded on the first site
+    engagement increase after a revocation would have been proposed (cf. metric
+    SafetyHub.DisruptiveNotificationRevocations.Proposed).
+  </summary>
+  <metric name="DaysSinceRevocation">
+    <summary>
+      The number of days between the website was put in the potential revocation
+      list and the detected increase in site engagement.
+    </summary>
+  </metric>
+  <metric name="NewSiteEngagement">
+    <summary>
+      New site engagement after user interaction with the site.
+    </summary>
+  </metric>
+  <metric name="OldSiteEngagement">
+    <summary>
+      Site engagement score when the site marked for revocation.
+    </summary>
+  </metric>
+</event>
+
+<event name="SafetyHub.DisruptiveNotificationRevocations.Proposed">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Recorded when Safety Hub would propose to revoke a disruptive notification
+    permissions for a site. The check is performed every time a notification
+    from the website is displayed. Notifications are considered disruptives when
+    sent by websites with both very low site engagement index and high volume of
+    notifications. After a revocation is proposed, this metric will not be
+    reported anymore for the website for 30 days.
+  </summary>
+  <metric name="DailyAverageVolume">
+    <summary>
+      Average daily volume of notifications sent by the site, measured over the
+      last 7 days.
+    </summary>
+  </metric>
+  <metric name="SiteEngagement">
+    <summary>
+      Site engagement for the disruptive site.
+    </summary>
+  </metric>
+</event>
+
 <event name="SalientImageAvailability" singular="True">
   <owner>chrome-intelligence-core@google.com</owner>
   <owner>tbansal@chromium.org</owner>
