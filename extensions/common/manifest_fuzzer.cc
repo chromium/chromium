@@ -70,30 +70,6 @@ struct Environment : public content::ContentTestSuiteBase {
   std::unique_ptr<TestExtensionsClient> extensions_client;
 };
 
-bool InitFuzzedCommandLine(FuzzedDataProvider& fuzzed_data_provider) {
-  constexpr int kMaxArgvItems = 100;
-  const int argc =
-      fuzzed_data_provider.ConsumeIntegralInRange<int>(0, kMaxArgvItems);
-  std::vector<std::string> argv;
-  argv.reserve(argc);
-  std::vector<const char*> argv_chars;
-  argv_chars.reserve(argc);
-  for (int i = 0; i < argc; ++i) {
-    argv.push_back(fuzzed_data_provider.ConsumeRandomLengthString());
-    argv_chars.push_back(argv.back().c_str());
-  }
-  return base::CommandLine::Init(argc, argv_chars.data());
-}
-
-// Holds state during a single fuzzer call.
-struct PerInputEnvironment {
-  explicit PerInputEnvironment(FuzzedDataProvider& fuzzed_data_provider) {
-    CHECK(InitFuzzedCommandLine(fuzzed_data_provider));
-  }
-
-  ~PerInputEnvironment() { base::CommandLine::Reset(); }
-};
-
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -102,7 +78,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
   FuzzedDataProvider fuzzed_data_provider(data, size);
-  PerInputEnvironment per_input_env(fuzzed_data_provider);
 
   std::string extension_id = fuzzed_data_provider.ConsumeRandomLengthString();
   if (extension_id.empty())
