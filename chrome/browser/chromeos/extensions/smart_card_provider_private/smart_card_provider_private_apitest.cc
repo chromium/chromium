@@ -4,7 +4,9 @@
 
 #include <cstdint>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"
@@ -248,8 +250,15 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
   class TestConnectionsWatcher
       : public device::mojom::SmartCardConnectionWatcher {
    public:
+    TestConnectionsWatcher() {
+      receivers_.set_disconnect_handler(base::BindRepeating(
+          &TestConnectionsWatcher::OnDisconnect, base::Unretained(this)));
+    }
     void NotifyConnectionUsed() override { ++times_used_; }
     uint32_t GetTimesUsed() const { return times_used_; }
+    uint32_t GetTimesDisconnected() const { return times_disconnected_; }
+    void WaitForDisconnect() { ASSERT_TRUE(disconnect_future_.Wait()); }
+    void ClearDisconnectFuture() { disconnect_future_.Clear(); }
 
     mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
     GetNewPipe() {
@@ -260,8 +269,17 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
     }
 
    private:
+    void OnDisconnect() {
+      ++times_disconnected_;
+      disconnect_future_.SetValue();
+    }
+
+   private:
     uint32_t times_used_ = 0;
+    uint32_t times_disconnected_ = 0;
     mojo::ReceiverSet<device::mojom::SmartCardConnectionWatcher> receivers_;
+    base::test::TestFuture<void> disconnect_future_;
+    base::WeakPtrFactory<TestConnectionsWatcher> weak_factory_{this};
   };
 
   using ContextAndConnection =
@@ -796,11 +814,26 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
 
   base::test::TestFuture<SmartCardResultPtr> result_future;
 
+  uint32_t usages_before = connections_watcher_.GetTimesUsed();
   connection->Disconnect(device::mojom::SmartCardDisposition::kUnpower,
                          result_future.GetCallback());
 
   SmartCardResultPtr result = result_future.Take();
   EXPECT_TRUE(result->is_success());
+  EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       DisconnectConnectionDisconnectsWatcher) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs});
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  auto disconnect_count = connections_watcher_.GetTimesDisconnected();
+  connections_watcher_.ClearDisconnectFuture();
+  connection.reset();
+  connections_watcher_.WaitForDisconnect();
+  EXPECT_EQ(disconnect_count + 1, connections_watcher_.GetTimesDisconnected());
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectNoProvider) {

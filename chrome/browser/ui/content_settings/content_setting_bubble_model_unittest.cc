@@ -1465,3 +1465,29 @@ TEST_F(ContentSettingBubbleModelTest, StorageAccess) {
             map->GetContentSetting(site.GetURL(), web_contents()->GetURL(),
                                    ContentSettingsType::STORAGE_ACCESS));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ContentSettingBubbleModelTest, SmartCard) {
+  const GURL page_url("https://toplevel.example/");
+  NavigateAndCommit(page_url);
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  content_settings->OnDeviceUsed(ContentSettingsType::SMART_CARD_GUARD);
+
+  ContentSettingSimpleBubbleModel content_setting_bubble_model(
+      nullptr, web_contents(), ContentSettingsType::SMART_CARD_GUARD);
+
+  const ContentSettingBubbleModel::BubbleContent& bubble_content =
+      content_setting_bubble_model.bubble_content();
+  EXPECT_EQ(bubble_content.title,
+            l10n_util::GetStringUTF16(IDS_ACCESSED_SMART_CARD_READER_TITLE));
+  EXPECT_TRUE(bubble_content.radio_group.radio_items.empty());
+  EXPECT_TRUE(bubble_content.list_items.empty());
+  EXPECT_TRUE(bubble_content.site_list.empty());
+  EXPECT_TRUE(bubble_content.custom_link.empty());
+  EXPECT_FALSE(bubble_content.custom_link_enabled);
+  EXPECT_EQ(bubble_content.manage_text, l10n_util::GetStringUTF16(IDS_MANAGE));
+  EXPECT_EQ(bubble_content.message,
+            l10n_util::GetStringUTF16(IDS_ACCESSED_SMART_CARD_READER_BODY));
+}
+#endif
