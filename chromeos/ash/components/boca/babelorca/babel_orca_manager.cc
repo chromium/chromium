@@ -50,13 +50,15 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsProducer(
     std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
     std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer,
     std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
+    base::RepeatingClosure on_local_caption_closed_cb,
     PrefService* pref_service,
     const std::string& application_locale) {
   auto caption_controller = std::make_unique<babelorca::CaptionController>(
       std::move(caption_bubble_context), pref_service, application_locale,
       std::make_unique<babelorca::CaptionBubbleSettingsImpl>(
           pref_service,
-          /*caption_language_code=*/application_locale));
+          /*caption_language_code=*/application_locale,
+          on_local_caption_closed_cb));
   ControllerFactory controller_factory =
       base::BindOnce(babelorca::BabelOrcaProducer::Create, url_loader_factory,
                      std::move(speech_recognizer),
@@ -73,13 +75,15 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsConsumer(
     const GaiaId& gaia_id,
     std::string school_tools_url_base,
     std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
+    base::RepeatingClosure on_local_caption_closed_cb,
     PrefService* pref_service,
     const std::string& application_locale) {
   auto caption_controller = std::make_unique<babelorca::CaptionController>(
       std::move(caption_bubble_context), pref_service, application_locale,
       std::make_unique<babelorca::CaptionBubbleSettingsImpl>(
           pref_service,
-          /*caption_language_code=*/application_locale));
+          /*caption_language_code=*/application_locale,
+          on_local_caption_closed_cb));
   ControllerFactory controller_factory = base::BindOnce(
       babelorca::BabelOrcaConsumer::Create, url_loader_factory,
       identity_manager, gaia_id, school_tools_url_base,
@@ -144,6 +148,14 @@ void BabelOrcaManager::OnLocalCaptionConfigUpdated(
   }
   babel_orca_controller_->OnLocalCaptionConfigUpdated(
       config.captions_enabled());
+}
+
+void BabelOrcaManager::OnLocalCaptionClosed() {
+  if (!babel_orca_controller_) {
+    return;
+  }
+  babel_orca_controller_->OnLocalCaptionConfigUpdated(
+      /*local_captions_enabled=*/false);
 }
 
 bool BabelOrcaManager::IsCaptioningAvailable() {

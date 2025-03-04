@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -93,8 +94,8 @@ class BabelOrcaProducerTest : public testing::Test {
   }
 
   std::unique_ptr<CaptionController> GetCaptionController() {
-    auto caption_bubble_settings =
-        std::make_unique<CaptionBubbleSettingsImpl>(&pref_service_, kLanguage);
+    auto caption_bubble_settings = std::make_unique<CaptionBubbleSettingsImpl>(
+        &pref_service_, kLanguage, base::DoNothing());
     return std::make_unique<CaptionController>(
         /*caption_bubble_context=*/
         nullptr, &pref_service_, kLanguage, std::move(caption_bubble_settings),

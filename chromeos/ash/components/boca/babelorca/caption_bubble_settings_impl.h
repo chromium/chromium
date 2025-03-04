@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/live_caption/caption_bubble_settings.h"
@@ -21,7 +22,8 @@ namespace ash::babelorca {
 class CaptionBubbleSettingsImpl : public ::captions::CaptionBubbleSettings {
  public:
   CaptionBubbleSettingsImpl(PrefService* profile_prefs,
-                            std::string_view caption_language_code);
+                            std::string_view caption_language_code,
+                            base::RepeatingClosure on_local_caption_closed_cb);
 
   CaptionBubbleSettingsImpl(const CaptionBubbleSettingsImpl&) = delete;
   CaptionBubbleSettingsImpl& operator=(const CaptionBubbleSettingsImpl&) =
@@ -50,6 +52,7 @@ class CaptionBubbleSettingsImpl : public ::captions::CaptionBubbleSettings {
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   bool translate_enabled_ = false;
   const std::string caption_language_code_;
+  const base::RepeatingClosure on_local_caption_closed_cb_;
   base::WeakPtr<::captions::CaptionBubbleSettings::Observer> observer_;
 };
 

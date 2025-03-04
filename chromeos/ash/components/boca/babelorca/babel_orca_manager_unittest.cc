@@ -247,6 +247,27 @@ TEST_F(BabelOrcaManagerTest, OnLocalCaptionConfigUpdated) {
   EXPECT_CALL(*controller_ptr, OnLocalCaptionConfigUpdated(false)).Times(1);
   manager.OnLocalCaptionConfigUpdated(captions_config);
 }
+
+TEST_F(BabelOrcaManagerTest, OnLocalCaptionClosed) {
+  base::test::TestFuture<bool> test_future;
+  MockBabelOrcaController* controller_ptr;
+  auto controller_factory = base::BindLambdaForTesting(
+      [&controller_ptr](babelorca::TokenManager*,
+                        babelorca::TachyonRequestDataProvider* data_provider)
+          -> std::unique_ptr<babelorca::BabelOrcaController> {
+        auto controller =
+            std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
+        controller_ptr = controller.get();
+        return controller;
+      });
+  BabelOrcaManager manager(identity_test_env_.identity_manager(),
+                           url_loader_factory_.GetSafeWeakWrapper(),
+                           std::move(controller_factory));
+
+  EXPECT_CALL(*controller_ptr, OnLocalCaptionConfigUpdated(false)).Times(1);
+  manager.OnLocalCaptionClosed();
+}
+
 TEST_F(BabelOrcaManagerTest, RequestDataProviderIsTheManager) {
   base::test::TestFuture<bool> test_future;
   babelorca::TachyonRequestDataProvider* request_data_provider;

@@ -67,6 +67,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
+      base::RepeatingClosure on_local_caption_closed_cb,
       PrefService* pref_service,
       const std::string& application_locale);
 
@@ -77,6 +78,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       const GaiaId& gaia_id,
       std::string school_tools_url_base,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
+      base::RepeatingClosure on_local_caption_closed_cb,
       PrefService* pref_service,
       const std::string& application_locale);
 
@@ -100,6 +102,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       const std::string& tachyon_group_id) override;
   void OnLocalCaptionConfigUpdated(
       const ::boca::CaptionsConfig& config) override;
+  void OnLocalCaptionClosed() override;
 
   bool IsCaptioningAvailable();
 
