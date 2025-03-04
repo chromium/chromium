@@ -656,27 +656,20 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
     const gfx::Size& old_visible_size = video_frame->visible_rect().size();
     gfx::Size new_visible_size = old_visible_size;
 
-    media::VideoRotation video_rotation = media::VIDEO_ROTATION_0;
-    if (video_frame->metadata().transformation) {
-      video_rotation = video_frame->metadata().transformation->rotation;
-    }
-
-    if (video_rotation == media::VIDEO_ROTATION_90 ||
-        video_rotation == media::VIDEO_ROTATION_270) {
-      new_visible_size.SetSize(old_visible_size.height(),
-                               old_visible_size.width());
-    }
-
     frame = frame_pool_.CreateFrame(
         is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
         new_visible_size, gfx::Rect(new_visible_size), new_visible_size,
         video_frame->timestamp());
 
+    frame->metadata().MergeMetadataFrom(video_frame->metadata());
+    frame->metadata().ClearTextureFrameMetadata();
+
     const SkImageInfo info = SkImageInfo::MakeN32(
         frame->visible_rect().width(), frame->visible_rect().height(),
         is_opaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType);
 
-    // Create |surface_| if it doesn't exist or incoming resolution has changed.
+    // Create |surface_| if it doesn't exist or incoming resolution has
+    // changed.
     if (!canvas_ || canvas_->imageInfo().width() != info.width() ||
         canvas_->imageInfo().height() != info.height()) {
       bitmap_.allocPixels(info);
@@ -711,8 +704,7 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
             frame->stride(media::VideoFrame::Plane::kV), 0 /* crop_x */,
             0 /* crop_y */, pixmap.width(), pixmap.height(),
             old_visible_size.width(), old_visible_size.height(),
-            MediaVideoRotationToRotationMode(video_rotation),
-            source_pixel_format) != 0) {
+            libyuv::kRotate0, source_pixel_format) != 0) {
       DLOG(ERROR) << "Error converting frame to I420";
       return nullptr;
     }
@@ -1285,10 +1277,13 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
   auto buffer = media::DecoderBuffer::CopyFrom(encoded_frame->Data());
   buffer->set_is_key_frame(encoded_frame->IsKeyFrame());
 
+  // TODO(crbug.com/391786486): create method in EncodedVideoFrame to get
+  // Transformation info. Use method instead of passing
+  // media::kNoTransformation.
   media::Muxer::VideoParameters params(encoded_frame->Resolution(),
                                        /*frame_rate=*/0.0f,
                                        /*codec=*/encoded_frame->Codec(),
-                                       color_space);
+                                       color_space, media::kNoTransformation);
   if (auto* callback = callback_interface()->Get()) {
     callback->OnPassthroughVideo(params, std::move(buffer),
                                  estimated_capture_time);

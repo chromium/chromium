@@ -298,7 +298,8 @@ TEST_P(WebmMuxerTest, ColorSpaceREC709IsPropagatedToTrack) {
       media::DecoderBuffer::CopyFrom(base::as_byte_span("abab"));
   encoded_data->set_is_key_frame(true);
   Muxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
-                                gfx::ColorSpace::CreateREC709());
+                                gfx::ColorSpace::CreateREC709(),
+                                media::kNoTransformation);
   PutVideo(params, std::move(encoded_data), std::nullopt);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
   EXPECT_EQ(colour->primaries(), mkvmuxer::Colour::kIturBt709P);
@@ -315,7 +316,8 @@ TEST_P(WebmMuxerTest, ColorSpaceExtendedSRGBIsPropagatedToTrack) {
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(
           gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
-          gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED));
+          gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED),
+      kNoTransformation);
   PutVideo(params, std::move(encoded_data), std::nullopt);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
   EXPECT_EQ(colour->primaries(), mkvmuxer::Colour::kIturBt709P);
@@ -333,7 +335,8 @@ TEST_P(WebmMuxerTest, ColorSpaceHDR10IsPropagatedToTrack) {
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
-                      gfx::ColorSpace::RangeID::LIMITED));
+                      gfx::ColorSpace::RangeID::LIMITED),
+      media::kNoTransformation);
   PutVideo(params, std::move(encoded_data), std::nullopt);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
   EXPECT_EQ(colour->primaries(), mkvmuxer::Colour::kIturBt2020);
@@ -352,7 +355,8 @@ TEST_P(WebmMuxerTest, ColorSpaceFullRangeHDR10IsPropagatedToTrack) {
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
-                      gfx::ColorSpace::RangeID::FULL));
+                      gfx::ColorSpace::RangeID::FULL),
+      media::kNoTransformation);
   PutVideo(params, std::move(encoded_data), std::nullopt);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
   EXPECT_EQ(colour->range(), mkvmuxer::Colour::kFullRange);
@@ -438,7 +442,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
 
   bool AddVideoAtOffset(int system_timestamp_offset_ms, bool is_key_frame) {
     Muxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP8,
-                                  gfx::ColorSpace());
+                                  gfx::ColorSpace(), media::kNoTransformation);
     auto buffer =
         media::DecoderBuffer::CopyFrom(base::as_byte_span("video_at_offset"));
     buffer->set_is_key_frame(is_key_frame);

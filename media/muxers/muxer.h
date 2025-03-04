@@ -39,7 +39,8 @@ class MEDIA_EXPORT Muxer {
     VideoParameters(gfx::Size visible_rect_size,
                     double frame_rate,
                     VideoCodec codec,
-                    std::optional<gfx::ColorSpace> color_space);
+                    std::optional<gfx::ColorSpace> color_space,
+                    std::optional<VideoTransformation> transformation);
     VideoParameters(const VideoParameters&);
     ~VideoParameters();
     // Returns a human-readable string describing `*this`.
@@ -50,6 +51,7 @@ class MEDIA_EXPORT Muxer {
     double frame_rate;
     VideoCodec codec;
     std::optional<gfx::ColorSpace> color_space;
+    std::optional<VideoTransformation> transformation;
   };
 
   // Structure for passing encoded Audio and Video frames.

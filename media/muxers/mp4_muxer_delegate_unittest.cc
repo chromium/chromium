@@ -193,7 +193,8 @@ TEST_P(Mp4MuxerDelegateTest, AddVideoFrame) {
   base::TimeDelta delta;
 
   media::Muxer::VideoParameters params(gfx::Size(kWidth, kHeight), 30,
-                                       VideoCodec::kH264, gfx::ColorSpace());
+                                       VideoCodec::kH264, gfx::ColorSpace(),
+                                       media::kNoTransformation);
   video_stream_1->set_is_key_frame(true);
   delegate.AddVideoFrame(params, video_stream_1, video_codec_description,
                          base_time_ticks);
@@ -873,7 +874,8 @@ TEST_P(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
   PopulateAVCDecoderConfiguration(video_code_description);
 
   media::Muxer::VideoParameters video_params(
-      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace(),
+      media::kNoTransformation);
   video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_code_description,
                          base_time_ticks);
@@ -1078,7 +1080,8 @@ TEST_P(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
   PopulateAVCDecoderConfiguration(video_codec_description);
 
   media::Muxer::VideoParameters video_params(
-      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace(),
+      media::kNoTransformation);
   video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
                          base_time_ticks);
@@ -1264,7 +1267,8 @@ TEST_P(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
   PopulateAVCDecoderConfiguration(video_codec_description);
 
   media::Muxer::VideoParameters video_params(
-      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace(),
+      media::kNoTransformation);
   video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
                          base_time_ticks);
@@ -1414,7 +1418,8 @@ TEST_P(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
   constexpr base::TimeDelta kDelta = base::Milliseconds(30);
   media::Muxer::VideoParameters video_params(
-      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace(),
+      media::kNoTransformation);
 
   // The first fragment; audio (1 sample) -> video (2 samples) track.
   delegate.AddAudioFrame(params, audio_stream, audio_codec_description,
@@ -1543,7 +1548,8 @@ TEST_P(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc) {
 
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
   media::Muxer::VideoParameters video_params(
-      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace());
+      gfx::Size(kWidth, kHeight), 30, VideoCodec::kH264, gfx::ColorSpace(),
+      media::kNoTransformation);
 
   video_stream->set_is_key_frame(true);
   delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
@@ -1633,7 +1639,8 @@ TEST_P(Mp4MuxerDelegateTest, VideoFrameResolutionChanged) {
   // Add the first `240x240` frame.
   auto stream_buffer_1 = converter.Convert(*video_stream_1);
   media::Muxer::VideoParameters params_1(gfx::Size(240, 240), 30,
-                                         VideoCodec::kH264, gfx::ColorSpace());
+                                         VideoCodec::kH264, gfx::ColorSpace(),
+                                         media::kNoTransformation);
   video_stream_1->set_is_key_frame(true);
   delegate.AddVideoFrame(params_1, video_stream_1,
                          converter.GetCodecDescription(), base_time_ticks);
@@ -1641,7 +1648,8 @@ TEST_P(Mp4MuxerDelegateTest, VideoFrameResolutionChanged) {
   // Add the second `320x192` frame.
   auto stream_buffer_2 = converter.Convert(*video_stream_2);
   media::Muxer::VideoParameters params_2(gfx::Size(320, 192), 30,
-                                         VideoCodec::kH264, gfx::ColorSpace());
+                                         VideoCodec::kH264, gfx::ColorSpace(),
+                                         media::kNoTransformation);
   video_stream_2->set_is_key_frame(true);
   delegate.AddVideoFrame(params_2, video_stream_2,
                          converter.GetCodecDescription(),
