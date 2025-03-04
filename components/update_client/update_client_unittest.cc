@@ -405,12 +405,10 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -617,13 +615,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kChecking &&
                          item.id == "jebgalgnebhfojomionfpkfelancnnkf";
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kCanUpdate &&
                          item.id == "jebgalgnebhfojomionfpkfelancnnkf";
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kDownloading &&
                          item.id == "jebgalgnebhfojomionfpkfelancnnkf";
@@ -637,21 +633,18 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kUpdated &&
                          item.id == "jebgalgnebhfojomionfpkfelancnnkf";
-                })))
-        .Times(1);
+                })));
   }
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kChecking &&
                          item.id == "abagagagagagagagagagagagagagagag";
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kUpToDate &&
                          item.id == "abagagagagagagagagagagagagagagag";
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -861,13 +854,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kChecking &&
                          item.id == "jebgalgnebhfojomionfpkfelancnnkf";
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kCanUpdate &&
                          item.id == "jebgalgnebhfojomionfpkfelancnnkf";
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kDownloading &&
                          item.id == "jebgalgnebhfojomionfpkfelancnnkf";
@@ -881,21 +872,19 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kUpdated &&
                          item.id == "jebgalgnebhfojomionfpkfelancnnkf";
-                })))
-        .Times(1);
+                })));
   }
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kChecking &&
                          item.id == "abagagagagagagagagagagagagagagag";
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.state == ComponentState::kUpdateError &&
                          item.id == "abagagagagagagagagagagagagagagag";
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
@@ -1097,13 +1086,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kDownloading;
@@ -1112,21 +1099,18 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
   }
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -1226,13 +1210,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -1473,13 +1455,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kDownloading;
@@ -1489,7 +1469,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(1, static_cast<int>(item.error_category));
@@ -1502,13 +1482,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -1517,13 +1495,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -1829,13 +1805,11 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -1844,8 +1818,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
@@ -1854,18 +1827,15 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -1874,8 +1844,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
@@ -1884,8 +1853,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
   }
 
   update_client->AddObserver(&observer);
@@ -2034,7 +2002,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
           base::MakeRefCounted<MockInstaller>();
 
       EXPECT_CALL(*installer, OnUpdateError(_)).Times(0);
-      EXPECT_CALL(*installer, DoInstall(_)).Times(1);
+      EXPECT_CALL(*installer, DoInstall(_));
       EXPECT_CALL(*installer, GetInstalledFile(_)).Times(0);
       EXPECT_CALL(*installer, Uninstall()).Times(0);
 
@@ -2175,13 +2143,11 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kDownloading;
@@ -2190,13 +2156,11 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -2486,13 +2450,11 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -2501,24 +2463,20 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
 
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -2537,8 +2495,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
   }
 
   update_client->AddObserver(&observer);
@@ -2865,13 +2822,11 @@ TEST_F(UpdateClientTest,
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -2880,24 +2835,20 @@ TEST_F(UpdateClientTest,
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
 
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -2906,13 +2857,11 @@ TEST_F(UpdateClientTest,
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
   }
 
   update_client->AddObserver(&observer);
@@ -3069,23 +3018,19 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items1;
@@ -3290,13 +3235,11 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kDownloading;
@@ -3305,13 +3248,12 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdated;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           ASSERT_TRUE(item.component);
           const auto* test_installer =
@@ -3428,7 +3370,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           // Tests that the state of the component when the CrxComponent data
           // is not provided. In this case, the optional |item.component|
@@ -3545,13 +3487,11 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
   EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                 return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                        item.state == ComponentState::kChecking;
-              })))
-      .Times(1);
+              })));
   EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                 return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                        item.state == ComponentState::kUpToDate;
-              })))
-      .Times(1);
+              })));
 
   std::vector<CrxUpdateItem> items1;
   auto receiver1 = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -3781,23 +3721,19 @@ TEST_F(UpdateClientTest, DiskFull) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kDownloading;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -4071,13 +4007,11 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -4091,18 +4025,15 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -4116,8 +4047,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
 
   update_client->AddObserver(&observer);
@@ -4390,33 +4320,27 @@ TEST_F(UpdateClientTest, RetryAfter) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
   }
 
   update_client->AddObserver(&observer);
@@ -4667,31 +4591,26 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
   {
     InSequence seq;
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kDownloading;
@@ -4700,13 +4619,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -4911,13 +4828,11 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kDownloading;
@@ -4927,7 +4842,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(1, static_cast<int>(item.error_category));
@@ -5038,13 +4953,12 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
@@ -5201,13 +5115,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
@@ -5220,13 +5133,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "abagagagagagagagagagagagagagagag" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "abagagagagagagagagagagagagagagag" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
@@ -5239,13 +5151,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
@@ -5258,13 +5169,12 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "gjpmebpgbhcamgdgjcmnjfhggjpgcimm" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "gjpmebpgbhcamgdgjcmnjfhggjpgcimm" &&
                          item.state == ComponentState::kUpdateError;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
@@ -6056,13 +5966,11 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kDownloading;
@@ -6072,8 +5980,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -6237,19 +6144,17 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
                 })))
-        .Times(1)
+
         .WillOnce(Invoke([&cancel] { cancel.Run(); }));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -6361,13 +6266,11 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
   }
   std::vector<CrxUpdateItem> items;
   auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -6512,13 +6415,11 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
   }
   std::vector<CrxUpdateItem> items;
   auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -6625,23 +6526,19 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
   }
   std::vector<CrxUpdateItem> items;
   auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -6762,13 +6659,11 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpToDate;
-                })))
-        .Times(1);
+                })));
   }
 
   std::vector<CrxUpdateItem> items;
@@ -6850,8 +6745,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
   std::vector<CrxUpdateItem> items;
   auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -7023,18 +6917,15 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
   }
   std::vector<CrxUpdateItem> items;
   auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
@@ -7233,13 +7124,11 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kDownloading;
@@ -7248,8 +7137,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdating;
@@ -7258,24 +7146,20 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
-                })))
-        .Times(1);
+                })));
 
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kChecking;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kCanUpdate;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdating;
-                })))
-        .Times(1);
+                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdating;
@@ -7284,8 +7168,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdated;
-                })))
-        .Times(1);
+                })));
   }
 
   update_client->AddObserver(&observer);
