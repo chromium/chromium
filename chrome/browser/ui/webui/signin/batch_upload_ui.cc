@@ -62,11 +62,11 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   // Set up the chrome://batch-upload source.
-  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+  web_ui_source_ = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIBatchUploadHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(source, kBatchUploadResources,
+  webui::SetupWebUIDataSource(web_ui_source_, kBatchUploadResources,
                               IDR_BATCH_UPLOAD_BATCH_UPLOAD_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -80,10 +80,10 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
       {"selectAllScreenReader", IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_ALL},
       {"selectNoneScreenReader", IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE},
   };
-  source->AddLocalizedStrings(kLocalizedStrings);
+  web_ui_source_->AddLocalizedStrings(kLocalizedStrings);
 
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
+  web_ui_source_->UseStringsJs();
+  web_ui_source_->EnableReplaceI18nInJS();
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -110,6 +110,15 @@ void BatchUploadUI::Initialize(
        local_data_description_list) {
     int section_title_id =
         BatchUploadHandler::GetTypeSectionTitleId(local_data_description.type);
+    // For Themes add the resource in the main `web_ui_source_` since themes has
+    // a special way to display it's title that requires a non plural localized
+    // string with a variable. Also add the resource in the
+    // `plural_string_handler` to simplify initialization of the view.
+    if (local_data_description.type == syncer::DataType::THEMES) {
+      web_ui_source_->AddLocalizedString(base::ToString(section_title_id),
+                                         section_title_id);
+    }
+
     plural_string_handler->AddLocalizedString(base::ToString(section_title_id),
                                               section_title_id);
   }
@@ -124,6 +133,7 @@ void BatchUploadUI::Initialize(
 
 void BatchUploadUI::Clear() {
   handler_.reset();
+  web_ui_source_ = nullptr;
 }
 
 void BatchUploadUI::BindInterface(
