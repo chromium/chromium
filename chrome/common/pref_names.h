@@ -2906,17 +2906,6 @@ inline constexpr char kDeviceSettingsCache[] = "signed_settings_cache";
 // "xkb:us::eng".
 inline constexpr char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";
 
-// A boolean pref of the auto-enrollment decision. Its value is only valid if
-// it's not the default value; otherwise, no auto-enrollment decision has been
-// made yet.
-inline constexpr char kShouldAutoEnroll[] = "ShouldAutoEnroll";
-
-// A boolean pref of the private-set-membership decision. Its value is only
-// valid if it's not the default value; otherwise, no private-set-membership
-// decision has been made yet.
-inline constexpr char kShouldRetrieveDeviceState[] =
-    "ShouldRetrieveDeviceState";
-
 // An integer pref. Its valid values are defined in
 // enterprise_management::DeviceRegisterRequest::PsmExecutionResult enum which
 // indicates all possible PSM execution results in the Chrome OS enrollment
@@ -2927,12 +2916,6 @@ inline constexpr char kEnrollmentPsmResult[] = "EnrollmentPsmResult";
 // determination successfully in the Chrome OS enrollment flow.
 inline constexpr char kEnrollmentPsmDeterminationTime[] =
     "EnrollmentPsmDeterminationTime";
-
-// An integer pref with the maximum number of bits used by the client in a
-// previous auto-enrollment request. If the client goes through an auto update
-// during OOBE and reboots into a version of the OS with a larger maximum
-// modulus, then it will retry auto-enrollment using the updated value.
-inline constexpr char kAutoEnrollmentPowerLimit[] = "AutoEnrollmentPowerLimit";
 
 // The local state pref that stores device activity times before reporting
 // them to the policy server.

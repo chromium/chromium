@@ -20,11 +20,11 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chromeos/ash/components/dbus/device_management/fake_install_attributes_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/ash/components/dbus/system_clock/fake_system_clock_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -272,9 +272,6 @@ TEST_F(AutoEnrollmentControllerTest, ReportsSafeguardTimeout) {
                              task_environment_.FastForwardBy(kSafeguardTimeout);
                            }));
 
-  EXPECT_EQ(controller.auto_enrollment_check_type(),
-            AutoEnrollmentTypeChecker::CheckType::
-                kForcedReEnrollmentExplicitlyRequired);
   EXPECT_FALSE(controller.SafeguardTimerForTesting().IsRunning());
   EXPECT_EQ(controller.state(), base::unexpected(AutoEnrollmentError(
                                     AutoEnrollmentSafeguardTimeoutError{})));
@@ -296,9 +293,6 @@ TEST_F(AutoEnrollmentControllerTest, TimeoutInterruptedByOtherError) {
   }
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  EXPECT_EQ(controller.auto_enrollment_check_type(),
-            AutoEnrollmentTypeChecker::CheckType::
-                kForcedReEnrollmentExplicitlyRequired);
   EXPECT_FALSE(controller.state().has_value());
   EXPECT_TRUE(controller.SafeguardTimerForTesting().IsRunning());
 

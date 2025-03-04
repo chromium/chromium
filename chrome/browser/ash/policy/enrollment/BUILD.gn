@@ -10,15 +10,10 @@ static_library("enrollment") {
   sources = [
     "account_status_check_fetcher.cc",
     "account_status_check_fetcher.h",
-    "auto_enrollment_client.h",
-    "auto_enrollment_client_impl.cc",
-    "auto_enrollment_client_impl.h",
     "auto_enrollment_controller.cc",
     "auto_enrollment_controller.h",
     "auto_enrollment_state.cc",
     "auto_enrollment_state.h",
-    "auto_enrollment_state_message_processor.cc",
-    "auto_enrollment_state_message_processor.h",
     "auto_enrollment_type_checker.cc",
     "auto_enrollment_type_checker.h",
     "device_cloud_policy_initializer.cc",
@@ -67,7 +62,6 @@ static_library("enrollment") {
     "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/device_management",
-    "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/system",
   ]
@@ -84,8 +78,6 @@ static_library("test_support") {
   sources = [
     "enrollment_test_helper.cc",
     "enrollment_test_helper.h",
-    "fake_auto_enrollment_client.cc",
-    "fake_auto_enrollment_client.h",
   ]
 
   public_deps = [ "//build:branding_buildflags" ]
@@ -110,7 +102,6 @@ source_set("unit_tests") {
 
   sources = [
     "account_status_check_fetcher_unittest.cc",
-    "auto_enrollment_client_impl_unittest.cc",
     "auto_enrollment_controller_unittest.cc",
     "auto_enrollment_type_checker_unittest.cc",
     "enrollment_config_unittest.cc",
@@ -144,7 +135,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/device_management",
     "//chromeos/ash/components/dbus/oobe_config",
     "//chromeos/ash/components/dbus/session_manager",
-    "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
@@ -156,7 +146,6 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//content/test:test_support",
-    "//crypto",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",

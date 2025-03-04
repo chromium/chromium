@@ -7,28 +7,21 @@
 
 #include <memory>
 #include <optional>
-#include <string>
-#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/device_management/device_management_interface.pb.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace ash {
-class InstallAttributesClient;
 class NetworkStateHandler;
-class SystemClockSyncObservation;
 }  // namespace ash
 
 namespace policy {
@@ -36,41 +29,8 @@ namespace policy {
 class DeviceManagementService;
 class ServerBackedStateKeysBroker;
 
-// Helper class to obtain FWMP flags.
-// See b/268267865.
-class EnrollmentFwmpHelper {
- public:
-  using ResultCallback = base::OnceCallback<void(bool)>;
-
-  // `install_attributes_client` has to be not nullptr. It will be used to
-  // obtain the FWMP flags.
-  explicit EnrollmentFwmpHelper(
-      ash::InstallAttributesClient* install_attributes_client);
-  EnrollmentFwmpHelper(const EnrollmentFwmpHelper&) = delete;
-  EnrollmentFwmpHelper& operator=(const EnrollmentFwmpHelper&) = delete;
-  ~EnrollmentFwmpHelper();
-
-  // Read FWMP.dev_disable_boot (a.k.a. block_devmode) and return the
-  // value asynchronously via result_callback.
-  // Return `false` in case of errors (e.g. `install_attributes_client_` or
-  // FWMP not available).
-  void DetermineDevDisableBoot(ResultCallback result_callback);
-
- private:
-  void RequestFirmwareManagementParameters(ResultCallback result_callback,
-                                           bool service_is_ready);
-
-  void OnGetFirmwareManagementParametersReceived(
-      ResultCallback result_callback,
-      std::optional<device_management::GetFirmwareManagementParametersReply>
-          reply);
-
-  raw_ptr<ash::InstallAttributesClient> install_attributes_client_;
-  base::WeakPtrFactory<EnrollmentFwmpHelper> weak_ptr_factory_{this};
-};
-
-// Drives the forced re-enrollment check (for historical reasons called
-// auto-enrollment check), running an `AutoEnrollmentClient` if appropriate to
+// Drives the enrollment state determinatio (for historical reasons called
+// auto-enrollment check), running an `EnrollmentStateFetcher` if appropriate to
 // make a decision.
 // The controller tracks network status to retry when the device is going
 // online in case of a prior failure.
@@ -80,19 +40,6 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
       base::RepeatingCallbackList<void(AutoEnrollmentState)>;
   using RlweClientFactory =
       policy::psm::RlweDmserverClientImpl::RlweClientFactory;
-
-  // State of the system clock.
-  enum class SystemClockSyncState {
-    // This `AutoEnrollmentController` has not tried to wait for the system
-    // clock sync state yet.
-    kCanWaitForSync,
-    // Currently waiting for the system clock to become synchronized.
-    kWaitingForSync,
-    // Waiting for the system clock to become synchronized timed out.
-    kSyncFailed,
-    // The system clock is synchronized
-    kSynchronized
-  };
 
   explicit AutoEnrollmentController(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
@@ -124,24 +71,9 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
 
   const std::optional<AutoEnrollmentState>& state() const { return state_; }
 
-  // Returns the auto-enrollment check type performed by this client.
-  // The returned value will be `CheckType::kNone` before calling `Start()`.
-  AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type() const {
-    return auto_enrollment_check_type_;
-  }
-
   // Sets the factory function that will be used to create the
   // `psm::RlweClient` for tests.
   void SetRlweClientFactoryForTesting(RlweClientFactory test_factory);
-
-  // Sets the factory that will be used to create the `AutoEnrollmentClient`.
-  // Ownership is not transferred when calling this - the caller must ensure
-  // that the `Factory` pointed to by `auto_enrollment_client_factory` remains
-  // valid while this `AutoEnrollmentController` is using it.
-  // To use the default factory again, call with nullptr.
-  void SetAutoEnrollmentClientFactoryForTesting(
-      std::unique_ptr<AutoEnrollmentClient::Factory>
-          auto_enrollment_client_factory);
 
   // Sets factory that will be used to create `EnrollmentStateFetcher`.  To use
   // the default factory again, call with `base::NullCallback()`.
@@ -171,28 +103,6 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
  private:
-  void OnDevDisableBootDetermined(bool dev_disable_boot);
-
-  // Determines the FRE and Initial Enrollment requirement and starts initial
-  // enrollment if necessary. If Initial Enrollment would be skipped and the
-  // system clock has not been synchronized yet, triggers waiting for system
-  // clock sync and will be called again when the system clock state is known.
-  void StartWithSystemClockSyncState();
-
-  // Callback for the ownership status check.
-  void OnOwnershipStatusCheckDone(
-      ash::DeviceSettingsService::OwnershipStatus status);
-
-  // Starts the auto-enrollment client for forced re-enrollment.
-  void StartClientForFRE(const std::vector<std::string>& state_keys);
-
-  // Called when the system clock has been synchronized or a timeout has been
-  // reached while waiting for the system clock sync.
-  void OnSystemClockSyncResult(bool system_clock_synchronized);
-
-  // Starts the auto-enrollment client for initial enrollment.
-  void StartClientForInitialEnrollment();
-
   // Sets `state_` and notifies `progress_callbacks_`.
   void UpdateState(AutoEnrollmentState state);
 
@@ -213,6 +123,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // `progress_callbacks_` in case cryptohome does not become available and the
   // timer is still running.
   // `service_is_ready` indicates if the cryptohome D-Bus service is ready.
+  // TODO(crbug.com/400446862) Analyze and (likely) remove this and related
+  // functions.
   void StartRemoveFirmwareManagementParameters(bool service_is_ready);
 
   // Callback for RemoveFirmwareManagementParameters(). If an error is received
@@ -228,6 +140,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // `progress_callbacks_` in case session manager does not become available
   // and the timer is still running.
   // `service_is_ready` indicates if the session manager D-Bus service is ready.
+  // TODO(crbug.com/400446862) Analyze and (likely) remove this and related
+  // functions.
   void StartClearForcedReEnrollmentVpd(bool service_is_ready);
 
   // Callback for ClearForcedReEnrollmentVpd(). If an error is received
@@ -248,18 +162,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Used for retrieving device state keys.
   raw_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
 
-  // Used for checking dev boot status.
-  std::unique_ptr<EnrollmentFwmpHelper> enrollment_fwmp_helper_;
-
   std::optional<AutoEnrollmentState> state_;
   ProgressCallbackList progress_callbacks_;
-
-  std::unique_ptr<AutoEnrollmentClient> client_;
-
-  // This will be used to create the `client_`. It can be set using
-  // `SetAutoEnrollmentClientFactoryForTesting`.
-  std::unique_ptr<AutoEnrollmentClient::Factory>
-      auto_enrollment_client_factory_;
 
   // Constructs the PSM RLWE client. It will either create a fake or real
   // implementation of the client.
@@ -286,20 +190,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // `SetEnrollmentStateFetcherFactoryForTesting`.
   EnrollmentStateFetcher::Factory enrollment_state_fetcher_factory_;
 
-  bool dev_disable_boot_ = false;
-
-  // Which type of auto-enrollment check is being performed by this
-  // `AutoEnrollmentClient`.
-  AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type_ =
-      AutoEnrollmentTypeChecker::CheckType::
-          kForcedReEnrollmentExplicitlyRequired;
-
   // Shared factory for outgoing network requests.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-
-  // Utility for waiting until the system clock has been synchronized.
-  std::unique_ptr<ash::SystemClockSyncObservation>
-      system_clock_sync_observation_;
 
   raw_ptr<ash::NetworkStateHandler> network_state_handler_;
   // Observes network state and calls `PortalStateChanged` when it changes from
@@ -307,18 +199,6 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // when the device goes online.
   ash::NetworkStateHandlerScopedObservation network_state_observation_{this};
 
-  // Current system clock sync state. This is only modified in
-  // `OnSystemClockSyncResult` after `system_clock_sync_wait_requested_` has
-  // been set to true.
-  SystemClockSyncState system_clock_sync_state_ =
-      SystemClockSyncState::kCanWaitForSync;
-
-  // Keeps track of number of tries to request state keys.
-  int request_state_keys_tries_ = 0;
-
-  // TODO(igorcov): Merge the two weak_ptr factories in one.
-  base::WeakPtrFactory<AutoEnrollmentController> client_start_weak_factory_{
-      this};
   base::WeakPtrFactory<AutoEnrollmentController> weak_ptr_factory_{this};
 };
 

@@ -1207,9 +1207,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, NoEnrollment) {
   EXPECT_CALL(*mock_enrollment_screen_, HideImpl()).Times(0);
   EXPECT_EQ(policy::AutoEnrollmentResult::kNoEnrollment,
             auto_enrollment_controller()->state());
-  EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
-                kForcedReEnrollmentExplicitlyRequired,
-            auto_enrollment_controller()->auto_enrollment_check_type());
 }
 
 // Tests that when EnrollmentStateFetcher reports state keys retrieval error, we

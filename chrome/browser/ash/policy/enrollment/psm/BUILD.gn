@@ -8,8 +8,6 @@ assert(is_chromeos)
 
 static_library("psm") {
   sources = [
-    "construct_rlwe_id.cc",
-    "construct_rlwe_id.h",
     "fake_rlwe_dmserver_client.cc",
     "fake_rlwe_dmserver_client.h",
     "rlwe_dmserver_client.h",
@@ -51,7 +49,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "construct_rlwe_id_unittest.cc",
     "rlwe_dmserver_client_impl_unittest.cc",
     "rlwe_test_support_unittest.cc",
   ]
