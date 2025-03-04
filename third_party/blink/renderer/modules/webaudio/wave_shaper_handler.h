@@ -11,13 +11,23 @@
 namespace blink {
 
 class AudioNode;
+class WaveShaperProcessor;
 
 class WaveShaperHandler : public AudioBasicProcessorHandler {
  public:
+  enum OverSampleType { kOverSampleNone, kOverSample2x, kOverSample4x };
+
   static scoped_refptr<WaveShaperHandler> Create(AudioNode&, float sample_rate);
+
+  void SetCurve(const float* curve_data, unsigned curve_length);
+  Vector<float>* Curve();
+  void SetOversample(OverSampleType oversample);
+  OverSampleType Oversample();
 
  private:
   WaveShaperHandler(AudioNode& iirfilter_node, float sample_rate);
+
+  WaveShaperProcessor* GetWaveShaperProcessor();
 };
 
 }  // namespace blink
