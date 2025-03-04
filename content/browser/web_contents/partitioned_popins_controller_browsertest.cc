@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom-shared.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -164,6 +165,15 @@ class PartitionedPopinsControllerBrowserTest
     // Check that the popin is open and it's partitioned.
     CHECK_EQ(EvalJs(popin_web_contents, "window.popinContextType()"),
              "partitioned");
+
+    // Check that the popin considers itself to be embedded by the origin of
+    // the opener.
+    CHECK_EQ(static_cast<WebContentsImpl*>(popin_web_contents)
+                 ->GetPartitionedPopinEmbedderOriginForTesting(),
+             execution_target.render_frame_host()
+                 ->GetMainFrame()
+                 ->GetLastCommittedOrigin()
+                 .GetURL());
 
     return popin_web_contents;
   }

@@ -225,6 +225,10 @@ class PermissionContextBase : public content_settings::Observer {
   const PermissionRequest* FindPermissionRequest(
       const PermissionRequestID& id) const;
 
+  // Implementors can override this method to use a different embedding origin.
+  // TODO(crbug.com/40220500): This should return a url::Origin instead.
+  virtual GURL GetEffectiveEmbedderOrigin(content::RenderFrameHost* rfh) const;
+
   base::ObserverList<permissions::Observer> permission_observers_;
 
   // Set by subclasses to inform the base class that they will handle adding
