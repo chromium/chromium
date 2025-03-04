@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.CPUDuration" units="ms"
-    expires_after="2025-06-28">
+    expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.NumUnsupportedRules"
-    units="rules" expires_after="2025-06-29">
+    units="rules" expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.IndexRuleset.WallDuration" units="ms"
-    expires_after="2025-06-28">
+    expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FingerprintingProtection.PageLoad.ActivationDecision"
     enum="FingerprintingProtectionActivationDecision"
-    expires_after="2025-06-29">
+    expires_after="2025-08-31">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.RootNavigation.ActivationState"
-    enum="SubresourceFilterActivationState" expires_after="2025-07-01">
+    enum="SubresourceFilterActivationState" expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>thesalsa@google.com</owner>
