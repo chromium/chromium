@@ -214,11 +214,8 @@ class CC_EXPORT LayerImpl {
   gfx::Transform ScreenSpaceTransform() const;
 
   // Setter for draw_properties_.
-  void set_visible_layer_rect(const gfx::Rect& visible_rect) {
+  void SetVisibleLayerRectForTesting(const gfx::Rect& visible_rect) {
     draw_properties_.visible_layer_rect = visible_rect;
-  }
-  void set_clip_rect(const gfx::Rect& clip_rect) {
-    draw_properties_.clip_rect = clip_rect;
   }
 
   // The following are shortcut accessors to get various information from
