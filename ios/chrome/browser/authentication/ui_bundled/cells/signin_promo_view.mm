@@ -408,8 +408,15 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 }
 
 - (NSString*)accessibilityLabel {
-  return [NSString stringWithFormat:@"%@ %@", self.textLabel.text,
-                                    [self primaryButtonTitle]];
+  switch (self.promoViewStyle) {
+    case SigninPromoViewStyleStandard:
+    case SigninPromoViewStyleCompact:
+      return [NSString stringWithFormat:@"%@ %@", self.textLabel.text,
+                                        [self primaryButtonTitle]];
+    case SigninPromoViewStyleOnlyButton:
+      return [self primaryButtonTitle];
+  }
+  NOTREACHED();
 }
 
 - (BOOL)accessibilityActivate {

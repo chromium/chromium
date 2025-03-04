@@ -63,8 +63,8 @@ TEST_F(SigninPromoViewTest, SecondaryButtonVisibility) {
 }
 
 // Tests the accessibility label (based on the `textLabel` and the primary
-// button title).
-TEST_F(SigninPromoViewTest, AccessibilityLabel) {
+// button title) as SigninPromoViewStyleStandard.
+TEST_F(SigninPromoViewTest, AccessibilityLabelSigninPromoViewStyleStandard) {
   UIWindow* currentWindow = GetAnyKeyWindow();
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
@@ -75,8 +75,48 @@ TEST_F(SigninPromoViewTest, AccessibilityLabel) {
   view.primaryButton.configuration = buttonConfigutation;
   NSString* promoText = @"This is the promo text.";
   view.textLabel.text = promoText;
+  view.promoViewStyle = SigninPromoViewStyleStandard;
   NSString* expectedAccessibilityLabel =
       [NSString stringWithFormat:@"%@ %@", promoText, primaryButtonTitle];
+  EXPECT_NSEQ(view.accessibilityLabel, expectedAccessibilityLabel);
+  [view removeFromSuperview];
+}
+
+// Tests the accessibility label (based on the `textLabel` and the primary
+// button title) as SigninPromoViewStyleCompact.
+TEST_F(SigninPromoViewTest, AccessibilityLabelSigninPromoViewStyleCompact) {
+  UIWindow* currentWindow = GetAnyKeyWindow();
+  SigninPromoView* view =
+      [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  [currentWindow.rootViewController.view addSubview:view];
+  UIButtonConfiguration* buttonConfigutation = view.primaryButton.configuration;
+  NSString* primaryButtonTitle = @"Primary Button Title";
+  buttonConfigutation.title = primaryButtonTitle;
+  view.primaryButton.configuration = buttonConfigutation;
+  NSString* promoText = @"This is the promo text.";
+  view.textLabel.text = promoText;
+  view.promoViewStyle = SigninPromoViewStyleCompact;
+  NSString* expectedAccessibilityLabel =
+      [NSString stringWithFormat:@"%@ %@", promoText, primaryButtonTitle];
+  EXPECT_NSEQ(view.accessibilityLabel, expectedAccessibilityLabel);
+  [view removeFromSuperview];
+}
+
+// Tests the accessibility label (based on the `textLabel` and the primary
+// button title) as SigninPromoViewStyleOnlyButton.
+TEST_F(SigninPromoViewTest, AccessibilityLabelSigninPromoViewStyleOnlyButton) {
+  UIWindow* currentWindow = GetAnyKeyWindow();
+  SigninPromoView* view =
+      [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  [currentWindow.rootViewController.view addSubview:view];
+  UIButtonConfiguration* buttonConfigutation = view.primaryButton.configuration;
+  NSString* primaryButtonTitle = @"Primary Button Title";
+  buttonConfigutation.title = primaryButtonTitle;
+  view.primaryButton.configuration = buttonConfigutation;
+  NSString* promoText = @"This is the promo text.";
+  view.textLabel.text = promoText;
+  view.promoViewStyle = SigninPromoViewStyleOnlyButton;
+  NSString* expectedAccessibilityLabel = primaryButtonTitle;
   EXPECT_NSEQ(view.accessibilityLabel, expectedAccessibilityLabel);
   [view removeFromSuperview];
 }
