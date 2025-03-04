@@ -124,6 +124,10 @@ class BocaSessionManager
     virtual void OnLocalCaptionConfigUpdated(
         const ::boca::CaptionsConfig& config);
 
+    // Notifies when local caption is disabled from a source other than the boca
+    // app.
+    virtual void OnLocalCaptionClosed();
+
     // Notifies when session roster updated. Will emit when only elements order
     // changed in the vector too. Deferred to events consumer to decide on
     // the actual action.
@@ -173,6 +177,8 @@ class BocaSessionManager
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);
 
+  virtual void NotifyLocalCaptionClosed();
+
   // Triggered by SWA delegate to notify app reload events.
   virtual void NotifyAppReload();
 
@@ -215,6 +221,7 @@ class BocaSessionManager
   void StartSendingStudentHeartbeatRequests();
   void StopSendingStudentHeartbeatRequests();
   void SendStudentHeartbeatRequest();
+  void HandleCaptionNotification();
 
   const bool is_producer_;
   bool is_app_opened_ = false;

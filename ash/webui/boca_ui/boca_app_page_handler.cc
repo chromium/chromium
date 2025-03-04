@@ -689,6 +689,10 @@ void BocaAppHandler::OnSessionRosterUpdated(const ::boca::Roster& roster) {
   UpdateSessionConfig();
 }
 
+void BocaAppHandler::OnLocalCaptionClosed() {
+  remote_->OnLocalCaptionDisabled();
+}
+
 void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
     mojom::CaptionConfigPtr config) {
   ::boca::CaptionsConfig local_caption_config;

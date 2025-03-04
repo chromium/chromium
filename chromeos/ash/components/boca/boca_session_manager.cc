@@ -98,6 +98,8 @@ void BocaSessionManager::Observer::OnSessionCaptionConfigUpdated(
 void BocaSessionManager::Observer::OnLocalCaptionConfigUpdated(
     const ::boca::CaptionsConfig& config) {}
 
+void BocaSessionManager::Observer::OnLocalCaptionClosed() {}
+
 void BocaSessionManager::Observer::OnSessionRosterUpdated(
     const ::boca::Roster& roster) {}
 
@@ -310,13 +312,15 @@ void BocaSessionManager::NotifyLocalCaptionEvents(
     observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
   }
   is_local_caption_enabled_ = caption_config.captions_enabled();
-  if (is_producer_) {
-    notification_handler_.HandleCaptionNotification(
-        message_center::MessageCenter::Get(), is_local_caption_enabled_,
-        GetSessionConfigSafe(current_session_.get())
-            .captions_config()
-            .captions_enabled());
+  HandleCaptionNotification();
+}
+
+void BocaSessionManager::NotifyLocalCaptionClosed() {
+  for (auto& observer : observers_) {
+    observer.OnLocalCaptionClosed();
   }
+  is_local_caption_enabled_ = false;
+  HandleCaptionNotification();
 }
 
 void BocaSessionManager::NotifyAppReload() {
@@ -523,11 +527,7 @@ void BocaSessionManager::NotifySessionCaptionConfigUpdate() {
           current_session_ ? current_session_->tachyon_group_id()
                            : std::string());
     }
-    if (is_producer_) {
-      notification_handler_.HandleCaptionNotification(
-          message_center::MessageCenter::Get(), is_local_caption_enabled_,
-          current_session_caption_config.captions_enabled());
-    }
+    HandleCaptionNotification();
   }
 }
 
@@ -626,6 +626,17 @@ void BocaSessionManager::UpdateLocalSessionDurationTracker() {
     session_duration_timer_.Stop();
     last_session_duration_ = base::Seconds(0);
   }
+}
+
+void BocaSessionManager::HandleCaptionNotification() {
+  if (!is_producer_) {
+    return;
+  }
+  notification_handler_.HandleCaptionNotification(
+      message_center::MessageCenter::Get(), is_local_caption_enabled_,
+      GetSessionConfigSafe(current_session_.get())
+          .captions_config()
+          .captions_enabled());
 }
 
 }  // namespace ash::boca
