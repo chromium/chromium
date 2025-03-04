@@ -106,7 +106,7 @@ PinStatusView::PinStatusView() {
   text_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kTextFont));
   decorate_label(text_label_);
-  AddChildView(text_label_.get());
+  AddChildViewRaw(text_label_.get());
 }
 
 PinStatusView::~PinStatusView() {

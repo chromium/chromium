@@ -196,7 +196,7 @@ class IdleAppNameNotificationDelegateView
     label->SetFontList(font);
     label->SetEnabledColor(text_color);
     label->SetAutoColorReadabilityEnabled(false);
-    AddChildView(label);
+    AddChildViewRaw(label);
   }
 
   // A timer which calls us to remove the message from the screen.

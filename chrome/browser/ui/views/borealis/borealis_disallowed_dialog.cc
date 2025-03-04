@@ -195,12 +195,12 @@ class BorealisDisallowedDialog : public DialogDelegate {
         views::style::STYLE_EMPHASIZED);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetMultiLine(true);
-    view->AddChildView(title_label);
+    view->AddChildViewRaw(title_label);
 
     views::Label* message_label = new views::Label(behaviour.GetMessage());
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    view->AddChildView(message_label);
+    view->AddChildViewRaw(message_label);
 
     for (const std::pair<std::u16string, GURL>& link : behaviour.GetLinks()) {
       views::Link* link_label =

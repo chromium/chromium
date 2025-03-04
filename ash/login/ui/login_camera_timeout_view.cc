@@ -77,7 +77,7 @@ LoginCameraTimeoutView::LoginCameraTimeoutView(
       views::BoxLayout::MainAxisAlignment::kCenter);
   text_container_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  AddChildView(text_container);
+  AddChildViewRaw(text_container);
   // TODO(dkuzmin): Make title in Google Sans font once
   // https://crbug.com/1288022 is resolved.
   title_ = text_container->AddChildView(CreateLabel(

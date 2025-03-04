@@ -474,7 +474,7 @@ TEST_F(DesktopWidgetTestInteractive,
   focusable_view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   std::unique_ptr<Widget> widget1 = base::WrapUnique(
       CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  widget1->GetContentsView()->AddChildView(focusable_view1);
+  widget1->GetContentsView()->AddChildViewRaw(focusable_view1);
   widget1->Show();
   aura::Window* root_window1 = GetRootWindow(widget1.get());
   focusable_view1->RequestFocus();
@@ -489,7 +489,7 @@ TEST_F(DesktopWidgetTestInteractive,
   View* focusable_view2 = new View;
   std::unique_ptr<Widget> widget2 = base::WrapUnique(
       CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  widget1->GetContentsView()->AddChildView(focusable_view2);
+  widget1->GetContentsView()->AddChildViewRaw(focusable_view2);
   widget2->Show();
   aura::Window* root_window2 = GetRootWindow(widget2.get());
   focusable_view2->RequestFocus();
@@ -596,7 +596,7 @@ TEST_F(DesktopWidgetTestInteractive, DISABLED_TouchNoActivateWindow) {
   focusable_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   std::unique_ptr<Widget> widget = base::WrapUnique(
       CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  widget->GetContentsView()->AddChildView(focusable_view);
+  widget->GetContentsView()->AddChildViewRaw(focusable_view);
   widget->Show();
 
   {

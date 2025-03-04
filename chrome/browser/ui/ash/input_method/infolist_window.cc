@@ -142,8 +142,8 @@ InfolistEntryView::InfolistEntryView(const ui::InfolistEntry& entry,
   description_label_->SizeToFit(kInfolistEntryWidth);
   description_label_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(2, 17, 4, 4)));
-  AddChildView(title_label_.get());
-  AddChildView(description_label_.get());
+  AddChildViewRaw(title_label_.get());
+  AddChildViewRaw(description_label_.get());
   UpdateBackground();
 }
 
@@ -216,7 +216,7 @@ InfolistWindow::InfolistWindow(views::View* candidate_window,
           SK_ColorBLACK, color_provider->GetColor(ui::kColorWindowBackground),
           0.0625f)));
 
-  AddChildView(caption_label);
+  AddChildViewRaw(caption_label);
 
   for (size_t i = 0; i < entries.size(); ++i) {
     entry_views_.push_back(new InfolistEntryView(entries[i], title_font_list_,
@@ -245,7 +245,7 @@ void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {
     } else {
       InfolistEntryView* new_entry = new InfolistEntryView(
           entries[i], title_font_list_, description_font_list_);
-      AddChildView(new_entry);
+      AddChildViewRaw(new_entry);
       entry_views_.push_back(new_entry);
     }
   }

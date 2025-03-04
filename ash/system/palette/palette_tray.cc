@@ -568,7 +568,7 @@ void PaletteTray::ShowBubble() {
   // Add palette tools.
   std::vector<PaletteToolView> views = palette_tool_manager_->CreateViews();
   for (const PaletteToolView& view : views) {
-    bubble_view->AddChildView(view.view.get());
+    bubble_view->AddChildViewRaw(view.view.get());
   }
 
   // Show the bubble.

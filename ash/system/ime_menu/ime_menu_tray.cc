@@ -291,7 +291,7 @@ class ImeButtonsView : public views::View {
                               input_method::ImeKeyset::kEmoji),
           kImeMenuEmoticonIcon, IDS_ASH_STATUS_TRAY_IME_EMOJI);
       emoji_button_->SetID(kEmojiButtonId);
-      AddChildView(emoji_button_.get());
+      AddChildViewRaw(emoji_button_.get());
     }
 
     if (show_handwriting) {
@@ -300,7 +300,7 @@ class ImeButtonsView : public views::View {
                               base::Unretained(this),
                               input_method::ImeKeyset::kHandwriting),
           kImeMenuWriteIcon, IDS_ASH_STATUS_TRAY_IME_HANDWRITING);
-      AddChildView(handwriting_button_.get());
+      AddChildViewRaw(handwriting_button_.get());
     }
 
     if (show_voice) {
@@ -310,7 +310,7 @@ class ImeButtonsView : public views::View {
                               input_method::ImeKeyset::kVoice),
           kImeMenuMicrophoneIcon, IDS_ASH_STATUS_TRAY_IME_VOICE);
       voice_button_->SetID(kVoiceButtonId);
-      AddChildView(voice_button_.get());
+      AddChildViewRaw(voice_button_.get());
     }
   }
 
@@ -655,7 +655,7 @@ void ImeMenuTray::CreateLabel() {
   label_->SetElideBehavior(gfx::TRUNCATE);
   label_->SetCustomTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
-  tray_container()->AddChildView(label_.get());
+  tray_container()->AddChildViewRaw(label_.get());
 }
 
 void ImeMenuTray::CreateImageView() {
@@ -671,7 +671,7 @@ void ImeMenuTray::CreateImageView() {
   image_view_ = new ImeMenuImageView();
   image_view_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
-  tray_container()->AddChildView(image_view_.get());
+  tray_container()->AddChildViewRaw(image_view_.get());
 }
 
 void ImeMenuTray::UpdateTrayImageOrLabelColor(bool is_image) {

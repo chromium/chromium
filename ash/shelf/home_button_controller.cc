@@ -204,7 +204,7 @@ void HomeButtonController::OnAppListDismissed() {
 void HomeButtonController::InitializeAssistantOverlay() {
   DCHECK_EQ(nullptr, tap_overlay_);
   tap_overlay_ = new HomeButtonTapOverlay(button_);
-  button_->AddChildView(tap_overlay_.get());
+  button_->AddChildViewRaw(tap_overlay_.get());
   tap_overlay_->SetVisible(false);
   tap_animation_delay_timer_ = std::make_unique<base::OneShotTimer>();
 }

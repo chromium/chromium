@@ -300,22 +300,22 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   views::View* view1 = new views::View;
   view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  pane1->AddChildView(view1);
+  pane1->AddChildViewRaw(view1);
 
   views::View* view2 = new views::View;
   view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  pane1->AddChildView(view2);
+  pane1->AddChildViewRaw(view2);
 
   views::AccessiblePaneView* pane2 = new views::AccessiblePaneView();
   root_view->AddChildView(pane2);
 
   views::View* view3 = new views::View;
   view3->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  pane2->AddChildView(view3);
+  pane2->AddChildViewRaw(view3);
 
   views::View* view4 = new views::View;
   view4->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  pane2->AddChildView(view4);
+  pane2->AddChildViewRaw(view4);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> panes;
   panes.push_back(pane1);
@@ -408,14 +408,14 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes_MoveOntoNext) {
 
   views::View* view1 = new views::View();
   view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  pane1->AddChildView(view1);
+  pane1->AddChildViewRaw(view1);
 
   views::AccessiblePaneView* pane2 = new views::AccessiblePaneView();
   root_view->AddChildView(pane2);
 
   views::View* view2 = new views::View();
   view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  pane2->AddChildView(view2);
+  pane2->AddChildViewRaw(view2);
 
   test_widget_delegate->SetAccessiblePanes({pane1, pane2});
 

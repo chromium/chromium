@@ -76,7 +76,7 @@ PinStatusMessageView::PinStatusMessageView(OnPinUnlock on_pin_unlock)
   message_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   message_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-  AddChildView(message_.get());
+  AddChildViewRaw(message_.get());
 }
 
 PinStatusMessageView::~PinStatusMessageView() {

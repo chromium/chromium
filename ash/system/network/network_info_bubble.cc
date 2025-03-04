@@ -96,7 +96,7 @@ NetworkInfoBubble::NetworkInfoBubble(base::WeakPtr<Delegate> delegate,
   label->SetMultiLine(true);
   label->SetSelectable(true);
 
-  AddChildView(label.release());
+  AddChildViewRaw(label.release());
 }
 
 NetworkInfoBubble::~NetworkInfoBubble() {
@@ -163,9 +163,9 @@ std::u16string NetworkInfoBubble::ComputeInfoText() {
     address_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                           *address_label);
-    container->AddChildView(title_label.release());
-    container->AddChildView(address_label.release());
-    label_container->AddChildView(container.release());
+    container->AddChildViewRaw(title_label.release());
+    container->AddChildViewRaw(address_label.release());
+    label_container->AddChildViewRaw(container.release());
   };
 
   const NetworkStateProperties* default_network = Shell::Get()

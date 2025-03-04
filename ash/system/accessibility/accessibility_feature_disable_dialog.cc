@@ -50,7 +50,7 @@ AccessibilityFeatureDisableDialog::AccessibilityFeatureDisableDialog(
       l10n_util::GetStringUTF16(window_title_text_id),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
   body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(body_label.release());
+  AddChildViewRaw(body_label.release());
 
   set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));

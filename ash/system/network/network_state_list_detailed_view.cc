@@ -137,7 +137,7 @@ class NetworkStateListDetailedView::InfoBubble
     set_shadow(views::BubbleBorder::NO_SHADOW);
     SetNotifyEnterExitOnChild(true);
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(content);
+    AddChildViewRaw(content);
   }
 
   InfoBubble(const InfoBubble&) = delete;

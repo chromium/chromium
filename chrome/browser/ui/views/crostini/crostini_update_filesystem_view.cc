@@ -115,7 +115,7 @@ CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(message_label);
+  AddChildViewRaw(message_label);
 }
 
 CrostiniUpdateFilesystemView::~CrostiniUpdateFilesystemView() {

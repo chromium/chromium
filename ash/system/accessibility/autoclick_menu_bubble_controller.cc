@@ -198,7 +198,7 @@ void AutoclickMenuBubbleController::ShowBubble(AutoclickEventType type,
   menu_view_ = new AutoclickMenuView(type, position);
   menu_view_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
-  bubble_view_->AddChildView(menu_view_.get());
+  bubble_view_->AddChildViewRaw(menu_view_.get());
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);

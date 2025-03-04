@@ -434,7 +434,7 @@ void UnifiedSystemTray::HandleLocaleChange() {
   tray_container()->RemoveAllChildViewsWithoutDeleting();
   for (TrayItemView* item : tray_items_) {
     item->HandleLocaleChange();
-    tray_container()->AddChildView(item);
+    tray_container()->AddChildViewRaw(item);
   }
 
   // TrayItemView objects can impact the accessible name.

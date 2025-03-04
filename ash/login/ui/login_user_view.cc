@@ -168,7 +168,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
     const int image_size = GetImageSize(style);
     image_ = new AnimatedRoundedImageView(gfx::Size(image_size, image_size),
                                           image_size / 2);
-    AddChildView(image_.get());
+    AddChildViewRaw(image_.get());
     enterprise_icon_container_ = AddChildView(std::make_unique<views::View>());
     const int icon_size = GetIconSize(style);
     enterprise_icon_container_->SetLayoutManager(
@@ -304,7 +304,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
         break;
     }
 
-    AddChildView(user_name_.get());
+    AddChildViewRaw(user_name_.get());
   }
 
   UserLabel(const UserLabel&) = delete;
@@ -708,10 +708,10 @@ void LoginUserView::SetLargeLayout() {
                      kVerticalSpacingBetweenEntriesDp)
       .AddRows(1, views::TableLayout::kFixedSize);
 
-  AddChildView(tap_button_.get());
+  AddChildViewRaw(tap_button_.get());
   tap_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-  AddChildView(user_image_.get());
+  AddChildViewRaw(user_image_.get());
   user_image_->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(5, 1));
   user_image_->SetProperty(views::kTableHorizAlignKey,
                            views::LayoutAlignment::kCenter);
@@ -721,10 +721,10 @@ void LoginUserView::SetLargeLayout() {
     skip_column->SetPreferredSize(dropdown_->GetPreferredSize());
   }
 
-  AddChildView(user_label_.get());
+  AddChildViewRaw(user_label_.get());
 
   if (dropdown_) {
-    AddChildView(dropdown_.get());
+    AddChildViewRaw(dropdown_.get());
   }
 }
 
@@ -732,11 +732,11 @@ void LoginUserView::SetSmallishLayout() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kSmallManyDistanceFromUserIconToUserLabelDp));
-  AddChildView(tap_button_.get());
+  AddChildViewRaw(tap_button_.get());
   tap_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-  AddChildView(user_image_.get());
-  AddChildView(user_label_.get());
+  AddChildViewRaw(user_image_.get());
+  AddChildViewRaw(user_label_.get());
 }
 
 BEGIN_METADATA(LoginUserView)

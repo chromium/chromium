@@ -52,7 +52,7 @@ ConfirmSignoutDialog::ConfirmSignoutDialog() {
   body->SetText(
       l10n_util::GetStringUTF16(IDS_ADD_SUPERVISION_EXIT_DIALOG_BODY));
   body->SizeToFit(kDialogBodyTextWidth);
-  AddChildView(body);
+  AddChildViewRaw(body);
 }
 
 ConfirmSignoutDialog::~ConfirmSignoutDialog() {

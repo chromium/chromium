@@ -62,7 +62,7 @@ ArcOverlayControllerImpl::ArcOverlayControllerImpl(aura::Window* host_window)
       host_window_->GetToplevelWindow());
   DCHECK(widget);
   DCHECK(widget->GetContentsView());
-  widget->GetContentsView()->AddChildView(overlay_container_.get());
+  widget->GetContentsView()->AddChildViewRaw(overlay_container_.get());
 }
 
 ArcOverlayControllerImpl::~ArcOverlayControllerImpl() {

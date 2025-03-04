@@ -260,7 +260,7 @@ void AudioDetailedView::AddAudioSubHeader(views::View* container,
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                         *sub_header_label_);
   sub_header_label_->SetBorder(views::CreateEmptyBorder(kTextRowInsets));
-  container->AddChildView(sub_header_label_);
+  container->AddChildViewRaw(sub_header_label_);
   return;
 }
 

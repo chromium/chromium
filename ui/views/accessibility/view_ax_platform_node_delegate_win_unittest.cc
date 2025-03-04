@@ -115,7 +115,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   Textfield* textfield = new Textfield;
   textfield->GetViewAccessibility().SetName(u"Name");
   textfield->SetText(u"Value");
-  content->AddChildView(textfield);
+  content->AddChildViewRaw(textfield);
 
   ComPtr<IAccessible> content_accessible(content->GetNativeViewAccessible());
   LONG child_count = 0;
@@ -160,10 +160,10 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   View* content = widget->SetContentsView(std::make_unique<View>());
 
   Label* label = new Label(u"Label");
-  content->AddChildView(label);
+  content->AddChildViewRaw(label);
   Textfield* textfield = new Textfield;
   textfield->GetViewAccessibility().SetName(*label);
-  content->AddChildView(textfield);
+  content->AddChildViewRaw(textfield);
 
   ComPtr<IAccessible> content_accessible(content->GetNativeViewAccessible());
   LONG child_count = 0;
@@ -304,10 +304,10 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
   View* content = widget->SetContentsView(std::make_unique<View>());
 
   View* infobar = new View;
-  content->AddChildView(infobar);
+  content->AddChildViewRaw(infobar);
 
   View* infobar2 = new View;
-  content->AddChildView(infobar2);
+  content->AddChildViewRaw(infobar2);
 
   View* root_view = content->parent();
   ASSERT_EQ(nullptr, root_view->parent());
@@ -410,11 +410,11 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, Overrides) {
                                              ax::mojom::NameFrom::kAttribute);
   alert_view->GetViewAccessibility().SetDescription("Description");
   alert_view->GetViewAccessibility().SetIsLeaf(true);
-  contents_view->AddChildView(alert_view);
+  contents_view->AddChildViewRaw(alert_view);
 
   // Descendant should be ignored because the parent uses SetIsLeaf().
   View* ignored_descendant = new View;
-  alert_view->AddChildView(ignored_descendant);
+  alert_view->AddChildViewRaw(ignored_descendant);
 
   ComPtr<IAccessible> content_accessible(
       contents_view->GetNativeViewAccessible());
@@ -549,7 +549,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, IsUIAControlIsTrueEvenWhenReadonly) {
 
   Textfield* text_field = new Textfield();
   text_field->SetReadOnly(true);
-  content->AddChildView(text_field);
+  content->AddChildViewRaw(text_field);
 
   ComPtr<IRawElementProviderSimple> textfield_provider =
       GetIRawElementProviderSimple(text_field);
@@ -566,7 +566,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, UIAGetPropertyValue_Histograms) {
 
   Textfield* text_field = new Textfield();
   text_field->SetReadOnly(true);
-  content->AddChildView(text_field);
+  content->AddChildViewRaw(text_field);
 
   ComPtr<IRawElementProviderSimple> textfield_provider =
       GetIRawElementProviderSimple(text_field);
@@ -722,14 +722,14 @@ class ViewAXPlatformNodeDelegateWinInnerTextRangeTest
 
     textfield_ = new Textfield();
     textfield_->SetBounds(0, 0, 100, 40);
-    widget_->GetContentsView()->AddChildView(textfield_.get());
+    widget_->GetContentsView()->AddChildViewRaw(textfield_.get());
 
     TextfieldTestApi textfield_test_api(textfield_);
     textfield_test_api.GetRenderText()->set_glyph_width_for_test(5);
     textfield_test_api.GetRenderText()->set_glyph_height_for_test(8);
 
     label_ = new Label();
-    widget_->GetContentsView()->AddChildView(label_.get());
+    widget_->GetContentsView()->AddChildViewRaw(label_.get());
 
     // TODO(crbug.com/40924888): This is not obvious, but the
     // AtomicViewAXTreeManager gets initialized from this GetData() call. This

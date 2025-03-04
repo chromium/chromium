@@ -178,7 +178,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
                            OobeWebDialogView* oobe_view)
       : dialog_delegate_(dialog_delegate), oobe_view_(oobe_view) {
     SetFocusTraversesOut(true);
-    AddChildView(oobe_view_.get());
+    AddChildViewRaw(oobe_view_.get());
 
     if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       // Create a shadow for the OOBE dialog.

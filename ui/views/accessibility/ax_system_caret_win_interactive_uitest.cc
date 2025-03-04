@@ -46,7 +46,7 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
     textfield_ = new Textfield();
     textfield_->SetBounds(0, 0, 200, 20);
     textfield_->SetText(u"Some text.");
-    widget_->GetRootView()->AddChildView(textfield_.get());
+    widget_->GetRootView()->AddChildViewRaw(textfield_.get());
     widget_->Show();
     test::WaitForWidgetActive(widget_, true);
     textfield_->RequestFocus();
@@ -353,7 +353,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestCaretMSAAEvents) {
     // Move focus to a button.
     LabelButton button{Button::PressedCallback(), std::u16string()};
     button.SetBounds(500, 0, 200, 20);
-    widget_->GetRootView()->AddChildView(&button);
+    widget_->GetRootView()->AddChildViewRaw(&button);
     WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_SHOW,
                                               EVENT_OBJECT_LOCATIONCHANGE);
     widget_->Show();

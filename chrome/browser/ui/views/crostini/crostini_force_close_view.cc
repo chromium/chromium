@@ -83,7 +83,7 @@ CrostiniForceCloseView::CrostiniForceCloseView(
                                        app_name));
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(message_label);
+  AddChildViewRaw(message_label);
 
   set_close_on_deactivate(true);
 }

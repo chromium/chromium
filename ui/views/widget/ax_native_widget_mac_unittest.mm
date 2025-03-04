@@ -63,7 +63,7 @@ class FlexibleRoleTestView : public View {
 
   // Add a child view and resize to fit the child.
   void FitBoundsToNewChild(View* view) {
-    AddChildView(view);
+    AddChildViewRaw(view);
     // Fit the parent widget to the size of the child for accurate hit tests.
     SetBoundsRect(view->bounds());
   }
@@ -154,7 +154,7 @@ class AXNativeWidgetMacTest : public test::WidgetTest {
     textfield->GetViewAccessibility().SetName(
         base::SysNSStringToUTF16(kTestTitle));
     textfield->SetSize(size);
-    widget()->GetContentsView()->AddChildView(textfield);
+    widget()->GetContentsView()->AddChildViewRaw(textfield);
     return textfield;
   }
 
@@ -343,7 +343,7 @@ TEST_F(AXNativeWidgetMacTest, TooltipText) {
   label->SetSize(GetWidgetBounds().size());
   EXPECT_NSEQ(nil, A11yElementAtMidpoint().accessibilityHelp);
   label->SetCustomTooltipText(base::SysNSStringToUTF16(kTestPlaceholderText));
-  widget()->GetContentsView()->AddChildView(label);
+  widget()->GetContentsView()->AddChildViewRaw(label);
 
   // The tooltip is exposed in accessibilityCustomContent. This is because the
   // DescriptionFrom for the ToolTip string has been been set to
@@ -752,7 +752,7 @@ TEST_F(AXNativeWidgetMacTest, Label) {
   Label* label = new Label;
   label->SetText(base::SysNSStringToUTF16(kTestStringValue));
   label->SetSize(GetWidgetBounds().size());
-  widget()->GetContentsView()->AddChildView(label);
+  widget()->GetContentsView()->AddChildViewRaw(label);
 
   // Get the Label's accessibility object.
   id<NSAccessibility> ax_node = A11yElementAtMidpoint();
@@ -795,7 +795,7 @@ TEST_F(AXNativeWidgetMacTest, LabelUsedAsTitleBar) {
   Label* label = new Label(base::SysNSStringToUTF16(kTestStringValue),
                            style::CONTEXT_DIALOG_TITLE, style::STYLE_PRIMARY);
   label->SetSize(GetWidgetBounds().size());
-  widget()->GetContentsView()->AddChildView(label);
+  widget()->GetContentsView()->AddChildViewRaw(label);
 
   // Get the Label's accessibility object.
   id<NSAccessibility> ax_node = A11yElementAtMidpoint();
@@ -824,7 +824,7 @@ class TestComboboxModel : public ui::ComboboxModel {
 TEST_F(AXNativeWidgetMacTest, Combobox) {
   Combobox* combobox = new Combobox(std::make_unique<TestComboboxModel>());
   combobox->SetSize(GetWidgetBounds().size());
-  widget()->GetContentsView()->AddChildView(combobox);
+  widget()->GetContentsView()->AddChildViewRaw(combobox);
 
   id<NSAccessibility> ax_node = A11yElementAtMidpoint();
   EXPECT_TRUE(ax_node);

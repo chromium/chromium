@@ -48,7 +48,7 @@ IdleActionWarningDialogView::IdleActionWarningDialogView(
       l10n_util::GetStringUTF16(IDS_IDLE_WARNING_LOGOUT_WARNING));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(label);
+  AddChildViewRaw(label);
 
   // Shown on the root window for new windows.
   views::DialogDelegate::CreateDialogWidget(this, nullptr /* context */,

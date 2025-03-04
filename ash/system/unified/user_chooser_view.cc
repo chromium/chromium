@@ -204,7 +204,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->set_minimum_cross_axis_size(kUnifiedUserChooserRowHeight);
-  AddChildView(CreateUserAvatarView(user_index));
+  AddChildViewRaw(CreateUserAvatarView(user_index));
 
   views::View* vertical_labels = new views::View;
   vertical_labels->SetCanProcessEventsWithinSubtree(false);
@@ -222,7 +222,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *name_);
   name_->SetAutoColorReadabilityEnabled(false);
   name_->SetSubpixelRenderingEnabled(false);
-  vertical_labels->AddChildView(name_.get());
+  vertical_labels->AddChildViewRaw(name_.get());
 
   email_->SetText(base::UTF8ToUTF16(user_session->user_info.display_email));
   email_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
@@ -230,9 +230,9 @@ UserItemButton::UserItemButton(PressedCallback callback,
                                         *email_);
   email_->SetAutoColorReadabilityEnabled(false);
   email_->SetSubpixelRenderingEnabled(false);
-  vertical_labels->AddChildView(email_.get());
+  vertical_labels->AddChildViewRaw(email_.get());
 
-  AddChildView(vertical_labels);
+  AddChildViewRaw(vertical_labels);
   layout->SetFlexForView(vertical_labels, 1);
 
   capture_icon_->SetImage(ui::ImageModel::FromVectorIcon(
@@ -244,7 +244,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
         0, 0, 0, kTrayItemSize + kUnifiedTopShortcutSpacing)));
   }
   capture_icon_->SetVisible(false);
-  AddChildView(capture_icon_.get());
+  AddChildViewRaw(capture_icon_.get());
 
   if (has_close_button) {
     AddChildView(std::make_unique<IconButton>(
@@ -357,11 +357,11 @@ UserChooserView::UserChooserView(
       AddChildView(std::make_unique<AddUserButton>(controller));
       break;
     case AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER:
-      AddChildView(CreateAddUserErrorView(l10n_util::GetStringUTF16(
+      AddChildViewRaw(CreateAddUserErrorView(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_MESSAGE_NOT_ALLOWED_PRIMARY_USER)));
       break;
     case AddUserSessionPolicy::ERROR_MAXIMUM_USERS_REACHED:
-      AddChildView(CreateAddUserErrorView(l10n_util::GetStringFUTF16Int(
+      AddChildViewRaw(CreateAddUserErrorView(l10n_util::GetStringFUTF16Int(
           IDS_ASH_STATUS_TRAY_MESSAGE_CANNOT_ADD_USER,
           session_manager::kMaximumNumberOfUserSessions)));
       break;
@@ -370,7 +370,7 @@ UserChooserView::UserChooserView(
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_MESSAGE_OUT_OF_USERS)));
       break;
     case AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER:
-      AddChildView(CreateAddUserErrorView(l10n_util::GetStringUTF16(
+      AddChildViewRaw(CreateAddUserErrorView(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_MESSAGE_NOT_ALLOWED_PRIMARY_USER)));
       break;
   }

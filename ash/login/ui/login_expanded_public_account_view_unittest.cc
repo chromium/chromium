@@ -87,8 +87,8 @@ class LoginExpandedPublicAccountViewTest
     container_ = new views::BoxLayoutView();
     container_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
-    container_->AddChildView(public_account_.get());
-    container_->AddChildView(other_view_.get());
+    container_->AddChildViewRaw(public_account_.get());
+    container_->AddChildViewRaw(other_view_.get());
     auto widget = CreateWidgetWithContent(container_);
     switch (GetParam().orientation) {
       case Orientation::kLandscape:

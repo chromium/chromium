@@ -69,8 +69,8 @@ class PrivacyScreenToastManagedView : public views::View {
     icon->SetImage(
         ui::ImageModel::FromVectorIcon(kSystemTrayManagedIcon, icon_color));
 
-    AddChildView(label);
-    AddChildView(icon);
+    AddChildViewRaw(label);
+    AddChildViewRaw(icon);
   }
 
   ~PrivacyScreenToastManagedView() override = default;
@@ -92,8 +92,8 @@ class PrivacyScreenToastLabelView : public views::View {
 
     label_ = new views::Label();
     managed_view_ = new PrivacyScreenToastManagedView();
-    AddChildView(label_.get());
-    AddChildView(managed_view_.get());
+    AddChildViewRaw(label_.get());
+    AddChildViewRaw(managed_view_.get());
 
     const AshColorProvider* color_provider = AshColorProvider::Get();
     const SkColor primary_text_color = color_provider->GetContentLayerColor(
@@ -140,10 +140,10 @@ PrivacyScreenToastView::PrivacyScreenToastView(
   button_->SetVectorIcon(kPrivacyScreenIcon);
   button_->SetToggled(false);
   button_->AddObserver(this);
-  AddChildView(button_.get());
+  AddChildViewRaw(button_.get());
 
   label_ = new PrivacyScreenToastLabelView();
-  AddChildView(label_.get());
+  AddChildViewRaw(label_.get());
 }
 
 PrivacyScreenToastView::~PrivacyScreenToastView() {

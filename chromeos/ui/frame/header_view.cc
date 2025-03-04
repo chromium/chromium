@@ -138,7 +138,7 @@ void HeaderView::SetAvatarIcon(const gfx::ImageSkia& avatar) {
     DCHECK_EQ(avatar.width(), avatar.height());
     if (!avatar_icon_) {
       avatar_icon_ = new views::ImageView();
-      AddChildView(avatar_icon_.get());
+      AddChildViewRaw(avatar_icon_.get());
     }
     avatar_icon_->SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
@@ -359,7 +359,7 @@ void HeaderView::UpdateBackButton() {
   if (has_back_button) {
     if (!back_button) {
       back_button = new chromeos::FrameBackButton();
-      AddChildView(back_button);
+      AddChildViewRaw(back_button);
       frame_header_->SetBackButton(back_button);
     }
     back_button->SetEnabled(caption_button_container_->model()->IsEnabled(
@@ -378,7 +378,7 @@ void HeaderView::UpdateCenterButton() {
     return;
   if (is_center_button_visible) {
     if (!center_button->parent())
-      AddChildView(center_button);
+      AddChildViewRaw(center_button);
     center_button->SetVisible(true);
   } else {
     center_button->SetVisible(false);

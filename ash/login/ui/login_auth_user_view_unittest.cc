@@ -156,7 +156,7 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     container_ = new views::View();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(view_.get());
+    container_->AddChildViewRaw(view_.get());
     SetWidget(CreateWidgetWithContent(container_));
   }
 
@@ -216,7 +216,7 @@ TEST_F(LoginAuthUserViewUnittest, ShowingPasswordForcesOpaque) {
   // since focus will keep it opaque.
   auto* focus = new views::View();
   focus->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  container_->AddChildView(focus);
+  container_->AddChildViewRaw(focus);
   focus->RequestFocus();
   EXPECT_FALSE(auth_test.user_view()->HasFocus());
 

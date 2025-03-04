@@ -94,10 +94,10 @@ void InputMappingView::SortChildren() {
   std::sort(right.begin(), right.end(), CompareActionViewPosition);
 
   for (auto* child : left) {
-    AddChildView(child);
+    AddChildViewRaw(child);
   }
   for (auto* child : right) {
-    AddChildView(child);
+    AddChildViewRaw(child);
   }
 }
 

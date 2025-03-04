@@ -118,7 +118,7 @@ void TrayItemView::RemoveObserver(Observer* observer) {
 
 void TrayItemView::CreateLabel() {
   label_ = new IconizedLabel;
-  AddChildView(label_.get());
+  AddChildViewRaw(label_.get());
   PreferredSizeChanged();
   for (auto& observer : observers_) {
     observer.OnTrayItemChildViewChanged();
@@ -127,7 +127,7 @@ void TrayItemView::CreateLabel() {
 
 void TrayItemView::CreateImageView() {
   image_view_ = new views::ImageView;
-  AddChildView(image_view_.get());
+  AddChildViewRaw(image_view_.get());
   PreferredSizeChanged();
   for (auto& observer : observers_) {
     observer.OnTrayItemChildViewChanged();
