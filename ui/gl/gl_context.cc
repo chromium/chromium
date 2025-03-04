@@ -530,7 +530,7 @@ bool GLContext::MakeVirtuallyCurrent(
     if (virtual_context->GetGLStateRestorer()->IsInitialized()) {
       GLStateRestorer* virtual_state = virtual_context->GetGLStateRestorer();
       GLStateRestorer* current_state =
-          current_virtual_context_
+          current_virtual_context_ && !current_virtual_context_->context_lost_
               ? current_virtual_context_->GetGLStateRestorer()
               : nullptr;
       if (current_state)
