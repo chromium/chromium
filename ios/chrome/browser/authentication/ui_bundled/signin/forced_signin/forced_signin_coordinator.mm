@@ -186,17 +186,10 @@
   }
 
   ProceduralBlock childCompletion = ^{
-    if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
-      [weakSelf.navigationController.presentingViewController
-          dismissViewControllerAnimated:animated
-                             completion:nil];
-      finishCompletion();
-
-    } else {
-      [weakSelf.navigationController.presentingViewController
-          dismissViewControllerAnimated:animated
-                             completion:finishCompletion];
-    }
+    [weakSelf.navigationController.presentingViewController
+        dismissViewControllerAnimated:animated
+                           completion:nil];
+    finishCompletion();
   };
 
   // Interrupt the child coordinator UI first before dismissing the forced

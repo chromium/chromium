@@ -140,8 +140,7 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
       // block from `IdentityInteractionManager` to be called, to call the
       // interrupt completion block.
       // See crbug.com/1455216.
-      [self.identityInteractionManager cancelAuthActivityAnimated:NO
-                                                       completion:nil];
+      [self.identityInteractionManager cancelAuthActivityAnimated:NO];
       [self operationCompletedWithIdentity:nil error:nil];
       if (completion) {
         completion();
@@ -149,28 +148,16 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
       break;
     case SigninCoordinatorInterrupt::DismissWithoutAnimation:
     case SigninCoordinatorInterrupt::DismissWithAnimation: {
-      __weak __typeof(self) weakSelf = self;
       BOOL animated =
           action == SigninCoordinatorInterrupt::DismissWithAnimation;
-      ProceduralBlock cancelCompletion = ^() {
-        // If `identityInteractionManager` completion
-        // callback has not been called yet, the add account
-        // needs to be fully done by calling:
-        // `operationCompletedWithIdentity:error:`, before
-        // calling `completion` See crbug.com/1227658.
-        [weakSelf operationCompletedWithIdentity:nil error:nil];
-        if (completion) {
-          completion();
-        }
-      };
-      if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
-        [self.identityInteractionManager cancelAuthActivityAnimated:animated
-                                                         completion:nil];
-        cancelCompletion();
-      } else {
-        [self.identityInteractionManager
-            cancelAuthActivityAnimated:animated
-                            completion:cancelCompletion];
+      [self.identityInteractionManager cancelAuthActivityAnimated:animated];
+      // If `identityInteractionManager` completion callback has not been called
+      // yet, the add account needs to be fully done by calling:
+      // `operationCompletedWithIdentity:error:`, before calling `completion`
+      // See crbug.com/1227658.
+      [self operationCompletedWithIdentity:nil error:nil];
+      if (completion) {
+        completion();
       }
       break;
     }
