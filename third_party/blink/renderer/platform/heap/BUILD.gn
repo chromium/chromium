@@ -44,6 +44,7 @@ blink_platform_sources("heap") {
     "collection_support/heap_linked_stack.h",
     "collection_support/heap_vector.h",
     "collection_support/heap_vector_backing.h",
+    "collection_support/utils.h",
     "cross_thread_handle.h",
     "cross_thread_handle_internal.h",
     "cross_thread_persistent.h",

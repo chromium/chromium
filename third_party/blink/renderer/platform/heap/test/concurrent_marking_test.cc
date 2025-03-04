@@ -395,39 +395,41 @@ TEST_F(ConcurrentMarkingTest, PopFromVectorOfPairs) {
 // HeapDeque
 
 template <typename T>
-struct MethodAdapter<HeapDeque<T>> : public MethodAdapterBase<HeapDeque<T>> {
+struct MethodAdapter<GCedHeapDeque<T>>
+    : public MethodAdapterBase<GCedHeapDeque<T>> {
   template <typename U>
-  static void insert(HeapDeque<T>& deque, U&& u) {
+  static void insert(GCedHeapDeque<T>& deque, U&& u) {
     deque.push_back(std::forward<U>(u));
   }
 
-  static void erase(HeapDeque<T>& deque, typename HeapDeque<T>::iterator&& it) {
+  static void erase(GCedHeapDeque<T>& deque,
+                    typename GCedHeapDeque<T>::iterator&& it) {
     deque.pop_back();
   }
 
-  static void Swap(HeapDeque<T>& a, HeapDeque<T>& b) { a.Swap(b); }
+  static void Swap(GCedHeapDeque<T>& a, GCedHeapDeque<T>& b) { a.Swap(b); }
 };
 
 TEST_F(ConcurrentMarkingTest, AddToDeque) {
-  AddToCollection<HeapDeque<Member<IntegerObject>>>();
+  AddToCollection<GCedHeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfDeque) {
-  RemoveFromBeginningOfCollection<HeapDeque<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<GCedHeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfDeque) {
-  RemoveFromMiddleOfCollection<HeapDeque<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<GCedHeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfDeque) {
-  RemoveFromEndOfCollection<HeapDeque<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<GCedHeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearDeque) {
-  ClearCollection<HeapDeque<Member<IntegerObject>>>();
+  ClearCollection<GCedHeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapDeque) {
-  SwapCollections<HeapDeque<Member<IntegerObject>>>();
+  SwapCollections<GCedHeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, PopFromDeque) {
-  PopFromCollection<HeapDeque<Member<IntegerObject>>>();
+  PopFromCollection<GCedHeapDeque<Member<IntegerObject>>>();
 }
 
 namespace {

@@ -53,7 +53,7 @@ static_assert(WTF::IsTraceable<IntWrapper>::value,
 }  // namespace
 
 using IntVector = blink::HeapVector<blink::Member<IntWrapper>>;
-using IntDeque = blink::HeapDeque<blink::Member<IntWrapper>>;
+using IntDeque = blink::GCedHeapDeque<blink::Member<IntWrapper>>;
 using IntMap = blink::HeapHashMap<blink::Member<IntWrapper>, int>;
 // TODO(sof): decide if this ought to be a global trait specialization.
 // (i.e., for HeapHash*<T>.)

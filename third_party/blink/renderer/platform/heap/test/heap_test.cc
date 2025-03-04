@@ -908,8 +908,8 @@ TEST_F(HeapTest, HeapVectorOnStackLargeObjectPageSized) {
 
 namespace {
 template <typename T, typename U>
-bool DequeContains(HeapDeque<T>& deque, U u) {
-  typedef typename HeapDeque<T>::iterator iterator;
+bool DequeContains(GCedHeapDeque<T>& deque, U u) {
+  typedef typename GCedHeapDeque<T>::iterator iterator;
   for (iterator it = deque.begin(); it != deque.end(); ++it) {
     if (*it == u)
       return true;
@@ -929,7 +929,7 @@ TEST_F(HeapTest, HeapCollectionTypes) {
   typedef HeapHashCountedSet<Member<IntWrapper>> MemberCountedSet;
 
   typedef HeapVector<Member<IntWrapper>, 2> MemberVector;
-  typedef HeapDeque<Member<IntWrapper>> MemberDeque;
+  typedef GCedHeapDeque<Member<IntWrapper>> MemberDeque;
 
   typedef HeapVector<PairWrappedUnwrapped, 2> VectorWU;
   typedef HeapVector<PairUnwrappedWrapped, 2> VectorUW;
@@ -1054,7 +1054,7 @@ TEST_F(HeapTest, HeapCollectionTypes) {
       vector_uw2->swap(cvec_uw);
       vector_uw->swap(cvec_uw);
 
-      MemberDeque& c_deque = container->deque;
+      auto& c_deque = container->deque;
       c_deque.Swap(*deque.Get());
       deque2->Swap(c_deque);
       deque->Swap(c_deque);
@@ -2151,7 +2151,7 @@ TEST_F(HeapTest, CollectionNesting) {
   int* key = &k;
   IntWrapper::destructor_calls_ = 0;
   typedef HeapVector<Member<IntWrapper>> IntVector;
-  typedef HeapDeque<Member<IntWrapper>> IntDeque;
+  typedef GCedHeapDeque<Member<IntWrapper>> IntDeque;
   HeapHashMap<void*, Member<IntVector>>* map =
       MakeGarbageCollected<HeapHashMap<void*, Member<IntVector>>>();
   HeapHashMap<void*, Member<IntDeque>>* map2 =
@@ -2907,7 +2907,7 @@ TEST_F(HeapTest, GCInHashMapOperations) {
 TEST_F(HeapTest, DequeExpand) {
   // Test expansion of a HeapDeque<>'s buffer.
 
-  typedef HeapDeque<Member<IntWrapper>> IntDeque;
+  using IntDeque = GCedHeapDeque<Member<IntWrapper>>;
 
   Persistent<IntDeque> deque = MakeGarbageCollected<IntDeque>();
 
