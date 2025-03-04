@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -250,10 +251,8 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
     replacements["textdirection"] = base::i18n::IsRTL() ? "rtl" : "ltr";
     replacements["barHtml"] = data->bar_html;
     replacements["varsHeadScript"] = base::StringPrintf(
-        "let abp = %s;", base::FeatureList::IsEnabled(
-                             ntp_features::kNtpOneGoogleBarAsyncBarParts)
-                             ? "true"
-                             : "false");
+        "let abp = %s;", base::ToString(base::FeatureList::IsEnabled(
+                             ntp_features::kNtpOneGoogleBarAsyncBarParts)));
     replacements["inHeadScript"] = data->in_head_script;
     replacements["inHeadStyle"] = data->in_head_style;
     replacements["afterBarScript"] = data->after_bar_script;

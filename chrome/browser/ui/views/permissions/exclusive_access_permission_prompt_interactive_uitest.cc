@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +38,7 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   ExclusiveAccessPermissionPromptInteractiveTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         permissions::features::kKeyboardLockPrompt,
-        {{"use_pepc_ui", GetParam() ? "true" : "false"}});
+        {{"use_pepc_ui", base::ToString(GetParam())}});
   }
 
   void SetUp() override {

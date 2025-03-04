@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "base/scoped_observation.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic.mojom-shared.h"
@@ -146,7 +147,7 @@ class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
           window.appController.%s();
         }
       )",
-                                        online ? "false" : "true",
+                                        base::ToString(!online),
                                         online ? "online" : "offline"));
   }
 

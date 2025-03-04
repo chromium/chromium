@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -206,10 +207,8 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
         std::string("/referrer_policy/referrer-policy-start.html?") +
         "policy=" + content::ReferrerPolicyToString(referrer_policy) +
         "&redirect=" + redirect_url.spec() + "&link=" +
-        ((button == blink::WebMouseEvent::Button::kNoButton &&
-          renderer_or_browser_initiated == RENDERER_INITIATED)
-             ? "false"
-             : "true") +
+        base::ToString(!(button == blink::WebMouseEvent::Button::kNoButton &&
+                         renderer_or_browser_initiated == RENDERER_INITIATED)) +
         "&target=" + (link_type == LINK_WITH_TARGET_BLANK ? "_blank" : "");
 
     auto* start_test_server = start_protocol == START_ON_HTTPS

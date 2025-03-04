@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -1549,10 +1550,6 @@ class ContentAnalysisDelegateBlockingSettingBrowserTest
 
   bool setting_param() const { return std::get<1>(GetParam()); }
 
-  // Use a string since the setting value is inserted into a JSON policy.
-  const char* bool_setting_value() const {
-    return setting_param() ? "true" : "false";
-  }
   const char* int_setting_value() const { return setting_param() ? "1" : "0"; }
 
   bool expected_result() const { return !setting_param(); }
@@ -1597,7 +1594,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   })";
   enterprise_connectors::test::SetAnalysisConnector(
       browser()->profile()->GetPrefs(), FILE_ATTACHED,
-      base::StringPrintf(kPasswordProtectedPref, bool_setting_value()),
+      base::StringPrintf(kPasswordProtectedPref,
+                         base::ToString(setting_param())),
       machine_scope());
 
   base::RunLoop content_analysis_run_loop;
@@ -1692,7 +1690,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   })";
   enterprise_connectors::test::SetAnalysisConnector(
       browser()->profile()->GetPrefs(), FILE_ATTACHED,
-      base::StringPrintf(kBlockLargeFilesPref, bool_setting_value()),
+      base::StringPrintf(kBlockLargeFilesPref, base::ToString(setting_param())),
       machine_scope());
 
   base::RunLoop content_analysis_run_loop;
@@ -1795,7 +1793,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   })";
   enterprise_connectors::test::SetAnalysisConnector(
       browser()->profile()->GetPrefs(), PRINT,
-      base::StringPrintf(kBlockLargePagesPref, bool_setting_value()),
+      base::StringPrintf(kBlockLargePagesPref, base::ToString(setting_param())),
       machine_scope());
 
   base::RunLoop content_analysis_run_loop;
