@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56.0"
 name = "bitflags"
-version = "2.8.0"
+version = "2.9.0"
 authors = ["The Rust Project Developers"]
 build = false
 exclude = [
@@ -43,6 +43,14 @@ repository = "https://github.com/bitflags/bitflags"
 
 [package.metadata.docs.rs]
 features = ["example_generated"]
+
+[features]
+example_generated = []
+rustc-dep-of-std = [
+    "core",
+    "compiler_builtins",
+]
+std = []
 
 [lib]
 name = "bitflags"
@@ -120,11 +128,3 @@ version = "1.0.18"
 [dev-dependencies.zerocopy]
 version = "0.8"
 features = ["derive"]
-
-[features]
-example_generated = []
-rustc-dep-of-std = [
-    "core",
-    "compiler_builtins",
-]
-std = []

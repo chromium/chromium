@@ -1,3 +1,12 @@
+# 2.9.0
+
+## What's Changed
+* `Flags` trait: add `clear(&mut self)` method by @wysiwys in https://github.com/bitflags/bitflags/pull/437
+* Fix up UI tests by @KodrAus in https://github.com/bitflags/bitflags/pull/438
+
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.8.0...2.9.0
+
 # 2.8.0
 
 ## What's Changed
