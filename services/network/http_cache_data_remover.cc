@@ -38,15 +38,8 @@ HttpCacheDataRemover::HttpCacheDataRemover(
     return;
   }
 
-  // Use the filter to create the |url_matcher_| callback.
-  std::set<std::string> domains;
-  domains.insert(url_filter->domains.begin(), url_filter->domains.end());
-
-  std::set<url::Origin> origins;
-  origins.insert(url_filter->origins.begin(), url_filter->origins.end());
-
-  url_matcher_ = base::BindRepeating(&DoesUrlMatchFilter, url_filter->type,
-                                     origins, domains);
+  url_matcher_ = BindDoesUrlMatchFilter(url_filter->type, url_filter->origins,
+                                        url_filter->domains);
 }
 
 HttpCacheDataRemover::~HttpCacheDataRemover() = default;
