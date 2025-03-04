@@ -3490,7 +3490,7 @@
   {
     "name": "enable-mac-a11y-api-migration",
     "owners": [ "shrike@chromium.org", "dtseng@chromium.com" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 142
   },
   {
     "name": "enable-mac-ime-live-conversion-fix",
