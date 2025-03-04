@@ -18,7 +18,7 @@ BASE_FEATURE(kManagedBrowserClientCertificateEnabled,
              "ManagedBrowserClientCertificateEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IskManagedBrowserClientCertificateEnabled() {
+bool IsManagedBrowserClientCertificateEnabled() {
   return base::FeatureList::IsEnabled(kManagedBrowserClientCertificateEnabled);
 }
 

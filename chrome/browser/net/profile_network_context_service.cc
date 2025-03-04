@@ -136,9 +136,12 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/client_certificates_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
@@ -265,20 +268,31 @@ void UpdateCookieSettings(Profile* profile, ContentSettingsType type) {
 std::unique_ptr<net::ClientCertStore> GetWrappedCertStore(
     Profile* profile,
     std::unique_ptr<net::ClientCertStore> platform_store) {
-  if (!profile || !client_certificates::features::
-                      IsManagedClientCertificateForUserEnabled()) {
-    return platform_store;
+  client_certificates::CertificateProvisioningService*
+      profile_provisioning_service = nullptr;
+  if (profile && client_certificates::features::
+                     IsManagedClientCertificateForUserEnabled()) {
+    profile_provisioning_service = client_certificates::
+        CertificateProvisioningServiceFactory::GetForProfile(profile);
   }
 
-  auto* provisioning_service =
-      client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
-          profile);
-  if (!provisioning_service) {
+  client_certificates::CertificateProvisioningService*
+      browser_provisioning_service = nullptr;
+  if (client_certificates::features::
+          IsManagedBrowserClientCertificateEnabled()) {
+    browser_provisioning_service =
+        g_browser_process->browser_policy_connector()
+            ->chrome_browser_cloud_management_controller()
+            ->GetCertificateProvisioningService();
+  }
+
+  if (!browser_provisioning_service && !profile_provisioning_service) {
     return platform_store;
   }
 
   return client_certificates::ClientCertificatesService::Create(
-      provisioning_service, std::move(platform_store));
+      profile_provisioning_service, browser_provisioning_service,
+      std::move(platform_store));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
