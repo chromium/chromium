@@ -245,4 +245,41 @@ void PlainTextNode::Shape(const Font& font) {
   }
 }
 
+float PlainTextNode::AccumulateInlineSize(gfx::RectF* glyph_bounds) const {
+  const bool is_rtl = IsRtl(base_direction_);
+  float inline_size = 0;
+  for (const auto& item : item_list_) {
+    const ShapeResult* shape_result = item.GetShapeResult();
+    if (!shape_result) {
+      continue;
+    }
+    // For every shape_result we need to accumulate its width to adjust the
+    // glyph_bounds. When the word_result is in RTL we accumulate in the
+    // opposite direction (negative).
+    if (is_rtl) {
+      inline_size -= shape_result->Width();
+    }
+    if (glyph_bounds) {
+      gfx::RectF adjusted_bounds = item.ink_bounds_;
+      // Translate glyph bounds to the current glyph position which
+      // is the total width before this glyph.
+      adjusted_bounds.set_x(adjusted_bounds.x() + inline_size);
+      glyph_bounds->Union(adjusted_bounds);
+    }
+    if (!is_rtl) {
+      inline_size += shape_result->Width();
+    }
+  }
+
+  // Finally, convert width back to positive if run is RTL.
+  if (is_rtl) {
+    inline_size = -inline_size;
+    if (glyph_bounds) {
+      glyph_bounds->set_x(glyph_bounds->x() + inline_size);
+    }
+  }
+
+  return inline_size;
+}
+
 }  // namespace blink
