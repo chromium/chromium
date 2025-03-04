@@ -38,30 +38,13 @@ TEST(CertVerifierMojomTraitsTest, RequestParams) {
   ASSERT_EQ(params, out_params);
 }
 
-namespace {
-
-bool ConfigsEqual(const net::CertVerifier::Config& config1,
-                  const net::CertVerifier::Config& config2) {
-  if (std::tie(config1.enable_rev_checking,
-               config1.require_rev_checking_local_anchors,
-               config1.enable_sha1_local_anchors) !=
-      std::tie(config2.enable_rev_checking,
-               config2.require_rev_checking_local_anchors,
-               config2.enable_sha1_local_anchors, )) {
-    return false;
-  }
-
-  return true;
-}
-}  // namespace
-
 TEST(CertVerifierMojomTraitsTest, ConfigBasic) {
   net::CertVerifier::Config config;
   net::CertVerifier::Config out_config;
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CertVerifierConfig>(
       config, out_config));
-  ASSERT_TRUE(ConfigsEqual(config, out_config));
+  ASSERT_EQ(config, out_config);
 }
 
 TEST(CertVerifierMojomTraitsTest, ConfigTrue) {
@@ -74,7 +57,7 @@ TEST(CertVerifierMojomTraitsTest, ConfigTrue) {
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CertVerifierConfig>(
       config, out_config));
-  ASSERT_TRUE(ConfigsEqual(config, out_config));
+  ASSERT_EQ(config, out_config);
 }
 
 }  // namespace cert_verifier
