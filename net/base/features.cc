@@ -450,11 +450,6 @@ const base::FeatureParam<int> kIpPrivacyDebugExperimentArm{
     /*name=*/"IpPrivacyDebugExperimentArm",
     /*default_value=*/0};
 
-const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo{
-    &kEnableIpProtectionProxy,
-    /*name=*/"IpPrivacyCacheTokensByGeo",
-    /*default_value=*/false};
-
 const base::FeatureParam<bool> kIpPrivacyAlwaysCreateCore{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyAlwaysCreateCore",

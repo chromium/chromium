@@ -482,11 +482,6 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyFallbackToDirect;
 // value, 0, is not sent.
 NET_EXPORT extern const base::FeatureParam<int> kIpPrivacyDebugExperimentArm;
 
-// Caches tokens by geo allowing for tokens to be preserved on network/geo
-// changes. The default value of this feature is false which maintains existing
-// behavior by default.
-NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo;
-
 // When enabled and an IP protection delegate can be be created in the
 // `NetworkContext`, a `IpProtectionProxyDelegate` will ALWAYS be created even
 // for `NetworkContexts` that do not participate in IP protection. This is
