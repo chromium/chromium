@@ -66,7 +66,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/user_agent.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -854,8 +853,9 @@ std::unique_ptr<content::WebContents> CreateArcCustomTabWebContents(
   // Override the user agent to request mobile version web sites.
   const std::string product = embedder_support::GetProductAndVersion();
   blink::UserAgentOverride ua_override;
-  ua_override.ua_string_override = content::BuildUserAgentFromOSAndProduct(
-      kOsOverrideForTabletSite, product);
+  ua_override.ua_string_override =
+      embedder_support::BuildUserAgentFromOSAndProduct(kOsOverrideForTabletSite,
+                                                       product);
 
   ua_override.ua_metadata_override =
       embedder_support::GetUserAgentMetadata(g_browser_process->local_state());

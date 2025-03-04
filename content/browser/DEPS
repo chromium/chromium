@@ -11,6 +11,7 @@ include_rules = [
   "+components/download/database",
   "+components/download/public/common",
   "+components/embedder_support/switches.h",
+  "+components/embedder_support/user_agent_utils.h",
   "+components/file_access",
   "+components/filename_generation",
   "+components/grit",

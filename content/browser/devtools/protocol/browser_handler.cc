@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
@@ -32,7 +33,6 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
@@ -104,7 +104,7 @@ Response BrowserHandler::GetVersion(std::string* protocol_version,
                                     std::string* user_agent,
                                     std::string* js_version) {
   *protocol_version = DevToolsAgentHost::GetProtocolVersion();
-  *revision = GetChromiumGitRevision();
+  *revision = embedder_support::GetChromiumGitRevision();
   *product = GetContentClient()->browser()->GetProduct();
   *user_agent = GetContentClient()->browser()->GetUserAgent();
   *js_version = V8_VERSION_STRING;

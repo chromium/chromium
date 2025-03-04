@@ -10,7 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/system/sys_info.h"
-#include "content/public/common/user_agent.h"
+#include "components/embedder_support/user_agent_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PlayServicesVersionInfo_jni.h"
@@ -22,8 +22,9 @@ std::string AndroidAboutAppInfo::GetGmsInfo() {
 
 std::string AndroidAboutAppInfo::GetOsInfo() {
   return base::SysInfo::OperatingSystemVersion() +
-         content::GetAndroidOSInfo(content::IncludeAndroidBuildNumber::Include,
-                                   content::IncludeAndroidModel::Include);
+         embedder_support::GetAndroidOSInfo(
+             embedder_support::IncludeAndroidBuildNumber::Include,
+             embedder_support::IncludeAndroidModel::Include);
 }
 
 std::string AndroidAboutAppInfo::GetTargetsUInfo() {

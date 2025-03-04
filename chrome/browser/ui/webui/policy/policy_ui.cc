@@ -22,6 +22,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
 #include "components/policy/core/common/features.h"
@@ -38,7 +39,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "content/public/common/user_agent.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
@@ -56,8 +56,9 @@ std::string GetOsInfo() {
   return base::StringPrintf(
       kOSVersionAndBuildFormat,
       (base::SysInfo::OperatingSystemVersion()).c_str(),
-      (content::GetAndroidOSInfo(content::IncludeAndroidBuildNumber::Include,
-                                 content::IncludeAndroidModel::Include))
+      (embedder_support::GetAndroidOSInfo(
+           embedder_support::IncludeAndroidBuildNumber::Include,
+           embedder_support::IncludeAndroidModel::Include))
           .c_str());
 #else
   return base::StringPrintf("%s %s",

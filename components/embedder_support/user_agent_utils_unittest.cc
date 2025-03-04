@@ -26,9 +26,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -549,7 +546,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
   ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
   {
     EXPECT_NE(GetUserAgent(), GenerateExpectedUserAgent());
-    EXPECT_NE(content::GetUnifiedPlatformForTesting().c_str(),
+    EXPECT_NE(GetUnifiedPlatformForTesting().c_str(),
               GetUserAgentPlatformOsCpu(GetUserAgent()));
   }
 
@@ -593,7 +590,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
       {blink::features::kReduceUserAgentMinorVersion,
        blink::features::kReduceUserAgentPlatformOsCpu},
       {blink::features::kReduceUserAgentAndroidVersionDeviceModel});
-  EXPECT_NE(content::GetUnifiedPlatformForTesting().c_str(),
+  EXPECT_NE(GetUnifiedPlatformForTesting().c_str(),
             GetUserAgentPlatformOsCpu(GetUserAgent()));
 #else
   scoped_feature_list.Reset();
@@ -601,7 +598,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
       {blink::features::kReduceUserAgentMinorVersion,
        blink::features::kReduceUserAgentPlatformOsCpu},
       {});
-  EXPECT_EQ(content::GetUnifiedPlatformForTesting().c_str(),
+  EXPECT_EQ(GetUnifiedPlatformForTesting().c_str(),
             GetUserAgentPlatformOsCpu(GetUserAgent()));
 #endif
 }
@@ -712,10 +709,10 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
 #else
   EXPECT_EQ(metadata.platform, "Unknown");
 #endif
-  EXPECT_EQ(metadata.architecture, content::GetCpuArchitecture());
-  EXPECT_EQ(metadata.model, content::BuildModelInfo());
-  EXPECT_EQ(metadata.bitness, content::GetCpuBitness());
-  EXPECT_EQ(metadata.wow64, content::IsWoW64());
+  EXPECT_EQ(metadata.architecture, GetCpuArchitecture());
+  EXPECT_EQ(metadata.model, BuildModelInfo());
+  EXPECT_EQ(metadata.bitness, GetCpuBitness());
+  EXPECT_EQ(metadata.wow64, IsWoW64());
   std::vector<std::string> expected_form_factors = {
       metadata.mobile ? "Mobile" : "Desktop"};
   EXPECT_EQ(metadata.form_factors, expected_form_factors);
@@ -1063,6 +1060,148 @@ TEST_F(UserAgentUtilsTest, HeadlessUserAgent) {
 
   // In headless mode product name should have the Headless prefix.
   EXPECT_THAT(GetUserAgent(), testing::HasSubstr("HeadlessChrome/"));
+}
+
+namespace {
+
+struct BuildOSCpuInfoTestCases {
+  std::string os_version;
+  std::string cpu_type;
+  std::string expected_os_cpu_info;
+};
+
+}  // namespace
+
+TEST_F(UserAgentUtilsTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
+  // clang-format off
+  const BuildOSCpuInfoTestCases test_cases[] = {
+#if BUILDFLAG(IS_WIN)
+    // On Windows, it's possible to have an empty string for CPU type.
+    {
+        /*os_version=*/"10.0",
+        /*cpu_type=*/"",
+        /*expected_os_cpu_info=*/"Windows NT 10.0",
+    },
+    {
+        /*os_version=*/"10.0",
+        /*cpu_type=*/"WOW64",
+        /*expected_os_cpu_info=*/"Windows NT 10.0; WOW64",
+    },
+    {
+        /*os_version=*/"10.0",
+        /*cpu_type=*/"Win64; x64",
+        /*expected_os_cpu_info=*/"Windows NT 10.0; Win64; x64",
+    },
+    {
+        /*os_version=*/"7.0",
+        /*cpu_type=*/"",
+        /*expected_os_cpu_info=*/"Windows NT 7.0",
+    },
+    // These cases should never happen in real life, but may be useful to detect
+    // changes when things are refactored.
+    {
+        /*os_version=*/"",
+        /*cpu_type=*/"",
+        /*expected_os_cpu_info=*/"Windows NT ",
+    },
+    {
+        /*os_version=*/"VERSION",
+        /*cpu_type=*/"CPU TYPE",
+        /*expected_os_cpu_info=*/"Windows NT VERSION; CPU TYPE",
+    },
+#elif BUILDFLAG(IS_MAC)
+    {
+        /*os_version=*/"10_15_4",
+        /*cpu_type=*/"Intel",
+        /*expected_os_cpu_info=*/"Intel Mac OS X 10_15_4",
+    },
+    // These cases should never happen in real life, but may be useful to detect
+    // changes when things are refactored.
+    {
+        /*os_version=*/"",
+        /*cpu_type=*/"",
+        /*expected_os_cpu_info=*/" Mac OS X ",
+    },
+    {
+        /*os_version=*/"VERSION",
+        /*cpu_type=*/"CPU TYPE",
+        /*expected_os_cpu_info=*/"CPU TYPE Mac OS X VERSION",
+    },
+#elif BUILDFLAG(IS_CHROMEOS)
+    {
+        /*os_version=*/"4537.56.0",
+        /*cpu_type=*/"armv7l",
+        /*expected_os_cpu_info=*/"CrOS armv7l 4537.56.0",
+    },
+    // These cases should never happen in real life, but may be useful to detect
+    // changes when things are refactored.
+    {
+        /*os_version=*/"",
+        /*cpu_type=*/"",
+        /*expected_os_cpu_info=*/"CrOS  ",
+    },
+    {
+        /*os_version=*/"VERSION",
+        /*cpu_type=*/"CPU TYPE",
+        /*expected_os_cpu_info=*/"CrOS CPU TYPE VERSION",
+    },
+#elif BUILDFLAG(IS_ANDROID)
+    {
+        /*os_version=*/"7.1.1",
+        /*cpu_type=*/"UNUSED",
+        /*expected_os_cpu_info=*/"Android 7.1.1",
+    },
+    // These cases should never happen in real life, but may be useful to detect
+    // changes when things are refactored.
+    {
+        /*os_version=*/"",
+        /*cpu_type=*/"",
+        /*expected_os_cpu_info=*/"Android ",
+    },
+    {
+        /*os_version=*/"VERSION",
+        /*cpu_type=*/"CPU TYPE",
+        /*expected_os_cpu_info=*/"Android VERSION",
+    },
+#elif BUILDFLAG(IS_FUCHSIA)
+    {
+        /*os_version=*/"VERSION",
+        /*cpu_type=*/"CPU TYPE",
+        /*expected_os_cpu_info=*/"Fuchsia",
+    },
+#endif
+  };
+  // clang-format on
+
+  for (const auto& test_case : test_cases) {
+    const std::string os_cpu_info = BuildOSCpuInfoFromOSVersionAndCpuType(
+        test_case.os_version, test_case.cpu_type);
+    EXPECT_EQ(os_cpu_info, test_case.expected_os_cpu_info);
+  }
+}
+
+TEST_F(UserAgentUtilsTest, GetCpuArchitecture) {
+  std::string arch = GetCpuArchitecture();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ("", arch);
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_POSIX)
+  EXPECT_TRUE("arm" == arch || "x86" == arch);
+#else
+#error Unsupported platform
+#endif
+}
+
+TEST_F(UserAgentUtilsTest, GetCpuBitness) {
+  std::string bitness = GetCpuBitness();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ("", bitness);
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_POSIX)
+  EXPECT_TRUE("32" == bitness || "64" == bitness);
+#else
+#error Unsupported platform
+#endif
 }
 
 }  // namespace embedder_support

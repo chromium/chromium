@@ -106,6 +106,7 @@ source_set("browser") {
     "//components/download/database",
     "//components/download/public/common:public",
     "//components/embedder_support",
+    "//components/embedder_support:user_agent",
     "//components/file_access",
     "//components/filename_generation",
     "//components/input",
