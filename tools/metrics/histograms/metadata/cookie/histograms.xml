@@ -396,34 +396,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.FirstPartySets.ContextDelayedQueriesCount"
-    units="queries" expires_after="M140">
-  <owner>shuuran@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The number of queries that were delayed for a browser context (i.e. answered
-    asynchronously instead of synchronously).
-
-    Recorded once per profile during log-in when the First-Party Sets info is
-    ready for the network context if feature WaitForFirstPartySetsInit was
-    enabled.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.FirstPartySets.ContextMostDelayedQueryDelta" units="ms"
-    expires_after="M140">
-  <owner>shuuran@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The length of time between when the first asynchronous query was received,
-    and when asynchronous queries started to be answered for a browser context.
-
-    Recorded once per profile profile during log-in when the First-Party Sets
-    info is ready in the network context if feature WaitForFirstPartySetsInit
-    was enabled.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.FirstPartySets.EnqueueingDelay.{QueryType}" units="ms"
     expires_after="2025-08-04">
   <owner>cfredric@chromium.org</owner>
@@ -506,7 +478,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Context">
     <variant name="Browser"/>
-    <variant name="Network"/>
   </token>
 </histogram>
 
@@ -528,7 +499,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Context">
     <variant name="Browser"/>
-    <variant name="Network"/>
   </token>
 </histogram>
 
