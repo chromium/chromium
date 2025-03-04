@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.collaboration.CollaborationService;
@@ -92,6 +93,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private Profile mProfile;
+    @Mock private TabGroupListBottomSheetCoordinator mBottomSheetCoordinator;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -139,6 +141,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         activity,
                         () -> mTabModel,
                         mTabGroupModelFilter,
+                        mBottomSheetCoordinator,
                         mShareDelegate,
                         mActionConfirmationManager,
                         mModalDialogManager,
@@ -147,6 +150,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 TabContextMenuCoordinator.createContextMenuCoordinator(
                         mTabModel,
                         mTabGroupModelFilter,
+                        mBottomSheetCoordinator,
                         mShareDelegate,
                         mActionConfirmationManager,
                         mModalDialogManager,
@@ -260,5 +264,12 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testCloseTab() {
         mOnItemClickedCallback.onClick(R.id.close_tab, TAB_ID, COLLABORATION_ID);
         verify(mTabRemover, times(1)).closeTabs(TabClosureParams.closeTab(mTab1).build(), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAddToTabGroup_newTabGroup() {
+        mOnItemClickedCallback.onClick(R.id.add_to_tab_group, TAB_ID, COLLABORATION_ID);
+        verify(mBottomSheetCoordinator, times(1)).showBottomSheet(List.of(mTab1));
     }
 }
