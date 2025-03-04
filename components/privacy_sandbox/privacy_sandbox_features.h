@@ -242,9 +242,6 @@ extern const base::FeatureParam<bool>
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAdTopicsContentParity);
 
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel);
-
 // If true, provides a link to the Privacy Policy on the Topics Consent notice.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxPrivacyPolicy);
