@@ -7258,10 +7258,13 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] http/tests/devtools/elements/resolve-alien-node.js [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/oopif/oopif-elements-inspect.js [ Skip Timeout ]
 
-crbug.com/400528100 [ Mac ] css3/blending/effect-background-blend-mode-stacking.html [ Failure ]
-crbug.com/400528100 [ Win11 ] css3/blending/effect-background-blend-mode-stacking.html [ Failure ]
-crbug.com/400528100 [ Mac ] svg/transforms/svg-css-transforms.xhtml [ Failure ]
-crbug.com/400528100 [ Mac ] transforms/svg-vs-css.xhtml [ Failure ]
+crbug.com/400528100 css3/blending/effect-background-blend-mode-stacking.html [ Failure ]
+crbug.com/400528100 fast/frames/frame-set-scaling-centered.html [ Failure ]
+crbug.com/400528100 fast/frames/frame-set-scaling.html [ Failure ]
+crbug.com/400528100 svg/transforms/svg-css-transforms.xhtml [ Failure ]
+crbug.com/400528100 transforms/scale-transform-composited-descendants-backdrop-filter.html [ Failure ]
+crbug.com/400528100 transforms/svg-vs-css.xhtml [ Failure ]
+crbug.com/400528100 virtual/gpu-rasterization/images/sprite-no-bleed.html [ Failure ]
 
 crbug.com/1401170 [ Debug ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Failure ]
 
