@@ -96,6 +96,17 @@ bool GWSAbandonedPageLoadMetricsObserver::IsAllowedToLogUKM() const {
   return involved_srp_url_;
 }
 
+bool GWSAbandonedPageLoadMetricsObserver::DidLogAllLoadingMilestones() const {
+  // We've logged all loading milestones if the map contains all the loading
+  // milestones. Since the keys are unique in the map, we only need to check if
+  // we have amount of entries is the same as the amount of loading milestones.
+  return loading_milestones().size() ==
+         (static_cast<int>(NavigationMilestone::kLastGwsEssentialLoadingEvent) -
+          static_cast<int>(
+              NavigationMilestone::kFirstGwsEssentialLoadingEvent) +
+          1);
+}
+
 std::string GWSAbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
   // Use the GWS-specific histograms.
   return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix;
