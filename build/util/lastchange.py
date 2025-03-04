@@ -314,9 +314,6 @@ def main(argv=None):
                     help=("Output the revision as a VCS revision ID only (in "
                           "Git, a 40-character commit hash, excluding the "
                           "Cr-Commit-Position)."))
-  parser.add_argument("--revision-id-prefix",
-                      metavar="PREFIX",
-                      help=("Adds a string prefix to the VCS revision ID."))
   parser.add_argument("--print-only", action="store_true",
                     help=("Just print the revision string. Overrides any "
                           "file-output-related options."))
@@ -352,9 +349,6 @@ def main(argv=None):
   revision_string = version_info.revision
   if args.revision_id_only:
     revision_string = version_info.revision_id
-
-  if args.revision_id_prefix:
-    revision_string = args.revision_id_prefix + revision_string
 
   if args.print_only:
     print(revision_string)
