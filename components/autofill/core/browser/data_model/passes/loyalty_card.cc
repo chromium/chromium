@@ -9,7 +9,7 @@ namespace autofill {
 LoyaltyCard::LoyaltyCard(std::string loyalty_card_id,
                          std::string merchant_name,
                          std::string program_name,
-                         std::string program_logo,
+                         GURL program_logo,
                          std::string unmasked_loyalty_card_suffix)
     : loyalty_card_id(std::move(loyalty_card_id)),
       merchant_name(std::move(merchant_name)),
@@ -21,5 +21,10 @@ LoyaltyCard::LoyaltyCard(const LoyaltyCard&) = default;
 LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;
 
 LoyaltyCard::~LoyaltyCard() = default;
+
+bool LoyaltyCard::IsValid() const {
+  return !loyalty_card_id.empty() &&
+         (program_logo.is_empty() || program_logo.is_valid());
+}
 
 }  // namespace autofill
