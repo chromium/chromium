@@ -17,6 +17,7 @@ load("./mac.star", chromium_mac = "chromium")
 load("./mojo.star", "mojo")
 load("./platform.star", "platform")
 load("./reproxy.star", "reproxy")
+load("./rust.star", "rust")
 load("./simple.star", "simple")
 load("./windows.star", chromium_windows = "chromium")
 
@@ -53,6 +54,7 @@ def init(ctx):
     step_config = blink_all.step_config(ctx, step_config)
     step_config = host.step_config(ctx, step_config)
     step_config = mojo.step_config(ctx, step_config)
+    step_config = rust.step_config(ctx, step_config)
     step_config = simple.step_config(ctx, step_config)
     if reproxy.enabled(ctx):
         step_config = reproxy.step_config(ctx, step_config)
@@ -83,11 +85,13 @@ def init(ctx):
     filegroups = {}
     filegroups.update(blink_all.filegroups(ctx))
     filegroups.update(host.filegroups(ctx))
+    filegroups.update(rust.filegroups(ctx))
     filegroups.update(simple.filegroups(ctx))
 
     handlers = {}
     handlers.update(blink_all.handlers)
     handlers.update(host.handlers)
+    handlers.update(rust.handlers)
     handlers.update(simple.handlers)
     handlers.update(reproxy.handlers)
 

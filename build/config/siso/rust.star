@@ -4,9 +4,11 @@
 # found in the LICENSE file.
 """Siso configuration for rust/linux."""
 
-load("@builtin//path.star", "path")
 load("@builtin//lib/gn.star", "gn")
+load("@builtin//path.star", "path")
+load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
+load("./ar.star", "ar")
 load("./config.star", "config")
 load("./fuchsia.star", "fuchsia")
 
@@ -96,7 +98,52 @@ def __rust_link_handler(ctx, cmd):
             android_arch = target.removesuffix(android_ver)
             filegroup = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%s:link" % (android_arch, android_ver)
             inputs.append(filegroup)
-    ctx.actions.fix(inputs = cmd.inputs + inputs)
+
+    # Replace thin archives (.lib) with -start-lib ... -end-lib in rsp file for
+    # Windows builds.
+    new_rspfile_content = None
+    is_windows = None
+    if "args.gn" in ctx.metadata:
+        gn_args = gn.args(ctx)
+        if gn_args.get("target_os") == '"win"':
+            is_windows = True
+    if runtime.os == "windows":
+        is_windows = True
+    if is_windows:
+        new_lines = []
+        for line in str(cmd.rspfile_content).split("\n"):
+            new_elems = []
+            for elem in line.split(" "):
+                # Parse only .lib files.
+                if not elem.endswith(".lib"):
+                    new_elems.append(elem)
+                    continue
+
+                # Parse files under the out dir.
+                fname = ctx.fs.canonpath(elem.removeprefix("-Clink-arg="))
+                if not ctx.fs.exists(fname):
+                    new_elems.append(elem)
+                    continue
+
+                # Check if the library is generated or not.
+                # The source libs are not under the build dir.
+                build_dir = ctx.fs.canonpath("./")
+                if path.rel(build_dir, fname).startswith("../../"):
+                    new_elems.append(elem)
+                    continue
+
+                ents = ar.entries(ctx, fname, build_dir)
+                if not ents:
+                    new_elems.append(elem)
+                    continue
+
+                new_elems.append("-Clink-arg=-start-lib")
+                new_elems.extend(["-Clink-arg=" + e for e in ents])
+                new_elems.append("-Clink-arg=-end-lib")
+            new_lines.append(" ".join(new_elems))
+        new_rspfile_content = "\n".join(new_lines)
+
+    ctx.actions.fix(inputs = cmd.inputs + inputs, rspfile_content = new_rspfile_content or cmd.rspfile_content)
 
 def __rust_build_handler(ctx, cmd):
     inputs = []
@@ -121,6 +168,8 @@ def __step_config(ctx, step_config):
         gn_args = gn.args(ctx)
         if gn_args.get("target_os") == '"win"':
             remote = False
+    if runtime.os != "linux":
+        remote = False
 
     clang_inputs = [
         "build/linux/debian_bullseye_amd64-sysroot:rustlink",
