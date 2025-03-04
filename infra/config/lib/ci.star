@@ -126,7 +126,7 @@ def ci_builder(
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
     branch_gardener_rotations = list({
-        builders.rotation(platform_settings.gardener_rotation, None): None
+        builders.rotation(platform_settings.gardener_rotation, None, None): None
         for platform, platform_settings in settings.platforms.items()
         if branches.matches(branch_selector, platform = platform) and platform_settings.gardener_rotation
     })
@@ -196,13 +196,13 @@ def ci_builder(
                     category = overview_console_category,
                     short_name = entry.short_name,
                 )
-            if tree_closing and notifiers.tree_closer_branch():
-                luci.console_view_entry(
-                    builder = builder,
-                    console_view = "Tree Closers",
-                    category = overview_console_category,
-                    short_name = entry.short_name,
-                )
+                if tree_closing and notifiers.tree_closer_branch():
+                    luci.console_view_entry(
+                        builder = builder,
+                        console_view = rotation.tree_closer_console,
+                        category = overview_console_category,
+                        short_name = entry.short_name,
+                    )
 
 def _gpu_linux_builder(*, name, **kwargs):
     """Defines a GPU-related linux builder.

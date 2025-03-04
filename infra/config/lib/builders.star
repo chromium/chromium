@@ -119,7 +119,7 @@ siso = struct(
     ),
 )
 
-def _rotation(name, console_name):
+def _rotation(name, console_name, tree_closer_console):
     if not name:
         fail("Rotations must be created with a name")
     return branches.value(
@@ -127,6 +127,7 @@ def _rotation(name, console_name):
         value = struct(
             name = name,
             console_name = console_name,
+            tree_closer_console = tree_closer_console,
         ),
     )
 
@@ -134,16 +135,16 @@ def _rotation(name, console_name):
 # New rotations can be added, but won't automatically show up in SoM without
 # changes to SoM code.
 gardener_rotations = struct(
-    ANDROID = _rotation("android", "android rotation"),
-    ANGLE = _rotation("angle", "angle rotation"),
-    CHROMIUM = _rotation("chromium", "chromium rotation"),
-    CFT = _rotation("cft", "cft rotation"),
-    DAWN = _rotation("dawn", "dawn rotation"),
-    FUCHSIA = _rotation("fuchsia", "fuchsia rotation"),
-    CHROMIUM_CLANG = _rotation("chromium.clang", "chromium.clang rotation"),
-    CHROMIUM_GPU = _rotation("chromium.gpu", "chromium.gpu rotation"),
-    IOS = _rotation("ios", "ios rotation"),
-    CHROMIUMOS = _rotation("chromiumos", "chromiumos rotation"),  # This group is not on SoM.
+    ANDROID = _rotation("android", "android rotation", "android rotation tree closers"),
+    ANGLE = _rotation("angle", "angle rotation", None),
+    CHROMIUM = _rotation("chromium", "chromium rotation", "chromium rotation tree closers"),
+    CFT = _rotation("cft", "cft rotation", None),
+    DAWN = _rotation("dawn", "dawn rotation", None),
+    FUCHSIA = _rotation("fuchsia", "fuchsia rotation", None),
+    CHROMIUM_CLANG = _rotation("chromium.clang", "chromium.clang rotation", None),
+    CHROMIUM_GPU = _rotation("chromium.gpu", "chromium.gpu rotation", "chromium.gpu rotation tree closers"),
+    IOS = _rotation("ios", "ios rotation", "ios rotation tree closers"),
+    CHROMIUMOS = _rotation("chromiumos", "chromiumos rotation", "chromiumos rotation tree closers"),  # This group is not on SoM.
 )
 
 # Free disk space in a machine reserved for build tasks.
