@@ -3982,6 +3982,55 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CancelRacesTPMCheck) {
   // the fix for https://crbug.com/352532554.
 }
 
+// Regression test for crbug.com/399937685.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, SelectDeletedPasskey) {
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+
+  // Set up a conditional UI request.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionConditionalUI);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kPasskeyAutofill);
+
+  // Delete the credential during the request. Websites could do this through
+  // the signal API, and users through the password manager.
+  passkey_model()->DeleteAllPasskeys();
+
+  // Go through all the steps to get the enclave set up.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
+  dialog_model()->OnAccountPreselectedIndex(0);
+  model_observer()->WaitForStep();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMError);
+  dialog_model()->OnGPMPinEntered(u"123456");
+  model_observer()->WaitForStep();
+}
+
 class EnclaveAuthenticatorConditionalCreateBrowserTest
     : public EnclaveAuthenticatorBrowserTest,
       public testing::WithParamInterface<bool> {
