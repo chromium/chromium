@@ -26,6 +26,7 @@
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
@@ -315,6 +316,9 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
     device.revision = desc.Revision;
     device.luid =
         CHROME_LUID{desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart};
+    device.device_string = base::WideToUTF8(std::wstring_view(
+        desc.Description,
+        wcsnlen_s(desc.Description, std::size(desc.Description))));
 
     LARGE_INTEGER umd_version;
     hr = dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice),
@@ -323,7 +327,7 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
       device.driver_version = DriverVersionToString(umd_version);
     } else {
       DLOG(ERROR) << "Unable to retrieve the umd version of adapter: "
-                  << desc.Description << " HR: " << std::hex << hr;
+                  << device.device_string << " HR: " << std::hex << hr;
     }
     if (i == 0) {
       gpu_info->gpu = device;
