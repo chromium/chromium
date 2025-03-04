@@ -64,7 +64,6 @@ mojom("mojom") {
     "parent_access.mojom",
     "policy_namespace.mojom",
     "policy_service.mojom",
-    "power.mojom",
     "print_preview_cros.mojom",
     "printing_metrics.mojom",
     "probe_service.mojom",

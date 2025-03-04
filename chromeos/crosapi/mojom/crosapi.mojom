@@ -55,7 +55,6 @@ import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/one_drive_notification_service.mojom";
 import "chromeos/crosapi/mojom/one_drive_integration_service.mojom";
-import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
@@ -483,9 +482,7 @@ interface Crosapi {
   [MinVersion=6] BindMediaSessionAudioFocusDebug@11(
       pending_receiver<media_session.mojom.AudioFocusManagerDebug> receiver);
 
-  // Binds the Power interface for power management.
-  // Added in M93.
-  [MinVersion=35] BindPower@40(pending_receiver<Power> receiver);
+  // BindPower@40 was removed.
 
   // Binds the PrintingMetrics interface for chrome.printingMetrics API.
   [MinVersion=86] BindPrintingMetrics@90(

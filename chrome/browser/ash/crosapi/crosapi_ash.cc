@@ -59,7 +59,6 @@
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
-#include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
@@ -202,7 +201,6 @@ CrosapiAsh::CrosapiAsh()
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
-      power_ash_(std::make_unique<PowerAsh>()),
       nonclosable_app_toast_service_ash_(
           std::make_unique<NonclosableAppToastServiceAsh>()),
 #if BUILDFLAG(USE_CUPS)
@@ -556,10 +554,6 @@ void CrosapiAsh::BindPaymentAppInstance(
 void CrosapiAsh::BindPolicyService(
     mojo::PendingReceiver<mojom::PolicyService> receiver) {
   policy_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindPower(mojo::PendingReceiver<mojom::Power> receiver) {
-  power_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindNonclosableAppToastService(
