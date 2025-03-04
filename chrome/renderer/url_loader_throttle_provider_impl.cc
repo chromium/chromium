@@ -23,7 +23,6 @@
 #include "components/fingerprinting_protection_filter/renderer/renderer_url_loader_throttle.h"
 #include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
-#include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/content_features.h"
@@ -48,6 +47,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/renderer/ash_merge_session_loader_throttle.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
+#endif
 
 namespace {
 
@@ -175,6 +178,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   DCHECK(!is_frame_resource ||
          type_ == blink::URLLoaderThrottleProviderType::kFrame);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (!is_frame_resource) {
     if (pending_safe_browsing_) {
       safe_browsing_.Bind(std::move(pending_safe_browsing_));
@@ -194,6 +198,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     throttles.emplace_back(std::move(throttle));
   }
+#endif
 
   if (fingerprinting_protection_filter::features::
           IsFingerprintingProtectionFeatureEnabled()) {

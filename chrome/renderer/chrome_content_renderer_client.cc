@@ -484,12 +484,16 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     thread->AddObserver(fingerprinting_protection_ruleset_dealer_.get());
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   phishing_model_setter_ =
       std::make_unique<safe_browsing::PhishingModelSetterImpl>();
+#endif
 
   thread->AddObserver(chrome_observer_.get());
   thread->AddObserver(subresource_filter_ruleset_dealer_.get());
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   thread->AddObserver(phishing_model_setter_.get());
+#endif
 
   blink::WebScriptController::RegisterExtension(
       extensions_v8::LoadTimesExtension::Get());

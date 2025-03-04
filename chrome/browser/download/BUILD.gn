@@ -16,6 +16,7 @@ source_set("download") {
     "//components/download/public/common:public",
     "//components/offline_items_collection/core",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/common/proto:download_file_types_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/strings",
     "//ui/base",
@@ -23,10 +24,6 @@ source_set("download") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (safe_browsing_mode != 0) {
-    public_deps += [ "//components/safe_browsing/content/common/proto:download_file_types_proto" ]
-  }
 
   if (!is_android) {
     sources += [ "download_commands.h" ]
