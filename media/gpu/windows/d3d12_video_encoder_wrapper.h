@@ -5,8 +5,10 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODER_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODER_WRAPPER_H_
 
-#include <d3d12.h>
-#include <d3d12video.h>
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12video.h"
+// Windows SDK headers should be included after DirectX headers.
+
 #include <wrl.h>
 
 #include "base/containers/span.h"
@@ -58,6 +60,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncoderWrapper {
   union {
     D3D12_VIDEO_ENCODER_PROFILE_H264 h264_profile_;
     D3D12_VIDEO_ENCODER_PROFILE_HEVC hevc_profile_;
+    D3D12_VIDEO_ENCODER_AV1_PROFILE av1_profile_;
   } profile_data_;
   D3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS
   resolve_metadata_input_arguments_{};

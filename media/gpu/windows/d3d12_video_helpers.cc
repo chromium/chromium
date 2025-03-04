@@ -222,6 +222,84 @@ EncoderStatus CheckD3D12VideoEncoderSupport(
   return EncoderStatus::Codes::kOk;
 }
 
+EncoderStatus CheckD3D12VideoEncoderSupport1(
+    ID3D12VideoDevice* video_device,
+    D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1* support) {
+  HRESULT hr = video_device->CheckFeatureSupport(
+      D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1, support, sizeof(*support));
+  RETURN_ON_HR_FAILURE(hr,
+                       "CheckFeatureSupport for "
+                       "D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1 failed",
+                       EncoderStatus::Codes::kSystemAPICallError);
+  if (!(support->SupportFlags &
+        D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK)) {
+    std::string error;
+    CHECK_EQ(0, support->ValidationFlags &
+                    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_CODEC_NOT_SUPPORTED);
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_INPUT_FORMAT_NOT_SUPPORTED) {
+      base::StrAppend(&error,
+                      {"D3D12VideoEncoder does not support input format: ",
+                       DxgiFormatToString(support->InputFormat), ". "});
+    }
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_CODEC_CONFIGURATION_NOT_SUPPORTED) {
+      base::StrAppend(
+          &error, {"D3D12VideoEncoder does not support codec configuration. "});
+    }
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_RATE_CONTROL_MODE_NOT_SUPPORTED) {
+      base::StrAppend(
+          &error,
+          {"D3D12VideoEncoder does not support rate control mode ",
+           D3D12VideoEncoderRateControlModeToString(support->RateControl.Mode),
+           ". "});
+    }
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_RATE_CONTROL_CONFIGURATION_NOT_SUPPORTED) {
+      base::StrAppend(
+          &error,
+          {"D3D12VideoEncoder does not support rate control configuration ",
+           D3D12VideoEncoderRateControlToString(support->RateControl), ". "});
+    }
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_INTRA_REFRESH_MODE_NOT_SUPPORTED) {
+      base::StrAppend(
+          &error, {"D3D12VideoEncoder does not support intra refresh mode. "});
+    }
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_SUBREGION_LAYOUT_MODE_NOT_SUPPORTED) {
+      base::StrAppend(
+          &error,
+          {"D3D12VideoEncoder does not support subregion layout mode. "});
+    }
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_RESOLUTION_NOT_SUPPORTED_IN_LIST) {
+      std::string resolutions;
+      for (size_t i = 0; i < support->ResolutionsListCount; i++) {
+        if (i > 0) {
+          base::StrAppend(&resolutions, {", "});
+        }
+        // SAFETY: Guaranteed by |support->ResolutionsListCount|.
+        const auto& resolution = UNSAFE_BUFFERS(support->pResolutionList[i]);
+        base::StrAppend(&resolutions,
+                        {base::StringPrintf("%u x %u", resolution.Width,
+                                            resolution.Height)});
+      }
+      base::StrAppend(&error,
+                      {"D3D12VideoEncoder does not support resolutions: ",
+                       resolutions, ". "});
+    }
+    if (support->ValidationFlags &
+        D3D12_VIDEO_ENCODER_VALIDATION_FLAG_GOP_STRUCTURE_NOT_SUPPORTED) {
+      base::StrAppend(&error,
+                      {"D3D12VideoEncoder does not support GOP structure. "});
+    }
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig, error};
+  }
+  return EncoderStatus::Codes::kOk;
+}
+
 std::unique_ptr<D3D12VideoEncoderWrapper> CreateD3D12VideoEncoderWrapper(
     ID3D12VideoDevice* video_device,
     D3D12_VIDEO_ENCODER_CODEC codec,

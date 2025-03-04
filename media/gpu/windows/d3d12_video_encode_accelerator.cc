@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 #include "media/gpu/windows/format_utils.h"
@@ -43,6 +44,8 @@ class VideoEncodeDelegateFactory
       case VideoCodec::kHEVC:
         return std::make_unique<D3D12VideoEncodeH265Delegate>(video_device);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      case VideoCodec::kAV1:
+        return std::make_unique<D3D12VideoEncodeAV1Delegate>(video_device);
       default:
         return nullptr;
     }

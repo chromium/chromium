@@ -5,7 +5,9 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_H265_DELEGATE_H_
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_H265_DELEGATE_H_
 
-#include <d3d12video.h>
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12video.h"
+// Windows SDK headers should be included after DirectX headers.
+
 #include <wrl.h>
 
 #include <vector>

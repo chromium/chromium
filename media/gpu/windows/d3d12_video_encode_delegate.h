@@ -5,7 +5,9 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_DELEGATE_H_
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_DELEGATE_H_
 
-#include <d3d12.h>
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+// Windows SDK headers should be included after DirectX headers.
+
 #include <wrl.h>
 
 #include "base/functional/callback.h"
@@ -22,6 +24,7 @@ namespace media {
 
 class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
  public:
+  static constexpr size_t kAV1DPBMaxSize = 8;
   struct EncodeResult {
     int32_t bitstream_buffer_id_;
     BitstreamBufferMetadata metadata_;
@@ -41,7 +44,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   // |UpdateRateControl()| during encoding.
   virtual bool SupportsRateControlReconfiguration() const = 0;
 
-  bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate);
+  virtual bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate);
 
   // Do video processing if the input frame format or resolution is not
   // expected and then call |EncodeImpl()|.
