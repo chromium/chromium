@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -125,6 +126,16 @@ public class ModalDialogViewBinder
             view.setVerticalMargin(model.get(ModalDialogProperties.VERTICAL_MARGIN));
         } else if (ModalDialogProperties.PADDING == propertyKey) {
             view.setPadding(model.get(ModalDialogProperties.PADDING));
+        } else if (ModalDialogProperties.POSITIVE_BUTTON_LOADING == propertyKey) {
+            view.setLoadingButtonState(
+                    model.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING),
+                    model.get(ModalDialogProperties.BUTTON_STYLES),
+                    ButtonType.POSITIVE);
+        } else if (ModalDialogProperties.NEGATIVE_BUTTON_LOADING == propertyKey) {
+            view.setLoadingButtonState(
+                    model.get(ModalDialogProperties.NEGATIVE_BUTTON_LOADING),
+                    model.get(ModalDialogProperties.BUTTON_STYLES),
+                    ButtonType.NEGATIVE);
         } else if (ModalDialogProperties.BLOCK_INPUTS == propertyKey) {
             view.blockInputs(model.get(ModalDialogProperties.BLOCK_INPUTS));
         } else if (ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS == propertyKey) {

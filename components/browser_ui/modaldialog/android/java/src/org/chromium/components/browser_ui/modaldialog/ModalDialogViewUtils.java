@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.widget;
+package org.chromium.components.browser_ui.modaldialog;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.widget.DualControlLayout;
 
 /** Set of shared helper functions for UI related to the {@link ModalDialogView}. */
 @NullMarked
