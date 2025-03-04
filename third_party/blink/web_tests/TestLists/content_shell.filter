@@ -175,6 +175,7 @@ external/wpt/css/css-color/system-color-hightlights-vs-getSelection-002.html
 external/wpt/css/css-color/system-color-support.html
 external/wpt/css/css-color/t424-hsl-basic-a.xht
 external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html
+external/wpt/css/css-conditional/container-queries/font-relative-units.html
 external/wpt/css/css-conditional/container-queries/pseudo-elements-009.html
 external/wpt/css/css-conditional/container-queries/pseudo-elements-010.html
 external/wpt/css/css-conditional/container-queries/pseudo-elements-011.html
