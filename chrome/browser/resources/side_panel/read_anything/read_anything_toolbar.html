@@ -102,7 +102,7 @@
     on-toolbar-overflow="onToolbarOverflow_">
   <template id="read-aloud-container" is="dom-if" if="[[isReadAloudEnabled_]]">
     <span id="audio-controls" class$="audio-background-when-active-[[isSpeechActive]]">
-      <span hidden="[[hideSpinner]]">
+      <span hidden="[[hideSpinner_]]">
         <picture class="spinner toolbar-button audio-controls">
           <source media="(prefers-color-scheme: dark)"
               srcset="//resources/images/throbber_small_dark.svg">
