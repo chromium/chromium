@@ -541,6 +541,76 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12CPU) {
   });
 }
 
+TEST_F(MFVideoProcessorAcceleratorTest, UpdateOutputSize) {
+  CheckForVideoDevice();
+
+  const UINT kWidth = 128;
+  const UINT kHeight = 128;
+  const UINT kUpdatedWidth = 256;
+  const UINT kUpdatedHeight = 256;
+
+  std::unique_ptr<MediaFoundationVideoProcessorAccelerator> video_processor;
+  video_processor = std::make_unique<MediaFoundationVideoProcessorAccelerator>(
+      gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds());
+  MediaFoundationVideoProcessorAccelerator::Config config;
+  config.input_format = VideoPixelFormat::PIXEL_FORMAT_XRGB;
+  config.input_visible_size = {kWidth, kHeight};
+  config.input_color_space = gfx::ColorSpace::CreateREC709();
+  config.output_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
+  config.output_visible_size = {kWidth, kHeight};
+  config.output_color_space = gfx::ColorSpace::CreateREC709();
+  ASSERT_TRUE(video_processor->Initialize(config, dxgi_device_man_,
+                                          std::make_unique<NullMediaLog>()));
+
+  std::vector<BYTE> image =
+      CreateRGBCheckerboard(kWidth, kHeight, kGreen, kMagenta);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+  ASSERT_HRESULT_SUCCEEDED(CreateTexture(
+      kWidth, kHeight, 4, DXGI_FORMAT_B8G8R8A8_UNORM, image.data(), &texture));
+
+  // Flush graphics pipeline so initial texture data is available when
+  // texture is accessed through shared handle.
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_context;
+  d3d11_device_->GetImmediateContext(&d3d11_context);
+  d3d11_context->Flush();
+
+  auto frame = TextureToMappableVideoFrame(texture.Get(), kWidth, kHeight);
+
+  Microsoft::WRL::ComPtr<IMFSample> sample;
+  ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample));
+
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer;
+  ASSERT_HRESULT_SUCCEEDED(sample->GetBufferByIndex(0, &media_buffer));
+  Microsoft::WRL::ComPtr<IMFDXGIBuffer> dxgi_buffer;
+  ASSERT_HRESULT_SUCCEEDED(media_buffer.As(&dxgi_buffer));
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> output_texture;
+  ASSERT_HRESULT_SUCCEEDED(
+      dxgi_buffer->GetResource(IID_PPV_ARGS(&output_texture)));
+  ValidateResult(output_texture.Get(), kWidth, kHeight, [](BYTE* image) {
+    EXPECT_NEAR(image[0], kLumaGreen, 1);
+    EXPECT_NEAR(image[2], kLumaMagenta, 1);
+  });
+
+  ASSERT_HRESULT_SUCCEEDED(
+      video_processor->UpdateOutputSize({kUpdatedWidth, kUpdatedHeight}));
+
+  Microsoft::WRL::ComPtr<IMFSample> sample1;
+  ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample1));
+
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer1;
+  ASSERT_HRESULT_SUCCEEDED(sample1->GetBufferByIndex(0, &media_buffer1));
+  Microsoft::WRL::ComPtr<IMFDXGIBuffer> dxgi_buffer1;
+  ASSERT_HRESULT_SUCCEEDED(media_buffer1.As(&dxgi_buffer1));
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> output_texture1;
+  ASSERT_HRESULT_SUCCEEDED(
+      dxgi_buffer1->GetResource(IID_PPV_ARGS(&output_texture1)));
+  ValidateResult(output_texture1.Get(), kUpdatedWidth, kUpdatedHeight,
+                 [](BYTE* image) {
+                   EXPECT_NEAR(image[0], kLumaGreen, 1);
+                   EXPECT_NEAR(image[5], kLumaMagenta, 1);
+                 });
+}
+
 class MockEncoderClient : public VideoEncodeAccelerator::Client {
  public:
   void RequireBitstreamBuffers(unsigned int input_count,
