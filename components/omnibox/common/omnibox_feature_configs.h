@@ -189,6 +189,10 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   // If true, the newer Discovery Engine OAuth scope will be used in suggestions
   // requests.
   bool use_discovery_engine_oauth_scope;
+  // If true, doc provider won't run outside the drive scope. If false, doc
+  // provider will run unscoped. Either way, doc provider won't run when in the
+  // enterprise scope.
+  bool disable_drive;
 
  private:
   // Utility methods and members for setting up a mock search engine via Finch.

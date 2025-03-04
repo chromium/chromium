@@ -95,6 +95,22 @@ BASE_FEATURE(SearchAggregatorProvider::kSearchAggregatorProvider,
 
 SearchAggregatorProvider::SearchAggregatorProvider() {
   enabled = base::FeatureList::IsEnabled(kSearchAggregatorProvider);
+
+  min_query_length =
+      base::FeatureParam<int>(&kSearchAggregatorProvider, "min_query_length", 4)
+          .Get();
+  parse_response_in_utility_process =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "parse_response_in_utility_process", true)
+          .Get();
+  use_discovery_engine_oauth_scope =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "use_discovery_engine_oauth_scope", false)
+          .Get();
+  disable_drive = base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                                           "disable_drive", true)
+                      .Get();
+
   name = base::FeatureParam<std::string>(&kSearchAggregatorProvider, "name", "")
              .Get();
   shortcut = base::FeatureParam<std::string>(&kSearchAggregatorProvider,
@@ -112,17 +128,6 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
   require_shortcut = base::FeatureParam<bool>(&kSearchAggregatorProvider,
                                               "require_shortcut", false)
                          .Get();
-  min_query_length =
-      base::FeatureParam<int>(&kSearchAggregatorProvider, "min_query_length", 4)
-          .Get();
-  parse_response_in_utility_process =
-      base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "parse_response_in_utility_process", true)
-          .Get();
-  use_discovery_engine_oauth_scope =
-      base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "use_discovery_engine_oauth_scope", false)
-          .Get();
 }
 
 SearchAggregatorProvider::SearchAggregatorProvider(
