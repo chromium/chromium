@@ -46,7 +46,7 @@ gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
   // On Mac and Linux, theming is handled by the system and does not require
   // different images for light/dark mode.
   const auto& icon =
-      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
+      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_STATUS_ICON);
   return gfx::CreateVectorIcon(icon, SK_ColorWHITE);
 #endif
 }
