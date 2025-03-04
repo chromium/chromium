@@ -227,10 +227,6 @@ BASE_FEATURE(kExperimentalFlingAnimation,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kDragDropEmpty, "DragDropEmpty", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 // Cached in Java as well, make sure defaults are updated together.
 BASE_FEATURE(kElasticOverscroll,

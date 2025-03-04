@@ -39,8 +39,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.MimeTypeUtils;
-import org.chromium.ui.base.UiAndroidFeatureList;
-import org.chromium.ui.base.UiAndroidFeatureMap;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.CursorOffset;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.DragShadowSpec;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -158,11 +156,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private boolean startDragAndDropInternal(
             View containerView, DragShadowBuilder dragShadowBuilder, DropDataAndroid dropData) {
         ClipData clipdata = buildClipData(dropData);
-        if (clipdata == null
-                && !UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY)) {
-            return false;
-        }
-
         mIsDragStarted = true;
         mDragStartSystemElapsedTime = SystemClock.elapsedRealtime();
         mDragTargetType = getDragTargetType(dropData);
@@ -459,8 +452,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         // Only record metrics when drop does not happen for ContentView.
         if (!mIsDropOnView) {
             assert mDragStartSystemElapsedTime > 0;
-            assert mDragTargetType != DragTargetType.INVALID
-                    || UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY);
             long dragDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
             recordDragDurationAndResult(dragDuration, dragResult);
             recordDragTargetType(mDragTargetType);

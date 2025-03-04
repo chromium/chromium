@@ -89,12 +89,7 @@ bool IsDragAndDropEnabled() {
 }
 
 bool IsDragEnabledForDropData(const DropData& drop_data) {
-  if (!IsDragAndDropEnabled()) {
-    return drop_data.text.has_value();
-  }
-  return !drop_data.url.is_empty() || !drop_data.file_contents.empty() ||
-         drop_data.text.has_value() ||
-         base::FeatureList::IsEnabled(features::kDragDropEmpty);
+  return IsDragAndDropEnabled() || drop_data.text.has_value();
 }
 }
 
