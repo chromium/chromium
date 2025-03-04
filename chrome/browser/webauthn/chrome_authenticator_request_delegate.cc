@@ -342,7 +342,7 @@ void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
 
 void ChromeAuthenticatorRequestDelegate::SetUIPresentation(
     UIPresentation ui_presentation) {
-  dialog_controller_->set_ui_presentation(ui_presentation);
+  dialog_controller_->SetUIPresentation(ui_presentation);
 }
 
 bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(

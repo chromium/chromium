@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/password_credential_controller.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
@@ -50,6 +51,8 @@ enum class EnclaveEnabledStatus {
   kEnabledAndReauthNeeded,
 };
 
+using UIPresentation =
+    content::AuthenticatorRequestClientDelegate::UIPresentation;
 //                ┌───────┐
 //                │ View  │
 //                └───────┘ Events are
@@ -418,6 +421,10 @@ struct AuthenticatorRequestDialogModel
 
   void DisableUiOrShowLoadingDialog();
 
+  void set_ui_presentation(UIPresentation presentation) {
+    ui_presentation = presentation;
+  }
+
   // generation is incremented each time the request is restarted so that events
   // from different request generations can be distinguished.
   int generation = 0;
@@ -452,6 +459,8 @@ struct AuthenticatorRequestDialogModel
   std::optional<device::DiscoverableCredentialMetadata> preselected_cred;
   // Whether the platform can check biometrics and has biometrics configured.
   std::optional<bool> platform_has_biometrics;
+  UIPresentation ui_presentation = UIPresentation::kModal;
+
   // offer_try_again_in_ui indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain
   // errors.

@@ -156,7 +156,7 @@ class ChromeWebAuthnCredentialsDelegateTest
     device::FidoRequestHandlerBase::TransportAvailabilityInfo tai;
     tai.request_type = device::FidoRequestType::kGetAssertion;
     tai.recognized_credentials = std::move(creds);
-    dialog_controller()->set_ui_presentation(
+    dialog_controller()->SetUIPresentation(
         content::AuthenticatorRequestClientDelegate::UIPresentation::kAutofill);
     // `passwords` are not required for this test suite as
     // `ChromeWebAuthnCredentialsDelegate` is supposed to get only passkeys from

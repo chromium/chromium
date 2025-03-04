@@ -1478,8 +1478,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
     const bool is_autofill = base::Contains(
         test.params, TransportAvailabilityParam::kIsConditionalUI);
-    controller.set_ui_presentation(is_autofill ? UIPresentation::kAutofill
-                                               : UIPresentation::kModal);
+    controller.SetUIPresentation(is_autofill ? UIPresentation::kAutofill
+                                             : UIPresentation::kModal);
     controller.StartFlow(std::move(transports_info), {});
     if (is_autofill) {
       EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
@@ -2049,7 +2049,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   transports_info.available_transports = kAllTransports;
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
-  controller.set_ui_presentation(UIPresentation::kAutofill);
+  controller.SetUIPresentation(UIPresentation::kAutofill);
   controller.StartFlow(std::move(transports_info), {});
   task_environment()->RunUntilIdle();
   EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
@@ -2091,7 +2091,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   transports_info.recognized_credentials = {kCred1, kCred2};
-  controller.set_ui_presentation(UIPresentation::kAutofill);
+  controller.SetUIPresentation(UIPresentation::kAutofill);
   controller.StartFlow(std::move(transports_info), {});
   EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   EXPECT_TRUE(model->should_dialog_be_closed());
@@ -2121,7 +2121,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
   TransportAvailabilityInfo transports_info;
   transports_info.attestation_conveyance_preference =
       device::AttestationConveyancePreference::kNone;
-  controller.set_ui_presentation(UIPresentation::kAutofill);
+  controller.SetUIPresentation(UIPresentation::kAutofill);
   controller.StartFlow(std::move(transports_info), {});
   EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -2200,7 +2200,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
     tai.ble_status = BleStatus::kOn;
     tai.request_type = device::FidoRequestType::kGetAssertion;
     tai.available_transports = {AuthenticatorTransport::kHybrid};
-    controller->set_ui_presentation(UIPresentation::kAutofill);
+    controller->SetUIPresentation(UIPresentation::kAutofill);
     controller->StartFlow(std::move(tai), {});
     CHECK_EQ(model->step(), Step::kPasskeyAutofill);
     return std::make_tuple(std::move(model), std::move(controller),
@@ -2276,7 +2276,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
   tai.ble_status = BleStatus::kOn;
   tai.request_type = device::FidoRequestType::kGetAssertion;
   tai.available_transports = {AuthenticatorTransport::kHybrid};
-  controller->set_ui_presentation(UIPresentation::kAutofill);
+  controller->SetUIPresentation(UIPresentation::kAutofill);
   controller->StartFlow(std::move(tai), {});
   ASSERT_EQ(model->step(), Step::kPasskeyAutofill);
 
@@ -2305,7 +2305,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
   TransportAvailabilityInfo transports_info;
   transports_info.attestation_conveyance_preference =
       device::AttestationConveyancePreference::kNone;
-  controller.set_ui_presentation(UIPresentation::kAutofill);
+  controller.SetUIPresentation(UIPresentation::kAutofill);
   controller.StartFlow(std::move(transports_info), {});
   EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -2922,7 +2922,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-    controller.set_ui_presentation(UIPresentation::kAutofill);
+    controller.SetUIPresentation(UIPresentation::kAutofill);
     controller.StartFlow(transports_info, {});
 
     // There is no phone available, so no passkeys should be sent to autofill.
@@ -2937,7 +2937,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     controller.set_cable_transport_info(
         /*extension_is_v2=*/std::nullopt, std::move(phones), base::DoNothing(),
         std::nullopt);
-    controller.set_ui_presentation(UIPresentation::kAutofill);
+    controller.SetUIPresentation(UIPresentation::kAutofill);
     controller.StartFlow(transports_info, {});
 
     // There is no phone from sync, so no passkeys should be sent to autofill.
@@ -2952,7 +2952,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     controller.set_cable_transport_info(
         /*extension_is_v2=*/std::nullopt, std::move(phones), base::DoNothing(),
         std::nullopt);
-    controller.set_ui_presentation(UIPresentation::kAutofill);
+    controller.SetUIPresentation(UIPresentation::kAutofill);
     controller.StartFlow(transports_info, {});
 
     auto* passkeys = delegate->GetPasskeys().value();
