@@ -20,6 +20,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/border.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -30,7 +32,8 @@ using content::DesktopMediaID;
 
 namespace {
 
-const int kDesktopMediaSourceViewGroupId = 1;
+constexpr int kDesktopMediaSourceViewGroupId = 1;
+constexpr int kItemSpacing = 4;
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Here we are going to display default app icon for app windows without an
@@ -58,6 +61,13 @@ DesktopMediaSourceView* AsDesktopMediaSourceView(views::View* view) {
   return static_cast<DesktopMediaSourceView*>(view);
 }
 
+// Returns the number of rows, each of size `num_columns`, required to display
+// `num_elements`.
+size_t NumRows(size_t num_elements, size_t num_columns) {
+  CHECK_GT(num_columns, 0u);
+  return (num_elements + num_columns - 1) / num_columns;
+}
+
 }  // namespace
 
 DesktopMediaListView::DesktopMediaListView(
@@ -65,14 +75,12 @@ DesktopMediaListView::DesktopMediaListView(
     DesktopMediaSourceViewStyle generic_style,
     DesktopMediaSourceViewStyle single_style,
     const std::u16string& accessible_name)
-    : item_spacing_(4),
-      horizontal_margins_(16),
-      vertical_margins_(16),
-      controller_(controller),
+    : controller_(controller),
       single_style_(single_style),
-      generic_style_(generic_style),
-      active_style_(&single_style_) {
-  SetStyle(&single_style_);
+      generic_style_(generic_style) {
+  SetBorder(views::CreateEmptyBorder(16));
+  SetLayoutManager(std::make_unique<views::TableLayout>());
+  SetStyle(single_style_);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   GetViewAccessibility().SetName(accessible_name);
@@ -84,47 +92,14 @@ void DesktopMediaListView::OnSelectionChanged() {
   controller_->OnSourceSelectionChanged();
 }
 
-gfx::Size DesktopMediaListView::CalculatePreferredSize(
-    const views::SizeBounds& /*available_size*/) const {
-  const int total_rows =
-      (static_cast<int>(children().size()) + active_style_->columns - 1) /
-      active_style_->columns;
-  return gfx::Size(active_style_->columns * active_style_->item_size.width() +
-                       (active_style_->columns - 1) * item_spacing_ +
-                       2 * horizontal_margins_,
-                   total_rows * active_style_->item_size.height() +
-                       (total_rows - 1) * item_spacing_ +
-                       2 * vertical_margins_);
-}
-
-void DesktopMediaListView::Layout(PassKey) {
-  // Children lay out in a grid, all with the same size and without padding.
-  const int width = active_style_->item_size.width();
-  const int height = active_style_->item_size.height();
-  auto i = children().begin();
-  // Child order is left-to-right, top-to-bottom, so lay out row-major.  The
-  // last row may not be full, so the inner loop will need to be careful about
-  // the child count anyway, so don't bother to compute a row count.
-  for (int y = 0;; y += (height + item_spacing_)) {
-    for (int x = 0, col = 0; col < active_style_->columns;
-         ++col, x += (width + item_spacing_)) {
-      if (i == children().end()) {
-        return;
-      }
-      (*i++)->SetBounds(x + horizontal_margins_, y + vertical_margins_, width,
-                        height);
-    }
-  }
-}
-
 bool DesktopMediaListView::OnKeyPressed(const ui::KeyEvent& event) {
   int position_increment = 0;
   switch (event.key_code()) {
     case ui::VKEY_UP:
-      position_increment = -active_style_->columns;
+      position_increment = -static_cast<int>(active_style_.columns);
       break;
     case ui::VKEY_DOWN:
-      position_increment = active_style_->columns;
+      position_increment = static_cast<int>(active_style_.columns);
       break;
     case ui::VKEY_LEFT:
       position_increment = -1;
@@ -136,9 +111,7 @@ bool DesktopMediaListView::OnKeyPressed(const ui::KeyEvent& event) {
       return false;
   }
 
-  if (position_increment == 0) {
-    return false;
-  }
+  CHECK_NE(position_increment, 0);
 
   views::View* selected = GetSelectedView();
   views::View* new_selected = nullptr;
@@ -187,13 +160,8 @@ void DesktopMediaListView::ClearSelection() {
 void DesktopMediaListView::OnSourceAdded(size_t index) {
   const DesktopMediaList::Source& source = controller_->GetSource(index);
 
-  // We are going to have a second item, apply the generic style.
-  if (children().size() == 1) {
-    SetStyle(&generic_style_);
-  }
-
   DesktopMediaSourceView* source_view =
-      new DesktopMediaSourceView(this, source.id, *active_style_);
+      new DesktopMediaSourceView(this, source.id, active_style_);
 
   source_view->SetName(source.name);
   source_view->SetGroup(kDesktopMediaSourceViewGroupId);
@@ -213,7 +181,17 @@ void DesktopMediaListView::OnSourceAdded(size_t index) {
   }
   AddChildViewAt(source_view, index);
 
-  if ((children().size() - 1) % active_style_->columns == 0) {
+  if (children().size() == 2) {
+    // We just added a second item, apply the generic style.
+    SetStyle(generic_style_);
+  } else if ((children().size() == 1) ||
+             ((children().size() - 1) % active_style_.columns == 0)) {
+    auto* const layout = static_cast<views::TableLayout*>(GetLayoutManager());
+    if (layout->NumRows() > 0) {
+      layout->AddPaddingRow(views::TableLayout::kFixedSize, kItemSpacing);
+    }
+    layout->AddRows(1, views::TableLayout::kFixedSize,
+                    active_style_.item_size.height());
     controller_->OnSourceListLayoutChanged();
   }
 
@@ -232,13 +210,14 @@ void DesktopMediaListView::OnSourceRemoved(size_t index) {
     OnSelectionChanged();
   }
 
-  if (children().size() % active_style_->columns == 0) {
-    controller_->OnSourceListLayoutChanged();
-  }
-
-  // Apply single-item styling when the second source is removed.
   if (children().size() == 1) {
-    SetStyle(&single_style_);
+    // Apply single-item styling when the second source is removed.
+    SetStyle(single_style_);
+  } else if (children().empty() ||
+             (children().size() % active_style_.columns == 0)) {
+    auto* const layout = static_cast<views::TableLayout*>(GetLayoutManager());
+    layout->RemoveRows(layout->NumRows() == 1 ? 1 : 2);  // 1 actual, 1 padding
+    controller_->OnSourceListLayoutChanged();
   }
 
   PreferredSizeChanged();
@@ -274,12 +253,40 @@ void DesktopMediaListView::OnDelegatedSourceListSelection() {
   }
 }
 
-void DesktopMediaListView::SetStyle(DesktopMediaSourceViewStyle* style) {
+void DesktopMediaListView::SetStyle(const DesktopMediaSourceViewStyle& style) {
+  const size_t old_columns = active_style_.columns;
+  const gfx::Size old_item_size = active_style_.item_size;
   active_style_ = style;
-  controller_->SetThumbnailSize(style->image_rect.size());
+
+  controller_->SetThumbnailSize(active_style_.image_rect.size());
 
   for (views::View* child : children()) {
-    AsDesktopMediaSourceView(child)->SetStyle(*active_style_);
+    AsDesktopMediaSourceView(child)->SetStyle(active_style_);
+  }
+
+  if (active_style_.columns != old_columns ||
+      active_style_.item_size != old_item_size) {
+    auto* const layout = static_cast<views::TableLayout*>(GetLayoutManager());
+    layout->RemoveRows(layout->NumRows());
+    layout->RemoveColumns(layout->NumColumns());
+    for (size_t col = 0; col < active_style_.columns; ++col) {
+      if (col) {
+        layout->AddPaddingColumn(views::TableLayout::kFixedSize, kItemSpacing);
+      }
+      layout->AddColumn(
+          views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch, 0,
+          views::TableLayout::ColumnSize::kFixed,
+          active_style_.item_size.width(), active_style_.item_size.width());
+    }
+    const size_t rows = NumRows(children().size(), active_style_.columns);
+    for (size_t row = 0; row < rows; ++row) {
+      if (row) {
+        layout->AddPaddingRow(views::TableLayout::kFixedSize, kItemSpacing);
+      }
+      layout->AddRows(1, views::TableLayout::kFixedSize,
+                      active_style_.item_size.height());
+    }
+    controller_->OnSourceListLayoutChanged();
   }
 }
 

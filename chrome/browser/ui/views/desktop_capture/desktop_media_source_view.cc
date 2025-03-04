@@ -30,11 +30,10 @@ constexpr int kCornerRadius = 8;
 
 using content::DesktopMediaID;
 
-DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
-    const DesktopMediaSourceViewStyle& style) = default;
+DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle() = default;
 
 DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
-    int columns,
+    size_t columns,
     const gfx::Size& item_size,
     const gfx::Rect& icon_rect,
     const gfx::Rect& label_rect,
@@ -46,6 +45,12 @@ DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
       label_rect(label_rect),
       text_alignment(text_alignment),
       image_rect(image_rect) {}
+
+DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
+    const DesktopMediaSourceViewStyle& style) = default;
+
+DesktopMediaSourceViewStyle& DesktopMediaSourceViewStyle::operator=(
+    const DesktopMediaSourceViewStyle& style) = default;
 
 DesktopMediaSourceView::DesktopMediaSourceView(
     DesktopMediaListView* parent,

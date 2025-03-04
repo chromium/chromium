@@ -323,6 +323,14 @@ TableLayout::TableLayout() = default;
 
 TableLayout::~TableLayout() = default;
 
+size_t TableLayout::NumColumns() const {
+  return columns_.size();
+}
+
+size_t TableLayout::NumRows() const {
+  return rows_.size();
+}
+
 TableLayout& TableLayout::AddColumn(LayoutAlignment h_align,
                                     LayoutAlignment v_align,
                                     float horizontal_resize,
@@ -341,6 +349,11 @@ TableLayout& TableLayout::AddPaddingColumn(float horizontal_resize, int width) {
   return *this;
 }
 
+void TableLayout::RemoveColumns(size_t n) {
+  CHECK_LE(n, columns_.size());
+  columns_.erase(columns_.end() - static_cast<ptrdiff_t>(n), columns_.end());
+}
+
 TableLayout& TableLayout::AddRows(size_t n, float vertical_resize, int height) {
   for (size_t i = 0; i < n; ++i) {
     rows_.emplace_back(vertical_resize, height, false);
@@ -351,6 +364,11 @@ TableLayout& TableLayout::AddRows(size_t n, float vertical_resize, int height) {
 TableLayout& TableLayout::AddPaddingRow(float vertical_resize, int height) {
   rows_.emplace_back(vertical_resize, height, true);
   return *this;
+}
+
+void TableLayout::RemoveRows(size_t n) {
+  CHECK_LE(n, rows_.size());
+  rows_.erase(rows_.end() - static_cast<ptrdiff_t>(n), rows_.end());
 }
 
 TableLayout& TableLayout::LinkColumnSizes(std::vector<size_t> columns) {
