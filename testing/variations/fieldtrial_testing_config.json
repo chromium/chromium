@@ -8161,7 +8161,9 @@
     "DirectCompositorThreadIpc": [
         {
             "platforms": [
-                "linux"
+                "chromeos",
+                "linux",
+                "mac"
             ],
             "experiments": [
                 {
