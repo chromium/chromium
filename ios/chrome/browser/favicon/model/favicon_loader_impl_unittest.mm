@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader_impl.h"
 
+#import "base/functional/callback_helpers.h"
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_types.h"
@@ -24,8 +25,9 @@ const char kTestFallbackURL[] = "http://test/fallback";
 // Size of dummy favicon image.
 const CGFloat kTestFaviconSize = 57;
 
-// FaviconLoaderTest is parameterized on this enum to test both
-// FaviconLoader::FaviconForPageUrl and FaviconLoader::FaviconForIconUrl.
+// FaviconLoaderImplTest is parameterized on this enum to test both
+// FaviconLoaderImpl::FaviconForPageUrl and
+// FaviconLoaderImpl::FaviconForIconUrl.
 enum FaviconUrlType { TEST_PAGE_URL, TEST_ICON_URL };
 
 // FakeLargeIconService mimics a LargeIconService that returns a LargeIconResult
@@ -90,90 +92,102 @@ class FakeLargeIconService : public favicon::LargeIconServiceImpl {
   }
 };
 
-class FaviconLoaderTest : public PlatformTest,
-                          public ::testing::WithParamInterface<FaviconUrlType> {
+class FaviconLoaderImplTest
+    : public PlatformTest,
+      public ::testing::WithParamInterface<FaviconUrlType> {
  public:
-  FaviconLoaderTest(const FaviconLoaderTest&) = delete;
-  FaviconLoaderTest& operator=(const FaviconLoaderTest&) = delete;
+  // Callback passed to FaviconForUrl(...).
+  using Callback = base::RepeatingCallback<void(FaviconAttributes*)>;
 
- protected:
-  FaviconLoaderTest() : favicon_loader_(&large_icon_service_) {}
+  FaviconLoaderImplTest() : favicon_loader_(&large_icon_service_) {}
 
-  FakeLargeIconService large_icon_service_;
-  FaviconLoader favicon_loader_;
+  FaviconLoaderImplTest(const FaviconLoaderImplTest&) = delete;
+  FaviconLoaderImplTest& operator=(const FaviconLoaderImplTest&) = delete;
 
-  // Returns FaviconLoader::FaviconForPageUrl or
-  // FaviconLoader::FaviconForIconUrl depending on the TEST_P param.
-  void FaviconForUrl(const GURL& url,
-                     FaviconLoader::FaviconAttributesCompletionBlock callback) {
+  // Invokes FaviconForPageUrl(...) or FaviconForIconUrl(...) depending on
+  // the TEST_P param. Since FakeLargeIconService is synchronous, the method
+  // itself is also synchronous.
+  void FaviconForUrl(const GURL& url, const Callback& callback) {
     if (GetParam() == TEST_PAGE_URL) {
       favicon_loader_.FaviconForPageUrl(url, kTestFaviconSize, kTestFaviconSize,
                                         /*fallback_to_google_server=*/false,
-                                        callback);
+                                        base::CallbackToBlock(callback));
     } else {
       favicon_loader_.FaviconForIconUrl(url, kTestFaviconSize, kTestFaviconSize,
-                                        callback);
+                                        base::CallbackToBlock(callback));
     }
   }
+
+ private:
+  FakeLargeIconService large_icon_service_;
+  FaviconLoaderImpl favicon_loader_;
 };
 
 // Tests that image is returned when a favicon is retrieved from
 // LargeIconService.
-TEST_P(FaviconLoaderTest, FaviconForPageUrl) {
-  __block bool callback_executed = false;
-  auto confirmation_block = ^(FaviconAttributes* favicon_attributes) {
-    callback_executed = true;
-    EXPECT_TRUE(favicon_attributes.faviconImage);
-  };
-  FaviconForUrl(GURL(kTestFaviconURL), confirmation_block);
-  EXPECT_TRUE(callback_executed);
+TEST_P(FaviconLoaderImplTest, FaviconForPageUrl) {
+  int call_count = 0;
+  FaviconForUrl(
+      GURL(kTestFaviconURL),
+      base::BindRepeating(
+          [](int& counter, FaviconAttributes* attrs) {
+            ++counter;
+            EXPECT_TRUE(attrs.faviconImage);
+          }, std::ref(call_count)));
+  EXPECT_GE(call_count, 1);
 }
 
 // Tests that fallback data is provided when no favicon is retrieved from
 // LargeIconService.
-TEST_P(FaviconLoaderTest, FallbackIcon) {
-  __block int callback_executed_count = 0;
-  auto confirmation_block = ^(FaviconAttributes* favicon_attributes) {
-    if (callback_executed_count == 0) {
-      // Check that a placeholder image is received.
-      EXPECT_TRUE(favicon_attributes.faviconImage);
-    } else {
-      // Check that a monogram is used as a fallback.
-      EXPECT_FALSE(favicon_attributes.faviconImage);
-      EXPECT_TRUE(favicon_attributes.monogramString);
-      EXPECT_TRUE(favicon_attributes.textColor);
-      EXPECT_TRUE(favicon_attributes.backgroundColor);
-    }
-
-    ++callback_executed_count;
-  };
-  FaviconForUrl(GURL(kTestFallbackURL), confirmation_block);
-  EXPECT_EQ(callback_executed_count, 2);
+TEST_P(FaviconLoaderImplTest, FallbackIcon) {
+  int call_count = 0;
+  FaviconForUrl(
+      GURL(kTestFallbackURL),
+      base::BindRepeating(
+          [](int& counter, FaviconAttributes* attrs) {
+            ++counter;
+            if (counter == 1) {
+              // Check that a placeholder image is received.
+              EXPECT_TRUE(attrs.faviconImage);
+            } else if (counter == 2) {
+              // Check that a monogram is used as a fallback.
+              EXPECT_FALSE(attrs.faviconImage);
+              EXPECT_TRUE(attrs.monogramString);
+              EXPECT_TRUE(attrs.textColor);
+              EXPECT_TRUE(attrs.backgroundColor);
+            }
+          }, std::ref(call_count)));
+  EXPECT_EQ(call_count, 2);
 }
 
 // Tests that when favicon is in cache, the callback is synchronously called.
-TEST_P(FaviconLoaderTest, Cache) {
+TEST_P(FaviconLoaderImplTest, Cache) {
   // Favicon retrieval that should put it in the cache.
-  FaviconForUrl(GURL(kTestFaviconURL), ^(FaviconAttributes* attributes){
-                });
-  __block bool callback_executed = false;
-  __block UIImage* faviconImage = nil;
-  __block int callback_executed_count = 0;
-  auto confirmation_block = ^(FaviconAttributes* faviconAttributes) {
-    callback_executed = true;
-    faviconImage = faviconAttributes.faviconImage;
-    ++callback_executed_count;
-  };
-  FaviconForUrl(GURL(kTestFaviconURL), confirmation_block);
-  EXPECT_EQ(callback_executed_count, 1);
+  {
+    int call_count = 0;
+    FaviconForUrl(
+        GURL(kTestFaviconURL),
+        base::BindRepeating(
+            [](int& counter, FaviconAttributes* attrs) {
+              ++counter;
+          }, std::ref(call_count)));
+    ASSERT_EQ(call_count, 2);
+  }
+
   // The callback should be immediately executed.
-  EXPECT_TRUE(callback_executed);
-  // The cached image should be available immediately.
-  EXPECT_TRUE(faviconImage);
+  int call_count = 0;
+  FaviconForUrl(
+      GURL(kTestFaviconURL),
+      base::BindRepeating(
+          [](int& counter, FaviconAttributes* attrs) {
+            ++counter;
+            EXPECT_TRUE(attrs.faviconImage);
+          }, std::ref(call_count)));
+  EXPECT_EQ(call_count, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(ProgrammaticFaviconLoaderTest,
-                         FaviconLoaderTest,
+INSTANTIATE_TEST_SUITE_P(ProgrammaticFaviconLoaderImplTest,
+                         FaviconLoaderImplTest,
                          ::testing::Values(FaviconUrlType::TEST_PAGE_URL,
                                            FaviconUrlType::TEST_ICON_URL));
 

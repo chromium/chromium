@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 
 #import "components/keyed_service/core/service_access_type.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader_impl.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -13,7 +13,7 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildFaviconLoader(web::BrowserState* context) {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  return std::make_unique<FaviconLoader>(
+  return std::make_unique<FaviconLoaderImpl>(
       IOSChromeLargeIconServiceFactory::GetForProfile(profile));
 }
 

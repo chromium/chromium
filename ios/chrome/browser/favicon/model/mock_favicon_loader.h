@@ -5,28 +5,40 @@
 #ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_MOCK_FAVICON_LOADER_H_
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_MOCK_FAVICON_LOADER_H_
 
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "testing/gmock/include/gmock/gmock.h"
-#import "url/gurl.h"
+#include "ios/chrome/browser/favicon/model/test_favicon_loader.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
-class MockFaviconLoader : public FaviconLoader {
+// A test double for FaviconLoader that allow mocking methods.
+//
+// If possible prefer to use TestFaviconLoader if you only need a
+// test double that successfully returns a valid favicon for all
+// invocations.
+class MockFaviconLoader : public TestFaviconLoader {
  public:
   MockFaviconLoader();
   ~MockFaviconLoader() override;
 
-  MOCK_METHOD(
-      void,
-      FaviconForPageUrl,
-      (const GURL&, float, float, bool, FaviconAttributesCompletionBlock),
-      (override));
+  // Mockable methods.
+  MOCK_METHOD(void,
+              FaviconForPageUrl,
+              (const GURL& page_url,
+               float size_in_points,
+               float min_size_in_points,
+               bool fallback_to_google_server,
+               FaviconAttributesCompletionBlock favicon_block_handler),
+              (override));
   MOCK_METHOD(void,
               FaviconForPageUrlOrHost,
-              (const GURL&, float, FaviconAttributesCompletionBlock),
+              (const GURL& page_url,
+               float size_in_points,
+               FaviconAttributesCompletionBlock favicon_block_handler),
               (override));
   MOCK_METHOD(void,
               FaviconForIconUrl,
-              (const GURL&, float, float, FaviconAttributesCompletionBlock),
+              (const GURL& icon_url,
+               float size_in_points,
+               float min_size_in_points,
+               FaviconAttributesCompletionBlock favicon_block_handler),
               (override));
   MOCK_METHOD(void, CancellAllRequests, (), (override));
 };
