@@ -1828,10 +1828,13 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(
 
   *status = kNormalSourceImageStatus;
 
+  if (alpha_disposition == kDontChangeAlpha) {
+    return image;
+  }
   // If the alpha_disposition is already correct, or the image is opaque, this
   // is a no-op.
-  return StaticBitmapImageTransform::GetWithAlphaDisposition(
-      reason, std::move(image), alpha_disposition);
+  return StaticBitmapImageTransform::GetWithAlphaPremultiplied(
+      reason, std::move(image));
 }
 
 bool HTMLCanvasElement::WouldTaintOrigin() const {

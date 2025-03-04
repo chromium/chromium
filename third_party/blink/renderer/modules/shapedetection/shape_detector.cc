@@ -94,7 +94,7 @@ std::optional<SkBitmap> ShapeDetector::GetBitmapFromSource(
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = canvas_image_source->GetSourceImageForCanvas(
       FlushReason::kShapeDetector, &source_image_status, size,
-      kDontChangeAlpha);
+      CanvasImageSource::kDontChangeAlpha);
   if (!image || source_image_status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid element or state.");

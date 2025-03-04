@@ -361,18 +361,11 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
 }
 
 scoped_refptr<StaticBitmapImage>
-StaticBitmapImageTransform::GetWithAlphaDisposition(
+StaticBitmapImageTransform::GetWithAlphaPremultiplied(
     FlushReason flush_reason,
-    scoped_refptr<StaticBitmapImage> source,
-    AlphaDisposition alpha_disposition) {
+    scoped_refptr<StaticBitmapImage> source) {
   if (!source) {
     return nullptr;
-  }
-  switch (alpha_disposition) {
-    case kPremultiplyAlpha:
-      break;
-    case kDontChangeAlpha:
-      return source;
   }
   StaticBitmapImageTransform::Params options;
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
