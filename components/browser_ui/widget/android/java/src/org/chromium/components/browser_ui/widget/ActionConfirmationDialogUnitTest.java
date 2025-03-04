@@ -44,6 +44,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DismissHandler;
@@ -72,7 +73,7 @@ public class ActionConfirmationDialogUnitTest {
     @Before
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        activity.setTheme(R.style.Theme_AppCompat);
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mContext = activity;
         configureDismissType(DialogDismissType.DISMISS_IMMEDIATELY);
     }
@@ -123,7 +124,6 @@ public class ActionConfirmationDialogUnitTest {
         PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
 
         assertEquals("Title", propertyModel.get(ModalDialogProperties.TITLE));
-        assertEquals("Confirm", propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
         assertEquals("Learn more", descriptionTextView.getText());
@@ -348,8 +348,6 @@ public class ActionConfirmationDialogUnitTest {
                         /* stopShowing= */ eq(false));
         assertTrue(propertyModel.get(ModalDialogProperties.BLOCK_INPUTS));
         assertFalse(propertyModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-        assertTrue(propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING));
-        assertFalse(propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_LOADING));
 
         // Signal the condition is met first.
         mDimissLaterRunnable.run();
@@ -392,8 +390,6 @@ public class ActionConfirmationDialogUnitTest {
                         /* stopShowing= */ eq(false));
         assertTrue(propertyModel.get(ModalDialogProperties.BLOCK_INPUTS));
         assertFalse(propertyModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-        assertFalse(propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING));
-        assertTrue(propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_LOADING));
 
         // Button spinner min-time first.
         shadowOf(Looper.getMainLooper()).runOneTask();
@@ -436,8 +432,6 @@ public class ActionConfirmationDialogUnitTest {
                         /* stopShowing= */ eq(false));
         assertTrue(propertyModel.get(ModalDialogProperties.BLOCK_INPUTS));
         assertFalse(propertyModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-        assertFalse(propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING));
-        assertTrue(propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_LOADING));
 
         // Flush the min-button duration.
         shadowOf(Looper.getMainLooper()).runOneTask();

@@ -13,6 +13,11 @@ found in the LICENSE file.
     <!-- Button bar dimensions -->
     <dimen name="button_bar_stacked_margin">8dp</dimen>
 
+    <!-- Modal dialog-->
+    <dimen name="modal_dialog_control_vertical_padding_filled">16dp</dimen>
+    <dimen name="modal_dialog_control_horizontal_padding_filled">16dp</dimen>
+    <dimen name="modal_dialog_spinner_size">24dp</dimen>
+
     <!-- Alert dialog -->
     <dimen name="dialog_padding_top">@dimen/abc_dialog_padding_top_material</dimen>
     <dimen name="dialog_padding_sides">@dimen/abc_dialog_padding_material</dimen>

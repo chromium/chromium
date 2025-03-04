@@ -30,6 +30,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/MaterialSwitchWithText.java",
     "java/src/org/chromium/components/browser_ui/widget/MaterialSwitchWithTitleAndSummary.java",
     "java/src/org/chromium/components/browser_ui/widget/MenuOrKeyboardActionController.java",
+    "java/src/org/chromium/components/browser_ui/widget/ModalDialogViewUtils.java",
     "java/src/org/chromium/components/browser_ui/widget/MoreProgressButton.java",
     "java/src/org/chromium/components/browser_ui/widget/NumberRollView.java",
     "java/src/org/chromium/components/browser_ui/widget/PaddedFrameLayout.java",
@@ -295,6 +296,7 @@ android_resources("java_resources") {
   ]
   deps = [
     "shared_with_webview:java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//third_party/android_deps:material_design_java",

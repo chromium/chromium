@@ -8,24 +8,28 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.core.util.Function;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -163,11 +167,6 @@ public class ActionConfirmationDialog {
             // scrim.
             mPropertyModel.set(ModalDialogProperties.BLOCK_INPUTS, true);
             mPropertyModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false);
-            mPropertyModel.set(
-                    buttonClickResult == ButtonClickResult.POSITIVE
-                            ? ModalDialogProperties.POSITIVE_BUTTON_LOADING
-                            : ModalDialogProperties.NEGATIVE_BUTTON_LOADING,
-                    true);
 
             mBarrierDismissRunnable =
                     () -> dismissDialog(getDialogDismissalCause(buttonClickResult));
@@ -319,19 +318,74 @@ public class ActionConfirmationDialog {
         DismissHandlerImpl dismissHandler =
                 new DismissHandlerImpl(
                         mModalDialogManager, confirmationDialogHandler, stopShowingDelegate);
+        OneshotSupplierImpl<PropertyModel> modelSupplier = new OneshotSupplierImpl<>();
+        View buttonBarView =
+                createCustomButtonBarView(mContext, modelSupplier, positiveText, negativeText);
         PropertyModel model =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, dismissHandler)
                         .with(ModalDialogProperties.TITLE, titleText)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveText)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeText)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .with(
-                                ModalDialogProperties.BUTTON_STYLES,
-                                ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                        .with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, buttonBarView)
                         .build();
+        modelSupplier.set(model);
         dismissHandler.setPropertyModel(model);
         mModalDialogManager.showDialog(model, ModalDialogType.APP);
+    }
+
+    private static View createCustomButtonBarView(
+            Context context,
+            OneshotSupplier<PropertyModel> modelSupplier,
+            String positiveText,
+            String negativeText) {
+        SpinnerButtonWrapper positiveButtonSpinner =
+                createSpinnerButton(
+                        context, modelSupplier, /* isPositiveButton= */ true, positiveText);
+        SpinnerButtonWrapper negativeButtonSpinner =
+                createSpinnerButton(
+                        context, modelSupplier, /* isPositiveButton= */ false, negativeText);
+        return ModalDialogViewUtils.createCustomButtonBarView(
+                context, positiveButtonSpinner, negativeButtonSpinner);
+    }
+
+    private static SpinnerButtonWrapper createSpinnerButton(
+            Context context,
+            OneshotSupplier<PropertyModel> modelSupplier,
+            boolean isPositiveButton,
+            String buttonText) {
+        int layoutButtonType =
+                isPositiveButton
+                        ? DualControlLayout.ButtonType.PRIMARY_FILLED
+                        : DualControlLayout.ButtonType.SECONDARY_TEXT;
+        @ColorInt
+        int spinnerColor =
+                isPositiveButton
+                        ? SemanticColorUtils.getDefaultBgColor(context)
+                        : SemanticColorUtils.getDefaultIconColorAccent1(context);
+        int dialogButtonType =
+                isPositiveButton
+                        ? ModalDialogProperties.ButtonType.POSITIVE
+                        : ModalDialogProperties.ButtonType.NEGATIVE;
+
+        Button button =
+                DualControlLayout.createButtonForLayout(
+                        context, layoutButtonType, buttonText, null);
+        SpinnerButtonWrapper spinnerButtonWrapper =
+                SpinnerButtonWrapper.createSpinnerButtonWrapper(
+                        context,
+                        button,
+                        R.string.collaboration_loading_button,
+                        R.dimen.modal_dialog_spinner_size,
+                        spinnerColor,
+                        () -> {
+                            // There is no need to use #onAvailable() for the modelSupplier as the
+                            // model will always be readily available since the use of a {@link
+                            // OneshotSupplier} is to resolve a dependency ordering issue.
+                            PropertyModel model = modelSupplier.get();
+                            model.get(ModalDialogProperties.CONTROLLER)
+                                    .onClick(model, dialogButtonType);
+                        });
+        return spinnerButtonWrapper;
     }
 }
