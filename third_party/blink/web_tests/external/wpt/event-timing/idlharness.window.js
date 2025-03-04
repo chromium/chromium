@@ -1,4 +1,4 @@
-// META: global=window,worker
+// META: global=window
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 
@@ -12,6 +12,8 @@ idl_test(
   idl_array => {
     idl_array.add_objects({
       Performance: ['performance'],
+      EventCounts: ['performance.eventCounts'],
+      // PerformanceEventTiming: [ TODO ]
     });
   }
 );
