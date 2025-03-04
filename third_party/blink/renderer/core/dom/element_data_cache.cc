@@ -24,13 +24,9 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/dom/element_data_cache.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/dom/element_data.h"
 
 namespace blink {
@@ -43,9 +39,10 @@ inline unsigned AttributeHash(
 inline bool HasSameAttributes(
     const Vector<Attribute, kAttributePrealloc>& attributes,
     ShareableElementData& element_data) {
-  return std::equal(
-      attributes.begin(), attributes.end(), element_data.attribute_array_,
-      element_data.attribute_array_ + element_data.Attributes().size());
+  return std::equal(attributes.begin(), attributes.end(),
+                    element_data.attribute_array_,
+                    UNSAFE_TODO(element_data.attribute_array_ +
+                                element_data.Attributes().size()));
 }
 
 ShareableElementData*

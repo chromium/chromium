@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/pausable_script_executor.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -190,8 +185,10 @@ V8FunctionExecutor::V8FunctionExecutor(v8::Isolate* isolate,
                                        v8::Local<v8::Value> argv[])
     : function_(isolate, function), receiver_(isolate, receiver) {
   args_.reserve(base::checked_cast<wtf_size_t>(argc));
-  for (int i = 0; i < argc; ++i)
-    args_.push_back(TraceWrapperV8Reference<v8::Value>(isolate, argv[i]));
+  for (int i = 0; i < argc; ++i) {
+    args_.push_back(
+        TraceWrapperV8Reference<v8::Value>(isolate, UNSAFE_TODO(argv[i])));
+  }
 }
 
 v8::LocalVector<v8::Value> V8FunctionExecutor::Execute(
