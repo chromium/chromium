@@ -9,14 +9,18 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_render_theme.h"
+#include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/inspector/locale_controller.h"
 #include "third_party/blink/renderer/core/inspector/protocol/dom.h"
+#include "third_party/blink/renderer/core/inspector/protocol/emulation.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -32,6 +36,46 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 namespace blink {
+
+namespace {
+
+void SetOrUnsetVariable(DocumentStyleEnvironmentVariables& variables,
+                        UADefinedVariable variable,
+                        std::optional<int> value) {
+  if (value.has_value()) {
+    variables.SetVariable(variable,
+                          StyleEnvironmentVariables::FormatPx(*value));
+  } else {
+    variables.RemoveVariable(variable);
+  }
+}
+
+void ApplySafeAreaInsetOverride(
+    LocalFrame* frame,
+    const protocol::Emulation::SafeAreaInsets& insets) {
+  if (Document* document = frame->GetDocument()) {
+    DocumentStyleEnvironmentVariables& vars =
+        document->GetStyleEngine().EnsureEnvironmentVariables();
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaInsetTop,
+                       insets.getTop());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaMaxInsetTop,
+                       insets.getTopMax());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaInsetLeft,
+                       insets.getLeft());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaMaxInsetLeft,
+                       insets.getLeftMax());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaInsetBottom,
+                       insets.getBottom());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaMaxInsetBottom,
+                       insets.getBottomMax());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaInsetRight,
+                       insets.getRight());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaMaxInsetRight,
+                       insets.getRightMax());
+  }
+}
+
+}  // namespace
 
 InspectorEmulationAgent::InspectorEmulationAgent(
     WebLocalFrameImpl* web_local_frame_impl,
@@ -69,7 +113,9 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()),
       disabled_image_types_(&agent_state_, /*default_value=*/false),
       cpu_throttling_rate_(&agent_state_, /*default_value=*/1),
-      automation_override_(&agent_state_, /*default_value=*/false) {}
+      automation_override_(&agent_state_, /*default_value=*/false),
+      safe_area_insets_override_(&agent_state_,
+                                 /*default_value=*/std::vector<uint8_t>()) {}
 
 InspectorEmulationAgent::~InspectorEmulationAgent() = default;
 
@@ -130,6 +176,11 @@ void InspectorEmulationAgent::Restore() {
     setAutoDarkModeOverride(auto_dark_mode_override_.Get());
   if (!timezone_id_override_.Get().IsNull())
     setTimezoneOverride(timezone_id_override_.Get());
+  auto status_or_insets = protocol::Emulation::SafeAreaInsets::ReadFrom(
+      safe_area_insets_override_.Get());
+  if (status_or_insets.ok()) {
+    setSafeAreaInsetsOverride(std::move(status_or_insets).value());
+  }
 
   if (virtual_time_policy_.Get().IsNull())
     return;
@@ -192,6 +243,14 @@ protocol::Response InspectorEmulationAgent::disable() {
   setDefaultBackgroundColorOverride(nullptr);
   disabled_image_types_.Clear();
   return protocol::Response::Success();
+}
+
+void InspectorEmulationAgent::DidCommitLoadForLocalFrame(LocalFrame* frame) {
+  auto status_or_insets = protocol::Emulation::SafeAreaInsets::ReadFrom(
+      safe_area_insets_override_.Get());
+  if (status_or_insets.ok()) {
+    ApplySafeAreaInsetOverride(frame, *std::move(status_or_insets).value());
+  }
 }
 
 protocol::Response InspectorEmulationAgent::resetPageScaleFactor() {
@@ -584,6 +643,33 @@ protocol::Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
   int alpha = static_cast<int>(lroundf(255.0f * rgba->getA(1.0f)));
   GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(
       Color(rgba->getR(), rgba->getG(), rgba->getB(), alpha).Rgb());
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorEmulationAgent::setSafeAreaInsetsOverride(
+    std::unique_ptr<protocol::Emulation::SafeAreaInsets> insets) {
+  protocol::Response response = AssertPage();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+  safe_area_insets_override_.Set(insets->Serialize());
+
+  for (Frame* frame = GetWebViewImpl()->GetPage()->MainFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      ApplySafeAreaInsetOverride(local_frame, *insets);
+
+      if (!local_frame->IsLocalRoot()) {
+        continue;
+      }
+
+      auto* frame_impl = WebLocalFrameImpl::FromFrame(local_frame);
+      if (auto* widget = frame_impl->FrameWidgetImpl()) {
+        widget->UpdateLifecycle(WebLifecycleUpdate::kAll,
+                                DocumentUpdateReason::kInspector);
+      }
+    }
+  }
   return protocol::Response::Success();
 }
 
