@@ -118,8 +118,8 @@ void fct() {
   temp = expected_data.subspan(index + 2 * 2 + offset()).data();
 
   // Expected rewrite:
-  // base::span<char> ptr = &buf[0];
-  base::span<char> ptr = &buf[0];
+  // base::span<char> ptr = buf;
+  base::span<char> ptr = buf;
   ptr[1] = 'x';
 }
 
@@ -185,7 +185,7 @@ const base::span<int> get_buf();
 // base::span<const int> get_buf() {
 const base::span<int> get_buf() {
   static std::vector<int> buf;
-  return &buf[0];
+  return buf;
 }
 
 void f() {

@@ -116,7 +116,7 @@ void fct() {
   temp = expected_data + index + 2 * 2 + offset();
 
   // Expected rewrite:
-  // base::span<char> ptr = &buf[0];
+  // base::span<char> ptr = buf;
   char* ptr = &buf[0];
   ptr[1] = 'x';
 }
