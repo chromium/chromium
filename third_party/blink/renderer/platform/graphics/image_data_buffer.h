@@ -65,11 +65,6 @@ class PLATFORM_EXPORT ImageDataBuffer {
 
   bool IsValid() { return is_valid_; }  // Only used by Create()
 
-  bool EncodeImageInternal(const ImageEncodingMimeType mime_type,
-                           const double& quality,
-                           Vector<unsigned char>* encoded_image,
-                           const SkPixmap& pixmap) const;
-
   sk_sp<SkImage> retained_image_;
   SkPixmap pixmap_;
   bool is_valid_ = false;

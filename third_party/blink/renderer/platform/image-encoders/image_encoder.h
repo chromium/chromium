@@ -56,6 +56,11 @@ class PLATFORM_EXPORT ImageEncoder {
                      const SkPixmap& src,
                      const SkWebpEncoder::Options&);
 
+  static bool Encode(Vector<unsigned char>* dst,
+                     const SkPixmap& src,
+                     ImageEncodingMimeType mime_type,
+                     double quality);
+
   static int MaxDimension(ImageEncodingMimeType mime_type);
 
   static std::unique_ptr<ImageEncoder> Create(Vector<unsigned char>* dst,

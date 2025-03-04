@@ -39,6 +39,33 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
   return SkWebpEncoder::Encode(&dst_stream, src, options);
 }
 
+bool ImageEncoder::Encode(Vector<unsigned char>* dst,
+                          const SkPixmap& src,
+                          ImageEncodingMimeType mime_type,
+                          double quality) {
+  switch (mime_type) {
+    case kMimeTypeJpeg: {
+      SkJpegEncoder::Options options;
+      options.fQuality = ComputeJpegQuality(quality);
+      options.fAlphaOption = SkJpegEncoder::AlphaOption::kBlendOnBlack;
+      if (options.fQuality == 100) {
+        options.fDownsample = SkJpegEncoder::Downsample::k444;
+      }
+      return Encode(dst, src, options);
+    }
+    case kMimeTypeWebp: {
+      SkWebpEncoder::Options options = ComputeWebpOptions(quality);
+      return Encode(dst, src, options);
+    }
+    case kMimeTypePng: {
+      SkPngEncoder::Options options;
+      options.fFilterFlags = SkPngEncoder::FilterFlag::kSub;
+      options.fZLibLevel = 3;
+      return Encode(dst, src, options);
+    }
+  }
+}
+
 std::unique_ptr<ImageEncoder> ImageEncoder::Create(
     Vector<unsigned char>* dst,
     const SkPixmap& src,
