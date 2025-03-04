@@ -74,9 +74,9 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -1546,9 +1546,9 @@ static bool NeedsEffectIgnoringClipPathAnd2DScale(
   }
 
   if (object.IsBlendingAllowed() &&
-      WebCoreCompositeToSkiaComposite(
-          kCompositeSourceOver, style.GetBlendMode()) != SkBlendMode::kSrcOver)
+      ToSkBlendMode(style.GetBlendMode()) != SkBlendMode::kSrcOver) {
     return true;
+  }
 
   if (!style.BackdropFilter().IsEmpty())
     return true;
@@ -1668,8 +1668,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         state.output_clip = context_.current.clip;
       state.opacity = style.Opacity();
       if (object_.IsBlendingAllowed()) {
-        state.blend_mode = WebCoreCompositeToSkiaComposite(
-            kCompositeSourceOver, style.GetBlendMode());
+        state.blend_mode = ToSkBlendMode(style.GetBlendMode());
       }
       if (object_.IsBoxModelObject()) {
         if (auto* layer = To<LayoutBoxModelObject>(object_).Layer()) {

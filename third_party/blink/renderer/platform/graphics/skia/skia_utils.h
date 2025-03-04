@@ -40,7 +40,7 @@
 #include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -69,11 +69,6 @@ enum {
 };
 
 bool PLATFORM_EXPORT IsValidImageSize(const gfx::Size&);
-
-SkBlendMode PLATFORM_EXPORT
-    WebCoreCompositeToSkiaComposite(CompositeOperator,
-                                    BlendMode = BlendMode::kNormal);
-SkBlendMode PLATFORM_EXPORT WebCoreBlendModeToSkBlendMode(BlendMode);
 
 std::pair<CompositeOperator, BlendMode> PLATFORM_EXPORT
 CompositeAndBlendOpsFromSkBlendMode(SkBlendMode sk_blend_mode);

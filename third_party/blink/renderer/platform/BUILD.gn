@@ -868,6 +868,8 @@ component("platform") {
     "graphics/bitmap_image.h",
     "graphics/bitmap_image_metrics.cc",
     "graphics/bitmap_image_metrics.h",
+    "graphics/blend_mode.cc",
+    "graphics/blend_mode.h",
     "graphics/box_reflection.cc",
     "graphics/box_reflection.h",
     "graphics/canvas_2d_layer_bridge.cc",

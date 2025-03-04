@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/svg_background_paint_context.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -103,8 +104,7 @@ void PaintMaskLayer(const FillLayer& layer,
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   // Don't use the operator if this is the bottom layer.
   if (layer.Next()) {
-    composite_op = WebCoreCompositeToSkiaComposite(layer.Composite(),
-                                                   layer.GetBlendMode());
+    composite_op = ToSkBlendMode(layer.Composite(), layer.GetBlendMode());
   }
 
   if (layer.MaskMode() == EFillMaskMode::kLuminance) {

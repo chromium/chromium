@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -1237,8 +1238,8 @@ void BoxPainterBase::PaintFillLayer(
     // Prepare compositing state first so that it's ready in case the layer
     // references an SVG <mask> element.
     if (ShouldApplyBlendOperation(fill_layer_info, bg_layer)) {
-      composite_op = WebCoreCompositeToSkiaComposite(bg_layer.Composite(),
-                                                     bg_layer.GetBlendMode());
+      composite_op =
+          ToSkBlendMode(bg_layer.Composite(), bg_layer.GetBlendMode());
     }
 
     if (NeedsMaskLuminanceLayer(bg_layer)) {

@@ -23,8 +23,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_BLEND_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_BLEND_H_
 
+#include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
 

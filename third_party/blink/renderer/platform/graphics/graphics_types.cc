@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
-#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -84,46 +83,6 @@ InterpolationQuality GetDefaultInterpolationQuality() {
     return InterpolationQuality::kInterpolationLow;
   }
   return InterpolationQuality::kInterpolationMedium;
-}
-
-String BlendModeToString(BlendMode blend_op) {
-  switch (blend_op) {
-    case BlendMode::kNormal:
-      return "normal";
-    case BlendMode::kMultiply:
-      return "multiply";
-    case BlendMode::kScreen:
-      return "screen";
-    case BlendMode::kOverlay:
-      return "overlay";
-    case BlendMode::kDarken:
-      return "darken";
-    case BlendMode::kLighten:
-      return "lighten";
-    case BlendMode::kColorDodge:
-      return "color-dodge";
-    case BlendMode::kColorBurn:
-      return "color-burn";
-    case BlendMode::kHardLight:
-      return "hard-light";
-    case BlendMode::kSoftLight:
-      return "soft-light";
-    case BlendMode::kDifference:
-      return "difference";
-    case BlendMode::kExclusion:
-      return "exclusion";
-    case BlendMode::kHue:
-      return "hue";
-    case BlendMode::kSaturation:
-      return "saturation";
-    case BlendMode::kColor:
-      return "color";
-    case BlendMode::kLuminosity:
-      return "luminosity";
-    case BlendMode::kPlusLighter:
-      return "plus-lighter";
-  }
-  NOTREACHED();
 }
 
 bool ParseImageEncodingMimeType(const String& mime_type_name,
