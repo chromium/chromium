@@ -122,7 +122,6 @@ class MODULES_EXPORT ManifestManager
   void ParseManifestFromPage(const KURL& document_url,
                              std::optional<KURL> manifest_url,
                              const String& data);
-  void RecordMetrics(const mojom::blink::Manifest& manifest);
   void ResolveCallbacks(Result result);
 
   void BindReceiver(
