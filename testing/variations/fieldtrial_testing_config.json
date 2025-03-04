@@ -23007,47 +23007,6 @@
             ]
         }
     ],
-    "StaleStorageCleanup": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeleteOrphanLocalStorageOnStartup",
-                        "DeleteStaleLocalStorageOnStartup",
-                        "EvictOrphanQuotaStorage",
-                        "EvictStaleQuotaStorage"
-                    ]
-                },
-                {
-                    "name": "Auto_Dogfood",
-                    "enable_features": [
-                        "DeleteOrphanLocalStorageOnStartup",
-                        "DeleteStaleLocalStorageOnStartup",
-                        "EvictOrphanQuotaStorage",
-                        "EvictStaleQuotaStorage"
-                    ]
-                },
-                {
-                    "name": "Opt_In_Dogfood",
-                    "enable_features": [
-                        "DeleteOrphanLocalStorageOnStartup",
-                        "DeleteStaleLocalStorageOnStartup",
-                        "EvictOrphanQuotaStorage",
-                        "EvictStaleQuotaStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "StandardizedBrowserZoom": [
         {
             "platforms": [
