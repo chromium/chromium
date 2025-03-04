@@ -5376,7 +5376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.MaskedDomainList.FirstUpdateTime" units="ms"
-    expires_after="2025-03-10">
+    expires_after="2025-06-08">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/browser/ip_protection/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
