@@ -1103,14 +1103,17 @@ base::Value::Dict ArcNetHostImpl::TranslateProxyConfiguration(
     proxy_dict.Set(onc::proxy::kPAC,
                    http_proxy->get_pac_url_proxy()->pac_url.spec());
   } else {
+    base::Value::Dict location_dict;
+    location_dict.Set(onc::proxy::kHost, http_proxy->get_manual_proxy()->host);
+    location_dict.Set(onc::proxy::kPort, http_proxy->get_manual_proxy()->port);
     base::Value::Dict manual;
-    manual.Set(onc::proxy::kHost, http_proxy->get_manual_proxy()->host);
-    manual.Set(onc::proxy::kPort, http_proxy->get_manual_proxy()->port);
-    manual.Set(onc::proxy::kExcludeDomains,
-               TranslateStringListToValue(
-                   std::move(http_proxy->get_manual_proxy()->exclusion_list)));
+    manual.Set(onc::proxy::kHttp, std::move(location_dict));
+
     proxy_dict.Set(onc::proxy::kType, onc::proxy::kManual);
     proxy_dict.Set(onc::proxy::kManual, std::move(manual));
+    proxy_dict.Set(onc::proxy::kExcludeDomains,
+               TranslateStringListToValue(
+                   std::move(http_proxy->get_manual_proxy()->exclusion_list)));
   }
   return proxy_dict;
 }
