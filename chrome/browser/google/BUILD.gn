@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
@@ -22,7 +21,7 @@ source_set("google") {
     "//content/public/browser",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "google_brand_chromeos.cc",
       "google_brand_chromeos.h",
@@ -96,7 +95,7 @@ source_set("unit_tests") {
     "//testing/gtest:gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "google_brand_code_map_chromeos_unittest.cc" ]
   }
 

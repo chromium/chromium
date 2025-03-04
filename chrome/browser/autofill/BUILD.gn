@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
@@ -273,7 +272,7 @@ if (!is_android) {
       "//ui/events:events_base",
     ]
 
-    if (is_chromeos_ash && enable_extensions) {
+    if (is_chromeos && enable_extensions) {
       deps += [
         "//chrome/browser/ash/accessibility",
         "//chrome/browser/ash/accessibility:test_support",

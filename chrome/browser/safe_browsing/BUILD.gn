@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -83,7 +82,7 @@ static_library("safe_browsing") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ash/file_manager" ]
 
     allow_circular_includes_from += [ "//chrome/browser/ash/file_manager" ]
@@ -464,14 +463,12 @@ static_library("safe_browsing") {
           "//chrome/common:version_header",
         ]
       }
-      if (is_chromeos_ash) {
+      if (is_chromeos) {
         deps += [
           "//ash/constants:constants",
           "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+          "//chromeos/components/mgs:mgs",
         ]
-      }
-      if (is_chromeos) {
-        deps += [ "//chromeos/components/mgs:mgs" ]
       }
       if (!is_android) {
         deps += [ "//chrome/browser/ui:browser_list" ]
