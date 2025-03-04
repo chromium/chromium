@@ -36,7 +36,11 @@ using SigninCompletionBlock = void (^)(id<SystemIdentity>, NSError*);
 
 // Cancels and dismisses any currently active operation. `animated` controls
 // whether the dimissal is animated or not.
-- (void)cancelAuthActivityAnimated:(BOOL)animated;
+// If kIOSInterruptibleCoordinatorStoppedSynchronously is disabled, `completion`
+// will be invoked asynchronously. Otherwise, `completion` is expected to be
+// `nil`.
+- (void)cancelAuthActivityAnimated:(BOOL)animated
+                        completion:(ProceduralBlock)completion;
 
 @end
 

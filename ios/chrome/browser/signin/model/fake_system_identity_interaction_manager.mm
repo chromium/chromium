@@ -123,18 +123,20 @@ BOOL gUsingUnknownCapabilities;
 
   [self dismissAndRunCompletionCallbackWithError:nil
                                         identity:identity
-                                        animated:YES];
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)simulateDidTapCancel {
-  [self cancelAuthActivityAnimated:YES];
+  [self cancelAuthActivityAnimated:YES completion:nil];
 }
 
 - (void)simulateDidThrowUnhandledError {
   NSError* error = [NSError errorWithDomain:@"Unhandled" code:-1 userInfo:nil];
   [self dismissAndRunCompletionCallbackWithError:error
                                         identity:nil
-                                        animated:YES];
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)simulateDidInterrupt {
@@ -171,11 +173,16 @@ BOOL gUsingUnknownCapabilities;
                              }];
 }
 
-- (void)cancelAuthActivityAnimated:(BOOL)animated {
+- (void)cancelAuthActivityAnimated:(BOOL)animated
+                        completion:(ProceduralBlock)completion {
+  if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
+    CHECK(!completion);
+  }
   NSError* error = ios::provider::CreateUserCancelledSigninError();
   [self dismissAndRunCompletionCallbackWithError:error
                                         identity:nil
-                                        animated:animated];
+                                        animated:animated
+                                      completion:completion];
 }
 
 #pragma mark - Properties
@@ -192,7 +199,8 @@ BOOL gUsingUnknownCapabilities;
 
 - (void)dismissAndRunCompletionCallbackWithError:(NSError*)error
                                         identity:(id<SystemIdentity>)identity
-                                        animated:(BOOL)animated {
+                                        animated:(BOOL)animated
+                                      completion:(ProceduralBlock)completion {
   DCHECK(_authActivityViewController);
   DCHECK(_isActivityViewPresented);
   DCHECK(error || identity)
@@ -216,19 +224,35 @@ BOOL gUsingUnknownCapabilities;
     }
   }
 
-  [_authActivityViewController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:nil];
-  [self runCompletionCallbackWithError:error identity:identity];
+  __weak FakeSystemIdentityInteractionManager* weakSelf = self;
+  auto dismissCompletion = ^{
+    [weakSelf runCompletionCallbackWithError:error
+                                    identity:identity
+                                  completion:completion];
+  };
+  if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
+    [_authActivityViewController.presentingViewController
+        dismissViewControllerAnimated:animated
+                           completion:nil];
+    dismissCompletion();
+  } else {
+    [_authActivityViewController.presentingViewController
+        dismissViewControllerAnimated:animated
+                           completion:dismissCompletion];
+  }
 }
 
 - (void)runCompletionCallbackWithError:(NSError*)error
-                              identity:(id<SystemIdentity>)identity {
+                              identity:(id<SystemIdentity>)identity
+                            completion:(ProceduralBlock)completion {
   _authActivityViewController = nil;
   if (_signinCompletion) {
     SigninCompletionBlock signinCompletion = nil;
     std::swap(_signinCompletion, signinCompletion);
     signinCompletion(identity, error);
+  }
+  if (completion) {
+    completion();
   }
   _isActivityViewPresented = NO;
 }

@@ -152,7 +152,8 @@
   if (_addAccountSigninCoordinator) {
     CHECK(!_identityChooserCoordinator);
     CHECK(!_activityOverlayCoordinator);
-    [_addAccountSigninCoordinator interruptWithAction:action completion:nil];
+    [_addAccountSigninCoordinator interruptWithAction:action
+                                           completion:completion];
   } else if (_identityChooserCoordinator) {
     CHECK(!_activityOverlayCoordinator);
     [self stopIdentityChooserCoordinator];
@@ -169,7 +170,7 @@
     // done. The coordinator needs to finish itself, and then call the interrupt
     // completion.
     _mediator.delegate = nil;
-    [_mediator interruptWithAction:action];
+    [_mediator interruptWithAction:action completion:nil];
     // Drop the activity overlay if it exists.
     [self stopActivityOverlay];
     [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
@@ -178,9 +179,13 @@
       completion();
     }
   } else {
-    [_mediator interruptWithAction:action];
-    if (completion) {
-      completion();
+    if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
+      [_mediator interruptWithAction:action completion:nil];
+      if (completion) {
+        completion();
+      }
+    } else {
+      [_mediator interruptWithAction:action completion:completion];
     }
   }
 }

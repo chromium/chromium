@@ -417,11 +417,22 @@
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
-  [self stopChildrenAndViewControllerWithAction:action];
-  [self runCompletionWithSigninResult:self.mediator.signinCoordinatorResult
-                   completionIdentity:self.mediator.signinCompletionIdentity];
-  if (completion) {
-    completion();
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock childrenCompletion = ^() {
+    [weakSelf
+        runCompletionWithSigninResult:weakSelf.mediator.signinCoordinatorResult
+                   completionIdentity:weakSelf.mediator
+                                          .signinCompletionIdentity];
+    if (completion) {
+      completion();
+    }
+  };
+  if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
+    [self stopChildrenAndViewControllerWithAction:action completion:nil];
+    childrenCompletion();
+  } else {
+    [self stopChildrenAndViewControllerWithAction:action
+                                       completion:childrenCompletion];
   }
 }
 
@@ -521,7 +532,8 @@
 // Stops all children, then dismiss the view controller. Executes
 // `completion` synchronously.
 - (void)stopChildrenAndViewControllerWithAction:
-    (SigninCoordinatorInterrupt)action {
+            (SigninCoordinatorInterrupt)action
+                                     completion:(ProceduralBlock)completion {
   // Stopping all potentially open children views.
   if (!_accountDetailsControllerDismissCallback.is_null()) {
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
@@ -532,7 +544,7 @@
     // Add Account coordinator should be stopped before the Manage Accounts
     // Coordinator, as the former may be presented by the latter.
     [weakSelf stopManageAccountsCoordinator];
-    [weakSelf dismissViewControllerAction:action];
+    [weakSelf dismissViewControllerAction:action completion:completion];
   };
   if (_signinCoordinator) {
     SigninCoordinatorInterrupt subviewAction =
@@ -548,9 +560,14 @@
 
 // Unplugs the view and navigation controller. Dismisses the navigation
 // controller as specified by the action.
-- (void)dismissViewControllerAction:(SigninCoordinatorInterrupt)action {
+- (void)dismissViewControllerAction:(SigninCoordinatorInterrupt)action
+                         completion:(void (^)())completion {
   if (!_navigationController) {
-    // The view controller was already dismissed.
+    // The view controller was already dismissed. We can directly call
+    // completion.
+    if (completion) {
+      completion();
+    }
     return;
   }
   _activityOverlayCallback.RunAndReset();
@@ -564,18 +581,21 @@
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
       CHECK(!IsInterruptibleCoordinatorAlwaysDismissedEnabled(),
             base::NotFatalUntil::M136);
+      if (completion) {
+        completion();
+      }
       break;
     }
     case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
       [navigationController.presentingViewController
           dismissViewControllerAnimated:NO
-                             completion:nil];
+                             completion:completion];
       break;
     }
     case SigninCoordinatorInterrupt::DismissWithAnimation: {
       [navigationController.presentingViewController
           dismissViewControllerAnimated:YES
-                             completion:nil];
+                             completion:completion];
       break;
     }
   }

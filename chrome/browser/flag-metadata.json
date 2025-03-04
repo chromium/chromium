@@ -5349,6 +5349,14 @@
     "expiry_milestone": 137
   },
   {
+    "name": "ios-interruptible-coordinator-stop-synchronously",
+    "owners": [
+      "arthurmilchior@google.com",
+      "chrome-signin-team@google.com"
+    ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "ios-iph-for-safari-switcher",
     "owners": [ "huitingyu@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 121

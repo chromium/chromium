@@ -231,12 +231,20 @@
     case SigninCoordinatorInterrupt::DismissWithAnimation: {
       BOOL animated =
           action == SigninCoordinatorInterrupt::DismissWithAnimation;
-      [self.navigationController.presentingViewController
-          dismissViewControllerAnimated:animated
-                             completion:nil];
-      // The coordinator is done, no event should happen from the mediator.
-      [self coordinatorDoneWithResult:signinResult];
-      finishCompletionBlock();
+      if (IsInterruptibleCoordinatorStoppedSynchronouslyEnabled()) {
+        [self.navigationController.presentingViewController
+            dismissViewControllerAnimated:animated
+                               completion:nil];
+        // The coordinator is done, no event should happen from the mediator.
+        [self coordinatorDoneWithResult:signinResult];
+        finishCompletionBlock();
+      } else {
+          [self.navigationController.presentingViewController
+              dismissViewControllerAnimated:animated
+                                 completion:finishCompletionBlock];
+          // The coordinator is done, no event should happen from the mediator.
+          [self coordinatorDoneWithResult:signinResult];
+      }
     }
   }
 }

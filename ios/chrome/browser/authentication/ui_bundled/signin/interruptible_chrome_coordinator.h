@@ -13,11 +13,19 @@
 // Whether InterruptibleChromeCoordinator’s should always always be dismissed.
 BOOL IsInterruptibleCoordinatorAlwaysDismissedEnabled();
 
+// Whether InterruptibleChromeCoordinator should always stop synchronously.
+BOOL IsInterruptibleCoordinatorStoppedSynchronouslyEnabled();
+
 // If `kInterruptibleChromeAlwaysDismissed` is is disabled,
 // `UIShutdownNoDismiss` is returned. Otherwise `DismissWithoutAnimation`.
 SigninCoordinatorInterrupt SynchronousStopAction();
 
 // Feature flag to enable a synchronous sync of signin coordinators.
+BASE_DECLARE_FEATURE(kIOSInterruptibleCoordinatorStoppedSynchronously);
+
+// Feature flag to enable a synchronous sync of signin coordinators. It must
+// only be enabled if `kIOSInterruptibleCoordinatorStoppedSynchronously` is
+// enabled.
 BASE_DECLARE_FEATURE(kIOSInterruptibleCoordinatorAlwaysDismissed);
 
 // Interface for a ChromeCoordinator that can be interrupted without following
@@ -30,7 +38,8 @@ BASE_DECLARE_FEATURE(kIOSInterruptibleCoordinatorAlwaysDismissed);
 // interruption is for shutdown (e.g., tearing down the scene). `completion` is
 // called synchronously. Simply calls `completion` if the
 // method is not overridden.
-// TODO(crbug.com/381444097): Remove the completion parameter.
+// TODO(crbug.com/381444097): Remove the completion parameter when the flag
+// IOSInterruptibleCoordinatorStoppedSynchronously is removed.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 
