@@ -6071,6 +6071,45 @@
             ]
         }
     ],
+    "CommitAvailableMemoryPressureThresholds": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LowerThresholds",
+                    "params": {
+                        "CommitAvailableCriticalThresholdMB": "100",
+                        "CommitAvailableModerateThresholdMB": "300"
+                    },
+                    "enable_features": [
+                        "CommitAvailableMemoryPressureThresholds"
+                    ]
+                },
+                {
+                    "name": "MediumThresholds",
+                    "params": {
+                        "CommitAvailableCriticalThresholdMB": "300",
+                        "CommitAvailableModerateThresholdMB": "750"
+                    },
+                    "enable_features": [
+                        "CommitAvailableMemoryPressureThresholds"
+                    ]
+                },
+                {
+                    "name": "HigherThresholds",
+                    "params": {
+                        "CommitAvailableCriticalThresholdMB": "400",
+                        "CommitAvailableModerateThresholdMB": "1000"
+                    },
+                    "enable_features": [
+                        "CommitAvailableMemoryPressureThresholds"
+                    ]
+                }
+            ]
+        }
+    ],
     "Compare": [
         {
             "platforms": [
