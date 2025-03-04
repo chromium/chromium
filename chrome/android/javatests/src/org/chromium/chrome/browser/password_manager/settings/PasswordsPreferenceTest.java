@@ -26,6 +26,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
+import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -71,6 +73,7 @@ public class PasswordsPreferenceTest {
     @Mock PrefService mPrefService;
 
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+    @Mock private LoginDbDeprecationUtilBridge.Natives mLoginDbDeprecationUtilBridgeJniMock;
 
     SettingsActivityPublicTransitEntryPoints mEntryPoints =
             new SettingsActivityPublicTransitEntryPoints(mSettingsActivityTestRule);
@@ -78,6 +81,7 @@ public class PasswordsPreferenceTest {
     @Before
     public void setUp() {
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
+        LoginDbDeprecationUtilBridgeJni.setInstanceForTesting(mLoginDbDeprecationUtilBridgeJniMock);
         PasswordManagerTestHelper.setUpGmsCoreFakeBackends();
 
         PasswordsPreference.setPrefServiceForTesting(mPrefService);
@@ -90,7 +94,7 @@ public class PasswordsPreferenceTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(any(), eq(true)))
                 .thenReturn(false);
         when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
+        when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
                 .thenReturn("random/file/path");
 
         SettingsStation<MainSettings> page = mEntryPoints.startMainSettingsNonBatched();
@@ -110,7 +114,7 @@ public class PasswordsPreferenceTest {
         when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         File fakeCsv = File.createTempFile("passwords", null, null);
         fakeCsv.deleteOnExit();
-        when(mPasswordManagerUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
+        when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
                 .thenReturn(fakeCsv.getAbsolutePath());
 
         SettingsStation<MainSettings> page = mEntryPoints.startMainSettingsNonBatched();

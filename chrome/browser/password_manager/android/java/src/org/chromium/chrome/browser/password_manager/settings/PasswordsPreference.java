@@ -16,6 +16,7 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.R;
@@ -94,7 +95,7 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
 
         boolean isPasswordManagerAvailable =
                 PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService);
-        boolean hasPasswordsInCsv = PasswordManagerUtilBridge.hasPasswordsInCsv(mProfile);
+        boolean hasPasswordsInCsv = LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile);
 
         // If there are no unmigrated passwords left in Chrome and the password manager is available
         // no subtitle is needed.
