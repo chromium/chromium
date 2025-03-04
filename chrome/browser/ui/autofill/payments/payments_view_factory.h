@@ -32,6 +32,8 @@ class SaveAndFillDialogView;
 namespace payments {
 class PaymentsWindowUserConsentDialogController;
 class PaymentsWindowUserConsentDialog;
+class SelectBnplIssuerView;
+class SelectBnplIssuerDialogController;
 }  // namespace payments
 
 // Factory function for creating and showing the autofill progress dialog
@@ -91,6 +93,14 @@ base::WeakPtr<SaveAndFillDialogView> CreateAndShowSaveAndFillDialog(
     base::WeakPtr<SaveAndFillDialogController> controller,
     content::WebContents* web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Factory function for creating and showing the BNPL issuer selection dialog.
+// This dialog is triggered when the BNPL payment method has been selected and
+// the user needs to select an issuer.
+std::unique_ptr<payments::SelectBnplIssuerView>
+CreateAndShowBnplIssuerSelectionDialog(
+    base::WeakPtr<payments::SelectBnplIssuerDialogController> controller,
+    content::WebContents* web_contents);
 
 }  // namespace autofill
 

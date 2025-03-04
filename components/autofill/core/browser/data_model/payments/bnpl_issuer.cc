@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
@@ -83,6 +84,9 @@ std::u16string BnplIssuer::GetDisplayName() const {
   }
   if (issuer_id_ == kBnplZipIssuerId) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP);
+  }
+  if (issuer_id_ == kBnplAfterpayIssuerId) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFTER_PAY);
   }
   NOTREACHED() << "Unknown issuer_id_ " << issuer_id_;
 }

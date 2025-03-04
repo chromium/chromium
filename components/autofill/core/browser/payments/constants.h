@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CONSTANTS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CONSTANTS_H_
 
+#include <string_view>
+
 namespace autofill {
 
 // Contains constants specific to the payments Autofill used in the browser
@@ -28,6 +30,7 @@ inline constexpr std::string_view kNatwestCardIssuerId = "natwest";
 // consistent between server and client.
 inline constexpr std::string_view kBnplAffirmIssuerId = "affirm";
 inline constexpr std::string_view kBnplZipIssuerId = "zip";
+inline constexpr std::string_view kBnplAfterpayIssuerId = "afterpay";
 
 // The urls to the static card art images used by Capital One cards.
 inline constexpr std::string_view kCapitalOneCardArtUrl =
