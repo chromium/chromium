@@ -270,6 +270,7 @@ class UsbDelegate;
 class VideoOverlayWindow;
 class VideoPictureInPictureWindowController;
 class VpnServiceProxy;
+class WebAuthenticationDelegate;
 class WebContents;
 class WebContentsViewDelegate;
 class WebUIBrowserInterfaceBrokerRegistry;
@@ -286,7 +287,6 @@ struct SocketPermissionRequest;
 class TtsEnvironmentAndroid;
 #else
 class AuthenticatorRequestClientDelegate;
-class WebAuthenticationDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2331,12 +2331,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::RenderFrameHost* rfh,
       const url::Origin& caller_origin);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Returns an embedder-provided subclass of WebAuthenticationDelegate. This
   // allows the embedder to customize the implementation of the Web
   // Authentication API.
   virtual WebAuthenticationDelegate* GetWebAuthenticationDelegate();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns an AuthenticatorRequestClientDelegate subclass instance to provide
   // embedder-specific configuration for a single Web Authentication API request
   // being serviced in a given RenderFrame. The instance is guaranteed to be

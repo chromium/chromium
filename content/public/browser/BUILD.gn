@@ -478,6 +478,9 @@ source_set("browser_sources") {
     "vpn_service_proxy.h",
     "weak_document_ptr.cc",
     "weak_document_ptr.h",
+    "web_authentication_delegate.cc",
+    "web_authentication_delegate.h",
+    "web_authentication_request_proxy.h",
     "web_contents.cc",
     "web_contents.h",
     "web_contents_capability_type.h",
@@ -722,9 +725,6 @@ source_set("browser_sources") {
       # Android provides its own native implementation of that API.
       "authenticator_request_client_delegate.cc",
       "authenticator_request_client_delegate.h",
-      "web_authentication_delegate.cc",
-      "web_authentication_delegate.h",
-      "web_authentication_request_proxy.h",
     ]
   }
 

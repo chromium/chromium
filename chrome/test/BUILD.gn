@@ -6193,6 +6193,7 @@ test("unit_tests") {
     "../browser/visibility_timer_tab_helper_unittest.cc",
     "../browser/visited_url_ranking/url_deduplication/search_engine_url_strip_handler_unittest.cc",
     "../browser/vr/vr_tab_helper_unittest.cc",
+    "../browser/webauthn/chrome_web_authentication_delegate_base_unittest.cc",
     "../browser/webid/federated_identity_account_keyed_permission_context_unittest.cc",
     "../browser/webid/federated_identity_api_permission_context_unittest.cc",
     "../browser/webid/federated_identity_auto_reauthn_permission_context_unittest.cc",

@@ -14,14 +14,14 @@
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/webauthn/chrome_web_authentication_delegate_base.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
-#include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 
-// ChromeWebAuthenticationDelegate is the //chrome layer implementation of
-// content::WebAuthenticationDelegate.
+// ChromeWebAuthenticationDelegate is the //chrome layer implementation
+// of content::WebAuthenticationDelegate.
 class ChromeWebAuthenticationDelegate final
-    : public content::WebAuthenticationDelegate {
+    : public ChromeWebAuthenticationDelegateBase {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -64,9 +64,6 @@ class ChromeWebAuthenticationDelegate final
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin,
       const std::string& relying_party_id) override;
-  bool OriginMayUseRemoteDesktopClientOverride(
-      content::BrowserContext* browser_context,
-      const url::Origin& caller_origin) override;
   std::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin) override;
