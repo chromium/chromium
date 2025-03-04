@@ -267,7 +267,7 @@ const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
 // See crbug.com/40285083 for more info.
 BASE_FEATURE(kDeleteStaleSessionCookiesOnStartup,
              "DeleteStaleSessionCookiesOnStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When a device bound session
 // (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) is
