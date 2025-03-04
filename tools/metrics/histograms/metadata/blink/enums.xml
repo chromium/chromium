@@ -5687,8 +5687,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5108" label="HTMLSearchElement"/>
   <int value="5109" label="HTMLUnsafeMethods"/>
   <int value="5110"
-      label="V8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter"/>
-  <int value="5111" label="MaxInterStageShaderComponentsRequiredLimit"/>
+      label="OBSOLETE_V8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter"/>
+  <int value="5111"
+      label="OBSOLETE_MaxInterStageShaderComponentsRequiredLimit"/>
   <int value="5112" label="ShowPickerSelect"/>
   <int value="5113" label="AudioContextPlayoutStats"/>
   <int value="5114" label="ThirdPartyCookieBlocked"/>
