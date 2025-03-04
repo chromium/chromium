@@ -38,6 +38,9 @@ using GroupDataOrFailureOutcome =
 using StateId = CollaborationController::StateId;
 using Flow = CollaborationController::Flow;
 
+constexpr base::TimeDelta kTimeoutWaitingForDataSharingGroup =
+    base::Seconds(20);
+
 std::string GetStateIdString(StateId state) {
   switch (state) {
     case StateId::kPending:
@@ -673,7 +676,7 @@ class WaitingForSyncAndDataSharingGroup
             weak_ptr_factory_.GetWeakPtr(),
             CollaborationServiceJoinEvent::
                 kTimeoutWaitingForSyncAndDataSharingGroup),
-        base::Seconds(10));
+        kTimeoutWaitingForDataSharingGroup);
     tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
     data_sharing_observer_.Observe(controller->data_sharing_service());
   }
@@ -689,11 +692,6 @@ class WaitingForSyncAndDataSharingGroup
     bool tab_group_exists = IsTabGroupInSync(group_id);
     bool people_group_exists = IsPeopleGroupInDataSharing(group_id);
     CHECK(!tab_group_exists || !people_group_exists);
-    // Force update sync.
-    if (!tab_group_exists) {
-      controller->sync_service()->TriggerRefresh(
-          {syncer::SHARED_TAB_GROUP_DATA});
-    }
     // Force update data sharing service.
     if (!IsPeopleGroupInDataSharing(group_id)) {
       controller->data_sharing_service()->ReadGroupDeprecated(

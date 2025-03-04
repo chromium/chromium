@@ -204,7 +204,6 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
       .WillRepeatedly(Return(all_tab_groups));
 
   data_sharing::DataSharingService::Observer* data_sharing_observer;
-  EXPECT_CALL(*sync_service_, TriggerRefresh(_));
   EXPECT_CALL(*tab_group_sync_service_, AddObserver(_))
       .WillOnce(SaveArg<0>(&sync_observer));
   EXPECT_CALL(*data_sharing_service_, AddObserver(_))
