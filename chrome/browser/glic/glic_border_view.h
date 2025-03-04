@@ -40,15 +40,17 @@ class GlicBorderView : public views::View,
   // `ui::CompositorObserver`:
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
-  // TODO(liuwilliam): These should be private once we can end-to-end test the
-  // UI behaviors.
-  void StartAnimation();
-  void CancelAnimation();
+  // TODO(crbug.com/390233842): These should be private once we can end-to-end
+  // test the UI behaviors.
+  void Show();
+  void StopShowing();
 
-  ui::Compositor* compositor_for_testing() const { return compositor_; }
+  bool IsShowing() const;
 
+  // TODO(crbug.com/384712084): Ideally we shouldn't expose these internals for
+  // testing. The pixel comparison tests were flaky thus reverted. Remove these
+  // once we set up the Skia Gold tests.
   float opacity_for_testing() const { return opacity_; }
-
   float emphasis_for_testing() const { return emphasis_; }
 
   // Allows tests to alternate some animation APIs, for the deterministic

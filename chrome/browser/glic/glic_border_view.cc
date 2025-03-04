@@ -175,9 +175,9 @@ class GlicBorderView::BorderViewUpdater {
       case UpdateBorderReason::kContextAccessIndicatorOn: {
         // Off to On. Throw away everything we have and start the animation from
         // the beginning.
-        border_view_->CancelAnimation();
+        border_view_->StopShowing();
         if (ShouldShowBorderAnimation()) {
-          border_view_->StartAnimation();
+          border_view_->Show();
         }
         break;
       }
@@ -197,9 +197,9 @@ class GlicBorderView::BorderViewUpdater {
       // This happens when the user has changed the focus from this chrome
       // window to a different chrome window or a different app.
       case UpdateBorderReason::kFocusedTabChanged_GainFocus: {
-        border_view_->CancelAnimation();
+        border_view_->StopShowing();
         if (ShouldShowBorderAnimation()) {
-          border_view_->StartAnimation();
+          border_view_->Show();
         }
         break;
       }
@@ -400,7 +400,7 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
   bool opacity_ramp_down_done =
       opacity_ == 0.f && !first_ramp_down_frame_.is_null();
   if (opacity_ramp_down_done) {
-    CancelAnimation();
+    StopShowing();
     return;
   }
 
@@ -408,10 +408,10 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
 }
 
 void GlicBorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  CancelAnimation();
+  StopShowing();
 }
 
-void GlicBorderView::StartAnimation() {
+void GlicBorderView::Show() {
   if (compositor_) {
     // The user can click on the glic icon after the window is shown. The
     // animation is already playing at that time.
@@ -444,7 +444,7 @@ void GlicBorderView::StartAnimation() {
   }
 }
 
-void GlicBorderView::CancelAnimation() {
+void GlicBorderView::StopShowing() {
   if (!compositor_) {
     return;
   }
@@ -464,6 +464,12 @@ void GlicBorderView::CancelAnimation() {
   // the destroyed layer.
   DestroyLayer();
   SetVisible(false);
+}
+
+bool GlicBorderView::IsShowing() const {
+  // `compositor_` is set when the border starts to show and unset when the
+  // border stops to show.
+  return !!compositor_;
 }
 
 float GlicBorderView::GetEffectTimeForTesting() const {
@@ -487,7 +493,7 @@ float GlicBorderView::GetEmphasis(base::TimeDelta delta) const {
 
 void GlicBorderView::ResetEmphasisAndReplay() {
   // TOOD(crbug.com/398319435): Remove once we know why this is called before
-  // `StartAnimation()`.
+  // `Show()`.
   if (!compositor_) {
     SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "opacity", opacity_);
     SCOPED_CRASH_KEY_NUMBER("crbug-398319435", "emphasis", emphasis_);
