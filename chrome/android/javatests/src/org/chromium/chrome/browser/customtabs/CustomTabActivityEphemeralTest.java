@@ -382,6 +382,10 @@ public class CustomTabActivityEphemeralTest {
         var tab = activity.getActivityTab();
         ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage);
 
+        // TODO(sinansahin): Find a better way to test omnibox interactivity because titleBar is
+        // going to have a click listener to show page info.
+        if (ChromeFeatureList.sCctNestedSecurityIcon.isEnabled()) return;
+
         var titleBar = activity.findViewById(R.id.title_url_container);
         Assert.assertFalse(titleBar.hasOnClickListeners());
     }
