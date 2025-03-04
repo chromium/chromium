@@ -36,7 +36,8 @@ class ChromeDesktopImpl : public ChromeImpl {
                     base::ScopedTempDir* extension_dir,
                     bool network_emulation_enabled,
                     bool autoaccept_beforeunload,
-                    bool enable_extension_targets);
+                    bool enable_extension_targets,
+                    bool quit_gracefully);
   ~ChromeDesktopImpl() override;
 
   // Waits for an extension's page with the given URL to appear and finish
@@ -68,6 +69,7 @@ class ChromeDesktopImpl : public ChromeImpl {
   ScopedTempDirWithRetry extension_dir_;
   bool network_connection_enabled_;
   int network_connection_;
+  bool quit_gracefully_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_CHROME_DESKTOP_IMPL_H_
