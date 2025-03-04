@@ -410,6 +410,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
                        ResizesToFitNonModalChildDialogs) {
+  // Note that on Windows and CrOS, this should not resize, because they do not
+  // clip child dialogs.
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
   gfx::Rect initial_pip_bounds =
@@ -424,9 +426,17 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   // The pip window should increase its size to contain the child dialog.
   gfx::Rect new_pip_bounds =
       pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  // Memorize these, rather than reusing the #if's in the cc file, in case
+  // somebody accidentally changes them.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On these platforms, the pip window should be updated.
   EXPECT_NE(initial_pip_bounds, new_pip_bounds);
   EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());
   EXPECT_GE(new_pip_bounds.height(), child_dialog_size.height());
+#else
+  // On these platforms, no adjustment should be made.
+  EXPECT_EQ(initial_pip_bounds, new_pip_bounds);
+#endif
 
   // Close the dialog.
   child_dialog->CloseNow();
