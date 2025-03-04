@@ -16,7 +16,6 @@ import("//build/config/cast.gni")
 # Chrome builds. Ideally we could create some generic knobs here that could be
 # flipped elsewhere though.
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -60,14 +59,14 @@ declare_args() {
   # Enables Closure compilation of generated JS lite bindings. In environments
   # where compilation is supported, any mojom target "foo" will also have a
   # corresponding "foo_js_library_for_compile" target generated.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     enable_mojom_closure_compile = enable_js_type_check && optimize_webui
   }
 }
 
 # Closure libraries are needed for mojom_closure_compile, and when
 # js_type_check is enabled on Ash.
-if (is_chromeos_ash) {
+if (is_chromeos) {
   generate_mojom_closure_libraries =
       enable_mojom_closure_compile || enable_js_type_check
 } else {
@@ -761,11 +760,8 @@ template("mojom") {
     }
     if (is_android) {
       enabled_features += [ "is_android" ]
-    } else if (is_chromeos_ash) {
-      enabled_features += [
-        "is_chromeos",
-        "is_chromeos_ash",
-      ]
+    } else if (is_chromeos) {
+      enabled_features += [ "is_chromeos" ]
     } else if (is_fuchsia) {
       enabled_features += [ "is_fuchsia" ]
     } else if (is_ios) {

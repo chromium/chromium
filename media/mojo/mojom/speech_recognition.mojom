@@ -249,7 +249,7 @@ interface SpeechRecognitionClientBrowserInterface {
   REMOVED_1@1();
 
   // Was BindBabelOrcaSpeechRecognitionBrowserObserver()
-  [MinVersion=7, EnableIf=is_chromeos_ash]
+  [MinVersion=7, EnableIf=is_chromeos]
   REMOVED_2@2(pending_remote<SpeechRecognitionBrowserObserver> observer);
 };
 
