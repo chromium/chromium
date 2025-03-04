@@ -191,6 +191,7 @@ test(() => {
 test(() => {
   const control = document.createElement('my-control');
   control.i.setValidity({badInput: true}, 'error message');
+  const validity = control.i.validity;
   assert_false(validity.customError);
   assert_false(validity.valid);
   assert_equals(control.i.validationMessage, 'error message');
