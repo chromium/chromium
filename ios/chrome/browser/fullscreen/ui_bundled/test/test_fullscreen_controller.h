@@ -45,9 +45,6 @@ class TestFullscreenController : public FullscreenController {
   void SetToolbarsSize(ToolbarsSize* ToolbarsSize) override;
   ToolbarsSize* GetToolbarsSize() const override;
 
-  // Needs to be cleanup after internal test changes.
-  void SetToolbarUIState(ToolbarUIState* toolbar_ui_state) override;
-
   // Calls FullscreenViewportInsetRangeChanged() on observers.
   void OnFullscreenViewportInsetRangeChanged(UIEdgeInsets min_viewport_insets,
                                              UIEdgeInsets max_viewport_insets);

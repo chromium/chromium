@@ -52,9 +52,6 @@ class FullscreenControllerImpl : public FullscreenController {
   void SetToolbarsSize(ToolbarsSize* toolbars_size) override;
   ToolbarsSize* GetToolbarsSize() const override;
 
-  // Needs to be cleanup after internal test changes.
-  void SetToolbarUIState(ToolbarUIState* toolbar_ui_state) override;
-
  private:
   // The broadcaster that drives the model.
   __strong ChromeBroadcaster* broadcaster_ = nil;

@@ -62,10 +62,6 @@ void TestFullscreenController::SetToolbarsSize(ToolbarsSize* toolbars_size) {
   toolbars_size_ = toolbars_size;
 }
 
-// Needs to be cleanup after internal test changes.
-void TestFullscreenController::SetToolbarUIState(
-    ToolbarUIState* toolbar_ui_state) {}
-
 void TestFullscreenController::BrowserTraitCollectionChangedBegin() {}
 
 void TestFullscreenController::BrowserTraitCollectionChangedEnd() {}

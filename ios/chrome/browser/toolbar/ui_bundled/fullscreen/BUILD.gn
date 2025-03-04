@@ -4,8 +4,6 @@
 
 source_set("fullscreen") {
   sources = [
-    "toolbar_ui.h",
-    "toolbar_ui.mm",
     "toolbars_size.h",
     "toolbars_size.mm",
     "toolbars_size_observer.h",
@@ -24,8 +22,6 @@ source_set("fullscreen") {
 
 source_set("fullscreen_broadcasting_util") {
   sources = [
-    "toolbar_ui_broadcasting_util.h",
-    "toolbar_ui_broadcasting_util.mm",
     "toolbars_size_broadcasting_util.h",
     "toolbars_size_broadcasting_util.mm",
   ]
