@@ -4,11 +4,10 @@
 
 import("//ash/ambient/resources/resources.gni")
 import("//build/cipd/cipd.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 assert(include_ash_ambient_animation_resources)
 
 lottie_resources_grd_file = "$target_gen_dir/lottie_resources.grd"
