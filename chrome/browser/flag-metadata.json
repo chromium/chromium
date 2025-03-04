@@ -775,7 +775,7 @@
   {
     "name": "autofill-sync-ewallet-accounts",
     "owners": ["junhuihe@chromium.org", "chrome-payments-team@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-third-party-mode-content-provider",
@@ -4344,7 +4344,7 @@
   {
     "name": "ewallet-payments",
     "owners": [ "junhuihe@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "exclude-display-in-mirror-mode",
@@ -6943,7 +6943,7 @@
   {
     "name": "payment-link-detection",
     "owners": [ "junhuihe@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "pcie-billboard-notification",
