@@ -9055,3 +9055,6 @@ crbug.com/387898495 fast/mediastream/MediaStreamTrack-applyConstraints.html [ Fa
 
 # Gardener 2025-03-03
 crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-fill-img.html [ Failure Pass ]
+
+# Gardener 2025-03-04
+crbug.com/400528100 [ Win11 ] scrollbars/scaled-rendering/scrollbars-scaled-half-size.html [ Failure ]
