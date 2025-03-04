@@ -162,7 +162,12 @@ rust_static_library("crabbyavif") {
     "dav1d",
     "libyuv",
     "capi",
+    "disable_cfi",
   ]
+
+  # Required for disable_cfi feature.
+  configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  rustflags = [ "-Zallow-features=no_sanitize" ]
 
   public_deps = [ ":header_files" ]
   deps = [
