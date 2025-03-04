@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -557,6 +558,44 @@ bool MixedContentChecker::ShouldBlockFetch(
     case mojom::blink::MixedContentContextType::kNotMixedContent:
       NOTREACHED();
   };
+
+  // Skip mixed content check for local and loopback targets if the request is a
+  // Local Network Access (LNA) request. LNA checks later on will ensure that
+  // (a) the request is actually an LNA request, and (b) the user has given
+  // permission for the LNA request to go through.
+  //
+  // Because we're still using PNA 1.0 terminology,
+  //
+  //   * local = IPAddressSpace.kPrivate
+  //   * loopback = IPAddressSpace.kLocal
+  //
+  // This will hopefully be renamed when we can remove PNA 1.0 code.
+  //
+  // Reference:
+  // https://github.com/explainers-by-googlers/local-network-access
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
+    // This request is a possible LNA request if one of the following is true:
+    //
+    // (1) The `targetAddressSpace` fetch option was set.
+    //     `target_address_space` here is private/local only when resource
+    //     request has explicitly set `targetAddressSpace` fetch option.
+    // (2) The host is a private IP address literal
+    // (3) The hostname is a .local domain (per RFC 6762).
+    //
+    // There is no check for loopback addresses because loopback addresses are
+    // considered secure and not mixed content.
+    //
+    // TODO(crbug.com/395895368): check the IP address space for initiator, only
+    // skip when the initiator is more public.
+    if (target_address_space ==
+            network::mojom::blink::IPAddressSpace::kPrivate ||
+        target_address_space == network::mojom::blink::IPAddressSpace::kLocal ||
+        network::ParsePrivateIpFromUrl(GURL(url)) ||
+        network::IsRFC6762LocalDomain(GURL(url))) {
+      allowed = true;
+    }
+  }
 
   // Skip mixed content check for private and local targets.
   // `target_address_space` here is private/local only when resource request

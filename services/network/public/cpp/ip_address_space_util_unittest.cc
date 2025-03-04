@@ -639,5 +639,23 @@ TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceOverride) {
                                     IPEndPoint(IPAddress(8, 8, 8, 8), 8888)));
 }
 
+TEST(IPAddressSpaceTest, ParsePrivateIpFromURL) {
+  EXPECT_EQ(std::nullopt, ParsePrivateIpFromUrl(GURL("http://foo.test")));
+  EXPECT_EQ(std::nullopt, ParsePrivateIpFromUrl(GURL("http://8.8.8.8")));
+  EXPECT_EQ(IPAddress(192, 168, 1, 10),
+            ParsePrivateIpFromUrl(GURL("http://192.168.1.10")));
+  EXPECT_EQ(IPAddress(10, 168, 1, 10),
+            ParsePrivateIpFromUrl(GURL("http://10.168.1.10")));
+}
+
+TEST(IPAddressSpaceTest, IsRFC6762LocalDomain) {
+  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://foo.test")));
+  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://8.8.8.8")));
+  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://192.168.1.10")));
+  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://localhost")));
+  EXPECT_EQ(true, IsRFC6762LocalDomain(GURL("http://menu.local")));
+  EXPECT_EQ(true, IsRFC6762LocalDomain(GURL("http://menu.local:8000")));
+}
+
 }  // namespace
 }  // namespace network

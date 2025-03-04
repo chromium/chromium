@@ -393,6 +393,7 @@ component("core") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
+    "//services/network/public/cpp:cpp",
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:skcms",
