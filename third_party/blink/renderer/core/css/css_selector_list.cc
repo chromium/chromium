@@ -24,14 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 
 #include <memory>
+
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -57,7 +54,8 @@ CSSSelectorList* CSSSelectorList::Copy() const {
       AdditionalBytes(sizeof(CSSSelector) * (length - 1)),
       base::PassKey<CSSSelectorList>());
   for (unsigned i = 0; i < length; ++i) {
-    new (&list->first_selector_[i]) CSSSelector(first_selector_[i]);
+    UNSAFE_TODO(new (&list->first_selector_[i])
+                    CSSSelector(first_selector_[i]));
   }
 
   return list;
@@ -67,7 +65,9 @@ HeapVector<CSSSelector> CSSSelectorList::Copy(
     const CSSSelector* selector_list) {
   HeapVector<CSSSelector> selectors;
   for (const CSSSelector* selector = selector_list; selector;
-       selector = selector->IsLastInSelectorList() ? nullptr : (selector + 1)) {
+       selector = selector->IsLastInSelectorList()
+                      ? nullptr
+                      : UNSAFE_TODO(selector + 1)) {
     selectors.push_back(*selector);
   }
   return selectors;
@@ -78,7 +78,8 @@ void CSSSelectorList::AdoptSelectorVector(
     CSSSelector* selector_array) {
   std::uninitialized_move(selector_vector.begin(), selector_vector.end(),
                           selector_array);
-  selector_array[selector_vector.size() - 1].SetLastInSelectorList(true);
+  UNSAFE_TODO(selector_array[selector_vector.size() - 1])
+      .SetLastInSelectorList(true);
 }
 
 CSSSelectorList* CSSSelectorList::AdoptSelectorVector(
@@ -100,7 +101,7 @@ unsigned CSSSelectorList::ComputeLength() const {
   }
   const CSSSelector* current = First();
   while (!current->IsLastInSelectorList()) {
-    ++current;
+    UNSAFE_TODO(++current);
   }
   return SelectorIndex(*current) + 1;
 }
@@ -120,7 +121,8 @@ bool CSSSelectorList::Renest(const CSSSelector* selector_list,
                              HeapVector<CSSSelector>& result) {
   bool renested_any = false;
   for (const CSSSelector* current = selector_list; current;
-       current = current->IsLastInSelectorList() ? nullptr : ++current) {
+       current = current->IsLastInSelectorList() ? nullptr
+                                                 : UNSAFE_TODO(++current)) {
     std::optional<CSSSelector> renested = current->Renest(new_parent);
     renested_any |= renested.has_value();
     result.push_back(renested.value_or(*current));
@@ -165,8 +167,8 @@ void CSSSelectorList::Trace(Visitor* visitor) const {
   }
 
   for (int i = 0;; ++i) {
-    visitor->Trace(first_selector_[i]);
-    if (first_selector_[i].IsLastInSelectorList()) {
+    visitor->Trace(UNSAFE_TODO(first_selector_[i]));
+    if (UNSAFE_TODO(first_selector_[i].IsLastInSelectorList())) {
       break;
     }
   }
