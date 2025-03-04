@@ -529,7 +529,7 @@
       type_name: "StyleHighlightData",
       include_paths: ["third_party/blink/renderer/core/style/style_highlight_data.h"],
       default_value: "StyleHighlightData()",
-      field_group: "misc->highlight-data",
+      field_group: "inherited->highlight-data",
       computed_style_custom_functions: [],
     },
     {
@@ -1130,7 +1130,7 @@
       // For now ComputedStyle for non-SVG elemnts always have the initial value
       // in order to disable the feature.
       name: "CssDominantBaseline",
-      field_group: "svg",
+      field_group: "svg->svginherited",
       field_template: "primitive",
       field_size: 4,
       type_name: "EDominantBaseline",
