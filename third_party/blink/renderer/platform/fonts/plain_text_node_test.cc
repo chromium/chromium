@@ -233,4 +233,13 @@ TEST_F(PlainTextNodeTest, SegmentTextBidiNoSupport) {
   EXPECT_EQ(item1.Text(), u"123\u05E9\u05DC\u05D5\u05DD456");
 }
 
+TEST_F(PlainTextNodeTest, Shape) {
+  TextRun run("hello world");
+  PlainTextNode& node = CreatePlainTextNode(run, !kNormalizeSpace,
+                                            !kBidiOverridden, kSupportsBidi);
+  for (const PlainTextItem& item : node.ItemList()) {
+    EXPECT_NE(item.GetShapeResult(), nullptr);
+  }
+}
+
 }  // namespace blink
