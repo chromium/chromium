@@ -6,9 +6,9 @@
 
 use crate::config::BuildConfig;
 use crate::crates;
+use crate::gn::{target_platform_to_condition, Condition};
 use crate::group::Group;
 use crate::inherit::find_inherited_privilege_group;
-use crate::platforms::{self, Platform, PlatformSet};
 
 use std::collections::{hash_map::Entry, HashMap, HashSet};
 use std::path::PathBuf;
@@ -81,9 +81,8 @@ pub struct DepOfDep {
     pub use_name: String,
     /// The resolved version of this dependency.
     pub version: Version,
-    /// A platform constraint for this dependency, or `None` if it's used on all
-    /// platforms.
-    pub platform: Option<Platform>,
+    /// A condition for using this dependency.
+    pub condition: Condition,
 }
 
 impl DepOfDep {
@@ -96,8 +95,8 @@ impl DepOfDep {
 /// test dependencies.
 #[derive(Clone, Debug)]
 pub struct PerKindInfo {
-    /// The set of platforms this kind is needed on.
-    pub platforms: PlatformSet,
+    /// Condition that enables the dependency.
+    pub condition: Condition,
     /// The resolved feature set for this kind.
     pub features: Vec<String>,
 }
@@ -318,16 +317,11 @@ pub fn collect_dependencies(
         // needed for build file generation later.
         for node_dep in iter_node_deps(node) {
             let dep_pkg = dep_graph.packages.get(node_dep.pkg).unwrap();
-            let mut platform = node_dep.target;
-            if let Some(p) = platform {
-                assert!(platforms::matches_supported_target(&p));
-                platform = platforms::filter_unsupported_platform_terms(p);
-            }
             let dep_of_dep = DepOfDep {
                 package_name: dep_pkg.name.clone(),
                 use_name: node_dep.lib_name.to_string(),
                 version: dep_pkg.version.clone(),
-                platform,
+                condition: node_dep.condition.clone(),
             };
 
             match node_dep.kind {
@@ -416,8 +410,8 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         let info: &mut PerKindInfo = dep
             .dependency_kinds
             .entry(dep_edge.kind)
-            .or_insert(PerKindInfo { platforms: PlatformSet::empty(), features: Vec::new() });
-        info.platforms.add(dep_edge.target);
+            .or_insert(PerKindInfo { condition: Condition::AlwaysFalse, features: Vec::new() });
+        info.condition = Condition::or(info.condition.clone(), dep_edge.condition);
     }
 
     // Initialize the dependency entry for this node's package if it's not our
@@ -431,7 +425,7 @@ struct DependencyEdge<'a> {
     pkg: &'a cargo_metadata::PackageId,
     lib_name: &'a str,
     kind: DependencyKind,
-    target: Option<Platform>,
+    condition: Condition,
 }
 
 /// Iterates over the dependencies of `node`, filtering out platforms we don't
@@ -451,14 +445,14 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
         // See crbug.com/1393600.
         let mut seen = HashSet::new();
         node_dep.dep_kinds.iter().filter_map(move |dep_kind_info| {
+            let condition = match dep_kind_info.target.as_ref() {
+                None => Condition::AlwaysTrue,
+                Some(platform) => target_platform_to_condition(platform),
+            };
+
             // Filter if it's for a platform we don't support.
-            match &dep_kind_info.target {
-                None => (),
-                Some(platform) => {
-                    if !platforms::matches_supported_target(platform) {
-                        return None;
-                    }
-                }
+            if condition == Condition::AlwaysFalse {
+                return None;
             };
 
             if seen.contains(&(&dep_kind_info.kind, &dep_kind_info.target)) {
@@ -470,7 +464,7 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
                 pkg: &node_dep.pkg,
                 lib_name: &node_dep.name,
                 kind: dep_kind_info.kind,
-                target: dep_kind_info.target.clone(),
+                condition,
             })
         })
     })
@@ -539,7 +533,6 @@ mod tests {
     #[test]
     fn collect_dependencies_on_sample_output() {
         use crate::config::CrateConfig;
-        use std::str::FromStr;
         let foo_config = CrateConfig { group: Some(Group::Test), ..CrateConfig::default() };
         let build_config = BuildConfig {
             per_crate_config: [("foo".to_string(), foo_config)].into_iter().collect(),
@@ -614,7 +607,7 @@ mod tests {
                 package_name: "bar".to_string(),
                 use_name: "baz".to_string(),
                 version: Version::new(0, 1, 0),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
         assert_eq!(
@@ -623,7 +616,7 @@ mod tests {
                 package_name: "time".to_string(),
                 use_name: "time".to_string(),
                 version: Version::new(0, 3, 14),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
 
@@ -663,7 +656,7 @@ mod tests {
                 package_name: "autocfg".to_string(),
                 use_name: "autocfg".to_string(),
                 version: Version::new(1, 1, 0),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
         assert!(dependencies[i].build_script.as_ref().is_some_and(|path| {
@@ -731,7 +724,7 @@ mod tests {
                 package_name: "serde_derive".to_string(),
                 use_name: "serde_derive".to_string(),
                 version: Version::new(1, 0, 139),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
 
@@ -754,7 +747,7 @@ mod tests {
                 package_name: "proc-macro2".to_string(),
                 use_name: "proc_macro2".to_string(),
                 version: Version::new(1, 0, 40),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
         assert_eq!(
@@ -763,7 +756,7 @@ mod tests {
                 package_name: "quote".to_string(),
                 use_name: "quote".to_string(),
                 version: Version::new(1, 0, 20),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
         assert_eq!(
@@ -772,7 +765,7 @@ mod tests {
                 package_name: "syn".to_string(),
                 use_name: "syn".to_string(),
                 version: Version::new(1, 0, 98),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
 
@@ -794,7 +787,7 @@ mod tests {
                 package_name: "proc-macro2".to_string(),
                 use_name: "proc_macro2".to_string(),
                 version: Version::new(1, 0, 40),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
         assert_eq!(
@@ -803,7 +796,7 @@ mod tests {
                 package_name: "quote".to_string(),
                 use_name: "quote".to_string(),
                 version: Version::new(1, 0, 20),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
         assert_eq!(
@@ -812,7 +805,7 @@ mod tests {
                 package_name: "unicode-ident".to_string(),
                 use_name: "unicode_ident".to_string(),
                 version: Version::new(1, 0, 1),
-                platform: None,
+                condition: Condition::AlwaysTrue,
             }
         );
 
@@ -834,7 +827,7 @@ mod tests {
                 package_name: "winapi-util".to_string(),
                 use_name: "winapi_util".to_string(),
                 version: Version::new(0, 1, 5),
-                platform: Some(Platform::from_str("cfg(windows)").unwrap()),
+                condition: Condition::Expr("is_win".to_string()),
             }
         );
 
@@ -855,7 +848,7 @@ mod tests {
                 package_name: "libc".to_string(),
                 use_name: "libc".to_string(),
                 version: Version::new(0, 2, 133),
-                platform: Some(Platform::from_str("cfg(target_family = \"unix\")").unwrap()),
+                condition: Condition::Expr("!is_win".to_string()),
             }
         );
         assert_eq!(
@@ -864,7 +857,7 @@ mod tests {
                 package_name: "num_threads".to_string(),
                 use_name: "num_threads".to_string(),
                 version: Version::new(0, 1, 6),
-                platform: Some(Platform::from_str("cfg(target_family = \"unix\")").unwrap()),
+                condition: Condition::Expr("!is_win".to_string()),
             }
         );
 
@@ -902,12 +895,11 @@ mod tests {
 
         i += 1;
 
-        let win_platform = Platform::from_str("cfg(windows)").unwrap();
         assert_eq!(dependencies[i].package_name, "winapi-util");
         assert_eq!(dependencies[i].version, Version::new(0, 1, 5));
         assert!(dependencies[i].dependency_kinds.get(&DependencyKind::Normal).is_some_and(|d| {
             assert_eq!(d.features, empty_str_slice);
-            assert_eq!(d.platforms, PlatformSet::one(Some(win_platform.clone())));
+            assert_eq!(d.condition, Condition::Expr("is_win".to_string()));
             true
         }));
         assert_eq!(dependencies[i].dependencies.len(), 1);
@@ -919,7 +911,7 @@ mod tests {
                 package_name: "winapi".to_string(),
                 use_name: "winapi".to_string(),
                 version: Version::new(0, 3, 9),
-                platform: Some(win_platform.clone()),
+                condition: Condition::Expr("is_win".to_string()),
             }
         );
 
