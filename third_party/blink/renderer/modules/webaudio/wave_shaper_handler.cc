@@ -19,6 +19,8 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
@@ -41,6 +43,7 @@ namespace blink {
 namespace {
 
 constexpr unsigned kNumberOfChannels = 1;
+constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 
 }  // namespace
 
@@ -565,15 +568,112 @@ WaveShaperHandler::OverSampleType WaveShaperHandler::Oversample() {
 }
 
 WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
-    : AudioBasicProcessorHandler(
-          NodeType::kNodeTypeWaveShaper,
-          node,
+    : AudioHandler(NodeType::kNodeTypeWaveShaper, node, sample_rate),
+      processor_(std::make_unique<WaveShaperProcessor>(
           sample_rate,
-          std::make_unique<WaveShaperProcessor>(
-              sample_rate,
-              kNumberOfChannels,
-              node.context()->GetDeferredTaskHandler().RenderQuantumFrames())) {
+          kNumberOfChannels,
+          node.context()->GetDeferredTaskHandler().RenderQuantumFrames())) {
+  AddInput();
+  AddOutput(kDefaultNumberOfOutputChannels);
+
   Initialize();
+}
+
+void WaveShaperHandler::Process(uint32_t frames_to_process) {
+  AudioBus* destination_bus = Output(0).Bus();
+
+  if (!IsInitialized() || !Processor() ||
+      Processor()->NumberOfChannels() != NumberOfChannels()) {
+    destination_bus->Zero();
+  } else {
+    scoped_refptr<AudioBus> source_bus = Input(0).Bus();
+
+    // FIXME: if we take "tail time" into account, then we can avoid calling
+    // processor()->process() once the tail dies down.
+    if (!Input(0).IsConnected()) {
+      source_bus->Zero();
+    }
+
+    Processor()->Process(source_bus.get(), destination_bus, frames_to_process);
+  }
+}
+
+void WaveShaperHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
+  if (!IsInitialized() || !Processor()) {
+    return;
+  }
+
+  Processor()->ProcessOnlyAudioParams(frames_to_process);
+}
+
+void WaveShaperHandler::Initialize() {
+  if (IsInitialized()) {
+    return;
+  }
+
+  DCHECK(Processor());
+  Processor()->Initialize();
+
+  AudioHandler::Initialize();
+}
+
+void WaveShaperHandler::Uninitialize() {
+  if (!IsInitialized()) {
+    return;
+  }
+
+  DCHECK(Processor());
+  Processor()->Uninitialize();
+
+  AudioHandler::Uninitialize();
+}
+
+void WaveShaperHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
+  DCHECK(Context()->IsAudioThread());
+  Context()->AssertGraphOwner();
+
+  DCHECK_EQ(input, &Input(0));
+  DCHECK(Processor());
+
+  unsigned number_of_channels = input->NumberOfChannels();
+
+  if (IsInitialized() && number_of_channels != Output(0).NumberOfChannels()) {
+    // We're already initialized but the channel count has changed.
+    Uninitialize();
+  }
+
+  if (!IsInitialized()) {
+    // This will propagate the channel count to any nodes connected further down
+    // the chain...
+    Output(0).SetNumberOfChannels(number_of_channels);
+
+    // Re-initialize the processor with the new channel count.
+    Processor()->SetNumberOfChannels(number_of_channels);
+    Initialize();
+  }
+
+  AudioHandler::CheckNumberOfChannelsForInput(input);
+}
+
+bool WaveShaperHandler::RequiresTailProcessing() const {
+  return processor_->RequiresTailProcessing();
+}
+
+double WaveShaperHandler::TailTime() const {
+  return processor_->TailTime();
+}
+
+double WaveShaperHandler::LatencyTime() const {
+  return processor_->LatencyTime();
+}
+
+void WaveShaperHandler::PullInputs(uint32_t frames_to_process) {
+  // Render directly into output bus for in-place processing
+  Input(0).Pull(Output(0).Bus(), frames_to_process);
+}
+
+unsigned WaveShaperHandler::NumberOfChannels() {
+  return Output(0).NumberOfChannels();
 }
 
 WaveShaperProcessor* WaveShaperHandler::GetWaveShaperProcessor() {
