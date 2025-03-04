@@ -9,15 +9,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/country_codes/country_codes.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace regional_capabilities {
 namespace {
-
-using ::testing::regional_capabilities::GetCountryId;
 
 constexpr int kUsaCountryId = country_codes::CountryCharsToCountryID('U', 'S');
 
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_P(
   auto& service = CHECK_DEREF(
       RegionalCapabilitiesServiceFactory::GetForProfile(browser()->profile()));
 
-  EXPECT_EQ(GetCountryId(service), GetExpectedCountryId());
+  EXPECT_EQ(service.GetCountryId().GetForTesting(), GetExpectedCountryId());
 }
 
 INSTANTIATE_TEST_SUITE_P(

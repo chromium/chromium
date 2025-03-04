@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 
@@ -52,7 +53,7 @@ RegionalCapabilitiesService::~RegionalCapabilitiesService() {
 #endif
 }
 
-int RegionalCapabilitiesService::GetCountryId() {
+int RegionalCapabilitiesService::GetCountryIdInternal() {
   std::optional<SearchEngineCountryOverride> country_override =
       GetSearchEngineCountryOverride();
   if (country_override.has_value()) {
@@ -69,8 +70,12 @@ int RegionalCapabilitiesService::GetCountryId() {
   return country_id_cache_.value();
 }
 
+CountryIdHolder RegionalCapabilitiesService::GetCountryId() {
+  return CountryIdHolder(GetCountryIdInternal());
+}
+
 bool RegionalCapabilitiesService::IsInEeaCountry() {
-  return IsEeaCountry(GetCountryId());
+  return regional_capabilities::IsEeaCountry(GetCountryIdInternal());
 }
 
 void RegionalCapabilitiesService::InitializeCountryIdCache() {

@@ -53,6 +53,7 @@ file://ui/android/java/res/LAYOUT_OWNERS
 file://components/policy/ENTERPRISE_POLICY_OWNERS
 
 # This restriction is in place due to the policies and compliance regulations around this code.
+file://components/regional_capabilities/COMPLIANCE_OWNERS
 file://components/search_engines/COMPLIANCE_OWNERS
 file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 file://chrome/android/java/src/org/chromium/chrome/browser/searchwidget/COMPLIANCE_OWNERS

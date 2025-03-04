@@ -16,26 +16,12 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
-namespace search_engines {
-class SearchEngineChoiceService;
-}
-
-
-namespace regional_capabilities {
-class RegionalCapabilitiesService;
-}
-
-namespace testing::regional_capabilities {
-int GetCountryId(::regional_capabilities::RegionalCapabilitiesService&);
-}
-
 class PrefService;
 
-namespace TemplateURLPrepopulateData {
-class Resolver;
-}
-
 namespace regional_capabilities {
+
+class CountryIdHolder;
+
 // Service for managing the state related to Search Engine Choice (mostly
 // for the country information).
 class RegionalCapabilitiesService : public KeyedService {
@@ -67,6 +53,12 @@ class RegionalCapabilitiesService : public KeyedService {
       std::unique_ptr<Client> regional_capabilities_client);
   ~RegionalCapabilitiesService() override;
 
+  // Returns the country ID to use in the context of regional checks.
+  // Can be overridden using `switches::kSearchEngineChoiceCountry`.
+  // Note: Access to the raw value is restricted, see `CountryIdHolder` for
+  // more details.
+  CountryIdHolder GetCountryId();
+
   // Returns whether the profile country is a EEA member.
   //
   // Testing note: To control the value this returns in manual or automated
@@ -94,27 +86,7 @@ class RegionalCapabilitiesService : public KeyedService {
 #endif
 
  private:
-  // -- Private access allow-list begin ---------------------------------------
-
-  // TemplateURLPrepopulateData::Resolver needs to know the exact country to
-  // provide the right search engine data.
-  // See https://crbug.com/328040066
-  friend class TemplateURLPrepopulateData::Resolver;
-
-  // Test-only. See https://crbug.com/328040066
-  friend int ::testing::regional_capabilities::GetCountryId(
-      ::regional_capabilities::RegionalCapabilitiesService&);
-
-  // TODO(b:328040066): Investigate friend-ing methods instead whole classes
-  // to tighten private access further.
-  friend class search_engines::SearchEngineChoiceService;
-
-  // -- Private access allow-list end -----------------------------------------
-
-  // Returns the country ID to use in the context of regional checks.
-  // Can be overridden using `switches::kSearchEngineChoiceCountry`.
-  // See `//components/country_codes` for the Country ID format.
-  int GetCountryId();
+  int GetCountryIdInternal();
 
   // Checks whether the persisted
   void InitializeCountryIdCache();

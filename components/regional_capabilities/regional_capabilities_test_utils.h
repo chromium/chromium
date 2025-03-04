@@ -46,12 +46,4 @@ class FakeRegionalCapabilitiesServiceClient
 
 }  // namespace regional_capabilities
 
-namespace testing::regional_capabilities {
-
-// Exposes `RegionalCapabilitiesService::GetCountryId()` to test functions,
-// as it is a friended private method.
-int GetCountryId(::regional_capabilities::RegionalCapabilitiesService& service);
-
-}  // namespace testing::regional_capabilities
-
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_TEST_UTILS_H_
