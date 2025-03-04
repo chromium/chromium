@@ -4757,7 +4757,7 @@
   {
      "name": "force-list-tab-switcher",
      "owners": ["ckitagawa@chromium.org", "skym@chromium.org"],
-     "expiry_milestone": 136
+     "expiry_milestone": 140
   },
   {
     "name": "force-ntp-mobile-promo",
