@@ -9059,3 +9059,4 @@ crbug.com/381238355 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-ima
 
 # Gardener 2025-03-04
 crbug.com/400528100 [ Win11 ] scrollbars/scaled-rendering/scrollbars-scaled-half-size.html [ Failure ]
+crbug.com/400528100 [ Win11-arm64 ] scrollbars/scaled-rendering/scrollbars-scaled-half-size.html [ Failure ]
