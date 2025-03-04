@@ -31,26 +31,26 @@ using serde_json_lenient::ContextPointer;
 const char kSecurityJsonParsingTime[] = "Security.JSONParser.ParsingTime";
 
 ContextPointer& ListAppendList(ContextPointer& ctx) {
-  auto& value = reinterpret_cast<base::Value&>(ctx);
-  value.GetList().Append(base::Value::List());
-  return reinterpret_cast<ContextPointer&>(value.GetList().back());
+  auto& list = reinterpret_cast<base::Value&>(ctx).GetList();
+  list.Append(base::Value::List());
+  return reinterpret_cast<ContextPointer&>(list.back());
 }
 
 ContextPointer& ListAppendDict(ContextPointer& ctx) {
-  auto& value = reinterpret_cast<base::Value&>(ctx);
-  value.GetList().Append(base::Value::Dict());
-  return reinterpret_cast<ContextPointer&>(value.GetList().back());
+  auto& list = reinterpret_cast<base::Value&>(ctx).GetList();
+  list.Append(base::Value::Dict());
+  return reinterpret_cast<ContextPointer&>(list.back());
 }
 
 void ListAppendNone(ContextPointer& ctx) {
-  auto& value = reinterpret_cast<base::Value&>(ctx);
-  value.GetList().Append(base::Value());
+  auto& list = reinterpret_cast<base::Value&>(ctx).GetList();
+  list.Append(base::Value());
 }
 
 template <class T, class As = T>
 void ListAppendValue(ContextPointer& ctx, T v) {
-  auto& value = reinterpret_cast<base::Value&>(ctx);
-  value.GetList().Append(As{v});
+  auto& list = reinterpret_cast<base::Value&>(ctx).GetList();
+  list.Append(As{v});
 }
 
 ContextPointer& DictSetList(ContextPointer& ctx, rust::Str key) {
