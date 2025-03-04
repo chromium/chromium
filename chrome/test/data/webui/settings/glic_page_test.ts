@@ -4,14 +4,13 @@
 
 import 'chrome://settings/settings.js';
 
-import type {CrCollapseElement, CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 
@@ -129,55 +128,6 @@ suite('GlicPage', function() {
       assertTrue(isVisible(keyboardShortcutSetting));
     });
   }
-
-  test('ShortcutInputSuspends', async () => {
-    const shortcutInput = $<CrShortcutInputElement>('shortcutInput')!;
-
-    // Clicking on the edit button should suspend shortcuts because the input is
-    // waiting for a new shortcut to save
-    shortcutInput.$.edit.click();
-    let arg = await glicBrowserProxy.whenCalled('setShortcutSuspensionState');
-    assertTrue(arg);
-    glicBrowserProxy.reset();
-
-    // Pressing the escape key should re-enable shortcuts since the input is no
-    // longer waiting for a shortcut to save
-    shortcutInput.$.edit.click();
-    keyDownOn(shortcutInput.$.input, 27);  // Escape key.
-    arg = await glicBrowserProxy.whenCalled('setShortcutSuspensionState');
-    assertFalse(arg);
-  });
-
-  test('UpdateShortcut', async () => {
-    const shortcutInput = $<CrShortcutInputElement>('shortcutInput')!;
-    const field = shortcutInput.$.input;
-    await microtasksFinished();
-    assertEquals(1, glicBrowserProxy.getCallCount('getGlicShortcut'));
-    assertEquals('⌃A', shortcutInput.shortcut);
-
-    // Clicking on the edit button should clear out the shortcut.
-    glicBrowserProxy.setGlicShortcutResponse('');
-    shortcutInput.$.edit.click();
-    let arg = await glicBrowserProxy.whenCalled('setGlicShortcut');
-    await microtasksFinished();
-    assertEquals('', arg);
-    assertEquals('', shortcutInput.shortcut);
-    glicBrowserProxy.reset();
-
-    // Verify that inputting an invalid shortcut doesn't update the shortcut.
-    keyDownOn(field, 65);
-    await microtasksFinished();
-    assertEquals(0, glicBrowserProxy.getCallCount('setGlicShortcut'));
-    glicBrowserProxy.reset();
-
-    // Inputting a valid shortcut should update the shortcut.
-    glicBrowserProxy.setGlicShortcutResponse('⌃A');
-    keyDownOn(field, 65, ['ctrl']);
-    arg = await glicBrowserProxy.whenCalled('setGlicShortcut');
-    await microtasksFinished();
-    assertEquals('Ctrl+A', arg);
-    assertEquals('⌃A', shortcutInput.shortcut);
-  });
 
   test('GeolocationToggleEnabled', () => {
     page.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
