@@ -7495,13 +7495,6 @@ const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =
     "If enabled, idle sockets will not be closed when chrome detects memory "
     "pressure. This applies to web pages only and not to internal requests.";
 
-const char kDisableOfficeEditingComponentAppName[] =
-    "Disable Office Editing for Docs, Sheets & Slides";
-const char kDisableOfficeEditingComponentAppDescription[] =
-    "Disables Office Editing for Docs, Sheets & Slides component app so "
-    "handlers won't be registered, making it possible to install another "
-    "version for testing.";
-
 const char kLockedModeName[] = "Enable the Locked Mode API.";
 const char kLockedModeDescription[] =
     "Enabled the Locked Mode Web API which allows admin-allowlisted sites "

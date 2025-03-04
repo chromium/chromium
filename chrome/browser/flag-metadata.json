@@ -2098,13 +2098,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "disable-office-editing-component-app",
-    "owners": [
-      "quickoffice-chrome-eng@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "disable-process-reuse",
     "owners": [
       "yangsharon@google.com", "alexmos@google.com", "creis@google.com" ],

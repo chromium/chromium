@@ -4400,9 +4400,6 @@ extern const char kCrOSEnforceSystemAecNsAgcDescription[];
 extern const char kDisableIdleSocketsCloseOnMemoryPressureName[];
 extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
 
-extern const char kDisableOfficeEditingComponentAppName[];
-extern const char kDisableOfficeEditingComponentAppDescription[];
-
 extern const char kLockedModeName[];
 extern const char kLockedModeDescription[];
 

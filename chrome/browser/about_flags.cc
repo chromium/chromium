@@ -4868,10 +4868,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kDisableIdleSocketsCloseOnMemoryPressure)},
-    {"disable-office-editing-component-app",
-     flag_descriptions::kDisableOfficeEditingComponentAppName,
-     flag_descriptions::kDisableOfficeEditingComponentAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kDisableOfficeEditingComponentApp)},
     {"one-group-per-renderer", flag_descriptions::kOneGroupPerRendererName,
      flag_descriptions::kOneGroupPerRendererDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(base::kOneGroupPerRenderer)},
