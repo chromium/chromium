@@ -7504,7 +7504,7 @@
   {
     "name": "read-anything-read-aloud",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "read-anything-read-aloud-phrase-highlighting",
@@ -7514,7 +7514,7 @@
       "ajitnarayanan@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "read-printer-capabilities-with-xps",
