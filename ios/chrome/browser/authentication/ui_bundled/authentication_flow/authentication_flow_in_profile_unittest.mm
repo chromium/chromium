@@ -171,7 +171,7 @@ TEST_F(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
   run_loop = std::make_unique<base::RunLoop>();
   // Perform sign-out request, simulating what the real performer would do..
   authentication_service->SignOut(
-      signin_metrics::ProfileSignout::kChangeAccountInAccountMenu,
+      signin_metrics::ProfileSignout::kSignoutForAccountSwitching,
       base::CallbackToBlock(run_loop->QuitClosure()));
   run_loop->Run();
   // Continue AuthenticationFlowInProfile flow.
