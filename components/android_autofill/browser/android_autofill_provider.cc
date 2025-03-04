@@ -86,13 +86,9 @@ std::unique_ptr<PasswordForm> ParseToPasswordForm(
 }
 
 // Returns whether we should attempt to cache provider responses for this form.
-// Currently, that is the case iff we diagnose it to be a login form or a change
-// password form.
+// Currently, that is the case iff we diagnose it to be a login form.
 bool ShouldCachePasswordForm(const PasswordForm& pw_form) {
-  return pw_form.IsLikelyLoginForm() ||
-         (pw_form.IsLikelyChangePasswordForm() &&
-          base::FeatureList::IsEnabled(
-              features::kAndroidAutofillPrefillRequestsForChangePassword));
+  return pw_form.IsLikelyLoginForm();
 }
 
 content::RenderFrameHost* GetRenderFrameHost(AutofillManager* manager) {
@@ -243,7 +239,7 @@ bool AndroidAutofillProvider::IsFormSimilarToCachedForm(
       return false;
     }
     PasswordParserOverrides overrides =
-        PasswordParserOverrides::FromPasswordForm(*pw_form, *form_structure)
+        PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure)
             .value_or(PasswordParserOverrides());
     return cached_data_->password_parser_overrides == overrides;
   }
@@ -770,8 +766,7 @@ void AndroidAutofillProvider::MaybeSendPrefillRequest(
       form_structure->ToFormData(), CreateSessionId());
   cached_data_->cached_form->UpdateFieldTypes(*form_structure);
   if (std::optional<PasswordParserOverrides> overrides =
-          PasswordParserOverrides::FromPasswordForm(*pw_form,
-                                                    *form_structure)) {
+          PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure)) {
     // If we manage to match the fields that the password form parser
     // identified as username and password fields, override their types.
     cached_data_->password_parser_overrides = *std::move(overrides);
@@ -790,15 +785,12 @@ AndroidAutofillProvider::PasswordParserOverrides::ToFieldTypeMap() const {
   if (password_field_id) {
     result.emplace(*password_field_id, FieldType::PASSWORD);
   }
-  if (new_password_field_id) {
-    result.emplace(*new_password_field_id, FieldType::NEW_PASSWORD);
-  }
   return result;
 }
 
 // static
 std::optional<AndroidAutofillProvider::PasswordParserOverrides>
-AndroidAutofillProvider::PasswordParserOverrides::FromPasswordForm(
+AndroidAutofillProvider::PasswordParserOverrides::FromLoginForm(
     const PasswordForm& pw_form,
     const FormStructure& form_structure) {
   PasswordParserOverrides result;
@@ -816,19 +808,10 @@ AndroidAutofillProvider::PasswordParserOverrides::FromPasswordForm(
     }
   }
 
-  // Perform consistency checks to confirm that the lifting was successful.
-  if (pw_form.IsLikelyLoginForm() && result.username_field_id &&
-      result.password_field_id) {
-    return result;
+  if (!result.username_field_id || !result.password_field_id) {
+    return std::nullopt;
   }
-  if (pw_form.IsLikelyChangePasswordForm() && result.password_field_id &&
-      result.new_password_field_id &&
-      base::FeatureList::IsEnabled(
-          features::kAndroidAutofillPrefillRequestsForChangePassword)) {
-    return result;
-  }
-
-  return std::nullopt;
+  return result;
 }
 
 AndroidAutofillProvider::CachedData::CachedData() = default;
