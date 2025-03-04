@@ -273,13 +273,6 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     dependencies
         .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
 
-    // Remove dev dependencies since tests aren't run.
-    dependencies.retain(|dep| {
-        dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal)
-        // TODO: Needed?
-            || dep.dependency_kinds.contains_key(&deps::DependencyKind::Build)
-    });
-
     dependencies.sort_unstable_by(|a, b| {
         a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
     });

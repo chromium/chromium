@@ -39,8 +39,6 @@ pub struct Package {
     pub dependencies: Vec<DepOfDep>,
     /// Same as the above, but for build script deps.
     pub build_dependencies: Vec<DepOfDep>,
-    /// Same as the above, but for test deps.
-    pub dev_dependencies: Vec<DepOfDep>,
     /// A package can be depended upon in different ways: as a normal
     /// dependency, just for build scripts, or just for tests. `kinds` contains
     /// an entry for each way this package is depended on.
@@ -327,8 +325,7 @@ pub fn collect_dependencies(
             match node_dep.kind {
                 DependencyKind::Normal => dep.dependencies.push(dep_of_dep),
                 DependencyKind::Build => dep.build_dependencies.push(dep_of_dep),
-                DependencyKind::Development => dep.dev_dependencies.push(dep_of_dep),
-                DependencyKind::Unknown => unreachable!(),
+                DependencyKind::Development | DependencyKind::Unknown => unreachable!(),
             }
         }
 
@@ -385,7 +382,6 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         edition: String::new(),
         dependencies: Vec::new(),
         build_dependencies: Vec::new(),
-        dev_dependencies: Vec::new(),
         dependency_kinds: HashMap::new(),
         lib_target: None,
         bin_targets: Vec::new(),
@@ -454,6 +450,12 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
             if condition == Condition::AlwaysFalse {
                 return None;
             };
+
+            // At this point we don't support building dev dependencies
+            // (e.g. native Rust unit tests) for packages from crates.io.
+            if dep_kind_info.kind == DependencyKind::Development {
+                return None;
+            }
 
             if seen.contains(&(&dep_kind_info.kind, &dep_kind_info.target)) {
                 return None;
@@ -631,16 +633,6 @@ mod tests {
 
         i += 1;
 
-        assert_eq!(dependencies[i].package_name, "more-asserts");
-        assert_eq!(dependencies[i].version, Version::new(0, 3, 0));
-        assert!(dependencies[i].is_toplevel_dep);
-        assert_eq!(
-            dependencies[i].dependency_kinds.get(&DependencyKind::Development).unwrap().features,
-            empty_str_slice
-        );
-
-        i += 1;
-
         assert_eq!(dependencies[i].package_name, "num-traits");
         assert_eq!(dependencies[i].version, Version::new(0, 2, 15));
         assert!(dependencies[i].is_toplevel_dep);
@@ -717,7 +709,6 @@ mod tests {
         );
         assert_eq!(dependencies[i].dependencies.len(), 1);
         assert_eq!(dependencies[i].build_dependencies.len(), 0);
-        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
         assert_eq!(
             dependencies[i].dependencies[0],
             DepOfDep {
@@ -740,7 +731,6 @@ mod tests {
         assert_eq!(dependencies[i].group, Group::Safe);
         assert_eq!(dependencies[i].dependencies.len(), 3);
         assert_eq!(dependencies[i].build_dependencies.len(), 0);
-        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
         assert_eq!(
             dependencies[i].dependencies[0],
             DepOfDep {
@@ -780,7 +770,6 @@ mod tests {
         );
         assert_eq!(dependencies[i].dependencies.len(), 3);
         assert_eq!(dependencies[i].build_dependencies.len(), 0);
-        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
         assert_eq!(
             dependencies[i].dependencies[0],
             DepOfDep {
@@ -820,7 +809,6 @@ mod tests {
         );
         assert_eq!(dependencies[i].dependencies.len(), 1);
         assert_eq!(dependencies[i].build_dependencies.len(), 0);
-        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
         assert_eq!(
             dependencies[i].dependencies[0],
             DepOfDep {
@@ -891,7 +879,6 @@ mod tests {
         );
         assert_eq!(dependencies[i].dependencies.len(), 0);
         assert_eq!(dependencies[i].build_dependencies.len(), 0);
-        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
 
         i += 1;
 
@@ -904,7 +891,6 @@ mod tests {
         }));
         assert_eq!(dependencies[i].dependencies.len(), 1);
         assert_eq!(dependencies[i].build_dependencies.len(), 0);
-        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
         assert_eq!(
             dependencies[i].dependencies[0],
             DepOfDep {
