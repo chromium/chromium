@@ -7259,6 +7259,7 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] http/tests/devtools/oopif/oopif-elements-inspect.js [ Skip Timeout ]
 
 crbug.com/400528100 [ Mac ] css3/blending/effect-background-blend-mode-stacking.html [ Failure ]
+crbug.com/400528100 [ Win11 ] css3/blending/effect-background-blend-mode-stacking.html [ Failure ]
 crbug.com/400528100 [ Mac ] svg/transforms/svg-css-transforms.xhtml [ Failure ]
 crbug.com/400528100 [ Mac ] transforms/svg-vs-css.xhtml [ Failure ]
 
