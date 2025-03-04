@@ -20,7 +20,9 @@ GlicFrePageHandler::GlicFrePageHandler(
     mojo::PendingReceiver<glic::mojom::FrePageHandler> receiver)
     : webui_contents_(webui_contents), receiver_(this, std::move(receiver)) {}
 
-GlicFrePageHandler::~GlicFrePageHandler() = default;
+GlicFrePageHandler::~GlicFrePageHandler() {
+  WebUiStateChanged(mojom::FreWebUiState::kUninitialized);
+}
 
 content::BrowserContext* GlicFrePageHandler::browser_context() const {
   return webui_contents_->GetBrowserContext();
@@ -43,6 +45,11 @@ void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {
     GetGlicService()->CreateTab(url, /*open_in_background=*/true, std::nullopt,
                                 base::DoNothing());
   }
+}
+
+void GlicFrePageHandler::WebUiStateChanged(mojom::FreWebUiState new_state) {
+  GetGlicService()->window_controller().fre_controller()->WebUiStateChanged(
+      new_state);
 }
 
 }  // namespace glic

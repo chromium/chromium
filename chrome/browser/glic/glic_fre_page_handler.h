@@ -35,6 +35,7 @@ class GlicFrePageHandler : public glic::mojom::FrePageHandler {
   void AcceptFre() override;
   void DismissFre() override;
   void ValidateAndOpenLinkInNewTab(const GURL& url) override;
+  void WebUiStateChanged(mojom::FreWebUiState new_state) override;
 
  private:
   content::BrowserContext* browser_context() const;

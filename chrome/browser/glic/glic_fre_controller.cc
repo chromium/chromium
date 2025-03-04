@@ -40,6 +40,19 @@ GlicFreController::GlicFreController(Profile* profile,
 
 GlicFreController::~GlicFreController() = default;
 
+void GlicFreController::WebUiStateChanged(mojom::FreWebUiState new_state) {
+  if (webui_state_ != new_state) {
+    // UI State has changed
+    webui_state_ = new_state;
+    webui_state_callback_list_.Notify(webui_state_);
+  }
+}
+
+base::CallbackListSubscription GlicFreController::AddWebUiStateChangedCallback(
+    WebUiStateChangedCallback callback) {
+  return webui_state_callback_list_.Add(std::move(callback));
+}
+
 void GlicFreController::Shutdown() {
   DismissFre();
 }
