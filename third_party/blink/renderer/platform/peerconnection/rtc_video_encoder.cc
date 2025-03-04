@@ -804,6 +804,18 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
                                       simulcast_to_svc_converter);
 
  private:
+  enum {
+    kInputBufferExtraCount = 1,  // The number of input buffers allocated, more
+                                 // than what is requested by
+                                 // VEA::RequireBitstreamBuffers().
+    kOutputBufferCount = 3,
+
+    // Max number of frames the encoder is allowed to hold before dropping
+    // input frames. Avoids large delay buildups. See
+    // https://issuetracker.google.com/issues/298660336 for details.
+    kMaxFramesInEncoder = 15,
+  };
+
   // proxy to pass weak reference to webrtc which could be invalidated when
   // frame size changes and new output buffers are allocated.
   class EncodedBufferReferenceHolder {
@@ -828,20 +840,15 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
     base::WeakPtrFactory<EncodedBufferReferenceHolder> weak_this_factory_{this};
   };
 
+  // The resource that may be required for some frame conversion when inputting
+  // a frame to VEA.
+  struct InputBufferResource {
+    std::unique_ptr<base::MappedReadOnlyRegion> i420_shmem = nullptr;
+  };
+
   void RequestEncodingParametersChangeInternal(
       const webrtc::VideoEncoder::RateControlParameters& parameters,
       const std::optional<gfx::Size>& input_visible_size);
-
-  enum {
-    kInputBufferExtraCount = 1,  // The number of input buffers allocated, more
-                                 // than what is requested by
-                                 // VEA::RequireBitstreamBuffers().
-    kOutputBufferCount = 3,
-    kMaxFramesInEncoder = 15,  // Max number of frames the encoder is allowed
-                               // to hold before dropping input frames.
-                               // Avoids large delay buildups.
-                               // See b/298660336 for details.
-  };
 
   // Perform encoding on an input frame from the input queue.
   void EncodeOneFrame(FrameChunk frame_chunk);
@@ -922,23 +929,20 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   gfx::Size input_frame_coded_size_;
   gfx::Size input_visible_size_;
 
-  // Shared memory buffers for input/output with the VEA.
-  Vector<std::unique_ptr<base::MappedReadOnlyRegion>> input_buffers_;
+  // The buffer resource that is possibly necessary to input a video frame.
+  // The resource is not allocated until it's needed.
+  Vector<InputBufferResource> input_buffers_;
+  // The slot of |input_buffers_| that is available to use for input. As a LIFO
+  // since we don't care about ordering.
+  Vector<size_t> input_buffers_free_;
 
   Vector<std::pair<base::UnsafeSharedMemoryRegion,
                    scoped_refptr<RefCountedWritableSharedMemoryMapping>>>
       output_buffers_;
 
-  // The number of input buffers requested by hardware video encoder.
-  size_t input_buffers_requested_count_{0};
-
   // The number of frames that are sent to a hardware video encoder by Encode()
   // and the encoder holds them.
   size_t frames_in_encoder_count_{0};
-
-  // Input buffers ready to be filled with input from Encode().  As a LIFO since
-  // we don't care about ordering.
-  Vector<int> input_buffers_free_;
 
   // The number of output buffers that have been sent to a hardware video
   // encoder by VideoEncodeAccelerator::UseOutputBitstreamBuffer() and the
@@ -1185,44 +1189,31 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
       if (frame->storage_type() == media::VideoFrame::STORAGE_UNOWNED_MEMORY) {
         if (use_native_input_) {
           use_native_input_ = false;
-          // VEA previously worked with imported frames. Now they need input
-          // buffers when handling non-imported frames.
-          if (input_buffers_.empty()) {
-            input_buffers_free_.resize(input_buffers_requested_count_);
-            input_buffers_.resize(input_buffers_requested_count_);
-            for (wtf_size_t i = 0; i < input_buffers_requested_count_; i++) {
-              input_buffers_free_[i] = i;
-              input_buffers_[i] = nullptr;
-            }
-          }
         }
       } else if (frame->storage_type() ==
                  media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
         if (!use_native_input_) {
           use_native_input_ = true;
-          // VEA previously worked with input buffers. Now they need imported
-          // frames, so get rid of those buffers.
-          input_buffers_free_.clear();
-          input_buffers_.clear();
+          // TODO(https://issuetracker.google.com/issues/337130619): Ideally
+          // |input_buffers_| should be cleaned up here.
         }
       }
     }
   }
 #endif
 
-  if (use_native_input_) {
-    DCHECK(pending_frames_.empty());
-    EncodeOneFrameWithNativeInput(std::move(frame_chunk));
-    return;
-  }
-
   pending_frames_.push_back(std::move(frame_chunk));
-  // When |input_buffers_free_| is empty, EncodeOneFrame() for the frame in
-  // |pending_frames_| will be invoked from InputBufferReleased().
+  // When |input_buffers_free_| is empty, EncodeOneFrame() or
+  // EncodeOneFrameWithNativeInput() for the frame in |pending_frames_| will be
+  // invoked from InputBufferReleased().
   while (!pending_frames_.empty() && !input_buffers_free_.empty()) {
     auto chunk = std::move(pending_frames_.front());
     pending_frames_.pop_front();
-    EncodeOneFrame(std::move(chunk));
+    if (use_native_input_) {
+      EncodeOneFrameWithNativeInput(std::move(chunk));
+    } else {
+      EncodeOneFrame(std::move(chunk));
+    }
   }
 }
 
@@ -1424,16 +1415,13 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
     return;
 
   input_frame_coded_size_ = input_coded_size;
-  input_buffers_requested_count_ = input_count + kInputBufferExtraCount;
+  size_t input_buffers_requested_count = input_count + kInputBufferExtraCount;
 
-  // |input_buffers_| is only needed in non import mode.
-  if (!use_native_input_) {
-    input_buffers_free_.resize(input_buffers_requested_count_);
-    input_buffers_.resize(input_buffers_requested_count_);
-    for (wtf_size_t i = 0; i < input_buffers_requested_count_; i++) {
-      input_buffers_free_[i] = i;
-      input_buffers_[i] = nullptr;
-    }
+  input_buffers_.resize(input_buffers_requested_count);
+  input_buffers_free_.resize(input_buffers_requested_count);
+  for (wtf_size_t i = 0; i < input_buffers_requested_count; i++) {
+    input_buffers_free_[i] = i;
+    input_buffers_[i] = {};
   }
 
   output_buffers_.clear();
@@ -2047,21 +2035,23 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
       }
     } else {
       const int index = input_buffers_free_.back();
-      if (!input_buffers_[index]) {
+      auto& i420_shmem = input_buffers_[index].i420_shmem;
+      if (!i420_shmem) {
         const size_t input_frame_buffer_size =
             media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420,
                                               input_frame_coded_size_);
-        input_buffers_[index] = std::make_unique<base::MappedReadOnlyRegion>(
+        i420_shmem = std::make_unique<base::MappedReadOnlyRegion>(
             base::ReadOnlySharedMemoryRegion::Create(input_frame_buffer_size));
-        if (!input_buffers_[index]->IsValid()) {
+        if (!i420_shmem && i420_shmem->IsValid()) {
           NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
-                             "Failed to create input buffer"});
+                             "Failed to create shared memory"});
           return;
         }
       }
+      CHECK(i420_shmem->IsValid());
+      auto& region = i420_shmem->region;
+      auto& mapping = i420_shmem->mapping;
 
-      auto& region = input_buffers_[index]->region;
-      auto& mapping = input_buffers_[index]->mapping;
       frame = media::VideoFrame::WrapExternalData(
           media::PIXEL_FORMAT_I420, input_frame_coded_size_,
           gfx::Rect(input_visible_size_), input_visible_size_,
@@ -2135,7 +2125,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
     FrameChunk frame_chunk) {
   DVLOG(3) << "Impl::EncodeOneFrameWithNativeInput()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(input_buffers_.empty() && input_buffers_free_.empty());
+  DCHECK(!input_buffers_free_.empty());
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput",
                "timestamp", frame_chunk.timestamp_us);
 
