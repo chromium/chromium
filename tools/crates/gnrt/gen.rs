@@ -132,9 +132,6 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     // explicitly since it doesn't get a dependency_kinds entry.
     dependencies.retain(|dep| dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal));
 
-    dependencies.sort_unstable_by(|a, b| {
-        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
-    });
     for dep in dependencies.iter_mut() {
         // Rehome stdlib deps from the `rust_src_root` to where they will be installed
         // in the Chromium checkout.
@@ -272,10 +269,6 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     // Remove any excluded dep entries.
     dependencies
         .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
-
-    dependencies.sort_unstable_by(|a, b| {
-        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
-    });
 
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()

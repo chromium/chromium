@@ -349,7 +349,11 @@ pub fn collect_dependencies(
     }
 
     // Return a flat list of dependencies.
-    Ok(dependencies.into_values().collect())
+    let mut dependencies = dependencies.into_values().collect::<Vec<_>>();
+    dependencies.sort_unstable_by(|a, b| {
+        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
+    });
+    Ok(dependencies)
 }
 
 /// Graph traversal state shared by recursive calls of `explore_node`.
@@ -543,11 +547,8 @@ mod tests {
 
         let metadata: cargo_metadata::Metadata =
             serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
-        let mut dependencies =
+        let dependencies =
             collect_dependencies(&metadata, "sample_package", &build_config).unwrap();
-        dependencies.sort_by(|left, right| {
-            left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
-        });
 
         let empty_str_slice: &'static [&'static str] = &[];
 
@@ -912,10 +913,7 @@ mod tests {
             serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
 
         // Start from "foo" workspace member.
-        let mut dependencies = collect_dependencies(&metadata, "foo", &config).unwrap();
-        dependencies.sort_by(|left, right| {
-            left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
-        });
+        let dependencies = collect_dependencies(&metadata, "foo", &config).unwrap();
 
         let mut i = 0;
 
