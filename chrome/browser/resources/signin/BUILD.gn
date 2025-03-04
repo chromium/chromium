@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//components/signin/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
@@ -34,7 +33,7 @@ build_webui("build") {
     "sync_confirmation/sync_disabled_confirmation.html",
     "sync_confirmation/sync_loading_confirmation.html",
   ]
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     static_files += [
       "managed_user_profile_notice/managed_user_profile_notice.html",
       "profile_customization/profile_customization.html",
@@ -59,7 +58,7 @@ build_webui("build") {
     "sync_confirmation/sync_disabled_confirmation_app.ts",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     non_web_component_files += [
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.html.ts",
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.ts",
@@ -104,7 +103,7 @@ build_webui("build") {
     "tangible_sync_style_shared.css",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     css_files += [
       "managed_user_profile_notice/legacy_managed_user_profile_notice_app.css",
       "managed_user_profile_notice/managed_user_profile_notice_app.css",
