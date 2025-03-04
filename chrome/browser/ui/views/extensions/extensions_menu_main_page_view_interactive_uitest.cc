@@ -799,8 +799,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
 // Tests clicking on the 'context menu' button opens the extension's context
 // menu.
+// TODO(crbug.com/400536589): Re-enable this flaky test.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
-                       ContextMenuButtonOpensContextMenu) {
+                       DISABLED_ContextMenuButtonOpensContextMenu) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
