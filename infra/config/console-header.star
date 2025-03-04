@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders")
 load("//lib/headers.star", "headers")
 load(".//project.star", "ACTIVE_MILESTONES", "settings")
 
@@ -462,14 +461,6 @@ HEADER = headers.header(
 )
 
 # TODO(crbug.com/40873502): Replace the normal header after this is approved
-def _get_tree_closer_console_ids():
-    rotations = []
-    for r in dir(builders.gardener_rotations):
-        rotation = getattr(builders.gardener_rotations, r)
-        if rotation and rotation.tree_closer_console:
-            rotations.append("chromium/{}".format(rotation.tree_closer_console))
-    return rotations
-
 DEV_HEADER = headers.header(
     oncalls = [
         headers.oncall(
@@ -843,20 +834,22 @@ DEV_HEADER = headers.header(
                     text = "Tree Closers",
                     url = "https://chromium-status.appspot.com/",
                 ),
-                console_ids = _get_tree_closer_console_ids(),
+                console_ids = [
+                    "chromium/chromium tree closers",
+                    "chromium/android tree closers",
+                    "chromium/chromiumos tree closers",
+                    "chromium/chromium.gpu tree closers",
+                    "chromium/ios tree closers",
+                ],
             ),
             headers.console_group(
-                title = headers.link(
-                    text = "Gardener Rotations",
-                    url = "https://chromium-status.appspot.com/",
-                ),
                 console_ids = [
-                    "chromium/android rotation",
-                    "chromium/angle rotation",
-                    "chromium/cft rotation",
                     "chromium/chromium rotation",
-                    "chromium/chromium.gpu rotation",
+                    "chromium/android rotation",
+                    "chromium/cft rotation",
                     "chrome/chrome.perf",
+                    "chromium/chromium.gpu rotation",
+                    "chromium/angle rotation",
                     "chromium/dawn rotation",
                     "chromium/fuchsia rotation",
                     "chromium/ios rotation",

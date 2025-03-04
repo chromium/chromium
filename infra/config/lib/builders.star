@@ -135,16 +135,16 @@ def _rotation(name, console_name, tree_closer_console):
 # New rotations can be added, but won't automatically show up in SoM without
 # changes to SoM code.
 gardener_rotations = struct(
-    ANDROID = _rotation("android", "android rotation", "android rotation tree closers"),
+    ANDROID = _rotation("android", "android rotation", "android tree closers"),
     ANGLE = _rotation("angle", "angle rotation", None),
-    CHROMIUM = _rotation("chromium", "chromium rotation", "chromium rotation tree closers"),
+    CHROMIUM = _rotation("chromium", "chromium rotation", "chromium tree closers"),
     CFT = _rotation("cft", "cft rotation", None),
     DAWN = _rotation("dawn", "dawn rotation", None),
     FUCHSIA = _rotation("fuchsia", "fuchsia rotation", None),
     CHROMIUM_CLANG = _rotation("chromium.clang", "chromium.clang rotation", None),
-    CHROMIUM_GPU = _rotation("chromium.gpu", "chromium.gpu rotation", "chromium.gpu rotation tree closers"),
-    IOS = _rotation("ios", "ios rotation", "ios rotation tree closers"),
-    CHROMIUMOS = _rotation("chromiumos", "chromiumos rotation", "chromiumos rotation tree closers"),  # This group is not on SoM.
+    CHROMIUM_GPU = _rotation("chromium.gpu", "chromium.gpu rotation", "chromium.gpu tree closers"),
+    IOS = _rotation("ios", "ios rotation", "ios tree closers"),
+    CHROMIUMOS = _rotation("chromiumos", "chromiumos rotation", "chromiumos tree closers"),  # This group is not on SoM.
 )
 
 # Free disk space in a machine reserved for build tasks.
