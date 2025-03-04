@@ -32,6 +32,9 @@
     _findInPageManager = web::FindInPageManager::FromWebState(webState);
 
     _webState = webState->GetWeakPtr();
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    _webState->AddObserver(_webStateObserverBridge.get());
   }
   return self;
 }
