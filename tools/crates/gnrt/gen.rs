@@ -110,23 +110,6 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
         deps::collect_dependencies(&metadata, &config.resolve.root, &config)?
     };
 
-    // Filter out any crates' dependencies removed by config file.
-    for dep in dependencies.iter_mut() {
-        let combined: HashSet<&str> =
-            config.get_combined_set(&dep.package_name, |crate_cfg| &crate_cfg.remove_deps);
-        if combined.is_empty() {
-            continue;
-        }
-
-        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| !combined.contains(dep_of_dep.package_name.as_str()));
-        }
-    }
-
-    // Remove any excluded dep entries.
-    dependencies
-        .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
-
     // Remove dev dependencies since tests aren't run. Also remove build deps
     // since we configure flags and env vars manually. Include the root
     // explicitly since it doesn't get a dependency_kinds entry.
@@ -240,7 +223,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     ];
 
     // Compute the set of all third-party crates.
-    let mut dependencies = deps::collect_dependencies(
+    let dependencies = deps::collect_dependencies(
         &run_cargo_metadata(
             paths.third_party_cargo_root.into(),
             cargo_extra_options,
@@ -249,26 +232,6 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
         &config.resolve.root,
         &config,
     )?;
-
-    // Filter out any crates' dependencies removed by config file.
-    for dep in dependencies.iter_mut() {
-        let all: Option<&Vec<String>> = Some(&config.all_config.remove_deps);
-        let per: Option<&Vec<String>> =
-            config.per_crate_config.get(&dep.package_name).map(|config| &config.remove_deps);
-
-        let combined: Vec<&String> = all.into_iter().chain(per).flatten().collect();
-        if combined.is_empty() {
-            continue;
-        }
-
-        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| !combined.iter().any(|r| **r == dep_of_dep.package_name));
-        }
-    }
-
-    // Remove any excluded dep entries.
-    dependencies
-        .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
 
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()

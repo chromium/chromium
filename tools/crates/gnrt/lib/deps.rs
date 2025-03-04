@@ -348,8 +348,23 @@ pub fn collect_dependencies(
         };
     }
 
-    // Return a flat list of dependencies.
+    // Filter out dependencies removed by config file.
     let mut dependencies = dependencies.into_values().collect::<Vec<_>>();
+    for dep in dependencies.iter_mut() {
+        let combined: HashSet<&str> =
+            extra_config.get_combined_set(&dep.package_name, |crate_cfg| &crate_cfg.remove_deps);
+        if combined.is_empty() {
+            continue;
+        }
+
+        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
+            kind.retain(|dep_of_dep| !combined.contains(dep_of_dep.package_name.as_str()));
+        }
+    }
+    dependencies
+        .retain(|dep| !extra_config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
+
+    // Return a flat list of dependencies.
     dependencies.sort_unstable_by(|a, b| {
         a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
     });
@@ -534,6 +549,8 @@ impl std::fmt::Display for TargetType {
 
 #[cfg(test)]
 mod tests {
+    use crate::config::CrateConfig;
+
     use super::*;
 
     #[test]
@@ -950,6 +967,33 @@ mod tests {
 
         i += 1;
         assert_eq!(dependencies.len(), i);
+    }
+
+    #[test]
+    fn dependencies_removed_by_config_file() {
+        // Use a config with `remove_crates` and `remove_deps` entries.
+        let mut config = BuildConfig::default();
+        config.resolve.remove_crates.push("num_threads".to_string());
+        config.per_crate_config.insert(
+            "time".to_string(),
+            CrateConfig { remove_deps: vec!["num_threads".to_string()], ..CrateConfig::default() },
+        );
+
+        // Collect dependencies.
+        let metadata: cargo_metadata::Metadata =
+            serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+        let dependencies = collect_dependencies(&metadata, "sample_package", &config).unwrap();
+
+        // Verify that `num_threads` got removed.
+        for package in dependencies.iter() {
+            dbg!(&package.package_name);
+            assert_ne!(package.package_name, "num_threads");
+            assert!(!package
+                .build_dependencies
+                .iter()
+                .any(|dep| dep.package_name == "num_threads"));
+            assert!(!package.dependencies.iter().any(|dep| dep.package_name == "num_threads"));
+        }
     }
 
     // test_metadata.json contains the output of "cargo metadata" run in
