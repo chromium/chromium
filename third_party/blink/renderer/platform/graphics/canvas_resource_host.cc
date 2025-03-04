@@ -153,8 +153,8 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     InitializeLayerWithCSSProperties(cc_layer_.get());
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);
-    cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
-    cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
+    cc_layer_->SetContentsOpaque(is_opaque_);
+    cc_layer_->SetBlendBackgroundColor(!is_opaque_);
   }
   return cc_layer_.get();
 }
@@ -245,10 +245,10 @@ void CanvasResourceHost::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
 }
 
 void CanvasResourceHost::SetOpacityMode(OpacityMode opacity_mode) {
-  opacity_mode_ = opacity_mode;
+  is_opaque_ = opacity_mode == kOpaque;
   if (cc_layer_) {
-    cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
-    cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
+    cc_layer_->SetContentsOpaque(is_opaque_);
+    cc_layer_->SetBlendBackgroundColor(!is_opaque_);
   }
 }
 

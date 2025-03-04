@@ -51,11 +51,6 @@ enum InterpolationQuality {
       static_cast<int>(cc::PaintFlags::FilterQuality::kMedium),
 };
 
-enum OpacityMode {
-  kNonOpaque,
-  kOpaque,
-};
-
 enum AntiAliasingMode { kNotAntiAliased, kAntiAliased };
 
 enum TextPaintOrder { kFillStroke, kStrokeFill };
