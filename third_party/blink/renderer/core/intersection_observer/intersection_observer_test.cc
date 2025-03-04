@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"

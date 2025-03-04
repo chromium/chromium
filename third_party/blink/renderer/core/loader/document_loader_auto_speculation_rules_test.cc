@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-shared.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_test_helper.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
