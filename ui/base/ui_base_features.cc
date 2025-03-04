@@ -456,4 +456,9 @@ BASE_FEATURE(kAsyncFullscreenWindowState,
              "AsyncFullscreenWindowState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag for enabling the clipboardchange event.
+BASE_FEATURE(kClipboardChangeEvent,
+             "ClipboardChangeEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

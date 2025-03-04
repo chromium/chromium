@@ -808,6 +808,13 @@
       status: "test",
     },
     {
+      // Enables clipboardchange event API for listening for changes to the
+      // system clipboard
+      // https://chromestatus.com/feature/5085102657503232
+      name: "ClipboardChangeEvent",
+      base_feature: "none",
+    },
+    {
       // Enables the API for getting a unique token of the system clipboard's
       // current state.
       // https://chromestatus.com/feature/5124993439236096

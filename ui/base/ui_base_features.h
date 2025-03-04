@@ -230,6 +230,11 @@ BASE_DECLARE_FEATURE(kWriteBookmarkWithoutTitle);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kAsyncFullscreenWindowState);
 
+// Enable ClipboardChange event API
+// https://chromestatus.com/feature/5085102657503232
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kClipboardChangeEvent);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_
