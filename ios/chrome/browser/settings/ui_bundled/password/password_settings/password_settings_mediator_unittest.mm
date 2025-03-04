@@ -287,7 +287,7 @@ TEST_F(PasswordSettingsMediatorTest,
           mediator_);
 
   [syncObserver onSyncStateChanged];
-  [[consumer_ verify] setLocalPasswordsCount:0 withUserEligibility:NO];
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:0];
 }
 
 // Tests that update GPM Pin button is shown for a user that has GPM Pin
@@ -354,19 +354,19 @@ TEST_F(PasswordSettingsMediatorTest, CountsProfileStorePasswordsAsLocal) {
 
   AddPassword("https://www.example.com/1", u"password1",
               PasswordForm::Store::kNotSet);
-  [[consumer_ verify] setLocalPasswordsCount:1 withUserEligibility:NO];
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:1];
   AddPassword("https://www.example.com/2", u"password2",
               PasswordForm::Store::kProfileStore);
-  [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 
   // Count should not be increased for an account store password.
   AddPassword("https://www.example.com/3", u"password3",
               PasswordForm::Store::kAccountStore);
-  [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
+  [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 
   if (syncer::IsWebauthnCredentialSyncEnabled()) {
     // Count should not be increased for a passkey.
     AddPasskey();
-    [[consumer_ verify] setLocalPasswordsCount:2 withUserEligibility:NO];
+    [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
   }
 }

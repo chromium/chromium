@@ -101,7 +101,7 @@ TEST_F(PasswordSettingsViewControllerTest, DisplaysOfferToSavePasswords) {
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysOfferToSavePasswordsManagedByPolicy) {
-  [controller() setSavePasswordsEnabled:NO managedByPolicy:YES];
+  [controller() setSavingPasswordsEnabled:NO managedByPolicy:YES];
   TableViewInfoButtonItem* managedSavePasswordsItem =
       static_cast<TableViewInfoButtonItem*>(GetTableViewItem(/*section=*/0, 0));
   EXPECT_NSEQ(managedSavePasswordsItem.text,
@@ -110,7 +110,7 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DisplaysMovePasswordsToAccountButtonWithLocalPasswords) {
-  [controller() setLocalPasswordsCount:2 withUserEligibility:YES];
+  [controller() setCanBulkMove:YES localPasswordsCount:2];
 
   TableViewDetailTextItem* movePasswordsToAccountDescriptionItem =
       static_cast<TableViewDetailTextItem*>(
@@ -257,8 +257,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
-  [controller() setSavePasswordsEnabled:YES managedByPolicy:NO];
-  [controller() setSavePasskeysEnabled:YES];
+  [controller() setSavingPasswordsEnabled:YES managedByPolicy:NO];
+  [controller() setSavingPasskeysEnabled:YES];
 
   TableViewSwitchItem* automaticPasskeyUpgradesSwitch =
       static_cast<TableViewSwitchItem*>(
@@ -359,7 +359,6 @@ TEST_F(PasswordSettingsViewControllerTest,
 TEST_F(PasswordSettingsViewControllerTest,
        ExportButtonDisabledWhenUserNotEligible) {
   [controller() setCanExportPasswords:NO];
-  [controller() updateExportPasswordsButton];
   EXPECT_TRUE(GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections(),
                                /*item=*/0)
                   .accessibilityTraits &
@@ -369,7 +368,6 @@ TEST_F(PasswordSettingsViewControllerTest,
 TEST_F(PasswordSettingsViewControllerTest,
        ExportButtonEnabledWhenUserEligible) {
   [controller() setCanExportPasswords:YES];
-  [controller() updateExportPasswordsButton];
   EXPECT_FALSE(GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections(),
                                 /*item=*/0)
                    .accessibilityTraits &
@@ -385,7 +383,6 @@ TEST_F(PasswordSettingsViewControllerTest,
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
   [controller() setCanDeleteAllCredentials:NO];
-  [controller() updateDeleteAllCredentialsSection];
   EXPECT_TRUE(
       GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections() + 1,
                        /*item=*/0)
@@ -402,7 +399,6 @@ TEST_F(PasswordSettingsViewControllerTest,
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
   [controller() setCanDeleteAllCredentials:YES];
-  [controller() updateDeleteAllCredentialsSection];
   EXPECT_FALSE(
       GetTableViewItem(ExpectedSectionAfterAlwaysVisibleTopSections() + 1,
                        /*item=*/0)
