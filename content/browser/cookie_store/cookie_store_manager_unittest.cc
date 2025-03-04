@@ -1844,11 +1844,8 @@ TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
 // cookies with third-party cookie blocking on.
 TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
   base::test::ScopedFeatureList feature_list;
-  // TODO(crbug.com/328043119): Remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies after it's enabled by default.
   feature_list.InitWithFeatures(
-      {net::features::kThirdPartyStoragePartitioning,
-       net::features::kAncestorChainBitEnabledInPartitionedCookies},
+      {net::features::kThirdPartyStoragePartitioning},
       {});
 
   // Register 1P worker.

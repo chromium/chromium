@@ -1733,13 +1733,6 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
 
 // Test Partitioned cookie behavior when feature is enabled.
 TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
-  // TODO crbug.com/328043119 remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies
-  // after it's enabled by default.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kAncestorChainBitEnabledInPartitionedCookies);
-
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://sub.foo.com");
   const net::SiteForCookies kSiteForCookies =
@@ -1896,13 +1889,6 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyFromScript) {
 }
 
 TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
-  // TODO crbug.com/328043119 remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies
-  // after it's enabled by default.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kAncestorChainBitEnabledInPartitionedCookies);
-
   const GURL kCookieURL("https://example.com");
   const GURL kTopFrameURL("https://foo.com");
   const net::SiteForCookies kSiteForCookies =

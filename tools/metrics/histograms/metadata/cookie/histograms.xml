@@ -359,18 +359,6 @@ chromium-metrics-reviews@google.com.
   <summary>Number of minutes until Secure cookie expires when set.</summary>
 </histogram>
 
-<histogram name="Cookie.FirstPartyPartitioned.HasCrossSiteAncestor"
-    enum="BooleanPresent" expires_after="2025-07-13">
-  <owner>selya@google.com</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    This histogram records the presence/absence of a cross-site ancestor when a
-    first-party Partitioned cookie is accessed. This metric is recorded each
-    time the IncludeForRequestURL method is called on a CanonicalCookie that is
-    first-party partitioned.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.FirstPartySets.ComponentSetsNonfatalErrors"
     units="sets" expires_after="2025-06-08">
   <owner>cfredric@chromium.org</owner>

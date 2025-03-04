@@ -96,12 +96,7 @@ enum class SetStorageKey { kYes, kNo };
 // ClearSiteData.
 class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
  public:
-  // TODO(crbug.com/328043119): Remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies after it's enabled by default.
-  TestBrowsingDataRemoverDelegate() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kAncestorChainBitEnabledInPartitionedCookies);
-  }
+  TestBrowsingDataRemoverDelegate() = default;
   // Sets a test expectation that a Clear-Site-Data header call from |origin|
   // (under |top_level_site|) instructing to delete |cookies|, |storage|, and
   // |cache|, will schedule the corresponding BrowsingDataRemover deletion
@@ -202,9 +197,6 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
                             /*storage=*/false,
                             /*cache=*/false, override_partition_key_cross_site);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
