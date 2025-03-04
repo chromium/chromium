@@ -52,6 +52,9 @@ class AutofillErrorDialogViewNativeViewsBrowserTest
     } else if (name.find("permanent") != std::string::npos) {
       autofill_error_dialog_context.type =
           AutofillErrorDialogType::kVirtualCardPermanentError;
+    } else if (name.find("bnpl") != std::string::npos) {
+      autofill_error_dialog_context.type =
+          AutofillErrorDialogType::kBnplPermanentError;
     } else {
       CHECK_NE(name.find("eligibility"), std::string::npos);
       autofill_error_dialog_context.type =
@@ -161,6 +164,28 @@ IN_PROC_BROWSER_TEST_P(AutofillErrorDialogViewNativeViewsBrowserTest,
           "Autofill.ErrorDialogShown.WithServerText"),
       BucketsAre(base::Bucket(
           AutofillErrorDialogType::kVirtualCardNotEligibleError,
+          /*count=*/server_did_return_title() && server_did_return_description()
+              ? 1
+              : 0)));
+}
+
+// Verify that the dialog is shown, and the metrics for shown are incremented
+// correctly for a BNPL error.
+IN_PROC_BROWSER_TEST_P(AutofillErrorDialogViewNativeViewsBrowserTest,
+                       InvokeUi_bnpl) {
+  base::HistogramTester histogram_tester;
+
+  ShowAndVerifyUi();
+
+  // Verify that the metric for shown is incremented.
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ErrorDialogShown"),
+              BucketsAre(base::Bucket(
+                  AutofillErrorDialogType::kBnplPermanentError, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ErrorDialogShown.WithServerText"),
+      BucketsAre(base::Bucket(
+          AutofillErrorDialogType::kBnplPermanentError,
           /*count=*/server_did_return_title() && server_did_return_description()
               ? 1
               : 0)));
