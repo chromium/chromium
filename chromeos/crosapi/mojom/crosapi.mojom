@@ -348,11 +348,7 @@ interface Crosapi {
       pending_receiver<chromeos.machine_learning.mojom.MachineLearningService> receiver);
 
   // BindMagicBoostController@144 was removed.
-
-  // Binds the mahi browser delegate to the mahi browser client.
-  // Added in M123.
-  [MinVersion=132] BindMahiBrowserDelegate@134(
-      pending_receiver<MahiBrowserDelegate> receiver);
+  // BindMahiBrowserDelegate@134 was removed.
 
   // Binds the MediaUI interface for the Global Media Controls UI.
   // Added in M113.

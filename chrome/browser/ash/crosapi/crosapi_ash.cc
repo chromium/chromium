@@ -475,11 +475,6 @@ void CrosapiAsh::BindMachineLearningService(
       ->BindMachineLearningService(std::move(receiver));
 }
 
-void CrosapiAsh::BindMahiBrowserDelegate(
-    mojo::PendingReceiver<mojom::MahiBrowserDelegate> receiver) {
-  NOTIMPLEMENTED();
-}
-
 void CrosapiAsh::BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) {
   media_ui_ash_->BindReceiver(std::move(receiver));
 }

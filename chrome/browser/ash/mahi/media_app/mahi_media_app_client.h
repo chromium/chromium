@@ -71,8 +71,7 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedService,
   aura::Window* media_app_window() const { return media_app_window_; }
 
  private:
-  // Unique id associated with this client. It is used by the
-  // `MahiBrowserDelegate` to identify clients.
+  // Unique id associated with this client.
   const base::UnguessableToken client_id_;
 
   mojo::Remote<media_app_ui::mojom::MahiUntrustedPage> media_app_pdf_file_;
