@@ -97,11 +97,6 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
       actions::ActionItem* action_item);
 
   // PinnedToolbarActionsModel::Observer
-  void OnActionAddedLocally(const actions::ActionId& id) override;
-  void OnActionRemovedLocally(const actions::ActionId& id) override;
-  void OnActionMovedLocally(const actions::ActionId& id,
-                            int from_index,
-                            int to_index) override;
   void OnActionsChanged() override;
 
   static base::PassKey<PageActionController> PassKeyForTesting() {

@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
@@ -36,14 +37,24 @@ ChromeLabsCoordinator::ChromeLabsCoordinator(
   if (!model) {
     model_ = std::make_unique<ChromeLabsModel>();
   }
+
+  pinned_actions_observation_.Observe(
+      PinnedToolbarActionsModel::Get(browser->profile()));
+
+  MaybeInstallDotIndicator();
 }
 
 ChromeLabsCoordinator::~ChromeLabsCoordinator() {
+  TearDown();
   if (BubbleExists()) {
     GetChromeLabsBubbleView()->GetWidget()->CloseWithReason(
         views::Widget::ClosedReason::kUnspecified);
     chrome_labs_bubble_view_tracker_.SetView(nullptr);
   }
+}
+
+void ChromeLabsCoordinator::TearDown() {
+  pinned_actions_observation_.Reset();
 }
 
 bool ChromeLabsCoordinator::BubbleExists() {
@@ -92,8 +103,11 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
       std::move(chrome_labs_bubble_view));
   widget->Show();
 
-  // TODO(crbug.com/354207075): Hide the dot indicator here once the bubble has
-  // been shown. Wait for bug to be fixed before doing this.
+  // Hide dot indicator once bubble has been shown.
+  views::DotIndicator* dot_indicator = GetDotIndicator();
+  if (dot_indicator) {
+    dot_indicator->SetVisible(false);
+  }
 }
 
 void ChromeLabsCoordinator::Hide() {
@@ -153,21 +167,58 @@ void ChromeLabsCoordinator::ShowOrHide() {
   Show();
 }
 
-views::Button* ChromeLabsCoordinator::GetChromeLabsButton() {
-  ToolbarView* toolbar =
-      BrowserView::GetBrowserViewForBrowser(browser_)->toolbar();
-  CHECK(toolbar);
-
-  // Null when the labs action is not visible in the container.
-  views::Button* button =
-      toolbar->pinned_toolbar_actions_container()->GetButtonFor(
-          kActionShowChromeLabs);
-
-  return button;
+PinnedActionToolbarButton* ChromeLabsCoordinator::GetChromeLabsButton() {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (browser_view && browser_view->toolbar()) {
+    return browser_view->toolbar()
+        ->pinned_toolbar_actions_container()
+        ->GetButtonFor(kActionShowChromeLabs);
+  }
+  return nullptr;
 }
 
 ChromeLabsBubbleView* ChromeLabsCoordinator::GetChromeLabsBubbleView() {
   return BubbleExists() ? static_cast<ChromeLabsBubbleView*>(
                               chrome_labs_bubble_view_tracker_.view())
                         : nullptr;
+}
+
+void ChromeLabsCoordinator::MaybeInstallDotIndicator() {
+  PinnedActionToolbarButton* button = GetChromeLabsButton();
+  if (!button) {
+    return;
+  }
+  views::View* anchor = button->GetImageContainerView();
+  // Check to ensure there isn't already a dot indicator on the button.
+  if (GetDotIndicator()) {
+    return;
+  }
+  views::DotIndicator* dot_indicator = views::DotIndicator::Install(anchor);
+  dot_indicator->SetVisible(
+      AreNewChromeLabsExperimentsAvailable(model_.get(), browser_->profile()));
+
+  gfx::Rect dot_rect(8, 8);
+  dot_rect.set_origin(gfx::Point(anchor->GetPreferredSize().width(),
+                                 anchor->GetPreferredSize().height()) -
+                      dot_rect.bottom_right().OffsetFromOrigin());
+  dot_indicator->SetBoundsRect(dot_rect);
+}
+
+views::DotIndicator* ChromeLabsCoordinator::GetDotIndicator() {
+  PinnedActionToolbarButton* button = GetChromeLabsButton();
+  if (!button) {
+    return nullptr;
+  }
+  views::View* anchor = button->GetImageContainerView();
+  // Check to ensure there isn't already a dot indicator on the button.
+  for (auto& child : anchor->children()) {
+    if (views::IsViewClass<views::DotIndicator>(child)) {
+      return views::AsViewClass<views::DotIndicator>(child);
+    }
+  }
+  return nullptr;
+}
+
+void ChromeLabsCoordinator::OnActionsChanged() {
+  MaybeInstallDotIndicator();
 }

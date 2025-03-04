@@ -303,6 +303,10 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   if (shared_tab_group_feedback_controller_) {
     shared_tab_group_feedback_controller_->TearDown();
   }
+
+  if (chrome_labs_coordinator_) {
+    chrome_labs_coordinator_->TearDown();
+  }
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

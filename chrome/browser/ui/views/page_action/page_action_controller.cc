@@ -136,14 +136,6 @@ PageActionController::CreateActionItemSubscription(
   return subscription;
 }
 
-void PageActionController::OnActionAddedLocally(const actions::ActionId& id) {}
-
-void PageActionController::OnActionRemovedLocally(const actions::ActionId& id) {
-}
-
-void PageActionController::OnActionMovedLocally(const actions::ActionId& id,
-                                                int from_index,
-                                                int to_index) {}
 void PageActionController::OnActionsChanged() {
   PinnedActionsModelChanged();
 }

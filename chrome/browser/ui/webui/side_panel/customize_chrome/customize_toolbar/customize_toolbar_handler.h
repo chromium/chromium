@@ -38,11 +38,6 @@ class CustomizeToolbarHandler
   void ResetToDefault() override;
 
   // PinnedToolbarActionsModel::Observer:
-  void OnActionAddedLocally(const actions::ActionId& id) override {}
-  void OnActionRemovedLocally(const actions::ActionId& id) override {}
-  void OnActionMovedLocally(const actions::ActionId& id,
-                            int from_index,
-                            int to_index) override {}
   void OnActionsChanged() override;
 
  private:
