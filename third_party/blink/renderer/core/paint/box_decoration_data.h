@@ -142,7 +142,7 @@ class BoxDecorationData {
   }
 
   bool ComputeShouldPaintGapDecorations() const {
-    return style_.HasColumnRule();
+    return style_.HasColumnRule() || style_.HasRowRule();
   }
 
   bool BorderObscuresBackgroundEdge() const;

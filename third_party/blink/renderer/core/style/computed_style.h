@@ -988,6 +988,17 @@ class ComputedStyle final : public ComputedStyleBase {
            BorderStyleIsVisible(ColumnRuleStyle().GetLegacyValue());
   }
 
+  bool RowRuleIsTransparent() const {
+    return RowRuleColor()
+        .GetLegacyValue()
+        .Resolve(GetCurrentColor(), UsedColorScheme())
+        .IsFullyTransparent();
+  }
+  bool HasRowRule() const {
+    return RowRuleWidth().GetLegacyValue() && !RowRuleIsTransparent() &&
+           BorderStyleIsVisible(RowRuleStyle().GetLegacyValue());
+  }
+
   // Flex utility functions.
   bool ResolvedIsColumnFlexDirection() const {
     if (IsDeprecatedFlexbox()) {
