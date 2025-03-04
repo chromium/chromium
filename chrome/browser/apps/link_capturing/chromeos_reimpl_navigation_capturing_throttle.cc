@@ -11,19 +11,25 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
+#include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/values_equivalent.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/1474984
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"  // nogncheck https://crbug.com/377760841
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
@@ -40,6 +46,7 @@
 #include "content/public/common/content_features.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/url_constants.h"
 
 namespace apps {
 
@@ -142,14 +149,14 @@ void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
                LaunchSource launch_source,
                WindowInfoPtr window_info,
                AppType app_type,
-               std::unique_ptr<ScopedKeepAlive>,
-               std::unique_ptr<ScopedProfileKeepAlive>) {
+               base::OnceClosure callback) {
   if (!proxy) {
     return;
   }
 
-  proxy->LaunchAppWithUrl(app_id, event_flags, url, launch_source,
-                          std::move(window_info), base::DoNothing());
+  proxy->LaunchAppWithUrl(
+      app_id, event_flags, url, launch_source, std::move(window_info),
+      base::IgnoreArgs<LaunchResult&&>(std::move(callback)));
 
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
       GetMetricsPlatform(app_type));
@@ -161,7 +168,6 @@ ui::PageTransition MaskOutPageTransition(ui::PageTransition page_transition,
 }
 
 bool IsCapturableLinkNavigation(ui::PageTransition page_transition,
-                                bool allow_form_submit,
                                 bool is_in_fenced_frame_tree,
                                 bool has_user_gesture) {
   // Navigations inside fenced frame trees are marked with
@@ -177,13 +183,13 @@ bool IsCapturableLinkNavigation(ui::PageTransition page_transition,
   page_transition = MaskOutPageTransition(page_transition,
                                           ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
 
+  // Note: This means that <form> submissions are not handled. They should
+  // always be handled by http(s) <form> submissions in Chrome for two reasons:
+  // 1) we don't have a way to send POST data to ARC, and
+  // 2) intercepting http(s) form submissions is not very important because such
+  //    submissions are usually done within the same domain.
   if (!ui::PageTransitionCoreTypeIs(page_transition,
-                                    ui::PAGE_TRANSITION_LINK) &&
-      !(allow_form_submit &&
-        ui::PageTransitionCoreTypeIs(page_transition,
-                                     ui::PAGE_TRANSITION_FORM_SUBMIT))) {
-    // Do not handle the |url| if this event wasn't spawned by the user clicking
-    // on a link.
+                                    ui::PAGE_TRANSITION_LINK)) {
     return false;
   }
 
@@ -260,47 +266,12 @@ GURL GetStartingUrl(content::NavigationHandle* navigation_handle) {
 // HTML post form.
 bool IsNavigateFromNonFormNonContextMenuLink(
     content::NavigationHandle* navigation_handle) {
-  // Always handle http(s) <form> submissions in Chrome for two reasons: 1) we
-  // don't have a way to send POST data to ARC, and 2) intercepting http(s) form
-  // submissions is not very important because such submissions are usually
-  // done within the same domain. ShouldOverrideUrlLoading() below filters out
-  // such submissions anyway.
-  constexpr bool kAllowFormSubmit = false;
-
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
 
-  return IsCapturableLinkNavigation(page_transition, kAllowFormSubmit,
+  return IsCapturableLinkNavigation(page_transition,
                                     navigation_handle->IsInFencedFrameTree(),
                                     navigation_handle->HasUserGesture()) &&
          !navigation_handle->WasStartedFromContextMenu();
-}
-
-std::optional<std::string> GetLaunchAppId(
-    const AppIdsToLaunchForUrl& app_ids_to_launch,
-    bool is_navigation_from_link,
-    int redirection_chain_size) {
-  if (app_ids_to_launch.candidates.empty()) {
-    return std::nullopt;
-  }
-
-  if (app_ids_to_launch.preferred) {
-    if (is_navigation_from_link) {
-      // A link click is always captured.
-      return app_ids_to_launch.preferred;
-    }
-
-    if (redirection_chain_size > 1 &&
-        web_app::ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
-            *app_ids_to_launch.preferred)) {
-      // For specific applications, we want to launch them after a redirect led
-      // to an app-controlled URL. Note: this behavior isn't covered by the web
-      // specs for Navigation Capturing, still it shouldn't be removed without
-      // prior alignment (e.g., the Enterprise Clippy project).
-      return app_ids_to_launch.preferred;
-    }
-  }
-
-  return std::nullopt;
 }
 
 // Returns if the the link navigation should be handled, either for web apps or
@@ -309,19 +280,33 @@ std::optional<std::string> GetLaunchAppId(
 // `NavigationCapturingProcess` is attached to the `NavigationHandle`.
 bool ShouldThrottleCaptureNavigation(
     AppType app_type,
+    const GURL& starting_url,
     const AppIdsToLaunchForUrl& app_ids_to_launch,
     bool is_link_click,
-    content::NavigationHandle* handle) {
+    bool is_for_projector_swa,
+    content::NavigationHandle* handle,
+    base::Value::Dict* debug_dict) {
   content::WebContents* web_contents = handle->GetWebContents();
   CHECK(web_contents);
+  CHECK(app_ids_to_launch.preferred);
 
+  webapps::AppId launch_app_id = *app_ids_to_launch.preferred;
+
+  bool is_for_cros_experiment_app =
+      web_app::ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
+          launch_app_id);
+  debug_dict->Set("is_for_cros_experiment_app", is_for_cros_experiment_app);
   if (app_type == AppType::kWeb) {
     if (!base::FeatureList::IsEnabled(
-            features::kNavigationCapturingOnExistingFrames)) {
+            features::kNavigationCapturingOnExistingFrames) &&
+        !is_for_cros_experiment_app && !is_for_projector_swa) {
+      debug_dict->Set("!result", "existing frame disabled");
       return false;
     }
     bool is_new_frame_capture_for_non_prerendering =
         web_app::NavigationCapturingProcess::GetForNavigationHandle(*handle);
+    debug_dict->Set("is_new_frame_capture",
+                    is_new_frame_capture_for_non_prerendering);
     if (is_new_frame_capture_for_non_prerendering) {
       return false;
     }
@@ -336,46 +321,24 @@ bool ShouldThrottleCaptureNavigation(
     // prerendering to occur and still allow this supplemental capturing.
   }
 
-  // Exclude #ref navigations, pushState/replaceState, etc. This doesn't exclude
-  // target="_self".
-  if (handle->IsSameDocument()) {
-    return false;
-  }
-
-  const GURL& url = handle->GetURL();
-  if (!url.is_valid()) {
-    return false;
-  }
-
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    return false;
-  }
-
-  if (!ShouldCaptureUrlIfRedirected(GetStartingUrl(handle), url)) {
-    return false;
-  }
-
-  // The v1 throttle seems to think this catches the 'popup' case and exits
-  // early.
-  WindowOpenDisposition disposition =
-      GetLinkCapturingSourceDisposition(web_contents);
-  if (disposition != WindowOpenDisposition::CURRENT_TAB &&
-      !web_contents->GetLastCommittedURL().is_valid()) {
-    return false;
-  }
-
-  std::optional<std::string> launch_app_id = GetLaunchAppId(
-      app_ids_to_launch, is_link_click, handle->GetRedirectChain().size());
-  if (!launch_app_id) {
+  // Non-link-clicks are OK if we are going to the ChromeOS experiment app,
+  // which only needs this behavior from an "about:blank" page.
+  debug_dict->Set("redirect_chain_size",
+                  static_cast<int>(handle->GetRedirectChain().size()));
+  if (!is_for_projector_swa && !is_link_click &&
+      !(handle->GetRedirectChain().size() > 1 && is_for_cros_experiment_app &&
+        starting_url == GURL(url::kAboutBlankURL))) {
     return false;
   }
 
   // Don't capture if already inside the target app scope.
   // TODO(crbug.com/313518305): Query App Service intent filters instead, so
   // that this check also covers ARC apps.
-  if (app_type == AppType::kWeb &&
-      base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
-                             &launch_app_id.value())) {
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (app_type == AppType::kWeb && tab_helper &&
+      tab_helper->app_id() == launch_app_id) {
+    debug_dict->Set("!result", "already in scope");
     return false;
   }
 
@@ -383,9 +346,8 @@ bool ShouldThrottleCaptureNavigation(
   // previous early return didn't trigger, this means we are in an app window
   // but out of scope of the original app, and navigating will put us back in
   // scope.
-  web_app::WebAppTabHelper* tab_helper =
-      web_app::WebAppTabHelper::FromWebContents(web_contents);
   if (tab_helper && tab_helper->window_app_id() == launch_app_id) {
+    debug_dict->Set("!result", "already in window");
     return false;
   }
 
@@ -414,7 +376,29 @@ ChromeOsReimplNavigationCapturingThrottle::MaybeCreate(
     return nullptr;
   }
 
+  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          contents) != nullptr) {
+    return nullptr;
+  }
+
   if (handle->ExistingDocumentWasDiscarded()) {
+    return nullptr;
+  }
+
+  // If there is no browser attached to this web-contents yet, this was a
+  // middle-mouse-click action, which should not be captured.
+  // TODO(crbug.com/40279479): Find a better way to detect middle-clicks.
+  if (chrome::FindBrowserWithTab(contents) == nullptr) {
+    return nullptr;
+  }
+
+  // Never link capture links that open in a popup window. Popups are closely
+  // associated with the tab that opened them, so the popup should open in the
+  // same (app/non-app) context as its opener.
+  WindowOpenDisposition disposition =
+      GetLinkCapturingSourceDisposition(contents);
+  if (disposition == WindowOpenDisposition::NEW_POPUP &&
+      !contents->GetLastCommittedURL().is_valid()) {
     return nullptr;
   }
 
@@ -454,6 +438,22 @@ ChromeOsReimplNavigationCapturingThrottle::SetClockForTesting(
 
 ThrottleCheckResult
 ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
+  return HandleRequest();
+}
+
+ThrottleCheckResult
+ChromeOsReimplNavigationCapturingThrottle::WillRedirectRequest() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return HandleRequest();
+}
+
+ChromeOsReimplNavigationCapturingThrottle::
+    ChromeOsReimplNavigationCapturingThrottle(
+        content::NavigationHandle* navigation_handle,
+        Profile* profile)
+    : content::NavigationThrottle(navigation_handle), profile_(*profile) {}
+
+ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(&profile_.get());
@@ -464,13 +464,36 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
   CHECK(navigation_handle());
   content::NavigationHandle* handle = navigation_handle();
 
+  // Exclude #ref navigations, pushState/replaceState, etc. This doesn't exclude
+  // target="_self".
+  if (handle->IsSameDocument()) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  const GURL& url = handle->GetURL();
+  if (!url.is_valid()) {
+    DVLOG(1) << "Unexpected URL: " << url << ", opening in Chrome.";
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  // Only http-style schemes are allowed.
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  GURL starting_url = GetStartingUrl(handle);
+  if (!ShouldCaptureUrlIfRedirected(starting_url, url)) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   AppIdsToLaunchForUrl app_ids_to_launch =
       FindAppIdsToLaunchForUrl(proxy, handle->GetURL());
 
   const std::vector<std::string>& app_candidates = app_ids_to_launch.candidates;
-  // If there are no candidates for launching the url in an app or the app is
-  // not preferred for launching the url, allow navigation to proceed normally.
-  if (app_candidates.empty() || !app_ids_to_launch.preferred) {
+  // If there are no candidates for launching the url in an app or the app
+  // is not preferred for launching the url, allow navigation to proceed
+  // normally.
+  if (app_candidates.empty() || !app_ids_to_launch.preferred.has_value()) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -479,12 +502,23 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
   if (is_for_prerender) {
     debug_data = debug_data_.EnsureDict("prerender");
   }
-  base::Value::List* candidates_debug_data =
-      debug_data->EnsureList("app_candidate");
+  debug_data->Set("!final_url", url.possibly_invalid_spec());
+  debug_data->Set("!starting_url", starting_url.possibly_invalid_spec());
+  debug_data->Set("!preferred", *app_ids_to_launch.preferred);
   for (const std::string& candidate : app_candidates) {
-    candidates_debug_data->Append(candidate);
+    debug_data->EnsureList("app_candidate")->Append(candidate);
   }
-  debug_data->Set("preferred", *app_ids_to_launch.preferred);
+  for (const GURL& redirect_url : handle->GetRedirectChain()) {
+    debug_data->EnsureList("redirect_chain")
+        ->Append(redirect_url.possibly_invalid_spec());
+  }
+  ui::PageTransition page_transition = navigation_handle()->GetPageTransition();
+  debug_data->Set("page_transition_core_transition",
+                  ui::PageTransitionGetCoreTransitionString(page_transition));
+  ui::PageTransition qualifiers =
+      ui::PageTransitionGetQualifier(page_transition);
+  debug_data->Set("page_transition_qualifiers",
+                  base::HexEncode(base::byte_span_from_ref(qualifiers)));
 
   const std::string launch_app_id = *app_ids_to_launch.preferred;
   const AppType app_type = proxy->AppRegistryCache().GetAppType(launch_app_id);
@@ -497,21 +531,21 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  const bool does_projector_swa_handle_url =
+  const bool is_for_projector_swa =
       base::Contains(app_candidates, ash::kChromeUIUntrustedProjectorSwaAppId);
 
   // Note: This is an unfortunate way to detect a link click. If there is a
   // better way to know all of navigation's original disposition, frame, etc,
   // that would be much better.
   bool is_link_click = IsNavigateFromNonFormNonContextMenuLink(handle);
-  bool is_capturable = does_projector_swa_handle_url ||
-                       ShouldThrottleCaptureNavigation(
-                           app_type, app_ids_to_launch, is_link_click, handle);
-  debug_data->Set("does_projector_swa_handle_url",
-                  does_projector_swa_handle_url);
+  bool is_capturable = ShouldThrottleCaptureNavigation(
+      app_type, starting_url, app_ids_to_launch, is_link_click,
+      is_for_projector_swa, handle, debug_data);
+  debug_data->Set("is_for_projector_swa", is_for_projector_swa);
   debug_data->Set("is_link_click", is_link_click);
   debug_data->Set("is_capturable", is_capturable);
   if (!is_capturable) {
+    debug_data->Set("!result", "not capturable");
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -534,7 +568,7 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
                            : LaunchSource::kFromOmnibox;
   debug_data->Set("launch_source", base::ToString(launch_source));
   GURL redirected_url =
-      does_projector_swa_handle_url
+      is_for_projector_swa
           ? RedirectUrlIfProjectorApp(&profile_.get(), launch_app_id,
                                       handle->GetURL())
           : handle->GetURL();
@@ -543,8 +577,8 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
   // Close existing web contents if it is around.
   std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
+  bool closed_web_contents = false;
   if (IsEmptyDanglingWebContentsAfterLinkCapture()) {
-    debug_data->Set("web_contents_will_dangle", true);
     browser_keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_LAUNCH, KeepAliveRestartOption::ENABLED);
     if (!profile_->IsOffTheRecord()) {
@@ -552,8 +586,26 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
           &profile_.get(), ProfileKeepAliveOrigin::kAppWindow);
     }
     handle->GetWebContents()->ClosePage();
+    closed_web_contents = true;
   }
+  debug_data->Set("closed_web_contents", closed_web_contents);
+  base::OnceClosure launch_callback = base::BindOnce(
+      [](std::unique_ptr<ScopedKeepAlive> browser_keep_alive,
+         std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+         bool closed_web_contents) {
+        // TODO(https://crbug.com/400473923): Move this to this class when we
+        // remove v1, as we'll still keep the tests that use this.
+        if (LinkCapturingNavigationThrottle::
+                GetLinkCaptureLaunchCallbackForTesting()) {  // IN-TEST
+          std::move(LinkCapturingNavigationThrottle::
+                        GetLinkCaptureLaunchCallbackForTesting())  // IN-TEST
+              .Run(closed_web_contents);
+        }
+      },
+      std::move(browser_keep_alive), std::move(profile_keep_alive),
+      closed_web_contents);
 
+  debug_data->Set("!result", "launched");
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&LaunchApp, proxy->GetWeakPtr(), launch_app_id,
@@ -561,23 +613,10 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
                                    /*prefer_container=*/true),
                      redirected_url, launch_source,
                      std::make_unique<WindowInfo>(display::kDefaultDisplayId),
-                     app_type, std::move(browser_keep_alive),
-                     std::move(profile_keep_alive)));
+                     app_type, std::move(launch_callback)));
 
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }
-
-ThrottleCheckResult
-ChromeOsReimplNavigationCapturingThrottle::WillRedirectRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return content::NavigationThrottle::PROCEED;
-}
-
-ChromeOsReimplNavigationCapturingThrottle::
-    ChromeOsReimplNavigationCapturingThrottle(
-        content::NavigationHandle* navigation_handle,
-        Profile* profile)
-    : content::NavigationThrottle(navigation_handle), profile_(*profile) {}
 
 bool ChromeOsReimplNavigationCapturingThrottle::
     IsEmptyDanglingWebContentsAfterLinkCapture() {

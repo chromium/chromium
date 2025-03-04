@@ -48,6 +48,8 @@ class ChromeOsReimplNavigationCapturingThrottle
       content::NavigationHandle* navigation_handle,
       Profile* profile);
 
+  ThrottleCheckResult HandleRequest();
+
   // Identify whether web contents need to be deleted post navigation capturing.
   bool IsEmptyDanglingWebContentsAfterLinkCapture();
 

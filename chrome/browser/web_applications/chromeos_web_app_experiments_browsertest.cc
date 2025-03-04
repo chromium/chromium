@@ -147,7 +147,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeOsWebAppExperimentsBrowserTest,
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::
+                        kV2DefaultOffCaptureExistingFrames),
     apps::test::LinkCapturingVersionToString);
 
 class ChromeOsWebAppExperimentsNavigationBrowserTest
@@ -411,7 +414,10 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeOsWebAppExperimentsNavigationBrowserTest,
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::
+                        kV2DefaultOffCaptureExistingFrames),
     apps::test::LinkCapturingVersionToString);
 
 class ChromeOsWebAppExperimentsManifestOverrideBrowserTest

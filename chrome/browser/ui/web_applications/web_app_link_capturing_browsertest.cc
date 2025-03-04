@@ -163,7 +163,7 @@ class WebAppLinkCapturingBrowserTest
   }
 
   void NavigateCapturable(Browser* browser, const GURL& url) {
-    LinkTarget target = (IsV2() ? LinkTarget::BLANK : LinkTarget::SELF);
+    LinkTarget target = (IsV1() ? LinkTarget::SELF : LinkTarget::BLANK);
     ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(), url,
                      target, "");
   }
@@ -173,13 +173,16 @@ class WebAppLinkCapturingBrowserTest
                      LinkTarget::SELF, "");
   }
 
-  Browser* GetNewBrowserFromNavigation(Browser* browser,
-                                       const GURL& url,
-                                       bool preserve_about_blank = true) {
-    if (preserve_about_blank && browser->tab_strip_model()
-                                    ->GetActiveWebContents()
-                                    ->GetVisibleURL()
-                                    .IsAboutBlank()) {
+  void NavigateBlank(Browser* browser, const GURL& url) {
+    ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(), url,
+                     LinkTarget::BLANK, "");
+  }
+
+  Browser* GetNewBrowserFromNavigation(Browser* browser, const GURL& url) {
+    if (browser->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetVisibleURL()
+            .IsAboutBlank()) {
       // Create a new tab to link capture in because about:blank tabs are
       // destroyed after link capturing, see:
       // CommonAppsNavigationThrottle::ShouldCancelNavigation()
@@ -249,7 +252,69 @@ class WebAppLinkCapturingBrowserTest
 // Link capturing with navigate_existing_client: always should navigate existing
 // app windows.
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
-                       NavigateExistingClientFromBrowser) {
+                       NavigateExistingClientFromBrowserTargetSelf) {
+  const auto [app_id, in_scope_1, in_scope_2, scope] = InstallTestApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_navigate_existing.json");
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kNavigateExisting,
+            launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
+
+  ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+
+  // Start browser at an out of scope page.
+  NavigateSelf(browser(), out_of_scope_);
+
+  // In scope navigation should open app window.
+  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_1});
+
+  // Click a link in the browser in to scope.
+  NavigateSelf(browser(), in_scope_2);
+  if (ShouldLinksWithExistingFrameTargetsCapture()) {
+    // Ensure that no additional tabs get opened in the browser.
+    ExpectTabs(browser(), {out_of_scope_});
+    ExpectTabs(app_browser, {in_scope_2});
+  } else {
+    ExpectTabs(browser(), {in_scope_2});
+    ExpectTabs(app_browser, {in_scope_1});
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
+                       NavigateExistingClientFromBrowserTargetBlank) {
+  const auto [app_id, in_scope_1, in_scope_2, scope] = InstallTestApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_navigate_existing.json");
+  auto launch_handler = GetLaunchHandler(app_id);
+  EXPECT_EQ(ClientMode::kNavigateExisting,
+            launch_handler->parsed_client_mode());
+  EXPECT_TRUE(launch_handler->client_mode_valid_and_specified());
+
+  ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+
+  // Start browser at an out of scope page.
+  NavigateSelf(browser(), out_of_scope_);
+
+  // In scope navigation should open app window.
+  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_1});
+
+  // Verify capturing works with target=_blank.
+  NavigateBlank(browser(), in_scope_2);
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_2});
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
+                       NavigateExistingClientFromBrowserWithAppOutOfScope) {
   const auto [app_id, in_scope_1, _, scope] = InstallTestApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_existing.json");
@@ -270,33 +335,27 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1});
 
-  // Navigate the app window out of scope to ensure the captured link triggers a
-  // navigation.
+  // App browsers that are out-of-scope don't get navigated with
+  // navigate-existing in v2.
   NavigateSelf(app_browser, out_of_scope_);
-  ExpectTabs(app_browser, {out_of_scope_});
 
-  // Click a link in the browser in to scope. Ensure that no additional tabs get
-  // opened in the browser.
-  // For v2, this will create a new app window, as the old one has an
-  // out-of-scope url.
   BrowserChangeObserver observer(nullptr,
                                  BrowserChangeObserver::ChangeType::kAdded);
-  NavigateCapturable(browser(), in_scope_1);
+  NavigateBlank(browser(), in_scope_1);
   ExpectTabs(browser(), {out_of_scope_});
-  if (IsV2()) {
-    ExpectTabs(app_browser, {out_of_scope_});
+  if (IsV1()) {
+    ExpectTabs(app_browser, {in_scope_1});
+  } else {
     Browser* other_app_browser = observer.Wait();
     ExpectTabs(other_app_browser, {in_scope_1});
-  } else {
-    ExpectTabs(app_browser, {in_scope_1});
   }
 }
 
 // Link captures from about:blank cleans up the about:blank page.
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
                        AboutBlankNavigationCleanUp) {
-  if (IsV2()) {
-    GTEST_SKIP() << "V2 never captures from navigating a current document.";
+  if (!ShouldLinksWithExistingFrameTargetsCapture()) {
+    GTEST_SKIP();
   }
   const auto [app_id, in_scope_1, _, scope] =
       InstallTestApp("/web_apps/basic.html");
@@ -308,8 +367,10 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
       browser(), BrowserChangeObserver::ChangeType::kRemoved);
 
   // Navigate an about:blank page.
-  Browser* app_browser = GetNewBrowserFromNavigation(
-      browser(), in_scope_1, /*preserve_about_blank=*/false);
+  BrowserChangeObserver observer(nullptr,
+                                 BrowserChangeObserver::ChangeType::kAdded);
+  NavigateSelf(browser(), in_scope_1);
+  Browser* app_browser = observer.Wait();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
   ExpectTabs(app_browser, {in_scope_1});
 
@@ -321,8 +382,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 // page.
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
                        JavascriptAboutBlankNavigationCleanUp) {
-  if (IsV2()) {
-    GTEST_SKIP() << "V2 never captures from navigating a current document.";
+  if (!ShouldLinksWithExistingFrameTargetsCapture()) {
+    GTEST_SKIP();
   }
   const auto [app_id, in_scope_1, _, scope] =
       InstallTestApp("/web_apps/basic.html");
