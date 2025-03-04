@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 
 #include "base/auto_reset.h"
@@ -809,9 +804,9 @@ void MediaControlsImpl::UpdateCSSClassFromState() {
 
   for (int i = 0; i < 8; i++) {
     if (i == state)
-      toAdd.push_back(kStateCSSClasses[i]);
+      toAdd.push_back(UNSAFE_TODO(kStateCSSClasses[i]));
     else
-      toRemove.push_back(kStateCSSClasses[i]);
+      toRemove.push_back(UNSAFE_TODO(kStateCSSClasses[i]));
   }
 
   if (MediaElement().ShouldShowControls() && ShouldShowVideoControls() &&

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -265,7 +261,8 @@ double AudioRendererMixerInput::ProvideInput(
       float* data = audio_bus->channel(ch);
 
       for (int i = 0; i < frames; ++i) {
-        data[i] *= static_cast<float>(start_volume + i) / total_fade_in_frames_;
+        UNSAFE_TODO(data[i]) *=
+            static_cast<float>(start_volume + i) / total_fade_in_frames_;
       }
     }
 
