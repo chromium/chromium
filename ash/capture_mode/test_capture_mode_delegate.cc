@@ -240,6 +240,11 @@ std::unique_ptr<AshWebView> TestCaptureModeDelegate::CreateSearchResultsView()
   return AshWebViewFactory::Get()->Create(AshWebView::InitParams());
 }
 
+void TestCaptureModeDelegate::GetPrimaryAccountAccessToken(
+    base::RepeatingCallback<void(const std::string& access_token)> callback) {
+  std::move(callback).Run("TEST");
+}
+
 void TestCaptureModeDelegate::SendRegionSearch(
     const SkBitmap& image,
     const gfx::Rect& region,

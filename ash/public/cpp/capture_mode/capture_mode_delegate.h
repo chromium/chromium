@@ -252,6 +252,12 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void DetectTextInImage(const SkBitmap& image,
                                  OnTextDetectionComplete callback) = 0;
 
+  // Gets the OAuth2 access token for the user's primary account, used for
+  // making a Lens Web API POST request.
+  virtual void GetPrimaryAccountAccessToken(
+      base::RepeatingCallback<void(const std::string& access_token)>
+          callback) = 0;
+
   // Sends the captured `region` and `image` to the backend. Invokes `callback`
   // when the response is fetched.
   virtual void SendRegionSearch(const SkBitmap& image,

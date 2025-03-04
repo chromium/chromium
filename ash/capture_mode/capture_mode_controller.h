@@ -541,6 +541,13 @@ class ASH_EXPORT CaptureModeController
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes);
 
+  // Called when an access token request completes (successfully or not). Used
+  // for the Lens Web API POST request.
+  void OnPrimaryAccountAccessTokenAvailable(
+      const gfx::Image& original_image,
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      const std::string& access_token);
+
   // Called back when on-device text detection is complete to show copy text and
   // smart actions buttons if needed. `image_search_token` is a weak pointer
   // which is invalidated every time the selected region or session changes. If
