@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -24,11 +26,13 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -36,6 +40,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import java.util.List;
 
 /** A container class for a view showing a photo in the Photo Picker. */
+@NullMarked
 public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     // The length of the image selection animation (in ms).
     private static final int ANIMATION_DURATION = 100;
@@ -47,7 +52,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     private static final int IMAGE_FRAME_DISPLAY = 250;
 
     // An animation listener to verify correct selection behavior with tests.
-    private static AnimationListener sAnimationListenerForTest;
+    private static @Nullable AnimationListener sAnimationListenerForTest;
 
     // Our context.
     private Context mContext;
@@ -59,7 +64,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     private SelectionDelegate<PickerBitmap> mSelectionDelegate;
 
     // The request details (meta-data) for the bitmap shown.
-    private PickerBitmap mBitmapDetails;
+    private @Nullable PickerBitmap mBitmapDetails;
 
     // The image view containing the bitmap.
     private ImageView mIconView;
@@ -165,6 +170,8 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     @Override
     public final void onClick(View view) {
         if (view == mPlayButton || view == mPlayButtonLarge) {
+            assumeNonNull(mBitmapDetails);
+            assumeNonNull(mBitmapDetails.getUri());
             mCategoryView.startVideoPlaybackAsync(mBitmapDetails.getUri());
         } else {
             super.onClick(view);
@@ -200,7 +207,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     }
 
     @Override
-    protected boolean toggleSelectionForItem(PickerBitmap item) {
+    protected boolean toggleSelectionForItem(@Nullable PickerBitmap item) {
         if (isGalleryTile() || isCameraTile()) return false;
         if (mCategoryView.isZoomSwitchingInEffect()) return false;
         return super.toggleSelectionForItem(item);
@@ -333,6 +340,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
 
         info.setCheckable(true);
         info.setChecked(isChecked());
+        assumeNonNull(mBitmapDetails);
         CharSequence text =
                 mBitmapDetails.getFilenameWithoutExtension()
                         + " "
@@ -346,6 +354,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
      * @param categoryView The category view showing the images. Used to access common functionality
      *     and sizes and retrieve the {@link SelectionDelegate}.
      */
+    @Initializer
     public void setCategoryView(PickerCategoryView categoryView) {
         mCategoryView = categoryView;
         mSelectionDelegate = mCategoryView.getSelectionDelegate();
@@ -362,10 +371,11 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
      * @param placeholder Whether the image given is a placeholder or the actual image.
      * @param ratio The aspect ratio of the image, if it were shown full-width.
      */
+    @Initializer
     public void initialize(
             PickerBitmap bitmapDetails,
             @Nullable List<Bitmap> thumbnails,
-            String videoDuration,
+            @Nullable String videoDuration,
             boolean placeholder,
             float ratio) {
         resetTile();
@@ -426,7 +436,8 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
      * @param ratio The aspect ratio of the image, if it were shown using the full screen width.
      * @return True if no image was loaded before (e.g. not even a low-res image).
      */
-    public boolean setThumbnailBitmap(List<Bitmap> thumbnails, String videoDuration, float ratio) {
+    public boolean setThumbnailBitmap(
+            @Nullable List<Bitmap> thumbnails, @Nullable String videoDuration, float ratio) {
         assert thumbnails == null || thumbnails.size() > 0;
 
         // There are four cases to consider:
@@ -435,7 +446,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         // 3) Videos: one thumbnail is shown first (videoDuration non-null, thumbnail.size() = 1).
         // 4) Then, as more video frames are decoded (thumbnail.size() > 1).
         // Only the last case needs to branch into the AnimationDrawable part.
-        if (videoDuration == null || thumbnails.size() == 1) {
+        if (videoDuration == null || assumeNonNull(thumbnails).size() == 1) {
             mIconView.setImageBitmap(thumbnails == null ? null : thumbnails.get(0));
         } else {
             final AnimationDrawable animationDrawable = new AnimationDrawable();
@@ -492,6 +503,8 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
 
     /** Updates the selection controls for this view. */
     private void updateSelectionState(boolean animateBorderChanges) {
+        assumeNonNull(mBitmapDetails);
+
         boolean special = !isPictureTile();
         boolean anySelection =
                 mSelectionDelegate != null && mSelectionDelegate.isSelectionEnabled();
@@ -540,14 +553,17 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     }
 
     private boolean isGalleryTile() {
+        assumeNonNull(mBitmapDetails);
         return mBitmapDetails.type() == PickerBitmap.TileTypes.GALLERY;
     }
 
     private boolean isCameraTile() {
+        assumeNonNull(mBitmapDetails);
         return mBitmapDetails.type() == PickerBitmap.TileTypes.CAMERA;
     }
 
     private boolean isPictureTile() {
+        assumeNonNull(mBitmapDetails);
         return mBitmapDetails.type() == PickerBitmap.TileTypes.PICTURE
                 || mBitmapDetails.type() == PickerBitmap.TileTypes.VIDEO;
     }

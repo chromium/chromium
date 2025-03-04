@@ -4,16 +4,21 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Button;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
 import java.util.List;
 
 /** Handles toolbar functionality for the Photo Picker class. */
+@NullMarked
 public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
     /** A delegate that handles dialog actions. */
     public interface PhotoPickerToolbarDelegate {
@@ -22,7 +27,7 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
     }
 
     // A delegate to notify when the dialog should close.
-    PhotoPickerToolbarDelegate mDelegate;
+    @Nullable PhotoPickerToolbarDelegate mDelegate;
 
     public PhotoPickerToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -47,6 +52,7 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
     @Override
     public void onNavigationBack() {
         super.onNavigationBack();
+        assumeNonNull(mDelegate);
         mDelegate.onNavigationBackCallback();
     }
 

@@ -813,13 +813,14 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     @Override
-    public void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri[] photos) {
+    public void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri @Nullable [] photos) {
         switch (action) {
             case PhotoPickerAction.CANCEL:
                 onFileNotSelected();
                 break;
 
             case PhotoPickerAction.PHOTOS_SELECTED:
+                assumeNonNull(photos);
                 if (photos.length == 0) {
                     onFileNotSelected();
                     return;

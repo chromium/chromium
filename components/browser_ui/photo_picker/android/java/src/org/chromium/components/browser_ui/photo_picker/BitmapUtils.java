@@ -12,6 +12,8 @@ import android.media.MediaMetadataRetriever;
 import android.util.Pair;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A collection of utility functions for dealing with bitmaps. */
+@NullMarked
 class BitmapUtils {
     // Constants used to log UMA enum histogram, must stay in sync with the
     // ExifOrientation enum in enums.xml. Further actions can only be appended,
@@ -73,7 +76,7 @@ class BitmapUtils {
      *     image is returned.
      * @return The resulting bitmap and its ratio.
      */
-    public static Pair<Bitmap, Float> decodeBitmapFromFileDescriptor(
+    public static @Nullable Pair<Bitmap, Float> decodeBitmapFromFileDescriptor(
             FileDescriptor descriptor, int size, boolean fullWidth) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
