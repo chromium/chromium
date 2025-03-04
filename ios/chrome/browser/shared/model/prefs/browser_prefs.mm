@@ -126,18 +126,6 @@
 
 namespace {
 
-// Deprecated 03/2024.
-const char kObsoleteAccountStorageNewFeatureIconImpressions[] =
-    "password_manager.account_storage_new_feature_icon_impressions";
-
-// Deprecated 03/2024.
-const char kObsoleteAccountStorageNoticeShown[] =
-    "password_manager.account_storage_notice_shown";
-
-// Deprecated 03/2024.
-constexpr char kPreferencesMigratedToBasic[] =
-    "browser.clear_data.preferences_migrated_to_basic";
-
 // Deprecated 05/2024.
 constexpr char kSyncCachedTrustedVaultAutoUpgradeDebugInfo[] =
     "sync.cached_trusted_vault_auto_upgrade_debug_info";
@@ -921,13 +909,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kUserAgentWasChanged, false);
 
-  registry->RegisterIntegerPref(
-      kObsoleteAccountStorageNewFeatureIconImpressions, 0);
-
-  registry->RegisterBooleanPref(kObsoleteAccountStorageNoticeShown, false);
-
-  registry->RegisterBooleanPref(kPreferencesMigratedToBasic, false);
-
   registry->RegisterTimePref(prefs::kLastApplicationStorageMetricsLogTime,
                              base::Time());
 
@@ -1080,19 +1061,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 03/2024.
-  prefs->ClearPref(kObsoleteAccountStorageNewFeatureIconImpressions);
-
-  // Added 03/2024.
-  prefs->ClearPref(kObsoleteAccountStorageNoticeShown);
-
-  // Added 03/2024
-  prefs->ClearPref(kPreferencesMigratedToBasic);
-
-  // Added 03/2024.
-  MigrateNSDatePreferenceFromUserDefaults(
-      prefs::kLastApplicationStorageMetricsLogTime, prefs, defaults);
 
   // Added 04/2024.
   prefs->ClearPref(prefs::kMixedContentAutoupgradeEnabled);
