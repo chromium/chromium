@@ -5108,14 +5108,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "https-first-mode-v2",
-    "owners": [
-      "cthomp@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "https-first-mode-v2-for-engaged-sites",
     "owners": [
       "meacer@chromium.org",

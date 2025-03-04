@@ -1300,9 +1300,6 @@ extern const char kHttpsFirstModeIncognitoDescription[];
 extern const char kHttpsFirstModeIncognitoNewSettingsName[];
 extern const char kHttpsFirstModeIncognitoNewSettingsDescription[];
 
-extern const char kHttpsFirstModeV2Name[];
-extern const char kHttpsFirstModeV2Description[];
-
 extern const char kHttpsFirstModeV2ForEngagedSitesName[];
 extern const char kHttpsFirstModeV2ForEngagedSitesDescription[];
 
