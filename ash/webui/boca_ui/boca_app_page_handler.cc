@@ -40,6 +40,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/wm/constants.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
@@ -182,6 +183,8 @@ std::string GetPrefName(mojom::BocaValidPref pref) {
       return ash::prefs::kClassManagementToolsNavRuleSetting;
     case mojom::BocaValidPref::kCaptionEnablementSetting:
       return ash::prefs::kClassManagementToolsCaptionEnablementSetting;
+    case mojom::BocaValidPref::kDefaultMediaStreamSetting:
+      return ::prefs::kManagedDefaultMediaStreamSetting;
   }
   NOTREACHED();
 }
@@ -602,6 +605,13 @@ void BocaAppHandler::GetUserPref(mojom::BocaValidPref pref,
 void BocaAppHandler::SetUserPref(mojom::BocaValidPref pref,
                                  base::Value value,
                                  SetUserPrefCallback callback) {
+  // Boca should only get but not set kDefaultMediaStreamSetting.
+  if (pref == mojom::BocaValidPref::kDefaultMediaStreamSetting) {
+    mojo::ReportBadMessage(
+        "Attempted to set kDefaultMediaStreamSetting user pref.");
+    return;
+  }
+
   pref_service_->Set(GetPrefName(pref), std::move(value));
   std::move(callback).Run();
 }

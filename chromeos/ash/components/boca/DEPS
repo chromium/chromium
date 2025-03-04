@@ -2,6 +2,7 @@ include_rules = [
   "+ash",
   "+ash/constants",
   "+google_apis/common",
+  "+components/content_settings",
   "+components/user_manager",
   "+content/public/test",
   "+components/signin/public/identity_manager",

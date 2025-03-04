@@ -42,9 +42,11 @@
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/account_id/account_id.h"
+#include "components/content_settings/core/browser/content_settings_policy_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -331,6 +333,8 @@ class BocaAppPageHandlerTest : public testing::Test {
     // Set up UserManager related modules.
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     ash::boca_util::RegisterPrefs(local_state_.registry());
+    content_settings::PolicyProvider::RegisterProfilePrefs(
+        pref_service_.registry());
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
@@ -437,10 +441,14 @@ class BocaAppPageHandlerTest : public testing::Test {
         boca_app_handler_.get()->GetWebviewAuthHandlerForTesting());
   }
   FakePage* fake_page() { return fake_page_.get(); }
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return &pref_service_;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
 
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
@@ -1863,6 +1871,14 @@ TEST_F(BocaAppPageHandlerTest, AuthenticateWebviewFailure) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(BocaAppPageHandlerTest, TestPrefGetter) {
+  boca_app_handler()->SetPrefForTesting(pref_service());
+  base::test::TestFuture<base::Value> future;
+  boca_app_handler()->GetUserPref(
+      mojom::BocaValidPref::kDefaultMediaStreamSetting, future.GetCallback());
+  EXPECT_TRUE(future.Get().is_int());
 }
 
 TEST_F(BocaAppPageHandlerTest, TestPrefGetterAndSetter) {
