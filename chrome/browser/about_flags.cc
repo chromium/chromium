@@ -10657,11 +10657,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kShowSuggestionsOnAutofocus)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"fetch-gaia-hash-on-sign-in",
-     flag_descriptions::kFetchGaiaHashOnSignInName,
-     flag_descriptions::kFetchGaiaHashOnSignInDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kFetchGaiaHashOnSignIn)},
-
     {"android-browser-controls-in-viz",
      flag_descriptions::kAndroidBrowserControlsInVizName,
      flag_descriptions::kAndroidBrowserControlsInVizDescription, kOsAndroid,
