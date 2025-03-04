@@ -63,6 +63,13 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // additional steps must be taken before opening Glic.
   static bool IsReadyForProfile(Profile* profile);
 
+  // The settings page is shown when:
+  // * Flags are enabled
+  // * The profile is eligible (regular, non-incognito, non-guest, etc.)
+  // * The profile has model execution privileges
+  // * The profile has completed the first run experience
+  static bool ShouldShowSettingsPage(Profile* profile);
+
   explicit GlicEnabling(Profile* profile);
   ~GlicEnabling() override;
 

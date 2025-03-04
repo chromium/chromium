@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
@@ -483,6 +484,31 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
             profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 
   EXPECT_FALSE(service->window_controller().IsShowing());
+}
+
+// Ensure the chrome://settings page for Glic is available when the feature is
+// disabled by policy (but the profile is otherwise eligible, completed FRE
+// etc).
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest,
+                       SettingsPageAvailableWithPolicyDisabled) {
+  // Disable the policy.
+  SetGlicPolicy(policy_for_profile_1(), SettingsPolicyState::kDisabled);
+  ASSERT_EQ(kDisabledValue,
+            profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
+
+  // Navigate to the Glic settings page URL.
+  const GURL kGlicSettingsUrl =
+      chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage);
+  content::TestNavigationObserver observer(kGlicSettingsUrl);
+  observer.WatchExistingWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kGlicSettingsUrl));
+  observer.WaitForNavigationFinished();
+  ASSERT_TRUE(observer.last_navigation_succeeded());
+
+  // If the settings page wasn't registered, the navigation will redirect to
+  // chrome://settings.
+  EXPECT_EQ(kGlicSettingsUrl,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 }  // namespace
 
