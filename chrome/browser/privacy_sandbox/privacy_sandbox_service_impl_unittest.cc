@@ -2698,7 +2698,6 @@ using TopicsConsentTest = PrivacySandboxNoticeActionToStorageTests;
 using NoticeAckTest = PrivacySandboxNoticeActionToStorageTests;
 using NoticeShownTest = PrivacySandboxNoticeActionToStorageTests;
 using NoticeSettingsTest = PrivacySandboxNoticeActionToStorageTests;
-using LearnMoreTest = PrivacySandboxNoticeActionToStorageTests;
 
 TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
   // Show then OptIn
@@ -2791,26 +2790,6 @@ TEST_P(NoticeSettingsTest, DidNoticeSettingsUpdateNoticeStorage) {
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompleted, 1);
-}
-
-TEST_P(LearnMoreTest, DidLearnMoreActionUpdateNoticeStorage) {
-  // Show then trigger Learn More
-  privacy_sandbox_service()->PromptActionOccurred(GetParam().shown_type,
-                                                  GetParam().surface_type);
-  privacy_sandbox_service()->PromptActionOccurred(GetParam().prompt_action,
-                                                  GetParam().surface_type);
-  // Pref
-  auto actual =
-      notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
-  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kNotSet,
-            actual->notice_action_taken_);
-
-  // Histogram
-  CreateService();
-  histogram_tester_.ExpectBucketCount(
-      base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
-                    GetParam().notice_name}),
-      privacy_sandbox::NoticeStartupState::kPromptWaiting, 1);
 }
 
 base::test::FeatureRefAndParams ConsentFeature() {
@@ -3016,41 +2995,6 @@ INSTANTIATE_TEST_SUITE_P(
           .shown_type = PromptAction::kRestrictedNoticeShown,
           .prompt_action = PromptAction::kRestrictedNoticeOpenSettings,
           .notice_name = privacy_sandbox::kMeasurementNoticeModalClankCCT}}));
-
-INSTANTIATE_TEST_SUITE_P(
-    NoticeTestSuite,
-    LearnMoreTest,
-    testing::ValuesIn<NoticeTestingParameters>(
-        // Learn More click
-        {{.surface_type = SurfaceType::kDesktop,
-          .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kConsentShown,
-          .prompt_action = PromptAction::kConsentMoreInfoOpened,
-          .notice_name = privacy_sandbox::kTopicsConsentModal},
-         {.surface_type = SurfaceType::kDesktop,
-          .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeMoreInfoOpened,
-          .notice_name =
-              privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
-         {.surface_type = SurfaceType::kDesktop,
-          .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeMoreInfoOpened,
-          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal},
-         // Ads API UX Enhancements
-         {.surface_type = SurfaceType::kDesktop,
-          .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened,
-          .notice_name =
-              privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
-         {.surface_type = SurfaceType::kDesktop,
-          .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeAdsMeasurementMoreInfoOpened,
-          .notice_name =
-              privacy_sandbox::kProtectedAudienceMeasurementNoticeModal}}));
 
 class PrivacySandboxServiceM1RestrictedNoticeTest
     : public PrivacySandboxServiceTest {

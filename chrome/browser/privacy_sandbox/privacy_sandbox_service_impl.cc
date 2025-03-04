@@ -934,9 +934,6 @@ void UpdateNoticeStorage(
       break;
     }
     case PromptAction::kConsentMoreInfoOpened: {
-      notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name,
-          privacy_sandbox::NoticeActionTaken::kLearnMore, base::Time::Now());
       break;
     }
     // EEA and ROW notices
@@ -958,15 +955,11 @@ void UpdateNoticeStorage(
       break;
     }
     case PromptAction::kNoticeMoreInfoOpened:
-    // Ads API UX Enhancements
+      // Ads API UX Enhancements
     case PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened:
     case PromptAction::kNoticeAdsMeasurementMoreInfoOpened: {
-      notice_storage->SetNoticeActionTaken(
-          pref_service, notice_name,
-          privacy_sandbox::NoticeActionTaken::kLearnMore, base::Time::Now());
       break;
     }
-
     // Restricted notices
     case PromptAction::kRestrictedNoticeShown: {
       DCHECK(privacy_sandbox::IsRestrictedNoticeRequired());
