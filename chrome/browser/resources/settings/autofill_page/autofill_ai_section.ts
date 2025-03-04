@@ -20,6 +20,7 @@ import '../icons.html.js';
 import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
+import './autofill_ai_add_or_edit_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -38,6 +39,7 @@ import {getTemplate} from './autofill_ai_section.html.js';
 import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 
+type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 
 // browser_element_identifiers constants
@@ -80,10 +82,24 @@ export class SettingsAutofillAiSectionElement extends
         value: false,
       },
 
+      /**
+         The corresponding `EntityInstance` model for any entity related action
+         menus or dialogs.
+       */
+      activeEntity_: {
+        type: Object,
+        value: null,
+      },
+
       /** The same dialog can be used for both adding and editing entities. */
       showAddOrEditEntityDialog_: {
         type: Boolean,
         value: false,
+      },
+
+      addOrEditEntityDialogTitle_: {
+        type: String,
+        value: '',
       },
 
       showRemoveEntityDialog_: {
@@ -99,12 +115,14 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   ineligibleUser: boolean;
+  private activeEntity_: EntityInstance|null;
   private showAddOrEditEntityDialog_: boolean;
+  private addOrEditEntityDialogTitle_: string;
   private showRemoveEntityDialog_: boolean;
   private entityInstances_: EntityInstanceWithLabels[];
 
   // The correspondent model for any entity related action menus or dialogs.
-  private activeEntity_: EntityInstanceWithLabels|null;
+  private activeEntityWithLabels_: EntityInstanceWithLabels|null;
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
 
@@ -139,7 +157,7 @@ export class SettingsAutofillAiSectionElement extends
    * Open the action menu.
    */
   private onMoreButtonClick_(e: DomRepeatEvent<EntityInstanceWithLabels>) {
-    this.activeEntity_ = e.model.item;
+    this.activeEntityWithLabels_ = e.model.item;
     const moreButton = e.target as HTMLElement;
     this.$.actionMenu.get().showAt(moreButton);
   }
@@ -155,10 +173,11 @@ export class SettingsAutofillAiSectionElement extends
   /**
    * Handles tapping on the "Edit" entity button in the action menu.
    */
-  private onMenuEditEntityClick_(e: Event) {
+  private async onMenuEditEntityClick_(e: Event) {
     e.preventDefault();
-    // Clone item so dialog won't update model on cancel.
-    this.activeEntity_ = structuredClone(this.activeEntity_);
+    this.activeEntity_ = await this.entityDataManager_.getEntityInstanceByGuid(
+        this.activeEntityWithLabels_!.guid);
+    this.addOrEditEntityDialogTitle_ = this.activeEntity_.type.editEntityString;
     this.showAddOrEditEntityDialog_ = true;
     this.$.actionMenu.get().close();
   }
@@ -172,16 +191,28 @@ export class SettingsAutofillAiSectionElement extends
     this.$.actionMenu.get().close();
   }
 
+  private onAutofillAiAddOrEditDone_(e: CustomEvent<EntityInstance>) {
+    e.stopPropagation();
+    this.entityDataManager_.addOrUpdateEntityInstance(e.detail);
+  }
+
+  private onAddOrEditEntityDialogClose_(e: Event) {
+    e.stopPropagation();
+    this.showAddOrEditEntityDialog_ = false;
+  }
+
   private onRemoveEntityDialogClose_() {
     const wasDeletionConfirmed =
         this.shadowRoot!
             .querySelector<SettingsSimpleConfirmationDialogElement>(
                 '#removeEntityDialog')!.wasConfirmed();
     if (wasDeletionConfirmed) {
-      this.entityDataManager_.removeEntityInstance(this.activeEntity_!.guid);
+      this.entityDataManager_.removeEntityInstance(
+          this.activeEntityWithLabels_!.guid);
       // Speculatively update local list to avoid potential stale data issues.
       const deletedEntityIndex = this.entityInstances_.findIndex(
-          entityInstance => entityInstance.guid === this.activeEntity_!.guid);
+          entityInstance =>
+              entityInstance.guid === this.activeEntityWithLabels_!.guid);
       this.splice('entityInstances_', deletedEntityIndex, 1);
     }
 

@@ -98,6 +98,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiSection) {
   RunTest("settings/autofill_ai_section_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiAddOrEditDialog) {
+  RunTest("settings/autofill_ai_add_or_edit_dialog_test.js", "mocha.run()");
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(SettingsTest, AxAnnotationsSection) {
   RunTest("settings/ax_annotations_section_test.js", "mocha.run()");

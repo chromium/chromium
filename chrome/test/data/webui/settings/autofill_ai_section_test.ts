@@ -6,10 +6,10 @@
 import 'chrome://settings/settings.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertTrue, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import type { SettingsToggleButtonElement } from 'chrome://settings/settings.js';
-import type {SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
-import { EntityDataManagerProxyImpl } from 'chrome://settings/lazy_load.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {SettingsAutofillAiAddOrEditDialogElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
+import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
@@ -76,12 +76,39 @@ suite('AutofillAiSectionUiTest', function() {
   let section: SettingsAutofillAiSectionElement;
   let entitiesListElement: HTMLElement;
   let entityDataManager: TestEntityDataManagerProxy;
+  let testEntity: chrome.autofillPrivate.EntityInstance;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
+    testEntity = {
+      type: {
+        typeName: 3,
+        typeNameAsString: 'Car',
+        addEntityString: 'Add car',
+        editEntityString: 'Edit car',
+      },
+      attributes: [
+        {
+          type: {
+            typeName: 8,
+            typeNameAsString: 'Owner',
+          },
+          value: 'Mark Nolan',
+        },
+        {
+          type: {
+            typeName: 10,
+            typeNameAsString: 'Registration',
+          },
+          value: 'ABCDE123',
+        },
+      ],
+      guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+      nickname: 'My car',
+    };
     const testEntityInstancesWithLabels:
         chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
@@ -200,6 +227,42 @@ suite('AutofillAiSectionUiTest', function() {
     assertTrue(listItems[0]!.textContent!.includes('Toyota'));
     assertTrue(listItems[1]!.textContent!.includes('John Doe'));
     assertTrue(listItems[2]!.hidden);
+  });
+
+  test('testEditEntityDialogOpenAndConfirm', async function() {
+    entityDataManager.setGetEntityInstanceByGuidResponse(testEntity);
+
+    const actionMenuButton =
+        entitiesListElement.querySelector<HTMLElement>('#moreButton');
+    assertTrue(!!actionMenuButton);
+    actionMenuButton.click();
+    await flushTasks();
+
+    const editButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuEditEntity');
+
+    assertTrue(!!editButton);
+    editButton.click();
+    await flushTasks();
+
+    const editEntityDialog =
+        section.shadowRoot!
+            .querySelector<SettingsAutofillAiAddOrEditDialogElement>(
+                '#addOrEditEntityDialog');
+    assertTrue(!!editEntityDialog);
+    assertDeepEquals(testEntity, editEntityDialog.entity);
+
+    // Simulate the dialog was confirmed.
+    editEntityDialog.dispatchEvent(
+        new CustomEvent('autofill-ai-add-or-edit-done', {
+          bubbles: true,
+          composed: true,
+          detail: testEntity,
+        }));
+
+    const editedEntity =
+        await entityDataManager.whenCalled('addOrUpdateEntityInstance');
+    assertDeepEquals(testEntity, editedEntity);
   });
 
   test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {

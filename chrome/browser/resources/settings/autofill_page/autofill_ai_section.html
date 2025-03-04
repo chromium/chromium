@@ -126,6 +126,13 @@
   </template>
 </cr-lazy-render>
 
+<template is="dom-if" if="[[showAddOrEditEntityDialog_]]" restamp>
+  <settings-autofill-ai-add-or-edit-dialog id="addOrEditEntityDialog"
+      entity="[[activeEntity_]]" dialog-title="[[addOrEditEntityDialogTitle_]]"
+      on-autofill-ai-add-or-edit-done="onAutofillAiAddOrEditDone_"
+      on-close="onAddOrEditEntityDialogClose_">
+  </settings-autofill-ai-add-or-edit-dialog>
+</template>
 <template is="dom-if" if="[[showRemoveEntityDialog_]]" restamp>
   <!-- TODO(crbug.com/393318914): Confirm the body text string with UX and
        potentially use settings localized strings provider for the body
