@@ -407,7 +407,10 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-position/sticky/",
               "external/wpt/css/css-viewport/zoom/scroll-top-test-with-zoom.html",
-              "fast/scrolling/"],
+              "fast/scrolling/",
+              "fast/forms/fieldset/overflow-scroll-interaction.html",
+              "fast/scroll-behavior/smooth-scroll-overflow-hidden.html",
+              "fast/scroll-snap/snap-to-area-with-fractional-offset.html"],
     "args": ["--enable-blink-features=FractionalScrollOffsets"],
     "expires": "Jun 1, 2025"
   },
