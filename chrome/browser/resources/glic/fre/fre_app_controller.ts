@@ -89,7 +89,7 @@ export class FreAppController {
     }
     if (this.state) {
       this.states.get(this.state)!.onExit?.call(this);
-      this.cancelTimeout;
+      this.cancelTimeout();
     }
     this.state = newState;
     this.states.get(this.state)!.onEnter?.call(this);
