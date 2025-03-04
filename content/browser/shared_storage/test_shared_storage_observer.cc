@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
@@ -34,7 +35,7 @@ std::string SerializeOptionalString(std::optional<std::string> str) {
 
 std::string SerializeOptionalBool(std::optional<bool> b) {
   if (b) {
-    return (*b) ? "true" : "false";
+    return base::ToString(*b);
   }
 
   return "std::nullopt";
