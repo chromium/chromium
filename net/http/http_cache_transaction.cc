@@ -3242,6 +3242,13 @@ bool HttpCache::Transaction::ComputeUnusablePerCachingHeaders() {
   // override.
   auto freshness_lifetimes =
       response_.headers->GetFreshnessLifetimes(response_.response_time);
+
+  if (!recorded_response_freshness_is_zero_) {
+    base::UmaHistogramBoolean("HttpCache.ResponseFreshnessIsZero",
+                              freshness_lifetimes.freshness.is_zero());
+    recorded_response_freshness_is_zero_ = true;
+  }
+
   return freshness_lifetimes.freshness.is_zero() &&
          freshness_lifetimes.staleness.is_zero();
 }

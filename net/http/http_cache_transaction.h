@@ -755,6 +755,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   bool recorded_histograms_ = false;
   bool has_opened_or_created_entry_ = false;
   bool record_entry_open_or_creation_time_ = false;
+  bool recorded_response_freshness_is_zero_ = false;
 
   NetworkTransactionInfo network_transaction_info_;
 

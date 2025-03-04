@@ -529,6 +529,16 @@ chromium-metrics-reviews@google.com.
   <summary>For each http cache transaction, the recorded pattern.</summary>
 </histogram>
 
+<histogram name="HttpCache.ResponseFreshnessIsZero" enum="Boolean"
+    expires_after="2025-09-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Whether the freshness of a response is zero or not. Recorded for each http
+    cache transaction. Emitted when a response is written into the HTTP cache.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.TotalDiskCacheTimePerTransaction.{AccessType}"
     units="ms" expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
