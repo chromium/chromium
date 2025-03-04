@@ -68,12 +68,13 @@ void OverrideZoomFactor(content::WebContents* web_contents,
 DialogContentLoadWithTimeoutObserver::DialogContentLoadWithTimeoutObserver(
     content::WebContents* web_contents,
     const GURL& pacp_url,
-    base::OnceClosure show_dialog_callback,
+    base::OnceClosure show_view_and_destroy_timer_callback,
     base::OnceClosure cancel_flow_on_timeout_callback)
     : content::WebContentsObserver(web_contents),
       pacp_url_(pacp_url),
-      show_dialog_callback_(std::move(show_dialog_callback)) {
-  CHECK(show_dialog_callback_);
+      show_view_and_destroy_timer_callback_(
+          std::move(show_view_and_destroy_timer_callback)) {
+  CHECK(show_view_and_destroy_timer_callback_);
   if (!web_contents) {
     // The web contains of the dialog were not created, abort the dialog
     // displaying.
@@ -101,9 +102,8 @@ void DialogContentLoadWithTimeoutObserver::DidFinishLoad(
 
   // Stop the timeout timer and display the dialog.
   initial_load_timer_.Stop();
-  if (!show_dialog_callback_.is_null()) {
-    std::move(show_dialog_callback_).Run();
-  }
+  // Causes this object to destruct.
+  std::move(show_view_and_destroy_timer_callback_).Run();
 }
 
 ParentAccessView::ParentAccessView(
@@ -113,6 +113,7 @@ ParentAccessView::ParentAccessView(
   CHECK(context);
   // Create the web view in the native dialog.
   web_view_ = AddChildView(std::make_unique<views::WebView>(context));
+  CHECK(web_view_);
 }
 
 ParentAccessView::~ParentAccessView() = default;
@@ -161,16 +162,16 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   std::move(web_contents_observer_creation_cb)
       .Run(view_weak_ptr->GetWebViewContents());
 
-  // TODO(crbug.com/394344573): Notify the user that a technical error has
-  // happened to avoid the impression that the button is unresponsive.
-  base::OnceClosure show_dialog_callback =
-      base::BindOnce(&ParentAccessView::ShowNativeView, view_weak_ptr);
-
   view_weak_ptr.get()->content_loader_timeout_observer_ =
       std::make_unique<DialogContentLoadWithTimeoutObserver>(
           view_weak_ptr->GetWebViewContents(), pacp_url,
-          std::move(show_dialog_callback), std::move(abort_dialog_callback));
+          /*show_view_and_destroy_timer_callback=*/
+          base::BindOnce(
+              &ParentAccessView::ShowWebViewAndDestroyTimeoutObserver,
+              view_weak_ptr),
+          /*cancel_flow_on_timeout_callback=*/std::move(abort_dialog_callback));
 
+  view_weak_ptr->ShowNativeView();
   return view_weak_ptr;
 }
 
@@ -190,6 +191,12 @@ void ParentAccessView::CloseView() {
   }
 }
 
+void ParentAccessView::ShowWebViewAndDestroyTimeoutObserver() {
+  CHECK(web_view_);
+  web_view_->SetVisible(true);
+  content_loader_timeout_observer_.reset();
+}
+
 void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   if (!dialog_result_reset_callback_.is_null()) {
     std::move(dialog_result_reset_callback_).Run();
@@ -204,11 +211,11 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
 
   // Remove the web view that displays the PACP widget content, and replace it
   // with a view that displays the error message.
-  CHECK(web_view_);
   // Assume ownership of the removed view but do not destruct yet,
   // as there may be still content observers for it, which can lead to a
   // crash.
-  removed_view_holder_ = RemoveChildViewT(web_view_.get());
+  CHECK(web_view_);
+  removed_view_holder_ = RemoveChildViewT(web_view_);
   web_view_ = nullptr;
   content_loader_timeout_observer_.reset();
   CHECK(content_loader_timeout_observer_ == nullptr);
@@ -277,6 +284,8 @@ void ParentAccessView::ShowNativeView() {
   CHECK(is_initialized_);
   // Applies the round corners to the inner web_view.
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(corner_radius_));
+  // Needed to avoid flashing in dark mode while the content is loaded.
+  web_view_->SetVisible(false);
   widget->Show();
   web_view_->RequestFocus();
 }
