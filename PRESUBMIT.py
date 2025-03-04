@@ -2154,6 +2154,14 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
           r'^(?!.*\.h$).*$', # Exclude all files except those that end in .h
         ],
     ),
+    BanRule(
+        pattern=('AddChildViewRaw'),
+        explanation=(
+            'Do not use AddChildViewRaw. It is prone to memory leaks and '
+            'use-after-free bugs. Instead, use AddChildView(std::unique_ptr). '
+            'See https://crbug.com/40485510 for more details.', ),
+        treat_as_error=False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
