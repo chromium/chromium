@@ -31,7 +31,6 @@ PrefMetricsService::~PrefMetricsService() = default;
 void PrefMetricsService::RecordHomePageLaunchMetrics(bool show_home_button,
                                                      bool homepage_is_ntp,
                                                      const GURL& homepage_url) {
-  UMA_HISTOGRAM_BOOLEAN("Settings.ShowHomeButton2", show_home_button);
   if (show_home_button) {
     UMA_HISTOGRAM_BOOLEAN("Settings.GivenShowHomeButton_HomePageIsNewTabPage2",
                           homepage_is_ntp);

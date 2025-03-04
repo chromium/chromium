@@ -1013,20 +1013,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.ShowHomeButton2" enum="BooleanEnabled"
-    expires_after="2025-03-09">
-  <owner>mpearson@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether or not the home button is enabled in user preferences when a regular
-    profile is loaded.
-
-    To be explicit: not logged when an Incognito profile is opened because that
-    inherits the settings from its parent profile. As such, it's not necessary
-    to log the Incognito profile's settings.
-  </summary>
-</histogram>
-
 <histogram name="Settings.StartSetAsDefault" enum="BooleanHit"
     expires_after="2025-03-09">
   <owner>pmonette@chromium.org</owner>
