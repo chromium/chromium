@@ -28,10 +28,12 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -83,6 +85,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -92,6 +95,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -676,7 +680,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
     EXPECT_FALSE(GetSaveCardBubbleViews());
   }
 
-  void ClickOnDialogViewWithId(DialogViewId view_id) {
+  template <typename IdType>
+  void ClickOnDialogViewWithId(IdType view_id) {
     ClickOnDialogView(FindViewInBubbleById(view_id));
   }
 
@@ -711,6 +716,15 @@ class SaveCardBubbleViewsFullFormBrowserTest
     }
 
     return specified_view;
+  }
+
+  views::View* FindViewInBubbleById(ui::ElementIdentifier element_identifier) {
+    SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
+    CHECK(save_card_bubble_views);
+
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+        element_identifier, views::ElementTrackerViews::GetContextForWidget(
+                                save_card_bubble_views->GetWidget()));
   }
 
   void ClickOnCancelButton() {
@@ -943,7 +957,8 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
     ASSERT_TRUE(WaitForObservedEvent());
 
     // Click on the redirect button.
-    ClickOnDialogViewWithId(DialogViewId::MANAGE_CARDS_BUTTON);
+    ClickOnDialogViewWithId(
+        SaveCardManageCardsBubbleViews::kSaveCardBubbleManageCardsButtonId);
   }
 
  private:
@@ -2230,7 +2245,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   // Bubble should be showing.
   EXPECT_TRUE(
-      FindViewInBubbleById(DialogViewId::MANAGE_CARDS_VIEW)->GetVisible());
+      FindViewInBubbleById(
+          SaveCardManageCardsBubbleViews::kSaveCardBubbleManageCardsViewId)
+          ->GetVisible());
   histogram_tester.ExpectUniqueSample(
       "Autofill.ManageCardsPrompt", ManageCardsPromptMetric::kManageCardsShown,
       1);

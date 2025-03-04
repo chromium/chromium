@@ -19,6 +19,9 @@ namespace autofill {
 class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews {
   METADATA_HEADER(SaveCardManageCardsBubbleViews, SaveCardBubbleViews)
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveCardBubbleManageCardsButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveCardBubbleManageCardsViewId);
+
   // Bubble will be anchored to |anchor_view|.
   SaveCardManageCardsBubbleViews(views::View* anchor_view,
                                  content::WebContents* web_contents,
