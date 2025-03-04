@@ -465,6 +465,11 @@ class EnterpriseReportingPrivateGetContextInfoTest
 
   void ExpectDefaultThirdPartyBlockingEnabled(
       const enterprise_reporting_private::ContextInfo& info) {
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    EXPECT_TRUE(*info.third_party_blocking_enabled);
+#else
+    EXPECT_FALSE(info.third_party_blocking_enabled.has_value());
+#endif
   }
 };
 
@@ -502,6 +507,9 @@ class EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest
 TEST_P(EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest, Test) {
   bool policyValue = GetParam();
 
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kThirdPartyBlockingEnabled, policyValue);
+
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 
   EXPECT_TRUE(info.browser_affiliation_ids.empty());
@@ -518,6 +526,7 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest, Test) {
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
+  EXPECT_EQ(policyValue, *info.third_party_blocking_enabled);
 }
 
 INSTANTIATE_TEST_SUITE_P(
