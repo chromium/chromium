@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.WriteRuleset.Result"
-    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-06-29">
+    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-08-31">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
