@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetProperties.ADD_TO_GROUP_VISIBLE;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -36,7 +34,6 @@ import java.util.List;
 public class TabGroupListBottomSheetMediator {
     private final BottomSheetController mBottomSheetController;
     private final TabGroupParityBottomSheetCoordinatorDelegate mDelegate;
-    private final PropertyModel mModel;
     private final ModelList mModelList;
     private final TabGroupModelFilter mFilter;
     private final TabGroupCreationCallback mTabGroupCreationCallback;
@@ -44,6 +41,7 @@ public class TabGroupListBottomSheetMediator {
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final DataSharingService mDataSharingService;
     private final CollaborationService mCollaborationService;
+    private final boolean mShowNewGroup;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
@@ -71,8 +69,8 @@ public class TabGroupListBottomSheetMediator {
      * @param dataSharingService Used to fetch shared group data.
      * @param collaborationService Used to fetch collaboration group data.
      * @param bottomSheetController Used to interact with the bottom sheet.
-     * @param model Properties for the bottom sheet.
      * @param delegate Called on {@link BottomSheetObserver} calls.
+     * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
      */
     public TabGroupListBottomSheetMediator(
             ModelList modelList,
@@ -83,8 +81,8 @@ public class TabGroupListBottomSheetMediator {
             DataSharingService dataSharingService,
             CollaborationService collaborationService,
             BottomSheetController bottomSheetController,
-            PropertyModel model,
-            TabGroupParityBottomSheetCoordinatorDelegate delegate) {
+            TabGroupParityBottomSheetCoordinatorDelegate delegate,
+            boolean showNewGroupRow) {
         mModelList = modelList;
         mFilter = filter;
         mTabGroupCreationCallback = tabGroupCreationCallback;
@@ -93,8 +91,8 @@ public class TabGroupListBottomSheetMediator {
         mDataSharingService = dataSharingService;
         mCollaborationService = collaborationService;
         mBottomSheetController = bottomSheetController;
-        mModel = model;
         mDelegate = delegate;
+        mShowNewGroup = showNewGroupRow;
     }
 
     /**
@@ -109,21 +107,9 @@ public class TabGroupListBottomSheetMediator {
         populateList(tabs);
     }
 
-    /**
-     * Sets whether to add the 'Add To Group' row upon next {@link #requestShowContent(List)} call.
-     */
-    void setShowAddToGroupRow(boolean showAddToGroupRow) {
-        mModel.set(ADD_TO_GROUP_VISIBLE, showAddToGroupRow);
-    }
-
     /** Hides the bottom sheet. */
     void hide(@StateChangeReason int hideReason) {
         mDelegate.hide(hideReason);
-    }
-
-    /** Returns the model for the bottom sheet. */
-    PropertyModel getModel() {
-        return mModel;
     }
 
     /**
@@ -133,7 +119,7 @@ public class TabGroupListBottomSheetMediator {
      */
     private void populateList(List<Tab> tabs) {
         mModelList.clear();
-        if (mModel.get(ADD_TO_GROUP_VISIBLE)) {
+        if (mShowNewGroup) {
             insertAddGroupRow(tabs);
         }
 

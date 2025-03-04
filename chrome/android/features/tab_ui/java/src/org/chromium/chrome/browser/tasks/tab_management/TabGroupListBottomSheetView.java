@@ -30,7 +30,11 @@ public class TabGroupListBottomSheetView extends LinearLayout implements BottomS
     private final RecyclerView mRecyclerView;
     private final ViewGroup mContentView;
 
-    TabGroupListBottomSheetView(Context context) {
+    /**
+     * @param context The {@link Context} to attach the bottom sheet to.
+     * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
+     */
+    TabGroupListBottomSheetView(Context context, boolean showNewGroupRow) {
         super(context);
         mContentView =
                 (ViewGroup)
