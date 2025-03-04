@@ -670,14 +670,14 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
 
   if (platform_settings.display_surface) {
     settings->setDisplaySurface(
-        GetDisplaySurfaceString(platform_settings.display_surface.value()));
+        GetDisplaySurfaceString(*platform_settings.display_surface));
   }
   if (platform_settings.logical_surface) {
-    settings->setLogicalSurface(platform_settings.logical_surface.value());
+    settings->setLogicalSurface(*platform_settings.logical_surface);
   }
   if (platform_settings.cursor) {
     WTF::String value;
-    switch (platform_settings.cursor.value()) {
+    switch (*platform_settings.cursor) {
       case media::mojom::CursorCaptureType::NEVER:
         value = "never";
         break;
@@ -697,8 +697,8 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
     if (platform_settings.display_surface ==
             media::mojom::DisplayCaptureSurfaceType::BROWSER &&
         zoom_level_ && ratio) {
-      ratio = zoom_level_.value() * ratio.value();
-      ratio = ratio.value() / 100.0f;
+      ratio = (*zoom_level_) * (*ratio);
+      ratio = *ratio / 100.0f;
     }
 
     if (platform_settings.physical_frame_size) {
@@ -708,10 +708,10 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
           platform_settings.physical_frame_size->height());
       if (ratio) {
         settings->setLogicalWidth(
-            platform_settings.physical_frame_size->width() / ratio.value());
+            platform_settings.physical_frame_size->width() / *ratio);
         settings->setLogicalHeight(
-            platform_settings.physical_frame_size->height() / ratio.value());
-        settings->setPixelRatio(ratio.value());
+            platform_settings.physical_frame_size->height() / *ratio);
+        settings->setPixelRatio(*ratio);
       }
     }
   }
@@ -719,7 +719,7 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
 
   if (suppress_local_audio_playback_setting_.has_value()) {
     settings->setSuppressLocalAudioPlayback(
-        suppress_local_audio_playback_setting_.value());
+        *suppress_local_audio_playback_setting_);
   }
 
   return settings;
