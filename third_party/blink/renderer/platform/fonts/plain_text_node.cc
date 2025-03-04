@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
@@ -164,14 +165,41 @@ void PlainTextNode::SegmentText(const TextRun& run,
   }
 }
 
+// LayoutNG does not split text into words during shaping, but PlainTextNode
+// splits it for Google Docs.
+//
+// * Performance: Google Docs calls CanvasRenderingContext2D.measureText() with
+//   a word, and fillText() with multiple words. We need a word-granularity
+//   ShapeResult cache to maintain performance.
+//
+// * Rendering behavior: Google Docs relies on the rendering of
+//   `fillText("a b", 0, 0)` being the same as `fillText("a", 0, 0)` and
+//   `fillText("b", measureText("a") + measureText(" "), 0)`. So we should not
+//   support kerning/ligature including spaces.
 void PlainTextNode::SegmentWord(wtf_size_t start_offset,
                                 wtf_size_t run_length,
                                 TextDirection direction,
                                 const Font& font) {
-  item_list_.push_back(
-      PlainTextItem(start_offset, run_length, direction, text_content_));
+  if (!font.CanShapeWordByWord()) {
+    item_list_.push_back(
+        PlainTextItem(start_offset, run_length, direction, text_content_));
+    return;
+  }
 
-  // TODO(crbug.com/389726691): Implement word segmentation.
+  const wtf_size_t insertion_index = item_list_.size();
+  StringView text_content(text_content_, start_offset, run_length);
+  for (wtf_size_t index = 0; index < run_length;) {
+    wtf_size_t new_index =
+        CachingWordShapeIterator::NextWordEndIndex(text_content, index);
+    PlainTextItem item(start_offset + index, new_index - index, direction,
+                       text_content_);
+    if (IsLtr(direction)) {
+      item_list_.push_back(std::move(item));
+    } else {
+      item_list_.insert(insertion_index, std::move(item));
+    }
+    index = new_index;
+  }
 }
 
 }  // namespace blink
