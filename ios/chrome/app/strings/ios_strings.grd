@@ -6561,41 +6561,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_SWITCHER_CLOSE_TAB" desc="The accessibility label for the closing of a selected tab. [iOS only]">
         Close tab.
       </message>
-      <message name="IDS_IOS_TAB_SWITCHER_CREATE_NEW_INCOGNITO_TAB" desc="The accessibility label for the button that creates new Incognito tabs. [iOS only]">
-        Create new Incognito tab.
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_CREATE_NEW_TAB" desc="The accessibility label for the button that creates new regular tabs (as opposed to Incognito tabs). [iOS only]">
-        Create new tab.
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_ENABLE_SYNC_TITLE" desc="Title label to enable sync for user. [Length: 30em] [iOS only]">
-          Enable sync
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_HEADER_NON_INCOGNITO_TABS" desc="Label shown to select the Non Incognito tabs panel, as opposed to the Incognito panel and the Other Devices panel. [Length: 17em] [iOS only]">
-        Open tabs
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_HEADER_OTHER_DEVICES_TABS" desc="Label shown to select the Other Devices tabs panel, as opposed to the Incognito and Non Incognito panels. [Length: 17em] [iOS only]">
-        Other devices
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_INCOGNITO_TABS" desc="Label explaining that the user can open a new Incognito tab. [iOS only]">
-        Open an Incognito tab to browse the web privately.
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_INCOGNITO_TABS_PROMO" desc="Title explaining that there are no opened Incognito tabs. [iOS only]">
-        No Incognito tabs
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_NON_INCOGNITO_TABS" desc="Label explaining that the user can open a new tab. [iOS only]">
-        Open a tab to browse the web.
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_NON_INCOGNITO_TABS_TITLE" desc="Title explaining that there are no opened tabs. [iOS only]">
-        No open tabs
-      </message>
       <message name="IDS_IOS_TAB_SWITCHER_PRICE_CARD" desc="Acessibility label to describe the UI which displays a price drop in the Tab Switching UI when it is identified. [iOS only]">
         Now <ph name="PRICE">$1<ex>$42</ex></ph> was <ph name="PREVIOUS_PRICE">$2<ex>$50</ex></ph>.
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_SYNC_IN_PROGRESS_PROMO" desc="Label explaining that the tabs are currently being synced. [iOS only]">
-        Syncing your tabs…
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_SYNC_IS_OFF" desc="Short paragraph(s) encouraging the user to enable sync on device [Length: 300em, may be line wrapped to multiple lines at run time.] [iOS only]">
-        To get your tabs from your other devices, turn on sync.
       </message>
       <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_TITLE" desc="Title shown in the iOS message when the account tailored security setting is disabled for a consented primary account">
         Enhanced Protection is off
