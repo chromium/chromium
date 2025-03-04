@@ -82,21 +82,68 @@ TEST(AutofillDataModelUtils, ParseDate) {
   EXPECT_EQ(ParseDate(u"11.12.99", u"D.M.YY"), Date(2099, 12, 11));
   EXPECT_EQ(ParseDate(u"1.2.00", u"D.M.YY"), Date(2000, 2, 1));
 
+  EXPECT_EQ(ParseDate(u"0000-00-00", u"YYYY-MM-DD"), Date(0, 0, 0));
+  EXPECT_EQ(ParseDate(u"00-00-00", u"YY-MM-DD"), Date(2000, 0, 0));
+
   EXPECT_EQ(ParseDate(u"09/2025", u"MM/YYYY"), Date(2025, 9, 0));
   EXPECT_EQ(ParseDate(u"9/25", u"M/YY"), Date(2025, 9, 0));
 
-  EXPECT_EQ(ParseDate(u"28.02.", u"DD.MM."), Date(0, 2, 28));
-  EXPECT_EQ(ParseDate(u"28.2.", u"D.M."), Date(0, 2, 28));
+  EXPECT_EQ(ParseDate(u"23.02.", u"DD.MM."), Date(0, 2, 23));
+  EXPECT_EQ(ParseDate(u"23.2.", u"D.M."), Date(0, 2, 23));
 
   EXPECT_EQ(ParseDate(u"2025", u"YYYY"), Date(2025, 0, 0));
+  EXPECT_EQ(ParseDate(u"0001", u"YYYY"), Date(1, 0, 0));
+  EXPECT_EQ(ParseDate(u"0000", u"YYYY"), Date(0, 0, 0));
+  EXPECT_EQ(ParseDate(u"0123", u"YYYY"), Date(123, 0, 0));
   EXPECT_EQ(ParseDate(u"25", u"YY"), Date(2025, 0, 0));
+  EXPECT_EQ(ParseDate(u"01", u"YY"), Date(2001, 0, 0));
+  EXPECT_EQ(ParseDate(u"00", u"YY"), Date(2000, 0, 0));
   EXPECT_EQ(ParseDate(u"12", u"MM"), Date(0, 12, 0));
+  EXPECT_EQ(ParseDate(u"00", u"MM"), Date(0, 0, 0));
   EXPECT_EQ(ParseDate(u"12", u"M"), Date(0, 12, 0));
   EXPECT_EQ(ParseDate(u"2", u"M"), Date(0, 2, 0));
+  EXPECT_EQ(ParseDate(u"0", u"M"), Date(0, 0, 0));
   EXPECT_EQ(ParseDate(u"11", u"DD"), Date(0, 0, 11));
   EXPECT_EQ(ParseDate(u"11", u"D"), Date(0, 0, 11));
+  EXPECT_EQ(ParseDate(u"00", u"DD"), Date(0, 0, 0));
   EXPECT_EQ(ParseDate(u"1", u"D"), Date(0, 0, 1));
+  EXPECT_EQ(ParseDate(u"0", u"D"), Date(0, 0, 0));
+  EXPECT_EQ(ParseDate(u"", u""), Date(0, 0, 0));
 
+  EXPECT_EQ(ParseDate(u"", u"foo"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"", u"YYYY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"", u"YY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"", u"MM"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"", u"M"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"", u"DD"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"", u"D"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"foo", u"YYYY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"foo", u""), std::nullopt);
+  EXPECT_EQ(ParseDate(u"foo", u"YYYY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"foo", u"YY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"foo", u"MM"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"foo", u"M"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"foo", u"DD"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"foo", u"D"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"123", u"YYYY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"001", u"YYYY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"202", u"YYYY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"2025", u"YY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"123", u"YY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"7", u"MM"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"007", u"MM"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"07", u"M"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"007", u"M"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"7", u"DD"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"007", u"DD"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"07", u"D"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"007", u"D"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"-1", u"YYYY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"-1", u"YY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"-1", u"MM"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"-1", u"M"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"-1", u"DD"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"-1", u"D"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-11", u"YY-MM-DD"), std::nullopt);
   EXPECT_EQ(ParseDate(u"25-12-11", u"YYYY-MM-DD"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-02-11", u"YYYY-M-DD"), std::nullopt);
@@ -105,13 +152,13 @@ TEST(AutofillDataModelUtils, ParseDate) {
   EXPECT_EQ(ParseDate(u"2025-12-1", u"YYYY-MM-DD"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-10", u"YYYY"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-10", u"YY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"201", u"YYYY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"201", u"YYYY"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025", u"YY"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-10", u"MM"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-10", u"M"), std::nullopt);
-  EXPECT_EQ(ParseDate(u"02", u"M"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-10", u"DD"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-10", u"D"), std::nullopt);
-  EXPECT_EQ(ParseDate(u"01", u"D"), std::nullopt);
 
   {
     Date date;
