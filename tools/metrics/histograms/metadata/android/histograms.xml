@@ -2194,7 +2194,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.HubSearch.SearchBoxEntrypointV2"
     enum="HubSearchEntrypoint" expires_after="2025-08-10">
   <owner>bjfong@google.com</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-hub-dev@google.com</owner>
   <summary>
     Reports under which context (incognito or non-incognito) and visual
@@ -4742,7 +4742,7 @@ chromium-metrics-reviews@google.com.
     enum="OmniboxSearchEngineType" expires_after="never">
 <!-- expires-never: Continuously monitored by Android partner team. -->
 
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     The type of the search engine chosen by the user in Search Engine Choice
@@ -4754,7 +4754,7 @@ chromium-metrics-reviews@google.com.
     enum="AndroidSearchEngineChoiceEvents" expires_after="never">
 <!-- expires-never: Continuously monitored by Android partner team. -->
 
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Counts occurences of various events related to Search Engine Choice feature.
@@ -4765,7 +4765,7 @@ chromium-metrics-reviews@google.com.
     enum="AndroidSearchEngineChoiceEventsV2" expires_after="never">
 <!-- expires-never: Continuously monitored by Android partner team. -->
 
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Counts occurences of various events related to Search Engine Choice V2
@@ -4777,7 +4777,7 @@ chromium-metrics-reviews@google.com.
     enum="OmniboxSearchEngineType" expires_after="never">
 <!-- expires-never: Continuously monitored by Android partner team. -->
 
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     The type of the search engine used before Search Engine Choice flow was
@@ -7889,7 +7889,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="AndroidSearchEngineLogo.Events"
     enum="AndroidSearchEngineLogoEvents" expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
     Counts occurences of various events related to the Search Engine Logo

@@ -1874,7 +1874,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.ArchivedTabs.MaxLimitReachedAt" units="count"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records how many tabs were archived prior to hitting the
@@ -1884,7 +1884,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.ArchivePass.DurationMs" units="ms"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records the duration of an archive pass, not including the
@@ -1895,7 +1895,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled"
     enum="Boolean" expires_after="2025-07-06">
   <owner>bjfong@google.com</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records when a user toggles the settings entry for automatically archiving
@@ -1908,7 +1908,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.ArchiveSettings.AutoDeleteEnabled" enum="Boolean"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records when a user toggles the settings entry for automatically deleting
@@ -1921,7 +1921,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.ArchiveSettings.TimeDeltaPreference" units="days"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>Records when a user selects an archive time preference.</summary>
 </histogram>
@@ -1941,7 +1941,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.CloseAllArchivedTabs.TabCount" units="tabs"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records the number of tabs that are currently selected when the close all
@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.CloseArchivedTabsMenuItem.TabCount" units="tabs"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records the number of tabs that are currently selected when the close menu
@@ -1988,7 +1988,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.DeleteWithPTD.DurationMs" units="ms"
     expires_after="2025-05-04">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records the duration of an auto-delete pass, including the
@@ -2109,7 +2109,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.InitializePTD.DurationMs" units="ms"
     expires_after="2025-05-04">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records the duration of initializing all the PersistedTabData
@@ -2520,7 +2520,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.RestoreAllArchivedTabsMenuItem.TabCount" units="tabs"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records the number of tabs that are currently selected when the restore all
@@ -2530,7 +2530,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.RestoreArchivedTabsMenuItem.TabCount" units="tabs"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records the number of tabs that are currently selected when the restore menu
@@ -2691,7 +2691,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.Startup.TabCount2.{TabModelSelectorType}.DuplicateTabIds"
     units="count" expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records the number of duplicate tabs in the tab metadata
@@ -2717,7 +2717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.Startup.UniqueUrlCount.{TabModelSelectorType}"
     units="count" expires_after="2025-05-04">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records the number of duplicate tab URLs found at startup per
@@ -2741,7 +2741,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabArchived.FoundDuplicateInRegularModel" units="count"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records how many tabs were found in the regular model which
@@ -2751,7 +2751,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabArchived.TabCount" units="tabs"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records how many tabs were archived from the normal tab model
@@ -2761,7 +2761,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabArchiveEligibilityCheck.AfterNDays" units="days"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records how old, in days, a tab is when it's checked for
@@ -2773,7 +2773,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabAutoDeleted.AfterNDays" units="days"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records how old, in days, a tab is when it's autodeleted. Age
@@ -2783,7 +2783,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabAutoDeleteEligibilityCheck.AfterNDays" units="days"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     (Android only) Records how old, in days, a tab is when it's checked for
@@ -3450,7 +3450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabStateCleanupAbortedByArchive" enum="Boolean"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records when a tab is marked as not ready for cleanup because it could
@@ -3461,7 +3461,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabThumbnailCleanupAbortedByArchive" enum="Boolean"
     expires_after="2025-07-06">
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records when a tab is marked as not ready for cleanup because it could

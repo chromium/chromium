@@ -987,17 +987,17 @@
   },
   {
     "name": "bookmarks-and-reading-list-behind-opt-in",
-    "owners": [ "wylieb@chromium.org", "bsazonov@chromium.org" ],
+    "owners": [ "wylieb@google.com", "bsazonov@chromium.org" ],
     "expiry_milestone": 126
   },
   {
     "name": "bookmarks-improved-save-flow",
-    "owners": ["wylieb@chromium.org", "fgorski@chromium.org", "mdjones@chromium.org"],
+    "owners": ["wylieb@google.com", "fgorski@chromium.org", "mdjones@chromium.org"],
     "expiry_milestone": 115
   },
   {
     "name": "bookmarks-refresh",
-    "owners": ["wylieb@chromium.org", "fgorski@chromium.org", "mdjones@chromium.org"],
+    "owners": ["wylieb@google.com", "fgorski@chromium.org", "mdjones@chromium.org"],
     "expiry_milestone": 115
   },
   {
@@ -7045,7 +7045,7 @@
   },
   {
     "name": "power-bookmark-backend",
-    "owners": [ "wylieb@chromium.org", "skym@chromium.org" ],
+    "owners": [ "wylieb@google.com", "skym@chromium.org" ],
     "expiry_milestone": 125
   },
   {
