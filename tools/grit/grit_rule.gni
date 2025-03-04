@@ -94,7 +94,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 import("//tools/grit/grit_args.gni")
 _strip_resource_files = is_android && is_official_build
-_js_minifier = "//tools/grit/minify_js.py"
 _css_minifier = "//tools/grit/minimize_css.py"
 
 grit_resource_id_target = "//tools/gritsettings:default_resource_ids"
@@ -267,18 +266,12 @@ template("grit") {
       }
     }
     if (_strip_resource_files) {
-      _js_minifier_command = rebase_path(_js_minifier, root_build_dir)
       _css_minifier_command = rebase_path(_css_minifier, root_build_dir)
       args += [
-        "--js-minifier",
-        _js_minifier_command,
         "--css-minifier",
         _css_minifier_command,
       ]
-      inputs += [
-        _js_minifier,
-        _css_minifier,
-      ]
+      inputs += [ _css_minifier ]
     }
 
     if (defined(invoker.visibility)) {
