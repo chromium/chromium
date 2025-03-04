@@ -378,8 +378,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountCleanupResult"
-    enum="CryptohomeOOPMountCleanupResult" expires_after="2025-04-01">
-  <owner>sarthakkukreti@chromium.org</owner>
+    enum="CryptohomeOOPMountCleanupResult" expires_after="2026-02-01">
+  <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The result of a cryptohome out-of-process mount cleanup. Recorded once per
@@ -388,8 +388,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountOperationResult"
-    enum="CryptohomeOOPMountOperationResult" expires_after="2025-04-28">
-  <owner>sarthakkukreti@chromium.org</owner>
+    enum="CryptohomeOOPMountOperationResult" expires_after="2026-02-01">
+  <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The result of a cryptohome out-of-process mount operation. Recorded once per
@@ -505,8 +505,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToMountEx" units="ms"
-    expires_after="2025-07-13">
-  <owner>sarthakkukreti@chromium.org</owner>
+    expires_after="2026-02-01">
+  <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time for Chrome OS cryptohome to mount the encrypted home
@@ -515,8 +515,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToMountGuestEx" units="ms"
-    expires_after="2025-06-11">
-  <owner>sarthakkukreti@chromium.org</owner>
+    expires_after="2026-02-01">
+  <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time for Chrome OS cryptohome to mount the encrypted guest
@@ -525,8 +525,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformEphemeralMount" units="ms"
-    expires_after="2025-06-08">
-  <owner>sarthakkukreti@chromium.org</owner>
+    expires_after="2026-02-01">
+  <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time cryptohome spends actively performing mounts when
@@ -536,8 +536,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformMount" units="ms"
-    expires_after="2025-07-13">
-  <owner>sarthakkukreti@chromium.org</owner>
+    expires_after="2026-02-01">
+  <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time cryptohome spends performing the mounts for the user's
@@ -547,8 +547,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToRelabelSELinuxContexts" units="ms"
-    expires_after="2025-03-09">
-  <owner>sarthakkukreti@chromium.org</owner>
+    expires_after="2026-02-01">
+  <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time for ChromeOS cryptohome to relabel SELinux contexts for
@@ -557,8 +557,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToSetupVault" units="ms"
-    expires_after="2025-03-09">
-  <owner>sarthakkukreti@chromium.org</owner>
+    expires_after="2026-02-01">
+  <owner>sarthakkukreti@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
     The amount of time for ChromeOS cryptohome to set up the encrypted user
