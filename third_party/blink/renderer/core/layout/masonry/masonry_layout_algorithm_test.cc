@@ -91,12 +91,21 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
-    <div id="masonry" style="display: masonry">
+    <style>
+    #masonry {
+      display: masonry;
+      masonry-template-tracks: auto auto [header-start] auto auto [header-end];
+    }
+    </style>
+    <div id="masonry">
       <div>1</div>
       <div style="masonry-track: 3 / span 2">2</div>
       <div style="masonry-track: span 2">3</div>
       <div style="masonry-track: span 3">4</div>
       <div style="masonry-track: 2 / 5">5</div>
+      <div style="masonry-track: header-start / header-end">1</div>
+      <div style="masonry-track: 1 / header-start">2</div>
+      <div style="masonry-track: 3 / header-end">2</div>
     </div>
   )HTML");
 
@@ -114,13 +123,17 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildMasonryItems) {
 
   EXPECT_EQ(MasonryItemCount(), 0U);
   ComputeGeometry(algorithm);
-  EXPECT_EQ(MasonryItemCount(), 5U);
+  EXPECT_EQ(MasonryItemCount(), 8U);
 
   const Vector<GridSpan> expected_spans = {
       GridSpan::IndefiniteGridSpan(1),
       GridSpan::TranslatedDefiniteGridSpan(2, 4),
-      GridSpan::IndefiniteGridSpan(2), GridSpan::IndefiniteGridSpan(3),
-      GridSpan::TranslatedDefiniteGridSpan(1, 4)};
+      GridSpan::IndefiniteGridSpan(2),
+      GridSpan::IndefiniteGridSpan(3),
+      GridSpan::TranslatedDefiniteGridSpan(1, 4),
+      GridSpan::TranslatedDefiniteGridSpan(2, 4),
+      GridSpan::TranslatedDefiniteGridSpan(0, 2),
+      GridSpan::TranslatedDefiniteGridSpan(2, 4)};
 
   for (wtf_size_t i = 0; i < expected_spans.size(); ++i) {
     EXPECT_EQ(MasonryItemSpan(i), expected_spans[i]);

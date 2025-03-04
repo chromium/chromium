@@ -47,9 +47,9 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
       column_auto_repetitions_(column_auto_repetitions),
       row_auto_repetitions_(row_auto_repetitions),
       subgridded_columns_merged_explicit_grid_line_names_(
-          grid_style.GridTemplateColumns().named_grid_lines),
+          grid_style.TemplateTracks(kForColumns).named_grid_lines),
       subgridded_rows_merged_explicit_grid_line_names_(
-          grid_style.GridTemplateRows().named_grid_lines) {
+          grid_style.TemplateTracks(kForRows).named_grid_lines) {
   if (subgrid_area.columns.IsTranslatedDefinite()) {
     subgridded_columns_span_size_ = subgrid_area.SpanSize(kForColumns);
   }
@@ -667,10 +667,7 @@ const NamedGridLinesMap& GridLineResolver::AutoRepeatLineNamesMap(
 
 const blink::ComputedGridTrackList& GridLineResolver::ComputedGridTrackList(
     GridTrackSizingDirection track_direction) const {
-  // TODO(kschmi): Refactor so this isn't necessary and handle auto-repeats
-  // for subgrids.
-  return (track_direction == kForColumns) ? style_->GridTemplateColumns()
-                                          : style_->GridTemplateRows();
+  return style_->TemplateTracks(track_direction);
 }
 
 GridSpan GridLineResolver::ResolveGridPositionAgainstOppositePosition(
