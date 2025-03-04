@@ -44,6 +44,7 @@ source_set("impl") {
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:browser_list",
     "//components/keep_alive_registry",
     "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",
