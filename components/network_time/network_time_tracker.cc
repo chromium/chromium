@@ -500,17 +500,13 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     return false;
   }
   response.remove_prefix(5);  // Skips leading )]}'\n
-  std::optional<base::Value> value = base::JSONReader::Read(response);
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(response);
   if (!value) {
-    DVLOG(1) << "bad JSON";
-    return false;
-  }
-  if (!value->is_dict()) {
     DVLOG(1) << "not a dictionary";
     return false;
   }
   std::optional<double> current_time_millis =
-      value->GetDict().FindDouble("current_time_millis");
+      value->FindDouble("current_time_millis");
   if (!current_time_millis) {
     DVLOG(1) << "no current_time_millis";
     return false;
