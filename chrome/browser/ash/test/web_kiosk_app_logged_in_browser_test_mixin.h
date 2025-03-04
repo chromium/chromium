@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TEST_PUBLIC_ACCOUNT_LOGGED_IN_BROWSER_TEST_MIXIN_H_
-#define CHROME_BROWSER_ASH_TEST_PUBLIC_ACCOUNT_LOGGED_IN_BROWSER_TEST_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_TEST_WEB_KIOSK_APP_LOGGED_IN_BROWSER_TEST_MIXIN_H_
+#define CHROME_BROWSER_ASH_TEST_WEB_KIOSK_APP_LOGGED_IN_BROWSER_TEST_MIXIN_H_
 
 #include <string>
 #include <string_view>
@@ -13,16 +13,16 @@
 
 namespace ash {
 
-// Registers a new PublicAccount User, and then use the user to enter
-// into a session.
-class PublicAccountLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
+// Registers a new WebKioskApp User, and then use the user to enter
+// into a kiosk session.
+class WebKioskAppLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
  public:
-  // `account_id` is the ID for the PublicSession account.
+  // `account_id` is the ID for the WebKioskApp account.
   // AccountId (to be used by, e.g., UserManager) is generated from the
   // `account_id`.
-  PublicAccountLoggedInBrowserTestMixin(InProcessBrowserTestMixinHost* host,
-                                        std::string_view account_id);
-  ~PublicAccountLoggedInBrowserTestMixin() override;
+  WebKioskAppLoggedInBrowserTestMixin(InProcessBrowserTestMixinHost* host,
+                                      std::string_view account_id);
+  ~WebKioskAppLoggedInBrowserTestMixin() override;
 
   // InProcessBrowserTestMixin:
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -33,10 +33,10 @@ class PublicAccountLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
   // generated from the `account_id` passed to the ctor.
   const std::string user_id_;
 
-  // Injects CrosSettings value to enable public account user.
+  // Injects CrosSettings value to enable Web Kiosk user.
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_TEST_PUBLIC_ACCOUNT_LOGGED_IN_BROWSER_TEST_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_TEST_WEB_KIOSK_APP_LOGGED_IN_BROWSER_TEST_MIXIN_H_

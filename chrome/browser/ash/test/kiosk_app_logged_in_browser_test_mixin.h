@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace ash {
@@ -27,10 +28,17 @@ class KioskAppLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpLocalStatePrefService(PrefService* local_state) override;
 
+  ScopedTestingCrosSettings& scoped_testing_cros_settings() {
+    return scoped_testing_cros_settings_;
+  }
+
  private:
   // Email-style ID used as a part of AccountId for the given User,
   // generated from the `account_id` passed to the ctor.
   const std::string user_id_;
+
+  // Injects CrosSettings value to enable Kiosk user.
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 }  // namespace ash

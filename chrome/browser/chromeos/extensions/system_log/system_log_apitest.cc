@@ -295,10 +295,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          /*system_logging_enabled=*/testing::Bool());
 
 // Verifies the systemLog API logs in regular user sessions.
-class SystemLogUserSessionApitest : public MixinBasedExtensionApiTest,
-                                    public ::testing::WithParamInterface<bool> {
+class SystemLogUserSessionApitestBase
+    : public MixinBasedExtensionApiTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  SystemLogUserSessionApitest()
+  SystemLogUserSessionApitestBase()
       : log_level_(system_logging_enabled() ? "DEBUG" : "EVENT") {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -328,11 +329,6 @@ class SystemLogUserSessionApitest : public MixinBasedExtensionApiTest,
 
   bool system_logging_enabled() const { return GetParam(); }
 
-  void SetSystemLogPolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kDeviceExtensionsSystemLogEnabled, system_logging_enabled());
-  }
-
   void ForceInstallExtension() {
     base::FilePath test_dir_path =
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
@@ -349,6 +345,16 @@ class SystemLogUserSessionApitest : public MixinBasedExtensionApiTest,
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       mock_policy_provider_;
+};
+
+class SystemLogUserSessionApitest : public SystemLogUserSessionApitestBase {
+ protected:
+  void SetSystemLogPolicy() {
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        ash::kDeviceExtensionsSystemLogEnabled, system_logging_enabled());
+  }
+
+ private:
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
@@ -396,12 +402,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                          /*system_logging_enabled=*/testing::Bool());
 
 // Verifies the systemLog API logs in Kiosk sessions.
-class SystemLogKioskSessionApitest : public SystemLogUserSessionApitest {
+class SystemLogKioskSessionApitest : public SystemLogUserSessionApitestBase {
  public:
   SystemLogKioskSessionApitest() {
     // Do not create User by LoggedInUserMixin, because
     // user log-in is handled by KioskBrowserTestMixin.
     set_chromeos_user_ = false;
+  }
+
+  void SetSystemLogPolicy() {
+    kiosk_mixin_.scoped_testing_cros_settings().device_settings()->SetBoolean(
+        ash::kDeviceExtensionsSystemLogEnabled, system_logging_enabled());
   }
 
  private:
