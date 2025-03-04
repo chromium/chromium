@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     // Use testCompile to have is_robolectric = true set on targets.
-    testCompileLatest "org.robolectric:robolectric:latest"
+    testCompileLatest "org.robolectric:robolectric:+"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
