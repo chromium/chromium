@@ -189,7 +189,7 @@ export class SummarizationView extends ReactiveLitElement {
   private readonly downloadRequested = signal(false);
 
   private readonly modelState =
-    computed(() => this.platformHandler.summaryModelLoader.state.value);
+    computed(() => this.platformHandler.getGenAiModelState());
 
   get summaryContainerForTest(): HTMLDivElement {
     return assertExists(this.summaryContainer.value);
@@ -320,9 +320,7 @@ export class SummarizationView extends ReactiveLitElement {
   }
 
   private onDownloadClicked() {
-    // TODO: b/399016315 - Have a wrapper to download models together.
-    this.platformHandler.summaryModelLoader.download();
-    this.platformHandler.titleSuggestionModelLoader.download();
+    this.platformHandler.downloadGenAiModel();
   }
 
   private renderDownloadStatus(state: ModelState) {

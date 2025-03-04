@@ -225,12 +225,9 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   }
 
   private renderContent() {
-    // TODO(pihsun): There should also be a consent / download model / loading
-    // state for title suggestion too. Implement it when the UI spec is done.
     if (this.suggestedTitles === null ||
         this.suggestedTitles.state !== ComputedState.DONE ||
         this.suggestedTitles.value === null) {
-      // TOOD(pihsun): Handle error.
       return html`<div id="loading">
         <genai-placeholder
           aria-label=${i18n.titleSuggestionStartedStatusMessage}

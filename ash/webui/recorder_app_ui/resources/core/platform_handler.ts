@@ -8,7 +8,11 @@ import {
 } from './events_sender.js';
 import {NoArgStringName} from './i18n.js';
 import {InternalMicInfo} from './microphone_manager.js';
-import {ModelLoader, ModelState} from './on_device_model/types.js';
+import {
+  getModelUiOrder,
+  ModelLoader,
+  ModelState,
+} from './on_device_model/types.js';
 import {PerfLogger} from './perf.js';
 import {effect, ReadonlySignal, Signal} from './reactive/signal.js';
 import {LangPackInfo, LanguageCode} from './soda/language_info.js';
@@ -47,6 +51,41 @@ export abstract class PlatformHandler {
    * The model loader for title suggestion.
    */
   abstract titleSuggestionModelLoader: ModelLoader<string[]>;
+
+  /**
+   * Gets integrated model state for title suggestion and summarization.
+   *
+   * Model state with smaller UI order will be returned. If both models are
+   * downloading, then return state with smaller progress.
+   */
+  getGenAiModelState(): ModelState {
+    const summaryModelState = this.summaryModelLoader.state.value;
+    const summaryUiOrder = getModelUiOrder(summaryModelState);
+    const titleSuggestionModelState =
+      this.titleSuggestionModelLoader.state.value;
+    const titleSuggestionUiOrder = getModelUiOrder(titleSuggestionModelState);
+
+    if (summaryModelState.kind === 'installing' &&
+        titleSuggestionModelState.kind === 'installing') {
+      if (summaryModelState.progress < titleSuggestionModelState.progress) {
+        return summaryModelState;
+      }
+      return titleSuggestionModelState;
+    }
+
+    if (summaryUiOrder < titleSuggestionUiOrder) {
+      return summaryModelState;
+    }
+    return titleSuggestionModelState;
+  }
+
+  /**
+   * Wrapper to download GenAI-related model.
+   */
+  downloadGenAiModel(): void {
+    this.summaryModelLoader.download();
+    this.titleSuggestionModelLoader.download();
+  }
 
   /**
    * Returns a readonly list of language pack info.

@@ -201,9 +201,7 @@ export class SettingsMenu extends ReactiveLitElement {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
     this.platformHandler.perfLogger.start({kind: 'summaryModelDownload'});
-    this.platformHandler.summaryModelLoader.download();
-    // The settings download both the model for summary and title suggestion.
-    this.platformHandler.titleSuggestionModelLoader.download();
+    this.platformHandler.downloadGenAiModel();
     this.summaryDownloadRequested.value = true;
   }
 
@@ -216,7 +214,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderSummaryModelDownloadStatus() {
-    const state = this.platformHandler.summaryModelLoader.state.value.kind;
+    const state = this.platformHandler.getGenAiModelState().kind;
     switch (state) {
       case 'unavailable':
         return assertNotReached(
@@ -259,7 +257,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderSummaryModelDescriptionAndAction() {
-    const state = this.platformHandler.summaryModelLoader.state.value;
+    const state = this.platformHandler.getGenAiModelState();
     const downloadButton = html`
       <cra-button
         slot="action"
@@ -344,8 +342,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderSummaryModelSettings() {
-    if (this.platformHandler.summaryModelLoader.state.value.kind ===
-        'unavailable') {
+    if (this.platformHandler.getGenAiModelState().kind === 'unavailable') {
       return nothing;
     }
     return html`
