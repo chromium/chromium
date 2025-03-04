@@ -68,7 +68,7 @@ public class TabRemoverImplUnitTest {
     @Mock private Runnable mUndoRunnable;
     @Mock private TabRemover mMockTabRemover;
     @Mock private TabModelActionListener mListener;
-    @Mock private Callback<Integer> mOnResult;
+    @Mock private Callback<@ActionConfirmationResult Integer> mOnResult;
     @Mock private Callback<MaybeBlockingResult> mOnMaybeBlockingResult;
     @Mock private DataSharingService mDataSharingService;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -76,7 +76,7 @@ public class TabRemoverImplUnitTest {
     @Mock private Runnable mFinishBlocking;
 
     @Captor private ArgumentCaptor<TabModelRemoverFlowHandler> mHandlerCaptor;
-    @Captor private ArgumentCaptor<Callback<Integer>> mOnResultCaptor;
+    @Captor private ArgumentCaptor<Callback<@ActionConfirmationResult Integer>> mOnResultCaptor;
     @Captor private ArgumentCaptor<Callback<MaybeBlockingResult>> mOnMaybeBlockingResultCaptor;
 
     private MockTabModel mTabModel;

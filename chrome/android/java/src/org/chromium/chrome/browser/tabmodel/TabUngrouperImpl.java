@@ -139,7 +139,8 @@ public class TabUngrouperImpl implements TabUngrouper {
         }
 
         @Override
-        public void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult) {
+        public void showTabGroupDeletionConfirmationDialog(
+                @NonNull Callback<@ActionConfirmationResult Integer> onResult) {
             @Nullable TabModelActionListener listener = takeListener();
             if (listener != null) {
                 boolean willSkipDialog =
@@ -219,9 +220,10 @@ public class TabUngrouperImpl implements TabUngrouper {
         };
     }
 
-    private static @NonNull Callback<Integer> adaptSyncOnResultCallback(
-            @NonNull Callback<Integer> callback, @Nullable TabModelActionListener listener) {
-        return (result) -> {
+    private static @NonNull Callback<@ActionConfirmationResult Integer> adaptSyncOnResultCallback(
+            @NonNull Callback<@ActionConfirmationResult Integer> callback,
+            @Nullable TabModelActionListener listener) {
+        return (@ActionConfirmationResult Integer result) -> {
             callback.onResult(result);
             if (listener != null) {
                 @DialogType

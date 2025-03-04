@@ -99,7 +99,7 @@ public class ActionConfirmationManager {
      * Process a close tab group operation that would delete the group. This does not include
      * per-tab operations, for that {@see processCloseTabAttempt}.
      */
-    public void processDeleteGroupAttempt(Callback<Integer> onResult) {
+    public void processDeleteGroupAttempt(Callback<@ActionConfirmationResult Integer> onResult) {
         processMaybeSyncAndPrefAction(
                 DELETE_GROUP_USER_ACTION,
                 Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_CLOSE,
@@ -136,7 +136,7 @@ public class ActionConfirmationManager {
 
     // TODO(crbug.com/362818090): Ensure this is unreachable if the group is shared.
     /** Ungroup is an action taken on tab groups that ungroups every tab within them. */
-    public void processUngroupAttempt(Callback<Integer> onResult) {
+    public void processUngroupAttempt(Callback<@ActionConfirmationResult Integer> onResult) {
         processMaybeSyncAndPrefAction(
                 UNGROUP_USER_ACTION,
                 Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_UNGROUP,
@@ -151,7 +151,7 @@ public class ActionConfirmationManager {
      * Removing tabs either moving to no group or to a different group. The caller needs to ensure
      * this action will delete the group.
      */
-    public void processUngroupTabAttempt(Callback<Integer> onResult) {
+    public void processUngroupTabAttempt(Callback<@ActionConfirmationResult Integer> onResult) {
         processMaybeSyncAndPrefAction(
                 REMOVE_TAB_FULL_GROUP_USER_ACTION,
                 Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE,
@@ -166,7 +166,7 @@ public class ActionConfirmationManager {
      * This processes closing tabs within groups. The caller needs to ensure this action will delete
      * the group.
      */
-    public void processCloseTabAttempt(Callback<Integer> onResult) {
+    public void processCloseTabAttempt(Callback<@ActionConfirmationResult Integer> onResult) {
         processMaybeSyncAndPrefAction(
                 CLOSE_TAB_FULL_GROUP_USER_ACTION,
                 Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE,
@@ -216,7 +216,7 @@ public class ActionConfirmationManager {
             @StringRes int withSyncDescriptionRes,
             @StringRes int noSyncDescriptionRes,
             @StringRes int actionRes,
-            Callback<Integer> onResult) {
+            Callback<@ActionConfirmationResult Integer> onResult) {
 
         boolean syncingTabGroups = false;
         @Nullable SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
@@ -307,7 +307,7 @@ public class ActionConfirmationManager {
     private static void handleDialogResult(
             @ButtonClickResult int buttonClickResult,
             String userActionBaseString,
-            Callback<Integer> onResult) {
+            Callback<@ActionConfirmationResult Integer> onResult) {
         boolean takePositiveAction = buttonClickResult == ButtonClickResult.POSITIVE;
         recordProceedOrAbort(userActionBaseString, takePositiveAction);
         onResult.onResult(

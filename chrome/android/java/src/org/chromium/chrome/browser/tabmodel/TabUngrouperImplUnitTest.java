@@ -58,16 +58,15 @@ public class TabUngrouperImplUnitTest {
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private TabGroupModelFilterInternal mTabGroupModelFilter;
     @Mock private TabModelRemover mTabModelRemover;
-    @Mock private Runnable mUndoRunnable;
     @Mock private TabModelActionListener mListener;
-    @Mock private Callback<Integer> mOnResult;
+    @Mock private Callback<@ActionConfirmationResult Integer> mOnResult;
     @Mock private Callback<MaybeBlockingResult> mOnMaybeBlockingResult;
     @Mock private DataSharingService mDataSharingService;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Runnable mFinishBlocking;
 
     @Captor private ArgumentCaptor<TabModelRemoverFlowHandler> mHandlerCaptor;
-    @Captor private ArgumentCaptor<Callback<Integer>> mOnResultCaptor;
+    @Captor private ArgumentCaptor<Callback<@ActionConfirmationResult Integer>> mOnResultCaptor;
     @Captor private ArgumentCaptor<Callback<MaybeBlockingResult>> mOnMaybeBlockingResultCaptor;
 
     private MockTabModel mTabModel;

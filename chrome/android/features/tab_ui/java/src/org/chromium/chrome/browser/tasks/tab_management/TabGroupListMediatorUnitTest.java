@@ -145,7 +145,10 @@ public class TabGroupListMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserver;
     @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncObserverCaptor;
-    @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCallbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<Callback<@ActionConfirmationResult Integer>>
+            mActionConfirmationResultCallbackCaptor;
 
     @Captor
     private ArgumentCaptor<Callback<MaybeBlockingResult>> mMaybeBlockingResultCallbackCaptor;

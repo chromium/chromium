@@ -126,7 +126,8 @@ public class TabRemoverImpl implements TabRemover {
         }
 
         @Override
-        public void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult) {
+        public void showTabGroupDeletionConfirmationDialog(
+                @NonNull Callback<@ActionConfirmationResult Integer> onResult) {
             boolean isTabGroup = mOriginalTabClosureParams.isTabGroup;
             @Nullable TabModelActionListener listener = takeListener();
             if (listener != null) {
@@ -206,9 +207,10 @@ public class TabRemoverImpl implements TabRemover {
             };
         }
 
-        private @NonNull Callback<Integer> adaptSyncOnResultCallback(
-                @NonNull Callback<Integer> callback, @Nullable TabModelActionListener listener) {
-            return (result) -> {
+        private @NonNull Callback<@ActionConfirmationResult Integer> adaptSyncOnResultCallback(
+                @NonNull Callback<@ActionConfirmationResult Integer> callback,
+                @Nullable TabModelActionListener listener) {
+            return (@ActionConfirmationResult Integer result) -> {
                 boolean isImmediateContinue = result == ActionConfirmationResult.IMMEDIATE_CONTINUE;
                 // Sync dialogs interrupt the flow and as such undo operations after the dialog is
                 // shown should be suppressed as the user already had an opportunity to abort.
