@@ -110,6 +110,9 @@ final class SigninPromoMediator
                         ? SigninPromoAction.NEW_ACCOUNT_NO_EXISTING_ACCOUNT
                         : SigninPromoAction.WITH_DEFAULT;
         SigninMetricsUtils.logSigninOffered(promoAction, mDelegate.getAccessPoint());
+
+        ChromeSharedPreferences.getInstance()
+                .incrementInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         recordEventHistogram(Event.SHOWN);
         mDelegate.recordImpression();
         mWasImpressionRecorded = true;
